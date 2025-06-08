@@ -2,14 +2,15 @@ Param(
     [Parameter(Mandatory=$true)]
     [PSCustomObject]$Config
 )
+. "$PSScriptRoot\..\runner_utility_scripts\Logger.ps1"
 
 # Check if WinRM is already configured
 $winrmStatus = Get-Service -Name WinRM -ErrorAction SilentlyContinue
 
 if ($winrmStatus -and $winrmStatus.Status -eq 'Running') {
-    Write-Host "WinRM is already enabled and running."
+    Write-Log "WinRM is already enabled and running."
 } else {
-    Write-Host "Enabling WinRM..."
+    Write-Log "Enabling WinRM..."
     
     # WinRM QuickConfig
     Enable-PSRemoting -Force
@@ -17,6 +18,6 @@ if ($winrmStatus -and $winrmStatus.Status -eq 'Running') {
     # Optionally configure additional authentication methods, etc.:
     # e.g.: Set-Item -Path WSMan:\localhost\Service\Auth\Basic -Value $true
     
-    Write-Host "WinRM has been enabled."
+    Write-Log "WinRM has been enabled."
 }
 

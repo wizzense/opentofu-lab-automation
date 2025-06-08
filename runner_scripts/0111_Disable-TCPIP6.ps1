@@ -2,6 +2,7 @@ Param(
     [Parameter(Mandatory=$true)]
     [PSCustomObject]$Config
 )
+. "$PSScriptRoot\..\runner_utility_scripts\Logger.ps1"
 
 if ($Config.DisableTCPIP6 -eq $true) {
     

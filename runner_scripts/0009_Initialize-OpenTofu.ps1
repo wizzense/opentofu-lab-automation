@@ -14,14 +14,15 @@ Param(
     [Parameter(Mandatory = $true)]
     [PSCustomObject]$Config
 )
+. "$PSScriptRoot\..\runner_utility_scripts\Logger.ps1"
 
 if ($Config.InitializeOpenTofu -eq $true) {
 
     Set-StrictMode -Version Latest
     $ErrorActionPreference = 'Stop'
 
-    Write-Host "---- Hyper-V Configuration Check ----"
-    Write-Host "Final Hyper-V configuration:"
+    Write-Log "---- Hyper-V Configuration Check ----"
+    Write-Log "Final Hyper-V configuration:"
     $Config.HyperV | Format-List
 
     # --------------------------------------------------
@@ -35,26 +36,26 @@ if ($Config.InitializeOpenTofu -eq $true) {
         $infraRepoPath = Join-Path $PSScriptRoot "my-infra"
     }
 
-    Write-Host "Using InfraRepoPath: $infraRepoPath"
+    Write-Log "Using InfraRepoPath: $infraRepoPath"
 
     # Ensure local directory exists
     if (Test-Path $infraRepoPath) {
-        Write-Host "Directory already exists: $infraRepoPath"
+        Write-Log "Directory already exists: $infraRepoPath"
     }
     else {
         New-Item -ItemType Directory -Path $infraRepoPath -Force | Out-Null
-        Write-Host "Created directory: $infraRepoPath"
+        Write-Log "Created directory: $infraRepoPath"
     }
 
 # --------------------------------------------------
 # 2) If InfraRepoUrl is given, clone directly to InfraRepoPath
 # --------------------------------------------------
 if (-not [string]::IsNullOrWhiteSpace($infraRepoUrl)) {
-    Write-Host "InfraRepoUrl detected: $infraRepoUrl"
+    Write-Log "InfraRepoUrl detected: $infraRepoUrl"
 
     # If infraRepoPath is already a Git repo, do a pull instead of clone
     if (Test-Path (Join-Path $infraRepoPath ".git")) {
-        Write-Host "This directory is already a Git repository. Pulling latest changes..."
+        Write-Log "This directory is already a Git repository. Pulling latest changes..."
         Push-Location $infraRepoPath
         git pull
         Pop-Location
@@ -63,7 +64,7 @@ if (-not [string]::IsNullOrWhiteSpace($infraRepoUrl)) {
         # If you want a clean slate each time, uncomment the lines below to remove existing files
         # Remove-Item -Path (Join-Path $infraRepoPath "*") -Recurse -Force -ErrorAction SilentlyContinue
 
-        Write-Host "Cloning $infraRepoUrl to $infraRepoPath..."
+        Write-Log "Cloning $infraRepoUrl to $infraRepoPath..."
         git clone $infraRepoUrl $infraRepoPath
         if ($LASTEXITCODE -ne 0) {
             Write-Error "ERROR: Failed to clone $infraRepoUrl"
@@ -72,12 +73,12 @@ if (-not [string]::IsNullOrWhiteSpace($infraRepoUrl)) {
     }
 }
 else {
-    Write-Host "No InfraRepoUrl provided. Using local or default .tf files."
+    Write-Log "No InfraRepoUrl provided. Using local or default .tf files."
 
     # If no main.tf found, create one from Hyper-V config
     $tfFile = Join-Path -Path $infraRepoPath -ChildPath "main.tf"
     if (-not (Test-Path $tfFile)) {
-        Write-Host "No main.tf found; creating main.tf using Hyper-V configuration..."
+        Write-Log "No main.tf found; creating main.tf using Hyper-V configuration..."
         $tfContent = @"
 terraform {
   required_providers {
@@ -89,17 +90,17 @@ terraform {
 }
 "@
         Set-Content -Path $tfFile -Value $tfContent
-        Write-Host "Created main.tf at $tfFile"
+        Write-Log "Created main.tf at $tfFile"
     }
     else {
-        Write-Host "main.tf already exists; not overwriting."
+        Write-Log "main.tf already exists; not overwriting."
     }
 
 
     # If no provider.tf found, create one from Hyper-V config
     $ProviderFile = Join-Path -Path $infraRepoPath -ChildPath "providers.tf"
     if (-not (Test-Path $ProviderFile)) {
-        Write-Host "No providers.tf found; creating providers.tf using Hyper-V configuration..."
+        Write-Log "No providers.tf found; creating providers.tf using Hyper-V configuration..."
         $tfContent = @"
 
 provider "hyperv" {
@@ -119,10 +120,10 @@ provider "hyperv" {
 }
 "@
         Set-Content -Path $ProviderFile -Value $tfContent
-        Write-Host "Created providers.tf at $ProviderFile"
+        Write-Log "Created providers.tf at $ProviderFile"
     }
     else {
-        Write-Host "providers.tf already exists; not overwriting."
+        Write-Log "providers.tf already exists; not overwriting."
     }
 }
 
@@ -133,7 +134,7 @@ $tofuCmd = Get-Command tofu -ErrorAction SilentlyContinue
 if (-not $tofuCmd) {
     $defaultTofuExe = Join-Path $env:USERPROFILE -ChildPath "AppData\\Local\\Programs\\OpenTofu\\tofu.exe"
     if (Test-Path $defaultTofuExe) {
-        Write-Host "Tofu command not found in PATH. Adding its folder to the session PATH..."
+        Write-Log "Tofu command not found in PATH. Adding its folder to the session PATH..."
         $tofuFolder = Split-Path -Path $defaultTofuExe
         $env:PATH = "$env:PATH;$tofuFolder"
         $tofuCmd = Get-Command tofu -ErrorAction SilentlyContinue
@@ -141,7 +142,7 @@ if (-not $tofuCmd) {
             Write-Warning "Even after updating PATH, tofu command is not recognized."
         }
         else {
-            Write-Host "Tofu command found: $($tofuCmd.Path)"
+            Write-Log "Tofu command found: $($tofuCmd.Path)"
         }
     }
     else {
@@ -153,7 +154,7 @@ if (-not $tofuCmd) {
 # --------------------------------------------------
 # 4) Run tofu init in InfraRepoPath
 # --------------------------------------------------
-Write-Host "Initializing OpenTofu in $infraRepoPath..."
+Write-Log "Initializing OpenTofu in $infraRepoPath..."
 Push-Location $infraRepoPath
 try {
     tofu init
@@ -165,7 +166,7 @@ catch {
 }
 Pop-Location
 
-Write-Host "OpenTofu initialized successfully."
+Write-Log "OpenTofu initialized successfully."
 
 Write-Host @"
 NEXT STEPS:

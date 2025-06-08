@@ -2,6 +2,7 @@ Param(
     [Parameter(Mandatory=$true)]
     [PSCustomObject]$Config
 )
+. "$PSScriptRoot\..\runner_utility_scripts\Logger.ps1"
 
 <# Define local path (fallback if not in config)
 
@@ -12,7 +13,7 @@ Can update this later to copy the script to C:\temp and run it from there.
 $localPath = if ($config.LocalPath) { $config.LocalPath } else { "$env:USERPROFILE\Documents\ServerSetup" }
 
 # Ensure local directory exists
-Write-Host "Ensuring local path '$localPath' exists..."
+Write-Log "Ensuring local path '$localPath' exists..."
 if ((Test-Path $localPath)) {
     Remove-Item -Recurse -Force -Path $localPath
 }
@@ -22,7 +23,7 @@ if ((Test-Path $localPath)) {
 $InfraPath = if ($config.InfraRepoPath) { $config.InfraRepoPath } else { "C:\Temp\base-infra" }
 
 # Ensure local directory exists
-Write-Host "Ensuring local path '$InfraPath' exists..."
+Write-Log "Ensuring local path '$InfraPath' exists..."
 if ((Test-Path $InfraPath)) {
     Remove-Item -Recurse -Force -Path $InfraPath
 }
