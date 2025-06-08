@@ -22,6 +22,19 @@ variable "hyperv_vm_path" {
   default = "B:\\hyper-v\\"
 }
 
+###############################################################################
+# Network switch configuration
+###############################################################################
+variable "wan_switch_name" {
+  type    = string
+  default = "wan"
+}
+
+variable "wan_adapter_names" {
+  type    = list(string)
+  default = ["Ethernet"]
+}
+
 variable "server_2025_iso_path" {
     type  = string
     default = "\\B:\\share\\isos\\core_windows_server_2025_feb_2025_CustomWinISO.iso"
