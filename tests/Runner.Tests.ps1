@@ -9,7 +9,8 @@ Describe 'runner.ps1 configuration' {
 
 Describe 'runner.ps1 script selection' {
     BeforeAll {
-        $runnerPath = Join-Path $PSScriptRoot '..\runner.ps1'
+        # Use script-scoped variable so PSScriptAnalyzer recognizes cross-block usage
+        $script:runnerPath = Join-Path $PSScriptRoot '..\runner.ps1'
         $modulePath = Join-Path $PSScriptRoot '..\lab_utils\Get-LabConfig.ps1'
         . $modulePath
     }
@@ -18,7 +19,7 @@ Describe 'runner.ps1 script selection' {
         $tempDir = Join-Path ([System.IO.Path]::GetTempPath()) ([System.Guid]::NewGuid())
         $null = New-Item -ItemType Directory -Path $tempDir
         try {
-            Copy-Item $runnerPath -Destination $tempDir
+            Copy-Item $script:runnerPath -Destination $tempDir
             Copy-Item (Join-Path $PSScriptRoot '..\runner_utility_scripts') -Destination $tempDir -Recurse
             Copy-Item (Join-Path $PSScriptRoot '..\lab_utils') -Destination $tempDir -Recurse
             Copy-Item (Join-Path $PSScriptRoot '..\config_files') -Destination (Join-Path $tempDir 'config_files') -Recurse
@@ -42,7 +43,7 @@ exit 0' | Set-Content -Path $dummy
         $tempDir = Join-Path ([System.IO.Path]::GetTempPath()) ([System.Guid]::NewGuid())
         $null = New-Item -ItemType Directory -Path $tempDir
         try {
-            Copy-Item $runnerPath -Destination $tempDir
+            Copy-Item $script:runnerPath -Destination $tempDir
             Copy-Item (Join-Path $PSScriptRoot '..\runner_utility_scripts') -Destination $tempDir -Recurse
             Copy-Item (Join-Path $PSScriptRoot '..\lab_utils') -Destination $tempDir -Recurse
             Copy-Item (Join-Path $PSScriptRoot '..\config_files') -Destination (Join-Path $tempDir 'config_files') -Recurse
@@ -81,7 +82,7 @@ exit 0
         $tempDir = Join-Path ([System.IO.Path]::GetTempPath()) ([System.Guid]::NewGuid())
         $null = New-Item -ItemType Directory -Path $tempDir
         try {
-            Copy-Item $runnerPath -Destination $tempDir
+            Copy-Item $script:runnerPath -Destination $tempDir
             Copy-Item (Join-Path $PSScriptRoot '..\runner_utility_scripts') -Destination $tempDir -Recurse
             Copy-Item (Join-Path $PSScriptRoot '..\lab_utils') -Destination $tempDir -Recurse
             $scriptsDir = Join-Path $tempDir 'runner_scripts'
