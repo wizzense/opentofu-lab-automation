@@ -591,17 +591,20 @@ function installStandalone() {
     }
 }
 
-function escapePathArgument() {
+function escapePathArgument {
+    [CmdletBinding()]
     param(
         [Parameter(Mandatory=$true, ValueFromPipeline=$true)]
-        [string] $path
+        [string] $Path
     )
 
-    if ($path -contains '"') {
-        throw [InvalidArgumentException]::new("Invalid path: ${path}")
-    }
+    process {
+        if ($Path -contains '"') {
+            throw [InvalidArgumentException]::new("Invalid path: ${Path}")
+        }
 
-    return "`"${path}`""
+        "`"${Path}`""
+    }
 }
 
 function usage() {
