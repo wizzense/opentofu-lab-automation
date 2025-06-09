@@ -1,4 +1,4 @@
-Param([pscustomobject]$Config)
+﻿Param([pscustomobject]$Config)
 . "$PSScriptRoot/../runner_utility_scripts/ScriptTemplate.ps1"
 Invoke-LabStep -Config $Config -Body {
 <#
