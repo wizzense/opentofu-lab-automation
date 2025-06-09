@@ -14,7 +14,7 @@ Describe 'runner.ps1 script selection' {
         . $modulePath
     }
 
-    It 'runs non-interactively when -RunScripts is supplied' {
+    It 'runs non-interactively when -Scripts is supplied' {
         $tempDir = Join-Path ([System.IO.Path]::GetTempPath()) ([System.Guid]::NewGuid())
         $null = New-Item -ItemType Directory -Path $tempDir
         try {
@@ -31,14 +31,14 @@ exit 0' | Set-Content -Path $dummy
 
             Push-Location $tempDir
             Mock Read-Host { throw 'Read-Host should not be called' }
-            & "$tempDir/runner.ps1" -RunScripts '0001' -AutoAccept | Out-Null
+            & "$tempDir/runner.ps1" -Scripts '0001' -Auto | Out-Null
             Pop-Location
         } finally {
             Remove-Item -Recurse -Force $tempDir
         }
     }
 
-    It 'prompts for script selection when no -RunScripts argument is supplied' -Skip:$IsLinux {
+    It 'prompts for script selection when no -Scripts argument is supplied' -Skip:$IsLinux {
         $tempDir = Join-Path ([System.IO.Path]::GetTempPath()) ([System.Guid]::NewGuid())
         $null = New-Item -ItemType Directory -Path $tempDir
         try {
@@ -56,7 +56,7 @@ exit 0' | Set-Content -Path $dummy
             $called = 0
             function global:Read-Host { param([string]$Prompt) $called++; $responses[$script:index++] }
             Push-Location $tempDir
-            & "$tempDir/runner.ps1" -AutoAccept | Out-Null
+            & "$tempDir/runner.ps1" -Auto | Out-Null
             Pop-Location
             $called | Should -BeGreaterThan 0
         } finally {

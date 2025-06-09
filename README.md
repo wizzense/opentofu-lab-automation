@@ -78,8 +78,19 @@ The runner script can run the following:
   - Builds the hyperv-provider for opentofu from tailiesins git
     
   - Copies the provider to the lab-infra
- 
-- Note, certificate validation for the hyperv provider is currently disabled by default, I am still working out to get it to use the certificates. I think they have to be converted to .pem first.
+  - Converts the generated certificates to PEM files and updates `providers.tf`
+
+**Certificate prerequisites**
+
+- You will be prompted for passwords when creating the Root CA and host certificates. Use the same password when asked.
+- Ensure WinRM HTTPS (port 5986) is allowed through the firewall.
+- Typical WinRM settings set by the script: `WinRS MaxMemoryPerShellMB = 1024`, `WinRM MaxTimeoutms = 1800000`, `TrustedHosts = '*'`, `Negotiate = True`.
+
+Scripts `0006`–`0010` form the minimal path to a working Hyper‑V provider. On Server Core 2025 you can run them non‑interactively with:
+
+```powershell
+./runner.ps1 -Scripts '0006,0007,0008,0009,0010' -Auto
+```
 
 Completely optional scripts I use for other tasks:
 -a----          3/7/2025   7:08 AM            616 0100_Enable-WinRM.ps1

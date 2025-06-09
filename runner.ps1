@@ -1,7 +1,7 @@
 param(
     [string]$ConfigFile = "./config_files/default-config.json",
-    [switch]$AutoAccept,
-    [string]$RunScripts
+    [switch]$Auto,
+    [string]$Scripts
 )
 
 # Load helpers
@@ -81,8 +81,8 @@ Write-Log "==== Current configuration ===="
 $formattedConfig = $ConfigRaw | ConvertTo-Json -Depth 5
 Write-Log $formattedConfig
 
-# If not in AutoAccept mode, allow customization
-if (-not $AutoAccept) {
+# If not in Auto mode, allow customization
+if (-not $Auto) {
     $customize = Read-Host "Would you like to customize your configuration? (Y/N)"
     if ($customize -match '^(?i)y') {
         $Config = Customize-Config -ConfigObject $Config
@@ -107,10 +107,10 @@ foreach ($Script in $ScriptFiles) {
 }
 
 # Determine scripts to run based on arguments
-if ($RunScripts -eq 'all') {
+if ($Scripts -eq 'all') {
     $ScriptsToRun = $ScriptFiles
-} elseif ($RunScripts) {
-    $selectedPrefixes = $RunScripts -split "," | ForEach-Object { $_.Trim() } | Where-Object { $_ -match '^\d{4}$' }
+} elseif ($Scripts) {
+    $selectedPrefixes = $Scripts -split "," | ForEach-Object { $_.Trim() } | Where-Object { $_ -match '^\d{4}$' }
     if (!$selectedPrefixes) {
         Write-Log "No valid 4-digit prefixes found in argument. Exiting."
         exit 1
