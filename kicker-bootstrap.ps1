@@ -61,11 +61,11 @@ if (-not (Test-Path $labConfigScript)) {
 # (0) clever? message, take a second...
 # ------------------------------------------------
 
-Write-Log "`nYo!"
+Write-CustomLog "`nYo!"
 Write-Continue "`n<press any key to continue>`n"
-Write-Log "I know you totally read the readme first, but just in case you didn't...`n"
+Write-CustomLog "I know you totally read the readme first, but just in case you didn't...`n"
 
-Write-Log """
+Write-CustomLog """
 
 Note: In order for most of this to work you will actually have to provide a config file. 
 You can either modify this command to point to the remote/local path, or leave it as is. 
@@ -113,10 +113,10 @@ else {
 # ------------------------------------------------
 # (1) Load Configuration
 # ------------------------------------------------
-Write-Log "==== Loading configuration file ===="
+Write-CustomLog "==== Loading configuration file ===="
 try {
     $config = Get-LabConfig -Path $ConfigFile
-    Write-Log "Config file loaded from $ConfigFile."
+    Write-CustomLog "Config file loaded from $ConfigFile."
 } catch {
     Write-Error "ERROR: $($_.Exception.Message)"
     exit 1
@@ -127,33 +127,33 @@ try {
 # ------------------------------------------------
 
 
-Write-Log "==== Checking if Git is installed ===="
+Write-CustomLog "==== Checking if Git is installed ===="
 $gitPath = "C:\Program Files\Git\cmd\git.exe"
 
 if (Test-Path $gitPath) {
-    Write-Log "Git is already installed at: $gitPath"
+    Write-CustomLog "Git is already installed at: $gitPath"
 } else {
 
     if ($Config.InstallGit -eq $true) {
-        Write-Log "Git is not installed. Downloading and installing Git for Windows..."
+        Write-CustomLog "Git is not installed. Downloading and installing Git for Windows..."
 
         $gitInstallerUrl = "https://github.com/git-for-windows/git/releases/download/v2.48.1.windows.1/Git-2.48.1-64-bit.exe"
         $gitInstallerPath = Join-Path -Path $env:TEMP -ChildPath "GitInstaller.exe"
 
         Invoke-WebRequest -Uri $gitInstallerUrl -OutFile $gitInstallerPath -UseBasicParsing
-        Write-Log "Installing Git silently..."
+        Write-CustomLog "Installing Git silently..."
         Start-Process -FilePath $gitInstallerPath -ArgumentList "/SILENT" -Wait -NoNewWindow
 
         Remove-Item -Path $gitInstallerPath -ErrorAction SilentlyContinue
-        Write-Log "Git installation completed."
+        Write-CustomLog "Git installation completed."
     }
 }
 
 # Double-check Git
 try {
     $gitVersion = & "$gitPath" --version
-    Write-Log $gitVersion
-    Write-Log "Git is installed and working."
+    Write-CustomLog $gitVersion
+    Write-CustomLog "Git is installed and working."
 } catch {
     Write-Error "ERROR: Git installation failed or is not accessible. Exiting."
     exit 1
@@ -162,24 +162,24 @@ try {
 # ------------------------------------------------
 # (3) Check GitHub CLI and call by explicit path
 # ------------------------------------------------
-Write-Log "==== Checking if GitHub CLI is installed ===="
+Write-CustomLog "==== Checking if GitHub CLI is installed ===="
 $ghExePath = "C:\Program Files\GitHub CLI\gh.exe"
 
 if (!(Test-Path $ghExePath)) {
     if ($Config.InstallGitHubCLI -eq $true) {
-        Write-Log "GitHub CLI not found. Downloading from $($config.GitHubCLIInstallerUrl)..."
+        Write-CustomLog "GitHub CLI not found. Downloading from $($config.GitHubCLIInstallerUrl)..."
         $ghCliInstaller = Join-Path -Path $env:TEMP -ChildPath "GitHubCLIInstaller.msi"
         Invoke-WebRequest -Uri $config.GitHubCLIInstallerUrl -OutFile $ghCliInstaller -UseBasicParsing
 
-        Write-Log "Installing GitHub CLI silently..."
+        Write-CustomLog "Installing GitHub CLI silently..."
         Start-Process msiexec.exe -ArgumentList "/i `"$ghCliInstaller`" /quiet /norestart /log `"$env:TEMP\ghCliInstall.log`"" -Wait -Verb RunAs
         Remove-Item -Path $ghCliInstaller -ErrorAction SilentlyContinue
 
-        Write-Log "GitHub CLI installation completed."
+        Write-CustomLog "GitHub CLI installation completed."
     }
 
 } else {
-    Write-Log "GitHub CLI found at '$ghExePath'."
+    Write-CustomLog "GitHub CLI found at '$ghExePath'."
 }
 
 if (!(Test-Path $ghExePath)) {
@@ -190,20 +190,20 @@ if (!(Test-Path $ghExePath)) {
 # ------------------------------------------------
 # (3.5) Check & Prompt for GitHub CLI Authentication
 # ------------------------------------------------
-Write-Log "==== Checking GitHub CLI Authentication ===="
+Write-CustomLog "==== Checking GitHub CLI Authentication ===="
 try {
     # If not authenticated, 'gh auth status' returns non-zero exit code
     & "$ghExePath" auth status 2>&1
-    Write-Log "GitHub CLI is authenticated."
+    Write-CustomLog "GitHub CLI is authenticated."
 }
 catch {
-    Write-Log "GitHub CLI is not authenticated."
+    Write-CustomLog "GitHub CLI is not authenticated."
 
     # Optional: Prompt user for a personal access token
     $pat = Read-Host "Enter your GitHub Personal Access Token (or press Enter to skip):"
 
     if (-not [string]::IsNullOrWhiteSpace($pat)) {
-        Write-Log "Attempting PAT-based GitHub CLI login..."
+        Write-CustomLog "Attempting PAT-based GitHub CLI login..."
         try {
             $pat | & "$ghExePath" auth login --hostname github.com --git-protocol https --with-token
         }
@@ -214,7 +214,7 @@ catch {
     }
     else {
         # No PAT, attempt normal interactive login in the console
-        Write-Log "No PAT provided. Attempting interactive login..."
+        Write-CustomLog "No PAT provided. Attempting interactive login..."
         try {
             & "$ghExePath" auth login --hostname github.com --git-protocol https
         }
@@ -227,7 +227,7 @@ catch {
     # After the login attempt, re-check auth
     try {
         & "$ghExePath" auth status 2>&1
-        Write-Log "GitHub CLI is now authenticated."
+        Write-CustomLog "GitHub CLI is now authenticated."
     }
     catch {
         Write-Error "ERROR: GitHub authentication failed. Please run '$ghExePath auth login' manually and re-run."
@@ -238,7 +238,7 @@ catch {
 # ------------------------------------------------
 # (4) Clone or Update Repository (using explicit Git/gh)
 # ------------------------------------------------
-Write-Log "==== Cloning or updating the target repository ===="
+Write-CustomLog "==== Cloning or updating the target repository ===="
 
 if (-not $config.RepoUrl) {
     Write-Error "ERROR: config.json does not specify 'RepoUrl'."
@@ -254,7 +254,7 @@ $localPath = [System.Environment]::ExpandEnvironmentVariables($localPath)
 
 
 # Ensure local directory exists
-Write-Log "Ensuring local path '$localPath' exists..."
+Write-CustomLog "Ensuring local path '$localPath' exists..."
 if (!(Test-Path $localPath)) {
     New-Item -ItemType Directory -Path $localPath -Force | Out-Null
 }
@@ -269,7 +269,7 @@ if (-not $repoPath) {
 }
 
 if (!(Test-Path $repoPath)) {
-    Write-Log "Cloning repository from $($config.RepoUrl) to $repoPath..."
+    Write-CustomLog "Cloning repository from $($config.RepoUrl) to $repoPath..."
 
     $prevEAP = $ErrorActionPreference
     $ErrorActionPreference = 'Continue'
@@ -280,7 +280,7 @@ if (!(Test-Path $repoPath)) {
 
     # Fallback to git if the GitHub CLI clone appears to have failed
     if (!(Test-Path $repoPath)) {
-        Write-Log "GitHub CLI clone failed. Trying git clone..."
+        Write-CustomLog "GitHub CLI clone failed. Trying git clone..."
         & "$gitPath" clone $config.RepoUrl $repoPath 2>&1 | Tee-Object -FilePath "$env:TEMP\git_clone_log.txt"
 
         if (!(Test-Path $repoPath)) {
@@ -289,7 +289,7 @@ if (!(Test-Path $repoPath)) {
         }
     }
 } else {
-    Write-Log "Repository already exists. Pulling latest changes..."
+    Write-CustomLog "Repository already exists. Pulling latest changes..."
     Push-Location $repoPath
     & "$gitPath" pull origin $targetBranch
     Pop-Location
@@ -320,7 +320,7 @@ Pop-Location
 # ------------------------------------------------
 # (5) Invoke the Runner Script
 # ------------------------------------------------
-Write-Log "==== Invoking the runner script ===="
+Write-CustomLog "==== Invoking the runner script ===="
 $runnerScriptName = $config.RunnerScriptName
 if (-not $runnerScriptName) {
     Write-Warning "No runner script specified in config. Exiting gracefully."
@@ -333,8 +333,8 @@ if (!(Test-Path $runnerScriptName)) {
     exit 1
 }
 
-Write-Log "Running $runnerScriptName from $repoPath ..."
+Write-CustomLog "Running $runnerScriptName from $repoPath ..."
 . .\$runnerScriptName -ConfigFile $ConfigFile
 
-Write-Log "`n=== Kicker script finished successfully! ==="
+Write-CustomLog "`n=== Kicker script finished successfully! ==="
 exit 0

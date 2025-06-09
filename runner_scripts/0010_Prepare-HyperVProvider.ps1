@@ -43,65 +43,65 @@ $ErrorActionPreference = 'Stop'
 # Check if Hyper-V feature is enabled
 $hvFeature = Get-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V
 if ($hvFeature.State -ne "Enabled") {
-    Write-Log "Enabling Hyper-V feature..."
+    Write-CustomLog "Enabling Hyper-V feature..."
     Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V -All
 } else {
-    Write-Log "Hyper-V is already enabled."
+    Write-CustomLog "Hyper-V is already enabled."
 }
 
 # Check if WinRM is enabled by testing the local WSMan endpoint
 try {
     Test-WSMan -ComputerName localhost -ErrorAction Stop | Out-Null
-    Write-Log "WinRM is already enabled."
+    Write-CustomLog "WinRM is already enabled."
 }
 catch {
-    Write-Log "Enabling WinRM..."
+    Write-CustomLog "Enabling WinRM..."
     Enable-PSRemoting -SkipNetworkProfileCheck -Force
 }
 
 # Check and set WinRS MaxMemoryPerShellMB to 1024 if needed
 $currentMaxMemory = (Get-WSManInstance -ResourceURI winrm/config/WinRS).MaxMemoryPerShellMB
 if ($currentMaxMemory -ne 1024) {
-    Write-Log "Setting WinRS MaxMemoryPerShellMB to 1024..."
+    Write-CustomLog "Setting WinRS MaxMemoryPerShellMB to 1024..."
     Set-WSManInstance -ResourceURI winrm/config/WinRS -ValueSet @{MaxMemoryPerShellMB = 1024}
 }
 else {
-    Write-Log "WinRS MaxMemoryPerShellMB is already 1024."
+    Write-CustomLog "WinRS MaxMemoryPerShellMB is already 1024."
 }
 
 # Check and set WinRM MaxTimeoutms to 1800000 if needed
 $currentTimeout = (Get-WSManInstance -ResourceURI winrm/config).MaxTimeoutms
 if ($currentTimeout -ne 1800000) {
-    Write-Log "Setting WinRM MaxTimeoutms to 1800000..."
+    Write-CustomLog "Setting WinRM MaxTimeoutms to 1800000..."
     Set-WSManInstance -ResourceURI winrm/config -ValueSet @{MaxTimeoutms = 1800000}
 }
 else {
-    Write-Log "WinRM MaxTimeoutms is already 1800000."
+    Write-CustomLog "WinRM MaxTimeoutms is already 1800000."
 }
 
 # Check and set TrustedHosts to "*" for the WinRM client if needed
 $currentTrustedHosts = (Get-WSManInstance -ResourceURI winrm/config/Client).TrustedHosts
 if ($currentTrustedHosts -ne "*") {
-    Write-Log "Setting TrustedHosts to '*'..."
+    Write-CustomLog "Setting TrustedHosts to '*'..."
     try {
         Set-WSManInstance -ResourceURI winrm/config/Client -ValueSet @{TrustedHosts = "*"}
     }
     catch {
-        Write-Log "TrustedHosts is set by policy."
+        Write-CustomLog "TrustedHosts is set by policy."
     }
 }
 else {
-    Write-Log "TrustedHosts is already set to '*'."
+    Write-CustomLog "TrustedHosts is already set to '*'."
 }
 
 # Check and set Negotiate to True in WinRM service auth if needed
 $currentNegotiate = (Get-WSManInstance -ResourceURI winrm/config/Service/Auth).Negotiate
 if (-not $currentNegotiate) {
-    Write-Log "Setting Negotiate to True..."
+    Write-CustomLog "Setting Negotiate to True..."
     Set-WSManInstance -ResourceURI winrm/config/Service/Auth -ValueSet @{Negotiate = $true}
 }
 else {
-    Write-Log "Negotiate is already set to True."
+    Write-CustomLog "Negotiate is already set to True."
 }
 
 # ------------------------------
@@ -136,7 +136,7 @@ if ($rootCaCertificate) {
         NotAfter          = (Get-Date).AddYears(5)
     }
 
-    Write-Log "Creating Root CA..."
+    Write-CustomLog "Creating Root CA..."
     $rootCaCertificate = New-SelfSignedCertificate @params
 
     Export-Certificate -Cert $rootCaCertificate -FilePath ".\$rootCaName.cer" -Verbose
@@ -182,7 +182,7 @@ if ($hostCertificate) {
         NotAfter          = (Get-Date).AddYears(2)
     }
 
-    Write-Log "Creating host certificate..."
+    Write-CustomLog "Creating host certificate..."
     $hostCertificate = New-SelfSignedCertificate @params
 
     Export-Certificate -Cert $hostCertificate -FilePath ".\$hostName.cer" -Verbose
@@ -201,12 +201,12 @@ if ($hostCertificate) {
     Copy-Item ".\$hostName.pem" -Destination (Join-Path $infraRepoPath "$hostName.pem") -Force
     Copy-Item ".\$hostName-key.pem" -Destination (Join-Path $infraRepoPath "$hostName-key.pem") -Force
 
-Write-Log "Configuring WinRM HTTPS listener..."
+Write-CustomLog "Configuring WinRM HTTPS listener..."
 Get-ChildItem wsman:\localhost\Listener\ | Where-Object -Property Keys -eq 'Transport=HTTPS' | Remove-Item -Recurse -ErrorAction SilentlyContinue
 New-Item -Path WSMan:\localhost\Listener -Transport HTTPS -Address * -CertificateThumbPrint $($hostCertificate.Thumbprint) -Force -Verbose
 Restart-Service WinRM -Verbose -Force
 
-Write-Log "Allowing HTTPS (5986) through firewall..."
+Write-CustomLog "Allowing HTTPS (5986) through firewall..."
 New-NetFirewallRule -DisplayName "Windows Remote Management (HTTPS-In)" -Name "WinRMHTTPSIn" -Profile Any -LocalPort 5986 -Protocol TCP -Verbose
 
 # ------------------------------
@@ -228,7 +228,7 @@ Get-ChildItem wsman:\localhost\Listener\ | Where-Object -Property Keys -eq 'Tran
 New-Item -Path WSMan:\localhost\Listener -Transport HTTP -Address * -Force -Verbose
 Restart-Service WinRM -Verbose -Force
 
-Write-Log "Allowing HTTP (5985) through firewall..."
+Write-CustomLog "Allowing HTTP (5985) through firewall..."
 New-NetFirewallRule -DisplayName "Windows Remote Management (HTTP-In)" -Name "WinRMHTTPIn" -Profile Any -LocalPort 5985 -Protocol TCP -Verbose
 #>
 
@@ -243,14 +243,14 @@ $infraRepoPath = if ([string]::IsNullOrWhiteSpace($Config.InfraRepoPath)) {
     $Config.InfraRepoPath
 }
 
-Write-Log "InfraRepoPath for hyperv provider: $infraRepoPath"
+Write-CustomLog "InfraRepoPath for hyperv provider: $infraRepoPath"
 
-Write-Log "Setting up Go environment..."
+Write-CustomLog "Setting up Go environment..."
 $goWorkspace = "C:\\GoWorkspace"
 $env:GOPATH = $goWorkspace
 [System.Environment]::SetEnvironmentVariable('GOPATH', $goWorkspace, 'User')
 
-Write-Log "Ensuring taliesins provider dir structure..."
+Write-CustomLog "Ensuring taliesins provider dir structure..."
 $taliesinsDir = Join-Path -Path $env:GOPATH -ChildPath "src\\github.com\\taliesins"
 if (!(Test-Path $taliesinsDir)) {
     New-Item -ItemType Directory -Force -Path $taliesinsDir | Out-Null
@@ -264,14 +264,14 @@ Set-Location $taliesinsDir
 $providerDir     = Join-Path $taliesinsDir "terraform-provider-hyperv"
 $providerExePath = Join-Path $providerDir  "terraform-provider-hyperv.exe"
 
-Write-Log "Checking if we need to clone or rebuild the hyperv provider..."
+Write-CustomLog "Checking if we need to clone or rebuild the hyperv provider..."
 if (!(Test-Path $providerExePath)) {
-    Write-Log "Provider exe not found; cloning from GitHub..."
+    Write-CustomLog "Provider exe not found; cloning from GitHub..."
     git clone https://github.com/taliesins/terraform-provider-hyperv.git
 }
 Set-Location $providerDir
 
-Write-Log "Building hyperv provider with go..."
+Write-CustomLog "Building hyperv provider with go..."
 go build -o terraform-provider-hyperv.exe
 
 # The version in your default main.tf is 1.2.1, so place it accordingly
@@ -280,11 +280,11 @@ if (!(Test-Path $hypervProviderDir)) {
     New-Item -ItemType Directory -Force -Path $hypervProviderDir | Out-Null
 }
 
-Write-Log "Copying provider exe -> $hypervProviderDir"
+Write-CustomLog "Copying provider exe -> $hypervProviderDir"
 $destinationBinary = Join-Path $hypervProviderDir "terraform-provider-hyperv.exe"
 Copy-Item -Path $providerExePath -Destination $destinationBinary -Force -Verbose
 
-Write-Log "Hyper-V provider installed at: $destinationBinary"
+Write-CustomLog "Hyper-V provider installed at: $destinationBinary"
 
 # Restore the original directory
 Pop-Location
@@ -294,7 +294,7 @@ Pop-Location
 # ------------------------------
 $tfFile = Join-Path -Path $infraRepoPath -ChildPath "providers.tf"
 if (Test-Path $tfFile) {
-    Write-Log "Updating providers configuration in providers.tf with certificate paths..."
+    Write-CustomLog "Updating providers configuration in providers.tf with certificate paths..."
 
     $rootCAPath   = (Resolve-Path (Join-Path -Path $infraRepoPath -ChildPath "$rootCaName.pem")).Path
     $hostCertPath = (Resolve-Path (Join-Path -Path $infraRepoPath -ChildPath "$hostName.pem")).Path
@@ -311,9 +311,9 @@ if (Test-Path $tfFile) {
     $content = $content -replace '(cert_path\s*=\s*")[^"]*"', '${1}' + $escapedHostCertPath + '"'
     $content = $content -replace '(key_path\s*=\s*")[^"]*"', '${1}' + $escapedHostKeyPath + '"'
     Set-Content -Path $tfFile -Value $content
-    Write-Log "Updated providers.tf successfully."
+    Write-CustomLog "Updated providers.tf successfully."
 } else {
-    Write-Log "providers.tf not found in $infraRepoPath; skipping provider config update."
+    Write-CustomLog "providers.tf not found in $infraRepoPath; skipping provider config update."
 }
     Write-Host @"
 Done preparing Hyper-V host and installing the provider.

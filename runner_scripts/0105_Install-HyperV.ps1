@@ -5,17 +5,17 @@ Param(
 . "$PSScriptRoot\..\runner_utility_scripts\Logger.ps1"
 
 if ($Config.InstallHyperV -eq $true) {
-    Write-Log "Checking if Hyper-V is already installed..."
+    Write-CustomLog "Checking if Hyper-V is already installed..."
 
     # Get the installation state of Hyper-V
     $feature = Get-WindowsFeature -Name Hyper-V
 
     if ($feature -and $feature.Installed) {
-        Write-Log "Hyper-V is already installed. Skipping installation."
+        Write-CustomLog "Hyper-V is already installed. Skipping installation."
         exit 0
     }
 
-    Write-Log "Hyper-V is not installed. Proceeding with installation..."
+    Write-CustomLog "Hyper-V is not installed. Proceeding with installation..."
 
     $enableMgtTools = $Config.HyperV.EnableManagementTools -eq $true
     $restart = $false  # Change to $true if you want an automatic restart
@@ -29,9 +29,9 @@ if ($Config.InstallHyperV -eq $true) {
         }
     }
     catch {
-        Write-Log "Only works on Windows Server."
+        Write-CustomLog "Only works on Windows Server."
     }
 
 
-    Write-Log "Hyper-V installation complete. A restart is typically required to finalize installation."
+    Write-CustomLog "Hyper-V installation complete. A restart is typically required to finalize installation."
 }
