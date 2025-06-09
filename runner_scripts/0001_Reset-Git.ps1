@@ -34,10 +34,8 @@ if (-not (Test-Path (Join-Path $InfraPath '.git'))) {
         throw
     }
 
-    Write-Log "Clone completed successfully."
+    Write-CustomLog "Clone completed successfully."
 }
-        exit 1
-    }
 
 } else {
     Write-CustomLog "Git repository found. Updating repository..."
