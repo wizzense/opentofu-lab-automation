@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
     Installs Node.js via MSI, using the existing config framework.
 
