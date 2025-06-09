@@ -86,7 +86,7 @@ Describe 'Prepare-HyperVProvider certificate handling' {
 Describe 'Convert certificate helpers honour -WhatIf' {
     It 'skips writing files when WhatIf is used' {
         $scriptPath = Join-Path $PSScriptRoot '..\runner_scripts\0010_Prepare-HyperVProvider.ps1'
-        . $scriptPath
+        . $scriptPath -Config @{ PrepareHyperVHost = $false }
         $cer = Join-Path $env:TEMP ([guid]::NewGuid()).ToString() + '.cer'
         $pem = Join-Path $env:TEMP ([guid]::NewGuid()).ToString() + '.pem'
         'dummy' | Set-Content -Path $cer
@@ -98,7 +98,7 @@ Describe 'Convert certificate helpers honour -WhatIf' {
 
     It 'skips writing PFX outputs when WhatIf is used' {
         $scriptPath = Join-Path $PSScriptRoot '..\runner_scripts\0010_Prepare-HyperVProvider.ps1'
-        . $scriptPath
+        . $scriptPath -Config @{ PrepareHyperVHost = $false }
         $pfx = Join-Path $env:TEMP ([guid]::NewGuid()).ToString() + '.pfx'
         $cert = Join-Path $env:TEMP ([guid]::NewGuid()).ToString() + '.pem'
         $key = Join-Path $env:TEMP ([guid]::NewGuid()).ToString() + '-key.pem'

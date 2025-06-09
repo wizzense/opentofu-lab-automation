@@ -1,8 +1,6 @@
-Param(
-    [Parameter(Mandatory=$true)]
-    [PSCustomObject]$Config
-)
-. "$PSScriptRoot\..\runner_utility_scripts\Logger.ps1"
+Param([pscustomobject]$Config)
+. "$PSScriptRoot/../runner_utility_scripts/ScriptTemplate.ps1"
+Invoke-LabStep -Config $Config -Body {
 if ($Config.InstallGo -eq $true) {
     $GoConfig = $Config.Go
     if ($null -eq $GoConfig) {
@@ -48,4 +46,4 @@ if ($Config.InstallGo -eq $true) {
 } else {
     Write-CustomLog "InstallGo flag is disabled. Skipping Go installation."
 }
-
+}

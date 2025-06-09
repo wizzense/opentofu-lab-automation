@@ -46,7 +46,7 @@ Describe 'Node installation scripts' {
     }
 
     It 'honours -WhatIf for Install-GlobalPackage' {
-        . (Resolve-Path $global)
+        . (Resolve-Path $global) -Config @{ Node_Dependencies = @{ InstallYarn=$false; InstallVite=$false; InstallNodemon=$false } }
         function npm { param([string[]]$testArgs) }
         Mock npm {}
         Install-GlobalPackage 'yarn' -WhatIf

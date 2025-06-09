@@ -1,3 +1,6 @@
+Param([pscustomobject]$Config)
+. "$PSScriptRoot/../runner_utility_scripts/ScriptTemplate.ps1"
+Invoke-LabStep -Config $Config -Body {
 <#
 .SYNOPSIS
     Installs global npm packages like yarn, vite, and nodemon using config-based logic.
@@ -23,14 +26,8 @@
     .\0202_Install-NodeGlobalPackages.ps1 -Config $Config
 #>
 
-param(
-    [Parameter(Mandatory)]
-    [hashtable]$Config
-)
 Write-Output "Config parameter is: $Config"
-. "$PSScriptRoot\..\runner_utility_scripts\Logger.ps1"
 
-$ErrorActionPreference = "Stop"
 
 function Install-GlobalPackage($package) {
     [CmdletBinding(SupportsShouldProcess)]
@@ -66,4 +63,4 @@ if ($Config.Node_Dependencies.InstallNodemon) {
 }
 
 Write-CustomLog "==== Global npm package installation complete ===="
-
+}

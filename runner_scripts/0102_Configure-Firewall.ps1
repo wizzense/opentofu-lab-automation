@@ -1,8 +1,6 @@
-Param(
-    [Parameter(Mandatory=$true)]
-    [PSCustomObject]$Config
-)
-. "$PSScriptRoot\..\runner_utility_scripts\Logger.ps1"
+Param([pscustomobject]$Config)
+. "$PSScriptRoot/../runner_utility_scripts/ScriptTemplate.ps1"
+Invoke-LabStep -Config $Config -Body {
 
 Write-CustomLog "Configuring Firewall rules..."
 
@@ -18,4 +16,5 @@ if ($null -ne $Config.FirewallPorts) {
     }
 } else {
     Write-CustomLog "No firewall ports specified."
+}
 }

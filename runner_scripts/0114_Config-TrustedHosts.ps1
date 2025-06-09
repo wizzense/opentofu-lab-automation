@@ -1,8 +1,6 @@
-Param(
-    [Parameter(Mandatory=$true)]
-    [PSCustomObject]$Config
-)
-. "$PSScriptRoot\..\runner_utility_scripts\Logger.ps1"
+Param([pscustomobject]$Config)
+. "$PSScriptRoot/../runner_utility_scripts/ScriptTemplate.ps1"
+Invoke-LabStep -Config $Config -Body {
 
 if ($Config.SetTrustedHosts -eq $true) {
     
@@ -11,6 +9,4 @@ if ($Config.SetTrustedHosts -eq $true) {
 } else {
     Write-CustomLog "SetTrustedHosts flag is disabled. Skipping TrustedHosts configuration."
 }
-
-
-
+}

@@ -1,8 +1,6 @@
-Param(
-    [Parameter(Mandatory=$true)]
-    [PSCustomObject]$Config
-)
-. "$PSScriptRoot\..\runner_utility_scripts\Logger.ps1"
+Param([pscustomobject]$Config)
+. "$PSScriptRoot/../runner_utility_scripts/ScriptTemplate.ps1"
+Invoke-LabStep -Config $Config -Body {
 
 function Convert-CerToPem {
     [CmdletBinding(SupportsShouldProcess)]
@@ -41,8 +39,6 @@ function Convert-PfxToPem {
 
 if ($Config.PrepareHyperVHost -eq $true) {
 
-Set-StrictMode -Version Latest
-$ErrorActionPreference = 'Stop'
 
 # ------------------------------
 # 1) Environment Preparation
@@ -326,4 +322,4 @@ You can now run 'tofu plan'/'tofu apply' in $infraRepoPath.
 } else {
     Write-CustomLog "PrepareHyperVHost flag is disabled. Skipping Hyper-V host preparation."
 }
-
+}

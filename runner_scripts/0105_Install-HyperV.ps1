@@ -1,8 +1,6 @@
-Param(
-    [Parameter(Mandatory=$true)]
-    [PSCustomObject]$Config
-)
-. "$PSScriptRoot\..\runner_utility_scripts\Logger.ps1"
+Param([pscustomobject]$Config)
+. "$PSScriptRoot/../runner_utility_scripts/ScriptTemplate.ps1"
+Invoke-LabStep -Config $Config -Body {
 
 if ($Config.InstallHyperV -eq $true) {
     Write-CustomLog "Checking if Hyper-V is already installed..."
@@ -36,4 +34,5 @@ if ($Config.InstallHyperV -eq $true) {
     Write-CustomLog "Hyper-V installation complete. A restart is typically required to finalize installation."
 } else {
     Write-CustomLog "InstallHyperV flag is disabled. Skipping Hyper-V installation."
+}
 }
