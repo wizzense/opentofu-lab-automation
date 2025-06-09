@@ -190,6 +190,7 @@ Node-related installs are controlled under the `Node_Dependencies` section of
   "InstallNodemon": true,
   "InstallNpm": true,
   "NpmPath": "C:\\Projects\\vde-mvp\\frontend",
+  "CreateNpmPath": false,
   "Node": {
     "InstallerUrl": "https://nodejs.org/dist/v20.11.1/node-v20.11.1-x64.msi"
   }

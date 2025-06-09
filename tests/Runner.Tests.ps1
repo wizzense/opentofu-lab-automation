@@ -170,6 +170,8 @@ Describe 'Set-LabConfig' {
 
         $npmPath = Read-Host "Path to Node project [`$($ConfigObject.Node_Dependencies.NpmPath)`]"
         if ($npmPath) { $ConfigObject.Node_Dependencies.NpmPath = $npmPath }
+        $createPath = Read-Host "Create NpmPath if missing? (Y/N) [`$($ConfigObject.Node_Dependencies.CreateNpmPath)`]"
+        if ($createPath) { $ConfigObject.Node_Dependencies.CreateNpmPath = $createPath -match '^(?i)y' }
 
         return $ConfigObject
     }
@@ -181,10 +183,10 @@ Describe 'Set-LabConfig' {
             InstallGo  = $false
             InstallOpenTofu = $false
             LocalPath = ''
-            Node_Dependencies = @{ NpmPath = 'C:\\Old' }
+            Node_Dependencies = @{ NpmPath = 'C:\\Old'; CreateNpmPath = $false }
         }
 
-        $answers = @('Y','N','Y','C:\\Repo','C:\\Node')
+        $answers = @('Y','N','Y','C:\\Repo','C:\\Node','Y')
         $script:idx = 0
         function global:Read-Host {
             param([string]$Prompt)
@@ -204,6 +206,7 @@ Describe 'Set-LabConfig' {
         $saved.InstallOpenTofu | Should -BeTrue
         $saved.LocalPath | Should -Be 'C:\\Repo'
         $saved.Node_Dependencies.NpmPath | Should -Be 'C:\\Node'
+        $saved.Node_Dependencies.CreateNpmPath | Should -BeTrue
 
         Remove-Item $temp -ErrorAction SilentlyContinue
     }
