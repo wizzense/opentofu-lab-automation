@@ -1,0 +1,20 @@
+name: Lint
+runs:
+  using: composite
+  steps:
+    - name: Install PSScriptAnalyzer
+      shell: pwsh
+      run: |
+        Install-Module -Name PSScriptAnalyzer -Force -Scope CurrentUser
+    - name: Install ruff
+      shell: bash
+      run: |
+        pip install ruff
+    - name: Run PSScriptAnalyzer
+      shell: pwsh
+      run: |
+        Invoke-ScriptAnalyzer -Path . -Recurse -Severity Error,Warning -EnableExit
+    - name: Run ruff
+      shell: bash
+      run: |
+        ruff .

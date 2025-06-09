@@ -26,4 +26,17 @@ Describe 'Get-LabConfig' {
 
         }
     }
+
+    It 'parses valid YAML' {
+        $modulePath = Join-Path $PSScriptRoot '..\lab_utils\Get-LabConfig.ps1'
+        . $modulePath
+        $yamlFile = Join-Path $PSScriptRoot 'test.yaml'
+        "foo: bar" | Set-Content -Path $yamlFile
+        try {
+            $result = Get-LabConfig -Path $yamlFile
+            $result.foo | Should -Be 'bar'
+        } finally {
+            Remove-Item $yamlFile
+        }
+    }
 }

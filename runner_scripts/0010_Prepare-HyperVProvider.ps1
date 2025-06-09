@@ -4,6 +4,33 @@ Param(
 )
 . "$PSScriptRoot\..\runner_utility_scripts\Logger.ps1"
 
+function Convert-CerToPem {
+    param(
+        [string]$CerPath,
+        [string]$PemPath
+    )
+    $bytes = Get-Content -Path $CerPath -Encoding Byte
+    $b64   = [System.Convert]::ToBase64String($bytes, 'InsertLineBreaks')
+    "-----BEGIN CERTIFICATE-----`n$b64`n-----END CERTIFICATE-----" | Set-Content -Path $PemPath
+}
+
+function Convert-PfxToPem {
+    param(
+        [string]$PfxPath,
+        [securestring]$Password,
+        [string]$CertPath,
+        [string]$KeyPath
+    )
+    $cert = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2($PfxPath,$Password,[System.Security.Cryptography.X509Certificates.X509KeyStorageFlags]::Exportable)
+    $certBytes = $cert.Export([System.Security.Cryptography.X509Certificates.X509ContentType]::Cert)
+    $certB64   = [System.Convert]::ToBase64String($certBytes,'InsertLineBreaks')
+    "-----BEGIN CERTIFICATE-----`n$certB64`n-----END CERTIFICATE-----" | Set-Content -Path $CertPath
+    $rsa = $cert.GetRSAPrivateKey()
+    $keyBytes = $rsa.ExportPkcs8PrivateKey()
+    $keyB64   = [System.Convert]::ToBase64String($keyBytes,'InsertLineBreaks')
+    "-----BEGIN PRIVATE KEY-----`n$keyB64`n-----END PRIVATE KEY-----" | Set-Content -Path $KeyPath
+}
+
 if ($Config.PrepareHyperVHost -eq $true) {
 
 Set-StrictMode -Version Latest
@@ -167,6 +194,13 @@ if ($hostCertificate) {
     $hostCertificate = Get-ChildItem cert:\LocalMachine\My | Where-Object {$_.subject -eq "CN=$hostName"}
 }
 
+    Convert-CerToPem -CerPath ".\$rootCaName.cer" -PemPath ".\$rootCaName.pem"
+    Convert-PfxToPem -PfxPath ".\$hostName.pfx" -Password $hostPassword -CertPath ".\$hostName.pem" -KeyPath ".\$hostName-key.pem"
+
+    Copy-Item ".\$rootCaName.pem" -Destination (Join-Path $infraRepoPath "$rootCaName.pem") -Force
+    Copy-Item ".\$hostName.pem" -Destination (Join-Path $infraRepoPath "$hostName.pem") -Force
+    Copy-Item ".\$hostName-key.pem" -Destination (Join-Path $infraRepoPath "$hostName-key.pem") -Force
+
 Write-Log "Configuring WinRM HTTPS listener..."
 Get-ChildItem wsman:\localhost\Listener\ | Where-Object -Property Keys -eq 'Transport=HTTPS' | Remove-Item -Recurse -ErrorAction SilentlyContinue
 New-Item -Path WSMan:\localhost\Listener -Transport HTTPS -Address * -CertificateThumbPrint $($hostCertificate.Thumbprint) -Force -Verbose
@@ -258,42 +292,29 @@ Pop-Location
 # ------------------------------
 # 5) Update Provider Config File (providers.tf)
 # ------------------------------
-<#
-I am disabling this for now because opentofu doesn't like the certs :(
-
 $tfFile = Join-Path -Path $infraRepoPath -ChildPath "providers.tf"
 if (Test-Path $tfFile) {
     Write-Log "Updating providers configuration in providers.tf with certificate paths..."
 
-    # Get absolute paths for the certificate files using $infraRepoPath
-    $rootCAPath   = (Resolve-Path (Join-Path -Path $infraRepoPath -ChildPath "$rootCaName.cer")).Path
-    $hostCertPath = (Resolve-Path (Join-Path -Path $infraRepoPath -ChildPath "$hostName.cer")).Path
-    $hostKeyPath  = (Resolve-Path (Join-Path -Path $infraRepoPath -ChildPath "$hostName.pfx")).Path
+    $rootCAPath   = (Resolve-Path (Join-Path -Path $infraRepoPath -ChildPath "$rootCaName.pem")).Path
+    $hostCertPath = (Resolve-Path (Join-Path -Path $infraRepoPath -ChildPath "$hostName.pem")).Path
+    $hostKeyPath  = (Resolve-Path (Join-Path -Path $infraRepoPath -ChildPath "$hostName-key.pem")).Path
 
-    # Escape backslashes for Terraform using literal string replacement
-    $escapedRootCAPath   = $rootCAPath.Replace('\', '\\')
-    $escapedHostCertPath = $hostCertPath.Replace('\', '\\')
-    $escapedHostKeyPath  = $hostKeyPath.Replace('\', '\\')
+    $escapedRootCAPath   = $rootCAPath.Replace('\\', '\\\\')
+    $escapedHostCertPath = $hostCertPath.Replace('\\', '\\\\')
+    $escapedHostKeyPath  = $hostKeyPath.Replace('\\', '\\\\')
 
-    # Read the file as a single string
     $content = Get-Content $tfFile -Raw
-
-    # Update insecure to false
     $content = $content -replace '(insecure\s*=\s*)(true|false)', '${1}false'
-    # Update tls_server_name to match the host name
-    $content = $content -replace '(tls_server_name\s*=\s*")[^"]*"', ( '${1}' + $hostName + '"' )
-    # Update certificate file paths with the escaped values
-    $content = $content -replace '(cacert_path\s*=\s*")[^"]*"', ( '${1}' + $escapedRootCAPath + '"' )
-    $content = $content -replace '(cert_path\s*=\s*")[^"]*"', ( '${1}' + $escapedHostCertPath + '"' )
-    $content = $content -replace '(key_path\s*=\s*")[^"]*"', ( '${1}' + $escapedHostKeyPath + '"' )
-
+    $content = $content -replace '(tls_server_name\s*=\s*")[^"]*"', '${1}' + $hostName + '"'
+    $content = $content -replace '(cacert_path\s*=\s*")[^"]*"', '${1}' + $escapedRootCAPath + '"'
+    $content = $content -replace '(cert_path\s*=\s*")[^"]*"', '${1}' + $escapedHostCertPath + '"'
+    $content = $content -replace '(key_path\s*=\s*")[^"]*"', '${1}' + $escapedHostKeyPath + '"'
     Set-Content -Path $tfFile -Value $content
     Write-Log "Updated providers.tf successfully."
-}
-else {
+} else {
     Write-Log "providers.tf not found in $infraRepoPath; skipping provider config update."
 }
-#>
     Write-Host @"
 Done preparing Hyper-V host and installing the provider.
 You can now run 'tofu plan'/'tofu apply' in $infraRepoPath.
