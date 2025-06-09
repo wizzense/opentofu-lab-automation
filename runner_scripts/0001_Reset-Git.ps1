@@ -14,10 +14,31 @@ if (-not (Test-Path $InfraPath)) {
     New-Item -ItemType Directory -Path $InfraPath -Force | Out-Null
 }
 
+
 # Check if the directory is a git repository
-if (-not (Test-Path (Join-Path $InfraPath ".git"))) {
+# Clone the infrastructure repository if $InfraPath is not already a Git repo
+if (-not (Test-Path (Join-Path $InfraPath '.git'))) {
     Write-CustomLog "Directory is not a git repository. Cloning repository..."
-    git clone $config.InfraRepoUrl $InfraPath
+
+    # Prefer GitHub CLI if present; otherwise use plain git
+    $ghCmd = Get-Command gh -ErrorAction SilentlyContinue
+    if ($ghCmd) {
+        gh repo clone $config.InfraRepoUrl $InfraPath
+    } else {
+        git clone $config.InfraRepoUrl $InfraPath
+    }
+
+    # Validate that the clone succeeded
+    if ($LASTEXITCODE -ne 0 -or -not (Test-Path (Join-Path $InfraPath '.git'))) {
+        Write-Error "Failed to clone repository from $($config.InfraRepoUrl)"
+        throw
+    }
+
+    Write-Log "Clone completed successfully."
+}
+        exit 1
+    }
+
 } else {
     Write-CustomLog "Git repository found. Updating repository..."
     Push-Location $InfraPath

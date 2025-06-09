@@ -46,3 +46,4 @@ if ($Config.InstallGo -eq $true) {
 
     Write-CustomLog "Go installation complete."
 }
+

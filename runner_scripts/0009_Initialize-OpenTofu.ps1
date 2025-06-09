@@ -64,8 +64,16 @@ if (-not [string]::IsNullOrWhiteSpace($infraRepoUrl)) {
         # If you want a clean slate each time, uncomment the lines below to remove existing files
         # Remove-Item -Path (Join-Path $infraRepoPath "*") -Recurse -Force -ErrorAction SilentlyContinue
 
+
         Write-CustomLog "Cloning $infraRepoUrl to $infraRepoPath..."
-        git clone $infraRepoUrl $infraRepoPath
+        $ghCmd = Get-Command gh -ErrorAction SilentlyContinue
+        if ($ghCmd) {
+            gh repo clone $infraRepoUrl $infraRepoPath
+        }
+        else {
+            git clone $infraRepoUrl $infraRepoPath
+        }
+        
         if ($LASTEXITCODE -ne 0) {
             Write-Error "ERROR: Failed to clone $infraRepoUrl"
             exit 1
