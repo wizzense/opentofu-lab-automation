@@ -11,11 +11,7 @@ Describe 'Runner scripts parameter and command checks' {
                     $configParam = $ast.ParamBlock.Parameters | Where-Object { $_.Name.VariablePath.UserPath -eq 'Config' }
                 }
 
-                if ($script.Name -eq '0100_Enable-WinRM.ps1') {
-                    $configParam | Should -BeNullOrEmpty
-                } else {
-                    $configParam | Should -Not -BeNullOrEmpty
-                }
+                $configParam | Should -Not -BeNullOrEmpty
             }
 
             It 'contains at least one command invocation' {
