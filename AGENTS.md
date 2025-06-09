@@ -2,15 +2,20 @@
 
 Below is a **comprehensive project plan** broken into phases.  Each task is paired with a *ready-to-paste* Codex prompt that tells the model exactly what to do, the constraints it must follow, and the tests it should add or update.  Copy a prompt into your IDE, press *⌥-Enter / ⇧-Enter*, and iterate.
 
+## Project status
+
+Phase 0 is complete. Platform detection via `Get-Platform.ps1` has Pester tests,
+but the Python script and pytest coverage remain outstanding.
+
 ---
 
 ## Phase 0  House-Keeping (1 day)
 
 | #   | Task                                                                                                                                    | Codex Prompt                                                                                                                                                                                                                                        |
 | --- | --------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 0.1 | **Stabilise runner.ps1**<br/>  • Accept `-Scripts "0006,0007"` without interactive prompt<br/>  • Exit with non-zero on any child error | > *“Refactor `runner.ps1` so it takes `-Scripts` (string) & `-Auto` (switch) to run non-interactive.  Preserve interactive mode by default.  Update `tests/Runner.Tests.ps1` to cover both modes.  Must stay idempotent and Windows-only for now.”* |
-| 0.2 | **Unify config-file loading**<br/>Replace all `Join-Path .. 'config_files'` fragments with a single function                            | > *“Create `lab_utils/Get-LabConfig.ps1` that returns `[pscustomobject]` from a JSON/YAML file path (default `config_files/default-config.json`).  Add Pester tests for happy path, missing file, bad JSON.”*                                       |
-| 0.3 | **CI hygiene**<br/>  • Lint (`PSScriptAnalyzer`, `ruff`) in GitHub Actions<br/>  • Fail on warnings                                     | > *“Add a composite action under `.github/actions/lint` that runs `Invoke-ScriptAnalyzer` and `ruff .`.  Update workflow so `lint → pester` jobs gate `main`.”*                                                                                     |
+| ~~0.1~~ | ~~**Stabilise runner.ps1**<br/>  • Accept `-Scripts "0006,0007"` without interactive prompt<br/>  • Exit with non-zero on any child error~~ | > *“Refactor `runner.ps1` so it takes `-Scripts` (string) & `-Auto` (switch) to run non-interactive.  Preserve interactive mode by default.  Update `tests/Runner.Tests.ps1` to cover both modes.  Must stay idempotent and Windows-only for now.”* |
+| ~~0.2~~ | ~~**Unify config-file loading**<br/>Replace all `Join-Path .. 'config_files'` fragments with a single function~~                            | > *“Create `lab_utils/Get-LabConfig.ps1` that returns `[pscustomobject]` from a JSON/YAML file path (default `config_files/default-config.json`).  Add Pester tests for happy path, missing file, bad JSON.”*                                       |
+| ~~0.3~~ | ~~**CI hygiene**<br/>  • Lint (`PSScriptAnalyzer`, `ruff`) in GitHub Actions<br/>  • Fail on warnings~~                                     | > *“Add a composite action under `.github/actions/lint` that runs `Invoke-ScriptAnalyzer` and `ruff .`.  Update workflow so `lint → pester` jobs gate `main`.”*                                                                                     |
 
 ---
 
@@ -18,7 +23,7 @@ Below is a **comprehensive project plan** broken into phases.  Each task is pair
 
 | #   | Task                                                                        | Codex Prompt                                                                                                                                                      |       |                                                                                    |
 | --- | --------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----- | ---------------------------------------------------------------------------------- |
-| 1.1 | **Platform detector**                                                       | > \*“Create `lab_utils/Get-Platform.ps1` returning \`Windows                                                                                                      | Linux | MacOS`.  Write equivalent `get\_platform.py\`.  Add cross-OS Pester and pytest.”\* |
+| 1.1 | **Platform detector** (PowerShell complete; Python/pytest pending)                                                       | > \*“Create `lab_utils/Get-Platform.ps1` returning \`Windows                                                                                                      | Linux | MacOS`.  Write equivalent `get\_platform.py\`.  Add cross-OS Pester and pytest.”\* |
 | 1.2 | **Hypervisor abstraction skeleton**                                         | > *“Produce `lab_utils/Hypervisor.psm1` with an interface: `Get-HVFacts`, `Enable-Provider`, `Deploy-VM`.  Implement stubs for `HyperV`; unit-test with Pester.”* |       |                                                                                    |
 | 1.3 | **Python scaffold**<br/>Poetry project in `/py` for future Linux/macOS work | > *“Init Poetry project `py/`.  Add Typer CLI `labctl` exposing `hv facts`, `hv deploy`, reading same JSON config.  Wire pytest.”*                                |       |                                                                                    |
 
