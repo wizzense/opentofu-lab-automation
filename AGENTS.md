@@ -12,6 +12,22 @@ Below is a **comprehensive project plan** broken into phases.  Each task is pair
 | 0.2 | **Unify config-file loading**<br/>Replace all `Join-Path .. 'config_files'` fragments with a single function                            | > *“Create `lab_utils/Get-LabConfig.ps1` that returns `[pscustomobject]` from a JSON/YAML file path (default `config_files/default-config.json`).  Add Pester tests for happy path, missing file, bad JSON.”*                                       |
 | 0.3 | **CI hygiene**<br/>  • Lint (`PSScriptAnalyzer`, `ruff`) in GitHub Actions<br/>  • Fail on warnings                                     | > *“Add a composite action under `.github/actions/lint` that runs `Invoke-ScriptAnalyzer` and `ruff .`.  Update workflow so `lint → pester` jobs gate `main`.”*                                                                                     |
 
+### Checking GitHub Actions status
+
+Make sure your repo is added as a remote and that [GitHub CLI](https://cli.github.com/) is installed. Then run:
+
+```bash
+gh run list --limit 20
+```
+
+This shows recent workflow runs. You can also query the GitHub API directly.
+
+When PowerShell is available via `pwsh`, run tests locally:
+
+```bash
+pwsh -NoLogo -NoProfile -Command "Invoke-Pester"
+```
+
 ---
 
 ## Phase 1  Cross-Platform Foundations (3 days)
