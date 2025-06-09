@@ -133,7 +133,12 @@ exit 0' | Set-Content -Path $dummy
             $responses = @('0001')
             $script:index = 0
             $called = 0
-            function global:Read-Host { param([string]$Prompt) $called++; $responses[$script:index++] }
+            function global:Read-Host {
+                param([string]$Prompt)
+                $null = $Prompt
+                $called++
+                $responses[$script:index++]
+            }
             Push-Location $tempDir
             & "$tempDir/runner.ps1" -Auto | Out-Null
             Pop-Location
@@ -144,9 +149,9 @@ exit 0' | Set-Content -Path $dummy
     }
 }
 
-Describe 'Customize-Config' {
+Describe 'Set-LabConfig' {
     BeforeAll {
-        function Customize-Config {
+        function Set-LabConfig {
             param([hashtable]$ConfigObject)
 
         $installPrompts = @{ 
@@ -181,9 +186,13 @@ Describe 'Customize-Config' {
 
         $answers = @('Y','N','Y','C:\\Repo','C:\\Node')
         $script:idx = 0
-        function global:Read-Host { param([string]$Prompt) $answers[$script:idx++] }
+        function global:Read-Host {
+            param([string]$Prompt)
+            $null = $Prompt
+            $answers[$script:idx++]
+        }
 
-        $updated = Customize-Config -ConfigObject $config
+        $updated = Set-LabConfig -ConfigObject $config
 
         $temp = Join-Path ([System.IO.Path]::GetTempPath()) 'config-test.json'
         $updated | ConvertTo-Json -Depth 5 | Out-File -FilePath $temp -Encoding utf8

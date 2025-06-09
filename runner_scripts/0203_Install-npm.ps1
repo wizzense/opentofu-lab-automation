@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
     Install frontend project dependencies using npm.
 

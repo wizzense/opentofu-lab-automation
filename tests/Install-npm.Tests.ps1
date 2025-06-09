@@ -6,12 +6,13 @@ Describe '0203_Install-npm' {
         '{}' | Set-Content -Path (Join-Path $npmDir 'package.json')
         $config = @{ Node_Dependencies = @{ NpmPath = $npmDir } }
 
-        $global:calledPath = $null
-        function npm { param([string[]]$Args) $global:calledPath = (Get-Location).ProviderPath }
+        $script:calledPath = $null
+        function npm { param([string[]]$Args) $script:calledPath = (Get-Location).ProviderPath }
+
 
         & $script -Config $config
 
-        $calledPath | Should -Be (Get-Item $npmDir).FullName
+        $script:calledPath | Should -Be (Get-Item $npmDir).FullName
 
         Remove-Item -Recurse -Force $npmDir
     }
@@ -23,7 +24,7 @@ Describe '0203_Install-npm' {
         '{}' | Set-Content -Path (Join-Path $npmDir 'package.json')
         $config = @{ Node_Dependencies = @{ NpmPath = $npmDir } }
 
-        function npm { param([string[]]$Args) }
+        function npm { param([string[]]$testArgs) }
 
         & $script -Config $config
         $success = $?

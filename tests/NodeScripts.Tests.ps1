@@ -10,7 +10,7 @@ Describe 'Node installation scripts' {
     }
 
     It 'uses Node_Dependencies.Node.InstallerUrl when installing Node' {
-        $config = @{ Node_Dependencies = @{ Node = @{ InstallerUrl = 'http://example.com/node.msi' } } }
+        $config = @{ Node_Dependencies = @{ InstallNode=$true; Node = @{ InstallerUrl = 'http://example.com/node.msi' } } }
         Mock Invoke-WebRequest {}
         Mock Start-Process {}
         Mock Remove-Item {}
@@ -19,14 +19,27 @@ Describe 'Node installation scripts' {
         Assert-MockCalled Invoke-WebRequest -ParameterFilter { $Uri -eq 'http://example.com/node.msi' } -Times 1
     }
 
+    It 'does nothing when InstallNode is $false' {
+        $config = @{ Node_Dependencies = @{ InstallNode = $false } }
+        Mock Invoke-WebRequest {}
+        Mock Start-Process {}
+        Mock Remove-Item {}
+        Mock Get-Command {}
+        & (Resolve-Path $core) -Config $config
+        Assert-MockNotCalled Invoke-WebRequest
+        Assert-MockNotCalled Start-Process
+        Assert-MockNotCalled Remove-Item
+    }
+
     It 'installs packages based on Node_Dependencies flags' {
         $config = @{ Node_Dependencies = @{ InstallYarn=$true; InstallVite=$false; InstallNodemon=$true } }
         Mock Get-Command { @{Name='npm'} } -ParameterFilter { $Name -eq 'npm' }
+        function npm { param([string[]]$testArgs) }
         Mock npm {}
         & (Resolve-Path $global) -Config $config
-        Assert-MockCalled npm -ParameterFilter { $Args -eq @('install','-g','yarn') } -Times 1
-        Assert-MockCalled npm -ParameterFilter { $Args -eq @('install','-g','nodemon') } -Times 1
-        Assert-MockNotCalled npm -ParameterFilter { $Args -eq @('install','-g','vite') }
+        Assert-MockCalled npm -ParameterFilter { $testArgs -eq @('install','-g','yarn') } -Times 1
+        Assert-MockCalled npm -ParameterFilter { $testArgs -eq @('install','-g','nodemon') } -Times 1
+        Assert-MockNotCalled npm -ParameterFilter { $testArgs -eq @('install','-g','vite') }
     }
 
     It 'uses NpmPath from Node_Dependencies when installing project deps' {
@@ -34,9 +47,10 @@ Describe 'Node installation scripts' {
         New-Item -ItemType Directory -Path $temp | Out-Null
         New-Item -ItemType File -Path (Join-Path $temp 'package.json') | Out-Null
         $config = @{ Node_Dependencies = @{ NpmPath = $temp } }
+        function npm { param([string[]]$testArgs) }
         Mock npm {}
         & (Resolve-Path $npm) -Config $config
-        Assert-MockCalled npm -ParameterFilter { $Args[0] -eq 'install' } -Times 1
+        Assert-MockCalled npm -ParameterFilter { $testArgs[0] -eq 'install' } -Times 1
         Remove-Item -Recurse -Force $temp
     }
 

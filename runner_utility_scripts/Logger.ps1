@@ -8,17 +8,21 @@ function Write-CustomLog {
     )
 
     if (-not $PSBoundParameters.ContainsKey('LogFile')) {
-        $LogFile = Get-Variable -Name LogFilePath -Scope Global -ErrorAction SilentlyContinue |
-                   Select-Object -ExpandProperty Value
+        if (Get-Variable -Name LogFilePath -Scope Script -ErrorAction SilentlyContinue) {
+            $LogFile = (Get-Variable -Name LogFilePath -Scope Script -ValueOnly)
+        } else {
+            $LogFile = Get-Variable -Name LogFilePath -Scope Global -ErrorAction SilentlyContinue |
+                       Select-Object -ExpandProperty Value
+        }
     }
     $timestamp = Get-Date -Format 'yyyy-MM-dd HH:mm:ss'
     $formatted = "[$timestamp] $Message"
-    Write-Host $formatted
+    Write-Output $formatted
     if ($LogFile) {
         try {
             $formatted | Out-File -FilePath $LogFile -Encoding utf8 -Append
         } catch {
-            Write-Host "[ERROR] Failed to write to log file ${LogFile}: $_"
+            Write-Output "[ERROR] Failed to write to log file ${LogFile}: $_"
         }
     }
 }
