@@ -17,6 +17,7 @@ param(
     [Parameter(Mandatory)]
     [hashtable]$Config
 )
+Write-Output "Config parameter is: $Config"
 . "$PSScriptRoot\..\runner_utility_scripts\Logger.ps1"
 
 $ErrorActionPreference = "Stop"

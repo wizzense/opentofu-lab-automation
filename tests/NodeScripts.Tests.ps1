@@ -34,7 +34,10 @@ Describe 'Node installation scripts' {
     It 'installs packages based on Node_Dependencies flags' {
         $config = @{ Node_Dependencies = @{ InstallYarn=$true; InstallVite=$false; InstallNodemon=$true } }
         Mock Get-Command { @{Name='npm'} } -ParameterFilter { $Name -eq 'npm' }
-        function npm { param([string[]]$testArgs) }
+        function npm {
+            param([string[]]$testArgs)
+            $null = $testArgs
+        }
         Mock npm {}
         & (Resolve-Path $global) -Config $config
         Assert-MockCalled npm -ParameterFilter { $testArgs -eq @('install','-g','yarn') } -Times 1
@@ -42,12 +45,23 @@ Describe 'Node installation scripts' {
         Assert-MockNotCalled npm -ParameterFilter { $testArgs -eq @('install','-g','vite') }
     }
 
+    It 'honours -WhatIf for Install-GlobalPackage' {
+        . (Resolve-Path $global)
+        function npm { param([string[]]$testArgs) }
+        Mock npm {}
+        Install-GlobalPackage 'yarn' -WhatIf
+        Assert-MockNotCalled npm
+    }
+
     It 'uses NpmPath from Node_Dependencies when installing project deps' {
         $temp = Join-Path $env:TEMP ([System.Guid]::NewGuid())
         New-Item -ItemType Directory -Path $temp | Out-Null
         New-Item -ItemType File -Path (Join-Path $temp 'package.json') | Out-Null
         $config = @{ Node_Dependencies = @{ NpmPath = $temp } }
-        function npm { param([string[]]$testArgs) }
+        function npm {
+            param([string[]]$testArgs)
+            $null = $testArgs
+        }
         Mock npm {}
         & (Resolve-Path $npm) -Config $config
         Assert-MockCalled npm -ParameterFilter { $testArgs[0] -eq 'install' } -Times 1
