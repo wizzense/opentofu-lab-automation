@@ -255,8 +255,6 @@ $taliesinsDir = Join-Path -Path $env:GOPATH -ChildPath "src\\github.com\\taliesi
 if (!(Test-Path $taliesinsDir)) {
     New-Item -ItemType Directory -Force -Path $taliesinsDir | Out-Null
 }
-# Capture current location so we can restore it later
-$originalLocation = Get-Location
 Push-Location
 Set-Location $taliesinsDir
 

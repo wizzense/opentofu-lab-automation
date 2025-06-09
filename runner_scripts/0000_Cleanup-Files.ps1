@@ -15,8 +15,6 @@ Param(
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
-# Ensure we are not executing from inside the directory we want to delete
-$originalLocation = Get-Location
 Push-Location -Path ([System.IO.Path]::GetTempPath())
 
 try {
@@ -51,11 +49,9 @@ catch {
     exit 1
 }
 finally {
-    if (Test-Path $originalLocation.Path) {
-        Pop-Location
-    }
-    else {
-        Pop-Location -ErrorAction SilentlyContinue
+    try {
+        Pop-Location -ErrorAction Stop
+    } catch {
         Set-Location $env:TEMP
     }
 }
