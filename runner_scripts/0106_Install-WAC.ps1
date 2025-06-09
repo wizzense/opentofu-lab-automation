@@ -2,12 +2,13 @@ Param(
     [Parameter(Mandatory=$true)]
     [PSCustomObject]$Config
 )
+. "$PSScriptRoot\..\runner_utility_scripts\Logger.ps1"
 
 if ($Config.InstallWAC -eq $true) {
     # Retrieve configuration for WAC from the config object
     $WacConfig = $Config.WAC
     if ($null -eq $WacConfig) {
-        Write-Host "No WAC configuration found. Skipping installation."
+        Write-Log "No WAC configuration found. Skipping installation."
         return
     }
 
@@ -36,18 +37,18 @@ if ($Config.InstallWAC -eq $true) {
     }
 
     if ($wacInstalled) {
-        Write-Host "Windows Admin Center is already installed. Skipping installation."
+        Write-Log "Windows Admin Center is already installed. Skipping installation."
         return
     }
 
     # Optionally, check if the desired installation port is already in use.
     $portInUse = Get-NetTCPConnection -LocalPort $installPort -ErrorAction SilentlyContinue
     if ($portInUse) {
-        Write-Host "Port $installPort is already in use. Assuming Windows Admin Center is running. Skipping installation."
+        Write-Log "Port $installPort is already in use. Assuming Windows Admin Center is running. Skipping installation."
         return
     }
 
-    Write-Host "Installing Windows Admin Center..."
+    Write-Log "Installing Windows Admin Center..."
 
     # Download the Windows Admin Center MSI
     $downloadUrl = "https://aka.ms/wacdownload"
@@ -55,11 +56,11 @@ if ($Config.InstallWAC -eq $true) {
 
     $ProgressPreference = 'SilentlyContinue'
 
-    Write-Host "Downloading WAC from $downloadUrl"
+    Write-Log "Downloading WAC from $downloadUrl"
     Invoke-WebRequest -Uri $downloadUrl -OutFile $installerPath -UseBasicParsing
 
-    Write-Host "Installing WAC silently on port $installPort"
+    Write-Log "Installing WAC silently on port $installPort"
     Start-Process msiexec.exe -Wait -ArgumentList "/i `"$installerPath`" /qn /L*v `"$env:TEMP\WacInstall.log`" SME_PORT=$installPort ACCEPT_EULA=1"
 
-    Write-Host "WAC installation complete."
+    Write-Log "WAC installation complete."
 }

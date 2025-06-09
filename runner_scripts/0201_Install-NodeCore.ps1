@@ -17,10 +17,11 @@ param(
     [Parameter(Mandatory)]
     [hashtable]$Config
 )
+. "$PSScriptRoot\..\runner_utility_scripts\Logger.ps1"
 
 $ErrorActionPreference = "Stop"
 
-Write-Host "==== [0201] Installing Node.js Core ===="
+Write-Log "==== [0201] Installing Node.js Core ===="
 
 $url = if ($Config.Dependencies.Node.InstallerUrl) {
     $Config.Dependencies.Node.InstallerUrl
@@ -29,14 +30,14 @@ $url = if ($Config.Dependencies.Node.InstallerUrl) {
 }
 
 $installerPath = Join-Path $env:TEMP "node-installer.msi"
-Write-Host "Downloading Node.js from: $url"
+Write-Log "Downloading Node.js from: $url"
 Invoke-WebRequest -Uri $url -OutFile $installerPath -UseBasicParsing
 
 Start-Process msiexec.exe -ArgumentList "/i `"$installerPath`" /quiet /norestart" -Wait -NoNewWindow
 Remove-Item $installerPath -Force
 
 if (Get-Command node -ErrorAction SilentlyContinue) {
-    Write-Host "✅Node.js installed successfully."
+    Write-Log "✅Node.js installed successfully."
     node -v
 } else {
     Write-Error "Node.js installation failed."

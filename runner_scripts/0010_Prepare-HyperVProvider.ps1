@@ -2,6 +2,7 @@ Param(
     [Parameter(Mandatory=$true)]
     [PSCustomObject]$Config
 )
+. "$PSScriptRoot\..\runner_utility_scripts\Logger.ps1"
 
 if ($Config.PrepareHyperVHost -eq $true) {
 
@@ -15,65 +16,65 @@ $ErrorActionPreference = 'Stop'
 # Check if Hyper-V feature is enabled
 $hvFeature = Get-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V
 if ($hvFeature.State -ne "Enabled") {
-    Write-Host "Enabling Hyper-V feature..."
+    Write-Log "Enabling Hyper-V feature..."
     Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V -All
 } else {
-    Write-Host "Hyper-V is already enabled."
+    Write-Log "Hyper-V is already enabled."
 }
 
 # Check if WinRM is enabled by testing the local WSMan endpoint
 try {
     Test-WSMan -ComputerName localhost -ErrorAction Stop | Out-Null
-    Write-Host "WinRM is already enabled."
+    Write-Log "WinRM is already enabled."
 }
 catch {
-    Write-Host "Enabling WinRM..."
+    Write-Log "Enabling WinRM..."
     Enable-PSRemoting -SkipNetworkProfileCheck -Force
 }
 
 # Check and set WinRS MaxMemoryPerShellMB to 1024 if needed
 $currentMaxMemory = (Get-WSManInstance -ResourceURI winrm/config/WinRS).MaxMemoryPerShellMB
 if ($currentMaxMemory -ne 1024) {
-    Write-Host "Setting WinRS MaxMemoryPerShellMB to 1024..."
+    Write-Log "Setting WinRS MaxMemoryPerShellMB to 1024..."
     Set-WSManInstance -ResourceURI winrm/config/WinRS -ValueSet @{MaxMemoryPerShellMB = 1024}
 }
 else {
-    Write-Host "WinRS MaxMemoryPerShellMB is already 1024."
+    Write-Log "WinRS MaxMemoryPerShellMB is already 1024."
 }
 
 # Check and set WinRM MaxTimeoutms to 1800000 if needed
 $currentTimeout = (Get-WSManInstance -ResourceURI winrm/config).MaxTimeoutms
 if ($currentTimeout -ne 1800000) {
-    Write-Host "Setting WinRM MaxTimeoutms to 1800000..."
+    Write-Log "Setting WinRM MaxTimeoutms to 1800000..."
     Set-WSManInstance -ResourceURI winrm/config -ValueSet @{MaxTimeoutms = 1800000}
 }
 else {
-    Write-Host "WinRM MaxTimeoutms is already 1800000."
+    Write-Log "WinRM MaxTimeoutms is already 1800000."
 }
 
 # Check and set TrustedHosts to "*" for the WinRM client if needed
 $currentTrustedHosts = (Get-WSManInstance -ResourceURI winrm/config/Client).TrustedHosts
 if ($currentTrustedHosts -ne "*") {
-    Write-Host "Setting TrustedHosts to '*'..."
+    Write-Log "Setting TrustedHosts to '*'..."
     try {
         Set-WSManInstance -ResourceURI winrm/config/Client -ValueSet @{TrustedHosts = "*"}
     }
     catch {
-        Write-Host "TrustedHosts is set by policy."
+        Write-Log "TrustedHosts is set by policy."
     }
 }
 else {
-    Write-Host "TrustedHosts is already set to '*'."
+    Write-Log "TrustedHosts is already set to '*'."
 }
 
 # Check and set Negotiate to True in WinRM service auth if needed
 $currentNegotiate = (Get-WSManInstance -ResourceURI winrm/config/Service/Auth).Negotiate
 if (-not $currentNegotiate) {
-    Write-Host "Setting Negotiate to True..."
+    Write-Log "Setting Negotiate to True..."
     Set-WSManInstance -ResourceURI winrm/config/Service/Auth -ValueSet @{Negotiate = $true}
 }
 else {
-    Write-Host "Negotiate is already set to True."
+    Write-Log "Negotiate is already set to True."
 }
 
 # ------------------------------
@@ -108,7 +109,7 @@ if ($rootCaCertificate) {
         NotAfter          = (Get-Date).AddYears(5)
     }
 
-    Write-Host "Creating Root CA..."
+    Write-Log "Creating Root CA..."
     $rootCaCertificate = New-SelfSignedCertificate @params
 
     Export-Certificate -Cert $rootCaCertificate -FilePath ".\$rootCaName.cer" -Verbose
@@ -154,7 +155,7 @@ if ($hostCertificate) {
         NotAfter          = (Get-Date).AddYears(2)
     }
 
-    Write-Host "Creating host certificate..."
+    Write-Log "Creating host certificate..."
     $hostCertificate = New-SelfSignedCertificate @params
 
     Export-Certificate -Cert $hostCertificate -FilePath ".\$hostName.cer" -Verbose
@@ -166,12 +167,12 @@ if ($hostCertificate) {
     $hostCertificate = Get-ChildItem cert:\LocalMachine\My | Where-Object {$_.subject -eq "CN=$hostName"}
 }
 
-Write-Host "Configuring WinRM HTTPS listener..."
+Write-Log "Configuring WinRM HTTPS listener..."
 Get-ChildItem wsman:\localhost\Listener\ | Where-Object -Property Keys -eq 'Transport=HTTPS' | Remove-Item -Recurse -ErrorAction SilentlyContinue
 New-Item -Path WSMan:\localhost\Listener -Transport HTTPS -Address * -CertificateThumbPrint $($hostCertificate.Thumbprint) -Force -Verbose
 Restart-Service WinRM -Verbose -Force
 
-Write-Host "Allowing HTTPS (5986) through firewall..."
+Write-Log "Allowing HTTPS (5986) through firewall..."
 New-NetFirewallRule -DisplayName "Windows Remote Management (HTTPS-In)" -Name "WinRMHTTPSIn" -Profile Any -LocalPort 5986 -Protocol TCP -Verbose
 
 # ------------------------------
@@ -193,7 +194,7 @@ Get-ChildItem wsman:\localhost\Listener\ | Where-Object -Property Keys -eq 'Tran
 New-Item -Path WSMan:\localhost\Listener -Transport HTTP -Address * -Force -Verbose
 Restart-Service WinRM -Verbose -Force
 
-Write-Host "Allowing HTTP (5985) through firewall..."
+Write-Log "Allowing HTTP (5985) through firewall..."
 New-NetFirewallRule -DisplayName "Windows Remote Management (HTTP-In)" -Name "WinRMHTTPIn" -Profile Any -LocalPort 5985 -Protocol TCP -Verbose
 #>
 
@@ -208,14 +209,14 @@ $infraRepoPath = if ([string]::IsNullOrWhiteSpace($Config.InfraRepoPath)) {
     $Config.InfraRepoPath
 }
 
-Write-Host "InfraRepoPath for hyperv provider: $infraRepoPath"
+Write-Log "InfraRepoPath for hyperv provider: $infraRepoPath"
 
-Write-Host "Setting up Go environment..."
+Write-Log "Setting up Go environment..."
 $goWorkspace = "C:\\GoWorkspace"
 $env:GOPATH = $goWorkspace
 [System.Environment]::SetEnvironmentVariable('GOPATH', $goWorkspace, 'User')
 
-Write-Host "Ensuring taliesins provider dir structure..."
+Write-Log "Ensuring taliesins provider dir structure..."
 $taliesinsDir = Join-Path -Path $env:GOPATH -ChildPath "src\\github.com\\taliesins"
 if (!(Test-Path $taliesinsDir)) {
     New-Item -ItemType Directory -Force -Path $taliesinsDir | Out-Null
@@ -226,14 +227,14 @@ Set-Location $taliesinsDir
 $providerDir     = Join-Path $taliesinsDir "terraform-provider-hyperv"
 $providerExePath = Join-Path $providerDir  "terraform-provider-hyperv.exe"
 
-Write-Host "Checking if we need to clone or rebuild the hyperv provider..."
+Write-Log "Checking if we need to clone or rebuild the hyperv provider..."
 if (!(Test-Path $providerExePath)) {
-    Write-Host "Provider exe not found; cloning from GitHub..."
+    Write-Log "Provider exe not found; cloning from GitHub..."
     git clone https://github.com/taliesins/terraform-provider-hyperv.git
 }
 Set-Location $providerDir
 
-Write-Host "Building hyperv provider with go..."
+Write-Log "Building hyperv provider with go..."
 go build -o terraform-provider-hyperv.exe
 
 # The version in your default main.tf is 1.2.1, so place it accordingly
@@ -242,11 +243,11 @@ if (!(Test-Path $hypervProviderDir)) {
     New-Item -ItemType Directory -Force -Path $hypervProviderDir | Out-Null
 }
 
-Write-Host "Copying provider exe -> $hypervProviderDir"
+Write-Log "Copying provider exe -> $hypervProviderDir"
 $destinationBinary = Join-Path $hypervProviderDir "terraform-provider-hyperv.exe"
 Copy-Item -Path $providerExePath -Destination $destinationBinary -Force -Verbose
 
-Write-Host "Hyper-V provider installed at: $destinationBinary"
+Write-Log "Hyper-V provider installed at: $destinationBinary"
 
 # ------------------------------
 # 5) Update Provider Config File (providers.tf)
@@ -256,7 +257,7 @@ I am disabling this for now because opentofu doesn't like the certs :(
 
 $tfFile = Join-Path -Path $infraRepoPath -ChildPath "providers.tf"
 if (Test-Path $tfFile) {
-    Write-Host "Updating providers configuration in providers.tf with certificate paths..."
+    Write-Log "Updating providers configuration in providers.tf with certificate paths..."
 
     # Get absolute paths for the certificate files using $infraRepoPath
     $rootCAPath   = (Resolve-Path (Join-Path -Path $infraRepoPath -ChildPath "$rootCaName.cer")).Path
@@ -281,10 +282,10 @@ if (Test-Path $tfFile) {
     $content = $content -replace '(key_path\s*=\s*")[^"]*"', ( '${1}' + $escapedHostKeyPath + '"' )
 
     Set-Content -Path $tfFile -Value $content
-    Write-Host "Updated providers.tf successfully."
+    Write-Log "Updated providers.tf successfully."
 }
 else {
-    Write-Host "providers.tf not found in $infraRepoPath; skipping provider config update."
+    Write-Log "providers.tf not found in $infraRepoPath; skipping provider config update."
 }
 #>
     Write-Host @"

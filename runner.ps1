@@ -4,6 +4,9 @@ param(
     [string]$RunScripts
 )
 
+# Load logging helper
+. "$PSScriptRoot\runner_utility_scripts\Logger.ps1"
+
 function ConvertTo-Hashtable {
     param(
         $obj
@@ -38,13 +41,13 @@ function Customize-Config {
     param(
         [hashtable]$ConfigObject
     )
-    Write-Host "Customize-Config functionality not implemented. Using existing configuration."
+    Write-Log "Customize-Config functionality not implemented. Using existing configuration."
     return $ConfigObject
 }
 
-Write-Host "==== Loading configuration ===="
+Write-Log "==== Loading configuration ===="
 if (!(Test-Path $ConfigFile)) {
-    Write-Host "ERROR: Cannot find config file at $ConfigFile"
+    Write-Log "ERROR: Cannot find config file at $ConfigFile"
     exit 1
 }
 
@@ -53,13 +56,13 @@ try {
     $ConfigRaw = ConvertFrom-Json $jsonContent
     $Config = ConvertTo-Hashtable $ConfigRaw
 } catch {
-    Write-Host "ERROR: Failed to parse JSON from $ConfigFile. $_"
+    Write-Log "ERROR: Failed to parse JSON from $ConfigFile. $_"
     exit 1
 }
 
-Write-Host "==== Current configuration ===="
+Write-Log "==== Current configuration ===="
 $formattedConfig = $ConfigRaw | ConvertTo-Json -Depth 5
-Write-Host $formattedConfig
+Write-Log $formattedConfig
 
 # If not in AutoAccept mode, allow customization
 if (-not $AutoAccept) {
@@ -68,22 +71,22 @@ if (-not $AutoAccept) {
         $Config = Customize-Config -ConfigObject $Config
         # Save the updated configuration
         $Config | ConvertTo-Json -Depth 5 | Out-File -FilePath $ConfigFile -Encoding utf8
-        Write-Host "Configuration updated and saved to $ConfigFile"
+        Write-Log "Configuration updated and saved to $ConfigFile"
     }
 }
 
-Write-Host "==== Locating scripts ===="
+Write-Log "==== Locating scripts ===="
 $ScriptFiles = Get-ChildItem -Path .\runner_scripts -Filter "????_*.ps1" -File | Sort-Object -Property Name
 
 if (!$ScriptFiles) {
-    Write-Host "ERROR: No scripts found matching ????_*.ps1 in current directory."
+    Write-Log "ERROR: No scripts found matching ????_*.ps1 in current directory."
     exit 1
 }
 
-Write-Host "`n==== Found the following scripts ===="
+Write-Log "`n==== Found the following scripts ===="
 foreach ($Script in $ScriptFiles) {
     $prefix = $Script.Name.Substring(0,4)
-    Write-Host "$prefix - $($Script.Name)"
+    Write-Log "$prefix - $($Script.Name)"
 }
 
 # Determine scripts to run based on arguments
@@ -92,7 +95,7 @@ if ($RunScripts -eq 'all') {
 } elseif ($RunScripts) {
     $selectedPrefixes = $RunScripts -split "," | ForEach-Object { $_.Trim() } | Where-Object { $_ -match '^\d{4}$' }
     if (!$selectedPrefixes) {
-        Write-Host "No valid 4-digit prefixes found in argument. Exiting."
+        Write-Log "No valid 4-digit prefixes found in argument. Exiting."
         exit 1
     }
     $ScriptsToRun = $ScriptFiles | Where-Object {
@@ -100,15 +103,15 @@ if ($RunScripts -eq 'all') {
         $selectedPrefixes -contains $prefix
     }
     if (!$ScriptsToRun) {
-        Write-Host "None of the provided prefixes match the scripts in the folder. Exiting."
+        Write-Log "None of the provided prefixes match the scripts in the folder. Exiting."
         exit 1
     }
 } else {
     # Interactive mode if no argument is given
     while ($true) {
-        Write-Host "`nTo run ALL scripts, type 'all'."
-        Write-Host "To run specific scripts, provide comma-separated 4-digit prefixes (e.g. 0001,0003)."
-        Write-Host "Or type 'exit' to quit."
+        Write-Log "`nTo run ALL scripts, type 'all'."
+        Write-Log "To run specific scripts, provide comma-separated 4-digit prefixes (e.g. 0001,0003)."
+        Write-Log "Or type 'exit' to quit."
         $selection = Read-Host "Enter selection"
 
         if ($selection -match '^(?i)exit$') { break }
@@ -118,7 +121,7 @@ if ($RunScripts -eq 'all') {
         } else {
             $selectedPrefixes = $selection -split "," | ForEach-Object { $_.Trim() } | Where-Object { $_ -match '^\d{4}$' }
             if (!$selectedPrefixes) {
-                Write-Host "No valid 4-digit prefixes found. Please try again."
+                Write-Log "No valid 4-digit prefixes found. Please try again."
                 continue
             }
             $ScriptsToRun = $ScriptFiles | Where-Object {
@@ -126,7 +129,7 @@ if ($RunScripts -eq 'all') {
                 $selectedPrefixes -contains $prefix
             }
             if (!$ScriptsToRun) {
-                Write-Host "None of the provided prefixes match the scripts in the folder. Please try again."
+                Write-Log "None of the provided prefixes match the scripts in the folder. Please try again."
                 continue
             }
         }
@@ -135,25 +138,25 @@ if ($RunScripts -eq 'all') {
 }
 
 if ($ScriptsToRun) {
-    Write-Host "`n==== Executing selected scripts ===="
+    Write-Log "`n==== Executing selected scripts ===="
     foreach ($Script in $ScriptsToRun) {
-        Write-Host "`n--- Running: $($Script.Name) ---"
+        Write-Log "`n--- Running: $($Script.Name) ---"
         try {
             & "$PSScriptRoot\runner_scripts\$($Script.Name)" -Config $Config
             if ($LASTEXITCODE -ne 0) {
-                Write-Host "ERROR: $($Script.Name) exited with code $LASTEXITCODE."
+                Write-Log "ERROR: $($Script.Name) exited with code $LASTEXITCODE."
                 exit 1
             }
         }
         catch {
-            Write-Host "ERROR: Exception in $($Script.Name). $_"
+            Write-Log "ERROR: Exception in $($Script.Name). $_"
             exit 1
         }
     }
-    Write-Host "`n==== Selected scripts execution completed! ===="
+    Write-Log "`n==== Selected scripts execution completed! ===="
 } else {
-    Write-Host "No scripts selected to run."
+    Write-Log "No scripts selected to run."
 }
 
-Write-Host "`nAll done!"
+Write-Log "`nAll done!"
 exit 0

@@ -29,17 +29,18 @@ function Write-Continue($prompt) {
 
 $ErrorActionPreference = 'Stop'  # So any error throws an exception
 $ProgressPreference = 'SilentlyContinue'
+. "$PSScriptRoot\runner_utility_scripts\Logger.ps1"
 
 
 # ------------------------------------------------
 # (0) clever? message, take a second...
 # ------------------------------------------------
 
-Write-Host "`nYo!"
+Write-Log "`nYo!"
 Write-Continue "`n<press any key to continue>`n"
-Write-Host "I know you totally read the readme first, but just in case you didn't...`n"
+Write-Log "I know you totally read the readme first, but just in case you didn't...`n"
 
-Write-Host """
+Write-Log """
 
 Note: In order for most of this to work you will actually have to provide a config file. 
 You can either modify this command to point to the remote/local path, or leave it as is. 
@@ -87,7 +88,7 @@ else {
 # ------------------------------------------------
 # (1) Load Configuration
 # ------------------------------------------------
-Write-Host "==== Loading configuration file ===="
+Write-Log "==== Loading configuration file ===="
 if (!(Test-Path $ConfigFile)) {
     Write-Error "ERROR: Could not find config.json at $ConfigFile"
     exit 1
@@ -95,7 +96,7 @@ if (!(Test-Path $ConfigFile)) {
 
 try {
     $config = Get-Content -Raw -Path $ConfigFile | ConvertFrom-Json
-    Write-Host "Config file loaded from $ConfigFile."
+    Write-Log "Config file loaded from $ConfigFile."
 } catch {
     Write-Error "ERROR: Failed to parse JSON from $ConfigFile. $($_.Exception.Message)"
     exit 1
@@ -106,32 +107,32 @@ try {
 # ------------------------------------------------
 
 
-Write-Host "==== Checking if Git is installed ===="
+Write-Log "==== Checking if Git is installed ===="
 $gitPath = "C:\Program Files\Git\cmd\git.exe"
 
 if (Test-Path $gitPath) {
-    Write-Host "Git is already installed at: $gitPath"
+    Write-Log "Git is already installed at: $gitPath"
 } else {
 
     if ($Config.InstallGit -eq $true) {
-        Write-Host "Git is not installed. Downloading and installing Git for Windows..."
+        Write-Log "Git is not installed. Downloading and installing Git for Windows..."
 
         $gitInstallerUrl = "https://github.com/git-for-windows/git/releases/download/v2.48.1.windows.1/Git-2.48.1-64-bit.exe"
         $gitInstallerPath = Join-Path -Path $env:TEMP -ChildPath "GitInstaller.exe"
 
         Invoke-WebRequest -Uri $gitInstallerUrl -OutFile $gitInstallerPath -UseBasicParsing
-        Write-Host "Installing Git silently..."
+        Write-Log "Installing Git silently..."
         Start-Process -FilePath $gitInstallerPath -ArgumentList "/SILENT" -Wait -NoNewWindow
 
         Remove-Item -Path $gitInstallerPath -ErrorAction SilentlyContinue
-        Write-Host "Git installation completed."
+        Write-Log "Git installation completed."
     }
 }
 
 # Double-check Git
 try {
-    & "$gitPath" --version | Write-Host
-    Write-Host "Git is installed and working."
+    & "$gitPath" --version | Write-Log
+    Write-Log "Git is installed and working."
 } catch {
     Write-Error "ERROR: Git installation failed or is not accessible. Exiting."
     exit 1
@@ -140,24 +141,24 @@ try {
 # ------------------------------------------------
 # (3) Check GitHub CLI and call by explicit path
 # ------------------------------------------------
-Write-Host "==== Checking if GitHub CLI is installed ===="
+Write-Log "==== Checking if GitHub CLI is installed ===="
 $ghExePath = "C:\Program Files\GitHub CLI\gh.exe"
 
 if (!(Test-Path $ghExePath)) {
     if ($Config.InstallGitHubCLI -eq $true) {
-        Write-Host "GitHub CLI not found. Downloading from $($config.GitHubCLIInstallerUrl)..."
+        Write-Log "GitHub CLI not found. Downloading from $($config.GitHubCLIInstallerUrl)..."
         $ghCliInstaller = Join-Path -Path $env:TEMP -ChildPath "GitHubCLIInstaller.msi"
         Invoke-WebRequest -Uri $config.GitHubCLIInstallerUrl -OutFile $ghCliInstaller -UseBasicParsing
 
-        Write-Host "Installing GitHub CLI silently..."
+        Write-Log "Installing GitHub CLI silently..."
         Start-Process msiexec.exe -ArgumentList "/i `"$ghCliInstaller`" /quiet /norestart /log `"$env:TEMP\ghCliInstall.log`"" -Wait -Verb RunAs
         Remove-Item -Path $ghCliInstaller -ErrorAction SilentlyContinue
 
-        Write-Host "GitHub CLI installation completed."
+        Write-Log "GitHub CLI installation completed."
     }
 
 } else {
-    Write-Host "GitHub CLI found at '$ghExePath'."
+    Write-Log "GitHub CLI found at '$ghExePath'."
 }
 
 if (!(Test-Path $ghExePath)) {
@@ -168,20 +169,20 @@ if (!(Test-Path $ghExePath)) {
 # ------------------------------------------------
 # (3.5) Check & Prompt for GitHub CLI Authentication
 # ------------------------------------------------
-Write-Host "==== Checking GitHub CLI Authentication ===="
+Write-Log "==== Checking GitHub CLI Authentication ===="
 try {
     # If not authenticated, 'gh auth status' returns non-zero exit code
     & "$ghExePath" auth status 2>&1
-    Write-Host "GitHub CLI is authenticated."
+    Write-Log "GitHub CLI is authenticated."
 }
 catch {
-    Write-Host "GitHub CLI is not authenticated."
+    Write-Log "GitHub CLI is not authenticated."
 
     # Optional: Prompt user for a personal access token
     $pat = Read-Host "Enter your GitHub Personal Access Token (or press Enter to skip):"
 
     if (-not [string]::IsNullOrWhiteSpace($pat)) {
-        Write-Host "Attempting PAT-based GitHub CLI login..."
+        Write-Log "Attempting PAT-based GitHub CLI login..."
         try {
             $pat | & "$ghExePath" auth login --hostname github.com --git-protocol https --with-token
         }
@@ -192,7 +193,7 @@ catch {
     }
     else {
         # No PAT, attempt normal interactive login in the console
-        Write-Host "No PAT provided. Attempting interactive login..."
+        Write-Log "No PAT provided. Attempting interactive login..."
         try {
             & "$ghExePath" auth login --hostname github.com --git-protocol https
         }
@@ -205,7 +206,7 @@ catch {
     # After the login attempt, re-check auth
     try {
         & "$ghExePath" auth status 2>&1
-        Write-Host "GitHub CLI is now authenticated."
+        Write-Log "GitHub CLI is now authenticated."
     }
     catch {
         Write-Error "ERROR: GitHub authentication failed. Please run '$ghExePath auth login' manually and re-run."
@@ -216,7 +217,7 @@ catch {
 # ------------------------------------------------
 # (4) Clone or Update Repository (using explicit Git/gh)
 # ------------------------------------------------
-Write-Host "==== Cloning or updating the target repository ===="
+Write-Log "==== Cloning or updating the target repository ===="
 
 if (-not $config.RepoUrl) {
     Write-Error "ERROR: config.json does not specify 'RepoUrl'."
@@ -232,7 +233,7 @@ $localPath = [System.Environment]::ExpandEnvironmentVariables($localPath)
 
 
 # Ensure local directory exists
-Write-Host "Ensuring local path '$localPath' exists..."
+Write-Log "Ensuring local path '$localPath' exists..."
 if (!(Test-Path $localPath)) {
     New-Item -ItemType Directory -Path $localPath -Force | Out-Null
 }
@@ -247,7 +248,7 @@ if (-not $repoPath) {
 }
 
 if (!(Test-Path $repoPath)) {
-    Write-Host "Cloning repository from $($config.RepoUrl) to $repoPath..."
+    Write-Log "Cloning repository from $($config.RepoUrl) to $repoPath..."
 
     $prevEAP = $ErrorActionPreference
     $ErrorActionPreference = 'Continue'
@@ -258,7 +259,7 @@ if (!(Test-Path $repoPath)) {
 
     # Fallback to git if the GitHub CLI clone appears to have failed
     if (!(Test-Path $repoPath)) {
-        Write-Host "GitHub CLI clone failed. Trying git clone..."
+        Write-Log "GitHub CLI clone failed. Trying git clone..."
         & "$gitPath" clone $config.RepoUrl $repoPath 2>&1 | Tee-Object -FilePath "$env:TEMP\git_clone_log.txt"
 
         if (!(Test-Path $repoPath)) {
@@ -267,16 +268,27 @@ if (!(Test-Path $repoPath)) {
         }
     }
 } else {
-    Write-Host "Repository already exists. Pulling latest changes..."
+    Write-Log "Repository already exists. Pulling latest changes..."
     Push-Location $repoPath
     & "$gitPath" pull
     Pop-Location
 }
 
+# Ensure the desired branch is checked out and up to date
+Push-Location $repoPath
+& "$gitPath" fetch --all
+& "$gitPath" checkout $targetBranch 2>$null
+if ($LASTEXITCODE -ne 0) {
+    Write-Warning "Branch '$targetBranch' not found. Using current branch."
+} else {
+    & "$gitPath" pull origin $targetBranch
+}
+Pop-Location
+
 # ------------------------------------------------
 # (5) Invoke the Runner Script
 # ------------------------------------------------
-Write-Host "==== Invoking the runner script ===="
+Write-Log "==== Invoking the runner script ===="
 $runnerScriptName = $config.RunnerScriptName
 if (-not $runnerScriptName) {
     Write-Warning "No runner script specified in config. Exiting gracefully."
@@ -289,8 +301,8 @@ if (!(Test-Path $runnerScriptName)) {
     exit 1
 }
 
-Write-Host "Running $runnerScriptName from $repoPath ..."
+Write-Log "Running $runnerScriptName from $repoPath ..."
 . .\$runnerScriptName -ConfigFile $ConfigFile
 
-Write-Host "`n=== Kicker script finished successfully! ==="
+Write-Log "`n=== Kicker script finished successfully! ==="
 exit 0

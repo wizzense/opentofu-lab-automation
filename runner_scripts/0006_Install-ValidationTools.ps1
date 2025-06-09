@@ -2,11 +2,12 @@ Param(
     [Parameter(Mandatory=$true)]
     [PSCustomObject]$Config
 )
+. "$PSScriptRoot\..\runner_utility_scripts\Logger.ps1"
 
 function Install-Cosign {
     # Check if cosign is available in the current PATH
     if (-not (Test-Path (Join-Path $Config.CosignPath "cosign-windows-amd64.exe") -ErrorAction SilentlyContinue)) {
-        Write-Host "Cosign is not found. Installing cosign..."
+        Write-Log "Cosign is not found. Installing cosign..."
         
         # Define the installation directory and destination file path
         $installDir = $Config.CosignPath
@@ -20,7 +21,7 @@ function Install-Cosign {
         try {
             # Download the cosign executable
             Invoke-WebRequest -Uri $config.cosignUrl -OutFile $destination -UseBasicParsing
-            Write-Host "Cosign downloaded and installed at $destination"
+            Write-Log "Cosign downloaded and installed at $destination"
         }
         catch {
             Write-Error "Failed to download cosign from $cosignUrl. Please check your internet connection and try again."
@@ -31,22 +32,22 @@ function Install-Cosign {
         $userPath = [Environment]::GetEnvironmentVariable("PATH", "User")
         if (-not $userPath.Contains($installDir)) {
             [Environment]::SetEnvironmentVariable("PATH", "$userPath;$installDir", "User")
-            Write-Host "Added $installDir to your user PATH. You may need to restart your session for this change to take effect."
+            Write-Log "Added $installDir to your user PATH. You may need to restart your session for this change to take effect."
         }
     }
     else {
-        Write-Host "Cosign is already installed."
+        Write-Log "Cosign is already installed."
     }
 }
 
 function Find-Gpg {
     # Check if gpg is available in the current PATH
     if (-not (Get-Command gpg -ErrorAction SilentlyContinue)) {
-        Write-Host "GPG is not found."
-        Write-Host "Please install Gpg4win from https://www.gpg4win.org/ and ensure it is added to your PATH."
+        Write-Log "GPG is not found."
+        Write-Log "Please install Gpg4win from https://www.gpg4win.org/ and ensure it is added to your PATH."
     }
     else {
-        Write-Host "GPG is already installed."
+        Write-Log "GPG is already installed."
     }
 }
 
@@ -59,5 +60,5 @@ elseif ($Config.InstallGpg -eq $true) {
 }
 
 if (-not $Config.InstallCosign -and -not $Config.InstallGpg) {
-    Write-Host "No installation option specified. Use -InstallCosign and/or -InstallGpg when running this script."
+    Write-Log "No installation option specified. Use -InstallCosign and/or -InstallGpg when running this script."
 }
