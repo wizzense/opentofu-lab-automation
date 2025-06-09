@@ -24,7 +24,7 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "Invoke-WebRequest -U
 
 ```
 
-It will prompt print the current config and prompt you to customize it interactively. 
+It will print the current configuration and prompt you to customize it interactively.
 
 Example opentofu-infra repo: https://github.com/wizzense/tofu-base-lab.git
 Example config file: https://raw.githubusercontent.com/wizzense/tofu-base-lab/refs/heads/main/configs/bootstrap-config.json
@@ -35,9 +35,9 @@ The runner script can run the following:
 
 0000_Cleanup-Files.ps1 - Removed lab-infra opentofu infrastructure repo
 
-0001_Reset-Git.ps1 - resets lab-infra opentofu infrastructure repo in case you modify any files and just want to re-pull the files/ reset
+0001_Reset-Git.ps1 - resets the lab-infra opentofu repository if you modify any files and want to re-pull or reset them
 
-0006_Install-ValidationTools.ps1 - downloads the  cosign exe to C:\temo\cosign
+0006_Install-ValidationTools.ps1 - downloads the  cosign exe to C:\temp\cosign
 
 0007_Install-Go.ps1 - downloads and installs Go
 
@@ -75,7 +75,7 @@ The runner script can run the following:
  
 - Note, certificate validation for the hyperv provider is currently disabled by default, I am still working out to get it to use the certificates. I think they have to be converted to .pem first.
 
-Completely optional stuff I usee for other things:
+Completely optional scripts I use for other tasks:
 -a----          3/7/2025   7:08 AM            616 0100_Enable-WinRM.ps1
 -a----          3/7/2025   7:08 AM            725 0101_Enable-RemoteDesktop.ps1
 -a----          3/7/2025   7:08 AM            613 0102_Configure-Firewall.ps1
@@ -161,4 +161,8 @@ Load the function and call it to get `Windows`, `Linux` or `MacOS`.
 . ./lab_utils/Get-Platform.ps1
 Get-Platform
 ```
+
+Use this output to branch your automation logic according to the host
+operating system. Check the other `lab_utils` scripts for additional
+cross-platform helpers.
 
