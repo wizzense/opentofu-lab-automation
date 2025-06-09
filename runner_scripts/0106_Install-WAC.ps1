@@ -8,7 +8,7 @@ if ($Config.InstallWAC -eq $true) {
     # Retrieve configuration for WAC from the config object
     $WacConfig = $Config.WAC
     if ($null -eq $WacConfig) {
-        Write-Log "No WAC configuration found. Skipping installation."
+        Write-CustomLog "No WAC configuration found. Skipping installation."
         return
     }
 
@@ -37,18 +37,18 @@ if ($Config.InstallWAC -eq $true) {
     }
 
     if ($wacInstalled) {
-        Write-Log "Windows Admin Center is already installed. Skipping installation."
+        Write-CustomLog "Windows Admin Center is already installed. Skipping installation."
         return
     }
 
     # Optionally, check if the desired installation port is already in use.
     $portInUse = Get-NetTCPConnection -LocalPort $installPort -ErrorAction SilentlyContinue
     if ($portInUse) {
-        Write-Log "Port $installPort is already in use. Assuming Windows Admin Center is running. Skipping installation."
+        Write-CustomLog "Port $installPort is already in use. Assuming Windows Admin Center is running. Skipping installation."
         return
     }
 
-    Write-Log "Installing Windows Admin Center..."
+    Write-CustomLog "Installing Windows Admin Center..."
 
     # Download the Windows Admin Center MSI
     $downloadUrl = "https://aka.ms/wacdownload"
@@ -56,11 +56,11 @@ if ($Config.InstallWAC -eq $true) {
 
     $ProgressPreference = 'SilentlyContinue'
 
-    Write-Log "Downloading WAC from $downloadUrl"
+    Write-CustomLog "Downloading WAC from $downloadUrl"
     Invoke-WebRequest -Uri $downloadUrl -OutFile $installerPath -UseBasicParsing
 
-    Write-Log "Installing WAC silently on port $installPort"
+    Write-CustomLog "Installing WAC silently on port $installPort"
     Start-Process msiexec.exe -Wait -ArgumentList "/i `"$installerPath`" /qn /L*v `"$env:TEMP\WacInstall.log`" SME_PORT=$installPort ACCEPT_EULA=1"
 
-    Write-Log "WAC installation complete."
+    Write-CustomLog "WAC installation complete."
 }

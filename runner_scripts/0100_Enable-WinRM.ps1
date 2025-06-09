@@ -8,9 +8,9 @@ Param(
 $winrmStatus = Get-Service -Name WinRM -ErrorAction SilentlyContinue
 
 if ($winrmStatus -and $winrmStatus.Status -eq 'Running') {
-    Write-Log "WinRM is already enabled and running."
+    Write-CustomLog "WinRM is already enabled and running."
 } else {
-    Write-Log "Enabling WinRM..."
+    Write-CustomLog "Enabling WinRM..."
     
     # WinRM QuickConfig
     Enable-PSRemoting -Force
@@ -18,6 +18,6 @@ if ($winrmStatus -and $winrmStatus.Status -eq 'Running') {
     # Optionally configure additional authentication methods, etc.:
     # e.g.: Set-Item -Path WSMan:\localhost\Service\Auth\Basic -Value $true
     
-    Write-Log "WinRM has been enabled."
+    Write-CustomLog "WinRM has been enabled."
 }
 

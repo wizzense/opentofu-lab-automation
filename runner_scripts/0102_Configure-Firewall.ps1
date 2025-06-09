@@ -4,11 +4,11 @@ Param(
 )
 . "$PSScriptRoot\..\runner_utility_scripts\Logger.ps1"
 
-Write-Log "Configuring Firewall rules..."
+Write-CustomLog "Configuring Firewall rules..."
 
 if ($null -ne $Config.FirewallPorts) {
     foreach ($port in $Config.FirewallPorts) {
-        Write-Log " - Opening TCP port $port"
+        Write-CustomLog " - Opening TCP port $port"
         New-NetFirewallRule -DisplayName "Open Port $port" `
                             -Direction Inbound `
                             -Protocol TCP `
@@ -17,5 +17,5 @@ if ($null -ne $Config.FirewallPorts) {
                             Out-Null
     }
 } else {
-    Write-Log "No firewall ports specified."
+    Write-CustomLog "No firewall ports specified."
 }
