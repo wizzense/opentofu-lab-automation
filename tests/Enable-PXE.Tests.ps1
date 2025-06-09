@@ -8,7 +8,7 @@ Describe '0112_Enable-PXE' {
     It 'logs firewall rules when ConfigPXE is true' -Skip:($IsLinux -or $IsMacOS) {
         $Config = [pscustomobject]@{ ConfigPXE = $true }
         $logPath = Join-Path $env:TEMP ('pxe-log-' + [System.Guid]::NewGuid().ToString() + '.txt')
-        $Global:LogFilePath = $logPath
+        $script:LogFilePath = $logPath
         try {
             & $scriptPath -Config $Config | Out-Null
             $log = Get-Content -Raw $logPath
@@ -18,7 +18,7 @@ Describe '0112_Enable-PXE' {
             $log | Should -Match 'prov-pxe-17530'
         } finally {
             Remove-Item $logPath -ErrorAction SilentlyContinue
-            Remove-Variable -Name LogFilePath -Scope Global -ErrorAction SilentlyContinue
+            Remove-Variable -Name LogFilePath -Scope Script -ErrorAction SilentlyContinue
         }
     }
 }

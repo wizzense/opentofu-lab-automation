@@ -7,7 +7,7 @@ Describe 'Cleanup-Files script' {
         $temp = Join-Path ([System.IO.Path]::GetTempPath()) ([System.Guid]::NewGuid())
         $null = New-Item -ItemType Directory -Path $temp
 
-        $Global:LogFilePath = Join-Path $temp 'cleanup.log'
+        $script:LogFilePath = Join-Path $temp 'cleanup.log'
 
         $repoName = 'opentofu-lab-automation'
         $repoPath = Join-Path $temp $repoName
@@ -27,14 +27,14 @@ Describe 'Cleanup-Files script' {
         (Test-Path $infraPath) | Should -BeFalse
 
         Remove-Item -Recurse -Force $temp -ErrorAction SilentlyContinue
-        Remove-Variable -Name LogFilePath -Scope Global -ErrorAction SilentlyContinue
+        Remove-Variable -Name LogFilePath -Scope Script -ErrorAction SilentlyContinue
     }
 
     It 'handles missing directories gracefully' {
         $temp = Join-Path ([System.IO.Path]::GetTempPath()) ([System.Guid]::NewGuid())
         $null = New-Item -ItemType Directory -Path $temp
         $infraPath = Join-Path $temp 'infra'
-        $Global:LogFilePath = Join-Path $temp 'cleanup.log'
+        $script:LogFilePath = Join-Path $temp 'cleanup.log'
         $config = [PSCustomObject]@{
             LocalPath     = $temp
             RepoUrl       = 'https://github.com/wizzense/test.git'
@@ -44,14 +44,14 @@ Describe 'Cleanup-Files script' {
         { . $scriptPath -Config $config } | Should -Not -Throw
 
         Remove-Item -Recurse -Force $temp -ErrorAction SilentlyContinue
-        Remove-Variable -Name LogFilePath -Scope Global -ErrorAction SilentlyContinue
+        Remove-Variable -Name LogFilePath -Scope Script -ErrorAction SilentlyContinue
     }
 
     It 'runs without a global log file' {
         $temp = Join-Path ([System.IO.Path]::GetTempPath()) ([System.Guid]::NewGuid())
         $null = New-Item -ItemType Directory -Path $temp
         $infraPath = Join-Path $temp 'infra'
-        Remove-Variable -Name LogFilePath -Scope Global -ErrorAction SilentlyContinue
+        Remove-Variable -Name LogFilePath -Scope Script -ErrorAction SilentlyContinue
         $config = [PSCustomObject]@{
             LocalPath     = $temp
             RepoUrl       = 'https://github.com/wizzense/test.git'
@@ -71,7 +71,7 @@ Describe 'Cleanup-Files script' {
         $infraPath = Join-Path $temp 'infra'
         $null = New-Item -ItemType Directory -Path $repoPath
         $null = New-Item -ItemType Directory -Path $infraPath
-        Remove-Variable -Name LogFilePath -Scope Global -ErrorAction SilentlyContinue
+        Remove-Variable -Name LogFilePath -Scope Script -ErrorAction SilentlyContinue
         $config = [PSCustomObject]@{
             LocalPath     = $temp
             RepoUrl       = "https://github.com/wizzense/$repoName.git"
