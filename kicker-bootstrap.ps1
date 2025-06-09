@@ -30,22 +30,40 @@ function Write-Continue($prompt) {
 $ErrorActionPreference = 'Stop'  # So any error throws an exception
 $ProgressPreference = 'SilentlyContinue'
 
+# Resolve script root even when $PSScriptRoot is not populated (e.g. -Command)
+$scriptRoot = if ($PSScriptRoot) { $PSScriptRoot } else { Split-Path -Parent $MyInvocation.MyCommand.Path }
+
 # Ensure the logger utility is available even when this script is executed
 # standalone. If the logger script is missing, download it from the repository.
-$loggerDir = Join-Path $PSScriptRoot 'runner_utility_scripts'
-$loggerPath = Join-Path $loggerDir 'Logger.ps1'
+$loggerDir  = Join-Path $scriptRoot 'runner_utility_scripts'
+$loggerPath = Join-Path $loggerDir  'Logger.ps1'
 if (-not (Test-Path $loggerPath)) {
     if (-not (Test-Path $loggerDir)) {
         New-Item -ItemType Directory -Path $loggerDir -Force | Out-Null
     }
-    $loggerUrl =
-        'https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/main/runner_utility_scripts/Logger.ps1'
+    $loggerUrl = 'https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/main/runner_utility_scripts/Logger.ps1'
     Invoke-WebRequest -Uri $loggerUrl -OutFile $loggerPath
 }
-. $loggerPath
+try { . $loggerPath } catch {}
+
+# Fallback inline logger in case dot-sourcing failed
+if (-not (Get-Command Write-CustomLog -ErrorAction SilentlyContinue)) {
+    function Write-CustomLog {
+        param(
+            [string]$Message,
+            [string]$LogFile
+        )
+        $ts = Get-Date -Format 'yyyy-MM-dd HH:mm:ss'
+        $fmt = "[$ts] $Message"
+        Write-Host $fmt
+        if ($LogFile) {
+            try { $fmt | Out-File -FilePath $LogFile -Encoding utf8 -Append } catch {}
+        }
+    }
+}
 
 # Load config helper
-$labUtilsDir = Join-Path $PSScriptRoot 'lab_utils'
+$labUtilsDir = Join-Path $scriptRoot 'lab_utils'
 $labConfigScript = Join-Path $labUtilsDir 'Get-LabConfig.ps1'
 if (-not (Test-Path $labConfigScript)) {
     if (-not (Test-Path $labUtilsDir)) {
@@ -95,13 +113,13 @@ $configOption = Read-Host -prompt "`nEnter a remote URL or local path, or leave 
 
 if ($configOption -ccontains "https://") {
     Invoke-WebRequest -Uri $configOption -OutFile '.\custom-config.json'
-    $ConfigFile = (Join-Path $PSScriptRoot "custom-config.json")
+    $ConfigFile = (Join-Path $scriptRoot "custom-config.json")
 }
 elseif ($configOption -and (Test-Path -Path $configOption)) {
     $ConfigFile = $configOption
 }
 else {
-    $localConfigDir = Join-Path $PSScriptRoot "config_files"
+    $localConfigDir = Join-Path $scriptRoot "config_files"
     if (!(Test-Path $localConfigDir)) {
         New-Item -ItemType Directory -Path $localConfigDir | Out-Null
     }
