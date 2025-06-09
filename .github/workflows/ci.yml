@@ -41,6 +41,13 @@ jobs:
           key: ${{ runner.os }}-pwsh-modules-${{ hashFiles('.github/actions/lint/requirements.txt') }}
           restore-keys: ${{ runner.os }}-pwsh-modules-
       - uses: ./.github/actions/lint
+      - name: Uninstall PSScriptAnalyzer
+        shell: pwsh
+        run: |
+          if (Get-Module -ListAvailable -Name PSScriptAnalyzer) {
+            Remove-Module -Name PSScriptAnalyzer -Force -ErrorAction SilentlyContinue
+            Uninstall-Module -Name PSScriptAnalyzer -AllVersions -Force
+          }
   pester:
     runs-on: ${{ matrix.os }}
     strategy:
