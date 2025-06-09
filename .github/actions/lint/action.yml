@@ -6,9 +6,21 @@ runs:
       uses: actions/setup-python@v4
       with:
         python-version: '3.x'
-    - name: Install ruff
+        cache: 'pip'
+        cache-dependency-path: .github/actions/lint/requirements.txt
+    - name: Cache PowerShell modules
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.local/share/powershell/Modules
+          ~/Documents/PowerShell/Modules
+        key: ${{ runner.os }}-lint-psmodules-${{ hashFiles('.github/actions/lint/requirements.txt') }}
+        if-no-files-found: ignore
+        restore-keys: |
+          ${{ runner.os }}-lint-psmodules-
+    - name: Install Python dependencies
       shell: bash
-      run: pip install "ruff<0.1"
+      run: pip install -r "${{ github.action_path }}/requirements.txt"
     - name: Install PSScriptAnalyzer
       shell: pwsh
       run: Install-Module -Name PSScriptAnalyzer -Force -Scope CurrentUser

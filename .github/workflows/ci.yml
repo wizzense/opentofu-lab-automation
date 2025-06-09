@@ -25,6 +25,20 @@ jobs:
               brew install --cask powershell
             fi
           fi
+      - name: Cache PowerShell modules (Windows)
+        if: runner.os == 'Windows'
+        uses: actions/cache@v4
+        with:
+          path: C:\Users\runneradmin\Documents\PowerShell\Modules
+          key: windows-pwsh-modules-${{ hashFiles('.github/actions/lint/requirements.txt') }}
+          restore-keys: windows-pwsh-modules-
+      - name: Cache PowerShell modules (Posix)
+        if: runner.os != 'Windows'
+        uses: actions/cache@v4
+        with:
+          path: ~/.local/share/powershell/Modules
+          key: ${{ runner.os }}-pwsh-modules-${{ hashFiles('.github/actions/lint/requirements.txt') }}
+          restore-keys: ${{ runner.os }}-pwsh-modules-
       - uses: ./.github/actions/lint
   pester:
     runs-on: ${{ matrix.os }}
@@ -46,6 +60,21 @@ jobs:
             fi
           fi
 
+      - name: Cache PowerShell modules (Windows)
+        if: runner.os == 'Windows'
+        uses: actions/cache@v4
+        with:
+          path: C:\Users\runneradmin\Documents\PowerShell\Modules
+          key: windows-pwsh-modules-${{ hashFiles('.github/actions/lint/requirements.txt') }}
+          restore-keys: windows-pwsh-modules-
+      - name: Cache PowerShell modules (Posix)
+        if: runner.os != 'Windows'
+        uses: actions/cache@v4
+        with:
+          path: ~/.local/share/powershell/Modules
+          key: ${{ runner.os }}-pwsh-modules-${{ hashFiles('.github/actions/lint/requirements.txt') }}
+          restore-keys: ${{ runner.os }}-pwsh-modules-
+      
       - name: Install Pester
         shell: pwsh
         run: |
