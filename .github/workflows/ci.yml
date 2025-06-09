@@ -51,6 +51,13 @@ jobs:
         run: |
           Install-Module -Name PSScriptAnalyzer -RequiredVersion 1.24.0 -Force -Scope CurrentUser
       - uses: ./.github/actions/lint
+      - name: Uninstall PSScriptAnalyzer
+        shell: pwsh
+        run: |
+          if (Get-Module -ListAvailable -Name PSScriptAnalyzer) {
+            Remove-Module -Name PSScriptAnalyzer -Force -ErrorAction SilentlyContinue
+            Uninstall-Module -Name PSScriptAnalyzer -AllVersions -Force
+          }
   pester:
     runs-on: ${{ matrix.os }}
     strategy:
