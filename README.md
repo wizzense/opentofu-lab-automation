@@ -158,6 +158,29 @@ And:
 
 Will probably change repo name to just 'lab-automation'.
 
+## Node dependency configuration
+
+Node-related installs are controlled under the `Node_Dependencies` section of
+`default-config.json`:
+
+```json
+"Node_Dependencies": {
+  "InstallNode": true,
+  "InstallYarn": true,
+  "InstallVite": true,
+  "InstallNodemon": true,
+  "InstallNpm": true,
+  "NpmPath": "C:\\Projects\\vde-mvp\\frontend",
+  "Node": {
+    "InstallerUrl": "https://nodejs.org/dist/v20.11.1/node-v20.11.1-x64.msi"
+  }
+}
+```
+
+The scripts `0201_Install-NodeCore.ps1`, `0202_Install-NodeGlobalPackages.ps1`
+and `0203_Install-npm.ps1` read these keys when installing Node, global npm
+packages, or project dependencies.
+
 ## Utility scripts
 
 `lab_utils/Get-Platform.ps1` detects the current platform.

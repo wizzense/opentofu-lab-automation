@@ -4,12 +4,12 @@
 
 .DESCRIPTION
     - Assumes Node.js is already installed
-    - Installs any npm packages flagged as true in the Dependencies section
+    - Installs any npm packages flagged as true in the Node_Dependencies section
     - Must be used in combination with 0201-InstallNodeCore.ps1
 
 .CONFIG FORMAT
 {
-  "Dependencies": {
+  "Node_Dependencies": {
     "InstallYarn": true,
     "InstallVite": true,
     "InstallNodemon": true
@@ -43,15 +43,15 @@ function Install-GlobalPackage($package) {
 Write-Log "==== [0202] Installing Global npm Packages ===="
 
 # --- npm Packages ---
-if ($Config.Dependencies.InstallYarn) {
+if ($Config.Node_Dependencies.InstallYarn) {
     Install-GlobalPackage "yarn"
 }
 
-if ($Config.Dependencies.InstallVite) {
+if ($Config.Node_Dependencies.InstallVite) {
     Install-GlobalPackage "vite"
 }
 
-if ($Config.Dependencies.InstallNodemon) {
+if ($Config.Node_Dependencies.InstallNodemon) {
     Install-GlobalPackage "nodemon"
 }
 

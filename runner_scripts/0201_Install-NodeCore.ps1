@@ -4,7 +4,7 @@
 
 .DESCRIPTION
     Downloads Node.js installer and installs silently.
-    Uses config.Dependencies.Node.InstallerUrl if specified.
+    Uses config.Node_Dependencies.Node.InstallerUrl if specified.
 
 .PARAMETER Config
     Hashed config object passed from runner.ps1
@@ -23,8 +23,8 @@ $ErrorActionPreference = "Stop"
 
 Write-Log "==== [0201] Installing Node.js Core ===="
 
-$url = if ($Config.Dependencies.Node.InstallerUrl) {
-    $Config.Dependencies.Node.InstallerUrl
+$url = if ($Config.Node_Dependencies.Node.InstallerUrl) {
+    $Config.Node_Dependencies.Node.InstallerUrl
 } else {
     "https://nodejs.org/dist/v20.11.1/node-v20.11.1-x64.msi"
 }

@@ -31,8 +31,9 @@ param(
 $ErrorActionPreference = "Stop"
 Write-Log "==== [0203] Installing Frontend npm Dependencies ===="
 
-# Determine npm project path
-$npmPath = if ($Config.Node_Dependencies.NpmPath) {
+# Determine frontend path
+$frontendPath = if ($Config.Node_Dependencies.NpmPath) {
+
     $Config.Node_Dependencies.NpmPath
 } else {
     Join-Path $PSScriptRoot "..\frontend"
