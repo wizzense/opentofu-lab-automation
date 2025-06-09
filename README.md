@@ -108,6 +108,7 @@ Completely optional scripts I use for other tasks:
 
 To run ALL scripts, type 'all'.
 To run one or more specific scripts, provide comma separated 4-digit prefixes (e.g. 0001,0003).
+Append '!' to a prefix to force that script and enable its configuration flag.
 Or type 'exit' to quit this script.
 
 ## Logging
