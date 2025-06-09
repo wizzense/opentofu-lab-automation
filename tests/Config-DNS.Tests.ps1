@@ -1,5 +1,5 @@
 Describe '0113_Config-DNS' {
-    It 'calls Set-DnsClientServerAddress with value from config' {
+    It 'calls Set-DnsClientServerAddress with value from config' -Skip:$IsLinux {
         $script = Join-Path $PSScriptRoot '..\runner_scripts\0113_Config-DNS.ps1'
         $config = [pscustomobject]@{
             SetDNSServers = $true

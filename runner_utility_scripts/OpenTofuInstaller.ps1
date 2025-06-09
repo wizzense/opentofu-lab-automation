@@ -533,7 +533,8 @@ function installStandalone() {
 
             logInfo "Unpacking with elevated privileges..."
             $logDir = tempdir
-            # TODO capture the log output of the shell running as admin and clean up afterwards.
+            $outLog = Join-Path $logDir 'stdout.log'
+            $errLog = Join-Path $logDir 'stderr.log'
             $argList = @("-NonInteractive", "-File", ($scriptCommand | escapePathArgument), "-internalContinue", "-allUsers", "-installMethod", "standalone", "-installPath", ($installPath | escapePathArgument), "-internalZipFile", ($internalZipFile | escapePathArgument))
             if ($skipChangePath)
             {
@@ -545,8 +546,12 @@ function installStandalone() {
                 -Wait `
                 -Passthru `
                 -FilePath 'powershell' `
-                -ArgumentList $argList
+                -ArgumentList $argList `
+                -RedirectStandardOutput $outLog `
+                -RedirectStandardError $errLog
             $subprocess.WaitForExit()
+            if (Test-Path $outLog) { Get-Content $outLog }
+            if (Test-Path $errLog) { Get-Content $errLog }
             if ($subprocess.ExitCode -ne 0) {
                 throw [InstallFailedException]::new("Unpack failed. (Exit code ${subprocess.ExitCode})")
             }
@@ -575,6 +580,9 @@ function installStandalone() {
                 logError $msg
                 throw
             }
+        }
+        if ($logDir) {
+            try { Remove-Item -Force -Recurse $logDir } catch {}
         }
     }
 }
