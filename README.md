@@ -24,7 +24,13 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "Invoke-WebRequest -U
 
 ```
 
-It will print the current configuration and prompt you to customize it interactively.
+
+The repo expects the latest stable code on the `main` branch. When running
+`iso_tools/bootstrap.ps1`, you can override the branch with the `-Branch`
+parameter if needed.
+
+It will prompt print the current config and prompt you to customize it interactively. 
+
 
 Example opentofu-infra repo: https://github.com/wizzense/tofu-base-lab.git
 Example config file: https://raw.githubusercontent.com/wizzense/tofu-base-lab/refs/heads/main/configs/bootstrap-config.json

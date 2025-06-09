@@ -1,6 +1,11 @@
+param(
+    [string]$Branch = 'main'
+)
+
 Set-ExecutionPolicy -ExecutionPolicy Bypass
 
-Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/refs/heads/dev/kicker-bootstrap.ps1' -OutFile '.\kicker-bootstrap.ps1'
+$bootstrapUrl = "https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/refs/heads/$Branch/kicker-bootstrap.ps1"
+Invoke-WebRequest -Uri $bootstrapUrl -OutFile '.\kicker-bootstrap.ps1'
 
 if (Test-Path '.\kicker-bootstrap.ps1') {
   Write-Host "Downloaded kicker-bootstrap.ps1 to $(Resolve-Path '.\kicker-bootstrap.ps1')"
