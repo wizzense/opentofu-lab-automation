@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
     Tests for runner_scripts\0001_Reset-Git.ps1
 
