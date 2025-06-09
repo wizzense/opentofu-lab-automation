@@ -17,7 +17,16 @@ if (-not (Test-Path $InfraPath)) {
 # Check if the directory is a git repository
 if (-not (Test-Path (Join-Path $InfraPath ".git"))) {
     Write-Log "Directory is not a git repository. Cloning repository..."
-    git clone $config.InfraRepoUrl $InfraPath
+    $ghCmd = Get-Command gh -ErrorAction SilentlyContinue
+    if ($ghCmd) {
+        gh repo clone $config.InfraRepoUrl $InfraPath
+    } else {
+        git clone $config.InfraRepoUrl $InfraPath
+    }
+    if ($LASTEXITCODE -ne 0) {
+        Write-Error "Failed to clone $($config.InfraRepoUrl)"
+        exit 1
+    }
 } else {
     Write-Log "Git repository found. Updating repository..."
     Push-Location $InfraPath
