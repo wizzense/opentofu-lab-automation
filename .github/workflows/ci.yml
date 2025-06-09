@@ -19,21 +19,12 @@ jobs:
         run: |
           if ! command -v pwsh >/dev/null 2>&1; then
             if [[ "$RUNNER_OS" == "Linux" ]]; then
-              sudo apt-get update
-              sudo apt-get install -y powershell
+              sudo snap install powershell --classic
             elif [[ "$RUNNER_OS" == "macOS" ]]; then
               brew install --cask powershell
             fi
           fi
       - uses: ./.github/actions/lint
-  tests:
-    needs: lint
-    strategy:
-      matrix:
-        os: [windows-latest, ubuntu-latest, macos-latest]
-    runs-on: ${{ matrix.os }}
-    steps:
-      - uses: actions/checkout@v4
   pester:
     runs-on: ${{ matrix.os }}
     strategy:
@@ -48,8 +39,7 @@ jobs:
         run: |
           if ! command -v pwsh >/dev/null 2>&1; then
             if [[ "$RUNNER_OS" == "Linux" ]]; then
-              sudo apt-get update
-              sudo apt-get install -y powershell
+              sudo snap install powershell --classic
             elif [[ "$RUNNER_OS" == "macOS" ]]; then
               brew install --cask powershell
             fi
