@@ -144,9 +144,9 @@ exit 0' | Set-Content -Path $dummy
     }
 }
 
-Describe 'Customize-Config' {
+Describe 'Set-LabConfig' {
     BeforeAll {
-        function Customize-Config {
+        function Set-LabConfig {
             param([hashtable]$ConfigObject)
 
         $installPrompts = @{ 
@@ -183,7 +183,7 @@ Describe 'Customize-Config' {
         $script:idx = 0
         function global:Read-Host { param([string]$Prompt) $answers[$script:idx++] }
 
-        $updated = Customize-Config -ConfigObject $config
+        $updated = Set-LabConfig -ConfigObject $config
 
         $temp = Join-Path ([System.IO.Path]::GetTempPath()) 'config-test.json'
         $updated | ConvertTo-Json -Depth 5 | Out-File -FilePath $temp -Encoding utf8

@@ -38,7 +38,7 @@ function ConvertTo-Hashtable {
     }
 }
 
-function Customize-Config {
+function Set-LabConfig {
     param(
         [hashtable]$ConfigObject
     )
@@ -85,7 +85,7 @@ Write-CustomLog $formattedConfig
 if (-not $Auto) {
     $customize = Read-Host "Would you like to customize your configuration? (Y/N)"
     if ($customize -match '^(?i)y') {
-        $Config = Customize-Config -ConfigObject $Config
+        $Config = Set-LabConfig -ConfigObject $Config
         # Save the updated configuration
         $Config | ConvertTo-Json -Depth 5 | Out-File -FilePath $ConfigFile -Encoding utf8
         Write-CustomLog "Configuration updated and saved to $ConfigFile"
