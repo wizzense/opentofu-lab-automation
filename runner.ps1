@@ -7,6 +7,8 @@ param(
 # Load helpers
 . "$PSScriptRoot\runner_utility_scripts\Logger.ps1"
 . "$PSScriptRoot\lab_utils\Get-LabConfig.ps1"
+. "$PSScriptRoot\lab_utils\Format-Config.ps1"
+. "$PSScriptRoot\lab_utils\Menu.ps1"
 
 # Set default log file path if none is defined
 if (-not (Get-Variable -Name LogFilePath -Scope Global -ErrorAction SilentlyContinue)) {
@@ -87,9 +89,8 @@ try {
     exit 1
 }
 
-Write-CustomLog "==== Current configuration ===="
-$formattedConfig = $ConfigRaw | ConvertTo-Json -Depth 5
-Write-CustomLog $formattedConfig
+Write-CustomLog "==== Configuration summary ===="
+Write-CustomLog (Format-Config -Config $ConfigRaw)
 
 # If not in Auto mode, allow customization
 if (-not $Auto) {
@@ -135,33 +136,13 @@ if ($Scripts -eq 'all') {
     }
 } else {
     # Interactive mode if no argument is given
-    while ($true) {
-        Write-CustomLog "`nTo run ALL scripts, type 'all'."
-        Write-CustomLog "To run specific scripts, provide comma-separated 4-digit prefixes (e.g. 0001,0003)."
-        Write-CustomLog "Or type 'exit' to quit."
-        $selection = Read-Host "Enter selection"
-
-        if ($selection -match '^(?i)exit$') { break }
-
-        if ($selection -eq 'all') {
-            $ScriptsToRun = $ScriptFiles
-        } else {
-            $selectedPrefixes = $selection -split "," | ForEach-Object { $_.Trim() } | Where-Object { $_ -match '^\d{4}$' }
-            if (!$selectedPrefixes) {
-                Write-CustomLog "No valid 4-digit prefixes found. Please try again."
-                continue
-            }
-            $ScriptsToRun = $ScriptFiles | Where-Object {
-                $prefix = $_.Name.Substring(0,4)
-                $selectedPrefixes -contains $prefix
-            }
-            if (!$ScriptsToRun) {
-                Write-CustomLog "None of the provided prefixes match the scripts in the folder. Please try again."
-                continue
-            }
+    $names = $ScriptFiles | ForEach-Object { $_.Name }
+    $selected = Get-MenuSelection -Items $names -AllowAll
+    if ($selected) {
+        $ScriptsToRun = $ScriptFiles | Where-Object { $selected -contains $_.Name }
+    } else {
+        $ScriptsToRun = @()
     }
-    break
-  }
 }
 
 # Warn if cleanup script is combined with others
