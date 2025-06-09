@@ -65,7 +65,13 @@ if (-not [string]::IsNullOrWhiteSpace($infraRepoUrl)) {
         # Remove-Item -Path (Join-Path $infraRepoPath "*") -Recurse -Force -ErrorAction SilentlyContinue
 
         Write-Log "Cloning $infraRepoUrl to $infraRepoPath..."
-        git clone $infraRepoUrl $infraRepoPath
+        $ghCmd = Get-Command gh -ErrorAction SilentlyContinue
+        if ($ghCmd) {
+            gh repo clone $infraRepoUrl $infraRepoPath
+        }
+        else {
+            git clone $infraRepoUrl $infraRepoPath
+        }
         if ($LASTEXITCODE -ne 0) {
             Write-Error "ERROR: Failed to clone $infraRepoUrl"
             exit 1
