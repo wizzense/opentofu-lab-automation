@@ -622,7 +622,6 @@ ${bold}${blue}OPTIONS for all installation methods:${normal}
   ${bold}-skipChangePath${normal}               Skip changing the user/system path to include the OpenTofu path.
   ${bold}-skipVerify${normal}                   Skip cosign integrity verification.
                                 (${bold}${red}not recommended${normal}).
-  ${bold}-debug${normal}                        Enable debug logging.
 
 ${bold}${blue}OPTIONS for the standalone installation:${normal}
 
