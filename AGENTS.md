@@ -4,8 +4,10 @@ Below is a **comprehensive project plan** broken into phases.  Each task is pair
 
 ## Project status
 
-Phase 0 is complete. Platform detection via `Get-Platform.ps1` has Pester tests,
-but the Python script and pytest coverage remain outstanding.
+Phase 0 was completed in June 2025. `Get-Platform.ps1` now has Pester tests.
+Phase 1 tasks are pending: the Python `get_platform.py` and pytest suite have
+yet to be created, and both the Hypervisor abstraction and Poetry project remain
+unimplemented.
 
 ---
 
