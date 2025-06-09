@@ -14,8 +14,8 @@
   5) Invokes runner.ps1 from that repo.
 #>
 
-$targetBranch = 'stable'
-$defaultConfig = "https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/refs/heads/stable/config_files/default-config.json"
+$targetBranch = 'main'
+$defaultConfig = "https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/refs/heads/main/config_files/default-config.json"
 
 # example: https://raw.githubusercontent.com/wizzense/tofu-base-lab/refs/heads/main/configs/bootstrap-config.json
 
