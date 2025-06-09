@@ -1,9 +1,7 @@
-Describe 'Runner scripts parameter and command checks' {
-    BeforeAll {
-        $scriptDir = Join-Path $PSScriptRoot '..' 'runner_scripts'
-        $scripts = Get-ChildItem $scriptDir -Filter '*.ps1'
-    }
+$scriptDir = Join-Path $PSScriptRoot '..' 'runner_scripts'
+$scripts = Get-ChildItem $scriptDir -Filter '*.ps1'
 
+Describe 'Runner scripts parameter and command checks' {
     foreach ($script in $scripts) {
         Context $script.Name {
             It 'declares a Config parameter' {

@@ -26,21 +26,21 @@ try {
     $repoPath  = Join-Path $localBase $repoName
 
     if (Test-Path $repoPath) {
-        Write-Log "Removing repo path '$repoPath'..."
+        Write-CustomLog "Removing repo path '$repoPath'..."
         Remove-Item -Recurse -Force -Path $repoPath
     } else {
-        Write-Log "Repo path '$repoPath' not found; skipping."
+        Write-CustomLog "Repo path '$repoPath' not found; skipping."
     }
 
     $infraPath = if ($Config.InfraRepoPath) { $Config.InfraRepoPath } else { 'C:\\Temp\\base-infra' }
     if (Test-Path $infraPath) {
-        Write-Log "Removing infra path '$infraPath'..."
+        Write-CustomLog "Removing infra path '$infraPath'..."
         Remove-Item -Recurse -Force -Path $infraPath
     } else {
-        Write-Log "Infra path '$infraPath' not found; skipping."
+        Write-CustomLog "Infra path '$infraPath' not found; skipping."
     }
 
-    Write-Log 'Cleanup completed successfully.'
+    Write-CustomLog 'Cleanup completed successfully.'
 }
 catch {
     Write-Error "Cleanup failed: $_"

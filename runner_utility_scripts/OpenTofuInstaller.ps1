@@ -225,7 +225,11 @@ function logError() {
     try
     {
         [Console]::Error.WriteLine("${red}${message}${normal}")
-    } catch {}
+    } catch {
+        $msg = $_.ToString()
+        Write-Error $msg
+        throw
+    }
 }
 
 function tempdir() {
@@ -304,7 +308,11 @@ function installStandalone() {
             if(Get-Command $cosignPath){
                 $cosignAvailable = $true
             }
-        } catch {}
+        } catch {
+            $msg = $_.ToString()
+            logError $msg
+            throw
+        }
         $ErrorActionPreference = 'continue'
 
         $gpgAvailable = $false
@@ -313,7 +321,11 @@ function installStandalone() {
             if(Get-Command $gpgPath){
                 $gpgAvailable = $true
             }
-        } catch {}
+        } catch {
+            $msg = $_.ToString()
+            logError $msg
+            throw
+        }
         $ErrorActionPreference = 'continue'
 
         if ($cosignAvailable) {
@@ -563,7 +575,11 @@ function installStandalone() {
             try
             {
                 Remove-Item -force -recurse $target
-            } catch {}
+            } catch {
+                $msg = $_.ToString()
+                logError $msg
+                throw
+            }
         }
         if ($logDir) {
             try { Remove-Item -Force -Recurse $logDir } catch {}

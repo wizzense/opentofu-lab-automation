@@ -11,12 +11,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/lint
-
+  tests:
+    needs: lint
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
   pester:
     runs-on: windows-latest
     needs: lint
     steps:
       - uses: actions/checkout@v4
+
       - name: Install Pester
         shell: pwsh
         run: |
@@ -24,4 +29,4 @@ jobs:
       - name: Run Pester
         shell: pwsh
         run: |
-          Invoke-Pester -CI
+          Invoke-Pester -CI -ErrorAction Stop

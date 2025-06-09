@@ -21,7 +21,7 @@ param(
 
 $ErrorActionPreference = "Stop"
 
-Write-Log "==== [0201] Installing Node.js Core ===="
+Write-CustomLog "==== [0201] Installing Node.js Core ===="
 
 $url = if ($Config.Node_Dependencies.Node.InstallerUrl) {
     $Config.Node_Dependencies.Node.InstallerUrl
@@ -30,14 +30,14 @@ $url = if ($Config.Node_Dependencies.Node.InstallerUrl) {
 }
 
 $installerPath = Join-Path $env:TEMP "node-installer.msi"
-Write-Log "Downloading Node.js from: $url"
+Write-CustomLog "Downloading Node.js from: $url"
 Invoke-WebRequest -Uri $url -OutFile $installerPath -UseBasicParsing
 
 Start-Process msiexec.exe -ArgumentList "/i `"$installerPath`" /quiet /norestart" -Wait -NoNewWindow
 Remove-Item $installerPath -Force
 
 if (Get-Command node -ErrorAction SilentlyContinue) {
-    Write-Log "✅Node.js installed successfully."
+    Write-CustomLog "✅Node.js installed successfully."
     node -v
 } else {
     Write-Error "Node.js installation failed."

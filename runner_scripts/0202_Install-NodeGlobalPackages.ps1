@@ -33,14 +33,14 @@ $ErrorActionPreference = "Stop"
 
 function Install-GlobalPackage($package) {
     if (Get-Command npm -ErrorAction SilentlyContinue) {
-        Write-Log "Installing npm package: $package..."
+        Write-CustomLog "Installing npm package: $package..."
         npm install -g $package
     } else {
         Write-Error "npm is not available. Node.js may not have installed correctly."
     }
 }
 
-Write-Log "==== [0202] Installing Global npm Packages ===="
+Write-CustomLog "==== [0202] Installing Global npm Packages ===="
 
 # --- npm Packages ---
 if ($Config.Node_Dependencies.InstallYarn) {
@@ -55,4 +55,4 @@ if ($Config.Node_Dependencies.InstallNodemon) {
     Install-GlobalPackage "nodemon"
 }
 
-Write-Log "==== Global npm package installation complete ===="
+Write-CustomLog "==== Global npm package installation complete ===="

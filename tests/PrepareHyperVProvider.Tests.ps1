@@ -16,7 +16,7 @@ Describe 'Prepare-HyperVProvider path restoration' {
         Mock Set-Location { param($Path) $location = $Path }
         Mock Pop-Location { $location = $stack[-1]; $stack = $stack[0..($stack.Count-2)] }
 
-        Mock Write-Log {}
+        Mock Write-CustomLog {}
         Mock Get-WindowsOptionalFeature { @{State='Enabled'} }
         Mock Enable-WindowsOptionalFeature {}
         Mock Test-WSMan {}
@@ -48,7 +48,7 @@ Describe 'Prepare-HyperVProvider certificate handling' {
             CertificateAuthority = @{ CommonName = 'TestCA' }
         }
 
-        Mock Write-Log {}
+        Mock Write-CustomLog {}
         Mock Get-WindowsOptionalFeature { @{State='Enabled'} }
         Mock Enable-WindowsOptionalFeature {}
         Mock Test-WSMan {}

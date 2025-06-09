@@ -6,7 +6,7 @@ Param(
 if ($Config.InstallGo -eq $true) {
     $GoConfig = $Config.Go
     if ($null -eq $GoConfig) {
-        Write-Log "No Go configuration found. Skipping installation."
+        Write-CustomLog "No Go configuration found. Skipping installation."
         return
     }
 
@@ -16,7 +16,7 @@ if ($Config.InstallGo -eq $true) {
             $goVersion = $matches[1]
             $goArch = $matches[2]
         } else {
-            Write-Log "Unable to extract Go version and architecture from InstallerUrl."
+            Write-CustomLog "Unable to extract Go version and architecture from InstallerUrl."
             return
         }
     } elseif ($GoConfig.Version) {
@@ -24,25 +24,26 @@ if ($Config.InstallGo -eq $true) {
         $goArch = $GoConfig.Architecture
         if (-not $goArch) { $goArch = "amd64" }
     } else {
-        Write-Log "No Go version or InstallerUrl specified. Skipping installation."
+        Write-CustomLog "No Go version or InstallerUrl specified. Skipping installation."
         return
     }
 
     # Check if Go is already installed by looking for the 'go' command
     if (Get-Command go -ErrorAction SilentlyContinue) {
-        Write-Log "Go is already installed. Skipping installation."
+        Write-CustomLog "Go is already installed. Skipping installation."
         return
     }
 
-    Write-Log "Installing Go version $goVersion for architecture $goArch..."
+    Write-CustomLog "Installing Go version $goVersion for architecture $goArch..."
     $installerPath = "$env:TEMP\GoInstaller.msi"
 
     $ProgressPreference = 'SilentlyContinue'
-    Write-Log "Downloading Go from $installerUrl"
+    Write-CustomLog "Downloading Go from $installerUrl"
     Invoke-WebRequest -Uri $installerUrl -OutFile $installerPath -UseBasicParsing
 
-    Write-Log "Installing Go silently..."
+    Write-CustomLog "Installing Go silently..."
     Start-Process msiexec.exe -Wait -ArgumentList "/i `"$installerPath`" /qn /L*v `"$env:TEMP\GoInstall.log`""
 
-    Write-Log "Go installation complete."
+    Write-CustomLog "Go installation complete."
 }
+
