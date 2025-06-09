@@ -51,7 +51,7 @@
   "RepoUrl": "https://github.com/wizzense/opentofu-lab-automation.git",
   "LocalPath": "",
   "RunnerScriptName": "runner.ps1",
-  "ConfigFile": "./default-config.json",
+  "ConfigFile": "./config_files/default-config.json",
   "Go": {
     "InstallerUrl": "https://go.dev/dl/go1.24.1.windows-amd64.msi"
   },
