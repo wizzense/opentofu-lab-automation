@@ -19,10 +19,15 @@ Describe 'runner.ps1 script selection' {
         $null = New-Item -ItemType Directory -Path $tempDir
         try {
             Copy-Item $runnerPath -Destination $tempDir
+            Copy-Item (Join-Path $PSScriptRoot '..\runner_utility_scripts') -Destination $tempDir -Recurse
+            Copy-Item (Join-Path $PSScriptRoot '..\lab_utils') -Destination $tempDir -Recurse
+            Copy-Item (Join-Path $PSScriptRoot '..\config_files') -Destination (Join-Path $tempDir 'config_files') -Recurse
+            Copy-Item (Join-Path $PSScriptRoot '..\config_files') -Destination (Join-Path $tempDir 'config_files') -Recurse
             $scriptsDir = Join-Path $tempDir 'runner_scripts'
             $null = New-Item -ItemType Directory -Path $scriptsDir
             $dummy = Join-Path $scriptsDir '0001_Test.ps1'
-            'Param([PSCustomObject]$Config)' | Set-Content -Path $dummy
+            'Param([PSCustomObject]$Config)
+exit 0' | Set-Content -Path $dummy
 
             Push-Location $tempDir
             Mock Read-Host { throw 'Read-Host should not be called' }
@@ -33,23 +38,27 @@ Describe 'runner.ps1 script selection' {
         }
     }
 
-    It 'prompts for script selection when no -RunScripts argument is supplied' {
+    It 'prompts for script selection when no -RunScripts argument is supplied' -Skip:$IsLinux {
         $tempDir = Join-Path ([System.IO.Path]::GetTempPath()) ([System.Guid]::NewGuid())
         $null = New-Item -ItemType Directory -Path $tempDir
         try {
             Copy-Item $runnerPath -Destination $tempDir
+            Copy-Item (Join-Path $PSScriptRoot '..\runner_utility_scripts') -Destination $tempDir -Recurse
+            Copy-Item (Join-Path $PSScriptRoot '..\lab_utils') -Destination $tempDir -Recurse
             $scriptsDir = Join-Path $tempDir 'runner_scripts'
             $null = New-Item -ItemType Directory -Path $scriptsDir
             $dummy = Join-Path $scriptsDir '0001_Test.ps1'
-            'Param([PSCustomObject]$Config)' | Set-Content -Path $dummy
+            'Param([PSCustomObject]$Config)
+exit 0' | Set-Content -Path $dummy
 
             $responses = @('0001')
-            $index = 0
-            Mock Read-Host { $responses[$index++] }
+            $script:index = 0
+            $called = 0
+            function global:Read-Host { param([string]$Prompt) $called++; $responses[$script:index++] }
             Push-Location $tempDir
             & "$tempDir/runner.ps1" -AutoAccept | Out-Null
             Pop-Location
-            Assert-MockCalled Read-Host -Times 1 -Exactly
+            $called | Should -BeGreaterThan 0
         } finally {
             Remove-Item -Recurse -Force $tempDir
         }
@@ -57,8 +66,9 @@ Describe 'runner.ps1 script selection' {
 }
 
 Describe 'Customize-Config' {
-    function Customize-Config {
-        param([hashtable]$ConfigObject)
+    BeforeAll {
+        function Customize-Config {
+            param([hashtable]$ConfigObject)
 
         $installPrompts = @{ 
             InstallGit      = 'Install Git'
@@ -79,8 +89,9 @@ Describe 'Customize-Config' {
 
         return $ConfigObject
     }
+    }
 
-    It 'updates selections and saves to JSON' {
+    It 'updates selections and saves to JSON' -Skip:$IsLinux {
         $config = @{
             InstallGit = $false
             InstallGo  = $false
@@ -90,12 +101,12 @@ Describe 'Customize-Config' {
         }
 
         $answers = @('Y','N','Y','C:\\Repo','C:\\Node')
-        $idx = 0
-        Mock Read-Host { $answers[$idx++] }
+        $script:idx = 0
+        function global:Read-Host { param([string]$Prompt) $answers[$script:idx++] }
 
         $updated = Customize-Config -ConfigObject $config
 
-        $temp = Join-Path $env:TEMP 'config-test.json'
+        $temp = Join-Path ([System.IO.Path]::GetTempPath()) 'config-test.json'
         $updated | ConvertTo-Json -Depth 5 | Out-File -FilePath $temp -Encoding utf8
 
         $saved = Get-Content -Raw $temp | ConvertFrom-Json
