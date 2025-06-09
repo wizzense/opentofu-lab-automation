@@ -4,8 +4,14 @@ function Write-CustomLog {
         [Parameter(Mandatory=$true, Position=0)]
         [string]$Message,
         [Parameter(Position=1)]
-        [string]$LogFile = $Global:LogFilePath
+        [string]$LogFile = $null
     )
+
+    if (-not $PSBoundParameters.ContainsKey('LogFile')) {
+        if (Test-Path 'variable:global:LogFilePath') {
+            $LogFile = $Global:LogFilePath
+        }
+    }
     $timestamp = Get-Date -Format 'yyyy-MM-dd HH:mm:ss'
     $formatted = "[$timestamp] $Message"
     Write-Host $formatted
