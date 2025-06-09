@@ -53,4 +53,6 @@ Install-AdcsCertificationAuthority `
 
 Write-CustomLog "Standalone Root CA '$CAName' installation complete."
 
+} else {
+    Write-CustomLog "InstallCA flag is disabled. Skipping CA installation."
 }

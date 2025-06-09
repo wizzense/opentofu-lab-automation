@@ -34,4 +34,6 @@ if ($Config.InstallHyperV -eq $true) {
 
 
     Write-CustomLog "Hyper-V installation complete. A restart is typically required to finalize installation."
+} else {
+    Write-CustomLog "InstallHyperV flag is disabled. Skipping Hyper-V installation."
 }

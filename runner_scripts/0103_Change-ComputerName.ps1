@@ -28,6 +28,8 @@ if ($config.SetComputerName -eq $true) {
             Write-CustomLog "Computer name is already set to $($Config.ComputerName). Skipping rename."
         }
     } else {
-        Write-CustomLog "No valid ComputerName specified in config. Skipping rename."
+    Write-CustomLog "No valid ComputerName specified in config. Skipping rename."
     }
+} else {
+    Write-CustomLog "SetComputerName flag is disabled. Skipping computer name change."
 }

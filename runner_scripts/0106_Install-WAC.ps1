@@ -63,4 +63,6 @@ if ($Config.InstallWAC -eq $true) {
     Start-Process msiexec.exe -Wait -ArgumentList "/i `"$installerPath`" /qn /L*v `"$env:TEMP\WacInstall.log`" SME_PORT=$installPort ACCEPT_EULA=1"
 
     Write-CustomLog "WAC installation complete."
+} else {
+    Write-CustomLog "InstallWAC flag is disabled. Skipping Windows Admin Center installation."
 }
