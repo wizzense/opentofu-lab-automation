@@ -119,7 +119,6 @@ else {
 $rootCaName = $config.CertificateAuthority.CommonName
 $UserInput = Read-Host -Prompt "Enter the password for the Root CA certificate" -AsSecureString
 $rootCaPassword = $UserInput
-#$rootCaPassword   = ConvertTo-SecureString $UserInput -AsPlainText -Force
 $rootCaCertificate = Get-ChildItem cert:\LocalMachine\Root | Where-Object {$_.Subject -eq "CN=$rootCaName"}
 
 if ($rootCaCertificate) {
@@ -162,7 +161,6 @@ if ($rootCaCertificate) {
 $hostName      = [System.Net.Dns]::GetHostName()
 $UserInput = Read-Host -Prompt "Enter the password for the host." -AsSecureString
 $hostPassword = $UserInput
-#$hostPassword  = ConvertTo-SecureString "P@ssw0rd" -AsPlainText -Force
 $hostCertificate = Get-ChildItem cert:\LocalMachine\My | Where-Object {$_.Subject -eq "CN=$hostName"}
 
 if ($hostCertificate) {
