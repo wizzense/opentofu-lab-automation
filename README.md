@@ -195,14 +195,18 @@ and `0203_Install-npm.ps1` read these keys when installing Node, global npm
 
 ## Troubleshooting
 
-If you encounter `fatal: Class not registered` when cloning on Windows, try using the GitHub CLI:
+If you encounter `fatal: Class not registered` after a browser window briefly opens,
+the Git credential manager could not launch the authentication flow.
+Install the [GitHub CLI](https://cli.github.com/) and authenticate once before
+running the automation scripts:
 
 ```powershell
 gh auth login
 gh repo clone <owner/repo>
 ```
 
-Using `gh` avoids the COM initialization issues seen with some Git installations.
+Using `gh` avoids the COM initialization issues seen with some Git installations
+and prevents Git from prompting for a username like `user@github.com`.
 
 ## Utility scripts
 

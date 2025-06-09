@@ -23,6 +23,12 @@ if (-not (Test-Path (Join-Path $InfraPath '.git'))) {
     # Prefer GitHub CLI if present; otherwise use plain git
     $ghCmd = Get-Command gh -ErrorAction SilentlyContinue
     if ($ghCmd) {
+        # Ensure the GitHub CLI is authenticated to avoid Git credential prompts
+        & $ghCmd.Path auth status 2>$null
+        if ($LASTEXITCODE -ne 0) {
+            Write-Error "GitHub CLI is not authenticated. Run 'gh auth login' and re-run the script."
+            return
+        }
         gh repo clone $config.InfraRepoUrl $InfraPath
     } else {
         git clone $config.InfraRepoUrl $InfraPath

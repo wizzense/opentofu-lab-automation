@@ -82,6 +82,30 @@ Describe '0001_Reset-Git' {
                 Remove-Item $tempDir -Recurse -Force -ErrorAction SilentlyContinue
             }
         }
+
+        It 'prompts to login when gh CLI is unauthenticated' {
+            $tempDir = Join-Path ([System.IO.Path]::GetTempPath()) ([guid]::NewGuid())
+
+            $config = [pscustomobject]@{
+                InfraRepoUrl  = 'https://example.com/repo.git'
+                InfraRepoPath = $tempDir
+            }
+
+            Mock Get-Command { @{ Name = 'gh'; Path = 'gh.exe' } } -ParameterFilter { $Name -eq 'gh' }
+            Mock gh {
+                param($Sub, $Action)
+                if ($Sub -eq 'auth' -and $Action -eq 'status') { $global:LASTEXITCODE = 1 }
+            }
+            Mock git {}
+
+            & $ScriptPath -Config $config
+
+            Assert-MockCalled gh -ParameterFilter { $args[0] -eq 'auth' -and $args[1] -eq 'status' } -Times 1
+            Assert-MockNotCalled gh -ParameterFilter { $args[0] -eq 'repo' -and $args[1] -eq 'clone' }
+            Assert-MockNotCalled git
+
+            Remove-Item $tempDir -Recurse -Force -ErrorAction SilentlyContinue
+        }
     }
 
     Context 'Logging' {
