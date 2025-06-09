@@ -78,6 +78,45 @@ exit 0
         }
     }
 
+    It 'runs only cleanup script when 0000 is combined with others in Auto mode' {
+        $tempDir = Join-Path ([System.IO.Path]::GetTempPath()) ([System.Guid]::NewGuid())
+        $null = New-Item -ItemType Directory -Path $tempDir
+        try {
+            Copy-Item $script:runnerPath -Destination $tempDir
+            Copy-Item (Join-Path $PSScriptRoot '..\runner_utility_scripts') -Destination $tempDir -Recurse
+            Copy-Item (Join-Path $PSScriptRoot '..\lab_utils') -Destination $tempDir -Recurse
+            Copy-Item (Join-Path $PSScriptRoot '..\config_files') -Destination (Join-Path $tempDir 'config_files') -Recurse
+            $scriptsDir = Join-Path $tempDir 'runner_scripts'
+            $null = New-Item -ItemType Directory -Path $scriptsDir
+            $out1 = Join-Path $tempDir 'out_cleanup.txt'
+            $out2 = Join-Path $tempDir 'out_other.txt'
+            $clean = Join-Path $scriptsDir '0000_Cleanup.ps1'
+            @"
+Param([PSCustomObject]`$Config)
+'c' | Out-File -FilePath '$out1'
+exit 0
+"@ | Set-Content -Path $clean
+            $other = Join-Path $scriptsDir '0001_Other.ps1'
+            @"
+Param([PSCustomObject]`$Config)
+'o' | Out-File -FilePath '$out2'
+exit 0
+"@ | Set-Content -Path $other
+
+            Push-Location $tempDir
+            Mock Read-Host { throw 'Read-Host should not be called' }
+            & "$tempDir/runner.ps1" -Scripts '0000,0001' -Auto | Out-Null
+            $code = $LASTEXITCODE
+            Pop-Location
+
+            Test-Path $out1 | Should -BeTrue
+            Test-Path $out2 | Should -BeFalse
+            $code | Should -Be 0
+        } finally {
+            Remove-Item -Recurse -Force $tempDir
+        }
+    }
+
     It 'prompts for script selection when no -Scripts argument is supplied' -Skip:($IsLinux -or $IsMacOS) {
         $tempDir = Join-Path ([System.IO.Path]::GetTempPath()) ([System.Guid]::NewGuid())
         $null = New-Item -ItemType Directory -Path $tempDir
