@@ -5,7 +5,7 @@ Describe '0112_Enable-PXE' {
         . $loggerPath
     }
 
-    It 'logs firewall rules when ConfigPXE is true' {
+    It 'logs firewall rules when ConfigPXE is true' -Skip:$IsLinux {
         $Config = [pscustomobject]@{ ConfigPXE = $true }
         $logPath = Join-Path $env:TEMP ('pxe-log-' + [System.Guid]::NewGuid().ToString() + '.txt')
         $Global:LogFilePath = $logPath

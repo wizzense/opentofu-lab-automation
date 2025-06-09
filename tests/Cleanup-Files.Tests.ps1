@@ -7,6 +7,8 @@ Describe 'Cleanup-Files script' {
         $temp = Join-Path ([System.IO.Path]::GetTempPath()) ([System.Guid]::NewGuid())
         $null = New-Item -ItemType Directory -Path $temp
 
+        $Global:LogFilePath = Join-Path $temp 'cleanup.log'
+
         $repoName = 'opentofu-lab-automation'
         $repoPath = Join-Path $temp $repoName
         $infraPath = Join-Path $temp 'infra'
@@ -25,11 +27,14 @@ Describe 'Cleanup-Files script' {
         (Test-Path $infraPath) | Should -BeFalse
 
         Remove-Item -Recurse -Force $temp -ErrorAction SilentlyContinue
+        Remove-Variable -Name LogFilePath -Scope Global -ErrorAction SilentlyContinue
     }
 
     It 'handles missing directories gracefully' {
         $temp = Join-Path ([System.IO.Path]::GetTempPath()) ([System.Guid]::NewGuid())
+        $null = New-Item -ItemType Directory -Path $temp
         $infraPath = Join-Path $temp 'infra'
+        $Global:LogFilePath = Join-Path $temp 'cleanup.log'
         $config = [PSCustomObject]@{
             LocalPath     = $temp
             RepoUrl       = 'https://github.com/wizzense/test.git'
@@ -39,6 +44,7 @@ Describe 'Cleanup-Files script' {
         { . $scriptPath -Config $config } | Should -Not -Throw
 
         Remove-Item -Recurse -Force $temp -ErrorAction SilentlyContinue
+        Remove-Variable -Name LogFilePath -Scope Global -ErrorAction SilentlyContinue
     }
 }
 
