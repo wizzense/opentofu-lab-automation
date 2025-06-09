@@ -43,7 +43,7 @@ try {
     Write-CustomLog 'Cleanup completed successfully.'
 }
 catch {
-    Write-Error "Cleanup failed: $_"
+    Write-Error -Message "Cleanup failed: $($PSItem.Exception.Message)`n$($PSItem.ScriptStackTrace)"
     exit 1
 }
 
