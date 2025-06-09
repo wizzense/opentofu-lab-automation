@@ -10,13 +10,25 @@ Describe 'Node installation scripts' {
     }
 
     It 'uses Node_Dependencies.Node.InstallerUrl when installing Node' {
-        $config = @{ Node_Dependencies = @{ Node = @{ InstallerUrl = 'http://example.com/node.msi' } } }
+        $config = @{ Node_Dependencies = @{ InstallNode=$true; Node = @{ InstallerUrl = 'http://example.com/node.msi' } } }
         Mock Invoke-WebRequest {}
         Mock Start-Process {}
         Mock Remove-Item {}
         Mock Get-Command { @{Name='node'} } -ParameterFilter { $Name -eq 'node' }
         & (Resolve-Path $core) -Config $config
         Assert-MockCalled Invoke-WebRequest -ParameterFilter { $Uri -eq 'http://example.com/node.msi' } -Times 1
+    }
+
+    It 'does nothing when InstallNode is $false' {
+        $config = @{ Node_Dependencies = @{ InstallNode = $false } }
+        Mock Invoke-WebRequest {}
+        Mock Start-Process {}
+        Mock Remove-Item {}
+        Mock Get-Command {}
+        & (Resolve-Path $core) -Config $config
+        Assert-MockNotCalled Invoke-WebRequest
+        Assert-MockNotCalled Start-Process
+        Assert-MockNotCalled Remove-Item
     }
 
     It 'installs packages based on Node_Dependencies flags' {
