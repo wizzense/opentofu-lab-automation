@@ -7,20 +7,53 @@ on:
 
 jobs:
   lint:
-    runs-on: windows-latest
+    strategy:
+      matrix:
+        os: [windows-latest, ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
+      - name: Install PowerShell
+        if: runner.os != 'Windows'
+        shell: bash
+        run: |
+          if ! command -v pwsh >/dev/null 2>&1; then
+            if [[ "$RUNNER_OS" == "Linux" ]]; then
+              sudo apt-get update
+              sudo apt-get install -y powershell
+            elif [[ "$RUNNER_OS" == "macOS" ]]; then
+              brew install --cask powershell
+            fi
+          fi
       - uses: ./.github/actions/lint
   tests:
     needs: lint
-    runs-on: windows-latest
+    strategy:
+      matrix:
+        os: [windows-latest, ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
   pester:
-    runs-on: windows-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [windows-latest, ubuntu-latest, macos-latest]
     needs: lint
     steps:
       - uses: actions/checkout@v4
+      - name: Install PowerShell
+        if: runner.os != 'Windows'
+        shell: bash
+        run: |
+          if ! command -v pwsh >/dev/null 2>&1; then
+            if [[ "$RUNNER_OS" == "Linux" ]]; then
+              sudo apt-get update
+              sudo apt-get install -y powershell
+            elif [[ "$RUNNER_OS" == "macOS" ]]; then
+              brew install --cask powershell
+            fi
+          fi
 
       - name: Install Pester
         shell: pwsh
