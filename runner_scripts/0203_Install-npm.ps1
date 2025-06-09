@@ -26,9 +26,10 @@ param(
     [Parameter(Mandatory)]
     [hashtable]$Config
 )
+. "$PSScriptRoot\..\runner_utility_scripts\Logger.ps1"
 
 $ErrorActionPreference = "Stop"
-Write-Host "==== [0203] Installing Frontend npm Dependencies ===="
+Write-Log "==== [0203] Installing Frontend npm Dependencies ===="
 
 # Determine frontend path
 $frontendPath = if ($Config.Dependencies.FrontendPath) {
@@ -50,13 +51,13 @@ if (-not (Test-Path (Join-Path $frontendPath "package.json"))) {
 Push-Location $frontendPath
 
 try {
-    Write-Host "Running npm install in $frontendPath ..."
+    Write-Log "Running npm install in $frontendPath ..."
     npm install
-    Write-Host "✅ npm install completed."
+    Write-Log "✅ npm install completed."
 } catch {
     Write-Error "ERROR: npm install failed: $_"
     exit 1
 }
 
 Pop-Location
-Write-Host "==== Frontend dependency installation complete ===="
+Write-Log "==== Frontend dependency installation complete ===="

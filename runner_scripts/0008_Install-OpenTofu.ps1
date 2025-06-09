@@ -2,7 +2,8 @@ param(
 
     [Parameter(Mandatory=$true)]
     [PSCustomObject]$Config
-    )
+)
+. "$PSScriptRoot\..\runner_utility_scripts\Logger.ps1"
 
 if ($Config.InstallOpenTofu -eq $true) {
     

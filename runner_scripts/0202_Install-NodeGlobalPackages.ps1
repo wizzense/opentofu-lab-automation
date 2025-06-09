@@ -27,19 +27,20 @@ param(
     [Parameter(Mandatory)]
     [hashtable]$Config
 )
+. "$PSScriptRoot\..\runner_utility_scripts\Logger.ps1"
 
 $ErrorActionPreference = "Stop"
 
 function Install-GlobalPackage($package) {
     if (Get-Command npm -ErrorAction SilentlyContinue) {
-        Write-Host "Installing npm package: $package..."
+        Write-Log "Installing npm package: $package..."
         npm install -g $package
     } else {
         Write-Error "npm is not available. Node.js may not have installed correctly."
     }
 }
 
-Write-Host "==== [0202] Installing Global npm Packages ===="
+Write-Log "==== [0202] Installing Global npm Packages ===="
 
 # --- npm Packages ---
 if ($Config.Dependencies.InstallYarn) {
@@ -54,4 +55,4 @@ if ($Config.Dependencies.InstallNodemon) {
     Install-GlobalPackage "nodemon"
 }
 
-Write-Host "==== Global npm package installation complete ===="
+Write-Log "==== Global npm package installation complete ===="
