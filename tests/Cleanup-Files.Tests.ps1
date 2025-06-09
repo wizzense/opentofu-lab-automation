@@ -85,5 +85,31 @@ Describe 'Cleanup-Files script' {
 
         Remove-Item -Recurse -Force $temp -ErrorAction SilentlyContinue
     }
+
+    It 'completes when the repo directory is removed' {
+        $temp = Join-Path ([System.IO.Path]::GetTempPath()) ([System.Guid]::NewGuid())
+        $repoName = 'opentofu-lab-automation'
+        $repoPath = Join-Path $temp $repoName
+        $infraPath = Join-Path $temp 'infra'
+        $null = New-Item -ItemType Directory -Path $repoPath
+        $null = New-Item -ItemType Directory -Path $infraPath
+
+        $config = [PSCustomObject]@{
+            LocalPath     = $temp
+            RepoUrl       = "https://github.com/wizzense/$repoName.git"
+            InfraRepoPath = $infraPath
+        }
+
+        $orig = Get-Location
+        Set-Location $repoPath
+
+        { . $scriptPath -Config $config } | Should -Not -Throw
+
+        (Test-Path $repoPath) | Should -BeFalse
+        (Get-Location).Path | Should -Not -Be $repoPath
+
+        Set-Location $orig
+        Remove-Item -Recurse -Force $temp -ErrorAction SilentlyContinue
+    }
 }
 
