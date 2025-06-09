@@ -582,7 +582,11 @@ function installStandalone() {
             }
         }
         if ($logDir) {
-            try { Remove-Item -Force -Recurse $logDir } catch {}
+            try { Remove-Item -Force -Recurse $logDir }
+            catch {
+                $msg = $_.ToString()
+                Write-Warning "Could not remove log directory ${logDir}: ${msg}"
+            }
         }
     }
 }

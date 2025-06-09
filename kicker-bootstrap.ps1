@@ -136,7 +136,7 @@ try {
     $config = Get-LabConfig -Path $ConfigFile
     Write-CustomLog "Config file loaded from $ConfigFile."
 } catch {
-    Write-Error "ERROR: $($_.Exception.Message)"
+    Write-Error "ERROR: Failed to load configuration file - $($_.Exception.Message)"
     exit 1
 }
 

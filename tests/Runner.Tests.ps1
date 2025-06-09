@@ -38,7 +38,7 @@ exit 0' | Set-Content -Path $dummy
         }
     }
 
-    It 'prompts for script selection when no -Scripts argument is supplied' -Skip:$IsLinux {
+    It 'prompts for script selection when no -Scripts argument is supplied' -Skip:($IsLinux -or $IsMacOS) {
         $tempDir = Join-Path ([System.IO.Path]::GetTempPath()) ([System.Guid]::NewGuid())
         $null = New-Item -ItemType Directory -Path $tempDir
         try {
@@ -91,7 +91,7 @@ Describe 'Customize-Config' {
     }
     }
 
-    It 'updates selections and saves to JSON' -Skip:$IsLinux {
+    It 'updates selections and saves to JSON' -Skip:($IsLinux -or $IsMacOS) {
         $config = @{
             InstallGit = $false
             InstallGo  = $false
