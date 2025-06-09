@@ -176,7 +176,14 @@ if ($ScriptsToRun) {
     foreach ($Script in $ScriptsToRun) {
         Write-CustomLog "`n--- Running: $($Script.Name) ---"
         try {
-            & "$PSScriptRoot\runner_scripts\$($Script.Name)" -Config $Config
+            $scriptPath = "$PSScriptRoot\runner_scripts\$($Script.Name)"
+            $cmdInfo = Get-Command -Name $scriptPath -ErrorAction SilentlyContinue
+            if ($cmdInfo -and $cmdInfo.Parameters.ContainsKey('Config')) {
+                & $scriptPath -Config $Config
+            }
+            else {
+                & $scriptPath
+            }
             if ($LASTEXITCODE -ne 0) {
                 Write-CustomLog "ERROR: $($Script.Name) exited with code $LASTEXITCODE."
                 $failed += $Script.Name
