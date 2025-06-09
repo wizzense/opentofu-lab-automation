@@ -204,6 +204,10 @@ gh repo clone <owner/repo>
 
 Using `gh` avoids the COM initialization issues seen with some Git installations.
 
+Running the test suite via `Invoke-Pester` requires **PowerShell 7 or later**.
+If you see errors about missing commands when invoking Pester, ensure `pwsh`
+is installed and use that executable instead of Windows PowerShell 5.1.
+
 ## Utility scripts
 
 `lab_utils/Get-Platform.ps1` detects the current platform.
