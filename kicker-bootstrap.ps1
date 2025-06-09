@@ -268,6 +268,17 @@ if (!(Test-Path $repoPath)) {
     Pop-Location
 }
 
+# Ensure the desired branch is checked out and up to date
+Push-Location $repoPath
+& "$gitPath" fetch --all
+& "$gitPath" checkout $targetBranch 2>$null
+if ($LASTEXITCODE -ne 0) {
+    Write-Warning "Branch '$targetBranch' not found. Using current branch."
+} else {
+    & "$gitPath" pull origin $targetBranch
+}
+Pop-Location
+
 # ------------------------------------------------
 # (5) Invoke the Runner Script
 # ------------------------------------------------
