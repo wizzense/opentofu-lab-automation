@@ -46,5 +46,21 @@ Describe 'Cleanup-Files script' {
         Remove-Item -Recurse -Force $temp -ErrorAction SilentlyContinue
         Remove-Variable -Name LogFilePath -Scope Global -ErrorAction SilentlyContinue
     }
+
+    It 'runs without a global log file' {
+        $temp = Join-Path ([System.IO.Path]::GetTempPath()) ([System.Guid]::NewGuid())
+        $null = New-Item -ItemType Directory -Path $temp
+        $infraPath = Join-Path $temp 'infra'
+        Remove-Variable -Name LogFilePath -Scope Global -ErrorAction SilentlyContinue
+        $config = [PSCustomObject]@{
+            LocalPath     = $temp
+            RepoUrl       = 'https://github.com/wizzense/test.git'
+            InfraRepoPath = $infraPath
+        }
+
+        { . $scriptPath -Config $config } | Should -Not -Throw
+
+        Remove-Item -Recurse -Force $temp -ErrorAction SilentlyContinue
+    }
 }
 
