@@ -82,3 +82,36 @@ Describe 'Prepare-HyperVProvider certificate handling' {
         (Get-Content $providerFile -Raw) | Should -Match 'insecure\s*=\s*false'
     }
 }
+
+Describe 'Convert certificate helpers honour -WhatIf' {
+    It 'skips writing files when WhatIf is used' {
+        $scriptPath = Join-Path $PSScriptRoot '..\runner_scripts\0010_Prepare-HyperVProvider.ps1'
+        . $scriptPath
+        $cer = Join-Path $env:TEMP ([guid]::NewGuid()).ToString() + '.cer'
+        $pem = Join-Path $env:TEMP ([guid]::NewGuid()).ToString() + '.pem'
+        'dummy' | Set-Content -Path $cer
+        Mock Set-Content {}
+        Convert-CerToPem -CerPath $cer -PemPath $pem -WhatIf
+        Assert-MockNotCalled Set-Content
+        Remove-Item $cer -ErrorAction SilentlyContinue
+    }
+
+    It 'skips writing PFX outputs when WhatIf is used' {
+        $scriptPath = Join-Path $PSScriptRoot '..\runner_scripts\0010_Prepare-HyperVProvider.ps1'
+        . $scriptPath
+        $pfx = Join-Path $env:TEMP ([guid]::NewGuid()).ToString() + '.pfx'
+        $cert = Join-Path $env:TEMP ([guid]::NewGuid()).ToString() + '.pem'
+        $key = Join-Path $env:TEMP ([guid]::NewGuid()).ToString() + '-key.pem'
+        'dummy' | Set-Content -Path $pfx
+        $rsa = New-Object psobject
+        $rsa | Add-Member -MemberType ScriptMethod -Name ExportPkcs8PrivateKey -Value { @() }
+        $stub = New-Object psobject
+        $stub | Add-Member -MemberType ScriptMethod -Name Export -Value { param($t) @() }
+        $stub | Add-Member -MemberType ScriptMethod -Name GetRSAPrivateKey -Value { $rsa }
+        Mock Set-Content {}
+        Mock New-Object { $stub }
+        Convert-PfxToPem -PfxPath $pfx -Password (ConvertTo-SecureString 'pw' -AsPlainText -Force) -CertPath $cert -KeyPath $key -WhatIf
+        Assert-MockNotCalled Set-Content
+        Remove-Item $pfx -ErrorAction SilentlyContinue
+    }
+}

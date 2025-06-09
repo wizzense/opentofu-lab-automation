@@ -182,6 +182,7 @@ exit 0' | Set-Content -Path $dummy
 Describe 'Set-LabConfig' {
     BeforeAll {
         function Set-LabConfig {
+            [CmdletBinding(SupportsShouldProcess)]
             param([hashtable]$ConfigObject)
 
         $installPrompts = @{ 

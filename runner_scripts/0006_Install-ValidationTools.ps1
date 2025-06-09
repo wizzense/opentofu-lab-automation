@@ -5,6 +5,7 @@ Param(
 . "$PSScriptRoot\..\runner_utility_scripts\Logger.ps1"
 
 function Install-Cosign {
+    [CmdletBinding(SupportsShouldProcess)]
     # Check if cosign is available in the current PATH
     if (-not (Test-Path (Join-Path $Config.CosignPath "cosign-windows-amd64.exe") -ErrorAction SilentlyContinue)) {
         Write-CustomLog "Cosign is not found. Installing cosign..."
@@ -15,13 +16,17 @@ function Install-Cosign {
 
         # Create the installation folder if it doesn't exist
         if (-not (Test-Path $installDir)) {
-            New-Item -ItemType Directory -Path $installDir -Force | Out-Null
+            if ($PSCmdlet.ShouldProcess($installDir, 'Create directory')) {
+                New-Item -ItemType Directory -Path $installDir -Force | Out-Null
+            }
         }
 
         try {
-            # Download the cosign executable
-            Invoke-WebRequest -Uri $config.cosignUrl -OutFile $destination -UseBasicParsing
-            Write-CustomLog "Cosign downloaded and installed at $destination"
+            if ($PSCmdlet.ShouldProcess($destination, 'Download cosign')) {
+                # Download the cosign executable
+                Invoke-WebRequest -Uri $config.cosignUrl -OutFile $destination -UseBasicParsing
+                Write-CustomLog "Cosign downloaded and installed at $destination"
+            }
         }
         catch {
             Write-Error "Failed to download cosign from $cosignUrl. Please check your internet connection and try again."
@@ -31,8 +36,10 @@ function Install-Cosign {
         # Add the installation folder to the user's PATH if not already present
         $userPath = [Environment]::GetEnvironmentVariable("PATH", "User")
         if (-not $userPath.Contains($installDir)) {
-            [Environment]::SetEnvironmentVariable("PATH", "$userPath;$installDir", "User")
-            Write-CustomLog "Added $installDir to your user PATH. You may need to restart your session for this change to take effect."
+            if ($PSCmdlet.ShouldProcess('User PATH', 'Update environment variable')) {
+                [Environment]::SetEnvironmentVariable("PATH", "$userPath;$installDir", "User")
+                Write-CustomLog "Added $installDir to your user PATH. You may need to restart your session for this change to take effect."
+            }
         }
     }
     else {

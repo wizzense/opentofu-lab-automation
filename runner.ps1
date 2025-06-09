@@ -85,6 +85,7 @@ function Set-NestedConfigValue {
 }
 
 function Set-LabConfig {
+    [CmdletBinding(SupportsShouldProcess)]
     param(
         [hashtable]$ConfigObject
     )
@@ -132,9 +133,10 @@ if (-not $Auto) {
     $customize = Read-Host "Would you like to customize your configuration? (Y/N)"
     if ($customize -match '^(?i)y') {
         $Config = Set-LabConfig -ConfigObject $Config
-        # Save the updated configuration
-        $Config | ConvertTo-Json -Depth 5 | Out-File -FilePath $ConfigFile -Encoding utf8
-        Write-CustomLog "Configuration updated and saved to $ConfigFile"
+        if ($PSCmdlet.ShouldProcess($ConfigFile, 'Save updated configuration')) {
+            $Config | ConvertTo-Json -Depth 5 | Out-File -FilePath $ConfigFile -Encoding utf8
+            Write-CustomLog "Configuration updated and saved to $ConfigFile"
+        }
     }
 }
 

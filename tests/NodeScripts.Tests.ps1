@@ -45,6 +45,14 @@ Describe 'Node installation scripts' {
         Assert-MockNotCalled npm -ParameterFilter { $testArgs -eq @('install','-g','vite') }
     }
 
+    It 'honours -WhatIf for Install-GlobalPackage' {
+        . (Resolve-Path $global)
+        function npm { param([string[]]$testArgs) }
+        Mock npm {}
+        Install-GlobalPackage 'yarn' -WhatIf
+        Assert-MockNotCalled npm
+    }
+
     It 'uses NpmPath from Node_Dependencies when installing project deps' {
         $temp = Join-Path $env:TEMP ([System.Guid]::NewGuid())
         New-Item -ItemType Directory -Path $temp | Out-Null
