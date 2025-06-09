@@ -171,6 +171,16 @@ Will probably change repo name to just 'lab-automation'.
 
 ## Node dependency configuration
 
+
+## Local CI with act
+
+To run the GitHub Actions workflow locally, install Docker and [act](https://github.com/nektos/act). Then execute:
+
+```bash
+act -j lint -P windows-latest=ghcr.io/catthehacker/ubuntu:act-latest -v
+```
+
+This will run the lint job in a container. Docker must be available for act to start containers.
 Node-related installs are controlled under the `Node_Dependencies` section of
 `default-config.json`:
 
