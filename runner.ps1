@@ -149,8 +149,24 @@ if ($Scripts -eq 'all') {
                 Write-CustomLog "None of the provided prefixes match the scripts in the folder. Please try again."
                 continue
             }
+    }
+    break
+  }
+}
+
+# Warn if cleanup script is combined with others
+if ($ScriptsToRun.Count -gt 1) {
+    $cleanup = $ScriptsToRun | Where-Object { $_.Name.Substring(0,4) -eq '0000' }
+    if ($cleanup) {
+        Write-CustomLog "WARNING: Cleanup script 0000 will remove local files. Remaining scripts will be unavailable." 
+        if (-not $Auto) {
+            $resp = Read-Host "Continue with cleanup and exit? (Y/N)"
+            if ($resp -notmatch '^(?i)y') {
+                Write-CustomLog 'Aborting per user request.'
+                exit 0
+            }
         }
-        break
+        $ScriptsToRun = $cleanup
     }
 }
 
