@@ -291,7 +291,7 @@ if (!(Test-Path $repoPath)) {
 } else {
     Write-Log "Repository already exists. Pulling latest changes..."
     Push-Location $repoPath
-    & "$gitPath" pull
+    & "$gitPath" pull origin $targetBranch
     Pop-Location
 }
 
