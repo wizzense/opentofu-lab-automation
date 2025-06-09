@@ -40,6 +40,16 @@ jobs:
           path: ~/.local/share/powershell/Modules
           key: ${{ runner.os }}-pwsh-modules-${{ hashFiles('.github/actions/lint/requirements.txt') }}
           restore-keys: ${{ runner.os }}-pwsh-modules-
+      - name: Uninstall PSScriptAnalyzer
+        shell: pwsh
+        run: |
+          if (Get-Module -ListAvailable -Name PSScriptAnalyzer) {
+            Uninstall-Module -Name PSScriptAnalyzer -AllVersions -Force
+          }
+      - name: Install PSScriptAnalyzer
+        shell: pwsh
+        run: |
+          Install-Module -Name PSScriptAnalyzer -RequiredVersion 1.24.0 -Force -Scope CurrentUser
       - uses: ./.github/actions/lint
   pester:
     runs-on: ${{ matrix.os }}

@@ -20,11 +20,6 @@ runs:
     - name: Install ruff
       shell: bash
       run: pip install "ruff>=0.1"
-    - name: Resolve Locked PSScriptAnalyzer Module
-      shell: pwsh
-      run: |
-        Remove-Module -Name PSScriptAnalyzer -Force -ErrorAction SilentlyContinue
-        Install-Module -Name PSScriptAnalyzer -Force -Scope CurrentUser
     - name: Run Script Analyzer
       shell: pwsh
       run: |
