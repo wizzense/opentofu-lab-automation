@@ -1,4 +1,6 @@
 # opentofu-lab-automation
+[![CI](https://github.com/wizzense/opentofu-lab-automation/actions/workflows/ci.yml/badge.svg)](https://github.com/wizzense/opentofu-lab-automation/actions/workflows/ci.yml)
+
 
   Kicker script for a fresh Windows Server Core setup
 
