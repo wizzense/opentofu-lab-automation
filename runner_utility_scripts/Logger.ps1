@@ -13,7 +13,7 @@ function Write-Log {
         try {
             $formatted | Out-File -FilePath $LogFile -Encoding utf8 -Append
         } catch {
-            Write-Host "[ERROR] Failed to write to log file $LogFile: $_"
+            Write-Host "[ERROR] Failed to write to log file ${LogFile}: $_"
         }
     }
 }
