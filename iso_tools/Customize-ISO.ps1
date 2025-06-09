@@ -59,7 +59,17 @@ Remove-Item -Recurse -Force $MountPath
 
 # Ensure running as Administrator
 if (-not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) {
-    Write-Host "Please run this script as Administrator!" -ForegroundColor Red
+    $scriptPath = $PSCommandPath
+    Write-Host "This script requires administrator privileges." -ForegroundColor Red
+    Write-Host "Rerun using: Start-Process powershell -Verb RunAs -ArgumentList '-File `\"$scriptPath`\"'" -ForegroundColor Yellow
+    if ($scriptPath) {
+        try {
+            Start-Process -FilePath (Get-Process -Id $PID).Path -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `\"$scriptPath`\"" -Verb RunAs -ErrorAction Stop
+            exit
+        } catch {
+            Write-Warning "Automatic elevation failed: $_"
+        }
+    }
     exit
 }
 
