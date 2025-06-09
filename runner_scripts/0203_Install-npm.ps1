@@ -43,13 +43,18 @@ $frontendPath = if ($Config.Node_Dependencies.NpmPath) {
 }
 
 if (-not (Test-Path $frontendPath)) {
-    Write-Error "ERROR: Frontend folder not found at: $frontendPath"
-    exit 1
+    if ($Config.Node_Dependencies.CreateNpmPath) {
+        Write-CustomLog "Creating missing frontend folder at: $frontendPath"
+        New-Item -ItemType Directory -Path $frontendPath -Force | Out-Null
+    } else {
+        Write-CustomLog "Frontend folder not found at: $frontendPath. Skipping npm install."
+        return
+    }
 }
 
 if (-not (Test-Path (Join-Path $frontendPath "package.json"))) {
-    Write-Error "ERROR: No package.json found in frontend folder. Cannot run npm install."
-    exit 1
+    Write-CustomLog "No package.json found in $frontendPath. Skipping npm install."
+    return
 }
 
 Push-Location $frontendPath

@@ -93,6 +93,8 @@ function Set-LabConfig {
 
     $npmPath = Read-Host "Path to Node project [`$($ConfigObject.Node_Dependencies.NpmPath)`]"
     if ($npmPath) { $ConfigObject.Node_Dependencies.NpmPath = $npmPath }
+    $createPath = Read-Host "Create NpmPath if missing? (Y/N) [`$($ConfigObject.Node_Dependencies.CreateNpmPath)`]"
+    if ($createPath) { $ConfigObject.Node_Dependencies.CreateNpmPath = $createPath -match '^(?i)y' }
 
     return $ConfigObject
 }

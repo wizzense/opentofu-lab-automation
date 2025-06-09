@@ -40,4 +40,35 @@ Describe '0203_Install-npm' {
 
         Remove-Item -Recurse -Force $npmDir
     }
+
+    It 'skips when NpmPath is missing' {
+        $script = Join-Path $PSScriptRoot '..\runner_scripts\0203_Install-npm.ps1'
+        $npmDir = Join-Path ([System.IO.Path]::GetTempPath()) ([System.Guid]::NewGuid())
+        $config = @{ Node_Dependencies = @{ NpmPath = $npmDir; CreateNpmPath = $false } }
+
+        $script:called = $false
+        function npm { $script:called = $true }
+
+        & $script -Config $config
+        $success = $?
+
+        $success | Should -BeTrue
+        $script:called | Should -BeFalse
+    }
+
+    It 'creates NpmPath when CreateNpmPath is true' {
+        $script = Join-Path $PSScriptRoot '..\runner_scripts\0203_Install-npm.ps1'
+        $npmDir = Join-Path ([System.IO.Path]::GetTempPath()) ([System.Guid]::NewGuid())
+        $config = @{ Node_Dependencies = @{ NpmPath = $npmDir; CreateNpmPath = $true } }
+
+        $script:calledPath = $null
+        function npm { param([string[]]$Args) $script:calledPath = (Get-Location).ProviderPath }
+
+        & $script -Config $config
+
+        $script:calledPath | Should -Be (Get-Item $npmDir).FullName
+        Test-Path $npmDir | Should -BeTrue
+
+        Remove-Item -Recurse -Force $npmDir
+    }
 }
