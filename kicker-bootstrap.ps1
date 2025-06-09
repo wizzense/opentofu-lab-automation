@@ -29,7 +29,20 @@ function Write-Continue($prompt) {
 
 $ErrorActionPreference = 'Stop'  # So any error throws an exception
 $ProgressPreference = 'SilentlyContinue'
-. "$PSScriptRoot\runner_utility_scripts\Logger.ps1"
+
+# Ensure the logger utility is available even when this script is executed
+# standalone. If the logger script is missing, download it from the repository.
+$loggerDir = Join-Path $PSScriptRoot 'runner_utility_scripts'
+$loggerPath = Join-Path $loggerDir 'Logger.ps1'
+if (-not (Test-Path $loggerPath)) {
+    if (-not (Test-Path $loggerDir)) {
+        New-Item -ItemType Directory -Path $loggerDir -Force | Out-Null
+    }
+    $loggerUrl =
+        'https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/main/runner_utility_scripts/Logger.ps1'
+    Invoke-WebRequest -Uri $loggerUrl -OutFile $loggerPath
+}
+. $loggerPath
 
 
 # ------------------------------------------------
