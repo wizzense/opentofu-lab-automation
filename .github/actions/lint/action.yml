@@ -18,9 +18,9 @@ runs:
         if-no-files-found: ignore
         restore-keys: |
           ${{ runner.os }}-lint-psmodules-
-    - name: Install Python dependencies
+    - name: Install ruff
       shell: bash
-      run: pip install -r "${{ github.action_path }}/requirements.txt"
+      run: pip install "ruff>=0.1"
     - name: Install PSScriptAnalyzer
       shell: pwsh
       run: Install-Module -Name PSScriptAnalyzer -Force -Scope CurrentUser
