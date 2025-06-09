@@ -7,7 +7,7 @@ Describe '0203_Install-npm' {
         $config = @{ Node_Dependencies = @{ NpmPath = $npmDir } }
 
         $global:calledPath = $null
-        function npm { param([string[]]$Args) $global:calledPath = (Get-Location).ProviderPath }
+        function npm { param([string[]]$testArgs) $global:calledPath = (Get-Location).ProviderPath }
 
         & $script -Config $config
 
@@ -23,7 +23,7 @@ Describe '0203_Install-npm' {
         '{}' | Set-Content -Path (Join-Path $npmDir 'package.json')
         $config = @{ Node_Dependencies = @{ NpmPath = $npmDir } }
 
-        function npm { param([string[]]$Args) }
+        function npm { param([string[]]$testArgs) }
 
         & $script -Config $config
         $success = $?
