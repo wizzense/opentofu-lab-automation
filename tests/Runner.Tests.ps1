@@ -133,7 +133,12 @@ exit 0' | Set-Content -Path $dummy
             $responses = @('0001')
             $script:index = 0
             $called = 0
-            function global:Read-Host { param([string]$Prompt) $called++; $responses[$script:index++] }
+            function global:Read-Host {
+                param([string]$Prompt)
+                $null = $Prompt
+                $called++
+                $responses[$script:index++]
+            }
             Push-Location $tempDir
             & "$tempDir/runner.ps1" -Auto | Out-Null
             Pop-Location
@@ -181,7 +186,11 @@ Describe 'Customize-Config' {
 
         $answers = @('Y','N','Y','C:\\Repo','C:\\Node')
         $script:idx = 0
-        function global:Read-Host { param([string]$Prompt) $answers[$script:idx++] }
+        function global:Read-Host {
+            param([string]$Prompt)
+            $null = $Prompt
+            $answers[$script:idx++]
+        }
 
         $updated = Customize-Config -ConfigObject $config
 
