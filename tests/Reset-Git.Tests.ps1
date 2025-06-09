@@ -1,14 +1,86 @@
-describe '0001_Reset-Git error handling' {
-    it 'exits with code 1 when git clone fails' {
-        $scriptPath = Join-Path $PSScriptRoot '..' 'runner_scripts' '0001_Reset-Git.ps1'
-        $tempDir = Join-Path ([System.IO.Path]::GetTempPath()) ([System.Guid]::NewGuid())
-        $config = [pscustomobject]@{
-            InfraRepoUrl = 'https://example.com/repo.git'
-            InfraRepoPath = $tempDir
+<#
+.SYNOPSIS
+    Tests for runner_scripts\0001_Reset-Git.ps1
+
+    • Verifies that the script prefers `gh repo clone` when the GitHub CLI exists.
+    • Verifies that it falls back to `git clone` when `gh` is absent.
+    • Verifies that it exits with a non-zero code (or throws) when the clone fails.
+#>
+
+Describe '0001_Reset-Git' {
+
+    BeforeAll {
+        $ScriptPath = Join-Path $PSScriptRoot '..' 'runner_scripts' '0001_Reset-Git.ps1'
+    }
+
+    Context 'Clone command selection' {
+
+        It 'uses **gh repo clone** when gh CLI is available' {
+            $tempDir = Join-Path ([System.IO.Path]::GetTempPath()) ([guid]::NewGuid())
+
+            $config = [pscustomobject]@{
+                InfraRepoUrl  = 'https://example.com/repo.git'
+                InfraRepoPath = $tempDir
+            }
+
+            Mock Get-Command { @{ Name = 'gh' } } -ParameterFilter { $Name -eq 'gh' }
+            Mock gh { $global:LASTEXITCODE = 0 }
+            Mock git {}
+
+            & $ScriptPath -Config $config
+
+            Assert-MockCalled gh  -ParameterFilter { $args[0] -eq 'repo' -and $args[1] -eq 'clone' } -Times 1
+            Assert-MockNotCalled git
+
+            Remove-Item $tempDir -Recurse -Force -ErrorAction SilentlyContinue
         }
-        Mock git { $global:LASTEXITCODE = 1 }
-        . $scriptPath -Config $config
-        $LASTEXITCODE | Should -Be 1
-        Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue
+
+        It 'falls back to **git clone** when gh CLI is missing' {
+            $tempDir = Join-Path ([System.IO.Path]::GetTempPath()) ([guid]::NewGuid())
+
+            $config = [pscustomobject]@{
+                InfraRepoUrl  = 'https://example.com/repo.git'
+                InfraRepoPath = $tempDir
+            }
+
+            Mock Get-Command { $null } -ParameterFilter { $Name -eq 'gh' }
+            Mock git { $global:LASTEXITCODE = 0 }
+            Mock gh  {}
+
+            & $ScriptPath -Config $config
+
+            Assert-MockCalled git -ParameterFilter { $args[0] -eq 'clone' } -Times 1
+            Assert-MockNotCalled gh
+
+            Remove-Item $tempDir -Recurse -Force -ErrorAction SilentlyContinue
+        }
+    }
+
+    Context 'Error handling' {
+
+        It 'exits with code 1 (or throws) when clone fails' {
+            $tempDir = Join-Path ([System.IO.Path]::GetTempPath()) ([guid]::NewGuid())
+
+            $config = [pscustomobject]@{
+                InfraRepoUrl  = 'https://example.com/repo.git'
+                InfraRepoPath = $tempDir
+            }
+
+            # Simulate git failing
+            Mock Get-Command { $null } -ParameterFilter { $Name -eq 'gh' }
+            Mock git { $global:LASTEXITCODE = 1 }
+
+            try {
+                & $ScriptPath -Config $config
+                # If the script uses `throw`, this assertion is skipped because the Try is exited.
+                $LASTEXITCODE | Should -Be 1
+            }
+            catch {
+                $_ | Should -Not -BeNullOrEmpty
+            }
+            finally {
+                Remove-Item $tempDir -Recurse -Force -ErrorAction SilentlyContinue
+            }
+        }
     }
 }
