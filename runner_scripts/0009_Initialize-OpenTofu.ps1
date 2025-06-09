@@ -14,7 +14,9 @@ Param(
     [Parameter(Mandatory = $true)]
     [PSCustomObject]$Config
 )
-. "$PSScriptRoot\..\runner_utility_scripts\Logger.ps1"
+. "$PSScriptRoot\..\lab_utils\Invoke-LabScript.ps1"
+
+Invoke-LabScript -Config $Config -ScriptBlock {
 
 if ($Config.InitializeOpenTofu -eq $true) {
 
@@ -192,3 +194,5 @@ exit 0
 } else {
     Write-CustomLog "InitializeOpenTofu flag is disabled. Skipping initialization."
 }
+}
+

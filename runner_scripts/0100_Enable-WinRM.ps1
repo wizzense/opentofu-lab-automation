@@ -1,4 +1,11 @@
-. "$PSScriptRoot\..\runner_utility_scripts\Logger.ps1"
+Param(
+    [Parameter(Mandatory=$true)]
+    [PSCustomObject]$Config
+)
+
+. "$PSScriptRoot\..\lab_utils\Invoke-LabScript.ps1"
+
+Invoke-LabScript -Config $Config -ScriptBlock {
 
 # Check if WinRM is already configured
 $winrmStatus = Get-Service -Name WinRM -ErrorAction SilentlyContinue
@@ -15,5 +22,7 @@ if ($winrmStatus -and $winrmStatus.Status -eq 'Running') {
     # e.g.: Set-Item -Path WSMan:\localhost\Service\Auth\Basic -Value $true
     
     Write-CustomLog "WinRM has been enabled."
+}
+
 }
 

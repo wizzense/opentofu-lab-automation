@@ -26,7 +26,9 @@ param(
     [Parameter(Mandatory)]
     [hashtable]$Config
 )
-. "$PSScriptRoot\..\runner_utility_scripts\Logger.ps1"
+. "$PSScriptRoot\..\lab_utils\Invoke-LabScript.ps1"
+
+Invoke-LabScript -Config $Config -ScriptBlock {
 
 $ErrorActionPreference = "Stop"
 Write-CustomLog "==== [0203] Installing Frontend npm Dependencies ===="
@@ -66,5 +68,7 @@ Pop-Location
 Write-CustomLog "==== Frontend dependency installation complete ===="
 } else {
     Write-CustomLog "InstallNpm flag is disabled. Skipping project dependency installation."
+}
+
 }
 

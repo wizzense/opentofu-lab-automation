@@ -27,7 +27,9 @@ param(
     [Parameter(Mandatory)]
     [hashtable]$Config
 )
-. "$PSScriptRoot\..\runner_utility_scripts\Logger.ps1"
+. "$PSScriptRoot\..\lab_utils\Invoke-LabScript.ps1"
+
+Invoke-LabScript -Config $Config -ScriptBlock {
 
 $ErrorActionPreference = "Stop"
 
@@ -62,4 +64,6 @@ if ($Config.Node_Dependencies.InstallNodemon) {
 }
 
 Write-CustomLog "==== Global npm package installation complete ===="
+
+}
 

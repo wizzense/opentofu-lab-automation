@@ -27,6 +27,8 @@ Describe 'OpenTofuInstaller logging' {
         Assert-MockCalled Start-Process -Times 1
         (Test-Path $logFile) | Should -BeFalse
         Remove-Item -Recurse -Force $temp
+    }
+}
 
 Describe 'OpenTofuInstaller error handling' {
     It 'returns install failed exit code when cosign is missing' {

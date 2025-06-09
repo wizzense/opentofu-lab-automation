@@ -2,7 +2,9 @@ Param(
     [Parameter(Mandatory=$true)]
     [PSCustomObject]$Config
 )
-. "$PSScriptRoot\..\runner_utility_scripts\Logger.ps1"
+. "$PSScriptRoot\..\lab_utils\Invoke-LabScript.ps1"
+
+Invoke-LabScript -Config $Config -ScriptBlock {
 
 function Convert-CerToPem {
     param(
@@ -319,5 +321,7 @@ You can now run 'tofu plan'/'tofu apply' in $infraRepoPath.
 "@
 } else {
     Write-CustomLog "PrepareHyperVHost flag is disabled. Skipping Hyper-V host preparation."
+}
+
 }
 

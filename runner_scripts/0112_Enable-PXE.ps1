@@ -2,7 +2,9 @@ Param(
     [Parameter(Mandatory=$true)]
     [PSCustomObject]$Config
 )
-. "$PSScriptRoot\..\runner_utility_scripts\Logger.ps1"
+. "$PSScriptRoot\..\lab_utils\Invoke-LabScript.ps1"
+
+Invoke-LabScript -Config $Config -ScriptBlock {
 
 if ($Config.ConfigPXE -eq $true) {
 
@@ -17,4 +19,5 @@ if ($Config.ConfigPXE -eq $true) {
 
 } else {
     Write-CustomLog 'ConfigPXE is false. Skipping PXE firewall configuration.'
-}
+}}
+

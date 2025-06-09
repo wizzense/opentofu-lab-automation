@@ -2,7 +2,9 @@ Param(
     [Parameter(Mandatory=$true)]
     [PSCustomObject]$Config
 )
-. "$PSScriptRoot\..\runner_utility_scripts\Logger.ps1"
+. "$PSScriptRoot\..\lab_utils\Invoke-LabScript.ps1"
+
+Invoke-LabScript -Config $Config -ScriptBlock {
 
 function Install-Cosign {
     # Check if cosign is available in the current PATH
@@ -62,3 +64,5 @@ elseif ($Config.InstallGpg -eq $true) {
 if (-not $Config.InstallCosign -and -not $Config.InstallGpg) {
     Write-CustomLog "No installation option specified. Use -InstallCosign and/or -InstallGpg when running this script."
 }
+}
+

@@ -1,6 +1,8 @@
 Describe 'Prepare-HyperVProvider path restoration' {
     It 'restores location after execution' {
         $scriptPath = Join-Path $PSScriptRoot '..\runner_scripts\0010_Prepare-HyperVProvider.ps1'
+        . (Join-Path $PSScriptRoot '..' 'lab_utils' 'Invoke-LabScript.ps1')
+        . (Join-Path $PSScriptRoot '..' 'lab_utils' 'Invoke-LabScript.ps1')
         $config = [pscustomobject]@{
             PrepareHyperVHost = $true
             InfraRepoPath = 'C:\\Infra'
@@ -31,7 +33,7 @@ Describe 'Prepare-HyperVProvider path restoration' {
         Mock Read-Host { '' }
         Mock Resolve-Path { param([string]$Path) @{ Path = $Path } }
 
-        & $scriptPath -Config $config
+        . $scriptPath -Config $config
 
         $location | Should -Be 'C:\\Start'
     }
@@ -74,7 +76,7 @@ Describe 'Prepare-HyperVProvider certificate handling' {
           '}'
         ) | Set-Content -Path $providerFile
 
-        & $scriptPath -Config $config
+        . $scriptPath -Config $config
 
         Test-Path (Join-Path $tempDir 'TestCA.pem') | Should -BeTrue
         Test-Path (Join-Path $tempDir ("$(hostname).pem")) | Should -BeTrue

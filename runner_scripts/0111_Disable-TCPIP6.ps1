@@ -2,7 +2,9 @@ Param(
     [Parameter(Mandatory=$true)]
     [PSCustomObject]$Config
 )
-. "$PSScriptRoot\..\runner_utility_scripts\Logger.ps1"
+. "$PSScriptRoot\..\lab_utils\Invoke-LabScript.ps1"
+
+Invoke-LabScript -Config $Config -ScriptBlock {
 
 if ($Config.DisableTCPIP6 -eq $true) {
     
@@ -12,4 +14,6 @@ if ($Config.DisableTCPIP6 -eq $true) {
     Write-CustomLog "DisableTCPIP6 flag is disabled. Skipping IPv6 configuration."
 }
 
+
+}
 
