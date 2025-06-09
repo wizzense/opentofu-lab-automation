@@ -166,7 +166,7 @@ if ($ScriptsToRun) {
             }
         }
         catch {
-            Write-CustomLog "ERROR: Exception in $($Script.Name). $_"
+            Write-CustomLog ("ERROR: Exception in $($Script.Name). {0}`n{1}" -f $PSItem.Exception.Message, $PSItem.ScriptStackTrace)
             exit 1
         }
     }
