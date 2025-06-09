@@ -43,17 +43,24 @@ jobs:
       - name: Uninstall PSScriptAnalyzer
         shell: pwsh
         run: |
-          if (Get-Module -ListAvailable -Name PSScriptAnalyzer) {
-            Write-Host "PSScriptAnalyzer module found. Uninstalling..."
+          if (Get-Module -ListAvailable -Name PSScriptAnalyzer) {            Write-Host "PSScriptAnalyzer module found. Uninstalling..."
             Uninstall-Module -Name PSScriptAnalyzer -AllVersions -Force
           } else {
             Write-Host "PSScriptAnalyzer module not found. Skipping uninstallation."
+
           }
       - name: Install PSScriptAnalyzer
         shell: pwsh
         run: |
           Install-Module -Name PSScriptAnalyzer -RequiredVersion 1.24.0 -Force -Scope CurrentUser
       - uses: ./.github/actions/lint
+      - name: Uninstall PSScriptAnalyzer
+        shell: pwsh
+        run: |
+          if (Get-Module -ListAvailable -Name PSScriptAnalyzer) {
+            Remove-Module -Name PSScriptAnalyzer -Force -ErrorAction SilentlyContinue
+            Uninstall-Module -Name PSScriptAnalyzer -AllVersions -Force
+          }
   pester:
     runs-on: ${{ matrix.os }}
     strategy:
