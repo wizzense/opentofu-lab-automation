@@ -9,7 +9,7 @@
 
 .CONFIG FORMAT
 {
-  "Dependencies": {
+  "Node_Dependencies": {
     "InstallNpm": true,
     "NpmPath": "C:\\Projects\\vde-mvp\\frontend"
   }
@@ -32,8 +32,8 @@ $ErrorActionPreference = "Stop"
 Write-Log "==== [0203] Installing Frontend npm Dependencies ===="
 
 # Determine frontend path
-$frontendPath = if ($Config.Dependencies.FrontendPath) {
-    $Config.Dependencies.FrontendPath
+$frontendPath = if ($Config.Node_Dependencies.NpmPath) {
+    $Config.Node_Dependencies.NpmPath
 } else {
     Join-Path $PSScriptRoot "..\frontend"
 }
