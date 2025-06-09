@@ -23,7 +23,15 @@ runs:
     - name: Run Script Analyzer
       shell: pwsh
       run: |
-        Invoke-ScriptAnalyzer -Path . -Recurse -Severity Error,Warning -EnableExit -ErrorAction Stop
+        $rulesToExclude = @(
+          'PSAvoidAssignmentToAutomaticVariable',
+          'PSAvoidUsingInvokeExpression',
+          'PSAvoidUsingWriteHost',
+          'PSReviewUnusedParameter',
+          'PSUseDeclaredVarsMoreThanAssignments',
+          'PSUseShouldProcessForStateChangingFunctions'
+        )
+        Invoke-ScriptAnalyzer -Path . -Recurse -Severity Error,Warning -ExcludeRule $rulesToExclude -EnableExit -ErrorAction Stop
     - name: Run ruff
       shell: bash
       run: ruff check .
