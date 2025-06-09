@@ -1,38 +1,21 @@
-name: Issue on CI failure
-
+name: Create Issue on Failure
 on:
   workflow_run:
     workflows: ["CI"]
-    types:
-      - completed
+    types: [completed]
 
 jobs:
   create-issue:
     if: ${{ github.event.workflow_run.conclusion == 'failure' }}
     runs-on: ubuntu-latest
+    permissions:
+      issues: write
     steps:
-      - uses: actions/github-script@v7
+      - name: Create issue
+        uses: actions-ecosystem/action-create-issue@v1
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const runId = context.payload.workflow_run.id;
-            const run = await github.rest.actions.getWorkflowRun({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              run_id: runId,
-            });
-            const { data } = await github.rest.actions.listJobsForWorkflowRun({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              run_id: runId,
-            });
-            const failed = data.jobs.filter(job => job.conclusion === 'failure');
-            let body = `CI workflow run [${run.data.head_branch}](${run.data.html_url}) failed.\n`;
-            body += failed.map(j => `- Job **${j.name}** [logs](${j.html_url})`).join('\n');
-            await github.rest.issues.create({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              title: `CI failed on ${run.data.head_branch}`,
-              body,
-            });
-
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          title: "CI failed on ${{ github.event.workflow_run.head_branch }}"
+          body: |
+            The workflow failed.
+            [View run](${{ github.event.workflow_run.html_url }})
