@@ -1,3 +1,4 @@
+
 <#
 
 # Define local paths for the installer files.
@@ -32,22 +33,27 @@ robocopy H:\ E:\CustomISO\ /E
 mkdir E:\Mount
 dism /mount-image /ImageFile:E:\CustomISO\sources\install.wim /Index:3 /MountDir:E:\Mount
 copy-item "C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\bootstrap.ps1" E:\mount\Windows\bootstrap.ps1
-Copy-Item $UnattendXML -Destination E:\Mount\Windows\autounattend.xml" -Force
+Copy-Item $UnattendXML -Destination "E:\Mount\Windows\autounattend.xml" -Force
 dism /Unmount-Image /MountDir:E:\Mount /Commit
 Set-Location -path "C:\Program Files (x86)\Windows Kits\10\Assessment and Deployment Kit\Deployment Tools\amd64\Oscdimg"
 .\oscdimg.exe -m -o -u2 -udfver102 -bootdata:2#p0,e,bE:\CustomISO\boot\etfsboot.com#pEF,e,bE:\CustomISO\efi\microsoft\boot\efisys.bin E:\CustomISO E:\CustomWinISO.iso
 Dismount-DiskImage -ImagePath "E:\2_auto_unattend_en-us_windows_server_2025_updated_feb_2025_x64_dvd_3733c10e.iso"
 #>
 
-# Define paths
-$ISOPath = "E:\2_auto_unattend_en-us_windows_server_2025_updated_feb_2025_x64_dvd_3733c10e.iso"   # Path to original Windows ISO
-$ExtractPath = "E:\CustomISO"            # Extracted ISO location
-$MountPath = "E:\Mount"                  # WIM mount directory
-$WIMFile = "$ExtractPath\sources\install.wim"  # WIM file inside extracted ISO
-$SetupScript = "E:\bootstrap.ps1"    # Your PowerShell setup script
-$UnattendXML = "E:\Path\to\autounattend.xml"  # Your unattended XML file
-$OutputISO = "E:\CustomWinISO.iso"       # Final customized ISO output path
-$OscdimgExe = "C:\Program Files (x86)\Windows Kits\10\Assessment and Deployment Kit\Deployment Tools\amd64\Oscdimg\oscdimg.exe"
+# Script parameters with sensible defaults so the script can be reused
+param(
+    [string]$ISOPath = "E:\2_auto_unattend_en-us_windows_server_2025_updated_feb_2025_x64_dvd_3733c10e.iso",
+    [string]$ExtractPath = "E:\CustomISO",
+    [string]$MountPath = "E:\Mount",
+    [string]$SetupScript = "E:\bootstrap.ps1",
+    [string]$UnattendXML = "E:\Path\to\autounattend.xml",
+    [string]$OutputISO = "E:\CustomWinISO.iso",
+    [string]$OscdimgExe = "C:\Program Files (x86)\Windows Kits\10\Assessment and Deployment Kit\Deployment Tools\amd64\Oscdimg\oscdimg.exe",
+    [int]$WIMIndex = 3
+)
+
+# Derived path to the WIM file inside the extracted ISO
+$WIMFile = Join-Path $ExtractPath "sources\install.wim"
 
 Remove-Item -Recurse -Force $MountPath
 
@@ -74,7 +80,7 @@ Dismount-DiskImage -ImagePath $ISOPath
 # Step 4: Mount the Install.wim Image
 Write-Host "Mounting install.wim..." -ForegroundColor Yellow
 if (-Not (Test-Path $MountPath)) { New-Item -Path $MountPath -ItemType Directory | Out-Null }
-dism /Mount-Image /ImageFile:$WIMFile /Index:3 /MountDir:$MountPath
+dism /Mount-Image /ImageFile:$WIMFile /Index:$WIMIndex /MountDir:$MountPath
 
 # Step 5: Copy bootstrap.ps1 into Windows
 Write-Host "Copying setup.ps1 into Windows..." -ForegroundColor Green
@@ -90,7 +96,7 @@ Copy-Item $UnattendXML -Destination "$ExtractPath\autounattend.xml" -Force
 
 # Step 8: Recreate Bootable ISO
 Write-Host "Recreating bootable ISO..." -ForegroundColor Yellow
-Start-Process Start-Process -FilePath $OscdimgExe -ArgumentList @(
+Start-Process -FilePath $OscdimgExe -ArgumentList @(
     "-m",
     "-o",
     "-u2",
