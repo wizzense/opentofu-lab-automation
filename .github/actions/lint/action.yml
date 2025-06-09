@@ -30,4 +30,4 @@ runs:
         Invoke-ScriptAnalyzer -Path . -Recurse -Severity Error,Warning -EnableExit -ErrorAction Stop
     - name: Run ruff
       shell: bash
-      run: ruff .
+      run: ruff check .
