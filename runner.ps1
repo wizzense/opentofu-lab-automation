@@ -42,7 +42,29 @@ function Customize-Config {
     param(
         [hashtable]$ConfigObject
     )
-    Write-Log "Customize-Config functionality not implemented. Using existing configuration."
+
+    # Prompt the user for common install flags
+    $installPrompts = @{
+        InstallGit       = 'Install Git'
+        InstallGo        = 'Install Go'
+        InstallOpenTofu  = 'Install OpenTofu'
+    }
+
+    foreach ($key in $installPrompts.Keys) {
+        $current = [bool]$ConfigObject[$key]
+        $answer  = Read-Host "$($installPrompts[$key])? (Y/N) [$current]"
+        if ($answer) {
+            $ConfigObject[$key] = $answer -match '^(?i)y'
+        }
+    }
+
+    # Prompt for key paths
+    $localPath = Read-Host "Local repo path [`$($ConfigObject['LocalPath'])`]"
+    if ($localPath) { $ConfigObject['LocalPath'] = $localPath }
+
+    $npmPath = Read-Host "Path to Node project [`$($ConfigObject.Node_Dependencies.NpmPath)`]"
+    if ($npmPath) { $ConfigObject.Node_Dependencies.NpmPath = $npmPath }
+
     return $ConfigObject
 }
 
