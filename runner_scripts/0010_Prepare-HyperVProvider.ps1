@@ -221,6 +221,9 @@ $taliesinsDir = Join-Path -Path $env:GOPATH -ChildPath "src\\github.com\\taliesi
 if (!(Test-Path $taliesinsDir)) {
     New-Item -ItemType Directory -Force -Path $taliesinsDir | Out-Null
 }
+# Capture current location so we can restore it later
+$originalLocation = Get-Location
+Push-Location
 Set-Location $taliesinsDir
 
 # Define the provider directory/exe
@@ -248,6 +251,9 @@ $destinationBinary = Join-Path $hypervProviderDir "terraform-provider-hyperv.exe
 Copy-Item -Path $providerExePath -Destination $destinationBinary -Force -Verbose
 
 Write-Log "Hyper-V provider installed at: $destinationBinary"
+
+# Restore the original directory
+Pop-Location
 
 # ------------------------------
 # 5) Update Provider Config File (providers.tf)
