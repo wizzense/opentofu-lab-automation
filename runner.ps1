@@ -9,13 +9,14 @@ param(
 . "$PSScriptRoot\lab_utils\Get-LabConfig.ps1"
 
 # Set default log file path if none is defined
-if (-not (Get-Variable -Name LogFilePath -Scope Global -ErrorAction SilentlyContinue)) {
+if (-not (Get-Variable -Name LogFilePath -Scope Script -ErrorAction SilentlyContinue) -and
+    -not (Get-Variable -Name LogFilePath -Scope Global -ErrorAction SilentlyContinue)) {
     $logDir = $env:LAB_LOG_DIR
     if (-not $logDir) {
         if ($IsWindows) { $logDir = 'C:\\temp' } else { $logDir = [System.IO.Path]::GetTempPath() }
     }
     if (-not (Test-Path $logDir)) { New-Item -ItemType Directory -Path $logDir -Force | Out-Null }
-    $global:LogFilePath = Join-Path $logDir 'lab.log'
+    $script:LogFilePath = Join-Path $logDir 'lab.log'
 }
 
 function ConvertTo-Hashtable {

@@ -1,6 +1,6 @@
 Describe 'Cleanup-Files script' {
     BeforeAll {
-        $scriptPath = Join-Path $PSScriptRoot '..' 'runner_scripts' '0000_Cleanup-Files.ps1'
+        $script:scriptPath = Join-Path $PSScriptRoot '..' 'runner_scripts' '0000_Cleanup-Files.ps1'
     }
 
     It 'removes repo and infra directories when they exist' {
@@ -21,7 +21,7 @@ Describe 'Cleanup-Files script' {
             InfraRepoPath = $infraPath
         }
 
-        . $scriptPath -Config $config
+        . $script:scriptPath -Config $config
 
         (Test-Path $repoPath) | Should -BeFalse
         (Test-Path $infraPath) | Should -BeFalse
@@ -41,7 +41,7 @@ Describe 'Cleanup-Files script' {
             InfraRepoPath = $infraPath
         }
 
-        { . $scriptPath -Config $config } | Should -Not -Throw
+        { . $script:scriptPath -Config $config } | Should -Not -Throw
 
         Remove-Item -Recurse -Force $temp -ErrorAction SilentlyContinue
         Remove-Variable -Name LogFilePath -Scope Script -ErrorAction SilentlyContinue
@@ -58,7 +58,7 @@ Describe 'Cleanup-Files script' {
             InfraRepoPath = $infraPath
         }
 
-        { . $scriptPath -Config $config } | Should -Not -Throw
+        { . $script:scriptPath -Config $config } | Should -Not -Throw
 
         Remove-Item -Recurse -Force $temp -ErrorAction SilentlyContinue
     }
@@ -78,7 +78,7 @@ Describe 'Cleanup-Files script' {
             InfraRepoPath = $infraPath
         }
 
-        { . $scriptPath -Config $config } | Should -Not -Throw
+        { . $script:scriptPath -Config $config } | Should -Not -Throw
 
         (Test-Path $repoPath) | Should -BeFalse
         (Test-Path $infraPath) | Should -BeFalse
@@ -103,7 +103,7 @@ Describe 'Cleanup-Files script' {
         $orig = Get-Location
         Set-Location $repoPath
 
-        { . $scriptPath -Config $config } | Should -Not -Throw
+        { . $script:scriptPath -Config $config } | Should -Not -Throw
 
         (Test-Path $repoPath) | Should -BeFalse
         (Get-Location).Path | Should -Not -Be $repoPath

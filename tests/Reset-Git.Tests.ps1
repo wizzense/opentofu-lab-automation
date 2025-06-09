@@ -10,7 +10,7 @@
 Describe '0001_Reset-Git' {
 
     BeforeAll {
-        $ScriptPath = Join-Path $PSScriptRoot '..' 'runner_scripts' '0001_Reset-Git.ps1'
+        $script:ScriptPath = Join-Path $PSScriptRoot '..' 'runner_scripts' '0001_Reset-Git.ps1'
     }
 
     Context 'Clone command selection' {
@@ -27,7 +27,7 @@ Describe '0001_Reset-Git' {
             Mock gh { $global:LASTEXITCODE = 0 }
             Mock git {}
 
-            & $ScriptPath -Config $config
+            & $script:ScriptPath -Config $config
 
             Assert-MockCalled gh  -ParameterFilter { $args[0] -eq 'repo' -and $args[1] -eq 'clone' } -Times 1
             Assert-MockNotCalled git
@@ -47,7 +47,7 @@ Describe '0001_Reset-Git' {
             Mock git { $global:LASTEXITCODE = 0 }
             Mock gh  {}
 
-            & $ScriptPath -Config $config
+            & $script:ScriptPath -Config $config
 
             Assert-MockCalled git -ParameterFilter { $args[0] -eq 'clone' } -Times 1
             Assert-MockNotCalled gh
@@ -71,7 +71,7 @@ Describe '0001_Reset-Git' {
             Mock git { $global:LASTEXITCODE = 1 }
 
             try {
-                & $ScriptPath -Config $config
+                & $script:ScriptPath -Config $config
                 # If the script uses `throw`, this assertion is skipped because the Try is exited.
                 $LASTEXITCODE | Should -Be 1
             }
@@ -98,7 +98,7 @@ Describe '0001_Reset-Git' {
             }
             Mock git {}
 
-            & $ScriptPath -Config $config
+            & $script:ScriptPath -Config $config
 
             Assert-MockCalled gh -ParameterFilter { $args[0] -eq 'auth' -and $args[1] -eq 'status' } -Times 1
             Assert-MockNotCalled gh -ParameterFilter { $args[0] -eq 'repo' -and $args[1] -eq 'clone' }
@@ -121,7 +121,7 @@ Describe '0001_Reset-Git' {
             Mock git { $global:LASTEXITCODE = 0 }
             Mock Write-CustomLog {}
 
-            & $ScriptPath -Config $config
+            & $script:ScriptPath -Config $config
 
             Assert-MockCalled Write-CustomLog -ParameterFilter { $Message -eq 'Clone completed successfully.' } -Times 1
 
