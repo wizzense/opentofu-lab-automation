@@ -8,13 +8,12 @@ provider "hyperv" {
   port            = 5986
   https           = true
 
-  # Disable verification of the self-signed certificate on the host
-  insecure        = true
+  insecure        = false
   use_ntlm        = true
-  tls_server_name = ""
-  cacert_path     = ""
-  cert_path       = ""
-  key_path        = ""
+  tls_server_name = var.hyperv_host_name
+  cacert_path     = "certs/rootca.pem"
+  cert_path       = "certs/host.pem"
+  key_path        = "certs/host-key.pem"
 
   script_path     = "C:/Temp/terraform_%RAND%.cmd"
   timeout         = "30s"
