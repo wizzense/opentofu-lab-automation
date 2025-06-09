@@ -18,6 +18,10 @@ if (-not (Test-Path $InfraPath)) {
 if (-not (Test-Path (Join-Path $InfraPath ".git"))) {
     Write-Log "Directory is not a git repository. Cloning repository..."
     git clone $config.InfraRepoUrl $InfraPath
+    if ($LASTEXITCODE -ne 0 -or -not (Test-Path (Join-Path $InfraPath '.git'))) {
+        Write-Error "Failed to clone repository from $($config.InfraRepoUrl)"
+        exit 1
+    }
 } else {
     Write-Log "Git repository found. Updating repository..."
     Push-Location $InfraPath
