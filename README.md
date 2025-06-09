@@ -2,7 +2,7 @@
 
   Kicker script for a fresh Windows Server Core setup
 
-  1) Downloads and loads default-config.json from the same folder by default (override with -ConfigFile).
+  1) Downloads and loads config_files/default-config.json by default (override with -ConfigFile).
   2) Checks if command-line Git is installed and in PATH. (requirement)
      - Prompts to install a minimal version if missing.
      - Updates PATH if installed but not found in PATH.

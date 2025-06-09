@@ -2,7 +2,7 @@
 .SYNOPSIS
   Kicker script for a fresh Windows Server Core setup with robust error handling.
 
-  1) Loads config.json from the same folder by default (override with -ConfigFile).
+  1) Loads config_files/default-config.json by default (override with -ConfigFile).
   2) Checks if command-line Git is installed and in PATH.
      - Installs a minimal version if missing.
      - Updates PATH if installed but not found in PATH.
@@ -50,7 +50,7 @@ At the time of this writing that feature may be broken... oh well.
 
 The script will do the following if you proceed:
 
-  1) Loads config.json from the same folder by default (override with -ConfigFile).
+  1) Loads config_files/default-config.json by default (override with -ConfigFile).
   2) Checks if command-line Git is installed and in PATH.
      - Installs a minimal version if missing.
      - Updates PATH if installed but not found in PATH.
@@ -75,8 +75,13 @@ elseif ($configOption -and (Test-Path -Path $configOption)) {
     $ConfigFile = $configOption
 }
 else {
-    Invoke-WebRequest -Uri $defaultConfig -OutFile '.\default-config.json'
-    $ConfigFile = (Join-Path $PSScriptRoot "default-config.json")
+    $localConfigDir = Join-Path $PSScriptRoot "config_files"
+    if (!(Test-Path $localConfigDir)) {
+        New-Item -ItemType Directory -Path $localConfigDir | Out-Null
+    }
+    $localConfigPath = Join-Path $localConfigDir "default-config.json"
+    Invoke-WebRequest -Uri $defaultConfig -OutFile $localConfigPath
+    $ConfigFile = $localConfigPath
 }
 
 # ------------------------------------------------
