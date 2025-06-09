@@ -1,7 +1,3 @@
-**Short answer:** Yes—I understand you want to evolve the Windows-centric **lab-automation** repo into a **multi-OS, multi-hypervisor, cloud-capable** automation toolkit while keeping everything reproducible, well-tested, and Codex-friendly.
-
-Below is a **comprehensive project plan** broken into phases.  Each task is paired with a *ready-to-paste* Codex prompt that tells the model exactly what to do, the constraints it must follow, and the tests it should add or update.  Copy a prompt into your IDE, press *⌥-Enter / ⇧-Enter*, and iterate.
-
 ## Project status
 
 Phase 0 was completed in June 2025. `Get-Platform.ps1` now has Pester tests.
