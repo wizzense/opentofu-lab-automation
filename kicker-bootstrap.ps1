@@ -44,7 +44,12 @@ if (-not (Test-Path $loggerPath)) {
     $loggerUrl = 'https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/main/runner_utility_scripts/Logger.ps1'
     Invoke-WebRequest -Uri $loggerUrl -OutFile $loggerPath
 }
-try { . $loggerPath } catch {}
+try {
+    . $loggerPath
+} catch {
+    Write-Error "Failed to load logger script: $_"
+    exit 1
+}
 
 # Fallback inline logger in case dot-sourcing failed
 if (-not (Get-Command Write-CustomLog -ErrorAction SilentlyContinue)) {
@@ -57,7 +62,11 @@ if (-not (Get-Command Write-CustomLog -ErrorAction SilentlyContinue)) {
         $fmt = "[$ts] $Message"
         Write-Host $fmt
         if ($LogFile) {
-            try { $fmt | Out-File -FilePath $LogFile -Encoding utf8 -Append } catch {}
+            try {
+                $fmt | Out-File -FilePath $LogFile -Encoding utf8 -Append
+            } catch {
+                Write-Error "Failed to write log to file: $_"
+            }
         }
     }
 }
