@@ -62,5 +62,28 @@ Describe 'Cleanup-Files script' {
 
         Remove-Item -Recurse -Force $temp -ErrorAction SilentlyContinue
     }
+
+    It 'completes when LogFilePath is undefined' {
+        $temp = Join-Path ([System.IO.Path]::GetTempPath()) ([System.Guid]::NewGuid())
+        $null = New-Item -ItemType Directory -Path $temp
+        $repoName = 'opentofu-lab-automation'
+        $repoPath = Join-Path $temp $repoName
+        $infraPath = Join-Path $temp 'infra'
+        $null = New-Item -ItemType Directory -Path $repoPath
+        $null = New-Item -ItemType Directory -Path $infraPath
+        Remove-Variable -Name LogFilePath -Scope Global -ErrorAction SilentlyContinue
+        $config = [PSCustomObject]@{
+            LocalPath     = $temp
+            RepoUrl       = "https://github.com/wizzense/$repoName.git"
+            InfraRepoPath = $infraPath
+        }
+
+        { . $scriptPath -Config $config } | Should -Not -Throw
+
+        (Test-Path $repoPath) | Should -BeFalse
+        (Test-Path $infraPath) | Should -BeFalse
+
+        Remove-Item -Recurse -Force $temp -ErrorAction SilentlyContinue
+    }
 }
 

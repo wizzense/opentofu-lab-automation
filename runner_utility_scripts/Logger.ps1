@@ -8,9 +8,10 @@ function Write-CustomLog {
     )
 
     if (-not $PSBoundParameters.ContainsKey('LogFile')) {
-        $var = Get-Variable -Name LogFilePath -Scope Global -ErrorAction SilentlyContinue
-        if ($null -ne $var) {
-            $LogFile = $var.Value
+        try {
+            $LogFile = Get-Variable -Name LogFilePath -Scope Global -ValueOnly -ErrorAction Stop
+        } catch {
+            $LogFile = $null
         }
     }
     $timestamp = Get-Date -Format 'yyyy-MM-dd HH:mm:ss'
