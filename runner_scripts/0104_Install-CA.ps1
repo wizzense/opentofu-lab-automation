@@ -1,8 +1,6 @@
-Param(
-    [Parameter(Mandatory=$true)]
-    [PSCustomObject]$Config
-)
-. "$PSScriptRoot\..\runner_utility_scripts\Logger.ps1"
+Param([pscustomobject]$Config)
+. "$PSScriptRoot/../runner_utility_scripts/ScriptTemplate.ps1"
+Invoke-LabStep -Config $Config -Body {
 
 if ($Config.InstallCA -eq $true) {
 Write-CustomLog "Checking for existing Certificate Authority (Standalone Root CA)..."
@@ -55,4 +53,5 @@ Write-CustomLog "Standalone Root CA '$CAName' installation complete."
 
 } else {
     Write-CustomLog "InstallCA flag is disabled. Skipping CA installation."
+}
 }

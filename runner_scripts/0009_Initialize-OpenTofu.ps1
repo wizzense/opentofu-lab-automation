@@ -1,3 +1,6 @@
+Param([pscustomobject]$Config)
+. "$PSScriptRoot/../runner_utility_scripts/ScriptTemplate.ps1"
+Invoke-LabStep -Config $Config -Body {
 <#
 .SYNOPSIS
   Initialize OpenTofu using Hyper-V settings from config.json.
@@ -10,16 +13,9 @@
   - Runs 'tofu init' to initialize OpenTofu in InfraRepoPath.
 #>
 
-Param(
-    [Parameter(Mandatory = $true)]
-    [PSCustomObject]$Config
-)
-. "$PSScriptRoot\..\runner_utility_scripts\Logger.ps1"
 
 if ($Config.InitializeOpenTofu -eq $true) {
 
-    Set-StrictMode -Version Latest
-    $ErrorActionPreference = 'Stop'
 
     Write-CustomLog "---- Hyper-V Configuration Check ----"
     Write-CustomLog "Final Hyper-V configuration:"
@@ -191,4 +187,5 @@ exit 0
 
 } else {
     Write-CustomLog "InitializeOpenTofu flag is disabled. Skipping initialization."
+}
 }

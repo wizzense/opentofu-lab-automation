@@ -1,9 +1,6 @@
-param(
-
-    [Parameter(Mandatory=$true)]
-    [PSCustomObject]$Config
-)
-. "$PSScriptRoot\..\runner_utility_scripts\Logger.ps1"
+Param([pscustomobject]$Config)
+. "$PSScriptRoot/../runner_utility_scripts/ScriptTemplate.ps1"
+Invoke-LabStep -Config $Config -Body {
 
 if ($Config.InstallOpenTofu -eq $true) {
     
@@ -12,4 +9,5 @@ if ($Config.InstallOpenTofu -eq $true) {
     & $installer -installMethod standalone -cosignPath $Cosign
 } else {
     Write-CustomLog "InstallOpenTofu flag is disabled. Skipping OpenTofu installation."
+}
 }

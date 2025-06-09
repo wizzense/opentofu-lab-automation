@@ -1,4 +1,7 @@
-﻿<#
+Param([pscustomobject]$Config)
+. "$PSScriptRoot/../runner_utility_scripts/ScriptTemplate.ps1"
+Invoke-LabStep -Config $Config -Body {
+<#
 .SYNOPSIS
     Install frontend project dependencies using npm.
 
@@ -22,14 +25,8 @@
     .\0203-InstallNpm.ps1 -Config $Config
 #>
 
-param(
-    [Parameter(Mandatory)]
-    [hashtable]$Config
-)
 Write-Output "Config parameter is: $Config"
-. "$PSScriptRoot\..\runner_utility_scripts\Logger.ps1"
 
-$ErrorActionPreference = "Stop"
 Write-CustomLog "==== [0203] Installing Frontend npm Dependencies ===="
 
 if ($Config.Node_Dependencies.InstallNpm) {
@@ -73,4 +70,4 @@ Write-CustomLog "==== Frontend dependency installation complete ===="
 } else {
     Write-CustomLog "InstallNpm flag is disabled. Skipping project dependency installation."
 }
-
+}

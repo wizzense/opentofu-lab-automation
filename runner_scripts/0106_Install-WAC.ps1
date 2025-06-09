@@ -1,8 +1,6 @@
-Param(
-    [Parameter(Mandatory=$true)]
-    [PSCustomObject]$Config
-)
-. "$PSScriptRoot\..\runner_utility_scripts\Logger.ps1"
+Param([pscustomobject]$Config)
+. "$PSScriptRoot/../runner_utility_scripts/ScriptTemplate.ps1"
+Invoke-LabStep -Config $Config -Body {
 
 if ($Config.InstallWAC -eq $true) {
     # Retrieve configuration for WAC from the config object
@@ -65,4 +63,5 @@ if ($Config.InstallWAC -eq $true) {
     Write-CustomLog "WAC installation complete."
 } else {
     Write-CustomLog "InstallWAC flag is disabled. Skipping Windows Admin Center installation."
+}
 }

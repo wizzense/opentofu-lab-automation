@@ -1,8 +1,6 @@
-Param(
-    [Parameter(Mandatory=$true)]
-    [PSCustomObject]$Config
-)
-. "$PSScriptRoot\..\runner_utility_scripts\Logger.ps1"
+Param([pscustomobject]$Config)
+. "$PSScriptRoot/../runner_utility_scripts/ScriptTemplate.ps1"
+Invoke-LabStep -Config $Config -Body {
 
 if ($Config.SetDNSServers -eq $true) {
     
@@ -11,4 +9,5 @@ if ($Config.SetDNSServers -eq $true) {
 
 } else {
     Write-CustomLog "SetDNSServers flag is disabled. Skipping DNS configuration."
+}
 }

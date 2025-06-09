@@ -1,8 +1,6 @@
-Param(
-    [Parameter(Mandatory=$true)]
-    [PSCustomObject]$Config
-)
-. "$PSScriptRoot\..\runner_utility_scripts\Logger.ps1"
+Param([pscustomobject]$Config)
+. "$PSScriptRoot/../runner_utility_scripts/ScriptTemplate.ps1"
+Invoke-LabStep -Config $Config -Body {
 
 # Determine InfraPath
 $InfraPath = if ($Config.InfraRepoPath) { $Config.InfraRepoPath } else { "C:\Temp\base-infra" }
@@ -55,4 +53,5 @@ else {
     } finally {
         Pop-Location
     }
+}
 }

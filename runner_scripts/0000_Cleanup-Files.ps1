@@ -1,8 +1,6 @@
-Param(
-    [Parameter(Mandatory=$true)]
-    [PSCustomObject]$Config
-)
-. "$PSScriptRoot\..\runner_utility_scripts\Logger.ps1"
+Param([pscustomobject]$Config)
+. "$PSScriptRoot/../runner_utility_scripts/ScriptTemplate.ps1"
+Invoke-LabStep -Config $Config -Body {
 
 <#
 .SYNOPSIS
@@ -12,8 +10,6 @@ Param(
     and the InfraRepoPath directory if they exist.
 #>
 
-Set-StrictMode -Version Latest
-$ErrorActionPreference = 'Stop'
 
 Push-Location -Path ([System.IO.Path]::GetTempPath())
 
@@ -55,4 +51,4 @@ finally {
         Set-Location $env:TEMP
     }
 }
-
+}
