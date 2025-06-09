@@ -39,20 +39,20 @@ $frontendPath = if ($Config.Node_Dependencies.NpmPath) {
     Join-Path $PSScriptRoot "..\frontend"
 }
 
-if (-not (Test-Path $npmPath)) {
-    Write-Error "ERROR: Frontend folder not found at: $npmPath"
+if (-not (Test-Path $frontendPath)) {
+    Write-Error "ERROR: Frontend folder not found at: $frontendPath"
     exit 1
 }
 
-if (-not (Test-Path (Join-Path $npmPath "package.json"))) {
+if (-not (Test-Path (Join-Path $frontendPath "package.json"))) {
     Write-Error "ERROR: No package.json found in frontend folder. Cannot run npm install."
     exit 1
 }
 
-Push-Location $npmPath
+Push-Location $frontendPath
 
 try {
-    Write-Log "Running npm install in $npmPath ..."
+    Write-Log "Running npm install in $frontendPath ..."
     npm install
     Write-Log "✅ npm install completed."
 } catch {
