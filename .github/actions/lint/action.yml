@@ -15,15 +15,16 @@ runs:
           ~/.local/share/powershell/Modules
           ~/Documents/PowerShell/Modules
         key: ${{ runner.os }}-lint-psmodules-${{ hashFiles('.github/actions/lint/requirements.txt') }}
-        if-no-files-found: ignore
         restore-keys: |
           ${{ runner.os }}-lint-psmodules-
     - name: Install ruff
       shell: bash
       run: pip install "ruff>=0.1"
-    - name: Install PSScriptAnalyzer
+    - name: Resolve Locked PSScriptAnalyzer Module
       shell: pwsh
-      run: Install-Module -Name PSScriptAnalyzer -Force -Scope CurrentUser
+      run: |
+        Remove-Module -Name PSScriptAnalyzer -Force -ErrorAction SilentlyContinue
+        Install-Module -Name PSScriptAnalyzer -Force -Scope CurrentUser
     - name: Run Script Analyzer
       shell: pwsh
       run: |
