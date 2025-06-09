@@ -298,11 +298,18 @@ if (!(Test-Path $repoPath)) {
 # Ensure the desired branch is checked out and up to date
 Push-Location $repoPath
 & "$gitPath" fetch --all
-& "$gitPath" checkout $targetBranch 2>$null
-if ($LASTEXITCODE -ne 0) {
+# Checkout the target branch without failing if we are already on it
+$prevEAP = $ErrorActionPreference
+$ErrorActionPreference = 'Continue'
+$checkoutOutput = & "$gitPath" checkout $targetBranch 2>&1
+$checkoutCode = $LASTEXITCODE
+$ErrorActionPreference = $prevEAP
+
+if ($checkoutCode -ne 0) {
     Write-Warning "Branch '$targetBranch' not found. Using current branch."
 } else {
-    & "$gitPath" pull origin $targetBranch
+    # Suppress noisy output like 'Already on ...' but still ensure the branch is up to date
+    & "$gitPath" pull origin $targetBranch | Out-Null
 }
 Pop-Location
 
