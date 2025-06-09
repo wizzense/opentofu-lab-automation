@@ -51,6 +51,16 @@ try {
     exit 1
 }
 
+# Set default log file path if none is defined
+if (-not (Get-Variable -Name LogFilePath -Scope Global -ErrorAction SilentlyContinue)) {
+    $logDir = $env:LAB_LOG_DIR
+    if (-not $logDir) {
+        if ($IsWindows) { $logDir = 'C:\\temp' } else { $logDir = [System.IO.Path]::GetTempPath() }
+    }
+    if (-not (Test-Path $logDir)) { New-Item -ItemType Directory -Path $logDir -Force | Out-Null }
+    $global:LogFilePath = Join-Path $logDir 'lab.log'
+}
+
 # Fallback inline logger in case dot-sourcing failed
 if (-not (Get-Command Write-CustomLog -ErrorAction SilentlyContinue)) {
     function Write-CustomLog {
