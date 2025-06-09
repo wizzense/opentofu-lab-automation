@@ -149,3 +149,14 @@ And:
 
 
 Will probably change repo name to just 'lab-automation'.
+
+## Utility scripts
+
+`lab_utils/Get-Platform.ps1` detects the current platform.
+Load the function and call it to get `Windows`, `Linux` or `MacOS`.
+
+```powershell
+. ./lab_utils/Get-Platform.ps1
+Get-Platform
+```
+

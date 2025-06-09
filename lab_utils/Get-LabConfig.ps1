@@ -1,6 +1,7 @@
 function Get-LabConfig {
     [CmdletBinding()]
     param(
+
         [string]$Path = (Join-Path $PSScriptRoot '..\config_files\default-config.json')
     )
 
@@ -9,6 +10,7 @@ function Get-LabConfig {
     }
 
     try {
+
         $content = Get-Content -Raw -Path $Path
         if ($Path -match '\.ya?ml$') {
             if (-not (Get-Command ConvertFrom-Yaml -ErrorAction SilentlyContinue)) {
@@ -22,5 +24,7 @@ function Get-LabConfig {
     }
     catch {
         throw "Failed to parse config file $Path. $_"
+
+
     }
 }

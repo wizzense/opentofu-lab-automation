@@ -1,4 +1,5 @@
 Describe 'Get-LabConfig' {
+
     It 'returns PSCustomObject for valid JSON' {
         $modulePath = Join-Path $PSScriptRoot '..\lab_utils\Get-LabConfig.ps1'
         . $modulePath
@@ -22,6 +23,7 @@ Describe 'Get-LabConfig' {
             { Get-LabConfig -Path $badFile } | Should -Throw
         } finally {
             Remove-Item $badFile
+
         }
     }
 }

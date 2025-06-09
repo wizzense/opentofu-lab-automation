@@ -44,6 +44,11 @@ if (-not (Test-Path $loggerPath)) {
 }
 . $loggerPath
 
+# Load config helper
+$labUtilsDir = Join-Path $PSScriptRoot 'lab_utils'
+$labConfigScript = Join-Path $labUtilsDir 'Get-LabConfig.ps1'
+. $labConfigScript
+
 
 # ------------------------------------------------
 # (0) clever? message, take a second...
@@ -102,16 +107,11 @@ else {
 # (1) Load Configuration
 # ------------------------------------------------
 Write-Log "==== Loading configuration file ===="
-if (!(Test-Path $ConfigFile)) {
-    Write-Error "ERROR: Could not find config.json at $ConfigFile"
-    exit 1
-}
-
 try {
-    $config = Get-Content -Raw -Path $ConfigFile | ConvertFrom-Json
+    $config = Get-LabConfig -Path $ConfigFile
     Write-Log "Config file loaded from $ConfigFile."
 } catch {
-    Write-Error "ERROR: Failed to parse JSON from $ConfigFile. $($_.Exception.Message)"
+    Write-Error "ERROR: $($_.Exception.Message)"
     exit 1
 }
 

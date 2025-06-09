@@ -4,8 +4,9 @@ param(
     [string]$RunScripts
 )
 
-# Load logging helper
+# Load helpers
 . "$PSScriptRoot\runner_utility_scripts\Logger.ps1"
+. "$PSScriptRoot\lab_utils\Get-LabConfig.ps1"
 
 function ConvertTo-Hashtable {
     param(
@@ -41,22 +42,38 @@ function Customize-Config {
     param(
         [hashtable]$ConfigObject
     )
-    Write-Log "Customize-Config functionality not implemented. Using existing configuration."
+
+    # Prompt the user for common install flags
+    $installPrompts = @{
+        InstallGit       = 'Install Git'
+        InstallGo        = 'Install Go'
+        InstallOpenTofu  = 'Install OpenTofu'
+    }
+
+    foreach ($key in $installPrompts.Keys) {
+        $current = [bool]$ConfigObject[$key]
+        $answer  = Read-Host "$($installPrompts[$key])? (Y/N) [$current]"
+        if ($answer) {
+            $ConfigObject[$key] = $answer -match '^(?i)y'
+        }
+    }
+
+    # Prompt for key paths
+    $localPath = Read-Host "Local repo path [`$($ConfigObject['LocalPath'])`]"
+    if ($localPath) { $ConfigObject['LocalPath'] = $localPath }
+
+    $npmPath = Read-Host "Path to Node project [`$($ConfigObject.Node_Dependencies.NpmPath)`]"
+    if ($npmPath) { $ConfigObject.Node_Dependencies.NpmPath = $npmPath }
+
     return $ConfigObject
 }
 
 Write-Log "==== Loading configuration ===="
-if (!(Test-Path $ConfigFile)) {
-    Write-Log "ERROR: Cannot find config file at $ConfigFile"
-    exit 1
-}
-
 try {
-    $jsonContent = Get-Content -Path $ConfigFile -Raw
-    $ConfigRaw = ConvertFrom-Json $jsonContent
+    $ConfigRaw = Get-LabConfig -Path $ConfigFile
     $Config = ConvertTo-Hashtable $ConfigRaw
 } catch {
-    Write-Log "ERROR: Failed to parse JSON from $ConfigFile. $_"
+    Write-Log "ERROR: $_"
     exit 1
 }
 
