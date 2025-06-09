@@ -24,4 +24,4 @@ jobs:
       - name: Run Pester
         shell: pwsh
         run: |
-          Invoke-Pester -CI
+          Invoke-Pester -CI -ErrorAction Stop
