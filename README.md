@@ -13,6 +13,7 @@
      - Prompts to installs GitHub CLI if missing.
      - Updates PATH if installed but not found in PATH.
      - Prompts for authentication if not already authenticated.
+     - Run `gh auth login` before using `0001_Reset-Git.ps1` or `0009_Initialize-OpenTofu.ps1`.
   4) Clones this repository from config.json -> RepoUrl to config.json -> LocalPath (or a default path).
   5) Invokes runner.ps1 from this repo. Runner can be ran with optional parameters to automatically run, but it will prompt you to manually select which scripts to run by default.
      - Use `-ConfigFile <path>` to specify an alternative configuration file. If omitted, `runner.ps1` loads `config_files/default-config.json`.
@@ -190,7 +191,18 @@ Node-related installs are controlled under the `Node_Dependencies` section of
 
 The scripts `0201_Install-NodeCore.ps1`, `0202_Install-NodeGlobalPackages.ps1`
 and `0203_Install-npm.ps1` read these keys when installing Node, global npm
-packages, or project dependencies.
+  packages, or project dependencies.
+
+## Troubleshooting
+
+If you encounter `fatal: Class not registered` when cloning on Windows, try using the GitHub CLI:
+
+```powershell
+gh auth login
+gh repo clone <owner/repo>
+```
+
+Using `gh` avoids the COM initialization issues seen with some Git installations.
 
 ## Utility scripts
 
