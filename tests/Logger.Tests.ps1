@@ -4,6 +4,13 @@ Describe 'Write-CustomLog' {
         { Write-CustomLog 'test message' } | Should -Not -Throw
     }
 
+    It 'works under strict mode without global variable' {
+        Remove-Variable -Name LogFilePath -Scope Global -ErrorAction SilentlyContinue
+        Set-StrictMode -Version Latest
+        { Write-CustomLog 'another test' } | Should -Not -Throw
+        Set-StrictMode -Off
+    }
+
     It 'writes to specified log file when provided' {
         $tempFile = Join-Path ([System.IO.Path]::GetTempPath()) ([System.Guid]::NewGuid()).ToString() + '.log'
         Remove-Variable -Name LogFilePath -Scope Global -ErrorAction SilentlyContinue
