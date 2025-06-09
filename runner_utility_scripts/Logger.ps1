@@ -13,6 +13,13 @@ function Write-CustomLog {
         } else {
             $LogFile = Get-Variable -Name LogFilePath -Scope Global -ErrorAction SilentlyContinue |
                        Select-Object -ExpandProperty Value
+            if (-not $LogFile) {
+                $logDir = $env:LAB_LOG_DIR
+                if (-not $logDir) {
+                    if ($IsWindows) { $logDir = 'C:\\temp' } else { $logDir = [System.IO.Path]::GetTempPath() }
+                }
+                $LogFile = Join-Path $logDir 'lab.log'
+            }
         }
     }
     $timestamp = Get-Date -Format 'yyyy-MM-dd HH:mm:ss'
