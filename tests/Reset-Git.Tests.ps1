@@ -12,6 +12,7 @@ Describe '0001_Reset-Git' {
     BeforeAll {
         $ScriptPath = Join-Path $PSScriptRoot '..' 'runner_scripts' '0001_Reset-Git.ps1'
         . (Join-Path $PSScriptRoot '..' 'lab_utils' 'Invoke-LabScript.ps1')
+
     }
 
     Context 'Clone command selection' {
@@ -29,6 +30,7 @@ Describe '0001_Reset-Git' {
             Mock git {}
 
             . $ScriptPath -Config $config
+
 
             Assert-MockCalled gh  -ParameterFilter { $args[0] -eq 'repo' -and $args[1] -eq 'clone' } -Times 1
             Assert-MockNotCalled git
@@ -49,6 +51,7 @@ Describe '0001_Reset-Git' {
             Mock gh  {}
 
             . $ScriptPath -Config $config
+
 
             Assert-MockCalled git -ParameterFilter { $args[0] -eq 'clone' } -Times 1
             Assert-MockNotCalled gh
@@ -73,6 +76,7 @@ Describe '0001_Reset-Git' {
 
             try {
                 . $ScriptPath -Config $config
+
                 # If the script uses `throw`, this assertion is skipped because the Try is exited.
                 $LASTEXITCODE | Should -Be 1
             }
@@ -100,6 +104,7 @@ Describe '0001_Reset-Git' {
             Mock git {}
 
             . $ScriptPath -Config $config
+
 
             Assert-MockCalled gh -ParameterFilter { $args[0] -eq 'auth' -and $args[1] -eq 'status' } -Times 1
             Assert-MockNotCalled gh -ParameterFilter { $args[0] -eq 'repo' -and $args[1] -eq 'clone' }

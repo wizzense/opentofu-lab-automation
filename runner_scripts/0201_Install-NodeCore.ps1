@@ -17,9 +17,11 @@ param(
     [Parameter(Mandatory)]
     [hashtable]$Config
 )
+
 . "$PSScriptRoot\..\lab_utils\Invoke-LabScript.ps1"
 
 Invoke-LabScript -Config $Config -ScriptBlock {
+
 
 $ErrorActionPreference = "Stop"
 

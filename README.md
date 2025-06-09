@@ -115,7 +115,7 @@ Or type 'exit' to quit this script.
 All scripts output to the console using `Write-CustomLog`. If no log file is
 specified, a file named `lab.log` is created in `C:\temp` on Windows (or the
 system temporary directory on other platforms). Set the `LAB_LOG_DIR`
-environment variable or `$global:LogFilePath` to override the location.
+environment variable or `$script:LogFilePath` to override the location.
 
 Make sure to modify the 'main.tf' so it uses your admin credentials and hostname/IP of the host machine if you don't have a customized config.json or choose not to customize.
 
@@ -190,6 +190,7 @@ Node-related installs are controlled under the `Node_Dependencies` section of
   "InstallNodemon": true,
   "InstallNpm": true,
   "NpmPath": "C:\\Projects\\vde-mvp\\frontend",
+  "CreateNpmPath": false,
   "Node": {
     "InstallerUrl": "https://nodejs.org/dist/v20.11.1/node-v20.11.1-x64.msi"
   }

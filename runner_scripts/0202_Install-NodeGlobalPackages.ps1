@@ -27,16 +27,21 @@ param(
     [Parameter(Mandatory)]
     [hashtable]$Config
 )
+
 . "$PSScriptRoot\..\lab_utils\Invoke-LabScript.ps1"
 
 Invoke-LabScript -Config $Config -ScriptBlock {
 
+
 $ErrorActionPreference = "Stop"
 
 function Install-GlobalPackage($package) {
+    [CmdletBinding(SupportsShouldProcess)]
     if (Get-Command npm -ErrorAction SilentlyContinue) {
         Write-CustomLog "Installing npm package: $package..."
-        npm install -g $package
+        if ($PSCmdlet.ShouldProcess($package, 'Install npm package')) {
+            npm install -g $package
+        }
     } else {
         Write-Error "npm is not available. Node.js may not have installed correctly."
     }

@@ -1,8 +1,10 @@
 Describe 'Prepare-HyperVProvider path restoration' {
     It 'restores location after execution' {
+
         $scriptPath = Join-Path $PSScriptRoot '..\runner_scripts\0010_Prepare-HyperVProvider.ps1'
         . (Join-Path $PSScriptRoot '..' 'lab_utils' 'Invoke-LabScript.ps1')
         . (Join-Path $PSScriptRoot '..' 'lab_utils' 'Invoke-LabScript.ps1')
+
         $config = [pscustomobject]@{
             PrepareHyperVHost = $true
             InfraRepoPath = 'C:\\Infra'
@@ -10,13 +12,13 @@ Describe 'Prepare-HyperVProvider path restoration' {
             HostName = 'hvhost'
         }
 
-        $location = 'C:\\Start'
-        $stack = @()
+        $script:location = 'C:\\Start'
+        $script:stack = @()
 
-        Mock Get-Location { $location }
-        Mock Push-Location { $stack += $location }
-        Mock Set-Location { param($Path) $location = $Path }
-        Mock Pop-Location { $location = $stack[-1]; $stack = $stack[0..($stack.Count-2)] }
+        Mock Get-Location { $script:location }
+        Mock Push-Location { $script:stack += $script:location }
+        Mock Set-Location { param($Path) $script:location = $Path }
+        Mock Pop-Location { $script:location = $script:stack[-1]; $script:stack = $script:stack[0..($script:stack.Count-2)] }
 
         Mock Write-CustomLog {}
         Mock Get-WindowsOptionalFeature { @{State='Enabled'} }
@@ -35,13 +37,14 @@ Describe 'Prepare-HyperVProvider path restoration' {
 
         . $scriptPath -Config $config
 
+
         $location | Should -Be 'C:\\Start'
     }
 }
 
 Describe 'Prepare-HyperVProvider certificate handling' {
     It 'creates PEM files and updates providers.tf' {
-        $scriptPath = Join-Path $PSScriptRoot '..\runner_scripts\0010_Prepare-HyperVProvider.ps1'
+        $script:scriptPath = Join-Path $PSScriptRoot '..\runner_scripts\0010_Prepare-HyperVProvider.ps1'
         $tempDir = Join-Path ([System.IO.Path]::GetTempPath()) ([System.Guid]::NewGuid())
         $null = New-Item -ItemType Directory -Path $tempDir
         $config = [pscustomobject]@{
@@ -78,9 +81,43 @@ Describe 'Prepare-HyperVProvider certificate handling' {
 
         . $scriptPath -Config $config
 
+
         Test-Path (Join-Path $tempDir 'TestCA.pem') | Should -BeTrue
         Test-Path (Join-Path $tempDir ("$(hostname).pem")) | Should -BeTrue
         Test-Path (Join-Path $tempDir ("$(hostname)-key.pem")) | Should -BeTrue
         (Get-Content $providerFile -Raw) | Should -Match 'insecure\s*=\s*false'
+    }
+}
+
+Describe 'Convert certificate helpers honour -WhatIf' {
+    It 'skips writing files when WhatIf is used' {
+        $scriptPath = Join-Path $PSScriptRoot '..\runner_scripts\0010_Prepare-HyperVProvider.ps1'
+        . $scriptPath
+        $cer = Join-Path $env:TEMP ([guid]::NewGuid()).ToString() + '.cer'
+        $pem = Join-Path $env:TEMP ([guid]::NewGuid()).ToString() + '.pem'
+        'dummy' | Set-Content -Path $cer
+        Mock Set-Content {}
+        Convert-CerToPem -CerPath $cer -PemPath $pem -WhatIf
+        Assert-MockNotCalled Set-Content
+        Remove-Item $cer -ErrorAction SilentlyContinue
+    }
+
+    It 'skips writing PFX outputs when WhatIf is used' {
+        $scriptPath = Join-Path $PSScriptRoot '..\runner_scripts\0010_Prepare-HyperVProvider.ps1'
+        . $scriptPath
+        $pfx = Join-Path $env:TEMP ([guid]::NewGuid()).ToString() + '.pfx'
+        $cert = Join-Path $env:TEMP ([guid]::NewGuid()).ToString() + '.pem'
+        $key = Join-Path $env:TEMP ([guid]::NewGuid()).ToString() + '-key.pem'
+        'dummy' | Set-Content -Path $pfx
+        $rsa = New-Object psobject
+        $rsa | Add-Member -MemberType ScriptMethod -Name ExportPkcs8PrivateKey -Value { @() }
+        $stub = New-Object psobject
+        $stub | Add-Member -MemberType ScriptMethod -Name Export -Value { param($t) @() }
+        $stub | Add-Member -MemberType ScriptMethod -Name GetRSAPrivateKey -Value { $rsa }
+        Mock Set-Content {}
+        Mock New-Object { $stub }
+        Convert-PfxToPem -PfxPath $pfx -Password (ConvertTo-SecureString 'pw' -AsPlainText -Force) -CertPath $cert -KeyPath $key -WhatIf
+        Assert-MockNotCalled Set-Content
+        Remove-Item $pfx -ErrorAction SilentlyContinue
     }
 }

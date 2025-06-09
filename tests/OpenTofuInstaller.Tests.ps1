@@ -1,6 +1,6 @@
 Describe 'OpenTofuInstaller logging' {
     It 'creates log files and removes them for elevated unpack' -Skip:($IsLinux -or $IsMacOS) {
-        $scriptPath = Join-Path $PSScriptRoot '..\runner_utility_scripts\OpenTofuInstaller.ps1'
+        $script:scriptPath = Join-Path $PSScriptRoot '..\runner_utility_scripts\OpenTofuInstaller.ps1'
         $temp = Join-Path ([System.IO.Path]::GetTempPath()) ([System.Guid]::NewGuid())
         New-Item -ItemType Directory -Path $temp | Out-Null
         $zipPath = Join-Path $temp 'tofu_0.0.0_windows_amd64.zip'
@@ -13,30 +13,32 @@ Describe 'OpenTofuInstaller logging' {
             } else { New-Item -ItemType File -Path $OutFile -Force | Out-Null }
         }
         Mock Expand-Archive {}
-        $logFile = $null
+        $script:logFile = $null
         Mock Start-Process {
             param($FilePath, $ArgumentList, $RedirectStandardOutput, $RedirectStandardError)
-            $logFile = $RedirectStandardOutput
+            $null = $FilePath
+            $null = $ArgumentList
+            $script:logFile = $RedirectStandardOutput
             New-Item -ItemType File -Path $RedirectStandardOutput -Force | Out-Null
             New-Item -ItemType File -Path $RedirectStandardError -Force | Out-Null
             $proc = New-Object psobject -Property @{ ExitCode = 0 }
             $proc | Add-Member -MemberType ScriptMethod -Name WaitForExit -Value { }
             return $proc
         }
-        & $scriptPath -installMethod standalone -opentofuVersion '0.0.0' -installPath $temp -allUsers -skipVerify -skipChangePath | Out-Null
+        & $script:scriptPath -installMethod standalone -opentofuVersion '0.0.0' -installPath $temp -allUsers -skipVerify -skipChangePath | Out-Null
         Assert-MockCalled Start-Process -Times 1
-        (Test-Path $logFile) | Should -BeFalse
+        (Test-Path $script:logFile) | Should -BeFalse
         Remove-Item -Recurse -Force $temp
     }
 }
 
 Describe 'OpenTofuInstaller error handling' {
     It 'returns install failed exit code when cosign is missing' {
-        $scriptPath = Join-Path $PSScriptRoot '..\runner_utility_scripts\OpenTofuInstaller.ps1'
+        $script:scriptPath = Join-Path $PSScriptRoot '..\runner_utility_scripts\OpenTofuInstaller.ps1'
         $arguments = @(
             '-NoLogo',
             '-NoProfile',
-            '-File', $scriptPath,
+            '-File', $script:scriptPath,
             '-installMethod', 'standalone',
             '-cosignPath', 'nonexistent.exe',
             '-gpgPath', 'nonexistent.exe'

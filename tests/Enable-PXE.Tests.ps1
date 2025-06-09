@@ -1,6 +1,6 @@
 Describe '0112_Enable-PXE' {
     BeforeAll {
-        $scriptPath = Join-Path $PSScriptRoot '..\runner_scripts\0112_Enable-PXE.ps1'
+        $script:scriptPath = Join-Path $PSScriptRoot '..\runner_scripts\0112_Enable-PXE.ps1'
         $loggerPath = Join-Path $PSScriptRoot '..\runner_utility_scripts\Logger.ps1'
         . $loggerPath
     }
@@ -10,7 +10,7 @@ Describe '0112_Enable-PXE' {
         $logPath = Join-Path $env:TEMP ('pxe-log-' + [System.Guid]::NewGuid().ToString() + '.txt')
         $script:LogFilePath = $logPath
         try {
-            & $scriptPath -Config $Config | Out-Null
+            & $script:scriptPath -Config $Config | Out-Null
             $log = Get-Content -Raw $logPath
             $log | Should -Match 'prov-pxe-67'
             $log | Should -Match 'prov-pxe-69'

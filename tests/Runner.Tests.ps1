@@ -117,6 +117,36 @@ exit 0
         }
     }
 
+    It 'forces script execution when flag disabled using -Force' {
+        $tempDir = Join-Path ([System.IO.Path]::GetTempPath()) ([System.Guid]::NewGuid())
+        $null = New-Item -ItemType Directory -Path $tempDir
+        try {
+            Copy-Item $script:runnerPath -Destination $tempDir
+            Copy-Item (Join-Path $PSScriptRoot '..\runner_utility_scripts') -Destination $tempDir -Recurse
+            Copy-Item (Join-Path $PSScriptRoot '..\lab_utils') -Destination $tempDir -Recurse
+            $configDir = Join-Path $tempDir 'config_files'
+            $null = New-Item -ItemType Directory -Path $configDir
+            $configFile = Join-Path $configDir 'config.json'
+            '{ "RunFoo": false }' | Set-Content -Path $configFile
+            $scriptsDir = Join-Path $tempDir 'runner_scripts'
+            $null = New-Item -ItemType Directory -Path $scriptsDir
+            $out = Join-Path $tempDir 'out.txt'
+            $scriptFile = Join-Path $scriptsDir '0001_Test.ps1'
+            @"`nparam([PSCustomObject]`$Config)
+if (`$Config.RunFoo -eq `$true) { 'foo' | Out-File -FilePath '$out' } else { Write-Output 'skip' }"@ | Set-Content -Path $scriptFile
+
+            Push-Location $tempDir
+            Mock Read-Host { throw 'Read-Host should not be called' }
+            & "$tempDir/runner.ps1" -Scripts '0001' -Auto -ConfigFile $configFile -Force | Out-Null
+            $updated = Get-Content -Raw $configFile | ConvertFrom-Json
+            Pop-Location
+
+            Test-Path $out | Should -BeTrue
+            $updated.RunFoo | Should -BeTrue
+        }
+        finally { Remove-Item -Recurse -Force $tempDir }
+    }
+
     It 'prompts for script selection when no -Scripts argument is supplied' -Skip:($IsLinux -or $IsMacOS) {
         $tempDir = Join-Path ([System.IO.Path]::GetTempPath()) ([System.Guid]::NewGuid())
         $null = New-Item -ItemType Directory -Path $tempDir
@@ -152,6 +182,7 @@ exit 0' | Set-Content -Path $dummy
 Describe 'Set-LabConfig' {
     BeforeAll {
         function Set-LabConfig {
+            [CmdletBinding(SupportsShouldProcess)]
             param([hashtable]$ConfigObject)
 
         $installPrompts = @{ 
@@ -170,6 +201,8 @@ Describe 'Set-LabConfig' {
 
         $npmPath = Read-Host "Path to Node project [`$($ConfigObject.Node_Dependencies.NpmPath)`]"
         if ($npmPath) { $ConfigObject.Node_Dependencies.NpmPath = $npmPath }
+        $createPath = Read-Host "Create NpmPath if missing? (Y/N) [`$($ConfigObject.Node_Dependencies.CreateNpmPath)`]"
+        if ($createPath) { $ConfigObject.Node_Dependencies.CreateNpmPath = $createPath -match '^(?i)y' }
 
         return $ConfigObject
     }
@@ -181,10 +214,10 @@ Describe 'Set-LabConfig' {
             InstallGo  = $false
             InstallOpenTofu = $false
             LocalPath = ''
-            Node_Dependencies = @{ NpmPath = 'C:\\Old' }
+            Node_Dependencies = @{ NpmPath = 'C:\\Old'; CreateNpmPath = $false }
         }
 
-        $answers = @('Y','N','Y','C:\\Repo','C:\\Node')
+        $answers = @('Y','N','Y','C:\\Repo','C:\\Node','Y')
         $script:idx = 0
         function global:Read-Host {
             param([string]$Prompt)
@@ -204,6 +237,7 @@ Describe 'Set-LabConfig' {
         $saved.InstallOpenTofu | Should -BeTrue
         $saved.LocalPath | Should -Be 'C:\\Repo'
         $saved.Node_Dependencies.NpmPath | Should -Be 'C:\\Node'
+        $saved.Node_Dependencies.CreateNpmPath | Should -BeTrue
 
         Remove-Item $temp -ErrorAction SilentlyContinue
     }
