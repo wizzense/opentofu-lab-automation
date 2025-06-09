@@ -591,17 +591,20 @@ function installStandalone() {
     }
 }
 
-function escapePathArgument() {
+function escapePathArgument {
+    [CmdletBinding()]
     param(
         [Parameter(Mandatory=$true, ValueFromPipeline=$true)]
-        [string] $path
+        [string] $Path
     )
 
-    if ($path -contains '"') {
-        throw [InvalidArgumentException]::new("Invalid path: ${path}")
-    }
+    process {
+        if ($Path -contains '"') {
+            throw [InvalidArgumentException]::new("Invalid path: ${Path}")
+        }
 
-    return "`"${path}`""
+        "`"${Path}`""
+    }
 }
 
 function usage() {
@@ -619,7 +622,6 @@ ${bold}${blue}OPTIONS for all installation methods:${normal}
   ${bold}-skipChangePath${normal}               Skip changing the user/system path to include the OpenTofu path.
   ${bold}-skipVerify${normal}                   Skip cosign integrity verification.
                                 (${bold}${red}not recommended${normal}).
-  ${bold}-debug${normal}                        Enable debug logging.
 
 ${bold}${blue}OPTIONS for the standalone installation:${normal}
 
@@ -660,11 +662,11 @@ ${bold}${blue}Exit codes:${normal}
   ${bold}${exitCodeInvalidArgument}${normal}                             Invalid configuration options.
 
 "@
-    Write-Host $usageText
+    Write-Output $usageText
 }
 
-Write-Host "${blue}${bold}OpenTofu Installer${normal}"
-Write-Host ""
+Write-Output "${blue}${bold}OpenTofu Installer${normal}"
+Write-Output ""
 if ($help) {
     usage
     exit $exitCodeOK

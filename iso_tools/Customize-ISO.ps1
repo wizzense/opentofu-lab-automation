@@ -59,43 +59,43 @@ Remove-Item -Recurse -Force $MountPath
 
 # Ensure running as Administrator
 if (-not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) {
-    Write-Host "Please run this script as Administrator!" -ForegroundColor Red
+    Write-CustomLog "Please run this script as Administrator!"
     exit
 }
 
 # Step 1: Mount the Windows ISO
-Write-Host "Mounting Windows ISO..." -ForegroundColor Yellow
+Write-CustomLog "Mounting Windows ISO..."
 $ISO = Mount-DiskImage -ImagePath $ISOPath -PassThru
 $DriveLetter = ($ISO | Get-Volume).DriveLetter + ":"
 
 # Step 2: Extract ISO contents
-Write-Host "Extracting ISO contents to $ExtractPath..." -ForegroundColor Yellow
+Write-CustomLog "Extracting ISO contents to $ExtractPath..."
 if (-Not (Test-Path $ExtractPath)) { New-Item -Path $ExtractPath -ItemType Directory | Out-Null }
 robocopy "$DriveLetter\" $ExtractPath /E /NFL /NDL /NJH /NJS /NC /NS
 
 # Step 3: Dismount the ISO
-Write-Host "Dismounting ISO..." -ForegroundColor Yellow
+Write-CustomLog "Dismounting ISO..."
 Dismount-DiskImage -ImagePath $ISOPath
 
 # Step 4: Mount the Install.wim Image
-Write-Host "Mounting install.wim..." -ForegroundColor Yellow
+Write-CustomLog "Mounting install.wim..."
 if (-Not (Test-Path $MountPath)) { New-Item -Path $MountPath -ItemType Directory | Out-Null }
 dism /Mount-Image /ImageFile:$WIMFile /Index:$WIMIndex /MountDir:$MountPath
 
 # Step 5: Copy bootstrap.ps1 into Windows
-Write-Host "Copying setup.ps1 into Windows..." -ForegroundColor Green
+Write-CustomLog "Copying setup.ps1 into Windows..."
 Copy-Item $SetupScript -Destination "$MountPath\Windows\bootstrap.ps1" -Force
 
 # Step 6: Commit Changes & Unmount WIM
-Write-Host "Committing changes and unmounting install.wim..." -ForegroundColor Yellow
+Write-CustomLog "Committing changes and unmounting install.wim..."
 dism /Unmount-Image /MountDir:$MountPath /Commit
 
 # Step 7: Add autounattend.xml to ISO root
-Write-Host "Copying autounattend.xml to ISO root..." -ForegroundColor Green
+Write-CustomLog "Copying autounattend.xml to ISO root..."
 Copy-Item $UnattendXML -Destination "$ExtractPath\autounattend.xml" -Force
 
 # Step 8: Recreate Bootable ISO
-Write-Host "Recreating bootable ISO..." -ForegroundColor Yellow
+Write-CustomLog "Recreating bootable ISO..."
 Start-Process -FilePath $OscdimgExe -ArgumentList @(
     "-m",
     "-o",
@@ -106,4 +106,4 @@ Start-Process -FilePath $OscdimgExe -ArgumentList @(
     "`"$OutputISO`""
 ) -NoNewWindow -Wait
 
-Write-Host "Custom ISO creation complete! New ISO saved as $OutputISO" -ForegroundColor Green
+Write-CustomLog "Custom ISO creation complete! New ISO saved as $OutputISO"

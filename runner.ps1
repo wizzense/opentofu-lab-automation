@@ -38,7 +38,7 @@ function ConvertTo-Hashtable {
     }
 }
 
-function Customize-Config {
+function Set-LabConfig {
     param(
         [hashtable]$ConfigObject
     )
@@ -85,7 +85,7 @@ Write-CustomLog $formattedConfig
 if (-not $Auto) {
     $customize = Read-Host "Would you like to customize your configuration? (Y/N)"
     if ($customize -match '^(?i)y') {
-        $Config = Customize-Config -ConfigObject $Config
+        $Config = Set-LabConfig -ConfigObject $Config
         # Save the updated configuration
         $Config | ConvertTo-Json -Depth 5 | Out-File -FilePath $ConfigFile -Encoding utf8
         Write-CustomLog "Configuration updated and saved to $ConfigFile"
@@ -176,7 +176,14 @@ if ($ScriptsToRun) {
     foreach ($Script in $ScriptsToRun) {
         Write-CustomLog "`n--- Running: $($Script.Name) ---"
         try {
-            & "$PSScriptRoot\runner_scripts\$($Script.Name)" -Config $Config
+            $scriptPath = "$PSScriptRoot\runner_scripts\$($Script.Name)"
+            $cmdInfo = Get-Command -Name $scriptPath -ErrorAction SilentlyContinue
+            if ($cmdInfo -and $cmdInfo.Parameters.ContainsKey('Config')) {
+                & $scriptPath -Config $Config
+            }
+            else {
+                & $scriptPath
+            }
             if ($LASTEXITCODE -ne 0) {
                 Write-CustomLog "ERROR: $($Script.Name) exited with code $LASTEXITCODE."
                 $failed += $Script.Name

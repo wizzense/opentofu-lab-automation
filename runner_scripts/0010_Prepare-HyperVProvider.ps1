@@ -255,8 +255,6 @@ $taliesinsDir = Join-Path -Path $env:GOPATH -ChildPath "src\\github.com\\taliesi
 if (!(Test-Path $taliesinsDir)) {
     New-Item -ItemType Directory -Force -Path $taliesinsDir | Out-Null
 }
-# Capture current location so we can restore it later
-$originalLocation = Get-Location
 Push-Location
 Set-Location $taliesinsDir
 
@@ -315,7 +313,7 @@ if (Test-Path $tfFile) {
 } else {
     Write-CustomLog "providers.tf not found in $infraRepoPath; skipping provider config update."
 }
-    Write-Host @"
+    Write-CustomLog @"
 Done preparing Hyper-V host and installing the provider.
 You can now run 'tofu plan'/'tofu apply' in $infraRepoPath.
 "@
