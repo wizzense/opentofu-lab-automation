@@ -144,7 +144,8 @@ if (Test-Path $gitPath) {
 
 # Double-check Git
 try {
-    & "$gitPath" --version | Write-Log
+    $gitVersion = & "$gitPath" --version
+    Write-Log $gitVersion
     Write-Log "Git is installed and working."
 } catch {
     Write-Error "ERROR: Git installation failed or is not accessible. Exiting."
