@@ -313,8 +313,11 @@ if (Test-Path $tfFile) {
 } else {
     Write-CustomLog "providers.tf not found in $infraRepoPath; skipping provider config update."
 }
-    Write-CustomLog @"
+Write-CustomLog @"
 Done preparing Hyper-V host and installing the provider.
 You can now run 'tofu plan'/'tofu apply' in $infraRepoPath.
 "@
+} else {
+    Write-CustomLog "PrepareHyperVHost flag is disabled. Skipping Hyper-V host preparation."
 }
+

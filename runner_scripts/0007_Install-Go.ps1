@@ -45,5 +45,7 @@ if ($Config.InstallGo -eq $true) {
     Start-Process msiexec.exe -Wait -ArgumentList "/i `"$installerPath`" /qn /L*v `"$env:TEMP\GoInstall.log`""
 
     Write-CustomLog "Go installation complete."
+} else {
+    Write-CustomLog "InstallGo flag is disabled. Skipping Go installation."
 }
 

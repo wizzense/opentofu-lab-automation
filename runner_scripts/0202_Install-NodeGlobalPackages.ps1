@@ -45,14 +45,21 @@ Write-CustomLog "==== [0202] Installing Global npm Packages ===="
 # --- npm Packages ---
 if ($Config.Node_Dependencies.InstallYarn) {
     Install-GlobalPackage "yarn"
+} else {
+    Write-CustomLog "InstallYarn flag is disabled. Skipping yarn installation."
 }
 
 if ($Config.Node_Dependencies.InstallVite) {
     Install-GlobalPackage "vite"
+} else {
+    Write-CustomLog "InstallVite flag is disabled. Skipping vite installation."
 }
 
 if ($Config.Node_Dependencies.InstallNodemon) {
     Install-GlobalPackage "nodemon"
+} else {
+    Write-CustomLog "InstallNodemon flag is disabled. Skipping nodemon installation."
 }
 
 Write-CustomLog "==== Global npm package installation complete ===="
+

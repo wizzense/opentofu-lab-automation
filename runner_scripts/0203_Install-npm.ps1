@@ -31,6 +31,8 @@ param(
 $ErrorActionPreference = "Stop"
 Write-CustomLog "==== [0203] Installing Frontend npm Dependencies ===="
 
+if ($Config.Node_Dependencies.InstallNpm) {
+
 # Determine frontend path
 $frontendPath = if ($Config.Node_Dependencies.NpmPath) {
 
@@ -62,3 +64,7 @@ try {
 
 Pop-Location
 Write-CustomLog "==== Frontend dependency installation complete ===="
+} else {
+    Write-CustomLog "InstallNpm flag is disabled. Skipping project dependency installation."
+}
+

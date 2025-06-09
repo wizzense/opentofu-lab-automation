@@ -189,4 +189,6 @@ NEXT STEPS:
 Set-Location $infraRepoPath
 exit 0
 
+} else {
+    Write-CustomLog "InitializeOpenTofu flag is disabled. Skipping initialization."
 }
