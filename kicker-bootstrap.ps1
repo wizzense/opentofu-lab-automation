@@ -47,6 +47,13 @@ if (-not (Test-Path $loggerPath)) {
 # Load config helper
 $labUtilsDir = Join-Path $PSScriptRoot 'lab_utils'
 $labConfigScript = Join-Path $labUtilsDir 'Get-LabConfig.ps1'
+if (-not (Test-Path $labConfigScript)) {
+    if (-not (Test-Path $labUtilsDir)) {
+        New-Item -ItemType Directory -Path $labUtilsDir -Force | Out-Null
+    }
+    $labConfigUrl = 'https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/main/lab_utils/Get-LabConfig.ps1'
+    Invoke-WebRequest -Uri $labConfigUrl -OutFile $labConfigScript
+}
 . $labConfigScript
 
 
