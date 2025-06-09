@@ -5,69 +5,58 @@ param(
     [switch]$Force
 )
 
-# Load helpers
+# ─── Load helpers ──────────────────────────────────────────────────────────────
 . "$PSScriptRoot\runner_utility_scripts\Logger.ps1"
 . "$PSScriptRoot\lab_utils\Get-LabConfig.ps1"
+. "$PSScriptRoot\lab_utils\Format-Config.ps1"
+. "$PSScriptRoot\lab_utils\Menu.ps1"
 
-# Set default log file path if none is defined
+# ─── Default log path ─────────────────────────────────────────────────────────
 if (-not (Get-Variable -Name LogFilePath -Scope Script -ErrorAction SilentlyContinue) -and
     -not (Get-Variable -Name LogFilePath -Scope Global -ErrorAction SilentlyContinue)) {
+
     $logDir = $env:LAB_LOG_DIR
-    if (-not $logDir) {
-        if ($IsWindows) { $logDir = 'C:\\temp' } else { $logDir = [System.IO.Path]::GetTempPath() }
-    }
+    if (-not $logDir) { $logDir = $IsWindows ? 'C:\temp' : [System.IO.Path]::GetTempPath() }
     if (-not (Test-Path $logDir)) { New-Item -ItemType Directory -Path $logDir -Force | Out-Null }
     $script:LogFilePath = Join-Path $logDir 'lab.log'
 }
 
+# ─── Utility helpers ──────────────────────────────────────────────────────────
 function ConvertTo-Hashtable {
-    param(
-        $obj
-    )
-    if ($obj -is [System.Collections.IDictionary]) {
-        $ht = @{}
-        foreach ($key in $obj.Keys) {
-            $ht[$key] = ConvertTo-Hashtable $obj[$key]
+    param($obj)
+    switch ($obj) {
+        { $_ -is [System.Collections.IDictionary] } {
+            $ht = @{}
+            foreach ($k in $_.Keys) { $ht[$k] = ConvertTo-Hashtable $_[$k] }
+            return $ht
         }
-        return $ht
-    }
-    elseif ($obj -is [System.Collections.IEnumerable] -and -not ($obj -is [string])) {
-        $arr = @()
-        foreach ($item in $obj) {
-            $arr += ConvertTo-Hashtable $item
+        { $_ -is [System.Collections.IEnumerable] -and -not ($_ -is [string]) } {
+            return $_ | ForEach-Object { ConvertTo-Hashtable $_ }
         }
-        return $arr
-    }
-    elseif ($obj -is [PSCustomObject]) {
-        $ht = @{}
-        foreach ($prop in $obj.PSObject.Properties) {
-            $ht[$prop.Name] = ConvertTo-Hashtable $prop.Value
+        { $_ -is [PSCustomObject] } {
+            $ht = @{}
+            foreach ($p in $_.PSObject.Properties) { $ht[$p.Name] = ConvertTo-Hashtable $p.Value }
+            return $ht
         }
-        return $ht
-    }
-    else {
-        return $obj
+        default { return $_ }
     }
 }
 
 function Get-ScriptConfigFlag {
     param([string]$Path)
     $content = Get-Content -Path $Path -Raw -ErrorAction SilentlyContinue
-    if ($content -match '\$Config\.([A-Za-z0-9_\.]+)\s*-eq\s*\$true') {
-        return $matches[1]
-    }
-    elseif ($content -match '\$config\.([A-Za-z0-9_\.]+)\s*-eq\s*\$true') {
-        return $matches[1]
-    }
+    if ($content -match '\$Config\.([A-Za-z0-9_\.]+)\s*-eq\s*\$true') { return $matches[1] }
+    if ($content -match '\$config\.([A-Za-z0-9_\.]+)\s*-eq\s*\$true') { return $matches[1] }
     return $null
 }
 
 function Get-NestedConfigValue {
     param([hashtable]$Config, [string]$Path)
     $parts = $Path -split '\.'
-    $cur = $Config
+    $cur   = $Config
     foreach ($p in $parts) {
-        if ($cur.ContainsKey($p)) { $cur = $cur[$p] } else { return $null }
+        if (-not $cur.ContainsKey($p)) { return $null }
+        $cur = $cur[$p]
     }
     return $cur
 }
@@ -75,39 +64,32 @@ function Get-NestedConfigValue {
 function Set-NestedConfigValue {
     param([hashtable]$Config, [string]$Path, [object]$Value)
     $parts = $Path -split '\.'
-    $cur = $Config
-    for ($i=0; $i -lt $parts.Length - 1; $i++) {
-        $part = $parts[$i]
-        if (-not $cur.ContainsKey($part)) { $cur[$part] = @{} }
-        $cur = $cur[$part]
+    $cur   = $Config
+    for ($i = 0; $i -lt $parts.Length - 1; $i++) {
+        if (-not $cur.ContainsKey($parts[$i])) { $cur[$parts[$i]] = @{} }
+        $cur = $cur[$parts[$i]]
     }
     $cur[$parts[-1]] = $Value
 }
 
 function Set-LabConfig {
     [CmdletBinding(SupportsShouldProcess)]
-    param(
-        [hashtable]$ConfigObject
-    )
+    param([hashtable]$ConfigObject)
 
-    # Prompt the user for common install flags
     $installPrompts = @{
-        InstallGit       = 'Install Git'
-        InstallGo        = 'Install Go'
-        InstallOpenTofu  = 'Install OpenTofu'
+        InstallGit      = 'Install Git'
+        InstallGo       = 'Install Go'
+        InstallOpenTofu = 'Install OpenTofu'
     }
 
-    foreach ($key in $installPrompts.Keys) {
-        $current = [bool]$ConfigObject[$key]
-        $answer  = Read-Host "$($installPrompts[$key])? (Y/N) [$current]"
-        if ($answer) {
-            $ConfigObject[$key] = $answer -match '^(?i)y'
-        }
+    foreach ($k in $installPrompts.Keys) {
+        $current = [bool]$ConfigObject[$k]
+        $ans     = Read-Host "$($installPrompts[$k])? (Y/N) [$current]"
+        if ($ans) { $ConfigObject[$k] = $ans -match '^(?i)y' }
     }
 
-    # Prompt for key paths
-    $localPath = Read-Host "Local repo path [`$($ConfigObject['LocalPath'])`]"
-    if ($localPath) { $ConfigObject['LocalPath'] = $localPath }
+    $localPath = Read-Host "Local repo path [`$($ConfigObject.LocalPath)`]"
+    if ($localPath) { $ConfigObject.LocalPath = $localPath }
 
     $npmPath = Read-Host "Path to Node project [`$($ConfigObject.Node_Dependencies.NpmPath)`]"
     if ($npmPath) { $ConfigObject.Node_Dependencies.NpmPath = $npmPath }
@@ -115,132 +97,124 @@ function Set-LabConfig {
     return $ConfigObject
 }
 
+# ─── Load configuration ───────────────────────────────────────────────────────
 Write-CustomLog "==== Loading configuration ===="
 try {
     $ConfigRaw = Get-LabConfig -Path $ConfigFile
-    $Config = ConvertTo-Hashtable $ConfigRaw
+    $Config    = ConvertTo-Hashtable $ConfigRaw
 } catch {
     Write-CustomLog "ERROR: $_"
     exit 1
 }
 
-Write-CustomLog "==== Current configuration ===="
-$formattedConfig = $ConfigRaw | ConvertTo-Json -Depth 5
-Write-CustomLog $formattedConfig
+Write-CustomLog "==== Configuration summary ===="
+Write-CustomLog (Format-Config -Config $ConfigRaw)
 
-# If not in Auto mode, allow customization
+# ─── Optional customization ──────────────────────────────────────────────────
 if (-not $Auto) {
-    $customize = Read-Host "Would you like to customize your configuration? (Y/N)"
-    if ($customize -match '^(?i)y') {
+    if ((Read-Host "Customize configuration? (Y/N)") -match '^(?i)y') {
         $Config = Set-LabConfig -ConfigObject $Config
         if ($PSCmdlet.ShouldProcess($ConfigFile, 'Save updated configuration')) {
-            $Config | ConvertTo-Json -Depth 5 | Out-File -FilePath $ConfigFile -Encoding utf8
+            $Config | ConvertTo-Json -Depth 5 | Out-File $ConfigFile -Encoding utf8
             Write-CustomLog "Configuration updated and saved to $ConfigFile"
         }
     }
 }
 
+# ─── Discover scripts ────────────────────────────────────────────────────────
 Write-CustomLog "==== Locating scripts ===="
-$ScriptFiles = Get-ChildItem -Path .\runner_scripts -Filter "????_*.ps1" -File | Sort-Object -Property Name
-
-if (!$ScriptFiles) {
-    Write-CustomLog "ERROR: No scripts found matching ????_*.ps1 in current directory."
+$ScriptFiles = Get-ChildItem .\runner_scripts -Filter "????_*.ps1" -File | Sort-Object Name
+if (-not $ScriptFiles) {
+    Write-CustomLog "ERROR: No scripts found matching pattern."
     exit 1
 }
+Write-CustomLog "`n==== Found scripts ===="
+$ScriptFiles | ForEach-Object { Write-CustomLog "$($_.Name.Substring(0,4)) - $($_.Name)" }
 
-Write-CustomLog "`n==== Found the following scripts ===="
-foreach ($Script in $ScriptFiles) {
-    $prefix = $Script.Name.Substring(0,4)
-    Write-CustomLog "$prefix - $($Script.Name)"
-}
-
+# ─── Execution helpers ───────────────────────────────────────────────────────
 function Invoke-Scripts {
     param([array]$ScriptsToRun)
 
     if ($ScriptsToRun.Count -gt 1) {
         $cleanup = $ScriptsToRun | Where-Object { $_.Name.Substring(0,4) -eq '0000' }
         if ($cleanup) {
-            Write-CustomLog "WARNING: Cleanup script 0000 will remove local files. Remaining scripts will be unavailable."
+            Write-CustomLog "WARNING: Cleanup script 0000 will remove local files."
             if (-not $Auto) {
-                $resp = Read-Host "Continue with cleanup and exit? (Y/N)"
-                if ($resp -notmatch '^(?i)y') { Write-CustomLog 'Aborting per user request.'; return }
+                if ((Read-Host "Continue with cleanup and exit? (Y/N)") -notmatch '^(?i)y') {
+                    Write-CustomLog 'Aborting per user request.'; return $false
+                }
             }
             $ScriptsToRun = $cleanup
         }
     }
 
-    if ($ScriptsToRun) {
-        Write-CustomLog "`n==== Executing selected scripts ===="
-        $failed = @()
-        foreach ($Script in $ScriptsToRun) {
-            Write-CustomLog "`n--- Running: $($Script.Name) ---"
-            try {
-                $scriptPath = "$PSScriptRoot\runner_scripts\$($Script.Name)"
-                $flag = Get-ScriptConfigFlag -Path $scriptPath
-                if ($flag) {
-                    $current = Get-NestedConfigValue -Config $Config -Path $flag
-                    if (-not $current) {
-                        if ($Force) {
-                            Set-NestedConfigValue -Config $Config -Path $flag -Value $true
-                        } elseif (-not $Auto) {
-                            $ans = Read-Host "Flag '$flag' is disabled. Enable and run? (Y/N)"
-                            if ($ans -match '^(?i)y') { Set-NestedConfigValue -Config $Config -Path $flag -Value $true }
-                        }
+    if (-not $ScriptsToRun) { Write-CustomLog "No scripts selected."; return $true }
+
+    Write-CustomLog "`n==== Executing selected scripts ===="
+    $failed = @()
+    foreach ($s in $ScriptsToRun) {
+        Write-CustomLog "`n--- Running: $($s.Name) ---"
+        try {
+            $scriptPath = "$PSScriptRoot\runner_scripts\$($s.Name)"
+            if ($flag = Get-ScriptConfigFlag -Path $scriptPath) {
+                $current = Get-NestedConfigValue -Config $Config -Path $flag
+                if (-not $current) {
+                    if ($Force)      { Set-NestedConfigValue -Config $Config -Path $flag -Value $true }
+                    elseif (-not $Auto -and (Read-Host "Enable flag '$flag' and run? (Y/N)") -match '^(?i)y') {
+                        Set-NestedConfigValue -Config $Config -Path $flag -Value $true
                     }
                 }
-
-                $cmdInfo = Get-Command -Name $scriptPath -ErrorAction SilentlyContinue
-                if ($cmdInfo -and $cmdInfo.Parameters.ContainsKey('Config')) {
-                    & $scriptPath -Config $Config
-                } else {
-                    & $scriptPath
-                }
-                if ($LASTEXITCODE -ne 0) { Write-CustomLog "ERROR: $($Script.Name) exited with code $LASTEXITCODE."; $failed += $Script.Name }
-                else { Write-CustomLog "$($Script.Name) completed successfully." }
-            } catch {
-                Write-CustomLog ("ERROR: Exception in $($Script.Name). {0}`n{1}" -f $PSItem.Exception.Message, $PSItem.ScriptStackTrace)
-                $failed += $Script.Name
             }
+
+            $cmd = Get-Command -Name $scriptPath -ErrorAction SilentlyContinue
+            if ($cmd -and $cmd.Parameters.ContainsKey('Config')) { & $scriptPath -Config $Config }
+            else                                               { & $scriptPath }
+
+            if ($LASTEXITCODE) {
+                Write-CustomLog "ERROR: $($s.Name) exited with code $LASTEXITCODE."
+                $failed += $s.Name
+            } else {
+                Write-CustomLog "$($s.Name) completed successfully."
+            }
+        } catch {
+            Write-CustomLog "ERROR: Exception in $($s.Name): $_"
+            $failed += $s.Name
         }
-        $Config | ConvertTo-Json -Depth 5 | Out-File -FilePath $ConfigFile -Encoding utf8
-        Write-CustomLog "`n==== Selected scripts execution completed! ===="
-        if ($failed.Count -gt 0) { Write-CustomLog "Failures occurred in: $($failed -join ', ')"; return $false }
-    } else {
-        Write-CustomLog "No scripts selected to run."
     }
+
+    $Config | ConvertTo-Json -Depth 5 | Out-File $ConfigFile -Encoding utf8
+    Write-CustomLog "`n==== Script run complete ===="
+    if ($failed) { Write-CustomLog "Failures: $($failed -join ', ')"; return $false }
     return $true
 }
 
 function Select-Scripts {
     param([string]$Input)
     if ($Input -eq 'all') { return $ScriptFiles }
-    $selectedPrefixes = $Input -split ',' | ForEach-Object { $_.Trim() } | Where-Object { $_ -match '^\d{4}$' }
-    if (!$selectedPrefixes) { Write-CustomLog "No valid 4-digit prefixes found."; return @() }
-    $res = $ScriptFiles | Where-Object { $selectedPrefixes -contains $_.Name.Substring(0,4) }
-    if (!$res) { Write-CustomLog "None of the provided prefixes match the scripts in the folder." }
-    return $res
+    $prefixes = $Input -split ',' | ForEach-Object { $_.Trim() } | Where-Object { $_ -match '^\d{4}$' }
+    if (-not $prefixes)   { Write-CustomLog "No valid prefixes."; return @() }
+    $matches  = $ScriptFiles | Where-Object { $prefixes -contains $_.Name.Substring(0,4) }
+    if (-not $matches)    { Write-CustomLog "No matching scripts."; }
+    return $matches
 }
 
-if ($Scripts -eq 'all' -or $Scripts) {
-    $selected = if ($Scripts -eq 'all') { $ScriptFiles } else { Select-Scripts -Input $Scripts }
-    if ($selected.Count -eq 0) { exit 1 }
-    $ok = Invoke-Scripts -ScriptsToRun $selected
-    exit (if ($ok) {0} else {1})
+# ─── Non-interactive or interactive execution ────────────────────────────────
+if ($Scripts) {
+    $sel = Select-Scripts -Input ($Scripts -eq 'all' ? 'all' : $Scripts)
+    if (-not $sel) { exit 1 }
+    if (-not (Invoke-Scripts -ScriptsToRun $sel)) { exit 1 }
+    exit 0
 }
 
-# Interactive mode
 while ($true) {
     Write-CustomLog "`nTo run ALL scripts, type 'all'."
-    Write-CustomLog "To run specific scripts, provide comma-separated 4-digit prefixes (e.g. 0001,0003)."
+    Write-CustomLog "To run specific scripts, give comma-separated 4-digit prefixes (e.g. 0001,0003)."
     Write-CustomLog "Or type 'exit' to quit."
-    $selection = Read-Host "Enter selection"
-    if ($selection -match '^(?i)exit$') { break }
-    $chosen = Select-Scripts -Input $selection
-    if ($chosen.Count -eq 0) { continue }
-    $ok = Invoke-Scripts -ScriptsToRun $chosen
-    if (-not $ok) { $LASTEXITCODE = 1 }
+    $choice = Read-Host "Enter selection"
+    if ($choice -match '^(?i)exit$') { break }
+    $selected = Select-Scripts -Input $choice
+    if ($selected) { if (-not (Invoke-Scripts -ScriptsToRun $selected)) { $LASTEXITCODE = 1 } }
 }
 
 Write-CustomLog "`nAll done!"
-exit $LASTEXITCODE
-
+exit ($LASTEXITCODE -as [int])

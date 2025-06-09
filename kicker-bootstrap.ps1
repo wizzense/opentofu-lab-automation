@@ -85,6 +85,7 @@ if (-not (Get-Command Write-CustomLog -ErrorAction SilentlyContinue)) {
 # Load config helper
 $labUtilsDir = Join-Path $scriptRoot 'lab_utils'
 $labConfigScript = Join-Path $labUtilsDir 'Get-LabConfig.ps1'
+$formatScript    = Join-Path $labUtilsDir 'Format-Config.ps1'
 if (-not (Test-Path $labConfigScript)) {
     if (-not (Test-Path $labUtilsDir)) {
         New-Item -ItemType Directory -Path $labUtilsDir -Force | Out-Null
@@ -92,7 +93,15 @@ if (-not (Test-Path $labConfigScript)) {
     $labConfigUrl = 'https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/main/lab_utils/Get-LabConfig.ps1'
     Invoke-WebRequest -Uri $labConfigUrl -OutFile $labConfigScript
 }
+if (-not (Test-Path $formatScript)) {
+    if (-not (Test-Path $labUtilsDir)) {
+        New-Item -ItemType Directory -Path $labUtilsDir -Force | Out-Null
+    }
+    $formatUrl = 'https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/main/lab_utils/Format-Config.ps1'
+    Invoke-WebRequest -Uri $formatUrl -OutFile $formatScript
+}
 . $labConfigScript
+. $formatScript
 
 
 # ------------------------------------------------
@@ -155,6 +164,7 @@ Write-CustomLog "==== Loading configuration file ===="
 try {
     $config = Get-LabConfig -Path $ConfigFile
     Write-CustomLog "Config file loaded from $ConfigFile."
+    Write-CustomLog (Format-Config -Config $config)
 } catch {
     Write-Error "ERROR: Failed to load configuration file - $($_.Exception.Message)"
     exit 1
