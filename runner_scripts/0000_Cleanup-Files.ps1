@@ -15,6 +15,9 @@ Param(
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
+# Ensure we are not executing from inside the directory we want to delete
+Push-Location -Path ([System.IO.Path]::GetTempPath())
+
 try {
     $localBase = if ($Config.LocalPath) {
         $Config.LocalPath
@@ -45,5 +48,8 @@ try {
 catch {
     Write-Error -Message "Cleanup failed: $($PSItem.Exception.Message)`n$($PSItem.ScriptStackTrace)"
     exit 1
+}
+finally {
+    Pop-Location
 }
 
