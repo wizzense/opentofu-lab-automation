@@ -660,11 +660,11 @@ ${bold}${blue}Exit codes:${normal}
   ${bold}${exitCodeInvalidArgument}${normal}                             Invalid configuration options.
 
 "@
-    Write-Host $usageText
+    Write-Output $usageText
 }
 
-Write-Host "${blue}${bold}OpenTofu Installer${normal}"
-Write-Host ""
+Write-Output "${blue}${bold}OpenTofu Installer${normal}"
+Write-Output ""
 if ($help) {
     usage
     exit $exitCodeOK

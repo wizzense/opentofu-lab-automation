@@ -176,7 +176,7 @@ Pop-Location
 
 Write-CustomLog "OpenTofu initialized successfully."
 
-Write-Host @"
+Write-CustomLog @"
 NEXT STEPS:
 1. Check or edit the .tf files in '$infraRepoPath'.
 2. You may need to modify variables.tf to match your Hyper-V configuration.

@@ -24,7 +24,7 @@ $prompt = "`n<press any key to continue>`n"
 
 
 function Write-Continue($prompt) {
-  Write-Host "$prompt  " -NoNewline
+  [Console]::Write($prompt + '  ')
   Microsoft.PowerShell.Utility\Read-Host }
 
 $ErrorActionPreference = 'Stop'  # So any error throws an exception
@@ -60,7 +60,7 @@ if (-not (Get-Command Write-CustomLog -ErrorAction SilentlyContinue)) {
         )
         $ts = Get-Date -Format 'yyyy-MM-dd HH:mm:ss'
         $fmt = "[$ts] $Message"
-        Write-Host $fmt
+        Write-Output $fmt
         if ($LogFile) {
             try {
                 $fmt | Out-File -FilePath $LogFile -Encoding utf8 -Append
