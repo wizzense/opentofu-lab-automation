@@ -83,4 +83,25 @@ Describe '0001_Reset-Git' {
             }
         }
     }
+
+    Context 'Logging' {
+        It 'logs a success message when clone succeeds' {
+            $tempDir = Join-Path ([System.IO.Path]::GetTempPath()) ([guid]::NewGuid())
+
+            $config = [pscustomobject]@{
+                InfraRepoUrl  = 'https://example.com/repo.git'
+                InfraRepoPath = $tempDir
+            }
+
+            Mock Get-Command { $null } -ParameterFilter { $Name -eq 'gh' }
+            Mock git { $global:LASTEXITCODE = 0 }
+            Mock Write-CustomLog {}
+
+            & $ScriptPath -Config $config
+
+            Assert-MockCalled Write-CustomLog -ParameterFilter { $Message -eq 'Clone completed successfully.' } -Times 1
+
+            Remove-Item $tempDir -Recurse -Force -ErrorAction SilentlyContinue
+        }
+    }
 }
