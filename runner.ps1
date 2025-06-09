@@ -4,8 +4,9 @@ param(
     [string]$RunScripts
 )
 
-# Load logging helper
+# Load helpers
 . "$PSScriptRoot\runner_utility_scripts\Logger.ps1"
+. "$PSScriptRoot\lab_utils\Get-LabConfig.ps1"
 
 function ConvertTo-Hashtable {
     param(
@@ -46,17 +47,11 @@ function Customize-Config {
 }
 
 Write-Log "==== Loading configuration ===="
-if (!(Test-Path $ConfigFile)) {
-    Write-Log "ERROR: Cannot find config file at $ConfigFile"
-    exit 1
-}
-
 try {
-    $jsonContent = Get-Content -Path $ConfigFile -Raw
-    $ConfigRaw = ConvertFrom-Json $jsonContent
+    $ConfigRaw = Get-LabConfig -Path $ConfigFile
     $Config = ConvertTo-Hashtable $ConfigRaw
 } catch {
-    Write-Log "ERROR: Failed to parse JSON from $ConfigFile. $_"
+    Write-Log "ERROR: $_"
     exit 1
 }
 
