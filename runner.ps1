@@ -156,21 +156,29 @@ if ($Scripts -eq 'all') {
 
 if ($ScriptsToRun) {
     Write-CustomLog "`n==== Executing selected scripts ===="
+    $failed = @()
     foreach ($Script in $ScriptsToRun) {
         Write-CustomLog "`n--- Running: $($Script.Name) ---"
         try {
             & "$PSScriptRoot\runner_scripts\$($Script.Name)" -Config $Config
             if ($LASTEXITCODE -ne 0) {
                 Write-CustomLog "ERROR: $($Script.Name) exited with code $LASTEXITCODE."
-                exit 1
+                $failed += $Script.Name
+            } else {
+                Write-CustomLog "$($Script.Name) completed successfully."
             }
         }
         catch {
             Write-CustomLog ("ERROR: Exception in $($Script.Name). {0}`n{1}" -f $PSItem.Exception.Message, $PSItem.ScriptStackTrace)
-            exit 1
+            $failed += $Script.Name
         }
     }
     Write-CustomLog "`n==== Selected scripts execution completed! ===="
+    if ($failed.Count -gt 0) {
+        Write-CustomLog "Failures occurred in: $($failed -join ', ')"
+        Write-CustomLog "`nAll done!"
+        exit 1
+    }
 } else {
     Write-CustomLog "No scripts selected to run."
 }

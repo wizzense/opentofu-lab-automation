@@ -38,6 +38,45 @@ exit 0' | Set-Content -Path $dummy
         }
     }
 
+    It 'continues executing all scripts even if one fails' {
+        $tempDir = Join-Path ([System.IO.Path]::GetTempPath()) ([System.Guid]::NewGuid())
+        $null = New-Item -ItemType Directory -Path $tempDir
+        try {
+            Copy-Item $runnerPath -Destination $tempDir
+            Copy-Item (Join-Path $PSScriptRoot '..\runner_utility_scripts') -Destination $tempDir -Recurse
+            Copy-Item (Join-Path $PSScriptRoot '..\lab_utils') -Destination $tempDir -Recurse
+            Copy-Item (Join-Path $PSScriptRoot '..\config_files') -Destination (Join-Path $tempDir 'config_files') -Recurse
+            $scriptsDir = Join-Path $tempDir 'runner_scripts'
+            $null = New-Item -ItemType Directory -Path $scriptsDir
+            $out1 = Join-Path $tempDir 'out1.txt'
+            $out2 = Join-Path $tempDir 'out2.txt'
+            $fail = Join-Path $scriptsDir '0001_Fail.ps1'
+            @"
+Param([PSCustomObject]`$Config)
+'1' | Out-File -FilePath '$out1'
+exit 1
+"@ | Set-Content -Path $fail
+            $succ = Join-Path $scriptsDir '0002_Success.ps1'
+            @"
+Param([PSCustomObject]`$Config)
+'2' | Out-File -FilePath '$out2'
+exit 0
+"@ | Set-Content -Path $succ
+
+            Push-Location $tempDir
+            Mock Read-Host { throw 'Read-Host should not be called' }
+            & "$tempDir/runner.ps1" -Scripts '0001,0002' -Auto | Out-Null
+            $code = $LASTEXITCODE
+            Pop-Location
+
+            Test-Path $out1 | Should -BeTrue
+            Test-Path $out2 | Should -BeTrue
+            $code | Should -Be 1
+        } finally {
+            Remove-Item -Recurse -Force $tempDir
+        }
+    }
+
     It 'prompts for script selection when no -Scripts argument is supplied' -Skip:($IsLinux -or $IsMacOS) {
         $tempDir = Join-Path ([System.IO.Path]::GetTempPath()) ([System.Guid]::NewGuid())
         $null = New-Item -ItemType Directory -Path $tempDir
