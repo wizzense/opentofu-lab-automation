@@ -9,7 +9,7 @@
 
 .CONFIG FORMAT
 {
-  "Dependencies": {
+  "Node_Dependencies": {
     "InstallNpm": true,
     "NpmPath": "C:\\Projects\\vde-mvp\\frontend"
   }
@@ -31,27 +31,27 @@ param(
 $ErrorActionPreference = "Stop"
 Write-Log "==== [0203] Installing Frontend npm Dependencies ===="
 
-# Determine frontend path
-$frontendPath = if ($Config.Dependencies.FrontendPath) {
-    $Config.Dependencies.FrontendPath
+# Determine npm project path
+$npmPath = if ($Config.Node_Dependencies.NpmPath) {
+    $Config.Node_Dependencies.NpmPath
 } else {
     Join-Path $PSScriptRoot "..\frontend"
 }
 
-if (-not (Test-Path $frontendPath)) {
-    Write-Error "ERROR: Frontend folder not found at: $frontendPath"
+if (-not (Test-Path $npmPath)) {
+    Write-Error "ERROR: Frontend folder not found at: $npmPath"
     exit 1
 }
 
-if (-not (Test-Path (Join-Path $frontendPath "package.json"))) {
+if (-not (Test-Path (Join-Path $npmPath "package.json"))) {
     Write-Error "ERROR: No package.json found in frontend folder. Cannot run npm install."
     exit 1
 }
 
-Push-Location $frontendPath
+Push-Location $npmPath
 
 try {
-    Write-Log "Running npm install in $frontendPath ..."
+    Write-Log "Running npm install in $npmPath ..."
     npm install
     Write-Log "✅ npm install completed."
 } catch {
