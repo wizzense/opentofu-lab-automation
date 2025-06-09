@@ -1,3 +1,9 @@
+
+Param(
+    [Parameter(Mandatory=$true)]
+    [PSCustomObject]$Config
+)
+
 . "$PSScriptRoot\..\runner_utility_scripts\Logger.ps1"
 
 # Check if WinRM is already configured
