@@ -8,10 +8,10 @@ function Convert-CerToPem {
         [string]$CerPath,
         [string]$PemPath
     )
-    if ([string]::IsNullOrWhiteSpace($CerPath)) {
+    if (-not $PSBoundParameters.ContainsKey('CerPath') -or [string]::IsNullOrWhiteSpace($CerPath)) {
         throw 'Convert-CerToPem: CerPath is required'
     }
-    if ([string]::IsNullOrWhiteSpace($PemPath)) {
+    if (-not $PSBoundParameters.ContainsKey('PemPath') -or [string]::IsNullOrWhiteSpace($PemPath)) {
         throw 'Convert-CerToPem: PemPath is required'
     }
     if (-not $PSCmdlet.ShouldProcess($PemPath, 'Create PEM file')) { return }
@@ -32,13 +32,13 @@ function Convert-PfxToPem {
         [string]$CertPath,
         [string]$KeyPath
     )
-    if ([string]::IsNullOrWhiteSpace($PfxPath)) {
+    if (-not $PSBoundParameters.ContainsKey('PfxPath') -or [string]::IsNullOrWhiteSpace($PfxPath)) {
         throw 'Convert-PfxToPem: PfxPath is required'
     }
-    if ([string]::IsNullOrWhiteSpace($CertPath)) {
+    if (-not $PSBoundParameters.ContainsKey('CertPath') -or [string]::IsNullOrWhiteSpace($CertPath)) {
         throw 'Convert-PfxToPem: CertPath is required'
     }
-    if ([string]::IsNullOrWhiteSpace($KeyPath)) {
+    if (-not $PSBoundParameters.ContainsKey('KeyPath') -or [string]::IsNullOrWhiteSpace($KeyPath)) {
         throw 'Convert-PfxToPem: KeyPath is required'
     }
     if (-not $PSCmdlet.ShouldProcess($PfxPath, 'Convert PFX to PEM')) { return }
