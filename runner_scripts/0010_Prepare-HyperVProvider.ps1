@@ -1,5 +1,6 @@
 Param([pscustomobject]$Config)
 
+if (-not (Get-Command Convert-CerToPem -ErrorAction SilentlyContinue)) {
 function Convert-CerToPem {
     [CmdletBinding(SupportsShouldProcess)]
     param(
@@ -11,7 +12,9 @@ function Convert-CerToPem {
     $b64   = [System.Convert]::ToBase64String($bytes, 'InsertLineBreaks')
     "-----BEGIN CERTIFICATE-----`n$b64`n-----END CERTIFICATE-----" | Set-Content -Path $PemPath
 }
+}
 
+if (-not (Get-Command Convert-PfxToPem -ErrorAction SilentlyContinue)) {
 function Convert-PfxToPem {
     [CmdletBinding(SupportsShouldProcess)]
     param(
@@ -33,6 +36,7 @@ function Convert-PfxToPem {
     if ($PSCmdlet.ShouldProcess($KeyPath, 'Write key PEM')) {
         "-----BEGIN PRIVATE KEY-----`n$keyB64`n-----END PRIVATE KEY-----" | Set-Content -Path $KeyPath
     }
+}
 }
 
 function Get-HyperVProviderVersion {
