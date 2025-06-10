@@ -212,12 +212,12 @@ function Invoke-Scripts {
 }
 
 function Select-Scripts {
-    param([string]$Input)
+    param([string]$Spec)
 
-    if (-not $Input) { Write-CustomLog 'No script selection provided.'; return @() }
-    if ($Input -eq 'all') { return $ScriptFiles }
+    if (-not $Spec) { Write-CustomLog 'No script selection provided.'; return @() }
+    if ($Spec -eq 'all') { return $ScriptFiles }
 
-    $prefixes = $Input -split ',' |
+    $prefixes = $Spec -split ',' |
         ForEach-Object { $_.Trim() } |
         Where-Object { $_ -match '^\d{4}$' }
 
@@ -238,8 +238,8 @@ function Prompt-Scripts {
 
 # ─── Non-interactive or interactive execution ────────────────────────────────
 if ($Scripts) {
-    if ($Scripts -eq 'all') { $sel = Select-Scripts -Input 'all' }
-    else                    { $sel = Select-Scripts -Input $Scripts }
+    if ($Scripts -eq 'all') { $sel = Select-Scripts -Spec 'all' }
+    else                    { $sel = Select-Scripts -Spec $Scripts }
     if (-not $sel -or $sel.Count -eq 0) { exit 1 }
     if (-not (Invoke-Scripts -ScriptsToRun $sel)) { exit 1 }
     exit 0
