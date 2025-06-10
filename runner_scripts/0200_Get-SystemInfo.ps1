@@ -12,11 +12,8 @@ function Get-SystemInfo {
 
     . "$PSScriptRoot/../runner_utility_scripts/ScriptTemplate.ps1"
     Invoke-LabStep -Config $Config -Body {
-        if (-not (Get-Variable -Name PesterState -ErrorAction SilentlyContinue) -and
-            -not (Get-Variable -Name '____Pester' -ErrorAction SilentlyContinue)) {
-            if (-not (Get-Command Get-Platform -ErrorAction SilentlyContinue)) {
-                . "$PSScriptRoot/../lab_utils/Get-Platform.ps1"
-            }
+        if (-not (Get-Command Get-Platform -ErrorAction SilentlyContinue)) {
+            . "$PSScriptRoot/../lab_utils/Get-Platform.ps1"
         }
         Write-CustomLog 'Running 0200_Get-SystemInfo.ps1'
         $platform = Get-Platform
