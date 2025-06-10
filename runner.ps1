@@ -188,6 +188,7 @@ function Invoke-Scripts {
             }
         } catch {
             Write-CustomLog "ERROR: Exception in $($s.Name): $_"
+            $global:LASTEXITCODE = 1
             $failed += $s.Name
         }
     }
