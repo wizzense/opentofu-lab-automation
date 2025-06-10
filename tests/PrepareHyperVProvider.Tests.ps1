@@ -121,10 +121,14 @@ Describe 'Prepare-HyperVProvider certificate handling' -Skip:($SkipNonWindows) {
         # prepare certificate files for conversion using static test data
         $rootCaName = $config.CertificateAuthority.CommonName
         $hostName   = [System.Net.Dns]::GetHostName()
-        $sourceCert = Join-Path $script:testRoot 'data' 'TestCA.cer'
-        Copy-Item -Path $sourceCert -Destination (Join-Path $PWD "$rootCaName.cer") -Force
-        'dummy' | Set-Content -Path (Join-Path $PWD "$rootCaName.pfx")
-        'dummy' | Set-Content -Path (Join-Path $PWD "$hostName.pfx")
+
+        $executionPath = Get-Location
+        $sourceCert = Join-Path $testRoot 'data' 'TestCA.cer'
+        Mock Test-Path { $true } -ParameterFilter { $_ -like "*$rootCaName.cer" }
+        Copy-Item -Path $sourceCert -Destination (Join-Path $executionPath "$rootCaName.cer") -Force
+        'dummy' | Set-Content -Path (Join-Path $executionPath "$rootCaName.pfx")
+        'dummy' | Set-Content -Path (Join-Path $executionPath "$hostName.pfx")
+
         Mock Copy-Item {}
 
         $providerFile = Join-Path $tempDir 'providers.tf'
@@ -155,13 +159,13 @@ Describe 'Prepare-HyperVProvider certificate handling' -Skip:($SkipNonWindows) {
         (Get-Content $providerFile -Raw) | Should -Match 'insecure\s*=\s*false'
 
         Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue
-        Remove-Item (Join-Path $PWD "$rootCaName.cer") -ErrorAction SilentlyContinue
-        Remove-Item (Join-Path $PWD "$rootCaName.pem") -ErrorAction SilentlyContinue
-        Remove-Item (Join-Path $PWD "$rootCaName.pfx") -ErrorAction SilentlyContinue
-        Remove-Item (Join-Path $PWD "$hostName.pfx") -ErrorAction SilentlyContinue
-        Remove-Item (Join-Path $PWD "$hostName.pem") -ErrorAction SilentlyContinue
-        Remove-Item (Join-Path $PWD "$hostName-key.pem") -ErrorAction SilentlyContinue
-    }
+        Remove-Item (Join-Path $executionPath "$rootCaName.cer") -ErrorAction SilentlyContinue
+        Remove-Item (Join-Path $executionPath "$rootCaName.pem") -ErrorAction SilentlyContinue
+        Remove-Item (Join-Path $executionPath "$rootCaName.pfx") -ErrorAction SilentlyContinue
+        Remove-Item (Join-Path $executionPath "$hostName.pfx") -ErrorAction SilentlyContinue
+        Remove-Item (Join-Path $executionPath "$hostName.pem") -ErrorAction SilentlyContinue
+        Remove-Item (Join-Path $executionPath "$hostName-key.pem") -ErrorAction SilentlyContinue
+   }
 
     It 'does not redefine Convert-PfxToPem when sourced twice' {
         $cmdFirst = Get-Command Convert-PfxToPem
