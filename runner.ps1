@@ -11,10 +11,10 @@ if ($PSVersionTable.PSVersion.Major -lt 7) {
 }
 
 # ─── Load helpers ──────────────────────────────────────────────────────────────
-. "$PSScriptRoot\runner_utility_scripts\Logger.ps1"
-. "$PSScriptRoot\lab_utils\Get-LabConfig.ps1"
-. "$PSScriptRoot\lab_utils\Format-Config.ps1"
-. "$PSScriptRoot\lab_utils\Menu.ps1"
+. (Join-Path $PSScriptRoot 'runner_utility_scripts' 'Logger.ps1')
+. (Join-Path $PSScriptRoot 'lab_utils' 'Get-LabConfig.ps1')
+. (Join-Path $PSScriptRoot 'lab_utils' 'Format-Config.ps1')
+. (Join-Path $PSScriptRoot 'lab_utils' 'Menu.ps1')
 
 # ─── Default log path ─────────────────────────────────────────────────────────
 if (-not (Get-Variable -Name LogFilePath -Scope Script -ErrorAction SilentlyContinue) -and
