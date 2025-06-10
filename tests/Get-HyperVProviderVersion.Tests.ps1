@@ -1,4 +1,5 @@
 . (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
+if ($IsLinux -or $IsMacOS) { return }
 
 Describe 'Get-HyperVProviderVersion' -Skip:($IsLinux -or $IsMacOS) {
     It 'parses version from main.tf' {

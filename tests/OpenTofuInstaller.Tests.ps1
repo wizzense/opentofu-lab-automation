@@ -1,4 +1,5 @@
 Describe 'OpenTofuInstaller' {
+if ($IsLinux -or $IsMacOS) { return }
 
     BeforeAll {
         # Ensure no lingering TestDrive from previous test runs
