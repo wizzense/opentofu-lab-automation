@@ -256,19 +256,13 @@ Param([PSCustomObject]`$Config)
             'Param([PSCustomObject]$Config)
 exit 0' | Set-Content -Path $dummy
 
-            $responses = @('0001')
-            $script:index = 0
-            $called = 0
-            function global:Read-Host {
-                param([string]$Prompt)
-                $null = $Prompt
-                $called++
-                $responses[$script:index++]
-            }
+            Mock Get-MenuSelection { '0001_Test.ps1' }
+
             Push-Location $tempDir
             & "$tempDir/runner.ps1" -Auto | Out-Null
             Pop-Location
-            $called | Should -BeGreaterThan 0
+
+            Assert-MockCalled Get-MenuSelection -Times 1
         } finally {
             Remove-Item -Recurse -Force $tempDir
         }
@@ -292,13 +286,7 @@ Param([PSCustomObject]`$Config)
 exit 0
 "@ | Set-Content -Path $scriptFile
 
-            $responses = @('', 'exit')
-            $script:index = 0
-            function global:Read-Host {
-                param([string]$Prompt)
-                $responses[$script:index++]
-            }
-
+            Mock Get-MenuSelection { @() }
             Mock Write-CustomLog {}
 
             Push-Location $tempDir
@@ -307,6 +295,7 @@ exit 0
 
             Test-Path $out | Should -BeFalse
             Assert-MockCalled Write-CustomLog -ParameterFilter { $Message -eq 'No scripts selected.' } -Times 1
+            Assert-MockCalled Get-MenuSelection -Times 1
         }
         finally {
             Remove-Item -Recurse -Force $tempDir
