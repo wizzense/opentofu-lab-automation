@@ -1,6 +1,7 @@
 Param([pscustomobject]$Config)
 . "$PSScriptRoot/../runner_utility_scripts/ScriptTemplate.ps1"
 Invoke-LabStep -Config $Config -Body {
+    Write-CustomLog 'Running 0009_Initialize-OpenTofu.ps1'
 <#
 .SYNOPSIS
   Initialize OpenTofu using Hyper-V settings from config.json.

@@ -4,6 +4,7 @@ function Install-CA {
 
     . "$PSScriptRoot/../runner_utility_scripts/ScriptTemplate.ps1"
     Invoke-LabStep -Config $Config -Body {
+    Write-CustomLog 'Running 0104_Install-CA.ps1'
 
 if ($Config.InstallCA -eq $true) {
 Write-CustomLog "Checking for existing Certificate Authority (Standalone Root CA)..."

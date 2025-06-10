@@ -14,7 +14,7 @@ Describe '0203_Install-npm' {
         }
 
 
-        . $script
+        . $script -Config @{}
         Install-NpmDependencies -Config $config
 
         $script:calledPath | Should -Be (Get-Item $npmDir).FullName
@@ -34,7 +34,7 @@ Describe '0203_Install-npm' {
             $null = $testArgs
         }
 
-        . $script
+        . $script -Config @{}
         Install-NpmDependencies -Config $config
         $success = $?
 
@@ -51,7 +51,7 @@ Describe '0203_Install-npm' {
         $script:called = $false
         function npm { $script:called = $true }
 
-        . $script
+        . $script -Config @{}
         Install-NpmDependencies -Config $config
         $success = $?
 
@@ -67,7 +67,7 @@ Describe '0203_Install-npm' {
         $script:calledPath = $null
         function npm { param([string[]]$Args) $script:calledPath = (Get-Location).ProviderPath }
 
-        . $script
+        . $script -Config @{}
         Install-NpmDependencies -Config $config
 
         $script:calledPath | Should -Be (Get-Item $npmDir).FullName

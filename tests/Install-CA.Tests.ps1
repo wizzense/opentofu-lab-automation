@@ -4,6 +4,7 @@ Describe '0104_Install-CA script' {
     }
 
     It 'invokes CA installation when InstallCA is true' {
+        . (Join-Path $PSScriptRoot '..\runner_utility_scripts\Logger.ps1')
         $config = [pscustomobject]@{
             InstallCA = $true
             CertificateAuthority = @{ CommonName = 'TestCA'; ValidityYears = 1 }
@@ -21,6 +22,7 @@ Describe '0104_Install-CA script' {
     }
 
     It 'skips CA installation when InstallCA is false' {
+        . (Join-Path $PSScriptRoot '..\runner_utility_scripts\Logger.ps1')
         $config = [pscustomobject]@{
             InstallCA = $false
             CertificateAuthority = @{ CommonName = 'TestCA'; ValidityYears = 1 }
