@@ -48,7 +48,7 @@ Describe 'Prepare-HyperVProvider path restoration' -Skip:($IsLinux -or $IsMacOS)
         }
         Mock Resolve-Path { param([string]$Path) @{ Path = $Path } }
 
-        . $script:scriptPath -Config $config
+        & $script:scriptPath -Config $config
 
         $location | Should -Be 'C:\\Start'
     }
@@ -128,7 +128,7 @@ Describe 'Prepare-HyperVProvider certificate handling' -Skip:($IsLinux -or $IsMa
         ) | Set-Content -Path $providerFile
 
         $cmdBefore = Get-Command Convert-PfxToPem
-        . $script:scriptPath -Config $config
+        & $script:scriptPath -Config $config
         $cmdAfter  = Get-Command Convert-PfxToPem
         $cmdAfter | Should -Be $cmdBefore
         Assert-MockCalled New-SelfSignedCertificate -Times 2
