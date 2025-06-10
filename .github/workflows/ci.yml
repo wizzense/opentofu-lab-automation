@@ -47,7 +47,6 @@ jobs:
         run: |
           Install-Module -Name PSScriptAnalyzer -RequiredVersion 1.24.0 -Force -Scope CurrentUser
       - name: Install powershell-yaml
-        if: runner.os == 'Windows'
         shell: pwsh
         run: |
           Install-Module -Name powershell-yaml -Force -Scope CurrentUser
@@ -103,7 +102,6 @@ jobs:
           Install-Module -Name Pester -Force -Scope CurrentUser
           
       - name: Install powershell-yaml
-        if: runner.os == 'Windows'
         shell: pwsh
         run: |
           Install-Module -Name powershell-yaml -Force -Scope CurrentUser
