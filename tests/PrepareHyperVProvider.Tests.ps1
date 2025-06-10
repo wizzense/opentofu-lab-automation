@@ -39,6 +39,7 @@ Describe 'Prepare-HyperVProvider path restoration' -Skip:($IsLinux -or $IsMacOS)
         Mock git {}
         Mock go {}
         Mock Copy-Item {}
+        Mock Convert-CerToPem {}
         Mock Read-Host {
             $pwd = New-Object System.Security.SecureString
             foreach ($c in ''.ToCharArray()) { $pwd.AppendChar($c) }
