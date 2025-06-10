@@ -37,9 +37,7 @@ macOS hosts use `uname`, `df` and networking APIs to return similar details.
 If the platform cannot be recognised the script exits with code `1` and logs an
 "unsupported platform" error.
 
-To suppress informational output, append the `-Quiet` switch (equivalent to
 To suppress informational output, use the `-Quiet` switch (equivalent to
- 
 `-Verbosity silent`). For example, to run scripts `0006` and `0007`
 silently and non-interactively:
 
