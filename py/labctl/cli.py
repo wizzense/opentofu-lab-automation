@@ -1,5 +1,8 @@
 import json
+import importlib.resources
 from pathlib import Path
+from typing import Optional
+
 import typer
 import yaml
 
@@ -8,15 +11,35 @@ hv_app = typer.Typer()
 app.add_typer(hv_app, name="hv")
 
 
-def load_config(path: Path) -> dict:
-    data = path.read_text()
-    if path.suffix.lower() in {".yaml", ".yml"}:
+def _read_default_config() -> str:
+    """Return the bundled default configuration as text."""
+    return (
+        importlib.resources.files("labctl")
+        .joinpath("config_files", "default-config.json")
+        .read_text()
+    )
+
+
+def load_config(path: Optional[Path] = None) -> dict:
+    """Load JSON or YAML configuration from *path* or bundled default."""
+    if path is None:
+        data = _read_default_config()
+        suffix = ".json"
+    else:
+        data = path.read_text()
+        suffix = path.suffix.lower()
+
+    if suffix in {".yaml", ".yml"}:
         return yaml.safe_load(data)
     return json.loads(data)
 
 
 @hv_app.command()
-def facts(config: Path = typer.Option(Path("../config_files/default-config.json"), exists=True)):
+def facts(
+    config: Optional[Path] = typer.Option(
+        None, help="Path to config file (defaults to packaged config)"
+    )
+):
     """Show hypervisor facts from config."""
     cfg = load_config(config)
     hv = cfg.get("HyperV", {})
@@ -24,7 +47,11 @@ def facts(config: Path = typer.Option(Path("../config_files/default-config.json"
 
 
 @hv_app.command()
-def deploy(config: Path = typer.Option(Path("../config_files/default-config.json"), exists=True)):
+def deploy(
+    config: Optional[Path] = typer.Option(
+        None, help="Path to config file (defaults to packaged config)"
+    )
+):
     """Pretend to deploy using the hypervisor config."""
     cfg = load_config(config)
     hv = cfg.get("HyperV", {})
