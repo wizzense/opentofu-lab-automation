@@ -1,7 +1,6 @@
 import json
 import logging
 import os
-import subprocess
 from pathlib import Path
 from importlib.resources import files
 import typer

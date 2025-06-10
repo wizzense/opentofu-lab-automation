@@ -1,6 +1,5 @@
 import subprocess
 from datetime import datetime
-from collections import defaultdict
 from typing import List
 
 
@@ -23,7 +22,7 @@ def cleanup_branches(remote: str = "origin") -> List[str]:
         [
             "git",
             "for-each-ref",
-            f"--format=%(committerdate:iso8601)%09%(refname)",
+            "--format=%(committerdate:iso8601)%09%(refname)",
             f"refs/remotes/{remote}"
         ]
     )
