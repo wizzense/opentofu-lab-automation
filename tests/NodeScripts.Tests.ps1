@@ -105,6 +105,9 @@ Describe 'Node installation scripts' {
         $npmPath = (Resolve-Path -ErrorAction Stop (Join-Path $PSScriptRoot '..' 'runner_scripts' '0203_Install-npm.ps1')).Path
         Mock npm {}
 
+        # Dot-source the script with a minimal config object
+        $config = [pscustomobject]@{}
+
         . $npmPath -Config $config
 
         Install-NpmDependencies -Config $cfg
