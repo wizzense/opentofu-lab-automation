@@ -54,8 +54,13 @@ if ($PSCmdlet.ShouldProcess($CAName, 'Configure Standalone Root CA')) {
 
     $installCmd = Get-Command Install-AdcsCertificationAuthority -ErrorAction SilentlyContinue
     if (-not $installCmd) {
+        if (Get-Module -ListAvailable -Name ADCSDeployment) {
+            Import-Module ADCSDeployment -ErrorAction SilentlyContinue
+            $installCmd = Get-Command Install-AdcsCertificationAuthority -ErrorAction SilentlyContinue
+        }
+    }
+    if (-not $installCmd) {
         Write-CustomLog 'Install-AdcsCertificationAuthority command not found. Ensure AD CS features are available.'
-
         return
     }
     Install-AdcsCertificationAuthority `
