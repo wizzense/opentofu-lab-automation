@@ -1,6 +1,6 @@
-$testRoot = if ($PSScriptRoot) { $PSScriptRoot } elseif ($PSCommandPath) { Split-Path $PSCommandPath } else { '.' }
-. (Join-Path $testRoot 'TestDriveCleanup.ps1')
-. (Join-Path $testRoot 'helpers' 'TestHelpers.ps1')
+$script:testRoot = if ($PSScriptRoot) { $PSScriptRoot } elseif ($PSCommandPath) { Split-Path $PSCommandPath } else { '.' }
+. (Join-Path $script:testRoot 'TestDriveCleanup.ps1')
+. (Join-Path $script:testRoot 'helpers' 'TestHelpers.ps1')
 if ($SkipNonWindows) { return }
 
 BeforeAll {
@@ -12,7 +12,7 @@ BeforeAll {
 }
 Describe 'Prepare-HyperVProvider path restoration' -Skip:($SkipNonWindows) {
     It 'restores location after execution' {
-        . (Join-Path $testRoot '..' 'runner_utility_scripts' 'Logger.ps1')
+        . (Join-Path $script:testRoot '..' 'runner_utility_scripts' 'Logger.ps1')
         $script:scriptPath = Get-RunnerScriptPath '0010_Prepare-HyperVProvider.ps1'
         $config = [pscustomobject]@{
             PrepareHyperVHost = $true
@@ -68,7 +68,7 @@ Describe 'Prepare-HyperVProvider path restoration' -Skip:($SkipNonWindows) {
 Describe 'Prepare-HyperVProvider certificate handling' -Skip:($SkipNonWindows) {
     It 'creates PEM files and updates providers.tf' {
 
-        . (Join-Path $testRoot '..' 'runner_utility_scripts' 'Logger.ps1')
+        . (Join-Path $script:testRoot '..' 'runner_utility_scripts' 'Logger.ps1')
         $script:scriptPath = Get-RunnerScriptPath '0010_Prepare-HyperVProvider.ps1'
         $tempDir = Join-Path ([System.IO.Path]::GetTempPath()) ([System.Guid]::NewGuid())
 
@@ -124,10 +124,11 @@ Describe 'Prepare-HyperVProvider certificate handling' -Skip:($SkipNonWindows) {
 
         $executionPath = Get-Location
         $sourceCert = Join-Path $testRoot 'data' 'TestCA.cer'
+        Mock Test-Path { $true } -ParameterFilter { $_ -like "*$rootCaName.cer" }
         Copy-Item -Path $sourceCert -Destination (Join-Path $executionPath "$rootCaName.cer") -Force
         'dummy' | Set-Content -Path (Join-Path $executionPath "$rootCaName.pfx")
         'dummy' | Set-Content -Path (Join-Path $executionPath "$hostName.pfx")
-        Mock Test-Path { $true } -ParameterFilter { $_ -like "*$rootCaName.cer" }
+
         Mock Copy-Item {}
 
         $providerFile = Join-Path $tempDir 'providers.tf'

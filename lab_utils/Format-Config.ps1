@@ -2,6 +2,7 @@ function Format-Config {
     [CmdletBinding()]
     param(
         [Parameter(Mandatory, ValueFromPipeline = $true)]
+        [AllowNull()]
         [psobject]$Config
     )
 

@@ -322,9 +322,13 @@ Write-Error 'err message'
             $script:warnings  = @()
             $script:errors    = @()
             function global:Write-Host {
-                param([Parameter(Mandatory=$true,Position=0)][string]$Object,
-                      [Parameter(Position=1)][string]$ForegroundColor)
-                $script:logLines += $Object
+                param(
+                    [Parameter(Mandatory=$true,Position=0,ValueFromPipeline=$true)]
+                    [object]$Object,
+                    [Parameter(Position=1)]
+                    [string]$ForegroundColor
+                )
+                process { $script:logLines += "$Object" }
             }
             function global:Write-Warning {
                 param([string]$Message)
@@ -367,9 +371,13 @@ Write-Error 'err message'
             $script:warnings  = @()
             $script:errors    = @()
             function global:Write-Host {
-                param([Parameter(Mandatory=$true,Position=0)][string]$Object,
-                      [Parameter(Position=1)][string]$ForegroundColor)
-                $script:logLines += $Object
+                param(
+                    [Parameter(Mandatory=$true,Position=0,ValueFromPipeline=$true)]
+                    [object]$Object,
+                    [Parameter(Position=1)]
+                    [string]$ForegroundColor
+                )
+                process { $script:logLines += "$Object" }
             }
             function global:Write-Warning {
                 param([string]$Message)
@@ -390,7 +398,7 @@ Write-Error 'err message'
         finally { Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue }
     }
 
-    It 'prompts for script selection when no -Scripts argument is supplied' -Skip:($SkipNonWindows) {
+    It 'prompts twice when -Auto is used without -Scripts' -Skip:($SkipNonWindows) {
         $tempDir = Join-Path ([System.IO.Path]::GetTempPath()) ([System.Guid]::NewGuid())
         $null = New-Item -ItemType Directory -Path $tempDir
         try {
