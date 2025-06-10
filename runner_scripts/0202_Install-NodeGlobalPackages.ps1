@@ -70,24 +70,15 @@ if ($nodeDeps -is [hashtable] -and $nodeDeps.ContainsKey('GlobalPackages')) {
     $packages = $nodeDeps.GlobalPackages
 
 } else {
-    if ($nodeDeps.InstallYarn) {
-        $packages += 'yarn'
+    if ($nodeDeps -is [hashtable]) {
+        if ($nodeDeps['InstallYarn'])    { $packages += 'yarn' }
+        if ($nodeDeps['InstallVite'])    { $packages += 'vite' }
+        if ($nodeDeps['InstallNodemon']) { $packages += 'nodemon' }
     } else {
-        Write-CustomLog "InstallYarn flag is disabled. Skipping yarn installation."
+        if ($nodeDeps.InstallYarn)    { $packages += 'yarn' }
+        if ($nodeDeps.InstallVite)    { $packages += 'vite' }
+        if ($nodeDeps.InstallNodemon) { $packages += 'nodemon' }
     }
-
-    if ($nodeDeps.InstallVite) {
-        $packages += 'vite'
-    } else {
-        Write-CustomLog "InstallVite flag is disabled. Skipping vite installation."
-    }
-
-    if ($nodeDeps.InstallNodemon) {
-        $packages += 'nodemon'
-    } else {
-        Write-CustomLog "InstallNodemon flag is disabled. Skipping nodemon installation."
-    }
-
 }
 
 if (-not $packages) {
