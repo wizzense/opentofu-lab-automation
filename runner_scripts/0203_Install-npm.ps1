@@ -36,6 +36,16 @@ Write-Output "Config parameter is: $Config"
 
 Write-CustomLog "==== [0203] Installing Frontend npm Dependencies ===="
 
+if ($Config -is [hashtable]) {
+    if (-not $Config.ContainsKey('Node_Dependencies')) {
+        Write-CustomLog "Config missing Node_Dependencies; skipping npm install."
+        return
+    }
+} elseif (-not $Config.PSObject.Properties.Match('Node_Dependencies')) {
+    Write-CustomLog "Config missing Node_Dependencies; skipping npm install."
+    return
+}
+
 if ($Config.Node_Dependencies.InstallNpm) {
 
 # Determine frontend path

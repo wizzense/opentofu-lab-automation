@@ -54,6 +54,16 @@ function Install-GlobalPackage {
 
 Write-CustomLog "==== [0202] Installing Global npm Packages ===="
 
+if ($Config -is [hashtable]) {
+    if (-not $Config.ContainsKey('Node_Dependencies')) {
+        Write-CustomLog "Config missing Node_Dependencies; skipping global package install."
+        return
+    }
+} elseif (-not $Config.PSObject.Properties.Match('Node_Dependencies')) {
+    Write-CustomLog "Config missing Node_Dependencies; skipping global package install."
+    return
+}
+
 $packages = @()
 if ($Config.Node_Dependencies.PSObject.Properties.Name -contains 'GlobalPackages') {
     $packages = $Config.Node_Dependencies.GlobalPackages
