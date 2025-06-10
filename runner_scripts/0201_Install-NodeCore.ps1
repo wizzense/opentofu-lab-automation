@@ -27,20 +27,16 @@ Write-Output "Config parameter is: $Config"
 
 Write-CustomLog "==== [0201] Installing Node.js Core ===="
 
-if ($Config -is [hashtable]) {
-    if (-not $Config.ContainsKey('Node_Dependencies')) {
-        Write-CustomLog "Config missing Node_Dependencies; skipping Node.js installation."
-        return
-    }
-} elseif (-not $Config.PSObject.Properties.Match('Node_Dependencies')) {
+$nodeDeps = if ($Config -is [hashtable]) { $Config['Node_Dependencies'] } else { $Config.Node_Dependencies }
+if (-not $nodeDeps) {
     Write-CustomLog "Config missing Node_Dependencies; skipping Node.js installation."
     return
 }
 
-if ($Config.Node_Dependencies.InstallNode) {
+if ($nodeDeps.InstallNode) {
     try {
-        $url = if ($Config.Node_Dependencies.Node.InstallerUrl) {
-            $Config.Node_Dependencies.Node.InstallerUrl
+        $url = if ($nodeDeps.Node.InstallerUrl) {
+            $nodeDeps.Node.InstallerUrl
         } else {
             "https://nodejs.org/dist/v20.11.1/node-v20.11.1-x64.msi"
         }

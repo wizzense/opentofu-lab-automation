@@ -54,33 +54,29 @@ function Install-GlobalPackage {
 
 Write-CustomLog "==== [0202] Installing Global npm Packages ===="
 
-if ($Config -is [hashtable]) {
-    if (-not $Config.ContainsKey('Node_Dependencies')) {
-        Write-CustomLog "Config missing Node_Dependencies; skipping global package install."
-        return
-    }
-} elseif (-not $Config.PSObject.Properties.Match('Node_Dependencies')) {
+$nodeDeps = if ($Config -is [hashtable]) { $Config['Node_Dependencies'] } else { $Config.Node_Dependencies }
+if (-not $nodeDeps) {
     Write-CustomLog "Config missing Node_Dependencies; skipping global package install."
     return
 }
 
 $packages = @()
-if ($Config.Node_Dependencies.PSObject.Properties.Name -contains 'GlobalPackages') {
-    $packages = $Config.Node_Dependencies.GlobalPackages
+if ($nodeDeps.PSObject.Properties.Name -contains 'GlobalPackages') {
+    $packages = $nodeDeps.GlobalPackages
 } else {
-    if ($Config.Node_Dependencies.InstallYarn) {
+    if ($nodeDeps.InstallYarn) {
         $packages += 'yarn'
     } else {
         Write-CustomLog "InstallYarn flag is disabled. Skipping yarn installation."
     }
 
-    if ($Config.Node_Dependencies.InstallVite) {
+    if ($nodeDeps.InstallVite) {
         $packages += 'vite'
     } else {
         Write-CustomLog "InstallVite flag is disabled. Skipping vite installation."
     }
 
-    if ($Config.Node_Dependencies.InstallNodemon) {
+    if ($nodeDeps.InstallNodemon) {
         $packages += 'nodemon'
     } else {
         Write-CustomLog "InstallNodemon flag is disabled. Skipping nodemon installation."
