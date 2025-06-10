@@ -128,11 +128,23 @@ jobs:
         continue-on-error: ${{ runner.os != 'Windows' }}
         shell: bash
         run: |
-          pwsh -NoLogo -NoProfile -Command "Invoke-Pester -Path tests -CI -ErrorAction Stop"
+          pwsh -NoLogo -NoProfile -Command "Invoke-Pester -Configuration tests/PesterConfiguration.psd1 -ErrorAction Stop"
+
+      - name: Upload coverage
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pester-coverage-${{ matrix.os }}
+          path: coverage/coverage.xml
+
 
   pytest:
     needs: pester
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
       - name: Authenticate gh
@@ -142,8 +154,6 @@ jobs:
         with:
           python-version: '3.x'
           cache: 'pip'
-          
-          
       - name: Install Poetry
         run: pip install --user poetry
       - name: Install dependencies

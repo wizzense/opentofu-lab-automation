@@ -1,6 +1,7 @@
 . (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
-if ($IsLinux -or $IsMacOS) { return }
-Describe '0008_Install-OpenTofu' -Skip:($IsLinux -or $IsMacOS) {
+. (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
+if ($SkipNonWindows) { return }
+Describe '0008_Install-OpenTofu' -Skip:($SkipNonWindows) {
     BeforeAll {
         $script:ScriptPath = (
             Resolve-Path (Join-Path $PSScriptRoot '..' 'runner_scripts' '0008_Install-OpenTofu.ps1')
@@ -19,9 +20,9 @@ Describe '0008_Install-OpenTofu' -Skip:($IsLinux -or $IsMacOS) {
         Mock Invoke-OpenTofuInstaller {}
         Mock Write-CustomLog {}
         
-        . $script:ScriptPath -Config $cfg
+        & $script:ScriptPath -Config $cfg
 
-        Assert-MockCalled Invoke-OpenTofuInstaller -Times 1 -ParameterFilter {
+        Should -Invoke -CommandName Invoke-OpenTofuInstaller -Times 1 -ParameterFilter {
             $CosignPath -eq (Join-Path $cfg.CosignPath 'cosign-windows-amd64.exe') -and
             $OpenTofuVersion -eq $cfg.OpenTofuVersion
         }
@@ -32,8 +33,8 @@ Describe '0008_Install-OpenTofu' -Skip:($IsLinux -or $IsMacOS) {
         Mock Invoke-OpenTofuInstaller {}
         Mock Write-CustomLog {}
 
-        . $script:ScriptPath -Config $cfg
+        & $script:ScriptPath -Config $cfg
 
-        Assert-MockCalled Invoke-OpenTofuInstaller -Times 0
+        Should -Invoke -CommandName Invoke-OpenTofuInstaller -Times 0
     }
 }

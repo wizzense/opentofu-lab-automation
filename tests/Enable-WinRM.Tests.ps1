@@ -1,6 +1,7 @@
 . (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
-if ($IsLinux -or $IsMacOS) { return }
-Describe '0100_Enable-WinRM' -Skip:($IsLinux -or $IsMacOS) {
+. (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
+if ($SkipNonWindows) { return }
+Describe '0100_Enable-WinRM' -Skip:($SkipNonWindows) {
     BeforeAll {
         $script:ScriptPath = Join-Path $PSScriptRoot '..' 'runner_scripts' '0100_Enable-WinRM.ps1'
     }
@@ -10,7 +11,7 @@ Describe '0100_Enable-WinRM' -Skip:($IsLinux -or $IsMacOS) {
         Mock Get-Service { [pscustomobject]@{ Status = 'Stopped' } } -ParameterFilter { $Name -eq 'WinRM' }
         Mock Enable-PSRemoting {}
         & $script:ScriptPath -Config $cfg
-        Assert-MockCalled Enable-PSRemoting -ParameterFilter { $Force } -Times 1
+        Should -Invoke -CommandName Enable-PSRemoting -Times 1 -ParameterFilter { $Force }
     }
 
     It 'skips enabling when WinRM already running' {
@@ -18,6 +19,6 @@ Describe '0100_Enable-WinRM' -Skip:($IsLinux -or $IsMacOS) {
         Mock Get-Service { [pscustomobject]@{ Status = 'Running' } } -ParameterFilter { $Name -eq 'WinRM' }
         Mock Enable-PSRemoting {}
         & $script:ScriptPath -Config $cfg
-        Assert-MockCalled Enable-PSRemoting -Times 0
+        Should -Invoke -CommandName Enable-PSRemoting -Times 0
     }
 }

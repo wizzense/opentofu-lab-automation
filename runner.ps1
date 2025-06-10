@@ -298,9 +298,13 @@ function Invoke-Scripts {
             Write-CustomLog "ERROR: Exception in $($s.Name): $_"
             $results[$s.Name] = 1
             $global:LASTEXITCODE = 1
+            $results[$s.Name] = $LASTEXITCODE
             $failed += $s.Name
         }
         }
+
+    }
+
 
     $Config | ConvertTo-Json -Depth 5 | Out-File $ConfigFile -Encoding utf8
     $summary = $results.GetEnumerator() | ForEach-Object { "${($_.Key)}=$($_.Value)" } | Sort-Object | Join-String -Separator ', '

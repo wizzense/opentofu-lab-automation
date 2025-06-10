@@ -1,4 +1,5 @@
 . (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
+. (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
 Describe 'Expand-All' {
     BeforeAll {
         . (Join-Path $PSScriptRoot '..' 'lab_utils' 'Expand-All.ps1')
@@ -6,6 +7,9 @@ Describe 'Expand-All' {
     BeforeEach {
         function global:Write-CustomLog {}
         Mock Write-CustomLog {}
+    }
+    AfterEach {
+        Remove-Item Function:Write-CustomLog -ErrorAction SilentlyContinue
     }
 
     It 'expands a specific ZIP file when provided' {
@@ -19,7 +23,7 @@ Describe 'Expand-All' {
 
         Expand-All -ZipFile $zipPath
 
-        Assert-MockCalled Expand-Archive -Times 1 -ParameterFilter {
+        Should -Invoke -CommandName Expand-Archive -Times 1 -ParameterFilter {
             $Path -eq $zipPath -and
             $DestinationPath -eq (Join-Path $temp 'archive')
         }
@@ -50,9 +54,9 @@ Describe 'Expand-All' {
             Pop-Location
         }
 
-        Assert-MockCalled Expand-Archive -ParameterFilter { $Path -eq $zip1 -and $DestinationPath -eq (Join-Path $temp 'a') } -Times 1
-        Assert-MockCalled Expand-Archive -ParameterFilter { $Path -eq $zip2 -and $DestinationPath -eq (Join-Path $subDir 'b') } -Times 1
-        Assert-MockCalled Get-ChildItem -Times 1
+        Should -Invoke -CommandName Expand-Archive -Times 1 -ParameterFilter { $Path -eq $zip1 -and $DestinationPath -eq (Join-Path $temp 'a') }
+        Should -Invoke -CommandName Expand-Archive -Times 1 -ParameterFilter { $Path -eq $zip2 -and $DestinationPath -eq (Join-Path $subDir 'b') }
+        Should -Invoke -CommandName Get-ChildItem -Times 1
     }
 }
 

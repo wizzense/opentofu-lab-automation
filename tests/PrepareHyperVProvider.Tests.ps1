@@ -1,5 +1,6 @@
 . (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
-if ($IsLinux -or $IsMacOS) { return }
+. (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
+if ($SkipNonWindows) { return }
 
 BeforeAll {
     $script:scriptPath = Join-Path $PSScriptRoot '..' 'runner_scripts' '0010_Prepare-HyperVProvider.ps1'
@@ -8,7 +9,7 @@ BeforeAll {
     $global:origConvertPfxToPem = (Get-Command Convert-PfxToPem).ScriptBlock
     Mock Convert-PfxToPem {}
 }
-Describe 'Prepare-HyperVProvider path restoration' -Skip:($IsLinux -or $IsMacOS) {
+Describe 'Prepare-HyperVProvider path restoration' -Skip:($SkipNonWindows) {
     It 'restores location after execution' {
         . (Join-Path $PSScriptRoot '..' 'runner_utility_scripts' 'Logger.ps1')
         $script:scriptPath = Join-Path $PSScriptRoot '..' 'runner_scripts' '0010_Prepare-HyperVProvider.ps1'
@@ -63,7 +64,7 @@ Describe 'Prepare-HyperVProvider path restoration' -Skip:($IsLinux -or $IsMacOS)
     }
 }
 
-Describe 'Prepare-HyperVProvider certificate handling' -Skip:($IsLinux -or $IsMacOS) {
+Describe 'Prepare-HyperVProvider certificate handling' -Skip:($SkipNonWindows) {
     It 'creates PEM files and updates providers.tf' {
 
         . (Join-Path $PSScriptRoot '..' 'runner_utility_scripts' 'Logger.ps1')
@@ -100,7 +101,6 @@ Describe 'Prepare-HyperVProvider certificate handling' -Skip:($IsLinux -or $IsMa
             param($PfxPath, $Password, $CertPath, $KeyPath)
             & $global:origConvertPfxToPem -PfxPath $PfxPath -Password $Password -CertPath $CertPath -KeyPath $KeyPath
         }
-        Mock Copy-Item {}
         # certificate operations should not touch the real store
         $rootStub = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2
         $hostStub = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2
@@ -124,6 +124,7 @@ Describe 'Prepare-HyperVProvider certificate handling' -Skip:($IsLinux -or $IsMa
         Copy-Item -Path $sourceCert -Destination (Join-Path $PWD "$rootCaName.cer") -Force
         'dummy' | Set-Content -Path (Join-Path $PWD "$rootCaName.pfx")
         'dummy' | Set-Content -Path (Join-Path $PWD "$hostName.pfx")
+        Mock Copy-Item {}
 
         $providerFile = Join-Path $tempDir 'providers.tf'
         @(
@@ -141,11 +142,11 @@ Describe 'Prepare-HyperVProvider certificate handling' -Skip:($IsLinux -or $IsMa
         & $script:scriptPath -Config $config
         $cmdAfter  = Get-Command Convert-PfxToPem
         $cmdAfter | Should -Be $cmdBefore
-        Assert-MockCalled New-SelfSignedCertificate -Times 2
-        Assert-MockCalled Export-Certificate -Times 2
-        Assert-MockCalled Import-PfxCertificate -Times 3
-        Assert-MockCalled Convert-CerToPem -Times 1
-        Assert-MockCalled Convert-PfxToPem -Times 1
+        Should -Invoke -CommandName New-SelfSignedCertificate -Times 2
+        Should -Invoke -CommandName Export-Certificate -Times 2
+        Should -Invoke -CommandName Import-PfxCertificate -Times 3
+        Should -Invoke -CommandName Convert-CerToPem -Times 1
+        Should -Invoke -CommandName Convert-PfxToPem -Times 1
 
         Test-Path (Join-Path $tempDir 'TestCA.pem') | Should -BeTrue
         Test-Path (Join-Path $tempDir ("$(hostname).pem")) | Should -BeTrue
@@ -170,7 +171,7 @@ Describe 'Prepare-HyperVProvider certificate handling' -Skip:($IsLinux -or $IsMa
 }
 
 
-Describe 'Convert certificate helpers honour -WhatIf' -Skip:($IsLinux -or $IsMacOS) {
+Describe 'Convert certificate helpers honour -WhatIf' -Skip:($SkipNonWindows) {
     It 'skips writing files when WhatIf is used' {
         $scriptPath = Join-Path $PSScriptRoot '..' 'runner_scripts' '0010_Prepare-HyperVProvider.ps1'
         . $scriptPath
@@ -183,7 +184,7 @@ Describe 'Convert certificate helpers honour -WhatIf' -Skip:($IsLinux -or $IsMac
         Remove-Item $cer -ErrorAction SilentlyContinue
     }
 
-    It 'skips writing PFX outputs when WhatIf is used' -Skip:($IsLinux -or $IsMacOS) {
+    It 'skips writing PFX outputs when WhatIf is used' -Skip:($SkipNonWindows) {
         $scriptPath = Join-Path $PSScriptRoot '..' 'runner_scripts' '0010_Prepare-HyperVProvider.ps1'
         . $scriptPath
         $pfx = Join-Path $TestDrive (([guid]::NewGuid()).ToString() + '.pfx')
@@ -206,10 +207,10 @@ Describe 'Convert certificate helpers honour -WhatIf' -Skip:($IsLinux -or $IsMac
     }
 }
 
-Describe 'Convert certificate helpers validate paths' -Skip:($IsLinux -or $IsMacOS) {
+Describe 'Convert certificate helpers validate paths' -Skip:($SkipNonWindows) {
     BeforeAll {
-        Unmock Convert-CerToPem -ErrorAction SilentlyContinue
-        Unmock Convert-PfxToPem -ErrorAction SilentlyContinue
+        Remove-Mock Convert-CerToPem -ErrorAction SilentlyContinue
+        Remove-Mock Convert-PfxToPem -ErrorAction SilentlyContinue
         $scriptPath = Join-Path $PSScriptRoot '..' 'runner_scripts' '0010_Prepare-HyperVProvider.ps1'
         . $scriptPath
     }

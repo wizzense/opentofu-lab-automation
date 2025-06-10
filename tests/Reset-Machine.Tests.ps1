@@ -1,4 +1,5 @@
 . (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
+. (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
 Describe 'Reset-Machine script' {
     BeforeAll {
         $script:ScriptPath = Join-Path $PSScriptRoot '..' 'runner_scripts' '9999_Reset-Machine.ps1'
@@ -9,7 +10,7 @@ Describe 'Reset-Machine script' {
         Remove-Variable -Name LogFilePath -Scope Script -ErrorAction SilentlyContinue
     }
 
-    It 'invokes sysprep and configures Remote Desktop on Windows' -Skip:($IsLinux -or $IsMacOS) {
+    It 'invokes sysprep and configures Remote Desktop on Windows' -Skip:($SkipNonWindows) {
         Mock Get-Platform { 'Windows' }
         $sysprep = 'C:\\Windows\\System32\\Sysprep\\Sysprep.exe'
         Mock Test-Path { $true } -ParameterFilter { $Path -eq $sysprep }
@@ -22,18 +23,18 @@ Describe 'Reset-Machine script' {
         $cfg = [pscustomobject]@{ AllowRemoteDesktop = $false; FirewallPorts = @() }
         Mock Get-ItemProperty { [pscustomobject]@{ fDenyTSConnections = 1 } }
         . $script:ScriptPath -Config $cfg
-        Assert-MockCalled Start-Process -Times 1 -ParameterFilter {
+        Should -Invoke -CommandName Start-Process -Times 1 -ParameterFilter {
             $FilePath -eq $sysprep -and $ArgumentList -eq '/generalize /oobe /shutdown /quiet' -and $Wait
         }
-        Assert-MockCalled Set-ItemProperty -Times 1
-        Assert-MockCalled New-NetFirewallRule -Times 1
+        Should -Invoke -CommandName Set-ItemProperty -Times 1
+        Should -Invoke -CommandName New-NetFirewallRule -Times 1
     }
 
     It 'calls Restart-Computer on Linux' {
         Mock Get-Platform { 'Linux' }
         Mock Restart-Computer {}
         . $script:ScriptPath -Config ([pscustomobject]@{})
-        Assert-MockCalled Restart-Computer -Times 1
+        Should -Invoke -CommandName Restart-Computer -Times 1
     }
 
     It 'returns exit code 1 for unknown platform' {
@@ -46,7 +47,7 @@ Describe 'Reset-Machine script' {
             $code = 1
         }
         $code | Should -Be 1
-        Assert-MockCalled Restart-Computer -Times 0
+        Should -Invoke -CommandName Restart-Computer -Times 0
     }
 
     AfterAll {

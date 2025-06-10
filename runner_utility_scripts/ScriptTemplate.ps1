@@ -1,6 +1,8 @@
 function Invoke-LabStep {
     param([scriptblock]$Body, [pscustomobject]$Config)
-    . $PSScriptRoot/Logger.ps1
+    if (-not (Get-Command Write-CustomLog -ErrorAction SilentlyContinue)) {
+        . $PSScriptRoot/Logger.ps1
+    }
 
     $prevEAP = $ErrorActionPreference
     $ErrorActionPreference = 'Stop'

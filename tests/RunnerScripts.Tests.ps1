@@ -5,21 +5,23 @@ if (-not (Test-Path $helperPath)) {
 }
 
 . (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
+. (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
 
-if ($IsLinux -or $IsMacOS) { return }
+if ($SkipNonWindows) { return }
 
 $scriptDir = Join-Path $PSScriptRoot '..' 'runner_scripts'
 $scripts = Get-ChildItem $scriptDir -Filter '*.ps1'
 
-Describe 'Runner scripts parameter and command checks' -Skip:($IsLinux -or $IsMacOS) {
+Describe 'Runner scripts parameter and command checks' -Skip:($SkipNonWindows) {
 
     BeforeAll {
         . (Join-Path $PSScriptRoot 'helpers' 'Get-ScriptAst.ps1')
     }
 
 
+    $mandatory = @('Write-CustomLog')
     $testCases = $scripts | ForEach-Object {
-        @{ Name = $_.Name; File = $_ }
+        @{ Name = $_.Name; File = $_; Commands = $mandatory }
     }
 
     It 'parses without errors' -TestCases $testCases {
@@ -30,7 +32,7 @@ Describe 'Runner scripts parameter and command checks' -Skip:($IsLinux -or $IsMa
     }
 
     It 'declares a Config parameter when required' -TestCases $testCases {
-        param($File)
+        param($File, $Commands)
         $ast = Get-ScriptAst $File.FullName
         $configParam = if ($ast) {
             $ast.FindAll({ param($n) $n -is [System.Management.Automation.Language.ParameterAst] -and $n.Name.VariablePath.UserPath -eq 'Config' }, $true)
@@ -41,13 +43,27 @@ Describe 'Runner scripts parameter and command checks' -Skip:($IsLinux -or $IsMa
         $configParam.Count | Should -BeGreaterThan 0
     }
 
-    It 'contains at least one command invocation' -TestCases $testCases {
-        param($File)
+    It 'contains mandatory command invocations' -TestCases $testCases {
+        param($File, $Commands)
         $ast = Get-ScriptAst $File.FullName
         $commands = if ($ast) { $ast.FindAll({ param($n) $n -is [System.Management.Automation.Language.CommandAst] }, $true) } else { @() }
-        if ($commands.Count -eq 0) {
-            Write-Host "No commands found in $($File.FullName)"
+        foreach ($cmd in $Commands) {
+            $found = $commands | Where-Object { $_.GetCommandName() -eq $cmd }
+            if (-not $found) {
+                Write-Host "Command '$cmd' not found in $($File.FullName)"
+            }
+            ($found | Measure-Object).Count | Should -BeGreaterThan 0
         }
-        $commands.Count | Should -BeGreaterThan 0
+    }
+
+    It 'contains Invoke-LabStep call' -TestCases $testCases {
+        param($File, $Commands)
+        $ast = Get-ScriptAst $File.FullName
+        $commands = if ($ast) { $ast.FindAll({ param($n) $n -is [System.Management.Automation.Language.CommandAst] }, $true) } else { @() }
+        $found = $commands | Where-Object { $_.GetCommandName() -eq 'Invoke-LabStep' }
+        if (-not $found) {
+            Write-Host "Invoke-LabStep not found in $($File.FullName)"
+        }
+        ($found | Measure-Object).Count | Should -BeGreaterThan 0
     }
 }

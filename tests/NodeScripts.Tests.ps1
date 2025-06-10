@@ -3,22 +3,24 @@ Describe 'Node installation scripts' {
     BeforeAll {
 
         $script:scriptRoot = Join-Path $PSScriptRoot '..' 'runner_scripts'
-        $script:core   = (Resolve-Path -ErrorAction Stop (Join-Path $script:scriptRoot '0201_Install-NodeCore.ps1')).Path
-        $script:global = (Resolve-Path -ErrorAction Stop (Join-Path $script:scriptRoot '0202_Install-NodeGlobalPackages.ps1')).Path
-        $script:npm    = (Resolve-Path -ErrorAction Stop (Join-Path $script:scriptRoot '0203_Install-npm.ps1')).Path
+        $script:nodeScripts = @(
+            '0201_Install-NodeCore.ps1'
+            '0202_Install-NodeGlobalPackages.ps1'
+            '0203_Install-npm.ps1'
+        )
+        $script:core   = (Resolve-Path -ErrorAction Stop (Join-Path $script:scriptRoot $script:nodeScripts[0])).Path
+        $script:global = (Resolve-Path -ErrorAction Stop (Join-Path $script:scriptRoot $script:nodeScripts[1])).Path
+        $script:npm    = (Resolve-Path -ErrorAction Stop (Join-Path $script:scriptRoot $script:nodeScripts[2])).Path
         $script:origTemp = $env:TEMP
         $env:TEMP = Join-Path ([System.IO.Path]::GetTempPath()) 'pester-temp'
         New-Item -ItemType Directory -Path $env:TEMP -Force | Out-Null
         $script:config = [pscustomobject]@{}
     }
 
-    It 'resolves script paths from the tests directory' {
-        $core   = (Resolve-Path -ErrorAction Stop (Join-Path $PSScriptRoot '..' 'runner_scripts' '0201_Install-NodeCore.ps1')).Path
-        $global = (Resolve-Path -ErrorAction Stop (Join-Path $PSScriptRoot '..' 'runner_scripts' '0202_Install-NodeGlobalPackages.ps1')).Path
-        $npm    = (Resolve-Path -ErrorAction Stop (Join-Path $PSScriptRoot '..' 'runner_scripts' '0203_Install-npm.ps1')).Path
-        Test-Path $core | Should -BeTrue
-        Test-Path $global | Should -BeTrue
-        Test-Path $npm   | Should -BeTrue
+    It 'resolves script paths from the tests directory' -TestCases $script:nodeScripts {
+        param($scriptName)
+        $path = (Resolve-Path -ErrorAction Stop (Join-Path $PSScriptRoot '..' 'runner_scripts' $scriptName)).Path
+        Test-Path $path | Should -BeTrue
     }
 
     It 'uses Node_Dependencies.Node.InstallerUrl when installing Node' {
@@ -31,7 +33,7 @@ Describe 'Node installation scripts' {
         . $core
 
         Install-NodeCore -Config $cfg
-        Assert-MockCalled Invoke-WebRequest -ParameterFilter { $Uri -eq 'http://example.com/node.msi' } -Times 1
+        Should -Invoke -CommandName Invoke-WebRequest -Times 1 -ParameterFilter { $Uri -eq 'http://example.com/node.msi' }
     }
 
     It 'does nothing when InstallNode is $false' {
@@ -62,8 +64,8 @@ Describe 'Node installation scripts' {
         Mock npm {}
         $WhatIfPreference = $false
         Install-NodeGlobalPackages -Config $cfg
-        Assert-MockCalled npm -ParameterFilter { ($testArgs -join ' ') -eq 'install -g yarn' } -Times 1
-        Assert-MockCalled npm -ParameterFilter { ($testArgs -join ' ') -eq 'install -g nodemon' } -Times 1
+        Should -Invoke -CommandName npm -Times 1 -ParameterFilter { ($testArgs -join ' ') -eq 'install -g yarn' }
+        Should -Invoke -CommandName npm -Times 1 -ParameterFilter { ($testArgs -join ' ') -eq 'install -g nodemon' }
         Should -Invoke -CommandName npm -Times 0 -ParameterFilter { ($testArgs -join ' ') -eq 'install -g vite' }
     }
 
@@ -79,23 +81,25 @@ Describe 'Node installation scripts' {
         Mock npm {}
         $WhatIfPreference = $false
         Install-NodeGlobalPackages -Config $cfg
-        Assert-MockCalled npm -ParameterFilter { ($testArgs -join ' ') -eq 'install -g yarn' } -Times 1
-        Assert-MockCalled npm -ParameterFilter { ($testArgs -join ' ') -eq 'install -g nodemon' } -Times 1
+        Should -Invoke -CommandName npm -Times 1 -ParameterFilter { ($testArgs -join ' ') -eq 'install -g yarn' }
+        Should -Invoke -CommandName npm -Times 1 -ParameterFilter { ($testArgs -join ' ') -eq 'install -g nodemon' }
         Should -Invoke -CommandName npm -Times 0 -ParameterFilter { ($testArgs -join ' ') -eq 'install -g vite' }
     }
 
-    It 'logs start message when running Install-NodeCore' {
-        . $core
-        Mock Write-CustomLog {}
-        Install-NodeCore -Config $script:config
-        Assert-MockCalled Write-CustomLog -ParameterFilter { $Message -eq 'Running 0201_Install-NodeCore.ps1' } -Times 1
-    }
+    It 'logs start message when running each node script' -TestCases $script:nodeScripts {
+        param($scriptName)
 
-    It 'logs start message when running Install-NodeGlobalPackages' {
-        . $global
+        $path = (Resolve-Path -ErrorAction Stop (Join-Path $script:scriptRoot $scriptName)).Path
         Mock Write-CustomLog {}
-        Install-NodeGlobalPackages -Config $script:config
-        Assert-MockCalled Write-CustomLog -ParameterFilter { $Message -eq 'Running 0202_Install-NodeGlobalPackages.ps1' } -Times 1
+        . $path
+
+        switch ($scriptName) {
+            '0201_Install-NodeCore.ps1'            { Install-NodeCore -Config $script:config }
+            '0202_Install-NodeGlobalPackages.ps1' { Install-NodeGlobalPackages -Config $script:config }
+            '0203_Install-npm.ps1'                { Install-NpmDependencies -Config $script:config }
+        }
+
+        Should -Invoke -CommandName Write-CustomLog -Times 1 -ParameterFilter { $Message -eq "Running $scriptName" }
     }
 
     It 'honours -WhatIf for Install-GlobalPackage' {
@@ -130,7 +134,7 @@ Describe 'Node installation scripts' {
         . $npmPath -Config $config
 
         Install-NpmDependencies -Config $cfg
-        Assert-MockCalled npm -ParameterFilter { $testArgs[0] -eq 'install' } -Times 1
+        Should -Invoke -CommandName npm -Times 1 -ParameterFilter { $testArgs[0] -eq 'install' }
         Remove-Item -Recurse -Force $temp
     }
 

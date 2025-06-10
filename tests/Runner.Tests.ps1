@@ -1,4 +1,6 @@
 . (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
+. (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
+
 if ($IsLinux -or $IsMacOS) { return }
 
 Describe 'runner.ps1 syntax' {
@@ -9,6 +11,7 @@ Describe 'runner.ps1 syntax' {
         ($errs ? $errs.Count : 0) | Should -Be 0
     }
 }
+
 Describe 'runner.ps1 configuration' {
     It 'loads default configuration without errors' {
         $modulePath = Join-Path $PSScriptRoot '..' 'lab_utils' 'Get-LabConfig.ps1'
@@ -18,7 +21,7 @@ Describe 'runner.ps1 configuration' {
     }
 }
 
-Describe 'runner.ps1 script selection' -Skip:($IsLinux -or $IsMacOS) {
+Describe 'runner.ps1 script selection' -Skip:($SkipNonWindows) {
     BeforeAll {
         # Use script-scoped variable so PSScriptAnalyzer recognizes cross-block usage
         $script:runnerPath = Join-Path $PSScriptRoot '..' 'runner.ps1'
@@ -26,6 +29,10 @@ Describe 'runner.ps1 script selection' -Skip:($IsLinux -or $IsMacOS) {
         . $modulePath
         . (Join-Path $PSScriptRoot '..' 'runner_utility_scripts' 'Logger.ps1')
         . (Join-Path $PSScriptRoot '..' 'lab_utils' 'Menu.ps1')
+    }
+    AfterEach {
+        Remove-Item Function:Write-Host -ErrorAction SilentlyContinue
+        Remove-Item Function:Read-Host -ErrorAction SilentlyContinue
     }
 
     It 'runs non-interactively when -Scripts is supplied' {
@@ -310,7 +317,6 @@ Write-Error 'err message'
                 $script:logLines += $Object
             }
             $output = & "$tempDir/runner.ps1" -Scripts '0001' -Auto -Verbosity 'silent' *>&1
-            Remove-Item Function:\Write-Host -ErrorAction SilentlyContinue
             Pop-Location
 
         $script:logLines | Should -Not -Contain '==== Loading configuration ===='
@@ -345,7 +351,6 @@ Write-Error 'err message'
                 $script:logLines += $Object
             }
             $output = & "$tempDir/runner.ps1" -Scripts '0001' -Auto -Verbosity silent *>&1
-            Remove-Item Function:\Write-Host -ErrorAction SilentlyContinue
             Pop-Location
 
             $script:logLines | Should -Not -Contain '==== Loading configuration ===='
@@ -355,7 +360,7 @@ Write-Error 'err message'
         finally { Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue }
     }
 
-    It 'prompts for script selection when no -Scripts argument is supplied' -Skip:($IsLinux -or $IsMacOS) {
+    It 'prompts for script selection when no -Scripts argument is supplied' -Skip:($SkipNonWindows) {
         $tempDir = Join-Path ([System.IO.Path]::GetTempPath()) ([System.Guid]::NewGuid())
         $null = New-Item -ItemType Directory -Path $tempDir
         try {
@@ -382,13 +387,13 @@ exit 0' | Set-Content -Path $dummy
             & "$tempDir/runner.ps1" -Auto | Out-Null
             Pop-Location
 
-            Assert-MockCalled Get-MenuSelection -Times 2
+            Should -Invoke -CommandName Get-MenuSelection -Times 2
         } finally {
             Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue
         }
     }
 
-    It 'handles empty or invalid selection by logging and doing nothing' -Skip:($IsLinux -or $IsMacOS) {
+    It 'handles empty or invalid selection by logging and doing nothing' -Skip:($SkipNonWindows) {
         $tempDir = Join-Path ([System.IO.Path]::GetTempPath()) ([System.Guid]::NewGuid())
         $null = New-Item -ItemType Directory -Path $tempDir
         try {
@@ -414,8 +419,8 @@ exit 0
             Pop-Location
 
             Test-Path $out | Should -BeFalse
-            Assert-MockCalled Write-CustomLog -ParameterFilter { $Message -eq 'No scripts selected.' } -Times 1
-            Assert-MockCalled Get-MenuSelection -Times 1
+            Should -Invoke -CommandName Write-CustomLog -Times 1 -ParameterFilter { $Message -eq 'No scripts selected.' }
+            Should -Invoke -CommandName Get-MenuSelection -Times 1
         }
         finally {
             Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue
@@ -495,7 +500,7 @@ Describe 'Set-LabConfig' {
         }
     }
 
-    It 'updates selections and saves to JSON' -Skip:($IsLinux -or $IsMacOS) {
+    It 'updates selections and saves to JSON' -Skip:($SkipNonWindows) {
         $config = @{
             InstallGit = $false
             InstallGo  = $false
