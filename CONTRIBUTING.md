@@ -9,6 +9,16 @@ macOS runners. Linux and macOS runners generally include `pwsh` already; the
 workflow installs PowerShell only if the command is missing so the steps run
 consistently across images.
 
+### Test setup
+
+Install the Python development dependencies so `pytest` and the CLI helpers are
+available in a virtual environment:
+
+```bash
+cd py
+poetry install --with dev
+```
+
 ## Running tests
 
 Run the Pester suite using PowerShell:
