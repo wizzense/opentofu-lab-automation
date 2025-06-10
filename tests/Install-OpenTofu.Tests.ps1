@@ -17,7 +17,7 @@ Describe '0008_Install-OpenTofu' -Skip:($IsLinux -or $IsMacOS) {
 
         Mock Invoke-OpenTofuInstaller {}
         Mock Write-CustomLog {}
-        & $script:ScriptPath -Config $cfg
+        . $script:ScriptPath -Config $cfg
         Assert-MockCalled Invoke-OpenTofuInstaller -Times 1 -ParameterFilter {
             $CosignPath -eq (Join-Path $cfg.CosignPath 'cosign-windows-amd64.exe') -and
             $OpenTofuVersion -eq $cfg.OpenTofuVersion
@@ -28,7 +28,7 @@ Describe '0008_Install-OpenTofu' -Skip:($IsLinux -or $IsMacOS) {
         $cfg = [pscustomobject]@{ InstallOpenTofu = $false }
         Mock Invoke-OpenTofuInstaller {}
         Mock Write-CustomLog {}
-        & $script:ScriptPath -Config $cfg
+        . $script:ScriptPath -Config $cfg
         Assert-MockCalled Invoke-OpenTofuInstaller -Times 0
     }
 }
