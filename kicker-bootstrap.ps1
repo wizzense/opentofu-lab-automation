@@ -120,6 +120,7 @@ if (-not (Test-Path $formatScript)) {
 
 Write-CustomLog "`nYo!"
 Write-Continue "`n<press any key to continue>`n"
+Write-CustomLog "Use `-Quiet` to reduce output."
 Write-CustomLog "I know you totally read the readme first, but just in case you didn't...`n"
 
 Write-CustomLog """
