@@ -198,7 +198,11 @@ This guide explains how to pull the latest Windows job artifacts, analyse test &
 | -------------------------------- | ----------------------------------------------- | -------------------------------------------------------------------------------- |
 | `Should -Invoke` fails (0 calls) | Mock parameter names don’t match implementation | Align names or remove filter while debugging.                                    |
 | Zero tests discovered on CI      | `$SkipNonWindows` guard triggered               | Ensure `.ps1` runs **only** on Windows runner or set `$ENV:OS` override locally. |
-| Artifacts script fails with 404  | No successful run yet for branch                | Manually specify run ID: `-RunId <id>` in the script.                            |
+| Artifacts script fails with 404  | No successful run yet for branch                | Authenticate with `gh` or specify `-RunId <id>`.                            |
+If the helper still fails, list recent runs and pass the ID with `-RunId`:
+```bash
+gh run list --limit 20
+```
 
 ## References
 

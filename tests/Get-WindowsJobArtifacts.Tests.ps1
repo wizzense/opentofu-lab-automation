@@ -35,4 +35,19 @@ Describe 'Get-WindowsJobArtifacts' {
 
         Should -Invoke -CommandName Invoke-WebRequest -Times 1 -ParameterFilter { $Uri -match 'nightly\.link' }
     }
+
+    It 'uses provided run ID with gh' {
+        $id = 123
+        Mock Get-Command { [pscustomobject]@{ Name = 'gh' } } -ParameterFilter { $Name -eq 'gh' }
+        Mock gh {} -ParameterFilter { $args[0] -eq 'auth status' }
+        Mock gh { '{"artifacts":[]}' } -ParameterFilter { $args[0] -like "*runs/$id/artifacts" }
+        Mock Expand-Archive {}
+        Mock Get-ChildItem { [pscustomobject]@{ FullName = 'dummy.xml' } }
+        Mock Select-Xml { @() }
+
+        & $scriptPath -RunId $id
+
+        Should -Invoke -CommandName gh -ParameterFilter { $args[0] -like "*runs/$id/artifacts" } -Times 1
+        Should -Not -Invoke -CommandName Invoke-WebRequest
+    }
 }
