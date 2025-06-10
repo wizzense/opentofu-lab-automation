@@ -110,7 +110,8 @@ Describe 'Convert certificate helpers honour -WhatIf' {
         $stub | Add-Member -MemberType ScriptMethod -Name GetRSAPrivateKey -Value { $rsa }
         Mock Set-Content {}
         Mock New-Object { $stub }
-        Convert-PfxToPem -PfxPath $pfx -Password (ConvertTo-SecureString 'pw' -AsPlainText -Force) -CertPath $cert -KeyPath $key -WhatIf
+        $securePw = [System.Net.NetworkCredential]::new('', 'pw').SecurePassword
+        Convert-PfxToPem -PfxPath $pfx -Password $securePw -CertPath $cert -KeyPath $key -WhatIf
         Assert-MockNotCalled Set-Content
         Remove-Item $pfx -ErrorAction SilentlyContinue
     }
