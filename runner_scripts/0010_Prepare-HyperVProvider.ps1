@@ -74,6 +74,7 @@ function Get-HyperVProviderVersion {
 }
 
 . "$PSScriptRoot/../runner_utility_scripts/ScriptTemplate.ps1"
+if ($MyInvocation.InvocationName -ne '.') {
 Invoke-LabStep -Config $Config -Body {
     Write-CustomLog 'Running 0010_Prepare-HyperVProvider.ps1'
 
