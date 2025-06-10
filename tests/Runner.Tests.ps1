@@ -66,6 +66,40 @@ exit 0' | Set-Content -Path $dummy
         }
     }
 
+    It 'uses pwsh from PSHOME when not in PATH' {
+        $tempDir = Join-Path ([System.IO.Path]::GetTempPath()) ([System.Guid]::NewGuid())
+        $null = New-Item -ItemType Directory -Path $tempDir
+        try {
+            Copy-Item $script:runnerPath -Destination $tempDir
+            Copy-Item (Join-Path $PSScriptRoot '..' 'runner_utility_scripts') -Destination $tempDir -Recurse
+            Copy-Item (Join-Path $PSScriptRoot '..' 'lab_utils') -Destination $tempDir -Recurse
+            Copy-Item (Join-Path $PSScriptRoot '..' 'config_files') -Destination (Join-Path $tempDir 'config_files') -Recurse
+            $scriptsDir = Join-Path $tempDir 'runner_scripts'
+            $null = New-Item -ItemType Directory -Path $scriptsDir
+            $dummy = Join-Path $scriptsDir '0001_Test.ps1'
+            'Param([PSCustomObject]$Config)
+exit 0' | Set-Content -Path $dummy
+
+            $oldPath = $env:PATH
+            $env:PATH = ''
+            try {
+                Push-Location $tempDir
+                Mock Read-Host { throw 'Read-Host should not be called' }
+                & "$tempDir/runner.ps1" -Scripts '0001' -Auto | Out-Null
+                $code = $LASTEXITCODE
+                Pop-Location
+            }
+            finally {
+                $env:PATH = $oldPath
+            }
+
+            $code | Should -Be 0
+        }
+        finally {
+            Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue
+        }
+    }
+
     It 'exits with code 1 when -Scripts has no matching prefixes' {
         $tempDir = Join-Path ([System.IO.Path]::GetTempPath()) ([System.Guid]::NewGuid())
         $null = New-Item -ItemType Directory -Path $tempDir
