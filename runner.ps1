@@ -270,11 +270,7 @@ function Invoke-Scripts {
                 }
             }
 
-            try {
-                $output = & pwsh -NoLogo -NoProfile -Command $sb -Args $tempCfg, $scriptPath, $Verbosity 2>&1
-            } catch {
-                $output = & pwsh -NoLogo -NoProfile -Command $sb -Args $tempCfg, $scriptPath, $Verbosity *>&1
-            }
+            $output = & pwsh -NoLogo -NoProfile -Command $sb -Args $tempCfg, $scriptPath, $Verbosity *>&1
 
             $exitCode = $LASTEXITCODE
 
