@@ -84,6 +84,20 @@ Describe 'Node installation scripts' {
         Should -Invoke -CommandName npm -Times 0 -ParameterFilter { ($testArgs -join ' ') -eq 'install -g vite' }
     }
 
+    It 'logs start message when running Install-NodeCore' {
+        . $core
+        Mock Write-CustomLog {}
+        Install-NodeCore -Config $script:config
+        Assert-MockCalled Write-CustomLog -ParameterFilter { $Message -eq 'Running 0201_Install-NodeCore.ps1' } -Times 1
+    }
+
+    It 'logs start message when running Install-NodeGlobalPackages' {
+        . $global
+        Mock Write-CustomLog {}
+        Install-NodeGlobalPackages -Config $script:config
+        Assert-MockCalled Write-CustomLog -ParameterFilter { $Message -eq 'Running 0202_Install-NodeGlobalPackages.ps1' } -Times 1
+    }
+
     It 'honours -WhatIf for Install-GlobalPackage' {
     
         $global = (Resolve-Path -ErrorAction Stop (Join-Path $PSScriptRoot '..' 'runner_scripts' '0202_Install-NodeGlobalPackages.ps1')).Path
