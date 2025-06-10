@@ -260,7 +260,9 @@ function Invoke-Scripts {
                 $script:ConsoleLevel = $vl[$verbosity]
                 $cfg = Get-Content -Raw -Path $cfgPath | ConvertFrom-Json
                 try {
-                    $result = & $scr -Config $cfg
+                    $args = @{ Config = $cfg }
+                    if ((Get-Command $scr).Parameters.ContainsKey('AsJson')) { $args.AsJson = $true }
+                    $result = & $scr @args
                     $exit = if ($LASTEXITCODE) { $LASTEXITCODE } elseif (-not $?) { 1 } else { 0 }
                     Write-Output $result
                     exit $exit
