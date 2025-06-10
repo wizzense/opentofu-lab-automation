@@ -46,7 +46,12 @@ if ($Config -is [hashtable]) {
     return
 }
 
-if ($Config.Node_Dependencies.InstallNpm) {
+$installNpm = $true
+if ($Config.Node_Dependencies.PSObject.Properties.Name -contains 'InstallNpm') {
+    $installNpm = [bool]$Config.Node_Dependencies.InstallNpm
+}
+
+if ($installNpm) {
 
 # Determine frontend path
 $frontendPath = if ($Config.Node_Dependencies.NpmPath) {
