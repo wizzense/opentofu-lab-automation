@@ -93,8 +93,8 @@ Describe 'Prepare-HyperVProvider certificate handling' -Skip:($IsLinux -or $IsMa
         }
         Mock Copy-Item {}
         # certificate operations should not touch the real store
-        $rootStub = [pscustomobject]@{ Thumbprint = 'ROOT123'; Subject = "CN=$($config.CertificateAuthority.CommonName)" }
-        $hostStub = [pscustomobject]@{ Thumbprint = 'HOST123'; Subject = "CN=$(hostname)" }
+        $rootStub = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2
+        $hostStub = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2
         $certCall = 0
         Mock New-SelfSignedCertificate { if ($certCall++ -eq 0) { $rootStub } else { $hostStub } }
         Mock Export-Certificate {}
