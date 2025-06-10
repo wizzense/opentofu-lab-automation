@@ -140,7 +140,7 @@ $UserInput = Read-Host -Prompt "Enter the password for the Root CA certificate" 
 $rootCaPassword = $UserInput
 $rootCaCertificate = Get-ChildItem cert:\LocalMachine\Root | Where-Object {$_.Subject -eq "CN=$rootCaName"}
 
-if ($rootCaCertificate) {
+if (-not $rootCaCertificate) {
     # Cleanup if present
     Get-ChildItem cert:\LocalMachine\My | Where-Object {$_.subject -eq "CN=$rootCaName"} | Remove-Item -Force -ErrorAction SilentlyContinue
     Remove-Item ".\$rootCaName.cer" -Force -ErrorAction SilentlyContinue
@@ -182,7 +182,7 @@ $UserInput = Read-Host -Prompt "Enter the password for the host." -AsSecureStrin
 $hostPassword = $UserInput
 $hostCertificate = Get-ChildItem cert:\LocalMachine\My | Where-Object {$_.Subject -eq "CN=$hostName"}
 
-if ($hostCertificate) {
+if (-not $hostCertificate) {
     # Cleanup if present
     Get-ChildItem cert:\LocalMachine\My | Where-Object {$_.subject -eq "CN=$hostName"} | Remove-Item -Force -ErrorAction SilentlyContinue
     Remove-Item ".\$hostName.cer" -Force -ErrorAction SilentlyContinue

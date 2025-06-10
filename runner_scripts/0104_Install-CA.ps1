@@ -49,9 +49,11 @@ Write-CustomLog "Configuring CA: $CAName with $($ValidityYears) year validity...
 
 if ($PSCmdlet.ShouldProcess($CAName, 'Configure Standalone Root CA')) {
     # Resolve the cmdlet after any Pester mocks have been defined
+
     $installCmd = Get-Command Install-AdcsCertificationAuthority -ErrorAction SilentlyContinue
     if (-not $installCmd) {
         Write-CustomLog 'Install-AdcsCertificationAuthority command not found. Ensure AD CS features are available.'
+
         return
     }
     Install-AdcsCertificationAuthority `
