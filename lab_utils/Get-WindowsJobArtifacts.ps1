@@ -1,0 +1,54 @@
+[CmdletBinding()]
+param(
+    [string]$Repo = 'wizzense/opentofu-lab-automation',
+    [string]$Workflow = 'pester.yml'
+)
+
+if (-not (Get-Command gh -ErrorAction SilentlyContinue)) {
+    throw "GitHub CLI 'gh' is required"
+}
+
+$tempDir = Join-Path ([System.IO.Path]::GetTempPath()) "gh-artifacts-$([System.Guid]::NewGuid().ToString())"
+New-Item -ItemType Directory -Path $tempDir | Out-Null
+
+$runsJson = gh api "repos/$Repo/actions/workflows/$Workflow/runs?branch=main&status=completed&per_page=10"
+$runs = (ConvertFrom-Json $runsJson).workflow_runs
+
+$found = $false
+foreach ($run in $runs) {
+    $artJson = gh api "repos/$Repo/actions/runs/$($run.id)/artifacts"
+    $artifacts = (ConvertFrom-Json $artJson).artifacts
+    $cov = $artifacts | Where-Object { $_.name -match 'coverage.*windows-latest' }
+    $res = $artifacts | Where-Object { $_.name -match 'results.*windows-latest' }
+    if ($cov -and $res) {
+        gh api $cov.archive_download_url --output (Join-Path $tempDir 'coverage.zip')
+        gh api $res.archive_download_url --output (Join-Path $tempDir 'results.zip')
+        $found = $true
+        break
+    }
+}
+
+if (-not $found) {
+    Write-Host 'No Windows artifacts found.' -ForegroundColor Yellow
+    exit 1
+}
+
+$covDir = Join-Path $tempDir 'coverage'
+$resDir = Join-Path $tempDir 'results'
+Expand-Archive -Path (Join-Path $tempDir 'coverage.zip') -DestinationPath $covDir -Force
+Expand-Archive -Path (Join-Path $tempDir 'results.zip') -DestinationPath $resDir -Force
+
+$resultsFile = Get-ChildItem -Path $resDir -Filter *.xml -Recurse | Select-Object -First 1
+if (-not $resultsFile) {
+    Write-Host 'Results file not found.' -ForegroundColor Yellow
+    exit 1
+}
+
+$failed = Select-Xml -Path $resultsFile.FullName -XPath '//test-case[@result="Failed" or @outcome="Failed"]' |
+    ForEach-Object { $_.Node.name }
+if ($failed) {
+    Write-Host 'Failing tests:' -ForegroundColor Red
+    $failed | ForEach-Object { Write-Host " - $_" }
+} else {
+    Write-Host 'All tests passed.' -ForegroundColor Green
+}
