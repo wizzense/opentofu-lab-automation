@@ -1,4 +1,4 @@
-Param([pscustomobject]$Config)
+﻿Param([pscustomobject]$Config)
 . "$PSScriptRoot/../runner_utility_scripts/ScriptTemplate.ps1"
 Invoke-LabStep -Config $Config -Body {
 <#
@@ -59,7 +59,7 @@ Push-Location $frontendPath
 try {
     Write-CustomLog "Running npm install in $frontendPath ..."
     npm install
-    Write-CustomLog "✅ npm install completed."
+    Write-CustomLog "npm install completed."
 } catch {
     Write-Error "ERROR: npm install failed: $_"
     exit 1
