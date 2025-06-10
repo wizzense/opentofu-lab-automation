@@ -18,14 +18,14 @@ $script:Quiet = $Quiet.IsPresent
 . (Join-Path $PSScriptRoot 'runner_utility_scripts' 'Logger.ps1')
 . (Join-Path $PSScriptRoot 'lab_utils' 'Get-LabConfig.ps1')
 . (Join-Path $PSScriptRoot 'lab_utils' 'Format-Config.ps1')
-. (Join-Path $PSScriptRoot 'lab_utils' 'Menu.ps1')
-
 $menuPath = Join-Path $PSScriptRoot 'lab_utils' 'Menu.ps1'
 if (-not (Test-Path $menuPath)) {
     Write-Error "Menu module not found at $menuPath"
     exit 1
 }
-. $menuPath
+if (-not (Get-Command Get-MenuSelection -ErrorAction SilentlyContinue)) {
+    . $menuPath
+}
 
 
 # ─── Default log path ─────────────────────────────────────────────────────────
