@@ -84,9 +84,17 @@ Describe 'OpenTofuInstaller' {
         $proc = Microsoft.PowerShell.Management\Start-Process pwsh -ArgumentList $arguments -Wait -PassThru
         $proc.ExitCode | Should -Be 2
 
-        }
-
     }
 
+    Describe 'macOS defaults' {
+        It 'allows -allUsers when Programfiles is missing' -Skip:(-not $IsMacOS) {
+            $scriptPath = Join-Path $PSScriptRoot '..' 'runner_utility_scripts' 'OpenTofuInstaller.ps1'
+            $zip = Join-Path $script:temp 'dummy.zip'
+            'dummy' | Set-Content $zip
+            Mock Expand-Archive {}
+            $Env:Programfiles = $null
+            { & $scriptPath -installMethod standalone -installPath $script:temp -allUsers -skipVerify -skipChangePath -internalContinue -internalZipFile $zip } | Should -Not -Throw
+        }
+    }
 
 }
