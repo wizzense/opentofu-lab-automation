@@ -117,16 +117,25 @@ jobs:
           }
           Invoke-Pester -Path tests -CI -ErrorAction Stop
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
+  pytest:
+    needs: pester
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v4
         with:
           python-version: '3.x'
           cache: 'pip'
-
-      - name: Install pytest
-        shell: bash
-        run: pip install pytest
-
+          
+          
+      - name: Install Poetry
+        run: pip install --user poetry
+      - name: Install dependencies
+        run: |
+          cd py
+          poetry install
       - name: Run pytest
-        shell: bash
-        run: pytest -q
+        run: |
+          cd py
+          poetry run pytest
+
