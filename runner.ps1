@@ -23,7 +23,9 @@ $script:ConsoleLevel    = $script:VerbosityLevels[$Verbosity]
 
 
 # ─── Load helpers ──────────────────────────────────────────────────────────────
-. (Join-Path $PSScriptRoot 'runner_utility_scripts' 'Logger.ps1')
+if (-not (Get-Command Write-CustomLog -ErrorAction SilentlyContinue)) {
+    . (Join-Path $PSScriptRoot 'runner_utility_scripts' 'Logger.ps1')
+}
 . (Join-Path $PSScriptRoot 'lab_utils' 'Get-LabConfig.ps1')
 . (Join-Path $PSScriptRoot 'lab_utils' 'Format-Config.ps1')
 $menuPath = Join-Path $PSScriptRoot 'lab_utils' 'Menu.ps1'
