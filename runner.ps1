@@ -269,7 +269,12 @@ function Invoke-Scripts {
                 }
             }
 
-            $output = & pwsh -NoLogo -NoProfile -Command $sb -Args $tempCfg, $scriptPath, $Verbosity *>&1
+            try {
+                $output = & pwsh -NoLogo -NoProfile -Command $sb -Args $tempCfg, $scriptPath, $Verbosity 2>&1
+            } catch {
+                $output = & pwsh -NoLogo -NoProfile -Command $sb -Args $tempCfg, $scriptPath, $Verbosity *>&1
+            }
+
             $exitCode = $LASTEXITCODE
 
             foreach ($line in $output) {
@@ -279,6 +284,16 @@ function Invoke-Scripts {
             Write-Output $output
             Remove-Item $tempCfg -ErrorAction SilentlyContinue
 
+            $results[$s.Name] = $exitCode
+            if ($exitCode) {
+                Write-CustomLog "ERROR: $($s.Name) exited with code $exitCode."
+                $failed += $s.Name
+            } else {
+                Write-CustomLog "$($s.Name) completed successfully."
+            }
+
+
+        } catch {
             Try {
 
                   $results[$s.Name] = $exitCode
@@ -298,6 +313,7 @@ function Invoke-Scripts {
         } 
         
         catch {
+
             Write-CustomLog "ERROR: Exception in $($s.Name): $_"
             $global:LASTEXITCODE = 1
             $failed += $s.Name
