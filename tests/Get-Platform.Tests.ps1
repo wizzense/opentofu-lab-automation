@@ -1,3 +1,4 @@
+. (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
 Describe 'Get-Platform' {
     BeforeAll {
         . (Join-Path $PSScriptRoot '..' 'lab_utils' 'Get-Platform.ps1')

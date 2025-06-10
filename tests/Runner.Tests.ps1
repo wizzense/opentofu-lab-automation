@@ -1,3 +1,4 @@
+. (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
 Describe 'runner.ps1 configuration' {
     It 'loads default configuration without errors' {
         $modulePath = Join-Path $PSScriptRoot '..' 'lab_utils' 'Get-LabConfig.ps1'

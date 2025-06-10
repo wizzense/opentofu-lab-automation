@@ -259,7 +259,8 @@ if (!(Test-Path $taliesinsDir)) {
     New-Item -ItemType Directory -Force -Path $taliesinsDir | Out-Null
 }
 Push-Location
-Set-Location $taliesinsDir
+try {
+    Set-Location $taliesinsDir
 
 # Define the provider directory/exe
 $providerDir     = Join-Path $taliesinsDir "terraform-provider-hyperv"
@@ -286,9 +287,11 @@ $destinationBinary = Join-Path $hypervProviderDir "terraform-provider-hyperv.exe
 Copy-Item -Path $providerExePath -Destination $destinationBinary -Force -Verbose
 
 Write-CustomLog "Hyper-V provider installed at: $destinationBinary"
-
-# Restore the original directory
-Pop-Location
+}
+finally {
+    # Restore the original directory even if build fails
+    Pop-Location
+}
 
 # ------------------------------
 # 5) Update Provider Config File (providers.tf)

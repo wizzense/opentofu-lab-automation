@@ -14,6 +14,7 @@ AfterEach {
     Remove-Item -Recurse -Force $script:temp -ErrorAction SilentlyContinue
 }
 
+
 Describe 'OpenTofuInstaller logging' {
     It 'creates log files and removes them for elevated unpack' -Skip:($IsLinux -or $IsMacOS) {
         $script:scriptPath = Join-Path $PSScriptRoot '..' 'runner_utility_scripts' 'OpenTofuInstaller.ps1'

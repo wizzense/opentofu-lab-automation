@@ -1,3 +1,4 @@
+. (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
 Describe 'Cleanup-Files script' {
     BeforeAll {
         $script:scriptPath = Join-Path $PSScriptRoot '..' 'runner_scripts' '0000_Cleanup-Files.ps1'

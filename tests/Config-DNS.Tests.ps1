@@ -1,3 +1,4 @@
+. (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
 Describe '0113_Config-DNS' {
     It 'calls Set-DnsClientServerAddress with value from config' -Skip:($IsLinux -or $IsMacOS) {
         $script = Join-Path $PSScriptRoot '..' 'runner_scripts' '0113_Config-DNS.ps1'
