@@ -17,6 +17,9 @@ if ($PSVersionTable.PSVersion.Major -lt 7) {
     exit 1
 }
 
+# expose quiet flag to logger
+if ($Quiet) { $Verbosity = 'silent' }
+
 $script:VerbosityLevels = @{ silent = 0; normal = 1; detailed = 2 }
 # honor -Quiet before calculating console level
 if ($Quiet) { $Verbosity = 'silent' }
