@@ -1,3 +1,25 @@
+<#
+.SYNOPSIS
+  Runs numbered scripts under runner_scripts.
+.DESCRIPTION
+  Loads config_files/default-config.json and prompts for scripts to execute.
+  Provide -Scripts to run non-interactively. Use -Auto to skip confirmation
+  prompts. -Force enables any configuration flags detected in a script and
+  persists the change back to the config file. Control console output with
+  -Verbosity silent|normal|detailed.
+.PARAMETER ConfigFile
+  JSON configuration file path.
+.PARAMETER Auto
+  Skip configuration and cleanup prompts.
+.PARAMETER Scripts
+  Comma-separated list of script prefixes or 'all'.
+.PARAMETER Force
+  Enable script flags even when disabled in config and persist the update.
+.PARAMETER Verbosity
+  Set the logging verbosity level.
+.EXAMPLE
+  ./runner.ps1 -Scripts '0006,0007' -Auto -Verbosity silent
+#>
 param(
     [string]$ConfigFile = "./config_files/default-config.json",
     [switch]$Auto,
@@ -12,7 +34,7 @@ if ($PSVersionTable.PSVersion.Major -lt 7) {
     exit 1
 }
 
-# expose quiet flag to logger
+# map verbosity to numeric logging level
 $script:VerbosityLevels = @{ silent = 0; normal = 1; detailed = 2 }
 $script:ConsoleLevel    = $script:VerbosityLevels[$Verbosity]
 
@@ -209,7 +231,7 @@ function Invoke-Scripts {
             }
 
 
-            & pwsh -NoLogo -NoProfile -Command $sb -Args $tempCfg, $scriptPath, $Quiet.IsPresent 2>&1
+            & pwsh -NoLogo -NoProfile -Command $sb -Args $tempCfg, $scriptPath, $Verbosity 2>&1
 
             Remove-Item $tempCfg -ErrorAction SilentlyContinue
 

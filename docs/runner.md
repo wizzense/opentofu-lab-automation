@@ -1,7 +1,6 @@
 # runner.ps1 guide
 
-`runner.ps1` orchestrates the numbered scripts under `runner_scripts/`.
-It loads `config_files/default-config.json` by default and then prompts for script selection unless told otherwise.
+`runner.ps1` orchestrates the numbered scripts under `runner_scripts/`. It loads `config_files/default-config.json` by default and then prompts for script selection unless told otherwise.
 
 ## Interactive mode
 
@@ -21,12 +20,10 @@ Supply a comma-separated list of 4-digit script prefixes via `-Scripts` to run w
 ./runner.ps1 -Scripts '0006,0007,0008,0009,0010' -Auto
 ```
 
-To suppress informational output, append the `-Quiet` switch. For
-example, to run scripts `0006` and `0007` silently and non-interactively:
+To suppress informational output, pass `-Verbosity silent`:
 
 ```powershell
-./runner.ps1 -Scripts '0006,0007' -Auto -Quiet
+./runner.ps1 -Scripts '0006,0007' -Auto -Verbosity silent
 ```
 
-The default configuration path (`./config_files/default-config.json`) and the `-Auto` switch are defined on lines 1-6. The logic that runs scripts directly when `-Scripts` is provided lives at lines 259-264. Prompts for editing the configuration or confirming cleanup only occur when `-Auto` is not specified, as shown on lines 135-168.
-
+Use `-Force` to enable configuration flags detected in a script even when the current config sets them to `false`. The updated value is written back to the configuration file after the script completes.
