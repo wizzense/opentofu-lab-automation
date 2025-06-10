@@ -252,7 +252,7 @@ Ongoing – Phase 5
 * **Document** `labctl` commands in the main `README` ✔️
 * **Package** default `config_files/` with the CLI ✔️
 * **Begin Phase 2** – VMware provider implementation.
-* **Ensure** local `pytest` & `Invoke-Pester` pass before each commit.
+* **Ensure** local `pytest` passes. Windows Pester tests run on GitHub and should be checked via `Get-WindowsJobArtifacts.ps1`.
 
 ---
 
