@@ -24,11 +24,12 @@ if ($useGh) {
         $artifacts = (ConvertFrom-Json $artJson).artifacts
         $cov = $artifacts | Where-Object { $_.name -match 'coverage.*windows-latest' }
         $res = $artifacts | Where-Object { $_.name -match 'results.*windows-latest' }
-        if ($cov -and $res) {
-            gh api $cov.archive_download_url --output (Join-Path $tempDir 'coverage.zip')
-            if ($LASTEXITCODE -ne 0) {
-                Write-Host 'Failed to download coverage artifact.' -ForegroundColor Yellow
-                exit 1
+        if ($res) {
+            if ($cov) {
+                gh api $cov.archive_download_url --output (Join-Path $tempDir 'coverage.zip')
+                if ($LASTEXITCODE -ne 0) {
+                    Write-Host 'Failed to download coverage artifact.' -ForegroundColor Yellow
+                }
             }
             gh api $res.archive_download_url --output (Join-Path $tempDir 'results.zip')
             if ($LASTEXITCODE -ne 0) {
@@ -36,7 +37,7 @@ if ($useGh) {
                 exit 1
             }
         } else {
-            Write-Host "No artifacts for windows-latest found on run $RunId. Use gh run view $RunId for details." -ForegroundColor Yellow
+            Write-Host "No Windows test results found on run $RunId. Use gh run view $RunId for details." -ForegroundColor Yellow
             exit 1
         }
     } else {
@@ -49,8 +50,10 @@ if ($useGh) {
             $artifacts = (ConvertFrom-Json $artJson).artifacts
             $cov = $artifacts | Where-Object { $_.name -match 'coverage.*windows-latest' }
             $res = $artifacts | Where-Object { $_.name -match 'results.*windows-latest' }
-            if ($cov -and $res) {
-                gh api $cov.archive_download_url --output (Join-Path $tempDir 'coverage.zip')
+            if ($res) {
+                if ($cov) {
+                    gh api $cov.archive_download_url --output (Join-Path $tempDir 'coverage.zip')
+                }
                 gh api $res.archive_download_url --output (Join-Path $tempDir 'results.zip')
                 $found = $true
                 break
@@ -74,23 +77,33 @@ if ($useGh) {
         Invoke-WebRequest -Uri $covUrl -OutFile (Join-Path $tempDir 'coverage.zip') -UseBasicParsing
         if (-not $?) {
             Write-Host 'Failed to download coverage artifact anonymously.' -ForegroundColor Yellow
-            exit 1
         }
+    } catch {
+        Write-Host 'Failed to download coverage artifact anonymously.' -ForegroundColor Yellow
+    }
+    try {
         Invoke-WebRequest -Uri $resUrl -OutFile (Join-Path $tempDir 'results.zip') -UseBasicParsing
         if (-not $?) {
             Write-Host 'Failed to download results artifact anonymously.' -ForegroundColor Yellow
             exit 1
         }
     } catch {
-        Write-Host 'Failed to download artifacts anonymously.' -ForegroundColor Yellow
+        Write-Host 'Failed to download results artifact anonymously.' -ForegroundColor Yellow
         exit 1
     }
 }
 
 $covDir = Join-Path $tempDir 'coverage'
 $resDir = Join-Path $tempDir 'results'
-Expand-Archive -Path (Join-Path $tempDir 'coverage.zip') -DestinationPath $covDir -Force
-Expand-Archive -Path (Join-Path $tempDir 'results.zip') -DestinationPath $resDir -Force
+if (Test-Path (Join-Path $tempDir 'coverage.zip')) {
+    Expand-Archive -Path (Join-Path $tempDir 'coverage.zip') -DestinationPath $covDir -Force
+}
+if (Test-Path (Join-Path $tempDir 'results.zip')) {
+    Expand-Archive -Path (Join-Path $tempDir 'results.zip') -DestinationPath $resDir -Force
+} else {
+    Write-Host 'Results artifact was not downloaded.' -ForegroundColor Yellow
+    exit 1
+}
 
 $resultsFile = Get-ChildItem -Path $resDir -Filter *.xml -Recurse | Select-Object -First 1
 if (-not $resultsFile) {
