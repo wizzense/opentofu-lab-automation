@@ -112,7 +112,6 @@ Describe 'Convert certificate helpers honour -WhatIf' {
         Mock New-Object { $stub }
         $securePass = (New-Object System.Net.NetworkCredential('', 'pw')).SecurePassword
         Convert-PfxToPem -PfxPath $pfx -Password $securePass -CertPath $cert -KeyPath $key -WhatIf
-
         Assert-MockNotCalled Set-Content
         Remove-Item $pfx -ErrorAction SilentlyContinue
     }

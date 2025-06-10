@@ -1,10 +1,10 @@
+
 function Install-NpmDependencies {
     [CmdletBinding(SupportsShouldProcess = $true)]
     param([pscustomobject]$Config)
 
     . "$PSScriptRoot/../runner_utility_scripts/ScriptTemplate.ps1"
     Invoke-LabStep -Config $Config -Body {
-
 
 <#
 .SYNOPSIS
@@ -69,7 +69,7 @@ try {
     if ($PSCmdlet.ShouldProcess($frontendPath, 'Run npm install')) {
         npm install
     }
-    Write-CustomLog "✅ npm install completed."
+    Write-CustomLog "npm install completed."
 
 } catch {
     Write-Error "ERROR: npm install failed: $_"
