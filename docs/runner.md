@@ -21,8 +21,9 @@ Supply a comma-separated list of 4-digit script prefixes via `-Scripts` to run w
 ./runner.ps1 -Scripts '0006,0007,0008,0009,0010' -Auto
 ```
 
-To suppress informational output, append the `-Quiet` switch. For
-example, to run scripts `0006` and `0007` silently and non-interactively:
+To suppress informational output, append the `-Quiet` switch (equivalent to
+`-Verbosity silent`). For example, to run scripts `0006` and `0007`
+silently and non-interactively:
 
 ```powershell
 ./runner.ps1 -Scripts '0006,0007' -Auto -Quiet
