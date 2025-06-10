@@ -21,6 +21,12 @@ Supply a comma-separated list of 4-digit script prefixes via `-Scripts` to run w
 ./runner.ps1 -Scripts '0006,0007,0008,0009,0010' -Auto
 ```
 
+To quickly gather system information, run script `0200` directly:
+
+```powershell
+./runner.ps1 -Scripts '0200'
+```
+
 To suppress informational output, append the `-Quiet` switch (equivalent to
 To suppress informational output, use the `-Quiet` switch (equivalent to
  
