@@ -1,3 +1,4 @@
+[CmdletBinding(SupportsShouldProcess)]
 param(
     [string]$ConfigFile = "./config_files/default-config.json",
     [switch]$Auto,
