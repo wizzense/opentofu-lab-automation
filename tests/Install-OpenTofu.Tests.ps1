@@ -17,7 +17,7 @@ Describe '0008_Install-OpenTofu' -Skip:($SkipNonWindows) {
         Mock Invoke-OpenTofuInstaller {}
         Mock-WriteLog
         
-        & $script:ScriptPath -Config $cfg
+        Install-OpenTofu -Config $cfg
 
         Should -Invoke -CommandName Invoke-OpenTofuInstaller -Times 1 -ParameterFilter {
             $CosignPath -eq (Join-Path $cfg.CosignPath 'cosign-windows-amd64.exe') -and
@@ -30,7 +30,7 @@ Describe '0008_Install-OpenTofu' -Skip:($SkipNonWindows) {
         Mock Invoke-OpenTofuInstaller {}
         Mock-WriteLog
 
-        & $script:ScriptPath -Config $cfg
+        Install-OpenTofu -Config $cfg
 
         Should -Invoke -CommandName Invoke-OpenTofuInstaller -Times 0
     }
