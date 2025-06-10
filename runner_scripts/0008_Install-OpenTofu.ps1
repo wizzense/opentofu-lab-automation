@@ -1,6 +1,3 @@
-Param([pscustomobject]$Config)
-. "$PSScriptRoot/../runner_utility_scripts/ScriptTemplate.ps1"
-
 function Invoke-OpenTofuInstaller {
     param(
         [string]$CosignPath,
@@ -14,15 +11,22 @@ function Invoke-OpenTofuInstaller {
     Write-CustomLog 'OpenTofu installer completed'
 }
 
-Invoke-LabStep -Config $Config -Body {
-    Write-CustomLog 'Running 0008_Install-OpenTofu.ps1'
+function Install-OpenTofu {
+    [CmdletBinding()]
+    param([pscustomobject]$Config)
 
-    if ($Config.InstallOpenTofu -eq $true) {
+    . "$PSScriptRoot/../runner_utility_scripts/ScriptTemplate.ps1"
+    Invoke-LabStep -Config $Config -Body {
+        Write-CustomLog 'Running 0008_Install-OpenTofu.ps1'
 
-        $Cosign = Join-Path $Config.CosignPath "cosign-windows-amd64.exe"
-        $openTofuVersion = if ($Config.OpenTofuVersion) { $Config.OpenTofuVersion } else { 'latest' }
-        Invoke-OpenTofuInstaller -CosignPath $Cosign -OpenTofuVersion $openTofuVersion
-    } else {
-        Write-CustomLog "InstallOpenTofu flag is disabled. Skipping OpenTofu installation."
+        if ($Config.InstallOpenTofu -eq $true) {
+            $Cosign = Join-Path $Config.CosignPath "cosign-windows-amd64.exe"
+            $openTofuVersion = if ($Config.OpenTofuVersion) { $Config.OpenTofuVersion } else { 'latest' }
+            Invoke-OpenTofuInstaller -CosignPath $Cosign -OpenTofuVersion $openTofuVersion
+        } else {
+            Write-CustomLog "InstallOpenTofu flag is disabled. Skipping OpenTofu installation."
+        }
     }
 }
+
+if ($MyInvocation.InvocationName -ne '.') { Install-OpenTofu @PSBoundParameters }

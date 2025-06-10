@@ -1,4 +1,6 @@
 import json
+import logging
+import os
 from pathlib import Path
 from importlib.resources import files
 import typer
@@ -10,9 +12,37 @@ def default_config_path() -> Path:
 
     return Path(files("labctl").joinpath("config_files", "default-config.json"))
 
+logger = logging.getLogger("labctl")
+
+
+def configure_logger() -> None:
+    """Configure logging to console and optional log file."""
+
+    handlers = [logging.StreamHandler()]
+    log_dir = os.environ.get("LAB_LOG_DIR")
+    if log_dir:
+        log_file = Path(log_dir) / "lab.log"
+        log_file.parent.mkdir(parents=True, exist_ok=True)
+        handlers.append(logging.FileHandler(log_file))
+
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s %(levelname)s %(message)s",
+        handlers=handlers,
+        force=True,
+    )
+
+
 app = typer.Typer()
 hv_app = typer.Typer()
 app.add_typer(hv_app, name="hv")
+
+
+@app.callback(invoke_without_command=True)
+def main(ctx: typer.Context):
+    """Initialize logging before executing commands."""
+
+    configure_logger()
 
 
 def load_config(path: Path) -> dict:
@@ -31,7 +61,7 @@ def facts(
     """Show hypervisor facts from config."""
     cfg = load_config(config)
     hv = cfg.get("HyperV", {})
-    typer.echo(json.dumps(hv, indent=2))
+    logger.info(json.dumps(hv, indent=2))
 
 
 @hv_app.command()
@@ -41,7 +71,7 @@ def deploy(
     """Pretend to deploy using the hypervisor config."""
     cfg = load_config(config)
     hv = cfg.get("HyperV", {})
-    typer.echo(f"Deploying Hyper-V host: {hv.get('Host', '')}")
+    logger.info("Deploying Hyper-V host: %s", hv.get("Host", ""))
 
 
 if __name__ == "__main__":

@@ -4,8 +4,8 @@ if ($IsLinux -or $IsMacOS) { return }
 BeforeAll {
     $script:scriptPath = Join-Path $PSScriptRoot '..' 'runner_scripts' '0010_Prepare-HyperVProvider.ps1'
     . $script:scriptPath
-    $script:origConvertCerToPem = (Get-Command Convert-CerToPem).ScriptBlock
-    $script:origConvertPfxToPem = (Get-Command Convert-PfxToPem).ScriptBlock
+    $global:origConvertCerToPem = (Get-Command Convert-CerToPem).ScriptBlock
+    $global:origConvertPfxToPem = (Get-Command Convert-PfxToPem).ScriptBlock
     Mock Convert-PfxToPem {}
 }
 Describe 'Prepare-HyperVProvider path restoration' -Skip:($IsLinux -or $IsMacOS) {
@@ -94,11 +94,11 @@ Describe 'Prepare-HyperVProvider certificate handling' -Skip:($IsLinux -or $IsMa
 
         Mock Convert-CerToPem {
             param($CerPath, $PemPath)
-            & $script:origConvertCerToPem -CerPath $CerPath -PemPath $PemPath
+            & $global:origConvertCerToPem -CerPath $CerPath -PemPath $PemPath
         }
         Mock Convert-PfxToPem {
             param($PfxPath, $Password, $CertPath, $KeyPath)
-            & $script:origConvertPfxToPem -PfxPath $PfxPath -Password $Password -CertPath $CertPath -KeyPath $KeyPath
+            & $global:origConvertPfxToPem -PfxPath $PfxPath -Password $Password -CertPath $CertPath -KeyPath $KeyPath
         }
         Mock Copy-Item {}
         # certificate operations should not touch the real store
@@ -208,11 +208,8 @@ Describe 'Convert certificate helpers honour -WhatIf' -Skip:($IsLinux -or $IsMac
 
 Describe 'Convert certificate helpers validate paths' -Skip:($IsLinux -or $IsMacOS) {
     BeforeAll {
-        if (Get-Command Remove-Mock -ErrorAction SilentlyContinue) {
-            Remove-Mock -CommandName Convert-PfxToPem -ErrorAction SilentlyContinue
-        } elseif (Get-Command Unmock -ErrorAction SilentlyContinue) {
-            Unmock Convert-PfxToPem -ErrorAction SilentlyContinue
-        }
+        Unmock Convert-CerToPem -ErrorAction SilentlyContinue
+        Unmock Convert-PfxToPem -ErrorAction SilentlyContinue
         $scriptPath = Join-Path $PSScriptRoot '..' 'runner_scripts' '0010_Prepare-HyperVProvider.ps1'
         . $scriptPath
     }
