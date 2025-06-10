@@ -6,11 +6,12 @@ authors = [
     {name = "Codex",email = "codex@openai.com"}
 ]
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.10,<4.0"
 dependencies = [
   "typer>=0.12",
   "pyyaml>=6.0",
-  "textual>=0.58",
+  "textual>=0.58,<0.59",
+  "click>=8,<8.2",
 ]
 
 [project.scripts]
@@ -23,11 +24,6 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.4.0"
-
-[tool.poetry.dev-dependencies]
-typer = "^0.12"
-PyYAML = "^6.0"
-textual = "^0.58"
 
 [tool.poetry]
 packages = [
