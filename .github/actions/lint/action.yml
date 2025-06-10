@@ -30,7 +30,12 @@ runs:
           'PSReviewUnusedParameter',
           'PSUseDeclaredVarsMoreThanAssignments'
         )
-        Invoke-ScriptAnalyzer -Path . -Recurse -Severity Error,Warning -ExcludeRule $rulesToExclude -EnableExit -ErrorAction Stop
+        $results = Invoke-ScriptAnalyzer -Path . -Recurse -Severity Error,Warning -ExcludeRule $rulesToExclude
+        $results | Format-Table
+        if ($results | Where-Object Severity -eq 'Error') {
+          Write-Error 'ScriptAnalyzer errors detected'
+          exit 1
+        }
     - name: Run ruff
       shell: bash
       run: ruff check .
