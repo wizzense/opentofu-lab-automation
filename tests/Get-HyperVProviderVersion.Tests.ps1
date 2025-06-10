@@ -4,7 +4,7 @@ if ($SkipNonWindows) { return }
 
 Describe 'Get-HyperVProviderVersion' -Skip:($SkipNonWindows) {
     It 'parses version from main.tf' {
-        $scriptPath = Join-Path $PSScriptRoot '..' 'runner_scripts' '0010_Prepare-HyperVProvider.ps1'
+        $scriptPath = Get-RunnerScriptPath '0010_Prepare-HyperVProvider.ps1'
         . $scriptPath
         $tf = [System.IO.Path]::ChangeExtension(
             [System.IO.Path]::Combine(
@@ -29,7 +29,7 @@ terraform {
     }
 
     It 'falls back to repository paths when missing' {
-        $scriptPath = Join-Path $PSScriptRoot '..' 'runner_scripts' '0010_Prepare-HyperVProvider.ps1'
+        $scriptPath = Get-RunnerScriptPath '0010_Prepare-HyperVProvider.ps1'
         . $scriptPath
         $tf = Join-Path $env:TEMP ([guid]::NewGuid()).ToString() + '.tf'
         Get-HyperVProviderVersion -MainTfPath $tf | Should -Be '1.2.1'

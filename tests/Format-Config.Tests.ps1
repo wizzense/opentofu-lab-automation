@@ -1,4 +1,5 @@
 . (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
+. (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
 Describe 'Format-Config' {
     BeforeAll {
         . (Join-Path $PSScriptRoot '..' 'lab_utils' 'Format-Config.ps1')

@@ -3,7 +3,7 @@
 if ($SkipNonWindows) { return }
 Describe '0102_Configure-Firewall' -Skip:($SkipNonWindows) {
     BeforeAll {
-        $script:ScriptPath = Join-Path $PSScriptRoot '..' 'runner_scripts' '0102_Configure-Firewall.ps1'
+        $script:ScriptPath = Get-RunnerScriptPath '0102_Configure-Firewall.ps1'
     }
 
     It 'creates firewall rules for each port when ports are specified' {

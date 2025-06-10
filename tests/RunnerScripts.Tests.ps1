@@ -9,7 +9,7 @@ if (-not (Test-Path $helperPath)) {
 
 if ($SkipNonWindows) { return }
 
-$scriptDir = Join-Path $PSScriptRoot '..' 'runner_scripts'
+$scriptDir = Split-Path (Get-RunnerScriptPath '0001_Reset-Git.ps1')
 $scripts = Get-ChildItem $scriptDir -Filter '*.ps1'
 
 Describe 'Runner scripts parameter and command checks' -Skip:($SkipNonWindows) {

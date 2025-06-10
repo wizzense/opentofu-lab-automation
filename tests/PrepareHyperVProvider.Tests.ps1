@@ -3,7 +3,7 @@
 if ($SkipNonWindows) { return }
 
 BeforeAll {
-    $script:scriptPath = Join-Path $PSScriptRoot '..' 'runner_scripts' '0010_Prepare-HyperVProvider.ps1'
+    $script:scriptPath = Get-RunnerScriptPath '0010_Prepare-HyperVProvider.ps1'
     . $script:scriptPath
     $global:origConvertCerToPem = (Get-Command Convert-CerToPem).ScriptBlock
     $global:origConvertPfxToPem = (Get-Command Convert-PfxToPem).ScriptBlock
@@ -12,7 +12,7 @@ BeforeAll {
 Describe 'Prepare-HyperVProvider path restoration' -Skip:($SkipNonWindows) {
     It 'restores location after execution' {
         . (Join-Path $PSScriptRoot '..' 'runner_utility_scripts' 'Logger.ps1')
-        $script:scriptPath = Join-Path $PSScriptRoot '..' 'runner_scripts' '0010_Prepare-HyperVProvider.ps1'
+        $script:scriptPath = Get-RunnerScriptPath '0010_Prepare-HyperVProvider.ps1'
         $config = [pscustomobject]@{
             PrepareHyperVHost = $true
             InfraRepoPath = 'C:\\Infra'
@@ -37,7 +37,7 @@ Describe 'Prepare-HyperVProvider path restoration' -Skip:($SkipNonWindows) {
             }
         }
 
-        Mock Write-CustomLog {}
+        Mock-WriteLog
         Mock Get-WindowsOptionalFeature { @{State='Enabled'} }
         Mock Enable-WindowsOptionalFeature {}
         Mock Test-WSMan {}
@@ -68,7 +68,7 @@ Describe 'Prepare-HyperVProvider certificate handling' -Skip:($SkipNonWindows) {
     It 'creates PEM files and updates providers.tf' {
 
         . (Join-Path $PSScriptRoot '..' 'runner_utility_scripts' 'Logger.ps1')
-        $script:scriptPath = Join-Path $PSScriptRoot '..' 'runner_scripts' '0010_Prepare-HyperVProvider.ps1'
+        $script:scriptPath = Get-RunnerScriptPath '0010_Prepare-HyperVProvider.ps1'
         $tempDir = Join-Path ([System.IO.Path]::GetTempPath()) ([System.Guid]::NewGuid())
 
         $null = New-Item -ItemType Directory -Path $tempDir
@@ -78,7 +78,7 @@ Describe 'Prepare-HyperVProvider certificate handling' -Skip:($SkipNonWindows) {
             CertificateAuthority = @{ CommonName = 'TestCA' }
         }
 
-        Mock Write-CustomLog {}
+        Mock-WriteLog
         Mock Get-WindowsOptionalFeature { @{State='Enabled'} }
         Mock Enable-WindowsOptionalFeature {}
         Mock Test-WSMan {}
@@ -173,7 +173,7 @@ Describe 'Prepare-HyperVProvider certificate handling' -Skip:($SkipNonWindows) {
 
 Describe 'Convert certificate helpers honour -WhatIf' -Skip:($SkipNonWindows) {
     It 'skips writing files when WhatIf is used' {
-        $scriptPath = Join-Path $PSScriptRoot '..' 'runner_scripts' '0010_Prepare-HyperVProvider.ps1'
+        $scriptPath = Get-RunnerScriptPath '0010_Prepare-HyperVProvider.ps1'
         . $scriptPath
         $cer = Join-Path $TestDrive (([guid]::NewGuid()).ToString() + '.cer')
         $pem = Join-Path $TestDrive (([guid]::NewGuid()).ToString() + '.pem')
@@ -185,7 +185,7 @@ Describe 'Convert certificate helpers honour -WhatIf' -Skip:($SkipNonWindows) {
     }
 
     It 'skips writing PFX outputs when WhatIf is used' -Skip:($SkipNonWindows) {
-        $scriptPath = Join-Path $PSScriptRoot '..' 'runner_scripts' '0010_Prepare-HyperVProvider.ps1'
+        $scriptPath = Get-RunnerScriptPath '0010_Prepare-HyperVProvider.ps1'
         . $scriptPath
         $pfx = Join-Path $TestDrive (([guid]::NewGuid()).ToString() + '.pfx')
         $cert = Join-Path $TestDrive (([guid]::NewGuid()).ToString() + '.pem')
@@ -211,18 +211,18 @@ Describe 'Convert certificate helpers validate paths' -Skip:($SkipNonWindows) {
     BeforeAll {
         Remove-Mock Convert-CerToPem -ErrorAction SilentlyContinue
         Remove-Mock Convert-PfxToPem -ErrorAction SilentlyContinue
-        $scriptPath = Join-Path $PSScriptRoot '..' 'runner_scripts' '0010_Prepare-HyperVProvider.ps1'
+        $scriptPath = Get-RunnerScriptPath '0010_Prepare-HyperVProvider.ps1'
         . $scriptPath
     }
     It 'errors when CerPath or PemPath is missing' {
-        $scriptPath = Join-Path $PSScriptRoot '..' 'runner_scripts' '0010_Prepare-HyperVProvider.ps1'
+        $scriptPath = Get-RunnerScriptPath '0010_Prepare-HyperVProvider.ps1'
         . $scriptPath
         { Convert-CerToPem -CerPath '' -PemPath 'x' } | Should -Throw 'Convert-CerToPem: CerPath is required'
         { Convert-CerToPem -CerPath 'x' -PemPath '' } | Should -Throw 'Convert-CerToPem: PemPath is required'
     }
 
     It 'errors when PfxPath, CertPath, or KeyPath is missing' {
-        $scriptPath = Join-Path $PSScriptRoot '..' 'runner_scripts' '0010_Prepare-HyperVProvider.ps1'
+        $scriptPath = Get-RunnerScriptPath '0010_Prepare-HyperVProvider.ps1'
         . $scriptPath
         $pwd = New-Object System.Security.SecureString
         foreach ($c in 'pw'.ToCharArray()) { $pwd.AppendChar($c) }

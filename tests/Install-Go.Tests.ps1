@@ -2,14 +2,14 @@
 . (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
 if ($SkipNonWindows) { return }
 Describe '0007_Install-Go' -Skip:($SkipNonWindows) {
-    BeforeAll { $script:ScriptPath = Join-Path $PSScriptRoot '..' 'runner_scripts' '0007_Install-Go.ps1' }
+    BeforeAll { $script:ScriptPath = Get-RunnerScriptPath '0007_Install-Go.ps1' }
 
     It 'installs Go when enabled' {
         $cfg = [pscustomobject]@{ InstallGo = $true; Go = @{ InstallerUrl = 'http://example.com/go1.21.0.windows-amd64.msi' } }
         Mock Get-Command {} -ParameterFilter { $Name -eq 'go' }
         Mock Invoke-WebRequest {}
         Mock Start-Process {}
-        Mock Write-CustomLog {}
+        Mock-WriteLog
         & $script:ScriptPath -Config $cfg
         Should -Invoke -CommandName Invoke-WebRequest -Times 1 -ParameterFilter { $Uri -eq $cfg.Go.InstallerUrl }
         Should -Invoke -CommandName Start-Process -Times 1 -ParameterFilter { $FilePath -eq 'msiexec.exe' }
@@ -19,7 +19,7 @@ Describe '0007_Install-Go' -Skip:($SkipNonWindows) {
         $cfg = [pscustomobject]@{ InstallGo = $false; Go = @{ InstallerUrl = 'http://example.com/go1.21.0.windows-amd64.msi' } }
         Mock Invoke-WebRequest {}
         Mock Start-Process {}
-        Mock Write-CustomLog {}
+        Mock-WriteLog
         & $script:ScriptPath -Config $cfg
         Should -Invoke -CommandName Invoke-WebRequest -Times 0
         Should -Invoke -CommandName Start-Process -Times 0
@@ -30,7 +30,7 @@ Describe '0007_Install-Go' -Skip:($SkipNonWindows) {
         Mock Get-Command { @{ Name = 'go' } } -ParameterFilter { $Name -eq 'go' }
         Mock Invoke-WebRequest {}
         Mock Start-Process {}
-        Mock Write-CustomLog {}
+        Mock-WriteLog
         & $script:ScriptPath -Config $cfg
         Should -Invoke -CommandName Invoke-WebRequest -Times 0
         Should -Invoke -CommandName Start-Process -Times 0

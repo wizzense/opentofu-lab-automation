@@ -3,7 +3,7 @@
 if ($SkipNonWindows) { return }
 Describe '0100_Enable-WinRM' -Skip:($SkipNonWindows) {
     BeforeAll {
-        $script:ScriptPath = Join-Path $PSScriptRoot '..' 'runner_scripts' '0100_Enable-WinRM.ps1'
+        $script:ScriptPath = Get-RunnerScriptPath '0100_Enable-WinRM.ps1'
     }
 
     It 'enables WinRM when service is not running' {

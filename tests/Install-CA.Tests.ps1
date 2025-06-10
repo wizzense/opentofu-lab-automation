@@ -5,7 +5,7 @@ if ($IsLinux -or $IsMacOS) { return }
 
 Describe '0104_Install-CA script' {
     BeforeAll {
-        $scriptPath = Join-Path $PSScriptRoot '..' 'runner_scripts' '0104_Install-CA.ps1'
+        $scriptPath = Get-RunnerScriptPath '0104_Install-CA.ps1'
     }
     AfterEach {
         Remove-Item Function:Install-AdcsCertificationAuthority -ErrorAction SilentlyContinue
@@ -17,7 +17,7 @@ Describe '0104_Install-CA script' {
             InstallCA = $true
             CertificateAuthority = @{ CommonName = 'TestCA'; ValidityYears = 1 }
         }
-        Mock Write-CustomLog {}
+        Mock-WriteLog
         Mock Get-WindowsFeature { @{ Installed = $false } } -ParameterFilter { $Name -eq 'Adcs-Cert-Authority' }
         Mock Install-WindowsFeature {}
         Mock Get-Item { $null }
@@ -37,7 +37,7 @@ Describe '0104_Install-CA script' {
             InstallCA = $false
             CertificateAuthority = @{ CommonName = 'TestCA'; ValidityYears = 1 }
         }
-        Mock Write-CustomLog {}
+        Mock-WriteLog
         function global:Install-AdcsCertificationAuthority {}
         Mock Install-AdcsCertificationAuthority {}
 
