@@ -18,7 +18,12 @@ try {
     $localBase = if ($Config.LocalPath) {
         $Config.LocalPath
     } else {
-        'C:\\temp'
+        if ($IsWindows) {
+            if ($env:TEMP) { $env:TEMP } else { 'C:\\temp' }
+        } else {
+            [System.IO.Path]::GetTempPath()
+        }
+
     }
     $localBase = [System.Environment]::ExpandEnvironmentVariables($localBase)
     $repoName  = ($Config.RepoUrl -split '/')[-1] -replace '\.git$',''
