@@ -3,7 +3,11 @@ Describe 'Get-HyperVProviderVersion' {
     It 'parses version from main.tf' {
         $scriptPath = Join-Path $PSScriptRoot '..' 'runner_scripts' '0010_Prepare-HyperVProvider.ps1'
         . $scriptPath
-        $tf = Join-Path ([System.IO.Path]::GetTempPath()) ([guid]::NewGuid()).ToString() + '.tf'
+        $tf = [System.IO.Path]::ChangeExtension(
+            [System.IO.Path]::Combine(
+                [System.IO.Path]::GetTempPath(),
+                ([guid]::NewGuid()).ToString()),
+            '.tf')
         @'
 terraform {
   required_providers {
