@@ -17,6 +17,20 @@ The configuration reads variables from `lab_config.yaml`, which you can copy fro
 
 Detailed guides and module references are located in the [docs](docs/) directory. Start with [docs/index.md](docs/index.md) for an overview.
 
+## Python CLI
+
+The optional `labctl` command line utility lives in the [py](py/) folder.
+Install its dependencies with [Poetry](https://python-poetry.org/) and run the
+subcommands via `poetry run`:
+
+```bash
+cd py
+poetry install
+poetry run labctl hv facts
+```
+
+See [docs/python-cli.md](docs/python-cli.md) for further details.
+
 
   Kicker script for a fresh Windows Server Core setup
 
