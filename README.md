@@ -216,9 +216,23 @@ gh repo clone <owner/repo>
 Using `gh` avoids the COM initialization issues seen with some Git installations
 and prevents Git from prompting for a username like `user@github.com`.
 
-Running the test suite via `Invoke-Pester` requires **PowerShell 7 or later**.
-If you see errors about missing commands when invoking Pester, ensure `pwsh`
-is installed and use that executable instead of Windows PowerShell 5.1.
+## Running tests
+
+PowerShell 7 or later is required to run the Pester suite. Install `pwsh` with
+your platform's package manager and then execute the tests:
+
+```bash
+# Windows
+winget install --id Microsoft.PowerShell -e
+
+# Debian/Ubuntu
+sudo apt-get update && sudo apt-get install -y powershell
+
+# macOS
+brew install --cask powershell
+
+pwsh -NoLogo -NoProfile -Command "Invoke-Pester"
+```
 
 ## Utility scripts
 
