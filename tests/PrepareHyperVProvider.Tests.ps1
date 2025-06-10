@@ -37,7 +37,7 @@ Describe 'Prepare-HyperVProvider path restoration' -Skip:($IsLinux -or $IsMacOS)
         Mock git {}
         Mock go {}
         Mock Copy-Item {}
-        Mock Read-Host { '' }
+        Mock Read-Host { ConvertTo-SecureString '' -AsPlainText -Force }
         Mock Resolve-Path { param([string]$Path) @{ Path = $Path } }
 
         . $script:scriptPath -Config $config
@@ -74,7 +74,7 @@ Describe 'Prepare-HyperVProvider certificate handling' -Skip:($IsLinux -or $IsMa
         Mock Convert-CerToPem -MockWith { & $script:origConvertCerToPem @PSBoundParameters }
         Mock Convert-PfxToPem -MockWith { & $script:origConvertPfxToPem @PSBoundParameters }
         Mock Copy-Item {}
-        Mock Read-Host { 'pw' }
+        Mock Read-Host { ConvertTo-SecureString 'pw' -AsPlainText -Force }
 
         $providerFile = Join-Path $tempDir 'providers.tf'
         @(
