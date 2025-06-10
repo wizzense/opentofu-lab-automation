@@ -1,5 +1,14 @@
 . (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
 if ($IsLinux -or $IsMacOS) { return }
+
+Describe 'runner.ps1 syntax' {
+    It 'parses without errors' {
+        $path = Join-Path $PSScriptRoot '..' 'runner.ps1'
+        $errs = $null
+        [System.Management.Automation.Language.Parser]::ParseFile($path, [ref]$null, [ref]$errs) | Out-Null
+        ($errs ? $errs.Count : 0) | Should -Be 0
+    }
+}
 Describe 'runner.ps1 configuration' {
     It 'loads default configuration without errors' {
         $modulePath = Join-Path $PSScriptRoot '..' 'lab_utils' 'Get-LabConfig.ps1'
