@@ -123,3 +123,23 @@ jobs:
             Remove-PSDrive TestDrive -Force -ErrorAction SilentlyContinue
           }
           Invoke-Pester -Path tests -CI -ErrorAction Stop
+
+  pytest:
+    needs: pester
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+          cache: 'pip'
+      - name: Install Poetry
+        run: pip install --user poetry
+      - name: Install dependencies
+        run: |
+          cd py
+          poetry install
+      - name: Run pytest
+        run: |
+          cd py
+          poetry run pytest
