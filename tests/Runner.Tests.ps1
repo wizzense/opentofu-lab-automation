@@ -462,6 +462,7 @@ Write-Output 'hello world'
 
 Describe 'Set-LabConfig' {
     BeforeAll {
+        . (Join-Path $PSScriptRoot '..' 'lab_utils' 'Menu.ps1')
         function Set-LabConfig {
             [CmdletBinding(SupportsShouldProcess)]
             param([hashtable]$ConfigObject)
