@@ -3,9 +3,9 @@
 .SYNOPSIS
     Tests for runner_scripts\0001_Reset-Git.ps1
 
-    • Verifies that the script prefers `gh repo clone` when the GitHub CLI exists.
-    • Verifies that it falls back to `git clone` when `gh` is absent.
-    • Verifies that it exits with a non-zero code (or throws) when the clone fails.
+    - Verifies that the script prefers `gh repo clone` when the GitHub CLI exists.
+    - Verifies that it falls back to `git clone` when `gh` is absent.
+    - Verifies that it exits with a non-zero code (or throws) when the clone fails.
 #>
 
 Describe '0001_Reset-Git' -Skip:($IsLinux -or $IsMacOS) {
