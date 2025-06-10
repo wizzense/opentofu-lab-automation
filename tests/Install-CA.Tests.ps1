@@ -19,7 +19,7 @@ Describe '0104_Install-CA script' {
         Mock Install-AdcsCertificationAuthority {}
 
         . $scriptPath
-        Install-CA -Config $config
+        Install-CA -Config $config -Confirm:$false
 
         Assert-MockCalled Install-AdcsCertificationAuthority -Times 1
     }
@@ -35,7 +35,7 @@ Describe '0104_Install-CA script' {
         Mock Install-AdcsCertificationAuthority {}
 
         . $scriptPath
-        Install-CA -Config $config
+        Install-CA -Config $config -Confirm:$false
 
         Should -Invoke -CommandName Install-AdcsCertificationAuthority -Times 0
     }

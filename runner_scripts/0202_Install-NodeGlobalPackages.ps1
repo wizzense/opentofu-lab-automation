@@ -1,5 +1,22 @@
 Param([pscustomobject]$Config)
 
+function Install-GlobalPackage {
+    [CmdletBinding(SupportsShouldProcess)]
+
+    param(
+        [string]$package
+    )
+
+    if (Get-Command npm -ErrorAction SilentlyContinue) {
+        Write-CustomLog "Installing npm package: $package..."
+        if ($PSCmdlet.ShouldProcess($package, 'Install npm package')) {
+            npm install -g $package
+        }
+    } else {
+        Write-Error "npm is not available. Node.js may not have installed correctly."
+    }
+}
+
 function Install-NodeGlobalPackages {
     [CmdletBinding(SupportsShouldProcess = $true)]
     param([pscustomobject]$Config)
@@ -34,24 +51,6 @@ function Install-NodeGlobalPackages {
 
 Write-Output "Config parameter is: $Config"
 
-
-function Install-GlobalPackage {
-    [CmdletBinding(SupportsShouldProcess)]
-    
-    param(
-        [string]$package
-    )
-
-    if (Get-Command npm -ErrorAction SilentlyContinue) {
-        Write-CustomLog "Installing npm package: $package..."
-        if ($PSCmdlet.ShouldProcess($package, 'Install npm package')) {
-            npm install -g $package
-        }
-    } else {
-        Write-Error "npm is not available. Node.js may not have installed correctly."
-    }
-}
-
 Write-CustomLog "==== [0202] Installing Global npm Packages ===="
 
 $nodeDeps = if ($Config -is [hashtable]) { $Config['Node_Dependencies'] } else { $Config.Node_Dependencies }
@@ -61,6 +60,7 @@ if (-not $nodeDeps) {
 }
 
 $packages = @()
+
 if ($nodeDeps -is [hashtable] -and $nodeDeps.ContainsKey('GlobalPackages')) {
     $packages = $nodeDeps['GlobalPackages']
 } elseif ($nodeDeps.PSObject.Properties.Name -contains 'GlobalPackages') {
@@ -76,12 +76,21 @@ if ($nodeDeps -is [hashtable] -and $nodeDeps.ContainsKey('GlobalPackages')) {
         $packages += 'vite'
     } else {
         Write-CustomLog "InstallVite flag is disabled. Skipping vite installation."
-    }
 
-    if ($nodeDeps.InstallNodemon) {
-        $packages += 'nodemon'
+    }
+} elseif ($nodeDeps.PSObject.Properties.Name -contains 'GlobalPackages') {
+    $packages = $nodeDeps.GlobalPackages
+}
+
+if (-not $packages) {
+    if ($nodeDeps -is [hashtable]) {
+        if ($nodeDeps['InstallYarn']) { $packages += 'yarn' } else { Write-CustomLog "InstallYarn flag is disabled. Skipping yarn installation." }
+        if ($nodeDeps['InstallVite']) { $packages += 'vite' } else { Write-CustomLog "InstallVite flag is disabled. Skipping vite installation." }
+        if ($nodeDeps['InstallNodemon']) { $packages += 'nodemon' } else { Write-CustomLog "InstallNodemon flag is disabled. Skipping nodemon installation." }
     } else {
-        Write-CustomLog "InstallNodemon flag is disabled. Skipping nodemon installation."
+        if ($nodeDeps.InstallYarn) { $packages += 'yarn' } else { Write-CustomLog "InstallYarn flag is disabled. Skipping yarn installation." }
+        if ($nodeDeps.InstallVite) { $packages += 'vite' } else { Write-CustomLog "InstallVite flag is disabled. Skipping vite installation." }
+        if ($nodeDeps.InstallNodemon) { $packages += 'nodemon' } else { Write-CustomLog "InstallNodemon flag is disabled. Skipping nodemon installation." }
     }
 }
 
