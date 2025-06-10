@@ -40,6 +40,29 @@ exit 0' | Set-Content -Path $dummy
         }
     }
 
+    It 'exits with code 1 when -Scripts has no matching prefixes' {
+        $tempDir = Join-Path ([System.IO.Path]::GetTempPath()) ([System.Guid]::NewGuid())
+        $null = New-Item -ItemType Directory -Path $tempDir
+        try {
+            Copy-Item $script:runnerPath -Destination $tempDir
+            Copy-Item (Join-Path $PSScriptRoot '..' 'runner_utility_scripts') -Destination $tempDir -Recurse
+            Copy-Item (Join-Path $PSScriptRoot '..' 'lab_utils') -Destination $tempDir -Recurse
+            Copy-Item (Join-Path $PSScriptRoot '..' 'config_files') -Destination (Join-Path $tempDir 'config_files') -Recurse
+            $scriptsDir = Join-Path $tempDir 'runner_scripts'
+            $null = New-Item -ItemType Directory -Path $scriptsDir
+
+            Push-Location $tempDir
+            Mock Write-CustomLog {}
+            & "$tempDir/runner.ps1" -Scripts '9999' -Auto | Out-Null
+            $code = $LASTEXITCODE
+            Pop-Location
+
+            $code | Should -Be 1
+        } finally {
+            Remove-Item -Recurse -Force $tempDir
+        }
+    }
+
     It 'continues executing all scripts even if one fails' {
         $tempDir = Join-Path ([System.IO.Path]::GetTempPath()) ([System.Guid]::NewGuid())
         $null = New-Item -ItemType Directory -Path $tempDir
