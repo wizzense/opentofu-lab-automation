@@ -11,10 +11,12 @@ if ($IsLinux -or $IsMacOS) { return }
     BeforeEach {
         $script:temp = Join-Path $TestDrive ([System.Guid]::NewGuid())
         New-Item -ItemType Directory -Path $script:temp | Out-Null
+        function Test-IsAdmin {}
     }
 
     AfterEach {
         Remove-Item -Recurse -Force $script:temp -ErrorAction SilentlyContinue
+        Remove-Item Function:Test-IsAdmin -ErrorAction SilentlyContinue
     }
 
 
