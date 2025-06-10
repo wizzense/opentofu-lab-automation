@@ -28,6 +28,7 @@ Describe '0001_Reset-Git' -Skip:($IsLinux -or $IsMacOS) {
             Mock Get-Command { @{ Name = 'gh'; Path = 'gh.exe' } } -ParameterFilter { $Name -eq 'gh' }
             function global:gh {}
             Mock gh { $global:LASTEXITCODE = 0 }
+            New-Item -ItemType Directory -Path (Join-Path $tempDir '.git') -Force
             Mock git {}
 
             & $script:ScriptPath -Config $config
