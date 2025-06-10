@@ -12,6 +12,7 @@
   "ConfigPXE": false,
   "InstallGit": true,
   "InstallGitHubCLI": true,
+  "InstallPwsh": true,
   "InstallHyperV": false,
   "InstallWAC": false,
   "InstallGo": false,

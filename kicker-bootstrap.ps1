@@ -208,6 +208,37 @@ try {
 }
 
 # ------------------------------------------------
+# (2.5) Ensure PowerShell 7 is present
+# ------------------------------------------------
+if (-not $IsWindows) {
+    Write-Error "PowerShell 7 installation via this script is only supported on Windows."
+    exit 1
+}
+
+Write-CustomLog "==== Checking if PowerShell 7 is installed ===="
+$pwshPath = "C:\\Program Files\\PowerShell\\7\\pwsh.exe"
+
+if (!(Test-Path $pwshPath)) {
+    if ($Config.InstallPwsh -eq $true) {
+        $pwshInstallerUrl = "https://github.com/PowerShell/PowerShell/releases/latest/download/PowerShell-7.5.1-win-x64.msi"
+        $pwshInstallerPath = Join-Path -Path $env:TEMP -ChildPath "PowerShellInstaller.msi"
+        Invoke-WebRequest -Uri $pwshInstallerUrl -OutFile $pwshInstallerPath -UseBasicParsing
+        Write-CustomLog "Installing PowerShell 7 silently..."
+        Start-Process msiexec.exe -ArgumentList "/i `"$pwshInstallerPath`" /quiet /norestart" -Wait -Verb RunAs
+        Remove-Item -Path $pwshInstallerPath -ErrorAction SilentlyContinue
+        Write-CustomLog "PowerShell 7 installation completed."
+    } else {
+        Write-Error "PowerShell 7 is required. Set InstallPwsh=true in the config."
+        exit 1
+    }
+}
+
+if (!(Test-Path $pwshPath)) {
+    Write-Error "ERROR: PowerShell 7 installation failed or is not accessible."
+    exit 1
+}
+
+# ------------------------------------------------
 # (3) Check GitHub CLI and call by explicit path
 # ------------------------------------------------
 Write-CustomLog "==== Checking if GitHub CLI is installed ===="
