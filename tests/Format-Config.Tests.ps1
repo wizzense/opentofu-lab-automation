@@ -12,6 +12,12 @@ Describe 'Format-Config' {
         $result | Should -Match '"Baz"\s*:\s*1'
     }
 
+    It 'accepts pipeline input' {
+        $cfg = [pscustomobject]@{ Foo = 'pipe' }
+        $result = $cfg | Format-Config
+        $result | Should -Match '"Foo"\s*:\s*"pipe"'
+    }
+
     It 'throws when Config is null' {
         { Format-Config -Config $null } | Should -Throw
     }
@@ -19,5 +25,9 @@ Describe 'Format-Config' {
     It 'is a terminating error when Config is null' {
         { Format-Config -Config $null } |
             Should -Throw -ErrorType System.ArgumentNullException
+    }
+
+    It 'is a terminating error when piped null' {
+        { $null | Format-Config } | Should -Throw -ErrorType System.ArgumentNullException
     }
 }
