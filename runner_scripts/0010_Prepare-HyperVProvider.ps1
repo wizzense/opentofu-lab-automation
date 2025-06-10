@@ -158,39 +158,52 @@ $rootCaPassword = $UserInput
 $rootCaCertificate = Get-ChildItem cert:\LocalMachine\Root | Where-Object {$_.Subject -eq "CN=$rootCaName"}
 
 if (-not $rootCaCertificate) {
-    # Cleanup if present
-    Get-ChildItem cert:\LocalMachine\My | Where-Object {$_.subject -eq "CN=$rootCaName"} | Remove-Item -Force -ErrorAction SilentlyContinue
-    Remove-Item ".\$rootCaName.cer" -Force -ErrorAction SilentlyContinue
-    Remove-Item ".\$rootCaName.pfx" -Force -ErrorAction SilentlyContinue
+    $cerPath = ".\$rootCaName.cer"
+    $pfxPath = ".\$rootCaName.pfx"
+    $cerExists = Test-Path $cerPath
+    $pfxExists = Test-Path $pfxPath
 
-    $params = @{
-        Type              = 'Custom'
-        DnsName           = $rootCaName
-        Subject           = "CN=$rootCaName"
-        KeyExportPolicy   = 'Exportable'
-        CertStoreLocation = 'Cert:\LocalMachine\My'
-        KeyUsageProperty  = 'All'
-        KeyUsage          = 'None'
-        Provider          = 'Microsoft Strong Cryptographic Provider'
-        KeySpec           = 'KeyExchange'
-        KeyLength         = 4096
-        HashAlgorithm     = 'SHA256'
-        KeyAlgorithm      = 'RSA'
-        NotAfter          = (Get-Date).AddYears(5)
+    if ($cerExists -and $pfxExists) {
+        Write-CustomLog "Importing existing Root CA certificates..."
+        Get-ChildItem cert:\LocalMachine\My | Where-Object {$_.subject -eq "CN=$rootCaName"} | Remove-Item -Force -ErrorAction SilentlyContinue
+        Import-PfxCertificate -FilePath $pfxPath -CertStoreLocation Cert:\LocalMachine\Root -Password $rootCaPassword -Exportable -Verbose | Out-Null
+        Import-PfxCertificate -FilePath $pfxPath -CertStoreLocation Cert:\LocalMachine\My -Password $rootCaPassword -Exportable -Verbose | Out-Null
+        $rootCaCertificate = Get-ChildItem cert:\LocalMachine\My | Where-Object {$_.subject -eq "CN=$rootCaName"}
+    } else {
+        # Cleanup if present
+        Get-ChildItem cert:\LocalMachine\My | Where-Object {$_.subject -eq "CN=$rootCaName"} | Remove-Item -Force -ErrorAction SilentlyContinue
+        if ($cerExists) { Remove-Item $cerPath -Force -ErrorAction SilentlyContinue }
+        if ($pfxExists) { Remove-Item $pfxPath -Force -ErrorAction SilentlyContinue }
+
+        $params = @{
+            Type              = 'Custom'
+            DnsName           = $rootCaName
+            Subject           = "CN=$rootCaName"
+            KeyExportPolicy   = 'Exportable'
+            CertStoreLocation = 'Cert:\LocalMachine\My'
+            KeyUsageProperty  = 'All'
+            KeyUsage          = 'None'
+            Provider          = 'Microsoft Strong Cryptographic Provider'
+            KeySpec           = 'KeyExchange'
+            KeyLength         = 4096
+            HashAlgorithm     = 'SHA256'
+            KeyAlgorithm      = 'RSA'
+            NotAfter          = (Get-Date).AddYears(5)
+        }
+
+        Write-CustomLog "Creating Root CA..."
+        $rootCaCertificate = New-SelfSignedCertificate @params
+
+        Export-Certificate -Cert $rootCaCertificate -FilePath $cerPath -Verbose
+        Export-PfxCertificate -Cert $rootCaCertificate -FilePath $pfxPath -Password $rootCaPassword -Verbose
+
+        # Re-import to Root store & My store
+        Get-ChildItem cert:\LocalMachine\My | Where-Object {$_.subject -eq "CN=$rootCaName"} | Remove-Item -Force -ErrorAction SilentlyContinue
+        Import-PfxCertificate -FilePath $pfxPath -CertStoreLocation Cert:\LocalMachine\Root -Password $rootCaPassword -Exportable -Verbose | Out-Null
+        Import-PfxCertificate -FilePath $pfxPath -CertStoreLocation Cert:\LocalMachine\My -Password $rootCaPassword -Exportable -Verbose | Out-Null
+
+        $rootCaCertificate = Get-ChildItem cert:\LocalMachine\My | Where-Object {$_.subject -eq "CN=$rootCaName"}
     }
-
-    Write-CustomLog "Creating Root CA..."
-    $rootCaCertificate = New-SelfSignedCertificate @params
-
-    Export-Certificate -Cert $rootCaCertificate -FilePath ".\$rootCaName.cer" -Verbose
-    Export-PfxCertificate -Cert $rootCaCertificate -FilePath ".\$rootCaName.pfx" -Password $rootCaPassword -Verbose
-
-    # Re-import to Root store & My store
-    Get-ChildItem cert:\LocalMachine\My | Where-Object {$_.subject -eq "CN=$rootCaName"} | Remove-Item -Force -ErrorAction SilentlyContinue
-    Import-PfxCertificate -FilePath ".\$rootCaName.pfx" -CertStoreLocation Cert:\LocalMachine\Root -Password $rootCaPassword -Exportable -Verbose
-    Import-PfxCertificate -FilePath ".\$rootCaName.pfx" -CertStoreLocation Cert:\LocalMachine\My -Password $rootCaPassword -Exportable -Verbose
-
-    $rootCaCertificate = Get-ChildItem cert:\LocalMachine\My | Where-Object {$_.subject -eq "CN=$rootCaName"}
 } else {
     Export-Certificate -Cert $rootCaCertificate -FilePath ".\$rootCaName.cer" -Force -Verbose
     Export-PfxCertificate -Cert $rootCaCertificate -FilePath ".\$rootCaName.pfx" -Password $rootCaPassword -Force -Verbose
