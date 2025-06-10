@@ -515,22 +515,25 @@ function installStandalone() {
             }
         } elseif ($verifyMethod -eq "gpg") {
 
-            $env:GPGHOME = ${tempPath}
+            # Set GNUPGHOME so gpg uses our temporary directory without relying
+            # on any pre-existing keyrings. Using the correct environment
+            # variable avoids problems starting gpg-agent on Windows runners.
+            $env:GNUPGHOME = ${tempPath}
 
             logInfo "Importing GPG key..."
-            $gpgOutput = & $gpgPath --homedir $tempPath --import $gpgKeyPath
+            $gpgOutput = & $gpgPath --batch --no-tty --no-autostart --homedir $tempPath --import $gpgKeyPath
             if (!$?) {
                 throw [InstallFailedException]::new("Failed to import the GPG key for OpenTofu. (${gpgOutput})")
             }
 
             logInfo "Trusting GPG key..."
-            $gpgOutput = & $gpgPath --homedir $tempPath --tofu-policy good $gpgKeyID
+            $gpgOutput = & $gpgPath --batch --no-tty --no-autostart --homedir $tempPath --tofu-policy good $gpgKeyID
             if (!$?) {
                 throw [InstallFailedException]::new("Failed to trust the GPG key for OpenTofu. Possible fingerprint mismatch? (${gpgOutput})")
             }
 
             logInfo "Verifying GPG signature..."
-            $gpgOutput = & $gpgPath --homedir $tempPath --trust-model tofu --verify $gpgSigPath $sumsPath
+            $gpgOutput = & $gpgPath --batch --no-tty --no-autostart --homedir $tempPath --trust-model tofu --verify $gpgSigPath $sumsPath
             if (!$?) {
                 throw [InstallFailedException]::new("Failed to verify OpenTofu ${opentofuVersion} with GPG. ($?, $LASTEXITCODE, ${gpgOutput})")
             }
