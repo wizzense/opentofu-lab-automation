@@ -24,7 +24,7 @@ Describe '0001_Reset-Git' {
                 InfraRepoPath = $tempDir
             }
 
-            Mock Get-Command { @{ Name = 'gh' } } -ParameterFilter { $Name -eq 'gh' }
+            Mock Get-Command { @{ Name = 'gh'; Path = 'gh.exe' } } -ParameterFilter { $Name -eq 'gh' }
             Mock gh { $global:LASTEXITCODE = 0 }
             Mock git {}
 
@@ -111,7 +111,7 @@ Describe '0001_Reset-Git' {
 
     Context 'Logging' {
         It 'logs a success message when clone succeeds' {
-            . (Join-Path $PSScriptRoot '..\runner_utility_scripts\Logger.ps1')
+            . (Join-Path $PSScriptRoot '..' 'runner_utility_scripts' 'Logger.ps1')
             $tempDir = Join-Path ([System.IO.Path]::GetTempPath()) ([guid]::NewGuid())
 
             $config = [pscustomobject]@{

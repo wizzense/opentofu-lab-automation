@@ -3,6 +3,7 @@ $scriptDir = Join-Path $PSScriptRoot '..' 'runner_scripts'
 $scripts = Get-ChildItem $scriptDir -Filter '*.ps1'
 
 Describe 'Runner scripts parameter and command checks' {
+
     foreach ($file in $scripts) {
         Context $file.Name {
             $script:current = $file
@@ -18,11 +19,13 @@ Describe 'Runner scripts parameter and command checks' {
             }
 
             It 'contains at least one command invocation' {
+
                 $ast = [System.Management.Automation.Language.Parser]::ParseFile($script:current.FullName, [ref]$null, [ref]$null)
                 $commands = if ($ast) { $ast.FindAll({ param($n) $n -is [System.Management.Automation.Language.CommandAst] }, $true) } else { @() }
                 if ($commands.Count -eq 0) {
                     Write-Host "No commands found in $($script:current.FullName)"
                 }
+
                 $commands.Count | Should -BeGreaterThan 0
             }
         }

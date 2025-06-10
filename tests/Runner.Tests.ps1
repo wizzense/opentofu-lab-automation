@@ -1,9 +1,9 @@
 . (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
 Describe 'runner.ps1 configuration' {
     It 'loads default configuration without errors' {
-        $modulePath = Join-Path $PSScriptRoot '..\lab_utils\Get-LabConfig.ps1'
+        $modulePath = Join-Path $PSScriptRoot '..' 'lab_utils' 'Get-LabConfig.ps1'
         . $modulePath
-        $configPath = Join-Path $PSScriptRoot '..\config_files\default-config.json'
+        $configPath = Join-Path $PSScriptRoot '..' 'config_files' 'default-config.json'
         { Get-LabConfig -Path $configPath } | Should -Not -Throw
     }
 }
@@ -11,8 +11,8 @@ Describe 'runner.ps1 configuration' {
 Describe 'runner.ps1 script selection' {
     BeforeAll {
         # Use script-scoped variable so PSScriptAnalyzer recognizes cross-block usage
-        $script:runnerPath = Join-Path $PSScriptRoot '..\runner.ps1'
-        $modulePath = Join-Path $PSScriptRoot '..\lab_utils\Get-LabConfig.ps1'
+        $script:runnerPath = Join-Path $PSScriptRoot '..' 'runner.ps1'
+        $modulePath = Join-Path $PSScriptRoot '..' 'lab_utils' 'Get-LabConfig.ps1'
         . $modulePath
     }
 
@@ -21,10 +21,10 @@ Describe 'runner.ps1 script selection' {
         $null = New-Item -ItemType Directory -Path $tempDir
         try {
             Copy-Item $script:runnerPath -Destination $tempDir
-            Copy-Item (Join-Path $PSScriptRoot '..\runner_utility_scripts') -Destination $tempDir -Recurse
-            Copy-Item (Join-Path $PSScriptRoot '..\lab_utils') -Destination $tempDir -Recurse
-            Copy-Item (Join-Path $PSScriptRoot '..\config_files') -Destination (Join-Path $tempDir 'config_files') -Recurse
-            Copy-Item (Join-Path $PSScriptRoot '..\config_files') -Destination (Join-Path $tempDir 'config_files') -Recurse
+            Copy-Item (Join-Path $PSScriptRoot '..' 'runner_utility_scripts') -Destination $tempDir -Recurse
+            Copy-Item (Join-Path $PSScriptRoot '..' 'lab_utils') -Destination $tempDir -Recurse
+            Copy-Item (Join-Path $PSScriptRoot '..' 'config_files') -Destination (Join-Path $tempDir 'config_files') -Recurse
+            Copy-Item (Join-Path $PSScriptRoot '..' 'config_files') -Destination (Join-Path $tempDir 'config_files') -Recurse
             $scriptsDir = Join-Path $tempDir 'runner_scripts'
             $null = New-Item -ItemType Directory -Path $scriptsDir
             $dummy = Join-Path $scriptsDir '0001_Test.ps1'
@@ -45,9 +45,9 @@ exit 0' | Set-Content -Path $dummy
         $null = New-Item -ItemType Directory -Path $tempDir
         try {
             Copy-Item $script:runnerPath -Destination $tempDir
-            Copy-Item (Join-Path $PSScriptRoot '..\runner_utility_scripts') -Destination $tempDir -Recurse
-            Copy-Item (Join-Path $PSScriptRoot '..\lab_utils') -Destination $tempDir -Recurse
-            Copy-Item (Join-Path $PSScriptRoot '..\config_files') -Destination (Join-Path $tempDir 'config_files') -Recurse
+            Copy-Item (Join-Path $PSScriptRoot '..' 'runner_utility_scripts') -Destination $tempDir -Recurse
+            Copy-Item (Join-Path $PSScriptRoot '..' 'lab_utils') -Destination $tempDir -Recurse
+            Copy-Item (Join-Path $PSScriptRoot '..' 'config_files') -Destination (Join-Path $tempDir 'config_files') -Recurse
             $scriptsDir = Join-Path $tempDir 'runner_scripts'
             $null = New-Item -ItemType Directory -Path $scriptsDir
             $out1 = Join-Path $tempDir 'out1.txt'
@@ -55,13 +55,13 @@ exit 0' | Set-Content -Path $dummy
             $fail = Join-Path $scriptsDir '0001_Fail.ps1'
             @"
 Param([PSCustomObject]`$Config)
-'1' | Out-File -FilePath '$out1'
+'1' | Out-File -FilePath "$out1"
 exit 1
 "@ | Set-Content -Path $fail
             $succ = Join-Path $scriptsDir '0002_Success.ps1'
             @"
 Param([PSCustomObject]`$Config)
-'2' | Out-File -FilePath '$out2'
+'2' | Out-File -FilePath "$out2"
 exit 0
 "@ | Set-Content -Path $succ
 
@@ -84,9 +84,9 @@ exit 0
         $null = New-Item -ItemType Directory -Path $tempDir
         try {
             Copy-Item $script:runnerPath -Destination $tempDir
-            Copy-Item (Join-Path $PSScriptRoot '..\runner_utility_scripts') -Destination $tempDir -Recurse
-            Copy-Item (Join-Path $PSScriptRoot '..\lab_utils') -Destination $tempDir -Recurse
-            Copy-Item (Join-Path $PSScriptRoot '..\config_files') -Destination (Join-Path $tempDir 'config_files') -Recurse
+            Copy-Item (Join-Path $PSScriptRoot '..' 'runner_utility_scripts') -Destination $tempDir -Recurse
+            Copy-Item (Join-Path $PSScriptRoot '..' 'lab_utils') -Destination $tempDir -Recurse
+            Copy-Item (Join-Path $PSScriptRoot '..' 'config_files') -Destination (Join-Path $tempDir 'config_files') -Recurse
             $scriptsDir = Join-Path $tempDir 'runner_scripts'
             $null = New-Item -ItemType Directory -Path $scriptsDir
             $out1 = Join-Path $tempDir 'out_cleanup.txt'
@@ -94,13 +94,13 @@ exit 0
             $clean = Join-Path $scriptsDir '0000_Cleanup.ps1'
             @"
 Param([PSCustomObject]`$Config)
-'c' | Out-File -FilePath '$out1'
+'c' | Out-File -FilePath "$out1"
 exit 0
 "@ | Set-Content -Path $clean
             $other = Join-Path $scriptsDir '0001_Other.ps1'
             @"
 Param([PSCustomObject]`$Config)
-'o' | Out-File -FilePath '$out2'
+'o' | Out-File -FilePath "$out2"
 exit 0
 "@ | Set-Content -Path $other
 
@@ -123,8 +123,8 @@ exit 0
         $null = New-Item -ItemType Directory -Path $tempDir
         try {
             Copy-Item $script:runnerPath -Destination $tempDir
-            Copy-Item (Join-Path $PSScriptRoot '..\runner_utility_scripts') -Destination $tempDir -Recurse
-            Copy-Item (Join-Path $PSScriptRoot '..\lab_utils') -Destination $tempDir -Recurse
+            Copy-Item (Join-Path $PSScriptRoot '..' 'runner_utility_scripts') -Destination $tempDir -Recurse
+            Copy-Item (Join-Path $PSScriptRoot '..' 'lab_utils') -Destination $tempDir -Recurse
             $configDir = Join-Path $tempDir 'config_files'
             $null = New-Item -ItemType Directory -Path $configDir
             $configFile = Join-Path $configDir 'config.json'
@@ -135,7 +135,7 @@ exit 0
             $scriptFile = Join-Path $scriptsDir '0001_Test.ps1'
             @"
 Param([PSCustomObject]`$Config)
-if (`$Config.RunFoo -eq `$true) { 'foo' | Out-File -FilePath '$out' } else { Write-Output 'skip' }
+if (`$Config.RunFoo -eq `$true) { 'foo' | Out-File -FilePath "$out" } else { Write-Output 'skip' }
 "@ | Set-Content -Path $scriptFile
 
             Push-Location $tempDir
@@ -155,16 +155,16 @@ if (`$Config.RunFoo -eq `$true) { 'foo' | Out-File -FilePath '$out' } else { Wri
         $null = New-Item -ItemType Directory -Path $tempDir
         try {
             Copy-Item $script:runnerPath -Destination $tempDir
-            Copy-Item (Join-Path $PSScriptRoot '..\runner_utility_scripts') -Destination $tempDir -Recurse
-            Copy-Item (Join-Path $PSScriptRoot '..\lab_utils') -Destination $tempDir -Recurse
-            Copy-Item (Join-Path $PSScriptRoot '..\config_files') -Destination (Join-Path $tempDir 'config_files') -Recurse
+            Copy-Item (Join-Path $PSScriptRoot '..' 'runner_utility_scripts') -Destination $tempDir -Recurse
+            Copy-Item (Join-Path $PSScriptRoot '..' 'lab_utils') -Destination $tempDir -Recurse
+            Copy-Item (Join-Path $PSScriptRoot '..' 'config_files') -Destination (Join-Path $tempDir 'config_files') -Recurse
             $scriptsDir = Join-Path $tempDir 'runner_scripts'
             $null = New-Item -ItemType Directory -Path $scriptsDir
             $out = Join-Path $tempDir 'out.txt'
             $scriptFile = Join-Path $scriptsDir '0001_NoExit.ps1'
             @"
 Param([PSCustomObject]`$Config)
-'ok' | Out-File -FilePath '$out'
+'ok' | Out-File -FilePath "$out"
 "@ | Set-Content -Path $scriptFile
 
             Push-Location $tempDir
@@ -184,8 +184,8 @@ Param([PSCustomObject]`$Config)
         $null = New-Item -ItemType Directory -Path $tempDir
         try {
             Copy-Item $script:runnerPath -Destination $tempDir
-            Copy-Item (Join-Path $PSScriptRoot '..\runner_utility_scripts') -Destination $tempDir -Recurse
-            Copy-Item (Join-Path $PSScriptRoot '..\lab_utils') -Destination $tempDir -Recurse
+            Copy-Item (Join-Path $PSScriptRoot '..' 'runner_utility_scripts') -Destination $tempDir -Recurse
+            Copy-Item (Join-Path $PSScriptRoot '..' 'lab_utils') -Destination $tempDir -Recurse
             $scriptsDir = Join-Path $tempDir 'runner_scripts'
             $null = New-Item -ItemType Directory -Path $scriptsDir
             $dummy = Join-Path $scriptsDir '0001_Test.ps1'
