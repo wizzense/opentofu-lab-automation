@@ -10,7 +10,7 @@ Describe '0008_Install-OpenTofu' -Skip:($SkipNonWindows) {
     It 'calls OpenTofuInstaller when enabled' {
         $cfg = [pscustomobject]@{
             InstallOpenTofu = $true
-            CosignPath      = 'C:\\temp'
+            CosignPath      = 'C:\temp'
             OpenTofuVersion = '1.9.1'
         }
 
