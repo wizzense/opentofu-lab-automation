@@ -17,6 +17,13 @@
 $targetBranch = 'main'
 $defaultConfig = "https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/refs/heads/main/config_files/default-config.json"
 
+param(
+    [string]$ConfigFile,
+    [switch]$Quiet
+)
+
+$script:Quiet = $Quiet.IsPresent
+
 # example: https://raw.githubusercontent.com/wizzense/tofu-base-lab/refs/heads/main/configs/bootstrap-config.json
 
 
@@ -68,17 +75,19 @@ if (-not (Get-Command Write-CustomLog -ErrorAction SilentlyContinue)) {
     function Write-CustomLog {
         param(
             [string]$Message,
-            [string]$LogFile
+            [string]$LogFile,
+            [ValidateSet('INFO','WARN','ERROR')]
+            [string]$Level = 'INFO'
         )
-        $ts = Get-Date -Format 'yyyy-MM-dd HH:mm:ss'
-        $fmt = "[$ts] $Message"
-        Write-Output $fmt
+        if ($script:Quiet -and $Level -eq 'INFO') { return }
+        $ts  = Get-Date -Format 'yyyy-MM-dd HH:mm:ss'
+        $fmt = "[$ts] [$Level] $Message"
+        $color = 'White'
+        switch ($Level) { 'WARN' { $color = 'Yellow' } 'ERROR' { $color = 'Red' } }
+        Write-Host $fmt -ForegroundColor $color
         if ($LogFile) {
-            try {
-                $fmt | Out-File -FilePath $LogFile -Encoding utf8 -Append
-            } catch {
-                Write-Error "Failed to write log to file: $_"
-            }
+            try { $fmt | Out-File -FilePath $LogFile -Encoding utf8 -Append }
+            catch { Write-Host "Failed to write log to file: $_" -ForegroundColor 'Red' }
         }
     }
 }
@@ -425,7 +434,9 @@ if (!(Test-Path $runnerScriptName)) {
 
 Write-CustomLog "Running $runnerScriptName from $repoPath ..."
 
-Start-Process -FilePath $pwshPath -ArgumentList @('-NoLogo','-NoProfile','-File',".\$runnerScriptName",'-ConfigFile',$ConfigFile) -Wait -NoNewWindow
+$args = @('-NoLogo','-NoProfile','-File',".\$runnerScriptName",'-ConfigFile',$ConfigFile)
+if ($Quiet) { $args += '-Quiet' }
+Start-Process -FilePath $pwshPath -ArgumentList $args -Wait -NoNewWindow
 
 
 if ($LASTEXITCODE -ne 0) {

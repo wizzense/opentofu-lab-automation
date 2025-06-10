@@ -4,7 +4,9 @@ function Write-CustomLog {
         [Parameter(Mandatory=$true, Position=0)]
         [string]$Message,
         [Parameter(Position=1)]
-        [string]$LogFile = $null
+        [string]$LogFile = $null,
+        [ValidateSet('INFO','WARN','ERROR')]
+        [string]$Level = 'INFO'
     )
 
     if (-not $PSBoundParameters.ContainsKey('LogFile')) {
@@ -25,14 +27,32 @@ function Write-CustomLog {
             $LogFile = Join-Path $logDir 'lab.log'
         }
     }
+
+    $quiet = $false
+    if (Get-Variable -Name Quiet -Scope Script -ErrorAction SilentlyContinue) {
+        $quiet = Get-Variable -Name Quiet -Scope Script -ValueOnly
+    } elseif (Get-Variable -Name Quiet -Scope Global -ErrorAction SilentlyContinue) {
+        $quiet = Get-Variable -Name Quiet -Scope Global -ValueOnly
+    }
+    if ($quiet -and $Level -eq 'INFO') { return }
+
     $timestamp = Get-Date -Format 'yyyy-MM-dd HH:mm:ss'
-    $formatted = "[$timestamp] $Message"
-    Write-Host $formatted
+
+    $formatted = "[$timestamp] [$Level] $Message"
+    $color = 'White'
+    switch ($Level) {
+        'WARN'  { $color = 'Yellow' }
+        'ERROR' { $color = 'Red'    }
+    }
+    Write-Host $formatted -ForegroundColor $color
+
     if ($LogFile) {
         try {
             $formatted | Out-File -FilePath $LogFile -Encoding utf8 -Append
         } catch {
-            Write-Host "[ERROR] Failed to write to log file ${LogFile}: $_"
+        
+            Write-Host "[ERROR] Failed to write to log file ${LogFile}: $_" -ForegroundColor 'Red'
+
         }
     }
 }

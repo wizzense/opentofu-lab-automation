@@ -2,8 +2,10 @@ function Format-Config {
     param(
         [pscustomobject]$Config
     )
-    $lines = foreach ($prop in $Config.PSObject.Properties) {
-        "{0}: {1}" -f $prop.Name, $prop.Value
-    }
-    return $lines -join "`n"
+
+    # Serialize the configuration object to indented JSON so nested
+    # properties are easier to read in the console output.  Depth 10
+    # should be sufficient for our current config structure.
+    $json = $Config | ConvertTo-Json -Depth 10
+    return $json
 }

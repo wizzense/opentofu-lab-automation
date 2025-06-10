@@ -3,10 +3,10 @@ Describe 'Format-Config' {
     BeforeAll {
         . (Join-Path $PSScriptRoot '..' 'lab_utils' 'Format-Config.ps1')
     }
-    It 'formats config as key-value lines' {
+    It 'formats config as indented JSON' {
         $cfg = [pscustomobject]@{ Foo = 'bar'; Baz = 1 }
         $result = Format-Config -Config $cfg
-        $result | Should -Match 'Foo: bar'
-        $result | Should -Match 'Baz: 1'
+        $result | Should -Match '"Foo"\s*:\s*"bar"'
+        $result | Should -Match '"Baz"\s*:\s*1'
     }
 }
