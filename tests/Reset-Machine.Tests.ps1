@@ -1,5 +1,6 @@
 . (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
 . (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
+if ($SkipNonWindows) { return }
 Describe 'Reset-Machine script' {
     BeforeAll {
         $script:ScriptPath = Get-RunnerScriptPath '9999_Reset-Machine.ps1'

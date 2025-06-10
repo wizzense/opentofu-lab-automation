@@ -1,5 +1,6 @@
 . (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
 . (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
+if ($SkipNonWindows) { return }
 Describe 'Hypervisor module' {
     BeforeAll {
         Import-Module (Join-Path $PSScriptRoot '..' 'lab_utils' 'Hypervisor.psm1') -Force

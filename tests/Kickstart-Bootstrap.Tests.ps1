@@ -1,5 +1,6 @@
 . (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
 . (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
+if ($SkipNonWindows) { return }
 Describe 'kickstart-bootstrap script' {
     It 'exists at repo root' {
         $path = Join-Path $PSScriptRoot '..' 'kickstart-bootstrap.sh'
