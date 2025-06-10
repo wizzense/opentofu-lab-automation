@@ -379,7 +379,8 @@ if (-not $repoPath) {
 }
 
 # Configure git safe.directory to avoid dubious ownership errors
-$resolvedRepoPath = (Resolve-Path $repoPath).ProviderPath
+# Use GetFullPath so path need not exist yet
+$resolvedRepoPath = [System.IO.Path]::GetFullPath($repoPath)
 & "$gitPath" config --global --add safe.directory $resolvedRepoPath 2>$null
 
 if (!(Test-Path $repoPath)) {
