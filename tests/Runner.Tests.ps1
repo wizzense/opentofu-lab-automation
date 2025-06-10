@@ -25,6 +25,7 @@ Describe 'runner.ps1 script selection' -Skip:($SkipNonWindows) {
     BeforeAll {
         # Use script-scoped variable so PSScriptAnalyzer recognizes cross-block usage
         $script:runnerPath = Join-Path $PSScriptRoot '..' 'runner.ps1'
+        . (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
         $modulePath = Join-Path $PSScriptRoot '..' 'lab_utils' 'Get-LabConfig.ps1'
         . $modulePath
         . (Join-Path $PSScriptRoot '..' 'runner_utility_scripts' 'Logger.ps1')
