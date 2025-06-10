@@ -382,7 +382,12 @@ if (!(Test-Path $runnerScriptName)) {
 }
 
 Write-CustomLog "Running $runnerScriptName from $repoPath ..."
-. .\$runnerScriptName -ConfigFile $ConfigFile
+& ".\$runnerScriptName" -ConfigFile $ConfigFile
+
+if ($LASTEXITCODE -ne 0) {
+    Write-CustomLog "Runner script failed with exit code $LASTEXITCODE"
+    exit $LASTEXITCODE
+}
 
 Write-CustomLog "`n=== Kicker script finished successfully! ==="
 exit 0
