@@ -1,4 +1,5 @@
 . (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
+. (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
 Describe 'Reset-Machine script' {
     BeforeAll {
         $script:ScriptPath = Join-Path $PSScriptRoot '..' 'runner_scripts' '9999_Reset-Machine.ps1'
@@ -9,7 +10,7 @@ Describe 'Reset-Machine script' {
         Remove-Variable -Name LogFilePath -Scope Script -ErrorAction SilentlyContinue
     }
 
-    It 'invokes sysprep and configures Remote Desktop on Windows' -Skip:($IsLinux -or $IsMacOS) {
+    It 'invokes sysprep and configures Remote Desktop on Windows' -Skip:($SkipNonWindows) {
         Mock Get-Platform { 'Windows' }
         $sysprep = 'C:\\Windows\\System32\\Sysprep\\Sysprep.exe'
         Mock Test-Path { $true } -ParameterFilter { $Path -eq $sysprep }
