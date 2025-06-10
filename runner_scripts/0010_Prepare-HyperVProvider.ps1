@@ -174,6 +174,9 @@ if (-not $rootCaCertificate) {
     Import-PfxCertificate -FilePath ".\$rootCaName.pfx" -CertStoreLocation Cert:\LocalMachine\My -Password $rootCaPassword -Exportable -Verbose
 
     $rootCaCertificate = Get-ChildItem cert:\LocalMachine\My | Where-Object {$_.subject -eq "CN=$rootCaName"}
+} else {
+    Export-Certificate -Cert $rootCaCertificate -FilePath ".\$rootCaName.cer" -Force -Verbose
+    Export-PfxCertificate -Cert $rootCaCertificate -FilePath ".\$rootCaName.pfx" -Password $rootCaPassword -Force -Verbose
 }
 
 # Create Host Certificate
@@ -217,6 +220,9 @@ if (-not $hostCertificate) {
     Import-PfxCertificate -FilePath ".\$hostName.pfx" -CertStoreLocation Cert:\LocalMachine\My -Password $hostPassword -Exportable -Verbose
 
     $hostCertificate = Get-ChildItem cert:\LocalMachine\My | Where-Object {$_.subject -eq "CN=$hostName"}
+} else {
+    Export-Certificate -Cert $hostCertificate -FilePath ".\$hostName.cer" -Force -Verbose
+    Export-PfxCertificate -Cert $hostCertificate -FilePath ".\$hostName.pfx" -Password $hostPassword -Force -Verbose
 }
 
     Convert-CerToPem -CerPath ".\$rootCaName.cer" -PemPath ".\$rootCaName.pem"
