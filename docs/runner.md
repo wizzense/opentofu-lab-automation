@@ -33,4 +33,3 @@ You can also specify the output level directly with the `-Verbosity`
 parameter (`silent`, `normal`, or `detailed`).
 
 The default configuration path (`./config_files/default-config.json`) and the `-Auto` switch are defined on lines 1-6. The logic that runs scripts directly when `-Scripts` is provided lives at lines 259-264. Prompts for editing the configuration or confirming cleanup only occur when `-Auto` is not specified, as shown on lines 135-168.
-
