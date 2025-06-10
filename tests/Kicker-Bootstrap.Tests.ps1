@@ -23,4 +23,10 @@ Describe 'kicker-bootstrap utilities' -Skip:($IsLinux -or $IsMacOS) {
         $content | Should -Match '\$configOption\s+-match\s+"https://"'
         $content | Should -Not -Match '-ccontains'
     }
+
+    It 'adds repo path to git safe.directory' {
+        $scriptPath = Join-Path $PSScriptRoot '..' 'kicker-bootstrap.ps1'
+        $content = Get-Content $scriptPath -Raw
+        $content | Should -Match 'gitPath"\s+config\s+--global\s+--add\s+safe.directory'
+    }
 }
