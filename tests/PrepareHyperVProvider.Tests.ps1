@@ -79,6 +79,8 @@ Describe 'Prepare-HyperVProvider certificate handling' -Skip:($IsLinux -or $IsMa
         Mock Test-Path { $false }
         Mock git {}
         Mock go {}
+        Mock Import-PfxCertificate {}
+        Mock New-SelfSignedCertificate {}
         Mock Convert-CerToPem {
             param($CerPath, $PemPath)
             & $script:origConvertCerToPem -CerPath $CerPath -PemPath $PemPath
@@ -100,6 +102,7 @@ Describe 'Prepare-HyperVProvider certificate handling' -Skip:($IsLinux -or $IsMa
         $hostName   = [System.Net.Dns]::GetHostName()
         $sourceCert = Join-Path $PSScriptRoot 'data' 'TestCA.cer'
         Copy-Item -Path $sourceCert -Destination (Join-Path $PWD "$rootCaName.cer") -Force
+        'dummy' | Set-Content -Path (Join-Path $PWD "$rootCaName.pfx")
         'dummy' | Set-Content -Path (Join-Path $PWD "$hostName.pfx")
 
         $providerFile = Join-Path $tempDir 'providers.tf'
@@ -118,6 +121,8 @@ Describe 'Prepare-HyperVProvider certificate handling' -Skip:($IsLinux -or $IsMa
         . $script:scriptPath -Config $config
         $cmdAfter  = Get-Command Convert-PfxToPem
         $cmdAfter | Should -Be $cmdBefore
+        Assert-MockCalled Import-PfxCertificate -Times 2
+        Assert-MockCalled New-SelfSignedCertificate -Times 0
         Assert-MockCalled Convert-CerToPem -Times 1
         Assert-MockCalled Convert-PfxToPem -Times 1
 
@@ -129,6 +134,7 @@ Describe 'Prepare-HyperVProvider certificate handling' -Skip:($IsLinux -or $IsMa
         Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue
         Remove-Item (Join-Path $PWD "$rootCaName.cer") -ErrorAction SilentlyContinue
         Remove-Item (Join-Path $PWD "$rootCaName.pem") -ErrorAction SilentlyContinue
+        Remove-Item (Join-Path $PWD "$rootCaName.pfx") -ErrorAction SilentlyContinue
         Remove-Item (Join-Path $PWD "$hostName.pfx") -ErrorAction SilentlyContinue
         Remove-Item (Join-Path $PWD "$hostName.pem") -ErrorAction SilentlyContinue
         Remove-Item (Join-Path $PWD "$hostName-key.pem") -ErrorAction SilentlyContinue
