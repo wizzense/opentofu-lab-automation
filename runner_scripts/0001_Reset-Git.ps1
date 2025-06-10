@@ -45,8 +45,11 @@ else {
     Write-CustomLog "Git repository found. Updating repository..."
     Push-Location $InfraPath
     try {
+        Write-CustomLog 'git reset --hard'
         git reset --hard
+        Write-CustomLog 'git clean -fd'
         git clean -fd
+        Write-CustomLog 'git pull'
         git pull
     } catch {
         Write-Error "An error occurred while updating the repository: $_"
