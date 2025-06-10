@@ -99,30 +99,77 @@ function Set-NestedConfigValue {
     $cur[$parts[-1]] = $Value
 }
 
+function Apply-RecommendedDefaults {
+    param([hashtable]$ConfigObject)
+
+    $recommendedPath = Join-Path $PSScriptRoot 'config_files' 'recommended-config.json'
+    if (-not (Test-Path $recommendedPath)) { return $ConfigObject }
+    try {
+        $recommended = Get-Content -Raw -Path $recommendedPath | ConvertFrom-Json
+        foreach ($prop in $recommended.PSObject.Properties) {
+            Set-NestedConfigValue -Config $ConfigObject -Path $prop.Name -Value $prop.Value
+        }
+    } catch {
+        Write-CustomLog "WARNING: Failed to load recommended defaults: $_"
+    }
+    return $ConfigObject
+}
+
 function Set-LabConfig {
     [CmdletBinding(SupportsShouldProcess)]
     param([hashtable]$ConfigObject)
 
-    $installPrompts = [ordered]@{
-        InstallGit      = 'Install Git'
-        InstallGo       = 'Install Go'
-        InstallOpenTofu = 'Install OpenTofu'
+    function Edit-PrimitiveValue {
+        param([string]$Path, [object]$Current)
+        $prompt = "New value for '$Path' [$Current]"
+        $ans = Read-Host $prompt
+        if (-not $ans) { return $Current }
+        if ($Current -is [bool]) { return $ans -match '^(?i)y|true$' }
+        if ($Current -is [int])  { return [int]$ans }
+        return $ans
     }
 
-    foreach ($k in $installPrompts.Keys) {
-        $current = [bool]$ConfigObject[$k]
-        $ans     = Read-Host "$($installPrompts[$k])? (Y/N) [$current]"
-        if ($ans) { $ConfigObject[$k] = $ans -match '^(?i)y' }
+    function Edit-Section {
+        param([hashtable]$Section, [string]$Prefix)
+        while ($true) {
+            $keys  = $Section.Keys | Sort-Object
+            $items = $keys + 'Back'
+            $sel   = Get-MenuSelection -Items $items -Title "Edit $Prefix"
+            if (-not $sel -or $sel -eq 'Back') { break }
+            foreach ($key in @($sel)) {
+                $path = if ($Prefix) { "$Prefix.$key" } else { $key }
+                $val  = $Section[$key]
+                if ($val -is [hashtable]) {
+                    Edit-Section -Section $val -Prefix $path
+                } else {
+                    $Section[$key] = Edit-PrimitiveValue -Path $path -Current $val
+                }
+            }
+        }
     }
 
-    $localPath = Read-Host "Local repo path [$($ConfigObject.LocalPath)]"
-    if ($localPath) { $ConfigObject.LocalPath = $localPath }
-
-    $npmPath = Read-Host "Path to Node project [$($ConfigObject.Node_Dependencies.NpmPath)]"
-    if ($npmPath) { $ConfigObject.Node_Dependencies.NpmPath = $npmPath }
-    $createPath = Read-Host "Create NpmPath if missing? (Y/N) [$($ConfigObject.Node_Dependencies.CreateNpmPath)]"
-    if ($createPath) { $ConfigObject.Node_Dependencies.CreateNpmPath = $createPath -match '^(?i)y' }
-
+    while ($true) {
+        $opts = $ConfigObject.Keys | Sort-Object
+        $menu = $opts + @('Apply recommended defaults','Done')
+        $choice = Get-MenuSelection -Items $menu -Title 'Edit configuration'
+        if (-not $choice) { break }
+        foreach ($sel in @($choice)) {
+            switch ($sel) {
+                'Done' { return $ConfigObject }
+                'Apply recommended defaults' {
+                    $ConfigObject = Apply-RecommendedDefaults -ConfigObject $ConfigObject
+                }
+                default {
+                    $val = $ConfigObject[$sel]
+                    if ($val -is [hashtable]) {
+                        Edit-Section -Section $val -Prefix $sel
+                    } else {
+                        $ConfigObject[$sel] = Edit-PrimitiveValue -Path $sel -Current $val
+                    }
+                }
+            }
+        }
+    }
     return $ConfigObject
 }
 
