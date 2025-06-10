@@ -119,13 +119,10 @@ jobs:
           }
 
       - name: Run Pester
+        continue-on-error: ${{ runner.os != 'Windows' }}
         shell: bash
         run: |
-          if [ "$RUNNER_OS" = "Windows" ]; then
-            pwsh -NoLogo -NoProfile -Command "Invoke-Pester -Path tests -CI -ErrorAction Stop"
-          else
-            pwsh -NoLogo -NoProfile -Command "Invoke-Pester -Path tests -CI -ErrorAction Stop" || echo "Ignoring Pester failure on non-Windows"
-          fi
+          pwsh -NoLogo -NoProfile -Command "Invoke-Pester -Path tests -CI -ErrorAction Stop"
 
   pytest:
     needs: pester

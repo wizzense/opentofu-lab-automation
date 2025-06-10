@@ -27,26 +27,40 @@ Write-Output "Config parameter is: $Config"
 
 Write-CustomLog "==== [0201] Installing Node.js Core ===="
 
-if ($Config.Node_Dependencies.InstallNode) {
-    $url = if ($Config.Node_Dependencies.Node.InstallerUrl) {
-        $Config.Node_Dependencies.Node.InstallerUrl
-    } else {
-        "https://nodejs.org/dist/v20.11.1/node-v20.11.1-x64.msi"
+if ($Config -is [hashtable]) {
+    if (-not $Config.ContainsKey('Node_Dependencies')) {
+        Write-CustomLog "Config missing Node_Dependencies; skipping Node.js installation."
+        return
     }
+} elseif (-not $Config.PSObject.Properties.Match('Node_Dependencies')) {
+    Write-CustomLog "Config missing Node_Dependencies; skipping Node.js installation."
+    return
+}
 
-    $installerPath = Join-Path $env:TEMP "node-installer.msi"
-    Write-CustomLog "Downloading Node.js from: $url"
-    Invoke-WebRequest -Uri $url -OutFile $installerPath -UseBasicParsing
+if ($Config.Node_Dependencies.InstallNode) {
+    try {
+        $url = if ($Config.Node_Dependencies.Node.InstallerUrl) {
+            $Config.Node_Dependencies.Node.InstallerUrl
+        } else {
+            "https://nodejs.org/dist/v20.11.1/node-v20.11.1-x64.msi"
+        }
 
-    Start-Process msiexec.exe -ArgumentList "/i `"$installerPath`" /quiet /norestart" -Wait -NoNewWindow
-    Remove-Item $installerPath -Force
+        $installerPath = Join-Path $env:TEMP "node-installer.msi"
+        Write-CustomLog "Downloading Node.js from: $url"
+        Invoke-WebRequest -Uri $url -OutFile $installerPath -UseBasicParsing
 
-    if (Get-Command node -ErrorAction SilentlyContinue) {
-        Write-CustomLog "Node.js installed successfully."
-        node -v
-    } else {
-        Write-Error "Node.js installation failed."
-        exit 1
+        Start-Process msiexec.exe -ArgumentList "/i `"$installerPath`" /quiet /norestart" -Wait -NoNewWindow
+        Remove-Item $installerPath -Force
+
+        if (Get-Command node -ErrorAction SilentlyContinue) {
+            Write-CustomLog "Node.js installed successfully."
+            node -v
+        } else {
+            Write-Error "Node.js installation failed."
+            exit 1
+        }
+    } catch {
+        Write-Warning "Failed to install Node.js: $_"
     }
 } else {
     Write-CustomLog "InstallNode flag is disabled. Skipping Node.js installation."
