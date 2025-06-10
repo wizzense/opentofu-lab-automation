@@ -31,6 +31,9 @@ Describe 'OpenTofuInstaller' {
             } else { New-Item -ItemType File -Path $OutFile -Force | Out-Null }
         }
         Mock Expand-Archive {}
+        $principal = New-Object psobject
+        $principal | Add-Member -MemberType ScriptMethod -Name IsInRole -Value { param($role) $false }
+        Mock New-Object -ParameterFilter { $TypeName -eq 'Security.Principal.WindowsPrincipal' } -MockWith { $principal }
         $script:logFile = $null
         Mock Start-Process {
             param($FilePath, $ArgumentList, $RedirectStandardOutput, $RedirectStandardError)
