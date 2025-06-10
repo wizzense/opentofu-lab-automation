@@ -1,7 +1,7 @@
 name: Create Issue on Failure
 on:
   workflow_run:
-    workflows: ["CI"]
+    workflows: ["Lint", "Pester", "Pytest"]
     types: [completed]
 
 jobs:
@@ -15,7 +15,7 @@ jobs:
         uses: actions-ecosystem/action-create-issue@v1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          title: "CI failed on ${{ github.event.workflow_run.head_branch }}"
+          title: "${{ github.event.workflow_run.name }} failed on ${{ github.event.workflow_run.head_branch }}"
           body: |
             The workflow failed.
             [View run](${{ github.event.workflow_run.html_url }})

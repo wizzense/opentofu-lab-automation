@@ -34,11 +34,11 @@ cd py && pytest
 ```
 
 The `task test` shortcut (defined in InvokeBuild) wraps these commands and
-executes the same steps as the CI pipeline.
+executes the same steps as the lint, Pester and Pytest workflows.
 
 When adding Windows‑specific tests, guard them with
 `-Skip:($IsLinux -or $IsMacOS)` so the suite succeeds across all platforms.
 
 ## CI failure issues
 
-If the `CI` workflow fails, the `issue-on-fail.yml` workflow automatically opens a GitHub issue summarizing which jobs failed. This helps track flaky tests without manual intervention.
+If any of the lint, Pester or Pytest workflows fail, the `issue-on-fail.yml` workflow automatically opens a GitHub issue summarizing the failure. This helps track flaky tests without manual intervention.
