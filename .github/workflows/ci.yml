@@ -128,7 +128,7 @@ jobs:
         continue-on-error: ${{ runner.os != 'Windows' }}
         shell: bash
         run: |
-          pwsh -NoLogo -NoProfile -Command "Invoke-Pester -Configuration tests/PesterConfiguration.psd1 -ErrorAction Stop"
+          pwsh -NoLogo -NoProfile -Command "Invoke-Pester -Configuration (Import-PowerShellDataFile -Path 'tests/PesterConfiguration.psd1') -ErrorAction Stop"
 
       - name: Upload coverage
         if: always()
