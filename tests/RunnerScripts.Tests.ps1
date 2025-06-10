@@ -14,8 +14,6 @@ function Parse-ScriptFile {
     [System.Management.Automation.Language.Parser]::ParseInput($text, [ref]$null, [ref]$null)
 }
 
-Describe 'Runner scripts parameter and command checks' {
-
     $testCases = $scripts | ForEach-Object { @{ file = $_ } }
 
     It 'declares a Config parameter when required' -TestCases $testCases {
