@@ -21,11 +21,22 @@ function Get-LabConfig {
                     throw "YAML support requires the 'powershell-yaml' module. Install it with 'Install-Module powershell-yaml'."
                 }
             }
-            return $content | ConvertFrom-Yaml
+            $config = $content | ConvertFrom-Yaml
         }
         else {
-            return $content | ConvertFrom-Json
+            $config = $content | ConvertFrom-Json
         }
+
+        $repoRoot = Resolve-Path (Join-Path $PSScriptRoot '..')
+        $dirs = [pscustomobject]@{
+            RepoRoot       = $repoRoot.Path
+            RunnerScripts  = Join-Path $repoRoot 'runner_scripts'
+            UtilityScripts = Join-Path $repoRoot 'runner_utility_scripts'
+            ConfigFiles    = Join-Path $repoRoot 'config_files'
+            InfraRepo      = if ($config.InfraRepoPath) { $config.InfraRepoPath } else { 'C:\\Temp\\base-infra' }
+        }
+        Add-Member -InputObject $config -MemberType NoteProperty -Name Directories -Value $dirs -Force
+        return $config
     }
     catch {
         throw "Failed to parse config file $Path. $_"
