@@ -46,3 +46,11 @@ poetry run labctl repo cleanup
 `cleanup` removes merged remote branches while keeping the most recent branch
 per hour.
 
+### `ui`
+Launch a simple Textual interface showing runner scripts, log output and
+configuration files:
+
+```bash
+poetry run labctl ui
+```
+

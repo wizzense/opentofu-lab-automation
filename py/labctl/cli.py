@@ -42,6 +42,14 @@ app.add_typer(hv_app, name="hv")
 app.add_typer(repo_app, name="repo")
 
 
+@app.command()
+def ui() -> None:
+    """Launch the Textual user interface."""
+    from .ui import run_ui
+
+    run_ui()
+
+
 @app.callback(invoke_without_command=True)
 def main(ctx: typer.Context):
     """Initialize logging before executing commands."""
