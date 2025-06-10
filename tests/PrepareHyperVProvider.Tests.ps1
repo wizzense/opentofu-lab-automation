@@ -198,7 +198,11 @@ Describe 'Convert certificate helpers honour -WhatIf' -Skip:($IsLinux -or $IsMac
 
 Describe 'Convert certificate helpers validate paths' -Skip:($IsLinux -or $IsMacOS) {
     BeforeAll {
-        Remove-Mock -CommandName Convert-PfxToPem -ErrorAction SilentlyContinue
+        if (Get-Command Unmock -ErrorAction SilentlyContinue) {
+            Unmock Convert-PfxToPem -ErrorAction SilentlyContinue
+        } elseif (Get-Command Remove-Mock -ErrorAction SilentlyContinue) {
+            Remove-Mock -CommandName Convert-PfxToPem -ErrorAction SilentlyContinue
+        }
         $scriptPath = Join-Path $PSScriptRoot '..' 'runner_scripts' '0010_Prepare-HyperVProvider.ps1'
         . $scriptPath
     }
