@@ -1,0 +1,18 @@
+name: Example Infrastructure
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: opentofu/setup-opentofu@v1
+      - name: Init and validate
+        working-directory: example-infrastructure
+        run: |
+          tofu init -input=false
+          tofu validate
+

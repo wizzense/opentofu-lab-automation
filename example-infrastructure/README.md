@@ -34,8 +34,7 @@ git pull
 
 ## Automated testing
 
-A GitHub Actions workflow located at `.github/workflows/test.yml` installs
-OpenTofu using the `wizzense/opentofu-lab-automation` action. The workflow
-runs `tofu init` and `tofu validate` whenever the repository is pushed to or a
-pull request is opened.
+The [test.yml](../.github/workflows/test.yml) workflow installs OpenTofu and
+executes `tofu init` and `tofu validate` in this directory. It runs whenever you
+push changes or open a pull request, ensuring the examples remain valid.
 
