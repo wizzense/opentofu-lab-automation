@@ -268,25 +268,11 @@ function Invoke-Scripts {
 
             $tempCfg = [System.IO.Path]::GetTempFileName()
             $Config | ConvertTo-Json -Depth 5 | Out-File -FilePath $tempCfg -Encoding utf8
-            $sb = {
-                param($cfgPath, $scr, $verbosity)
-                $vl = @{ silent = 0; normal = 1; detailed = 2 }
-                $script:ConsoleLevel = $vl[$verbosity]
-                $cfg = Get-Content -Raw -Path $cfgPath | ConvertFrom-Json
-                try {
-                    $args = @{ Config = $cfg }
-                    if ((Get-Command $scr).Parameters.ContainsKey('AsJson')) { $args.AsJson = $true }
-                    $result = & $scr @args
-                    $exit = if ($LASTEXITCODE) { $LASTEXITCODE } elseif (-not $?) { 1 } else { 0 }
-                    Write-Output $result
-                    exit $exit
-                } catch {
-                    $_ | Out-String | Write-Error
-                    exit 1
-                }
-            }
-
-            $output = & $pwshPath -NoLogo -NoProfile -Command $sb -Args $tempCfg, $scriptPath, $Verbosity *>&1
+            $scriptArgs = @('-File', $scriptPath, '-Config', $tempCfg)
+            if ((Get-Command $scriptPath).Parameters.ContainsKey('AsJson')) { $scriptArgs += '-AsJson' }
+            $env:LAB_CONSOLE_LEVEL = $script:VerbosityLevels[$Verbosity]
+            $output = & $pwshPath -NoLogo -NoProfile @scriptArgs *>&1
+            Remove-Item Env:LAB_CONSOLE_LEVEL -ErrorAction SilentlyContinue
 
             $exitCode = $LASTEXITCODE
 

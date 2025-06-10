@@ -1,5 +1,16 @@
+if (-not $PSScriptRoot) {
+    $PSScriptRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
+}
+
 function Invoke-LabStep {
     param([scriptblock]$Body, [pscustomobject]$Config)
+    if ($Config -is [string]) {
+        if (Test-Path $Config) {
+            $Config = Get-Content -Raw -Path $Config | ConvertFrom-Json
+        } else {
+            try { $Config = $Config | ConvertFrom-Json } catch {}
+        }
+    }
     if (-not (Get-Command Write-CustomLog -ErrorAction SilentlyContinue)) {
         . $PSScriptRoot/Logger.ps1
     }

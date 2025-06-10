@@ -92,4 +92,25 @@ Describe 'Runner scripts parameter and command checks' -Skip:($SkipNonWindows) {
 
         ($found | Measure-Object).Count | Should -BeGreaterThan 0
     }
+
+    It 'resolves PSScriptRoot when run with pwsh -File' {
+        $tempDir = Join-Path ([System.IO.Path]::GetTempPath()) ([guid]::NewGuid())
+        New-Item -ItemType Directory -Path $tempDir | Out-Null
+        try {
+            $dummy = Join-Path $tempDir 'dummy.ps1'
+            @"\
+Param([pscustomobject]`$Config)
+. `"$PSScriptRoot/../runner_utility_scripts/ScriptTemplate.ps1`"
+Invoke-LabStep -Config `$Config -Body { Write-Output `$PSScriptRoot }
+"@ | Set-Content -Path $dummy
+
+            $pwsh = (Get-Command pwsh).Source
+            $result = & $pwsh -NoLogo -NoProfile -File $dummy -Config @{}
+            $expected = Split-Path $dummy -Parent
+            $result.Trim() | Should -Be $expected
+        }
+        finally {
+            Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue
+        }
+    }
 }
