@@ -14,7 +14,7 @@ function global:Get-RunnerScriptPath {
     (Resolve-Path -ErrorAction Stop (Join-Path $root '..' '..' 'runner_scripts' $Name)).Path
 }
 
-function Mock-WriteLog {
+function global:Mock-WriteLog {
     if (-not (Get-Command Write-CustomLog -ErrorAction SilentlyContinue)) {
         function global:Write-CustomLog { param([string]$Message,[string]$Level) }
     }
