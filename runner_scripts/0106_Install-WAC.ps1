@@ -1,4 +1,20 @@
 Param([pscustomobject]$Config)
+
+function Get-WacRegistryInstallation {
+    param(
+        [string]$RegistryPath
+    )
+    $items = Get-ChildItem $RegistryPath -ErrorAction SilentlyContinue
+    foreach ($item in $items) {
+        $itemProps = Get-ItemProperty $item.PSPath -ErrorAction SilentlyContinue
+        # Only check if the DisplayName property exists
+        if ($itemProps.PSObject.Properties['DisplayName'] -and $itemProps.DisplayName -like "*Windows Admin Center*") {
+            return $itemProps
+        }
+    }
+    return $null
+}
+
 . "$PSScriptRoot/../runner_utility_scripts/ScriptTemplate.ps1"
 Invoke-LabStep -Config $Config -Body {
     Write-CustomLog 'Running 0106_Install-WAC.ps1'
@@ -12,22 +28,6 @@ if ($Config.InstallWAC -eq $true) {
     }
 
     $installPort = $WacConfig.InstallPort
-
-    # Define a helper function to check a registry path for Windows Admin Center
-    function Get-WacRegistryInstallation {
-        param(
-            [string]$RegistryPath
-        )
-        $items = Get-ChildItem $RegistryPath -ErrorAction SilentlyContinue
-        foreach ($item in $items) {
-            $itemProps = Get-ItemProperty $item.PSPath -ErrorAction SilentlyContinue
-            # Only check if the DisplayName property exists
-            if ($itemProps.PSObject.Properties['DisplayName'] -and $itemProps.DisplayName -like "*Windows Admin Center*") {
-                return $itemProps
-            }
-        }
-        return $null
-    }
 
     # Check both standard and Wow6432Node uninstall registry keys for WAC installation
     $wacInstalled = Get-WacRegistryInstallation -RegistryPath "HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall"

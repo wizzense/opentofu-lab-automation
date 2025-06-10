@@ -1,7 +1,4 @@
 Param([pscustomobject]$Config)
-. "$PSScriptRoot/../runner_utility_scripts/ScriptTemplate.ps1"
-Invoke-LabStep -Config $Config -Body {
-    Write-CustomLog 'Running 0010_Prepare-HyperVProvider.ps1'
 
 function Convert-CerToPem {
     [CmdletBinding(SupportsShouldProcess)]
@@ -54,6 +51,10 @@ function Get-HyperVProviderVersion {
     }
     throw "Failed to parse hyperv provider version from $MainTfPath"
 }
+
+. "$PSScriptRoot/../runner_utility_scripts/ScriptTemplate.ps1"
+Invoke-LabStep -Config $Config -Body {
+    Write-CustomLog 'Running 0010_Prepare-HyperVProvider.ps1'
 
 if ($Config.PrepareHyperVHost -eq $true) {
 

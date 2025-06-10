@@ -1,7 +1,4 @@
 Param([pscustomobject]$Config)
-. "$PSScriptRoot/../runner_utility_scripts/ScriptTemplate.ps1"
-Invoke-LabStep -Config $Config -Body {
-    Write-CustomLog 'Running 0006_Install-ValidationTools.ps1'
 
 function Install-Cosign {
     [CmdletBinding(SupportsShouldProcess)]
@@ -57,6 +54,10 @@ function Find-Gpg {
         Write-CustomLog "GPG is already installed."
     }
 }
+
+. "$PSScriptRoot/../runner_utility_scripts/ScriptTemplate.ps1"
+Invoke-LabStep -Config $Config -Body {
+    Write-CustomLog 'Running 0006_Install-ValidationTools.ps1'
 
 # Execute based on provided switches
 if ($Config.InstallCosign -eq $true) {
