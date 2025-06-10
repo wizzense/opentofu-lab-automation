@@ -108,7 +108,7 @@ if ($IsLinux -or $IsMacOS) { return }
     }
 
     Describe 'error handling' {
-        It 'returns install failed exit code when cosign is missing' {
+        It 'returns requirement not met exit code when cosign is missing' {
             $script:scriptPath = Join-Path $PSScriptRoot '..' 'runner_utility_scripts' 'OpenTofuInstaller.ps1'
             $arguments = @(
                 '-NoLogo',
@@ -120,7 +120,7 @@ if ($IsLinux -or $IsMacOS) { return }
             )
             $Env:Programfiles = $script:temp
             $proc = Microsoft.PowerShell.Management\Start-Process pwsh -ArgumentList $arguments -Wait -PassThru
-            $proc.ExitCode | Should -Be 2
+            $proc.ExitCode | Should -Be 1
         }
     }
 
