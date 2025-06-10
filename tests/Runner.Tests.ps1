@@ -35,6 +35,8 @@ Describe 'runner.ps1 script selection' -Skip:($SkipNonWindows) {
     AfterEach {
         Remove-Item Function:Write-Host -ErrorAction SilentlyContinue
         Remove-Item Function:Read-Host -ErrorAction SilentlyContinue
+        Remove-Item Function:Write-Warning -ErrorAction SilentlyContinue
+        Remove-Item Function:Write-Error -ErrorAction SilentlyContinue
     }
 
     It 'runs non-interactively when -Scripts is supplied' {
@@ -313,17 +315,28 @@ Write-Error 'err message'
 
             Push-Location $tempDir
             $script:logLines = @()
+            $script:warnings  = @()
+            $script:errors    = @()
             function global:Write-Host {
                 param([Parameter(Mandatory=$true,Position=0)][string]$Object,
                       [Parameter(Position=1)][string]$ForegroundColor)
                 $script:logLines += $Object
             }
+            function global:Write-Warning {
+                param([string]$Message)
+                $script:warnings += $Message
+            }
+            function global:Write-Error {
+                param([string]$Message)
+                $script:errors += $Message
+            }
             $output = & "$tempDir/runner.ps1" -Scripts '0001' -Auto -Verbosity 'silent' *>&1
             Pop-Location
 
         $script:logLines | Should -Not -Contain '==== Loading configuration ===='
-        ($output | Out-String) | Should -Match 'warn message'
-        ($output | Out-String) | Should -Match 'err message'
+        ($output | Out-String).Trim() | Should -BeEmpty
+        $script:warnings | Should -Contain 'warn message'
+        $script:errors   | Should -Contain 'err message'
     }
     finally { Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue }
 }
@@ -347,17 +360,28 @@ Write-Error 'err message'
 
             Push-Location $tempDir
             $script:logLines = @()
+            $script:warnings  = @()
+            $script:errors    = @()
             function global:Write-Host {
                 param([Parameter(Mandatory=$true,Position=0)][string]$Object,
                       [Parameter(Position=1)][string]$ForegroundColor)
                 $script:logLines += $Object
             }
+            function global:Write-Warning {
+                param([string]$Message)
+                $script:warnings += $Message
+            }
+            function global:Write-Error {
+                param([string]$Message)
+                $script:errors += $Message
+            }
             $output = & "$tempDir/runner.ps1" -Scripts '0001' -Auto -Verbosity silent *>&1
             Pop-Location
 
             $script:logLines | Should -Not -Contain '==== Loading configuration ===='
-            ($output | Out-String) | Should -Match 'warn message'
-            ($output | Out-String) | Should -Match 'err message'
+            ($output | Out-String).Trim() | Should -BeEmpty
+            $script:warnings | Should -Contain 'warn message'
+            $script:errors   | Should -Contain 'err message'
         }
         finally { Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue }
     }
