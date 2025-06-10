@@ -244,7 +244,7 @@ Param([PSCustomObject]`$Config)
         finally { Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue }
     }
 
-    It 'suppresses informational logs when -Quiet is used' {
+    It 'suppresses informational logs when -Verbosity silent is used' {
         $tempDir = Join-Path ([System.IO.Path]::GetTempPath()) ([System.Guid]::NewGuid())
         $null = New-Item -ItemType Directory -Path $tempDir
         try {
@@ -268,7 +268,7 @@ Write-Error 'err message'
                       [Parameter(Position=1)][string]$ForegroundColor)
                 $script:logLines += $Object
             }
-            $output = & "$tempDir/runner.ps1" -Scripts '0001' -Auto -Quiet *>&1
+            $output = & "$tempDir/runner.ps1" -Scripts '0001' -Auto -Verbosity 'silent' *>&1
             Remove-Item Function:\Write-Host -ErrorAction SilentlyContinue
             Pop-Location
 
