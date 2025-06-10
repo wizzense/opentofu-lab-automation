@@ -203,6 +203,20 @@ The scripts `0201_Install-NodeCore.ps1`, `0202_Install-NodeGlobalPackages.ps1`
 and `0203_Install-npm.ps1` read these keys when installing Node, global npm
   packages, or project dependencies.
 
+## OpenTofu configuration
+
+`default-config.json` exposes an `OpenTofuVersion` option used by
+`0008_Install-OpenTofu.ps1`.  Set this value to install a specific
+OpenTofu release:
+
+```json
+"InstallOpenTofu": true,
+"OpenTofuVersion": "1.3.2"
+```
+
+When omitted or set to `latest`, the installer downloads the newest
+release available from GitHub.
+
 ## Troubleshooting
 
 If you encounter `fatal: Class not registered` after a browser window briefly opens,
