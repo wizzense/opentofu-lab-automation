@@ -1,3 +1,4 @@
+Param([pscustomobject]$Config)
 
 function Install-NpmDependencies {
     [CmdletBinding(SupportsShouldProcess = $true)]

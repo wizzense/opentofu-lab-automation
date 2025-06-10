@@ -15,7 +15,7 @@ Describe 'Node installation scripts' {
         Mock Start-Process {}
         Mock Remove-Item {}
         Mock Get-Command { @{Name='node'} } -ParameterFilter { $Name -eq 'node' }
-        . (Resolve-Path $core)
+        . (Resolve-Path $core) -Config @{}
         Install-NodeCore -Config $config
         Assert-MockCalled Invoke-WebRequest -ParameterFilter { $Uri -eq 'http://example.com/node.msi' } -Times 1
     }
@@ -26,7 +26,7 @@ Describe 'Node installation scripts' {
         Mock Start-Process {}
         Mock Remove-Item {}
         Mock Get-Command {}
-        . (Resolve-Path $core)
+        . (Resolve-Path $core) -Config @{}
         Install-NodeCore -Config $config
         Assert-MockNotCalled Invoke-WebRequest
         Assert-MockNotCalled Start-Process
@@ -41,7 +41,7 @@ Describe 'Node installation scripts' {
             $null = $testArgs
         }
         Mock npm {}
-        . (Resolve-Path $global)
+        . (Resolve-Path $global) -Config @{}
         Install-NodeGlobalPackages -Config $config
         Assert-MockCalled npm -ParameterFilter { $testArgs -eq @('install','-g','yarn') } -Times 1
         Assert-MockCalled npm -ParameterFilter { $testArgs -eq @('install','-g','nodemon') } -Times 1
@@ -49,7 +49,7 @@ Describe 'Node installation scripts' {
     }
 
     It 'honours -WhatIf for Install-GlobalPackage' {
-        . (Resolve-Path $global)
+        . (Resolve-Path $global) -Config @{}
         Install-NodeGlobalPackages -Config @{ Node_Dependencies = @{ InstallYarn=$false; InstallVite=$false; InstallNodemon=$false } }
         function npm { param([string[]]$testArgs) }
         Mock npm {}
@@ -67,7 +67,7 @@ Describe 'Node installation scripts' {
             $null = $testArgs
         }
         Mock npm {}
-        . (Resolve-Path $npm)
+        . (Resolve-Path $npm) -Config @{}
         Install-NpmDependencies -Config $config
         Assert-MockCalled npm -ParameterFilter { $testArgs[0] -eq 'install' } -Times 1
         Remove-Item -Recurse -Force $temp

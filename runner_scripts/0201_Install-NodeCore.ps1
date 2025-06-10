@@ -1,3 +1,5 @@
+Param([pscustomobject]$Config)
+
 function Install-NodeCore {
     [CmdletBinding(SupportsShouldProcess = $true)]
     param([pscustomobject]$Config)

@@ -1,3 +1,5 @@
+Param([pscustomobject]$Config)
+
 function Install-NodeGlobalPackages {
     [CmdletBinding(SupportsShouldProcess = $true)]
     param([pscustomobject]$Config)
