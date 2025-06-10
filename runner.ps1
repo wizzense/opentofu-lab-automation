@@ -260,8 +260,9 @@ function Invoke-Scripts {
                 $script:ConsoleLevel = $vl[$verbosity]
                 $cfg = Get-Content -Raw -Path $cfgPath | ConvertFrom-Json
                 try {
-                    & $scr -Config $cfg
+                    $result = & $scr -Config $cfg
                     $exit = if ($LASTEXITCODE) { $LASTEXITCODE } elseif (-not $?) { 1 } else { 0 }
+                    Write-Output $result
                     exit $exit
                 } catch {
                     $_ | Out-String | Write-Error
@@ -295,11 +296,15 @@ function Invoke-Scripts {
 
         } catch {
             Write-CustomLog "ERROR: Exception in $($s.Name): $_"
+            $results[$s.Name] = 1
             $global:LASTEXITCODE = 1
             $results[$s.Name] = $LASTEXITCODE
             $failed += $s.Name
         }
+        }
+
     }
+
 
     $Config | ConvertTo-Json -Depth 5 | Out-File $ConfigFile -Encoding utf8
     $summary = $results.GetEnumerator() | ForEach-Object { "${($_.Key)}=$($_.Value)" } | Sort-Object | Join-String -Separator ', '

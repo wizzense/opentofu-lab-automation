@@ -24,6 +24,13 @@ Describe 'Runner scripts parameter and command checks' -Skip:($SkipNonWindows) {
         @{ Name = $_.Name; File = $_; Commands = $mandatory }
     }
 
+    It 'parses without errors' -TestCases $testCases {
+        param($File)
+        $errors = $null
+        [System.Management.Automation.Language.Parser]::ParseFile($File.FullName, [ref]$null, [ref]$errors) | Out-Null
+        ($errors ? $errors.Count : 0) | Should -Be 0
+    }
+
     It 'declares a Config parameter when required' -TestCases $testCases {
         param($File, $Commands)
         $ast = Get-ScriptAst $File.FullName
