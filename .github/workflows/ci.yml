@@ -116,3 +116,17 @@ jobs:
             Remove-PSDrive TestDrive -Force -ErrorAction SilentlyContinue
           }
           Invoke-Pester -Path tests -CI -ErrorAction Stop
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+          cache: 'pip'
+
+      - name: Install pytest
+        shell: bash
+        run: pip install pytest
+
+      - name: Run pytest
+        shell: bash
+        run: pytest -q
