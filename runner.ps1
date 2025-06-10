@@ -9,7 +9,8 @@ param(
     [switch]$Quiet
 )
 
-if ($Quiet) { $Verbosity = 'silent' }
+
+if ($Quiet.IsPresent) { $Verbosity = 'silent' }
 
 if ($PSVersionTable.PSVersion.Major -lt 7) {
     Write-Error "PowerShell 7 or later is required. Current version: $($PSVersionTable.PSVersion)"
