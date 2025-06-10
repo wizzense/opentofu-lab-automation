@@ -14,13 +14,13 @@
   5) Invokes runner.ps1 from that repo.
 #>
 
-$targetBranch = 'main'
-$defaultConfig = "https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/refs/heads/main/config_files/default-config.json"
-
 param(
     [string]$ConfigFile,
     [switch]$Quiet
 )
+
+$targetBranch = 'main'
+$defaultConfig = "https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/refs/heads/main/config_files/default-config.json"
 
 $script:Quiet = $Quiet.IsPresent
 
