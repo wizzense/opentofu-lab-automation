@@ -58,15 +58,27 @@ if ($Config.Node_Dependencies -is [hashtable]) {
 
 if ($installNpm) {
 
-# Determine frontend path
-$frontendPath = if ($nodeDeps.NpmPath) {
+    $createPath = $false
+    if ($Config.Node_Dependencies -is [hashtable]) {
+        if ($Config.Node_Dependencies.ContainsKey('CreateNpmPath')) {
+            $createPath = [bool]$Config.Node_Dependencies['CreateNpmPath']
+        }
+    } elseif ($Config.Node_Dependencies.PSObject.Properties.Match('CreateNpmPath').Count -gt 0) {
+        $createPath = [bool]$Config.Node_Dependencies.CreateNpmPath
+    }
 
-    $nodeDeps.NpmPath
-} else {
-    Join-Path $PSScriptRoot "..\frontend"
-}
+    # Determine frontend path
+    $frontendPath = if ($nodeDeps.NpmPath) {
 
-$createPath = $false
+        $nodeDeps.NpmPath
+    } else {
+        Join-Path $PSScriptRoot "..\frontend"
+    }
+
+    if ($nodeDeps.PSObject.Properties.Match('NpmPath').Count -gt 0 -and [string]::IsNullOrWhiteSpace($nodeDeps.NpmPath) -and -not $createPath) {
+        Write-Error 'Node_Dependencies.NpmPath is empty and CreateNpmPath is false.'
+        return
+    }
 if ($Config.Node_Dependencies -is [hashtable]) {
     if ($Config.Node_Dependencies.ContainsKey('CreateNpmPath')) {
         $createPath = [bool]$Config.Node_Dependencies['CreateNpmPath']
@@ -81,7 +93,7 @@ if (-not (Test-Path $frontendPath)) {
         Write-CustomLog "Creating missing frontend folder at: $frontendPath"
         New-Item -ItemType Directory -Path $frontendPath -Force | Out-Null
     } else {
-        Write-CustomLog "Frontend folder not found at: $frontendPath. Skipping npm install."
+        Write-Error "Frontend folder not found at: $frontendPath"
         return
     }
 }

@@ -21,6 +21,7 @@ Describe '0203_Install-npm' {
         $script:calledPath | Should -Be (Get-Item $npmDir).FullName
 
         Remove-Item -Recurse -Force $npmDir
+        Remove-Item function:npm -ErrorAction SilentlyContinue
     }
 
     It 'succeeds when NpmPath exists' {
@@ -42,9 +43,10 @@ Describe '0203_Install-npm' {
         $success | Should -BeTrue
 
         Remove-Item -Recurse -Force $npmDir
+        Remove-Item function:npm -ErrorAction SilentlyContinue
     }
 
-    It 'skips when NpmPath is missing' {
+    It 'errors when NpmPath is missing and CreateNpmPath is false' {
         $script = Join-Path $PSScriptRoot '..' 'runner_scripts' '0203_Install-npm.ps1'
         $npmDir = Join-Path ([System.IO.Path]::GetTempPath()) ([System.Guid]::NewGuid())
         $cfg = @{ Node_Dependencies = @{ NpmPath = $npmDir; CreateNpmPath = $false } }
@@ -53,11 +55,22 @@ Describe '0203_Install-npm' {
         function global:npm { $script:called = $true }
 
         . $script
-        Install-NpmDependencies -Config $cfg
-        $success = $?
-
-        $success | Should -BeTrue
+        { Install-NpmDependencies -Config $cfg } | Should -Throw
         $script:called | Should -BeFalse
+        Remove-Item function:npm -ErrorAction SilentlyContinue
+    }
+
+    It 'errors when NpmPath is empty string' {
+        $script = Join-Path $PSScriptRoot '..' 'runner_scripts' '0203_Install-npm.ps1'
+        $cfg = @{ Node_Dependencies = @{ NpmPath = ''; CreateNpmPath = $false } }
+
+        $script:called = $false
+        function global:npm { $script:called = $true }
+
+        . $script
+        { Install-NpmDependencies -Config $cfg } | Should -Throw
+        $script:called | Should -BeFalse
+        Remove-Item function:npm -ErrorAction SilentlyContinue
     }
 
     It 'creates NpmPath when CreateNpmPath is true' {
