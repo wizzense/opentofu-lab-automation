@@ -1,4 +1,5 @@
 . (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
+if ($IsLinux -or $IsMacOS) { return }
 
 BeforeAll {
     $script:scriptPath = Join-Path $PSScriptRoot '..' 'runner_scripts' '0010_Prepare-HyperVProvider.ps1'

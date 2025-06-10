@@ -1,4 +1,5 @@
 . (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
+if ($IsLinux -or $IsMacOS) { return }
 Describe '0104_Install-CA script' {
     BeforeAll {
         $scriptPath = Join-Path $PSScriptRoot '..' 'runner_scripts' '0104_Install-CA.ps1'

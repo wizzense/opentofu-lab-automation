@@ -1,4 +1,5 @@
 . (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
+if ($IsLinux -or $IsMacOS) { return }
 Describe 'kicker-bootstrap utilities' -Skip:($IsLinux -or $IsMacOS) {
     It 'defines Write-CustomLog fallback' {
         $script:scriptPath = Join-Path $PSScriptRoot '..' 'kicker-bootstrap.ps1'
