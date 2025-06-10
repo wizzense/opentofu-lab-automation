@@ -1,6 +1,6 @@
 . (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
 Describe 'Prepare-HyperVProvider path restoration' {
-    It 'restores location after execution' {
+    It 'restores location after execution' -Skip:($IsLinux -or $IsMacOS) {
         . (Join-Path $PSScriptRoot '..' 'runner_utility_scripts' 'Logger.ps1')
         $script:scriptPath = Join-Path $PSScriptRoot '..' 'runner_scripts' '0010_Prepare-HyperVProvider.ps1'
         $config = [pscustomobject]@{
@@ -94,7 +94,7 @@ Describe 'Prepare-HyperVProvider certificate handling' {
 Describe 'Convert certificate helpers honour -WhatIf' {
     It 'skips writing files when WhatIf is used' {
         $scriptPath = Join-Path $PSScriptRoot '..' 'runner_scripts' '0010_Prepare-HyperVProvider.ps1'
-        . $scriptPath -Config @{ PrepareHyperVHost = $false }
+        . $scriptPath
         $cer = Join-Path $TestDrive (([guid]::NewGuid()).ToString() + '.cer')
         $pem = Join-Path $TestDrive (([guid]::NewGuid()).ToString() + '.pem')
         'dummy' | Set-Content -Path $cer
@@ -106,7 +106,7 @@ Describe 'Convert certificate helpers honour -WhatIf' {
 
     It 'skips writing PFX outputs when WhatIf is used' {
         $scriptPath = Join-Path $PSScriptRoot '..' 'runner_scripts' '0010_Prepare-HyperVProvider.ps1'
-        . $scriptPath -Config @{ PrepareHyperVHost = $false }
+        . $scriptPath
         $pfx = Join-Path $TestDrive (([guid]::NewGuid()).ToString() + '.pfx')
         $cert = Join-Path $TestDrive (([guid]::NewGuid()).ToString() + '.pem')
         $key = Join-Path $TestDrive (([guid]::NewGuid()).ToString() + '-key.pem')
