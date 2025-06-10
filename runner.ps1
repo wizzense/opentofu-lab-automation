@@ -3,6 +3,7 @@ param(
     [switch]$Auto,
     [string]$Scripts,
     [switch]$Force,
+    [switch]$Quiet,
     [ValidateSet('silent','normal','detailed')]
     [string]$Verbosity = 'normal'
 )
@@ -13,6 +14,7 @@ if ($PSVersionTable.PSVersion.Major -lt 7) {
 }
 
 # expose quiet flag to logger
+if ($Quiet) { $Verbosity = 'silent' }
 $script:VerbosityLevels = @{ silent = 0; normal = 1; detailed = 2 }
 $script:ConsoleLevel    = $script:VerbosityLevels[$Verbosity]
 
