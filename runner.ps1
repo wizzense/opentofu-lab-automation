@@ -228,7 +228,7 @@ function Invoke-Scripts {
 
           }
 
-            & pwsh -NoLogo -NoProfile -Command $sb -Args $tempCfg, $scriptPath, $Verbosity *>&1
+            & pwsh -NoLogo -NoProfile -Command $sb -Args $tempCfg, $scriptPath, $Verbosity 2>&1
 
             Remove-Item $tempCfg -ErrorAction SilentlyContinue
 
