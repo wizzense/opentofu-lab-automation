@@ -5,24 +5,19 @@ param(
     [switch]$Force,
     [switch]$Quiet,
     [ValidateSet('silent','normal','detailed')]
-    [string]$Verbosity = 'normal',
-    [switch]$Quiet
+    [string]$Verbosity = 'normal'
 )
 
-
-if ($Quiet.IsPresent) { $Verbosity = 'silent' }
 
 if ($PSVersionTable.PSVersion.Major -lt 7) {
     Write-Error "PowerShell 7 or later is required. Current version: $($PSVersionTable.PSVersion)"
     exit 1
 }
 
-# expose quiet flag to logger
+# expose quiet flag to logger and apply before console level calculation
 if ($Quiet) { $Verbosity = 'silent' }
 
 $script:VerbosityLevels = @{ silent = 0; normal = 1; detailed = 2 }
-# honor -Quiet before calculating console level
-if ($Quiet) { $Verbosity = 'silent' }
 $script:ConsoleLevel    = $script:VerbosityLevels[$Verbosity]
 
 
