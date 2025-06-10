@@ -31,9 +31,7 @@ Describe 'OpenTofuInstaller' {
             } else { 'dummy' | Set-Content $OutFile }
         }
         Mock Expand-Archive {}
-        $principal = New-Object psobject
-        $principal | Add-Member -MemberType ScriptMethod -Name IsInRole -Value { param($role) $false }
-        Mock New-Object -ParameterFilter { $TypeName -eq 'Security.Principal.WindowsPrincipal' } -MockWith { $principal }
+        Mock Test-IsAdmin { $false }
         $script:logFile = $null
         $Env:Programfiles = $temp
         $global:startProcessCalled = $false
@@ -91,9 +89,7 @@ Describe 'OpenTofuInstaller' {
             } else { 'dummy' | Set-Content $OutFile }
         }
         Mock Expand-Archive {}
-        $principal = New-Object psobject
-        $principal | Add-Member -MemberType ScriptMethod -Name IsInRole -Value { param($role) $false }
-        Mock New-Object -ParameterFilter { $TypeName -eq 'Security.Principal.WindowsPrincipal' } -MockWith { $principal }
+        Mock Test-IsAdmin { $false }
         $Env:Programfiles = $temp
         $global:startProcessCalled = $false
         function global:Start-Process {
