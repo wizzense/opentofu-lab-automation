@@ -180,8 +180,8 @@ function Invoke-Scripts {
 
             $cmd = Get-Command -Name $scriptPath -ErrorAction SilentlyContinue
             $global:LASTEXITCODE = 0
-            if ($cmd -and $cmd.Parameters.ContainsKey('Config')) { & $scriptPath -Config $Config }
-            else                                               { & $scriptPath }
+            if ($cmd -and $cmd.Parameters.ContainsKey('Config')) { & "$scriptPath" -Config $Config }
+            else                                               { & "$scriptPath" }
 
             $results[$s.Name] = $LASTEXITCODE
             if ($LASTEXITCODE) {
