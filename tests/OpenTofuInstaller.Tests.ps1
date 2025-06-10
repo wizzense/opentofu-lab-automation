@@ -11,7 +11,7 @@ if ($IsLinux -or $IsMacOS) { return }
     BeforeEach {
         $script:temp = Join-Path $TestDrive ([System.Guid]::NewGuid())
         New-Item -ItemType Directory -Path $script:temp | Out-Null
-        function Test-IsAdmin {}
+        function global:Test-IsAdmin {}
     }
 
     AfterEach {
