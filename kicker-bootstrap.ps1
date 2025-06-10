@@ -358,7 +358,7 @@ if (-not $config.RepoUrl) {
 # Define local path (fallback if not in config)
 $localPath = $config.LocalPath
 if (-not $localPath -or [string]::IsNullOrWhiteSpace($localPath)) {
-    $localPath = Join-Path $env:USERPROFILE 'Documents\ServerSetup'
+    $localPath = 'C:\\temp'
 }
 $localPath = [System.Environment]::ExpandEnvironmentVariables($localPath)
 
