@@ -45,3 +45,16 @@ def test_cleanup(monkeypatch):
     assert deletes == [["git", "push", "origin", "--delete", "feat1"]]
 
 
+def test_create_issue(monkeypatch):
+    called = {}
+
+    def fake_run(cmd, check=True):
+        called["cmd"] = cmd
+
+    monkeypatch.setattr(subprocess, "run", fake_run)
+
+    github_utils.create_issue("title", "body")
+
+    assert called["cmd"] == ["gh", "issue", "create", "-t", "title", "-b", "body"]
+
+

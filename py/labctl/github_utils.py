@@ -13,6 +13,11 @@ def close_issue(issue_number: int) -> None:
     subprocess.run(["gh", "issue", "close", str(issue_number)], check=True)
 
 
+def create_issue(title: str, body: str) -> None:
+    """Create a GitHub issue using the CLI."""
+    subprocess.run(["gh", "issue", "create", "-t", title, "-b", body], check=True)
+
+
 def cleanup_branches(remote: str = "origin") -> List[str]:
     """Delete remote branches keeping the newest per hour.
 
