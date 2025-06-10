@@ -50,7 +50,7 @@
   },
   "GitHubCLIInstallerUrl": "https://github.com/cli/cli/releases/download/v2.67.0/gh_2.67.0_windows_amd64.msi",
   "RepoUrl": "https://github.com/wizzense/opentofu-lab-automation.git",
-  "LocalPath": "",
+  "LocalPath": "C:\\temp",
   "RunnerScriptName": "runner.ps1",
   "ConfigFile": "./config_files/default-config.json",
   "Go": {
