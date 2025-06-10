@@ -6,6 +6,7 @@
  Kicker script for a fresh Windows Server Core setup
 
   1) Downloads and loads `config_files/default-config.json` by default (override with `-ConfigFile`).
+     - Edit the `LocalPath` field in this file to change where the repo is cloned.
 
   2) Checks if command-line Git is installed and in PATH. (requirement)
      - Prompts to install a minimal version if missing.
@@ -18,7 +19,8 @@
      - Updates PATH if installed but not found in PATH.
      - Prompts for authentication if not already authenticated.
      - Run `gh auth login` before using `0001_Reset-Git.ps1` or `0009_Initialize-OpenTofu.ps1`.
-  4) Clones this repository from config.json -> RepoUrl to config.json -> LocalPath (or a default path).
+  4) Clones this repository from config.json -> RepoUrl to config.json -> LocalPath.
+     - If `LocalPath` is empty, the project clones into `C:\\temp` by default.
   5) Invokes runner.ps1 from this repo. Runner can be ran with optional parameters to automatically run, but it will prompt you to manually select which scripts to run by default. After a selection completes, the menu is shown again so you can run more scripts or type `exit` to quit.
      - Use `-ConfigFile <path>` to specify an alternative configuration file. If omitted, `runner.ps1` loads `config_files/default-config.json`.
     - Use `-Quiet` to hide most informational output. This is shorthand for
