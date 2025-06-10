@@ -105,4 +105,4 @@ jobs:
           if (Get-PSDrive TestDrive -ErrorAction SilentlyContinue) {
             Remove-PSDrive TestDrive -Force -ErrorAction SilentlyContinue
           }
-          Invoke-Pester -CI -ErrorAction Stop
+          Invoke-Pester -Path tests -CI -ErrorAction Stop
