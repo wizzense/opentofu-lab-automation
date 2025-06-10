@@ -50,7 +50,7 @@ The runner script can run the following:
 
 0007_Install-Go.ps1 - downloads and installs Go
 
-0008_Install-OpenTofu.ps1 - Downloads and installs opentofu standalone (verified with cosign)
+0008_Install-OpenTofu.ps1 - Downloads and installs opentofu standalone (verified with cosign). The version used comes from `OpenTofuVersion` in `default-config.json` and defaults to `latest`.
 
 0009_Initialize-OpenTofu.ps1 - setups up opentofu and the lab-infra repo in C:\temp\base-infra
 
@@ -191,6 +191,7 @@ Node-related installs are controlled under the `Node_Dependencies` section of
   "InstallVite": true,
   "InstallNodemon": true,
   "InstallNpm": true,
+  "GlobalPackages": ["yarn", "vite", "nodemon"],
   "NpmPath": "C:\\Projects\\vde-mvp\\frontend",
   "CreateNpmPath": false,
   "Node": {
@@ -198,6 +199,10 @@ Node-related installs are controlled under the `Node_Dependencies` section of
   }
 }
 ```
+
+The `GlobalPackages` array is the preferred way to list npm packages for
+`0202_Install-NodeGlobalPackages.ps1`. The older boolean flags (`InstallYarn`,
+`InstallVite`, `InstallNodemon`) are still honored for backward compatibility.
 
 The scripts `0201_Install-NodeCore.ps1`, `0202_Install-NodeGlobalPackages.ps1`
 and `0203_Install-npm.ps1` read these keys when installing Node, global npm

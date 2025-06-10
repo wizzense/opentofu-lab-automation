@@ -17,7 +17,7 @@ Describe 'OpenTofuInstaller' {
     }
 
 
-    Describe 'logging' {
+    Describe 'logging' -Skip:($IsLinux -or $IsMacOS) {
         It 'creates log files and removes them for elevated unpack' {
         $script:scriptPath = Join-Path $PSScriptRoot '..' 'runner_utility_scripts' 'OpenTofuInstaller.ps1'
         $temp = $script:temp
@@ -63,9 +63,60 @@ Describe 'OpenTofuInstaller' {
             return $proc
         }
         & $script:scriptPath -installMethod standalone -opentofuVersion '0.0.0' -installPath $temp -allUsers -skipVerify -skipChangePath | Out-Null
+
         $global:startProcessCalled | Should -BeTrue
         $script:logFile | Should -Not -BeNullOrEmpty
+
+        if ($IsWindows) {
+            $global:startProcessCalled | Should -BeTrue
+        } else {
+            # Privilege escalation is skipped on non-Windows platforms.
+            $global:startProcessCalled | Should -BeFalse
+        }
+
         (Test-Path $script:logFile) | Should -BeFalse
+        Remove-Item Function:Start-Process -ErrorAction SilentlyContinue
+        }
+
+        It 'gracefully handles missing log directory' {
+        $script:scriptPath = Join-Path $PSScriptRoot '..' 'runner_utility_scripts' 'OpenTofuInstaller.ps1'
+        $temp = $script:temp
+        $zipPath = Join-Path $temp 'tofu_0.0.0_windows_amd64.zip'
+        'dummy' | Set-Content $zipPath
+        $hash = (Get-FileHash -Algorithm SHA256 $zipPath).Hash
+        Mock Invoke-WebRequest {
+            param([string]$Uri, [string]$OutFile)
+            if ($Uri -match 'SHA256SUMS$') {
+                "${hash}  tofu_0.0.0_windows_amd64.zip" | Set-Content $OutFile
+            } else { 'dummy' | Set-Content $OutFile }
+        }
+        Mock Expand-Archive {}
+        $principal = New-Object psobject
+        $principal | Add-Member -MemberType ScriptMethod -Name IsInRole -Value { param($role) $false }
+        Mock New-Object -ParameterFilter { $TypeName -eq 'Security.Principal.WindowsPrincipal' } -MockWith { $principal }
+        $Env:Programfiles = $temp
+        $global:startProcessCalled = $false
+        function global:Start-Process {
+            param(
+                $FilePath,
+                $ArgumentList,
+                $RedirectStandardOutput,
+                $RedirectStandardError,
+                $Verb,
+                $WorkingDirectory,
+                [switch]$Wait,
+                [switch]$Passthru
+            )
+            $global:startProcessCalled = $true
+            $dir = Split-Path $RedirectStandardOutput -Parent
+            if (Test-Path $dir) { Remove-Item -Recurse -Force $dir }
+            $proc = [pscustomobject]@{ ExitCode = 0 }
+            $proc | Add-Member -MemberType ScriptMethod -Name WaitForExit -Value { }
+            return $proc
+        }
+        & $script:scriptPath -installMethod standalone -opentofuVersion '0.0.0' -installPath $temp -allUsers -skipVerify -skipChangePath | Out-Null
+        $global:startProcessCalled | Should -BeTrue
+        $LASTEXITCODE | Should -Be 0
         Remove-Item Function:Start-Process -ErrorAction SilentlyContinue
         }
     }
@@ -85,9 +136,17 @@ Describe 'OpenTofuInstaller' {
         $proc = Microsoft.PowerShell.Management\Start-Process pwsh -ArgumentList $arguments -Wait -PassThru
         $proc.ExitCode | Should -Be 2
 
-        }
-
     }
 
+    Describe 'macOS defaults' {
+        It 'allows -allUsers when Programfiles is missing' -Skip:(-not $IsMacOS) {
+            $scriptPath = Join-Path $PSScriptRoot '..' 'runner_utility_scripts' 'OpenTofuInstaller.ps1'
+            $zip = Join-Path $script:temp 'dummy.zip'
+            'dummy' | Set-Content $zip
+            Mock Expand-Archive {}
+            $Env:Programfiles = $null
+            { & $scriptPath -installMethod standalone -installPath $script:temp -allUsers -skipVerify -skipChangePath -internalContinue -internalZipFile $zip } | Should -Not -Throw
+        }
+    }
 
 }

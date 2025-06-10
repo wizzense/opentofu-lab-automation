@@ -132,14 +132,23 @@ $normal = "$esc[0m"
 $magenta = "$esc[35m"
 
 $defaultOpenTofuVersion = "latest"
-if (-not $Env:LOCALAPPDATA -and $IsLinux) {
-    # Fallback for Linux where LOCALAPPDATA may not be defined
-    $Env:LOCALAPPDATA = Join-Path $HOME ".local/share"
+# Provide cross-platform defaults when key environment variables are missing
+if (-not $Env:LOCALAPPDATA) {
+    if ($IsLinux) {
+        $Env:LOCALAPPDATA = Join-Path $HOME '.local/share'
+    } elseif ($IsMacOS) {
+        $Env:LOCALAPPDATA = Join-Path $HOME 'Library/Application Support'
+    }
+}
+if ($allUsers -and -not $Env:Programfiles) {
+    if ($IsMacOS -or $IsLinux) {
+        $Env:Programfiles = '/usr/local'
+    }
 }
 if ($allUsers) {
-    $defaultInstallPath = Join-Path $Env:Programfiles "OpenTofu"
+    $defaultInstallPath = Join-Path $Env:Programfiles 'OpenTofu'
 } else {
-    $defaultInstallPath = Join-Path (Join-Path $Env:LOCALAPPDATA "Programs") "OpenTofu"
+    $defaultInstallPath = Join-Path (Join-Path $Env:LOCALAPPDATA 'Programs') 'OpenTofu'
 }
 $defaultCosignPath = "cosign.exe"
 $defaultCosignOidcIssuer = "https://token.actions.githubusercontent.com"
@@ -523,47 +532,53 @@ function installStandalone() {
         $internalZipFile = Join-Path $tempPath $zipName
 
         $hasAdminPrivileges = $false
-        try {
-            $principal = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
-            $hasAdminPrivileges = $principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
-        } catch {
+        if ($IsWindows) {
+            try {
+                $principal = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
+                $hasAdminPrivileges = $principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
+            } catch {
+                logWarning "Could not determine admin privileges: $_"
+                $hasAdminPrivileges = $false
+            }
+        } else {
+            # On Linux and macOS there is no built-in equivalent of Start-Process -Verb RunAs.
+            # We therefore skip privilege detection/escalation and continue with current permissions.
             $hasAdminPrivileges = $false
         }
 
         if ($allUsers -and (-not $hasAdminPrivileges))
         {
-            # Note on this section: we are requesting elevated privileges via UAC. Unfortunately, this is only possible
-            # by launching the current script again as Administrator. This can cause some weird parsing bugs in
-            # conjunction with Start-Process and the "powershell" command. (The parameter separation disappears.)
-            # Also note that when using Start-Process with RunAs, it is not possible to pass environment variables.
-            # (The documentation is lying!)
-            #
-            # TL;DR: Make sure to MANUALLY test privilege elevation if you change this as we can't test UAC in CI! Make
-            # sure to test with paths containing spaces too! Did I mention to test this? Test it. I'm serious.
+            if ($IsWindows) {
+                # On Windows we can request elevated privileges via UAC by relaunching the script.
+                # Make sure to manually test this flow, especially with paths containing spaces.
 
-            logInfo "Unpacking with elevated privileges..."
-            $logDir = tempdir
-            $outLog = Join-Path $logDir 'stdout.log'
-            $errLog = Join-Path $logDir 'stderr.log'
-            $argList = @("-NonInteractive", "-File", ($scriptCommand | escapePathArgument), "-internalContinue", "-allUsers", "-installMethod", "standalone", "-installPath", ($installPath | escapePathArgument), "-internalZipFile", ($internalZipFile | escapePathArgument))
-            if ($skipChangePath)
-            {
-                $argList += "-skipChangePath"
-            }
-            $subprocess = Start-Process `
-                -Verb RunAs `
-                -WorkingDirectory (Get-Location) `
-                -Wait `
-                -Passthru `
-                -FilePath 'powershell' `
-                -ArgumentList $argList `
-                -RedirectStandardOutput $outLog `
-                -RedirectStandardError $errLog
-            $subprocess.WaitForExit()
-            if (Test-Path $outLog) { Get-Content $outLog }
-            if (Test-Path $errLog) { Get-Content $errLog }
-            if ($subprocess.ExitCode -ne 0) {
-                throw [InstallFailedException]::new("Unpack failed. (Exit code ${subprocess.ExitCode})")
+                logInfo "Unpacking with elevated privileges..."
+                $logDir = tempdir
+                $outLog = Join-Path $logDir 'stdout.log'
+                $errLog = Join-Path $logDir 'stderr.log'
+                $argList = @("-NonInteractive", "-File", ($scriptCommand | escapePathArgument), "-internalContinue", "-allUsers", "-installMethod", "standalone", "-installPath", ($installPath | escapePathArgument), "-internalZipFile", ($internalZipFile | escapePathArgument))
+                if ($skipChangePath)
+                {
+                    $argList += "-skipChangePath"
+                }
+                $subprocess = Start-Process `
+                    -Verb RunAs `
+                    -WorkingDirectory (Get-Location) `
+                    -Wait `
+                    -Passthru `
+                    -FilePath 'powershell' `
+                    -ArgumentList $argList `
+                    -RedirectStandardOutput $outLog `
+                    -RedirectStandardError $errLog
+                $subprocess.WaitForExit()
+                if (Test-Path $outLog) { Get-Content $outLog }
+                if (Test-Path $errLog) { Get-Content $errLog }
+                if ($subprocess.ExitCode -ne 0) {
+                    throw [InstallFailedException]::new("Unpack failed. (Exit code ${subprocess.ExitCode})")
+                }
+            } else {
+                logWarning "-allUsers specified but privilege escalation is not supported on this platform. Continuing with current privileges."
+                unpackStandalone
             }
         }
         else
@@ -591,7 +606,7 @@ function installStandalone() {
                 throw
             }
         }
-        if ($logDir) {
+        if ($logDir -and (Test-Path $logDir)) {
             try { Remove-Item -Force -Recurse $logDir }
             catch {
                 $msg = $_.ToString()

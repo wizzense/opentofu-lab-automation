@@ -17,6 +17,7 @@
   "InstallWAC": false,
   "InstallGo": false,
   "InstallOpenTofu": false,
+  "OpenTofuVersion": "latest",
   "InitializeOpenTofu": false,
   "PrepareHyperVHost": false,
   "InstallCA": false,
@@ -66,6 +67,7 @@
   "InstallVite": true,
   "InstallNodemon": true,
   "InstallNpm": true,
+  "GlobalPackages": ["yarn", "vite", "nodemon"],
   "NpmPath": "C:\\Projects\\vde-mvp\\frontend",
   "CreateNpmPath": false,
   "Node": {

@@ -157,10 +157,13 @@ function Invoke-Scripts {
         }
     }
 
-    if (-not $ScriptsToRun) { Write-CustomLog "No scripts selected."; return $true }
+    if ($ScriptsToRun.Count -eq 0) { Write-CustomLog "No scripts selected."; return $true }
 
+    $names = $ScriptsToRun | ForEach-Object { $_.Name }
+    Write-CustomLog "Selected script order: $($names -join ', ')"
     Write-CustomLog "`n==== Executing selected scripts ===="
     $failed = @()
+    $results = @{}
     foreach ($s in $ScriptsToRun) {
         Write-CustomLog "`n--- Running: $($s.Name) ---"
         try {
@@ -180,6 +183,7 @@ function Invoke-Scripts {
             if ($cmd -and $cmd.Parameters.ContainsKey('Config')) { & $scriptPath -Config $Config }
             else                                               { & $scriptPath }
 
+            $results[$s.Name] = $LASTEXITCODE
             if ($LASTEXITCODE) {
                 Write-CustomLog "ERROR: $($s.Name) exited with code $LASTEXITCODE."
                 $failed += $s.Name
@@ -194,6 +198,8 @@ function Invoke-Scripts {
     }
 
     $Config | ConvertTo-Json -Depth 5 | Out-File $ConfigFile -Encoding utf8
+    $summary = $results.GetEnumerator() | ForEach-Object { "${($_.Key)}=$($_.Value)" } | Sort-Object | Join-String -Separator ', '
+    Write-CustomLog "Results: $summary"
     Write-CustomLog "`n==== Script run complete ===="
     if ($failed) { Write-CustomLog "Failures: $($failed -join ', ')"; return $false }
     return $true
@@ -225,7 +231,11 @@ while ($true) {
     $choice = Read-Host "Enter selection"
     if ($choice -match '^(?i)exit$') { break }
     $selected = Select-Scripts -Input $choice
-    if ($selected) { if (-not (Invoke-Scripts -ScriptsToRun $selected)) { $LASTEXITCODE = 1 } }
+    if ($selected.Count -gt 0) {
+        if (-not (Invoke-Scripts -ScriptsToRun $selected)) { $LASTEXITCODE = 1 }
+    } else {
+        Write-CustomLog 'No scripts selected.'
+    }
 }
 
 Write-CustomLog "`nAll done!"
