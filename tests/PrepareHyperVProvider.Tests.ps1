@@ -94,10 +94,11 @@ Describe 'Prepare-HyperVProvider certificate handling' -Skip:($IsLinux -or $IsMa
             $pwd
         }
 
-        # create dummy certificate files for conversion
+        # prepare certificate files for conversion using static test data
         $rootCaName = $config.CertificateAuthority.CommonName
         $hostName   = [System.Net.Dns]::GetHostName()
-        'dummy' | Set-Content -Path (Join-Path $PWD "$rootCaName.cer")
+        $sourceCert = Join-Path $PSScriptRoot 'data' 'TestCA.cer'
+        Copy-Item -Path $sourceCert -Destination (Join-Path $PWD "$rootCaName.cer") -Force
         'dummy' | Set-Content -Path (Join-Path $PWD "$hostName.pfx")
 
         $providerFile = Join-Path $tempDir 'providers.tf'
@@ -123,6 +124,13 @@ Describe 'Prepare-HyperVProvider certificate handling' -Skip:($IsLinux -or $IsMa
         Test-Path (Join-Path $tempDir ("$(hostname).pem")) | Should -BeTrue
         Test-Path (Join-Path $tempDir ("$(hostname)-key.pem")) | Should -BeTrue
         (Get-Content $providerFile -Raw) | Should -Match 'insecure\s*=\s*false'
+
+        Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue
+        Remove-Item (Join-Path $PWD "$rootCaName.cer") -ErrorAction SilentlyContinue
+        Remove-Item (Join-Path $PWD "$rootCaName.pem") -ErrorAction SilentlyContinue
+        Remove-Item (Join-Path $PWD "$hostName.pfx") -ErrorAction SilentlyContinue
+        Remove-Item (Join-Path $PWD "$hostName.pem") -ErrorAction SilentlyContinue
+        Remove-Item (Join-Path $PWD "$hostName-key.pem") -ErrorAction SilentlyContinue
     }
 
     It 'does not redefine Convert-PfxToPem when sourced twice' {
