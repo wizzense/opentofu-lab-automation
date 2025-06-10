@@ -208,7 +208,9 @@ function Invoke-Scripts {
                 exit $LASTEXITCODE
             }
 
-            & pwsh -NoLogo -NoProfile -Command $sb -Args $tempCfg, $scriptPath, $Verbosity
+
+            & pwsh -NoLogo -NoProfile -Command $sb -Args $tempCfg, $scriptPath, $Quiet.IsPresent 2>&1
+
             Remove-Item $tempCfg -ErrorAction SilentlyContinue
 
             $results[$s.Name] = $LASTEXITCODE
