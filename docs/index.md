@@ -1,20 +1,10 @@
 
-# OpenTofu Lab Automation Docs
-
-This folder contains early documentation for the project.
-
-- [labctl Python CLI](python-cli.md)
-
-# Documentation
-
-This folder will hold reference guides for automation scripts and modules.
-
-- [Runner script usage](runner.md)
-
 # OpenTofu Lab Automation Documentation
 
-
 Welcome! This folder collects notes and guides for working with the project.
+
+- [labctl Python CLI](python-cli.md)
+- [Runner script usage](runner.md)
 
 
 
