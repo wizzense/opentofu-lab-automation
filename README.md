@@ -373,3 +373,9 @@ Use this output to branch your automation logic according to the host
 operating system. Check the other `lab_utils` scripts for additional
 cross-platform helpers.
 
+
+## CI failure issues
+
+The `issue-on-fail` workflow automatically opens or updates an issue whenever a CI run fails. It collects the conclusion of each job, then searches open issues for the same branch or run. If an issue already exists, the workflow posts a comment with the latest failure details; otherwise it creates a new issue.
+
+Each issue body lists the failed jobs with links to their logs and notes the commit SHA and branch. Use these issues to track flaky tests and other problems.
