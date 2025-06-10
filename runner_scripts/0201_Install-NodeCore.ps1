@@ -36,7 +36,7 @@ if ($Config.Node_Dependencies.InstallNode) {
     Remove-Item $installerPath -Force
 
     if (Get-Command node -ErrorAction SilentlyContinue) {
-        Write-CustomLog "✅Node.js installed successfully."
+        Write-CustomLog "Node.js installed successfully."
         node -v
     } else {
         Write-Error "Node.js installation failed."
