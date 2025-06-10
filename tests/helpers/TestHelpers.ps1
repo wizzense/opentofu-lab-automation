@@ -10,7 +10,8 @@ function global:Get-RunnerScriptPath {
     param(
         [Parameter(Mandatory=$true)][string]$Name
     )
-    (Resolve-Path -ErrorAction Stop (Join-Path $PSScriptRoot '..' '..' 'runner_scripts' $Name)).Path
+    $root = if ($PSScriptRoot) { $PSScriptRoot } else { Split-Path -Parent $MyInvocation.MyCommand.Path }
+    (Resolve-Path -ErrorAction Stop (Join-Path $root '..' '..' 'runner_scripts' $Name)).Path
 }
 
 function Mock-WriteLog {
