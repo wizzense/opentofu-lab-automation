@@ -9,6 +9,6 @@ This folder contains helper tools used across the project. Each script focuses o
 - **Menu.ps1** – Provides an interactive menu for selecting items from a list.
 - **Hypervisor.psm1** – Stub module defining `Get-HVFacts`, `Enable-Provider` and `Deploy-VM` functions.
 - **get_platform.py** – Python version of `Get-Platform.ps1`.
-- **Get-WindowsJobArtifacts.ps1** – Downloads the latest Windows job artifacts from GitHub and shows failing tests. Use `gh run list` to grab a run ID and call the script with `-RunId <id>` if automatic discovery fails. The script falls back to nightly.link URLs when unauthenticated.
+- **Get-WindowsJobArtifacts.ps1** – Downloads the latest Windows job artifacts from GitHub and shows failing tests. Use `gh run list` to grab a run ID and call the script with `-RunId <id>` if automatic discovery fails. Run IDs are 64‑bit integers, so quote them if needed. The script falls back to nightly.link URLs when unauthenticated.
 
 The `__init__.py` file is currently empty and simply marks the folder as a Python package.

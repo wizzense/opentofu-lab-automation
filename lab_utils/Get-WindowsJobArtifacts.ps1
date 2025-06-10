@@ -2,7 +2,7 @@
 param(
     [string]$Repo = 'wizzense/opentofu-lab-automation',
     [string]$Workflow = 'pester.yml',
-    [int]$RunId
+    [long]$RunId
 )
 
 $tempDir = Join-Path ([System.IO.Path]::GetTempPath()) "gh-artifacts-$([System.Guid]::NewGuid())"

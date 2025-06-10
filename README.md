@@ -383,11 +383,12 @@ Install-Module powershell-yaml -Scope CurrentUser
 Download the latest Windows test results with `lab_utils/Get-WindowsJobArtifacts.ps1`.
 If the GitHub CLI isn't authenticated, the script falls back to public
 downloads via the nightly.link service. You can also pass a specific
-workflow run ID obtained from `gh run list`:
+workflow run ID obtained from `gh run list`. Because run IDs are 64-bit
+integers, wrap the value in quotes on PowerShell:
 
 ```powershell
 gh run list --limit 20
-lab_utils/Get-WindowsJobArtifacts.ps1 -RunId <id>
+lab_utils/Get-WindowsJobArtifacts.ps1 -RunId "<id>"
 ```
 
 Python unit tests live under `py/`. Install the dependencies first using
