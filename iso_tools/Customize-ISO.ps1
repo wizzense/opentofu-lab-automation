@@ -61,8 +61,13 @@ Remove-Item -Recurse -Force $MountPath
 if (-not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) {
 
     $scriptPath = $PSCommandPath
-    Write-Host "This script requires administrator privileges." -ForegroundColor Red
-    Write-Host "Rerun using: Start-Process powershell -Verb RunAs -ArgumentList '-File `\"$scriptPath`\"'" -ForegroundColor Yellow
+    $warnMsg1 = "This script requires administrator privileges."
+    Write-CustomLog $warnMsg1 -Level WARN
+    Write-Host $warnMsg1 -ForegroundColor Red
+
+    $warnMsg2 = "Rerun using: Start-Process powershell -Verb RunAs -ArgumentList '-File `\"$scriptPath`\"'"
+    Write-CustomLog $warnMsg2 -Level WARN
+    Write-Host $warnMsg2 -ForegroundColor Yellow
     if ($scriptPath) {
         try {
             Start-Process -FilePath (Get-Process -Id $PID).Path -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `\"$scriptPath`\"" -Verb RunAs -ErrorAction Stop

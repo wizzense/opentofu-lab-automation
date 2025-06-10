@@ -259,8 +259,14 @@ function Invoke-Scripts {
                 $vl = @{ silent = 0; normal = 1; detailed = 2 }
                 $script:ConsoleLevel = $vl[$verbosity]
                 $cfg = Get-Content -Raw -Path $cfgPath | ConvertFrom-Json
-                & $scr -Config $cfg
-                exit $LASTEXITCODE
+                try {
+                    & $scr -Config $cfg
+                    $exit = if ($LASTEXITCODE) { $LASTEXITCODE } elseif (-not $?) { 1 } else { 0 }
+                    exit $exit
+                } catch {
+                    $_ | Out-String | Write-Error
+                    exit 1
+                }
             }
 
             $output = & pwsh -NoLogo -NoProfile -Command $sb -Args $tempCfg, $scriptPath, $Verbosity *>&1
@@ -270,21 +276,35 @@ function Invoke-Scripts {
                 if ($line) { Write-CustomLog $line.ToString() }
             }
 
+            Write-Output $output
             Remove-Item $tempCfg -ErrorAction SilentlyContinue
 
-            $results[$s.Name] = $exitCode
-            if ($exitCode -ne 0) {
-                Write-CustomLog "ERROR: $($s.Name) exited with code $exitCode."
-                $failed += $s.Name
+            Try {
+
+                  $results[$s.Name] = $exitCode
+                  if ($exitCode -ne 0) {
+                  Write-CustomLog "ERROR: $($s.Name) exited with code $exitCode."
+}
+
+            Catch {
+                  $results[$s.Name] = $LASTEXITCODE
+                   if ($LASTEXITCODE) {
+                      Write-CustomLog "ERROR: $($s.Name) exited with code $LASTEXITCODE."
+
+                      $failed += $s.Name
             } else {
                 Write-CustomLog "$($s.Name) completed successfully."
             }
-        } catch {
+        } 
+        
+        catch {
             Write-CustomLog "ERROR: Exception in $($s.Name): $_"
             $global:LASTEXITCODE = 1
             $failed += $s.Name
         }
     }
+    
+ }
 
     $Config | ConvertTo-Json -Depth 5 | Out-File $ConfigFile -Encoding utf8
     $summary = $results.GetEnumerator() | ForEach-Object { "${($_.Key)}=$($_.Value)" } | Sort-Object | Join-String -Separator ', '

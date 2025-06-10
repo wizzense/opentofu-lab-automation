@@ -31,6 +31,12 @@ To quickly gather system information, run script `0200` directly:
 ./runner.ps1 -Scripts '0200'
 ```
 
+The script now calls `Get-Platform` to detect the host OS. On Windows it
+collects features and hotfix data in addition to the basic facts. Linux and
+macOS hosts use `uname`, `df` and networking APIs to return similar details.
+If the platform cannot be recognised the script exits with code `1` and logs an
+"unsupported platform" error.
+
 To suppress informational output, append the `-Quiet` switch (equivalent to
 To suppress informational output, use the `-Quiet` switch (equivalent to
  
