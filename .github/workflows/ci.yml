@@ -102,4 +102,7 @@ jobs:
       - name: Run Pester
         shell: pwsh
         run: |
+          if (Get-PSDrive TestDrive -ErrorAction SilentlyContinue) {
+            Remove-PSDrive TestDrive -Force -ErrorAction SilentlyContinue
+          }
           Invoke-Pester -CI -ErrorAction Stop
