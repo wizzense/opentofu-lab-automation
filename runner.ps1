@@ -114,12 +114,12 @@ function Set-LabConfig {
         if ($ans) { $ConfigObject[$k] = $ans -match '^(?i)y' }
     }
 
-    $localPath = Read-Host "Local repo path [`$($ConfigObject.LocalPath)`]"
+    $localPath = Read-Host "Local repo path [$($ConfigObject.LocalPath)]"
     if ($localPath) { $ConfigObject.LocalPath = $localPath }
 
-    $npmPath = Read-Host "Path to Node project [`$($ConfigObject.Node_Dependencies.NpmPath)`]"
+    $npmPath = Read-Host "Path to Node project [$($ConfigObject.Node_Dependencies.NpmPath)]"
     if ($npmPath) { $ConfigObject.Node_Dependencies.NpmPath = $npmPath }
-    $createPath = Read-Host "Create NpmPath if missing? (Y/N) [`$($ConfigObject.Node_Dependencies.CreateNpmPath)`]"
+    $createPath = Read-Host "Create NpmPath if missing? (Y/N) [$($ConfigObject.Node_Dependencies.CreateNpmPath)]"
     if ($createPath) { $ConfigObject.Node_Dependencies.CreateNpmPath = $createPath -match '^(?i)y' }
 
     return $ConfigObject
