@@ -2,11 +2,11 @@
 . (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
 . (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
 if ($SkipNonWindows) { return }
-. (Join-Path $PSScriptRoot '..' 'lab_utils' 'Get-Platform.ps1')
 
 
 Describe '0200_Get-SystemInfo' {
     BeforeAll {
+        . (Join-Path $PSScriptRoot '..' 'lab_utils' 'Get-Platform.ps1')
         $script:ScriptPath = Get-RunnerScriptPath '0200_Get-SystemInfo.ps1'
     }
 
