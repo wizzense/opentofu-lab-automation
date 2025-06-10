@@ -39,6 +39,7 @@ Describe 'Prepare-HyperVProvider path restoration' -Skip:($IsLinux -or $IsMacOS)
         Mock git {}
         Mock go {}
         Mock Copy-Item {}
+        Mock Convert-CerToPem {}
         Mock Read-Host {
             $pwd = New-Object System.Security.SecureString
             foreach ($c in ''.ToCharArray()) { $pwd.AppendChar($c) }
@@ -78,6 +79,10 @@ Describe 'Prepare-HyperVProvider certificate handling' -Skip:($IsLinux -or $IsMa
         Mock Test-Path { $false }
         Mock git {}
         Mock go {}
+        Mock Get-ChildItem { $null } -ParameterFilter { $Path -like 'cert:*' }
+        Mock Import-PfxCertificate {}
+        Mock New-SelfSignedCertificate {}
+
         Mock Convert-CerToPem {
             param($CerPath, $PemPath)
             & $script:origConvertCerToPem -CerPath $CerPath -PemPath $PemPath
@@ -87,6 +92,14 @@ Describe 'Prepare-HyperVProvider certificate handling' -Skip:($IsLinux -or $IsMa
             & $script:origConvertPfxToPem -PfxPath $PfxPath -Password $Password -CertPath $CertPath -KeyPath $KeyPath
         }
         Mock Copy-Item {}
+        # certificate operations should not touch the real store
+        $rootStub = [pscustomobject]@{ Thumbprint = 'ROOT123'; Subject = "CN=$($config.CertificateAuthority.CommonName)" }
+        $hostStub = [pscustomobject]@{ Thumbprint = 'HOST123'; Subject = "CN=$(hostname)" }
+        $certCall = 0
+        Mock New-SelfSignedCertificate { if ($certCall++ -eq 0) { $rootStub } else { $hostStub } }
+        Mock Export-Certificate {}
+        Mock Import-PfxCertificate {}
+        Mock Remove-Item {}
         Mock Read-Host {
             $pwd = New-Object System.Security.SecureString
             foreach ($c in 'pw'.ToCharArray()) { $pwd.AppendChar($c) }
@@ -99,6 +112,7 @@ Describe 'Prepare-HyperVProvider certificate handling' -Skip:($IsLinux -or $IsMa
         $hostName   = [System.Net.Dns]::GetHostName()
         $sourceCert = Join-Path $PSScriptRoot 'data' 'TestCA.cer'
         Copy-Item -Path $sourceCert -Destination (Join-Path $PWD "$rootCaName.cer") -Force
+        'dummy' | Set-Content -Path (Join-Path $PWD "$rootCaName.pfx")
         'dummy' | Set-Content -Path (Join-Path $PWD "$hostName.pfx")
 
         $providerFile = Join-Path $tempDir 'providers.tf'
@@ -117,6 +131,9 @@ Describe 'Prepare-HyperVProvider certificate handling' -Skip:($IsLinux -or $IsMa
         . $script:scriptPath -Config $config
         $cmdAfter  = Get-Command Convert-PfxToPem
         $cmdAfter | Should -Be $cmdBefore
+        Assert-MockCalled New-SelfSignedCertificate -Times 2
+        Assert-MockCalled Export-Certificate -Times 2
+        Assert-MockCalled Import-PfxCertificate -Times 3
         Assert-MockCalled Convert-CerToPem -Times 1
         Assert-MockCalled Convert-PfxToPem -Times 1
 
@@ -128,6 +145,7 @@ Describe 'Prepare-HyperVProvider certificate handling' -Skip:($IsLinux -or $IsMa
         Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue
         Remove-Item (Join-Path $PWD "$rootCaName.cer") -ErrorAction SilentlyContinue
         Remove-Item (Join-Path $PWD "$rootCaName.pem") -ErrorAction SilentlyContinue
+        Remove-Item (Join-Path $PWD "$rootCaName.pfx") -ErrorAction SilentlyContinue
         Remove-Item (Join-Path $PWD "$hostName.pfx") -ErrorAction SilentlyContinue
         Remove-Item (Join-Path $PWD "$hostName.pem") -ErrorAction SilentlyContinue
         Remove-Item (Join-Path $PWD "$hostName-key.pem") -ErrorAction SilentlyContinue
@@ -179,6 +197,11 @@ Describe 'Convert certificate helpers honour -WhatIf' -Skip:($IsLinux -or $IsMac
 }
 
 Describe 'Convert certificate helpers validate paths' -Skip:($IsLinux -or $IsMacOS) {
+    BeforeAll {
+        Remove-Mock -CommandName Convert-PfxToPem -ErrorAction SilentlyContinue
+        $scriptPath = Join-Path $PSScriptRoot '..' 'runner_scripts' '0010_Prepare-HyperVProvider.ps1'
+        . $scriptPath
+    }
     It 'errors when CerPath or PemPath is missing' {
         $scriptPath = Join-Path $PSScriptRoot '..' 'runner_scripts' '0010_Prepare-HyperVProvider.ps1'
         . $scriptPath
