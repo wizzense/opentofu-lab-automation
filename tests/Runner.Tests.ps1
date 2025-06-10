@@ -322,9 +322,13 @@ Write-Error 'err message'
             $script:warnings  = @()
             $script:errors    = @()
             function global:Write-Host {
-                param([Parameter(Mandatory=$true,Position=0)][string]$Object,
-                      [Parameter(Position=1)][string]$ForegroundColor)
-                $script:logLines += $Object
+                param(
+                    [Parameter(Mandatory=$true,Position=0,ValueFromPipeline=$true)]
+                    [object]$Object,
+                    [Parameter(Position=1)]
+                    [string]$ForegroundColor
+                )
+                process { $script:logLines += "$Object" }
             }
             function global:Write-Warning {
                 param([string]$Message)
@@ -367,9 +371,13 @@ Write-Error 'err message'
             $script:warnings  = @()
             $script:errors    = @()
             function global:Write-Host {
-                param([Parameter(Mandatory=$true,Position=0)][string]$Object,
-                      [Parameter(Position=1)][string]$ForegroundColor)
-                $script:logLines += $Object
+                param(
+                    [Parameter(Mandatory=$true,Position=0,ValueFromPipeline=$true)]
+                    [object]$Object,
+                    [Parameter(Position=1)]
+                    [string]$ForegroundColor
+                )
+                process { $script:logLines += "$Object" }
             }
             function global:Write-Warning {
                 param([string]$Message)
