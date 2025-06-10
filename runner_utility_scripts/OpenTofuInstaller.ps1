@@ -591,7 +591,7 @@ function installStandalone() {
                 throw
             }
         }
-        if ($logDir) {
+        if ($logDir -and (Test-Path $logDir)) {
             try { Remove-Item -Force -Recurse $logDir }
             catch {
                 $msg = $_.ToString()
