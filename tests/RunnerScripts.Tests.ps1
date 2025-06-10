@@ -66,4 +66,30 @@ Describe 'Runner scripts parameter and command checks' -Skip:($SkipNonWindows) {
         }
         ($found | Measure-Object).Count | Should -BeGreaterThan 0
     }
+
+    It 'imports ScriptTemplate.ps1 using dot-source' -TestCases $testCases {
+        param($File)
+        $ast = Get-ScriptAst $File.FullName
+        $commands = if ($ast) {
+            $ast.FindAll({ param($n) $n -is [System.Management.Automation.Language.CommandAst] }, $true)
+        } else { @() }
+
+        $found = $commands | Where-Object {
+            $_.CommandElements.Count -ge 2 -and
+            $_.CommandElements[0] -is [System.Management.Automation.Language.StringConstantExpressionAst] -and
+            $_.CommandElements[0].Value -eq '.' -and
+            (
+                ($_.CommandElements[1] -is [System.Management.Automation.Language.StringConstantExpressionAst] -and
+                    ([System.IO.Path]::GetFileName($_.CommandElements[1].Value) -eq 'ScriptTemplate.ps1')) -or
+                ($_.CommandElements[1] -is [System.Management.Automation.Language.ExpandableStringExpressionAst] -and
+                    ([System.IO.Path]::GetFileName($_.CommandElements[1].Value) -eq 'ScriptTemplate.ps1'))
+            )
+        }
+
+        if (-not $found) {
+            Write-Host "ScriptTemplate.ps1 not dot-sourced in $($File.FullName)"
+        }
+
+        ($found | Measure-Object).Count | Should -BeGreaterThan 0
+    }
 }
