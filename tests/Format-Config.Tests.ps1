@@ -13,4 +13,9 @@ Describe 'Format-Config' {
     It 'throws when Config is null' {
         { Format-Config -Config $null } | Should -Throw
     }
+
+    It 'is a terminating error when Config is null' {
+        { Format-Config -Config $null } |
+            Should -Throw -ErrorType System.ArgumentNullException
+    }
 }
