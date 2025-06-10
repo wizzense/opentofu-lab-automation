@@ -1,3 +1,4 @@
+. "$PSScriptRoot/../runner_utility_scripts/ScriptTemplate.ps1"
 function Invoke-OpenTofuInstaller {
     param(
         [string]$CosignPath,

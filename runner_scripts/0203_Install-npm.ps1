@@ -3,6 +3,7 @@ Param(
     [pscustomobject]$Config
 )
 
+. "$PSScriptRoot/../runner_utility_scripts/ScriptTemplate.ps1"
 function Install-NpmDependencies {
     [CmdletBinding(SupportsShouldProcess = $true)]
     param([pscustomobject]$Config)
