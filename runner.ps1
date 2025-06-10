@@ -83,7 +83,7 @@ function Set-LabConfig {
     [CmdletBinding(SupportsShouldProcess)]
     param([hashtable]$ConfigObject)
 
-    $installPrompts = @{
+    $installPrompts = [ordered]@{
         InstallGit      = 'Install Git'
         InstallGo       = 'Install Go'
         InstallOpenTofu = 'Install OpenTofu'
@@ -168,6 +168,11 @@ function Invoke-Scripts {
         Write-CustomLog "`n--- Running: $($s.Name) ---"
         try {
             $scriptPath = "$PSScriptRoot\runner_scripts\$($s.Name)"
+            if (-not (Test-Path $scriptPath)) {
+                Write-CustomLog "ERROR: Script not found at $scriptPath"
+                $failed += $s.Name
+                continue
+            }
             if ($flag = Get-ScriptConfigFlag -Path $scriptPath) {
                 $current = Get-NestedConfigValue -Config $Config -Path $flag
                 if (-not $current) {
@@ -180,8 +185,8 @@ function Invoke-Scripts {
 
             $cmd = Get-Command -Name $scriptPath -ErrorAction SilentlyContinue
             $global:LASTEXITCODE = 0
-            if ($cmd -and $cmd.Parameters.ContainsKey('Config')) { & $scriptPath -Config $Config }
-            else                                               { & $scriptPath }
+            if ($cmd -and $cmd.Parameters.ContainsKey('Config')) { & "$scriptPath" -Config $Config }
+            else                                               { & "$scriptPath" }
 
             $results[$s.Name] = $LASTEXITCODE
             if ($LASTEXITCODE) {
@@ -217,12 +222,17 @@ function Select-Scripts {
 
     if (-not $prefixes) { Write-CustomLog 'No valid prefixes.'; return @() }
 
-    $ordered = foreach ($p in $prefixes) {
-        $ScriptFiles | Where-Object { $_.Name.Substring(0,4) -eq $p } | Select-Object -First 1
-    } | Where-Object { $_ }
+    $matches = $ScriptFiles | Where-Object { $prefixes -contains $_.Name.Substring(0,4) }
 
-    if (-not $ordered) { Write-CustomLog 'No matching scripts.' }
-    return $ordered
+    if (-not $matches) { Write-CustomLog 'No matching scripts.' }
+    return $matches
+}
+
+function Prompt-Scripts {
+    $names = $ScriptFiles | ForEach-Object { $_.Name }
+    $selNames = Get-MenuSelection -Items $names -Title 'Select scripts to run' -AllowAll
+    if (-not $selNames) { return @() }
+    return $ScriptFiles | Where-Object { $selNames -contains $_.Name }
 }
 
 # ─── Non-interactive or interactive execution ────────────────────────────────
@@ -234,19 +244,12 @@ if ($Scripts) {
     exit 0
 }
 
-while ($true) {
-    Write-CustomLog "`nTo run ALL scripts, type 'all'."
-    Write-CustomLog "To run specific scripts, give comma-separated 4-digit prefixes (e.g. 0001,0003)."
-    Write-CustomLog "Or type 'exit' to quit."
-    $choice = Read-Host "Enter selection"
-    if ($choice -match '^(?i)exit$') { break }
-    $selected = Select-Scripts -Input $choice
-    if ($selected.Count -gt 0) {
-        if (-not (Invoke-Scripts -ScriptsToRun $selected)) { $LASTEXITCODE = 1 }
-    } else {
-        Write-CustomLog 'No scripts selected.'
-    }
+$selection = Prompt-Scripts
+if ($selection.Count -eq 0) {
+    Write-CustomLog 'No scripts selected.'
+    exit 0
 }
+if (-not (Invoke-Scripts -ScriptsToRun $selection)) { exit 1 }
 
 Write-CustomLog "`nAll done!"
-exit ($LASTEXITCODE -as [int])
+exit 0
