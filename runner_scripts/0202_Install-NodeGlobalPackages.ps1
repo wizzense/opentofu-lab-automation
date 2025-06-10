@@ -65,21 +65,6 @@ if ($nodeDeps -is [hashtable] -and $nodeDeps.ContainsKey('GlobalPackages')) {
     $packages = $nodeDeps['GlobalPackages']
 } elseif ($nodeDeps.PSObject.Properties.Name -contains 'GlobalPackages') {
     $packages = $nodeDeps.GlobalPackages
-} else {
-    if ($nodeDeps.InstallYarn) {
-        $packages += 'yarn'
-    } else {
-        Write-CustomLog "InstallYarn flag is disabled. Skipping yarn installation."
-    }
-
-    if ($nodeDeps.InstallVite) {
-        $packages += 'vite'
-    } else {
-        Write-CustomLog "InstallVite flag is disabled. Skipping vite installation."
-
-    }
-} elseif ($nodeDeps.PSObject.Properties.Name -contains 'GlobalPackages') {
-    $packages = $nodeDeps.GlobalPackages
 }
 
 if (-not $packages) {
