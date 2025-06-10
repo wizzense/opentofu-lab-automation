@@ -1,5 +1,7 @@
 # opentofu-lab-automation
-[![CI](https://github.com/wizzense/opentofu-lab-automation/actions/workflows/ci.yml/badge.svg)](https://github.com/wizzense/opentofu-lab-automation/actions/workflows/ci.yml)
+[![Lint](https://github.com/wizzense/opentofu-lab-automation/actions/workflows/lint.yml/badge.svg)](https://github.com/wizzense/opentofu-lab-automation/actions/workflows/lint.yml)
+[![Pester](https://github.com/wizzense/opentofu-lab-automation/actions/workflows/pester.yml/badge.svg)](https://github.com/wizzense/opentofu-lab-automation/actions/workflows/pester.yml)
+[![Pytest](https://github.com/wizzense/opentofu-lab-automation/actions/workflows/pytest.yml/badge.svg)](https://github.com/wizzense/opentofu-lab-automation/actions/workflows/pytest.yml)
 
 ## Quick start
 
