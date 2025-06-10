@@ -1,3 +1,4 @@
+Param([pscustomobject]$Config)
 function Install-CA {
     [CmdletBinding(SupportsShouldProcess = $true)]
     param([pscustomobject]$Config)
