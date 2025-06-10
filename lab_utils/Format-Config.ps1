@@ -1,6 +1,7 @@
 function Format-Config {
+    [CmdletBinding()]
     param(
-        [pscustomobject]$Config
+        [psobject]$Config
     )
 
     if ($null -eq $Config) {
