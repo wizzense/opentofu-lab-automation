@@ -1,4 +1,5 @@
 . (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
+if ($IsLinux -or $IsMacOS) { return }
 
 Describe '0114_Config-TrustedHosts' -Skip:($IsLinux -or $IsMacOS) {
     It 'calls Start-Process with winrm arguments using config value' {

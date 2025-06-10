@@ -1,4 +1,5 @@
 . (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
+if ($IsLinux -or $IsMacOS) { return }
 Describe '0112_Enable-PXE' {
     BeforeAll {
         $script:scriptPath = Join-Path $PSScriptRoot '..' 'runner_scripts' '0112_Enable-PXE.ps1'
