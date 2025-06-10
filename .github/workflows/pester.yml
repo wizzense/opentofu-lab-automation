@@ -75,11 +75,12 @@ jobs:
           }
       - name: Run Pester
         id: pester
-        continue-on-error: ${{ runner.os != 'Windows' }}
+        continue-on-error: true
         shell: pwsh
         run: |
           $cfg = New-PesterConfiguration -Hashtable (Import-PowerShellDataFile 'tests/PesterConfiguration.psd1')
           Invoke-Pester -Configuration $cfg -ErrorAction Stop
+          "pester_exit_code=$LASTEXITCODE" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
       - name: Upload coverage
         if: steps.pester.outcome == 'success'
         uses: actions/upload-artifact@v4
@@ -92,3 +93,7 @@ jobs:
         with:
           name: pester-results-${{ matrix.os }}
           path: coverage/testResults.xml
+      - name: Fail if Pester tests failed
+        if: steps.pester.outputs.pester_exit_code != '0'
+        shell: pwsh
+        run: exit 1
