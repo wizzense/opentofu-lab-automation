@@ -79,6 +79,9 @@ jobs:
         shell: pwsh
         run: |
           $cfg = New-PesterConfiguration -Hashtable (Import-PowerShellDataFile 'tests/PesterConfiguration.psd1')
+          $repoRoot = $env:GITHUB_WORKSPACE
+          $cfg.TestResult.OutputPath   = Join-Path $repoRoot 'coverage/testResults.xml'
+          $cfg.CodeCoverage.OutputPath = Join-Path $repoRoot 'coverage/coverage.xml'
           Invoke-Pester -Configuration $cfg -ErrorAction Stop
           "pester_exit_code=$LASTEXITCODE" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
       - name: Upload coverage
