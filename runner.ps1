@@ -259,8 +259,14 @@ function Invoke-Scripts {
                 $vl = @{ silent = 0; normal = 1; detailed = 2 }
                 $script:ConsoleLevel = $vl[$verbosity]
                 $cfg = Get-Content -Raw -Path $cfgPath | ConvertFrom-Json
-                & $scr -Config $cfg
-                exit $LASTEXITCODE
+                try {
+                    & $scr -Config $cfg
+                    $exit = if ($LASTEXITCODE) { $LASTEXITCODE } elseif (-not $?) { 1 } else { 0 }
+                    exit $exit
+                } catch {
+                    $_ | Out-String | Write-Error
+                    exit 1
+                }
             }
 
             $output = & pwsh -NoLogo -NoProfile -Command $sb -Args $tempCfg, $scriptPath, $Verbosity *>&1
