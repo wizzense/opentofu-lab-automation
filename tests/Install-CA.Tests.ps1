@@ -1,9 +1,14 @@
 . (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
 . (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
-if ($SkipNonWindows) { return }
+
+if ($IsLinux -or $IsMacOS) { return }
+
 Describe '0104_Install-CA script' {
     BeforeAll {
         $scriptPath = Join-Path $PSScriptRoot '..' 'runner_scripts' '0104_Install-CA.ps1'
+    }
+    AfterEach {
+        Remove-Item Function:Install-AdcsCertificationAuthority -ErrorAction SilentlyContinue
     }
 
     It 'invokes CA installation when InstallCA is true' -Skip:($SkipNonWindows) {

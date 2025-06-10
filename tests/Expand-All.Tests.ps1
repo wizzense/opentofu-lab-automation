@@ -1,4 +1,5 @@
 . (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
+. (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
 Describe 'Expand-All' {
     BeforeAll {
         . (Join-Path $PSScriptRoot '..' 'lab_utils' 'Expand-All.ps1')
@@ -6,6 +7,9 @@ Describe 'Expand-All' {
     BeforeEach {
         function global:Write-CustomLog {}
         Mock Write-CustomLog {}
+    }
+    AfterEach {
+        Remove-Item Function:Write-CustomLog -ErrorAction SilentlyContinue
     }
 
     It 'expands a specific ZIP file when provided' {

@@ -1,6 +1,8 @@
 . (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
 . (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
-if ($SkipNonWindows) { return }
+
+if ($IsLinux -or $IsMacOS) { return }
+
 Describe 'runner.ps1 configuration' {
     It 'loads default configuration without errors' {
         $modulePath = Join-Path $PSScriptRoot '..' 'lab_utils' 'Get-LabConfig.ps1'
@@ -18,6 +20,10 @@ Describe 'runner.ps1 script selection' -Skip:($SkipNonWindows) {
         . $modulePath
         . (Join-Path $PSScriptRoot '..' 'runner_utility_scripts' 'Logger.ps1')
         . (Join-Path $PSScriptRoot '..' 'lab_utils' 'Menu.ps1')
+    }
+    AfterEach {
+        Remove-Item Function:Write-Host -ErrorAction SilentlyContinue
+        Remove-Item Function:Read-Host -ErrorAction SilentlyContinue
     }
 
     It 'runs non-interactively when -Scripts is supplied' {
@@ -302,7 +308,6 @@ Write-Error 'err message'
                 $script:logLines += $Object
             }
             $output = & "$tempDir/runner.ps1" -Scripts '0001' -Auto -Verbosity 'silent' *>&1
-            Remove-Item Function:\Write-Host -ErrorAction SilentlyContinue
             Pop-Location
 
         $script:logLines | Should -Not -Contain '==== Loading configuration ===='
@@ -337,7 +342,6 @@ Write-Error 'err message'
                 $script:logLines += $Object
             }
             $output = & "$tempDir/runner.ps1" -Scripts '0001' -Auto -Verbosity silent *>&1
-            Remove-Item Function:\Write-Host -ErrorAction SilentlyContinue
             Pop-Location
 
             $script:logLines | Should -Not -Contain '==== Loading configuration ===='
