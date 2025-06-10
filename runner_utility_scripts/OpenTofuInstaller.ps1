@@ -117,6 +117,8 @@ param(
     [string]$internalZipFile = ""
 )
 
+. $PSScriptRoot/Logger.ps1
+
 $scriptCommand = $MyInvocation.MyCommand.Source
 $InformationPreference = 'continue'
 $WarningPreference = 'continue'
@@ -704,11 +706,11 @@ ${bold}${blue}Exit codes:${normal}
   ${bold}${exitCodeInvalidArgument}${normal}                             Invalid configuration options.
 
 "@
-    Write-Output $usageText
+    Write-CustomLog $usageText
 }
 
-Write-Output "${blue}${bold}OpenTofu Installer${normal}"
-Write-Output ""
+Write-CustomLog "${blue}${bold}OpenTofu Installer${normal}"
+Write-CustomLog ""
 if ($help) {
     usage
     exit $exitCodeOK
