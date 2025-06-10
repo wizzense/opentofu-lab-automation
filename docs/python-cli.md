@@ -32,3 +32,17 @@ poetry run labctl hv deploy --config path/to/config.json
 
 Both commands simply parse the configuration and print details to the console at this stage.
 
+### Repository helpers
+
+The `repo` group wraps a few common GitHub tasks. These commands require the
+`gh` CLI to be installed and authenticated:
+
+```bash
+poetry run labctl repo close-pr 123
+poetry run labctl repo close-issue 42
+poetry run labctl repo cleanup
+```
+
+`cleanup` removes merged remote branches while keeping the most recent branch
+per hour.
+

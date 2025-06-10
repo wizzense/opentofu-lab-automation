@@ -1,10 +1,13 @@
 import json
 import logging
 import os
+import subprocess
 from pathlib import Path
 from importlib.resources import files
 import typer
 import yaml
+
+from . import github_utils
 
 
 def default_config_path() -> Path:
@@ -35,7 +38,9 @@ def configure_logger() -> None:
 
 app = typer.Typer()
 hv_app = typer.Typer()
+repo_app = typer.Typer(help="Simple GitHub repository utilities")
 app.add_typer(hv_app, name="hv")
+app.add_typer(repo_app, name="repo")
 
 
 @app.callback(invoke_without_command=True)
@@ -72,6 +77,30 @@ def deploy(
     cfg = load_config(config)
     hv = cfg.get("HyperV", {})
     logger.info("Deploying Hyper-V host: %s", hv.get("Host", ""))
+
+
+@repo_app.command("close-pr")
+def close_pr(pr_number: int):
+    """Close a pull request."""
+    github_utils.close_pull_request(pr_number)
+    logger.info("Closed pull request #%s", pr_number)
+
+
+@repo_app.command("close-issue")
+def close_issue(issue_number: int):
+    """Close an issue."""
+    github_utils.close_issue(issue_number)
+    logger.info("Closed issue #%s", issue_number)
+
+
+@repo_app.command()
+def cleanup(
+    remote: str = typer.Option("origin", help="Remote name"),
+):
+    """Delete merged branches while keeping the newest per hour."""
+    deleted = github_utils.cleanup_branches(remote=remote)
+    for name in deleted:
+        logger.info("Deleted branch %s", name)
 
 
 if __name__ == "__main__":
