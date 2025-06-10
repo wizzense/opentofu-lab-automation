@@ -10,6 +10,18 @@ param(
 )
 
 
+# Determine pwsh executable path early for nested script execution
+$pwshPath = (Get-Command pwsh -ErrorAction SilentlyContinue).Source
+if (-not $pwshPath) {
+    $exeName  = if ($IsWindows) { 'pwsh.exe' } else { 'pwsh' }
+    $pwshPath = Join-Path $PSHOME $exeName
+}
+if (-not (Test-Path $pwshPath)) {
+    Write-Error "pwsh executable not found. Install PowerShell 7 or adjust PATH."
+    exit 1
+}
+
+
 if ($PSVersionTable.PSVersion.Major -lt 7) {
     Write-Error "PowerShell 7 or later is required. Current version: $($PSVersionTable.PSVersion)"
     exit 1
@@ -274,7 +286,7 @@ function Invoke-Scripts {
                 }
             }
 
-            $output = & pwsh -NoLogo -NoProfile -Command $sb -Args $tempCfg, $scriptPath, $Verbosity *>&1
+            $output = & $pwshPath -NoLogo -NoProfile -Command $sb -Args $tempCfg, $scriptPath, $Verbosity *>&1
 
             $exitCode = $LASTEXITCODE
 
