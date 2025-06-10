@@ -108,7 +108,16 @@ jobs:
         shell: pwsh
         run: |
           Install-Module -Name powershell-yaml -Force -Scope CurrentUser
-          
+
+      - name: Verify test helpers
+        shell: pwsh
+        run: |
+          . ./tests/helpers/Get-ScriptAst.ps1
+          if (-not (Get-Command Get-ScriptAst -ErrorAction SilentlyContinue)) {
+              Write-Error 'Get-ScriptAst helper not loaded'
+              exit 1
+          }
+
       - name: Run Pester
         shell: bash
         run: |
