@@ -30,7 +30,7 @@ Describe '0001_Reset-Git' {
             & $script:ScriptPath -Config $config
 
             Assert-MockCalled gh  -ParameterFilter { $args[0] -eq 'repo' -and $args[1] -eq 'clone' } -Times 1
-            Assert-MockNotCalled git
+            Assert-MockCalled git -Times 0
 
             Remove-Item $tempDir -Recurse -Force -ErrorAction SilentlyContinue
         }
@@ -50,7 +50,7 @@ Describe '0001_Reset-Git' {
             & $script:ScriptPath -Config $config
 
             Assert-MockCalled git -ParameterFilter { $args[0] -eq 'clone' } -Times 1
-            Assert-MockNotCalled gh
+            Assert-MockCalled gh -Times 0
 
             Remove-Item $tempDir -Recurse -Force -ErrorAction SilentlyContinue
         }
@@ -101,8 +101,8 @@ Describe '0001_Reset-Git' {
             & $script:ScriptPath -Config $config
 
             Assert-MockCalled gh -ParameterFilter { $args[0] -eq 'auth' -and $args[1] -eq 'status' } -Times 1
-            Assert-MockNotCalled gh -ParameterFilter { $args[0] -eq 'repo' -and $args[1] -eq 'clone' }
-            Assert-MockNotCalled git
+            Assert-MockCalled gh -ParameterFilter { $args[0] -eq 'repo' -and $args[1] -eq 'clone' } -Times 0
+            Assert-MockCalled git -Times 0
 
             Remove-Item $tempDir -Recurse -Force -ErrorAction SilentlyContinue
         }
