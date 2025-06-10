@@ -83,7 +83,7 @@ function Set-LabConfig {
     [CmdletBinding(SupportsShouldProcess)]
     param([hashtable]$ConfigObject)
 
-    $installPrompts = @{
+    $installPrompts = [ordered]@{
         InstallGit      = 'Install Git'
         InstallGo       = 'Install Go'
         InstallOpenTofu = 'Install OpenTofu'
