@@ -7,9 +7,11 @@ function Install-GlobalPackage {
         [string]$package
     )
 
+    . "$PSScriptRoot/../runner_utility_scripts/Logger.ps1"
+
     if (Get-Command npm -ErrorAction SilentlyContinue) {
         Write-CustomLog "Installing npm package: $package..."
-        if ($PSCmdlet.ShouldProcess($package, 'Install npm package')) {
+        if ($PSCmdlet.ShouldProcess($package, 'Install npm package') -and -not $WhatIfPreference) {
             npm install -g $package
         }
     } else {
@@ -66,6 +68,7 @@ if ($nodeDeps -is [hashtable] -and $nodeDeps.ContainsKey('GlobalPackages')) {
     $packages = $nodeDeps['GlobalPackages']
 } elseif ($nodeDeps.PSObject.Properties.Name -contains 'GlobalPackages') {
     $packages = $nodeDeps.GlobalPackages
+
 } else {
     if ($nodeDeps.InstallYarn) {
         $packages += 'yarn'
@@ -84,6 +87,7 @@ if ($nodeDeps -is [hashtable] -and $nodeDeps.ContainsKey('GlobalPackages')) {
     } else {
         Write-CustomLog "InstallNodemon flag is disabled. Skipping nodemon installation."
     }
+
 }
 
 if (-not $packages) {

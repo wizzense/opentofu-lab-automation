@@ -8,7 +8,7 @@ function Convert-CerToPem {
         [string]$PemPath
     )
     if (-not $PSCmdlet.ShouldProcess($PemPath, 'Create PEM file')) { return }
-    $bytes = Get-Content -Path $CerPath -Encoding Byte
+    $bytes = Get-Content -Path $CerPath -AsByteStream
     $b64   = [System.Convert]::ToBase64String($bytes, 'InsertLineBreaks')
     "-----BEGIN CERTIFICATE-----`n$b64`n-----END CERTIFICATE-----" | Set-Content -Path $PemPath
 }
