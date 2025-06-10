@@ -1,8 +1,8 @@
 . (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
 . (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
-if ($SkipNonWindows) { return }
-
-if ($IsLinux -or $IsMacOS) { return }
+# These tests exercise logic that works on all platforms. Avoid skipping when
+# running on Linux or macOS so we can verify behaviour in CI.
+$script:SkipNonWindows = $false
 
 Describe 'runner.ps1 syntax' {
     It 'parses without errors' {
