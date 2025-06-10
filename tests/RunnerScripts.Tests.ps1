@@ -44,3 +44,4 @@ Describe 'Runner scripts parameter and command checks' {
         $commands.Count | Should -BeGreaterThan 0
     }
 }
+}
