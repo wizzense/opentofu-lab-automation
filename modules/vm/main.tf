@@ -1,6 +1,15 @@
 # Module to provision a Hyper-V VM with an attached VHD
 # and optional dvd drive for installation media.
 
+terraform {
+  required_providers {
+    hyperv = {
+      source  = "taliesins/hyperv"
+      version = ">=1.2.1"
+    }
+  }
+}
+
 resource "hyperv_vhd" "this" {
   count = var.vm_count
   depends_on = [var.switch_dependency]
