@@ -6,6 +6,8 @@ import yaml
 
 
 def default_config_path() -> Path:
+    """Return the path to the packaged default configuration file."""
+
     return Path(files("labctl").joinpath("config_files", "default-config.json"))
 
 app = typer.Typer()
@@ -14,6 +16,8 @@ app.add_typer(hv_app, name="hv")
 
 
 def load_config(path: Path) -> dict:
+    """Load and parse a JSON or YAML config file into a dictionary."""
+
     data = path.read_text()
     if path.suffix.lower() in {".yaml", ".yml"}:
         return yaml.safe_load(data)
