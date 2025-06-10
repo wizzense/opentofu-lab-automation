@@ -1,8 +1,8 @@
 . (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
 Describe 'Prepare-HyperVProvider path restoration' {
     It 'restores location after execution' {
-        . (Join-Path $PSScriptRoot '..\runner_utility_scripts\Logger.ps1')
-        $script:scriptPath = Join-Path $PSScriptRoot '..\runner_scripts\0010_Prepare-HyperVProvider.ps1'
+        . (Join-Path $PSScriptRoot '..' 'runner_utility_scripts' 'Logger.ps1')
+        $script:scriptPath = Join-Path $PSScriptRoot '..' 'runner_scripts' '0010_Prepare-HyperVProvider.ps1'
         $config = [pscustomobject]@{
             PrepareHyperVHost = $true
             InfraRepoPath = 'C:\\Infra'
@@ -41,9 +41,10 @@ Describe 'Prepare-HyperVProvider path restoration' {
 
 Describe 'Prepare-HyperVProvider certificate handling' {
     It 'creates PEM files and updates providers.tf' {
-        . (Join-Path $PSScriptRoot '..\runner_utility_scripts\Logger.ps1')
-        $script:scriptPath = Join-Path $PSScriptRoot '..\runner_scripts\0010_Prepare-HyperVProvider.ps1'
-        $tempDir = Join-Path $TestDrive ([System.Guid]::NewGuid())
+        . (Join-Path $PSScriptRoot '..' 'runner_utility_scripts' 'Logger.ps1')
+        $script:scriptPath = Join-Path $PSScriptRoot '..' 'runner_scripts' '0010_Prepare-HyperVProvider.ps1'
+        $tempDir = Join-Path ([System.IO.Path]::GetTempPath()) ([System.Guid]::NewGuid())
+
         $null = New-Item -ItemType Directory -Path $tempDir
         $config = [pscustomobject]@{
             PrepareHyperVHost = $true
@@ -92,7 +93,7 @@ Describe 'Prepare-HyperVProvider certificate handling' {
 
 Describe 'Convert certificate helpers honour -WhatIf' {
     It 'skips writing files when WhatIf is used' {
-        $scriptPath = Join-Path $PSScriptRoot '..\runner_scripts\0010_Prepare-HyperVProvider.ps1'
+        $scriptPath = Join-Path $PSScriptRoot '..' 'runner_scripts' '0010_Prepare-HyperVProvider.ps1'
         . $scriptPath -Config @{ PrepareHyperVHost = $false }
         $cer = Join-Path $TestDrive (([guid]::NewGuid()).ToString() + '.cer')
         $pem = Join-Path $TestDrive (([guid]::NewGuid()).ToString() + '.pem')
@@ -104,7 +105,7 @@ Describe 'Convert certificate helpers honour -WhatIf' {
     }
 
     It 'skips writing PFX outputs when WhatIf is used' {
-        $scriptPath = Join-Path $PSScriptRoot '..\runner_scripts\0010_Prepare-HyperVProvider.ps1'
+        $scriptPath = Join-Path $PSScriptRoot '..' 'runner_scripts' '0010_Prepare-HyperVProvider.ps1'
         . $scriptPath -Config @{ PrepareHyperVHost = $false }
         $pfx = Join-Path $TestDrive (([guid]::NewGuid()).ToString() + '.pfx')
         $cert = Join-Path $TestDrive (([guid]::NewGuid()).ToString() + '.pem')

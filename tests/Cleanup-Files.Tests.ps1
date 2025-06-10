@@ -4,9 +4,18 @@ Describe 'Cleanup-Files script' {
         $script:scriptPath = Join-Path $PSScriptRoot '..' 'runner_scripts' '0000_Cleanup-Files.ps1'
     }
 
+    BeforeEach {
+        $script:temp = Join-Path $TestDrive ([System.Guid]::NewGuid())
+        New-Item -ItemType Directory -Path $script:temp | Out-Null
+    }
+
+    AfterEach {
+        Remove-Item -Recurse -Force $script:temp -ErrorAction SilentlyContinue
+        Remove-Variable -Name LogFilePath -Scope Script -ErrorAction SilentlyContinue
+    }
+
     It 'removes repo and infra directories when they exist' {
-        $temp = Join-Path ([System.IO.Path]::GetTempPath()) ([System.Guid]::NewGuid())
-        $null = New-Item -ItemType Directory -Path $temp
+        $temp = $script:temp
 
         $script:LogFilePath = Join-Path $temp 'cleanup.log'
 
@@ -27,13 +36,11 @@ Describe 'Cleanup-Files script' {
         (Test-Path $repoPath) | Should -BeFalse
         (Test-Path $infraPath) | Should -BeFalse
 
-        Remove-Item -Recurse -Force $temp -ErrorAction SilentlyContinue
-        Remove-Variable -Name LogFilePath -Scope Script -ErrorAction SilentlyContinue
+        # cleanup handled in AfterEach
     }
 
     It 'handles missing directories gracefully' {
-        $temp = Join-Path ([System.IO.Path]::GetTempPath()) ([System.Guid]::NewGuid())
-        $null = New-Item -ItemType Directory -Path $temp
+        $temp = $script:temp
         $infraPath = Join-Path $temp 'infra'
         $script:LogFilePath = Join-Path $temp 'cleanup.log'
         $config = [PSCustomObject]@{
@@ -43,14 +50,10 @@ Describe 'Cleanup-Files script' {
         }
 
         { . $script:scriptPath -Config $config } | Should -Not -Throw
-
-        Remove-Item -Recurse -Force $temp -ErrorAction SilentlyContinue
-        Remove-Variable -Name LogFilePath -Scope Script -ErrorAction SilentlyContinue
     }
 
     It 'runs without a global log file' {
-        $temp = Join-Path ([System.IO.Path]::GetTempPath()) ([System.Guid]::NewGuid())
-        $null = New-Item -ItemType Directory -Path $temp
+        $temp = $script:temp
         $infraPath = Join-Path $temp 'infra'
         Remove-Variable -Name LogFilePath -Scope Script -ErrorAction SilentlyContinue
         $config = [PSCustomObject]@{
@@ -60,13 +63,10 @@ Describe 'Cleanup-Files script' {
         }
 
         { . $script:scriptPath -Config $config } | Should -Not -Throw
-
-        Remove-Item -Recurse -Force $temp -ErrorAction SilentlyContinue
     }
 
     It 'completes when LogFilePath is undefined' {
-        $temp = Join-Path ([System.IO.Path]::GetTempPath()) ([System.Guid]::NewGuid())
-        $null = New-Item -ItemType Directory -Path $temp
+        $temp = $script:temp
         $repoName = 'opentofu-lab-automation'
         $repoPath = Join-Path $temp $repoName
         $infraPath = Join-Path $temp 'infra'
@@ -83,12 +83,10 @@ Describe 'Cleanup-Files script' {
 
         (Test-Path $repoPath) | Should -BeFalse
         (Test-Path $infraPath) | Should -BeFalse
-
-        Remove-Item -Recurse -Force $temp -ErrorAction SilentlyContinue
     }
 
     It 'completes when the repo directory is removed' {
-        $temp = Join-Path ([System.IO.Path]::GetTempPath()) ([System.Guid]::NewGuid())
+        $temp = $script:temp
         $repoName = 'opentofu-lab-automation'
         $repoPath = Join-Path $temp $repoName
         $infraPath = Join-Path $temp 'infra'
@@ -110,7 +108,6 @@ Describe 'Cleanup-Files script' {
         (Get-Location).Path | Should -Not -Be $repoPath
 
         Set-Location $orig
-        Remove-Item -Recurse -Force $temp -ErrorAction SilentlyContinue
     }
 }
 

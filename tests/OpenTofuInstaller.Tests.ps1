@@ -1,9 +1,24 @@
-. (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
+BeforeAll {
+    # Ensure no lingering TestDrive from previous test runs
+    if (Get-PSDrive -Name TestDrive -ErrorAction SilentlyContinue) {
+        Remove-PSDrive -Name TestDrive -Force -ErrorAction SilentlyContinue
+    }
+}
+
+BeforeEach {
+    $script:temp = Join-Path $TestDrive ([System.Guid]::NewGuid())
+    New-Item -ItemType Directory -Path $script:temp | Out-Null
+}
+
+AfterEach {
+    Remove-Item -Recurse -Force $script:temp -ErrorAction SilentlyContinue
+}
+
+
 Describe 'OpenTofuInstaller logging' {
     It 'creates log files and removes them for elevated unpack' -Skip:($IsLinux -or $IsMacOS) {
-        $script:scriptPath = Join-Path $PSScriptRoot '..\runner_utility_scripts\OpenTofuInstaller.ps1'
-        $temp = Join-Path ([System.IO.Path]::GetTempPath()) ([System.Guid]::NewGuid())
-        New-Item -ItemType Directory -Path $temp | Out-Null
+        $script:scriptPath = Join-Path $PSScriptRoot '..' 'runner_utility_scripts' 'OpenTofuInstaller.ps1'
+        $temp = $script:temp
         $zipPath = Join-Path $temp 'tofu_0.0.0_windows_amd64.zip'
         'dummy' | Set-Content $zipPath
         $hash = (Get-FileHash -Algorithm SHA256 $zipPath).Hash
@@ -29,13 +44,12 @@ Describe 'OpenTofuInstaller logging' {
         & $script:scriptPath -installMethod standalone -opentofuVersion '0.0.0' -installPath $temp -allUsers -skipVerify -skipChangePath | Out-Null
         Assert-MockCalled Start-Process -Times 1
         (Test-Path $script:logFile) | Should -BeFalse
-        Remove-Item -Recurse -Force $temp
     }
 }
 
 Describe 'OpenTofuInstaller error handling' {
     It 'returns install failed exit code when cosign is missing' {
-        $script:scriptPath = Join-Path $PSScriptRoot '..\runner_utility_scripts\OpenTofuInstaller.ps1'
+        $script:scriptPath = Join-Path $PSScriptRoot '..' 'runner_utility_scripts' 'OpenTofuInstaller.ps1'
         $arguments = @(
             '-NoLogo',
             '-NoProfile',
