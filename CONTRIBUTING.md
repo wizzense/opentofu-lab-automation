@@ -11,16 +11,23 @@ consistently across images.
 
 ## Running tests
 
-1. Install PowerShell and the Pester module if they are not already available.
-2. From the repository root, execute:
+Run the Pester suite using PowerShell:
 
-```powershell
-Invoke-Pester -Path tests
+```bash
+pwsh -NoLogo -NoProfile -Command "Invoke-Pester"
 ```
 
-This runs the test suite found under the `tests/` directory. When adding
-Windows‑specific tests, guard them with `-Skip:($IsLinux -or $IsMacOS)` so the
-suite succeeds across all platforms.
+Python tests live under the `py` directory:
+
+```bash
+cd py && pytest
+```
+
+The `task test` shortcut (defined in InvokeBuild) wraps these commands and
+executes the same steps as the CI pipeline.
+
+When adding Windows‑specific tests, guard them with
+`-Skip:($IsLinux -or $IsMacOS)` so the suite succeeds across all platforms.
 
 ## CI failure issues
 
