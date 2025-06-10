@@ -78,8 +78,14 @@ Describe 'Prepare-HyperVProvider certificate handling' -Skip:($IsLinux -or $IsMa
         Mock Test-Path { $false }
         Mock git {}
         Mock go {}
-        Mock Convert-CerToPem -MockWith { & $script:origConvertCerToPem @PSBoundParameters }
-        Mock Convert-PfxToPem -MockWith { & $script:origConvertPfxToPem @PSBoundParameters }
+        Mock Convert-CerToPem {
+            param($CerPath, $PemPath)
+            & $script:origConvertCerToPem -CerPath $CerPath -PemPath $PemPath
+        }
+        Mock Convert-PfxToPem {
+            param($PfxPath, $Password, $CertPath, $KeyPath)
+            & $script:origConvertPfxToPem -PfxPath $PfxPath -Password $Password -CertPath $CertPath -KeyPath $KeyPath
+        }
         Mock Copy-Item {}
         Mock Read-Host {
             $pwd = New-Object System.Security.SecureString
