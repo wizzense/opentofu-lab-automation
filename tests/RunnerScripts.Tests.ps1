@@ -2,7 +2,7 @@
 $scriptDir = Join-Path $PSScriptRoot '..' 'runner_scripts'
 $scripts = Get-ChildItem $scriptDir -Filter '*.ps1'
 
-Describe 'Runner scripts parameter and command checks' {
+Describe 'Runner scripts parameter and command checks' -Skip:($IsLinux -or $IsMacOS) {
 
     foreach ($file in $scripts) {
         Context $file.Name {

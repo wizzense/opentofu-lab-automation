@@ -1,5 +1,5 @@
 . (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
-Describe '0114_Config-TrustedHosts' {
+Describe '0114_Config-TrustedHosts' -Skip:($IsLinux -or $IsMacOS) {
     It 'calls Start-Process with winrm arguments using config value' {
         $script = Join-Path $PSScriptRoot '..' 'runner_scripts' '0114_Config-TrustedHosts.ps1'
         $config = [pscustomobject]@{

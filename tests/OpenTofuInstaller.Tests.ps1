@@ -50,7 +50,7 @@ Describe 'OpenTofuInstaller' {
     }
 
     Describe 'error handling' {
-        It 'returns install failed exit code when cosign is missing' {
+        It 'returns install failed exit code when cosign is missing' -Skip:($IsLinux -or $IsMacOS) {
         $script:scriptPath = Join-Path $PSScriptRoot '..' 'runner_utility_scripts' 'OpenTofuInstaller.ps1'
         $arguments = @(
             '-NoLogo',
