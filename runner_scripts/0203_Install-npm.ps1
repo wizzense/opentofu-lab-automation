@@ -1,53 +1,29 @@
-Param (
+Param(
     [Parameter(Mandatory)]
     [pscustomobject]$Config
 )
 
 function Install-NpmDependencies {
     [CmdletBinding(SupportsShouldProcess = $true)]
-    param (
-        [pscustomobject]$Config
-    )
+    param([pscustomobject]$Config)
 
-    # Bring in common helpers / Write-CustomLog, Invoke-LabStep, etc.
     . "$PSScriptRoot/../runner_utility_scripts/ScriptTemplate.ps1"
 
-    #---------------------------------------------------------------------
-    # Invoke within the standard Lab-Step wrapper
-    #---------------------------------------------------------------------
     Invoke-LabStep -Config $Config -Body {
-        param ($Config)
+        param($Config)
 
         Write-CustomLog 'Running 0203_Install-npm.ps1'
 
-        <#
-        .SYNOPSIS
-            Install frontend project dependencies using npm.
-
-        .DESCRIPTION
-            * Reads Node_Dependencies from $Config
-            * Optionally creates the frontend path and a stub package.json
-            * Executes `npm install` in that folder
-        #>
-
-        #--- Pull Node_Dependencies block --------------------------------
-        $nodeDeps = if ($Config -is [hashtable]) { 
-                        $Config['Node_Dependencies'] 
-                    } else { 
-                        $Config.Node_Dependencies 
-                    }
-
+        # Pull Node_Dependencies block
+        $nodeDeps = if ($Config -is [hashtable]) { $Config['Node_Dependencies'] } else { $Config.Node_Dependencies }
         if (-not $nodeDeps) {
-            Write-CustomLog "Config missing Node_Dependencies; skipping npm install."
+            Write-CustomLog 'Config missing Node_Dependencies; skipping npm install.'
             return
         }
 
-        #-----------------------------------------------------------------
         # Determine flags
-        #-----------------------------------------------------------------
-        $installNpm = $true          # default
-        $createPath = $false         # default
-
+        $installNpm = $true
+        $createPath = $false
         foreach ($key in @('InstallNpm','CreateNpmPath')) {
             if ($nodeDeps -is [hashtable]) {
                 if ($nodeDeps.ContainsKey($key)) {
@@ -58,4 +34,57 @@ function Install-NpmDependencies {
             }
         }
 
-        if (-not $insta
+        if (-not $installNpm) {
+            Write-CustomLog 'InstallNpm flag is disabled. Skipping project dependency installation.'
+            return
+        }
+
+        # Determine frontend path
+        $frontendPath = $null
+        if ($nodeDeps -is [hashtable]) {
+            if ($nodeDeps.ContainsKey('NpmPath')) { $frontendPath = $nodeDeps['NpmPath'] }
+        } elseif ($nodeDeps.PSObject.Properties.Match('NpmPath').Count) {
+            $frontendPath = $nodeDeps.NpmPath
+        }
+        if (-not $frontendPath) { $frontendPath = Join-Path $PSScriptRoot '..' 'frontend' }
+
+        if ($nodeDeps.PSObject.Properties.Match('NpmPath').Count -and [string]::IsNullOrWhiteSpace($nodeDeps.NpmPath)) {
+            throw 'Node_Dependencies.NpmPath is empty and CreateNpmPath is false.'
+        }
+
+        if (-not (Test-Path $frontendPath)) {
+            if ($createPath) {
+                Write-CustomLog "Creating missing frontend folder at: $frontendPath"
+                if ($PSCmdlet.ShouldProcess($frontendPath,'Create NpmPath')) {
+                    New-Item -ItemType Directory -Path $frontendPath -Force | Out-Null
+                }
+            } else {
+                throw "Frontend folder not found at: $frontendPath"
+            }
+        }
+
+        if (-not (Test-Path (Join-Path $frontendPath 'package.json'))) {
+            if ($createPath) {
+                '{}' | Set-Content -Path (Join-Path $frontendPath 'package.json')
+            } else {
+                Write-CustomLog "No package.json found in $frontendPath. Skipping npm install."
+                return
+            }
+        }
+
+        Push-Location $frontendPath
+        try {
+            Write-CustomLog "Running npm install in $frontendPath ..."
+            if ($PSCmdlet.ShouldProcess($frontendPath,'Run npm install')) { npm install }
+            Write-CustomLog 'npm install completed.'
+        } catch {
+            Write-Error "ERROR: npm install failed: $_"
+            exit 1
+        } finally {
+            Pop-Location
+        }
+        Write-CustomLog '==== Frontend dependency installation complete ===='
+    }
+}
+
+if ($MyInvocation.InvocationName -ne '.') { Install-NpmDependencies @PSBoundParameters }
