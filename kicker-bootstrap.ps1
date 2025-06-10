@@ -436,12 +436,12 @@ Write-CustomLog "Running $runnerScriptName from $repoPath ..."
 
 $args = @('-NoLogo','-NoProfile','-File',".\$runnerScriptName",'-ConfigFile',$ConfigFile)
 if ($Quiet) { $args += '-Quiet' }
-Start-Process -FilePath $pwshPath -ArgumentList $args -Wait -NoNewWindow
+$proc = Start-Process -FilePath $pwshPath -ArgumentList $args -Wait -NoNewWindow -PassThru
+$exitCode = $proc.ExitCode
 
-
-if ($LASTEXITCODE -ne 0) {
-    Write-CustomLog "Runner script failed with exit code $LASTEXITCODE"
-    exit $LASTEXITCODE
+if ($exitCode -ne 0) {
+    Write-CustomLog "Runner script failed with exit code $exitCode"
+    exit $exitCode
 }
 
 Write-CustomLog "`n=== Kicker script finished successfully! ==="
