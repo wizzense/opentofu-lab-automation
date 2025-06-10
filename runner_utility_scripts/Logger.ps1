@@ -1,58 +1,26 @@
 function Write-CustomLog {
-    [CmdletBinding()]
     param(
-        [Parameter(Mandatory=$true, Position=0)]
         [string]$Message,
-        [Parameter(Position=1)]
-        [string]$LogFile = $null,
-        [ValidateSet('INFO','WARN','ERROR')]
-        [string]$Level = 'INFO'
+        [ValidateSet('INFO','WARN','ERROR')] [string]$Level = 'INFO'
     )
+    $levelIdx = @{ INFO = 1; WARN = 1; ERROR = 0 }[$Level]
 
-    if (-not $PSBoundParameters.ContainsKey('LogFile')) {
-        $candidate = $null
-        if (Get-Variable -Name LogFilePath -Scope Script -ErrorAction SilentlyContinue) {
-            $candidate = Get-Variable -Name LogFilePath -Scope Script -ValueOnly
-        } elseif (Get-Variable -Name LogFilePath -Scope Global -ErrorAction SilentlyContinue) {
-            $candidate = Get-Variable -Name LogFilePath -Scope Global -ValueOnly
-        }
-
-        if (-not [string]::IsNullOrWhiteSpace($candidate)) {
-            $LogFile = $candidate
-        } else {
-            $logDir = $env:LAB_LOG_DIR
-            if (-not $logDir) {
-                if ($IsWindows) { $logDir = 'C:\\temp' } else { $logDir = [System.IO.Path]::GetTempPath() }
-            }
-            $LogFile = Join-Path $logDir 'lab.log'
-        }
+    if (-not (Get-Variable -Name LogFilePath -Scope Script -ErrorAction SilentlyContinue)) {
+        $logDir = $env:LAB_LOG_DIR
+        if (-not $logDir) { $logDir = if ($IsWindows) { 'C:\\temp' } else { [System.IO.Path]::GetTempPath() } }
+        $script:LogFilePath = Join-Path $logDir 'lab.log'
     }
 
-    $quiet = $false
-    if (Get-Variable -Name Quiet -Scope Script -ErrorAction SilentlyContinue) {
-        $quiet = Get-Variable -Name Quiet -Scope Script -ValueOnly
-    } elseif (Get-Variable -Name Quiet -Scope Global -ErrorAction SilentlyContinue) {
-        $quiet = Get-Variable -Name Quiet -Scope Global -ValueOnly
+    if (-not (Get-Variable -Name ConsoleLevel -Scope Script -ErrorAction SilentlyContinue)) {
+        $script:ConsoleLevel = 1
     }
-    if ($quiet -and $Level -eq 'INFO') { return }
 
-    $timestamp = Get-Date -Format 'yyyy-MM-dd HH:mm:ss'
+    $ts  = Get-Date -Format 'yyyy-MM-dd HH:mm:ss'
+    $fmt = "[$ts] [$Level] $Message"
+    $fmt | Out-File -FilePath $script:LogFilePath -Encoding utf8 -Append
 
-    $formatted = "[$timestamp] [$Level] $Message"
-    $color = 'White'
-    switch ($Level) {
-        'WARN'  { $color = 'Yellow' }
-        'ERROR' { $color = 'Red'    }
-    }
-    Write-Host $formatted -ForegroundColor $color
-
-    if ($LogFile) {
-        try {
-            $formatted | Out-File -FilePath $LogFile -Encoding utf8 -Append
-        } catch {
-        
-            Write-Host "[ERROR] Failed to write to log file ${LogFile}: $_" -ForegroundColor 'Red'
-
-        }
+    if ($levelIdx -le $script:ConsoleLevel) {
+        $color = @{ INFO='Gray'; WARN='Yellow'; ERROR='Red' }[$Level]
+        Write-Host $fmt -ForegroundColor $color
     }
 }

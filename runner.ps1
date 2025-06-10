@@ -3,7 +3,8 @@ param(
     [switch]$Auto,
     [string]$Scripts,
     [switch]$Force,
-    [switch]$Quiet
+    [ValidateSet('silent','normal','detailed')]
+    [string]$Verbosity = 'normal'
 )
 
 if ($PSVersionTable.PSVersion.Major -lt 7) {
@@ -12,7 +13,8 @@ if ($PSVersionTable.PSVersion.Major -lt 7) {
 }
 
 # expose quiet flag to logger
-$script:Quiet = $Quiet.IsPresent
+$script:VerbosityLevels = @{ silent = 0; normal = 1; detailed = 2 }
+$script:ConsoleLevel    = $script:VerbosityLevels[$Verbosity]
 
 # ─── Load helpers ──────────────────────────────────────────────────────────────
 . (Join-Path $PSScriptRoot 'runner_utility_scripts' 'Logger.ps1')
@@ -198,14 +200,15 @@ function Invoke-Scripts {
             $tempCfg = [System.IO.Path]::GetTempFileName()
             $Config | ConvertTo-Json -Depth 5 | Out-File -FilePath $tempCfg -Encoding utf8
             $sb = {
-                param($cfgPath, $scr, $quietFlag)
-                if ($quietFlag) { $script:Quiet = $true }
+                param($cfgPath, $scr, $verbosity)
+                $vl = @{ silent = 0; normal = 1; detailed = 2 }
+                $script:ConsoleLevel = $vl[$verbosity]
                 $cfg = Get-Content -Raw -Path $cfgPath | ConvertFrom-Json
                 & $scr -Config $cfg
                 exit $LASTEXITCODE
             }
 
-            & pwsh -NoLogo -NoProfile -Command $sb -Args $tempCfg, $scriptPath, $Quiet.IsPresent
+            & pwsh -NoLogo -NoProfile -Command $sb -Args $tempCfg, $scriptPath, $Verbosity
             Remove-Item $tempCfg -ErrorAction SilentlyContinue
 
             $results[$s.Name] = $LASTEXITCODE

@@ -17,15 +17,17 @@ Describe 'Write-CustomLog' {
         Set-StrictMode -Off
     }
 
-    It 'writes to specified log file when provided' {
-
+    It 'appends to log file when LogFilePath is set' {
         $tempFile = (Join-Path ([System.IO.Path]::GetTempPath()) ([System.Guid]::NewGuid().ToString())) + '.log'
-        Remove-Variable -Name LogFilePath -Scope Script -ErrorAction SilentlyContinue
-        Remove-Variable -Name LogFilePath -Scope Global -ErrorAction SilentlyContinue
-        Write-CustomLog 'hello world' -LogFile $tempFile
-        $content = Get-Content $tempFile -Raw
-        $content | Should -Match 'hello world'
-        Remove-Item $tempFile -ErrorAction SilentlyContinue
+        $script:LogFilePath = $tempFile
+        try {
+            Write-CustomLog 'hello world'
+            $content = Get-Content $tempFile -Raw
+            $content | Should -Match 'hello world'
+        } finally {
+            Remove-Item $tempFile -ErrorAction SilentlyContinue
+            Remove-Variable -Name LogFilePath -Scope Script -ErrorAction SilentlyContinue
+        }
     }
 
     It 'defaults to LogFilePath variable when not provided' {

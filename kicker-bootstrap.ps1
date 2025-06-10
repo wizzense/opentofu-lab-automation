@@ -16,13 +16,16 @@
 
 param(
     [string]$ConfigFile,
-    [switch]$Quiet
+    [ValidateSet('silent','normal','detailed')]
+    [string]$Verbosity = 'normal'
 )
+
+$script:VerbosityLevels = @{ silent = 0; normal = 1; detailed = 2 }
+$script:ConsoleLevel    = $script:VerbosityLevels[$Verbosity]
 
 $targetBranch = 'main'
 $defaultConfig = "https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/refs/heads/main/config_files/default-config.json"
 
-$script:Quiet = $Quiet.IsPresent
 
 # example: https://raw.githubusercontent.com/wizzense/tofu-base-lab/refs/heads/main/configs/bootstrap-config.json
 
@@ -75,19 +78,23 @@ if (-not (Get-Command Write-CustomLog -ErrorAction SilentlyContinue)) {
     function Write-CustomLog {
         param(
             [string]$Message,
-            [string]$LogFile,
-            [ValidateSet('INFO','WARN','ERROR')]
-            [string]$Level = 'INFO'
+            [ValidateSet('INFO','WARN','ERROR')] [string]$Level = 'INFO'
         )
-        if ($script:Quiet -and $Level -eq 'INFO') { return }
+        $levelIdx = @{ INFO = 1; WARN = 1; ERROR = 0 }[$Level]
+        if (-not (Get-Variable -Name LogFilePath -Scope Script -ErrorAction SilentlyContinue)) {
+            $logDir = $env:LAB_LOG_DIR
+            if (-not $logDir) { $logDir = if ($isWindowsOS) { 'C:\\temp' } else { [System.IO.Path]::GetTempPath() } }
+            $script:LogFilePath = Join-Path $logDir 'lab.log'
+        }
+        if (-not (Get-Variable -Name ConsoleLevel -Scope Script -ErrorAction SilentlyContinue)) {
+            $script:ConsoleLevel = 1
+        }
         $ts  = Get-Date -Format 'yyyy-MM-dd HH:mm:ss'
         $fmt = "[$ts] [$Level] $Message"
-        $color = 'White'
-        switch ($Level) { 'WARN' { $color = 'Yellow' } 'ERROR' { $color = 'Red' } }
-        Write-Host $fmt -ForegroundColor $color
-        if ($LogFile) {
-            try { $fmt | Out-File -FilePath $LogFile -Encoding utf8 -Append }
-            catch { Write-Host "Failed to write log to file: $_" -ForegroundColor 'Red' }
+        $fmt | Out-File -FilePath $script:LogFilePath -Encoding utf8 -Append
+        if ($levelIdx -le $script:ConsoleLevel) {
+            $color = @{ INFO='Gray'; WARN='Yellow'; ERROR='Red' }[$Level]
+            Write-Host $fmt -ForegroundColor $color
         }
     }
 }
@@ -373,14 +380,14 @@ if (!(Test-Path $repoPath)) {
     $prevEAP = $ErrorActionPreference
     $ErrorActionPreference = 'Continue'
 
-    & "$ghExePath" repo clone $config.RepoUrl $repoPath 2>&1 | Tee-Object -FilePath "$env:TEMP\gh_clone_log.txt"
+    & "$ghExePath" repo clone $config.RepoUrl $repoPath -- -q 2>&1 >> "$env:TEMP\gh_clone_log.txt"
 
     $ErrorActionPreference = $prevEAP
 
     # Fallback to git if the GitHub CLI clone appears to have failed
     if (!(Test-Path $repoPath)) {
         Write-CustomLog "GitHub CLI clone failed. Trying git clone..."
-        & "$gitPath" clone $config.RepoUrl $repoPath 2>&1 | Tee-Object -FilePath "$env:TEMP\git_clone_log.txt"
+        & "$gitPath" clone $config.RepoUrl $repoPath --quiet 2>&1 >> "$env:TEMP\git_clone_log.txt"
 
         if (!(Test-Path $repoPath)) {
             Write-Error "ERROR: Repository cloning failed. Check logs: $env:TEMP\gh_clone_log.txt and $env:TEMP\git_clone_log.txt"
@@ -390,13 +397,13 @@ if (!(Test-Path $repoPath)) {
 } else {
     Write-CustomLog "Repository already exists. Pulling latest changes..."
     Push-Location $repoPath
-    & "$gitPath" pull origin $targetBranch
+    & "$gitPath" pull origin $targetBranch --quiet 2>&1 >> "$env:TEMP\git.log"
     Pop-Location
 }
 
 # Ensure the desired branch is checked out and up to date
 Push-Location $repoPath
-& "$gitPath" fetch --all | Out-Null
+& "$gitPath" fetch --all --quiet 2>&1 >> "$env:TEMP\git.log"
 
 # Avoid noisy checkout messages when already on the target branch
 $currentBranch = (& "$gitPath" rev-parse --abbrev-ref HEAD).Trim()
@@ -412,7 +419,7 @@ if ($currentBranch -ne $targetBranch) {
 if ($checkoutCode -ne 0) {
     Write-Warning "Branch '$targetBranch' not found. Using current branch."
 } else {
-    & "$gitPath" pull origin $targetBranch | Out-Null
+    & "$gitPath" pull origin $targetBranch --quiet 2>&1 >> "$env:TEMP\git.log"
 }
 Pop-Location
 
@@ -434,8 +441,7 @@ if (!(Test-Path $runnerScriptName)) {
 
 Write-CustomLog "Running $runnerScriptName from $repoPath ..."
 
-$args = @('-NoLogo','-NoProfile','-File',".\$runnerScriptName",'-ConfigFile',$ConfigFile)
-if ($Quiet) { $args += '-Quiet' }
+$args = @('-NoLogo','-NoProfile','-File',".\$runnerScriptName",'-ConfigFile',$ConfigFile,'-Verbosity',$Verbosity)
 $proc = Start-Process -FilePath $pwshPath -ArgumentList $args -Wait -NoNewWindow -PassThru
 $exitCode = $proc.ExitCode
 
