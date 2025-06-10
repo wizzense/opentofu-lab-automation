@@ -14,7 +14,7 @@ Describe 'Node installation scripts' {
         $global = (Resolve-Path -ErrorAction Stop (Join-Path $PSScriptRoot '..' 'runner_scripts' '0202_Install-NodeGlobalPackages.ps1')).Path
         $npm    = (Resolve-Path -ErrorAction Stop (Join-Path $PSScriptRoot '..' 'runner_scripts' '0203_Install-npm.ps1')).Path
         Test-Path $core | Should -BeTrue
-        Test-Path $globalScript | Should -BeTrue
+        Test-Path $global | Should -BeTrue
         Test-Path $npm   | Should -BeTrue
     }
 
