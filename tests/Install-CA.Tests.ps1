@@ -14,6 +14,7 @@ Describe '0104_Install-CA script' {
         Mock Get-WindowsFeature { @{ Installed = $false } } -ParameterFilter { $Name -eq 'Adcs-Cert-Authority' }
         Mock Install-WindowsFeature {}
         Mock Get-Item { $null }
+        function global:Install-AdcsCertificationAuthority {}
         Mock Install-AdcsCertificationAuthority {}
 
         . $scriptPath
@@ -29,6 +30,7 @@ Describe '0104_Install-CA script' {
             CertificateAuthority = @{ CommonName = 'TestCA'; ValidityYears = 1 }
         }
         Mock Write-CustomLog {}
+        function global:Install-AdcsCertificationAuthority {}
         Mock Install-AdcsCertificationAuthority {}
 
         . $scriptPath
