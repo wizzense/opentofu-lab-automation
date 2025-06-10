@@ -28,7 +28,7 @@ Describe 'Get-LabConfig' {
         }
     }
 
-    It 'parses valid YAML' {
+    It 'parses valid YAML' -Skip:(-not (Get-Module -ListAvailable 'powershell-yaml')) {
         $modulePath = Join-Path $PSScriptRoot '..' 'lab_utils' 'Get-LabConfig.ps1'
         . $modulePath
         $yamlFile = Join-Path $PSScriptRoot 'test.yaml'

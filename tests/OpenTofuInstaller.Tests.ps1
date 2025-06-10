@@ -137,6 +137,7 @@ Describe 'OpenTofuInstaller' {
         $proc.ExitCode | Should -Be 2
 
     }
+    }
 
     Describe 'macOS defaults' {
         It 'allows -allUsers when Programfiles is missing' -Skip:(-not $IsMacOS) {
