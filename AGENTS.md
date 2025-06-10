@@ -46,7 +46,7 @@ he CI configuration and catches failures early.
 
 ---
 
-**Shortcut**: `task test` (defined in `InvokeBuild`) runs the same command the CI pipeline executes.
+**Shortcut**: `task test` (defined in `InvokeBuild`) runs the same steps as the lint, Pester and Pytest workflows.
 
 - **Style:** Run `Invoke-ScriptAnalyzer` for PowerShell and `ruff .` for Python to ensure code style.
 - **Docs:** Document-only changes belong under `docs/` and can skip tests but should still build successfully with `mkdocs build` once the docs site is implemented.
@@ -59,13 +59,13 @@ find . -maxdepth 2 -name AGENTS.md -print
 ### CI failure issues
 
 
-`.github/workflows/issue-on-fail.yml` opens an issue whenever the `CI` workflow ends in `failure`. It uses `actions-ecosystem/action-create-issue@v1` with the repository `GITHUB_TOKEN` and requests `issues: write` permissions. Check these issues when debugging failing runs and mention them when submitting fixes.
+`.github/workflows/issue-on-fail.yml` opens an issue whenever any of the lint, Pester or Pytest workflows end in `failure`. It uses `actions-ecosystem/action-create-issue@v1` with the repository `GITHUB_TOKEN` and requests `issues: write` permissions. Check these issues when debugging failing runs and mention them when submitting fixes.
 
 The `.github/workflows/issue-on-fail.yml` workflow listens for
-`workflow_run` events from the `CI` workflow. When the run concludes with a
+`workflow_run` events from the `Lint`, `Pester` and `Pytest` workflows. When a run concludes with a
 `failure` status, it opens a GitHub issue using
-`actions-ecosystem/action-create-issue@v1`. The issue title notes the branch that
-failed and the body links to the failing run.
+`actions-ecosystem/action-create-issue@v1`. The issue title notes the workflow name and branch that
+failed, and the body links to the failing run.
 
 To help debug flaky tests, consider enriching the issue body with details such
 as which jobs failed or key log excerpts. The `workflow_run` payload provides
