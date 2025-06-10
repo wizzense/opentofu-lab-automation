@@ -32,6 +32,7 @@ $ProgressPreference = 'SilentlyContinue'
 
 # Resolve script root even when $PSScriptRoot is not populated (e.g. -Command)
 $scriptRoot = if ($PSScriptRoot) { $PSScriptRoot } else { Split-Path -Parent $MyInvocation.MyCommand.Path }
+$isWindowsOS = [System.Environment]::OSVersion.Platform -eq 'Win32NT'
 
 # Ensure the logger utility is available even when this script is executed
 # standalone. If the logger script is missing, download it from the repository.
@@ -56,7 +57,7 @@ if (-not (Get-Variable -Name LogFilePath -Scope Script -ErrorAction SilentlyCont
     -not (Get-Variable -Name LogFilePath -Scope Global -ErrorAction SilentlyContinue)) {
     $logDir = $env:LAB_LOG_DIR
     if (-not $logDir) {
-        if ($IsWindows) { $logDir = 'C:\\temp' } else { $logDir = [System.IO.Path]::GetTempPath() }
+        if ($isWindowsOS) { $logDir = 'C:\\temp' } else { $logDir = [System.IO.Path]::GetTempPath() }
     }
     if (-not (Test-Path $logDir)) { New-Item -ItemType Directory -Path $logDir -Force | Out-Null }
     $script:LogFilePath = Join-Path $logDir 'lab.log'
@@ -204,6 +205,38 @@ try {
     Write-CustomLog "Git is installed and working."
 } catch {
     Write-Error "ERROR: Git installation failed or is not accessible. Exiting."
+    exit 1
+}
+
+# ------------------------------------------------
+# (2.5) Ensure PowerShell 7 is present
+# ------------------------------------------------
+$isWindowsOS = [System.Environment]::OSVersion.Platform -eq 'Win32NT'
+if (-not $isWindowsOS) {
+    Write-Error "PowerShell 7 installation via this script is only supported on Windows."
+    exit 1
+}
+
+Write-CustomLog "==== Checking if PowerShell 7 is installed ===="
+$pwshPath = "C:\\Program Files\\PowerShell\\7\\pwsh.exe"
+
+if (!(Test-Path $pwshPath)) {
+    if ($Config.InstallPwsh -eq $true) {
+        $pwshInstallerUrl = "https://github.com/PowerShell/PowerShell/releases/latest/download/PowerShell-7.5.1-win-x64.msi"
+        $pwshInstallerPath = Join-Path -Path $env:TEMP -ChildPath "PowerShellInstaller.msi"
+        Invoke-WebRequest -Uri $pwshInstallerUrl -OutFile $pwshInstallerPath -UseBasicParsing
+        Write-CustomLog "Installing PowerShell 7 silently..."
+        Start-Process msiexec.exe -ArgumentList "/i `"$pwshInstallerPath`" /quiet /norestart" -Wait -Verb RunAs
+        Remove-Item -Path $pwshInstallerPath -ErrorAction SilentlyContinue
+        Write-CustomLog "PowerShell 7 installation completed."
+    } else {
+        Write-Error "PowerShell 7 is required. Set InstallPwsh=true in the config."
+        exit 1
+    }
+}
+
+if (!(Test-Path $pwshPath)) {
+    Write-Error "ERROR: PowerShell 7 installation failed or is not accessible."
     exit 1
 }
 
