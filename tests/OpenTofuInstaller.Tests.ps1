@@ -43,7 +43,7 @@ if ($IsLinux -or $IsMacOS) { return }
             $global:startProcessCalled = $true
             $wrapper = $ArgumentList[3].Trim('"')
             # make logDir visible in the test’s script scope
-            Set-Variable -Scope Script -Name logDir -Value (Split-Path $wrapper -Parent)
+            $script:logDir = Split-Path $wrapper -Parent
             New-Item -ItemType File -Path (Join-Path $script:logDir 'stdout.log') -Force | Out-Null
             New-Item -ItemType File -Path (Join-Path $script:logDir 'stderr.log') -Force | Out-Null
             [pscustomobject]@{ ExitCode = 0 } | Add-Member -MemberType ScriptMethod -Name WaitForExit -Value { } -PassThru
