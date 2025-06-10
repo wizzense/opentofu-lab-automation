@@ -44,6 +44,7 @@ Describe 'runner.ps1 executing 0200_Get-SystemInfo' -Skip:($IsLinux -or $IsMacOS
             $obj.PSObject.Properties.Name | Should -Contain 'DiskInfo'
             $obj.PSObject.Properties.Name | Should -Contain 'RolesFeatures'
             $obj.PSObject.Properties.Name | Should -Contain 'LatestHotfix'
+
         }
         finally {
             Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue
