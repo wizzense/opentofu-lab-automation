@@ -31,6 +31,18 @@ When PowerShell is available via `pwsh`, run tests locally:
 pwsh -NoLogo -NoProfile -Command "Invoke-Pester"
 ```
 
+### CI failure issues
+
+The `.github/workflows/issue-on-fail.yml` workflow listens for
+`workflow_run` events from the `CI` workflow. When the run concludes with a
+`failure` status, it opens a GitHub issue using
+`actions-ecosystem/action-create-issue@v1`. The issue title notes the branch that
+failed and the body links to the failing run.
+
+To help debug flaky tests, consider enriching the issue body with details such
+as which jobs failed or key log excerpts. The `workflow_run` payload provides
+job-level results that can be inserted into the issue text.
+
 ---
 
 ## Phase 1  Cross-Platform Foundations (3 days)
