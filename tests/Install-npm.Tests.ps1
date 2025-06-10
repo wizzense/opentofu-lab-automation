@@ -10,7 +10,7 @@ Describe '0203_Install-npm' {
         $script:calledPath = $null
         function npm {
             param([string[]]$NpmArgs)
-            $script:calledPath = (Get-Location).ProviderPath
+            $script:calledPath = (Get-Location).Path
             $null = $NpmArgs
         }
 
@@ -66,7 +66,7 @@ Describe '0203_Install-npm' {
         $config = @{ Node_Dependencies = @{ NpmPath = $npmDir; CreateNpmPath = $true } }
 
         $script:calledPath = $null
-        function npm { param([string[]]$Args) $script:calledPath = (Get-Location).ProviderPath }
+        function npm { param([string[]]$Args) $script:calledPath = (Get-Location).Path }
 
         . $script -Config @{}
         Install-NpmDependencies -Config $config
