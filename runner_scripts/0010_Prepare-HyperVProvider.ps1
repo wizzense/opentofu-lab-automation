@@ -401,3 +401,4 @@ You can now run 'tofu plan'/'tofu apply' in $infraRepoPath.
     Write-CustomLog "PrepareHyperVHost flag is disabled. Skipping Hyper-V host preparation."
 }
 }
+}
