@@ -1,0 +1,23 @@
+. (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
+Describe 'Get-HyperVProviderVersion' {
+    It 'parses version from main.tf' {
+        $scriptPath = Join-Path $PSScriptRoot '..' 'runner_scripts' '0010_Prepare-HyperVProvider.ps1'
+        . $scriptPath
+        $tf = Join-Path ([System.IO.Path]::GetTempPath()) ([guid]::NewGuid()).ToString() + '.tf'
+        @'
+terraform {
+  required_providers {
+    hyperv = {
+      source  = "taliesins/hyperv"
+      version = "9.9.9"
+    }
+  }
+}
+'@ | Set-Content -Path $tf
+        try {
+            Get-HyperVProviderVersion -MainTfPath $tf | Should -Be '9.9.9'
+        } finally {
+            Remove-Item $tf -ErrorAction SilentlyContinue
+        }
+    }
+}
