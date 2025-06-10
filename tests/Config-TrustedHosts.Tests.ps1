@@ -8,7 +8,7 @@ Describe '0114_Config-TrustedHosts' {
 
         Mock Start-Process {}
 
-        & $script -Config $config
+        . $script -Config $config
 
         Assert-MockCalled Start-Process -ParameterFilter {
             $FilePath -eq 'cmd.exe' -and $ArgumentList -match 'TrustedHosts=\"host1\"'
