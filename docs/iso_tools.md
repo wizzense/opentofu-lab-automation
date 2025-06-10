@@ -6,5 +6,7 @@ The `iso_tools` directory contains scripts for building automated installation m
 - **bootstrap.ps1** – Downloads `kicker-bootstrap.ps1` from this repository and runs it. Used inside customized ISOs.
 - **autounattend - generic.xml** – Example unattended installation file for Windows Server.
 - **headlessunattend.xml** – Sample answer file for fully headless deployments.
+- **kickstart.cfg** – Example Kickstart file for automating Linux installations.
+- **kickstart-bootstrap.sh** – Shell helper that downloads `kickstart.cfg` and launches a sample `virt-install` command.
 
 These resources can be adapted to streamline automated lab setups.

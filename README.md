@@ -76,6 +76,9 @@ The repo expects the latest stable code on the `main` branch. When running
 `iso_tools/bootstrap.ps1`, you can override the branch with the `-Branch`
 parameter if needed.
 
+Linux users can run `./kickstart-bootstrap.sh` to download the example
+`kickstart.cfg` and launch a Kickstart-based install via `virt-install`.
+
 It will prompt print the current config and prompt you to customize it interactively. 
 
 
