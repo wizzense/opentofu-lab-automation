@@ -192,9 +192,9 @@ function Invoke-Scripts {
 }
 
 function Select-Scripts {
-    param([string]$Input)
-    if ($Input -eq 'all') { return $ScriptFiles }
-    $prefixes = $Input -split ',' | ForEach-Object { $_.Trim() } | Where-Object { $_ -match '^\d{4}$' }
+    param([string]$Selection)
+    if ($Selection -eq 'all') { return $ScriptFiles }
+    $prefixes = $Selection -split ',' | ForEach-Object { $_.Trim() } | Where-Object { $_ -match '^\d{4}$' }
     if (-not $prefixes)   { Write-CustomLog "No valid prefixes."; return @() }
     $matches  = $ScriptFiles | Where-Object { $prefixes -contains $_.Name.Substring(0,4) }
     if (-not $matches)    { Write-CustomLog "No matching scripts."; }
@@ -203,7 +203,7 @@ function Select-Scripts {
 
 # ─── Non-interactive or interactive execution ────────────────────────────────
 if ($Scripts) {
-    $sel = Select-Scripts -Input ($Scripts -eq 'all' ? 'all' : $Scripts)
+    $sel = Select-Scripts -Selection ($Scripts -eq 'all' ? 'all' : $Scripts)
     if (-not $sel) { exit 1 }
     if (-not (Invoke-Scripts -ScriptsToRun $sel)) { exit 1 }
     exit 0
@@ -215,7 +215,7 @@ while ($true) {
     Write-CustomLog "Or type 'exit' to quit."
     $choice = Read-Host "Enter selection"
     if ($choice -match '^(?i)exit$') { break }
-    $selected = Select-Scripts -Input $choice
+    $selected = Select-Scripts -Selection $choice
     if ($selected) { if (-not (Invoke-Scripts -ScriptsToRun $selected)) { $LASTEXITCODE = 1 } }
 }
 
