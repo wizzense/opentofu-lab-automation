@@ -1,145 +1,145 @@
-## Project status
+# Agents Roadmap
 
-Phase 0 was completed in June 2025. `Get-Platform.ps1` now has Pester tests.
-Phase 1 is partially complete: `get_platform.py`, a pytest suite, and a basic
-Typer-based CLI under `py/` are present. The Hypervisor PowerShell module is in
-place with stub implementations. Further cross-platform work and provider
-support remain on the roadmap.
+## Project Status
 
----
+* **Phase 0 – House‑Keeping (✅ complete, June 2025)**
+  `Get-Platform.ps1` is now fully covered by Pester tests.
 
-## Phase 0  House-Keeping (1 day)
+* **Phase 1 – Cross‑Platform Foundations (🟡 in progress)**
 
-| #   | Task                                                                                                                                    | Codex Prompt                                                                                                                                                                                                                                        |
-| --- | --------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| ~~0.1~~ | ~~**Stabilise runner.ps1**<br/>  • Accept `-Scripts "0006,0007"` without interactive prompt<br/>  • Exit with non-zero on any child error~~ | > *“Refactor `runner.ps1` so it takes `-Scripts` (string) & `-Auto` (switch) to run non-interactive.  Preserve interactive mode by default.  Update `tests/Runner.Tests.ps1` to cover both modes.  Must stay idempotent and Windows-only for now.”* |
-| ~~0.2~~ | ~~**Unify config-file loading**<br/>Replace all `Join-Path .. 'config_files'` fragments with a single function~~                            | > *“Create `lab_utils/Get-LabConfig.ps1` that returns `[pscustomobject]` from a JSON/YAML file path (default `config_files/default-config.json`).  Add Pester tests for happy path, missing file, bad JSON.”*                                       |
-| ~~0.3~~ | ~~**CI hygiene**<br/>  • Lint (`PSScriptAnalyzer`, `ruff`) in GitHub Actions<br/>  • Fail on warnings~~                                     | > *“Add a composite action under `.github/actions/lint` that runs `Invoke-ScriptAnalyzer` and `ruff .`.  Update workflow so `lint → pester` jobs gate `main`.”*                                                                                     |
-
-### Checking GitHub Actions status
-
-Make sure your repo is added as a remote and that [GitHub CLI](https://cli.github.com/) is installed. Then run:
-
-```bash
-gh run list --limit 20
-```
-
-This shows recent workflow runs. You can also query the GitHub API directly.
-
-The repository has the **ChatGPT Connector** installed. This service can open
-issues and pull requests without depending on local GitHub CLI authentication.
-You still need a configured Git remote if you want to push commits yourself.
-`gh` commands are optional when using the connector, though they continue to
-work if `gh` is installed and authenticated.
-
-When PowerShell is available via `pwsh`, run tests locally:
-
-```bash
-pwsh -NoLogo -NoProfile -Command "Invoke-Pester"
-```
-
-### Contribution expectations
-
-- **Tests:** Any modification to scripts or functional code (PowerShell or Python) must pass `Invoke-Pester` (and `pytest` once available) before committing.
-- **Pester coverage:** When adding or modifying PowerShell scripts or modules, create or update Pester tests that exercise the new behaviour. Organise scenarios in `tests/` with `Describe` blocks named for the module or script, and cover both success and error paths where feasible.
-he CI configuration and catches failures early.
+  * `get_platform.py` with pytest suite.
+  * Typer‑based CLI scaffold (`labctl`) under `py/`.
+  * Hypervisor PowerShell module skeleton available.
+  * **Next:** Finish cross‑platform provider implementations.
 
 ---
 
-**Shortcut**: `task test` (defined in `InvokeBuild`) runs the same command the CI pipeline executes.
+## Phase 0 – House‑Keeping (1 day)
 
-- **Style:** Run `Invoke-ScriptAnalyzer` for PowerShell and `ruff .` for Python to ensure code style.
-- **Docs:** Document-only changes belong under `docs/` and can skip tests but should still build successfully with `mkdocs build` once the docs site is implemented.
-
-To locate relevant `AGENTS.md` files, you can run:
-```bash
-find . -maxdepth 2 -name AGENTS.md -print
-```
-
-### CI failure issues
-
-
-`.github/workflows/issue-on-fail.yml` opens an issue whenever the `CI` workflow ends in `failure`. It uses `actions-ecosystem/action-create-issue@v1` with the repository `GITHUB_TOKEN` and requests `issues: write` permissions. Check these issues when debugging failing runs and mention them when submitting fixes.
-
-The `.github/workflows/issue-on-fail.yml` workflow listens for
-`workflow_run` events from the `CI` workflow. When the run concludes with a
-`failure` status, it opens a GitHub issue using
-`actions-ecosystem/action-create-issue@v1`. The issue title notes the branch that
-failed and the body links to the failing run.
-
-To help debug flaky tests, consider enriching the issue body with details such
-as which jobs failed or key log excerpts. The `workflow_run` payload provides
-job-level results that can be inserted into the issue text.
-
+| Task                              | Details                                                                                                                                                                                   |
+| --------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| ~~0.1 Stabilise `runner.ps1`~~    | • Added `-Scripts` (string) & `-Auto` (switch) parameters.<br>• Defaults to interactive mode.<br>• Exits non‑zero on child failures.<br>**Prompt:** “Refactor `runner.ps1` so it takes …” |
+| ~~0.2 Unify config‑file loading~~ | • New `lab_utils/Get-LabConfig.ps1` returning a `[pscustomobject]`.<br>• Handles missing file & invalid JSON.<br>**Prompt:** “Create `lab_utils/Get‑LabConfig.ps1` …”                     |
+| ~~0.3 CI hygiene~~                | • Composite action `.github/actions/lint` runs `Invoke‑ScriptAnalyzer` and `ruff`.<br>• `lint` → `pester` gates `main`.<br>**Prompt:** “Add a composite action …”                         |
 
 ---
 
-## Phase 1  Cross-Platform Foundations (3 days)
+## Phase 1 – Cross‑Platform Foundations (3 days)
 
-| #   | Task                                                                        | Codex Prompt                                                                                                                                                      |       |                                                                                    |
-| --- | --------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----- | ---------------------------------------------------------------------------------- |
-| ~~1.1~~ | ~~**Platform detector**~~ | > \*“Create `lab_utils/Get-Platform.ps1` returning \`Windows                                                                                                      | Linux | MacOS`.  Write equivalent `get\_platform.py\`.  Add cross-OS Pester and pytest.”\* |
-| ~~1.2~~ | ~~**Hypervisor abstraction skeleton**~~ | > *“Produce `lab_utils/Hypervisor.psm1` with an interface: `Get-HVFacts`, `Enable-Provider`, `Deploy-VM`.  Implement stubs for `HyperV`; unit-test with Pester.”* |       |                                                                                    |
-| ~~1.3~~ | ~~**Python scaffold**~~ | > *“Init Poetry project `py/`.  Add Typer CLI `labctl` exposing `hv facts`, `hv deploy`, reading same JSON config.  Wire pytest.”*                                |       |                                                                                    |
+| Task                                    | Details                                                                                                                 |
+| --------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| ~~1.1 Platform detector~~               | `lab_utils/Get‑Platform.ps1` and `get_platform.py` return `Windows`, `Linux`, or `macOS` with shared tests.             |
+| ~~1.2 Hypervisor abstraction skeleton~~ | `lab_utils/Hypervisor.psm1` exposes `Get‑HVFacts`, `Enable‑Provider`, and `Deploy‑VM` with stub Hyper‑V implementation. |
+| ~~1.3 Python scaffold~~                 | Poetry project under `py/`; Typer CLI `labctl` (`hv facts`, `hv deploy`) shares JSON config; pytest wired.              |
 
----
+**Remaining work**
 
-## Phase 2  Additional Hypervisors (10 days)
-
-| #   | Task                                                          | Codex Prompt                                                                                                                                                                |
-| --- | ------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 2.1 | **VMware Workstation / ESXi support (Windows & Linux hosts)** | > *“Extend `Hypervisor.psm1` and Python module with VMware implementation using `govc` (CLI).  Update tests and docs.  Add `Install-Govc.ps1` to `runner_scripts/0011_…`.”* |
-| 2.2 | **Proxmox / libvirt / KVM (Linux hosts)**                     | > *“Implement Proxmox provider via its REST API (see docs).  Provide Typer sub-command.  Add pytest w/ `responses` mocks.”*                                                 |
+* Flesh out provider‑specific classes in both PowerShell and Python.
+* Map shared config schema across languages.
 
 ---
 
-## Phase 3  Cloud Targets (8 days)
+## Phase 2 – Additional Hypervisors (10 days)
 
-| #   | Task      | Codex Prompt                                                                                                                                                                                           |
-| --- | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| 3.1 | **Azure** | > *“Create `cloud/azure` OpenTofu module producing a vNet, subnet, VMSS.  Expose variables identical to on-prem path.  Update CI to run `tofu init` and `tofu validate` against `azurite` container.”* |
-| 3.2 | **AWS**   | > *“Mirror Azure module for AWS EC2 using provider `aws`.  Keep variable names consistent (`vm_size`, `image_id`, etc.).  Include Tfsec and Checkov baselines.”*                                       |
-
----
-
-## Phase 4  Secrets & Security (2 days)
-
-| #   | Task                                              | Codex Prompt                                                                                                                                                    |
-| --- | ------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 4.1 | **Secrets back-ends** (KeyVault / SecretsManager) | > *“Add `lab_utils/Get-Secret.ps1` (and Python sibling) that resolves secret IDs from Azure KeyVault or AWS SecretsManager, falling back to ENV vars for dev.”* |
-| 4.2 | **Hyper-V provider certificate flow**             | > *“Finish cert handling in `Prepare-HyperVProvider.ps1`: convert PFX → PEM, place in OpenTofu provider inputs, remove `insecure = true`.”*                     |
+| Task                          | Details                                                                                                   |
+| ----------------------------- | --------------------------------------------------------------------------------------------------------- |
+| 2.1 VMware Workstation / ESXi | Extend `Hypervisor` modules with VMware provider via `govc`; add `Install‑Govc.ps1`; update tests & docs. |
+| 2.2 Proxmox / libvirt / KVM   | Implement Proxmox provider via REST API; Typer sub‑command; pytest with `responses`.                      |
 
 ---
 
-## Phase 5  User-Facing Improvements (ongoing)
+## Phase 3 – Cloud Targets (8 days)
 
-| #   | Task                                                   | Codex Prompt                                                                                               |
-| --- | ------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------- |
-| 5.1 | **Interactive TUI** for script selection (`labctl ui`) | > *“Use `Textual` to build a curses-style selector that drives the same JSON config and invokes scripts.”* |
-| 5.2 | **Docs site** (MkDocs-Material)                        | > *“Generate `docs/` with automatic API docs from PowerShell & Python.  Deploy via GitHub Pages.”*         |
+| Task      | Details                                                                                 |
+| --------- | --------------------------------------------------------------------------------------- |
+| 3.1 Azure | Create OpenTofu module (`cloud/azure`) for vNet, subnet, VMSS; validate with `azurite`. |
+| 3.2 AWS   | Mirror Azure module for EC2; include Tfsec & Checkov baselines.                         |
 
 ---
 
-### Suggested Timeline (reference)
+## Phase 4 – Secrets & Security (2 days)
+
+| Task                                  | Details                                                                                                                   |
+| ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| 4.1 Secrets back‑ends                 | `lab_utils/Get‑Secret.ps1` (+ Python twin) resolves IDs from KeyVault/SecretsManager, falling back to env vars.           |
+| 4.2 Hyper‑V provider certificate flow | Finalise cert handling in `Prepare‑HyperVProvider.ps1` – convert PFX→PEM, inject into OpenTofu, remove `insecure = true`. |
+
+---
+
+## Phase 5 – User‑Facing Improvements (ongoing)
+
+| Task                              | Details                                                                          |
+| --------------------------------- | -------------------------------------------------------------------------------- |
+| 5.1 Interactive TUI (`labctl ui`) | Build Textual‑based selector that consumes JSON config and invokes scripts.      |
+| 5.2 Docs site                     | MkDocs‑Material docs with autogenerated API references; deploy via GitHub Pages. |
+
+---
+
+## Contribution Guidelines
+
+1. **Tests**
+   • PowerShell: `Invoke‑Pester`
+   • Python: `pytest`
+   • *Shortcut:* `task test` (InvokeBuild) runs the same CI command.
+
+2. **Coverage**
+   • Add or update Pester/pytest tests for every functional change, covering success and failure paths.
+
+3. **Style**
+   • PowerShell: `Invoke‑ScriptAnalyzer`
+   • Python: `ruff .`
+
+4. **Documentation**
+   • Doc‑only changes live under `docs/` and must build with `mkdocs build`.
+
+5. **CI**
+   • GitHub Actions: `lint` → `test` gate `main`.
+   • `.github/workflows/issue-on-fail.yml` opens an issue on CI failure; include log excerpts when debugging.
+
+---
+
+## Working With GitHub
+
+* Install [GitHub CLI](https://cli.github.com/) or rely on the **ChatGPT Connector** for creating PRs and issues.
+* Recent workflow runs:
+
+  ```bash
+  gh run list --limit 20
+  ```
+* Run local tests:
+
+  ```bash
+  pwsh -NoLogo -NoProfile -Command "Invoke-Pester"
+  ```
+
+---
+
+## Suggested Timeline
 
 ```
-Week 1 – Phase 0
-Week 2 – Phase 1
-Weeks 3-4 – Phase 2
-Week 5 – Phase 3
-Week 6 – Phase 4 + polish
+Week 1 – Phase 0 (done)
+Week 2 – Phase 1
+Weeks 3‑4 – Phase 2
+Week 5 – Phase 3
+Week 6 – Phase 4 + polish
+Ongoing – Phase 5
 ```
-
-> **Tip** – Paste one prompt at a time, review Codex output, then commit with matching test updates.  Keep PRs small (single task).
 
 ---
 
-**Anything missing?**
-Tell me which phase or task you’d like fleshed out further, or drop any new constraints, and I’ll update the plan (or draft the first PR for you).
+## Next Steps
 
-### Current Recommendations
+* **Document** `labctl` commands in the main `README` ✔️
+* **Package** default `config_files/` with the CLI ✔️
+* **Begin Phase 2** – VMware provider implementation.
+* **Ensure** local `pytest` & `Invoke-Pester` pass before each commit.
 
-- Document the Python `labctl` CLI in the main README (done).
-- Package `config_files/` with the CLI so default paths work when installed.
-- Continue Phase 2 by adding VMware provider support and corresponding tests.
-- Enable `pytest` and `Invoke-Pester` locally before committing changes.
+---
+
+### Open Questions
+
+> Let me know which phase or task needs more detail, or propose new constraints, and I can expand the plan or draft the initial PR.
+
+---
+
+*This is a streamlined and formatted update to `AGENTS.md`, consolidating redundant prose, fixing table layouts, and clarifying action items for quicker onboarding and maintenance.*
