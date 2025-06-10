@@ -1,9 +1,12 @@
 import json
 from pathlib import Path
+from importlib.resources import files
 import typer
 import yaml
 
-BASE_DIR = Path(__file__).resolve().parents[1]
+
+def default_config_path() -> Path:
+    return Path(files("labctl").joinpath("config_files", "default-config.json"))
 
 app = typer.Typer()
 hv_app = typer.Typer()
@@ -19,9 +22,7 @@ def load_config(path: Path) -> dict:
 
 @hv_app.command()
 def facts(
-    config: Path = typer.Option(
-        Path(BASE_DIR / "config_files" / "default-config.json"), exists=True
-    )
+    config: Path = typer.Option(default_config_path(), exists=True)
 ):
     """Show hypervisor facts from config."""
     cfg = load_config(config)
@@ -31,9 +32,7 @@ def facts(
 
 @hv_app.command()
 def deploy(
-    config: Path = typer.Option(
-        Path(BASE_DIR / "config_files" / "default-config.json"), exists=True
-    )
+    config: Path = typer.Option(default_config_path(), exists=True)
 ):
     """Pretend to deploy using the hypervisor config."""
     cfg = load_config(config)
@@ -43,3 +42,4 @@ def deploy(
 
 if __name__ == "__main__":
     app()
+
