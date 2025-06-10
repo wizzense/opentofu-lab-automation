@@ -522,9 +522,15 @@ function installStandalone() {
 
         $internalZipFile = Join-Path $tempPath $zipName
 
-        if ($allUsers -and (!
-            (New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator))
-        )
+        $hasAdminPrivileges = $false
+        try {
+            $principal = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
+            $hasAdminPrivileges = $principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
+        } catch {
+            $hasAdminPrivileges = $false
+        }
+
+        if ($allUsers -and (-not $hasAdminPrivileges))
         {
             # Note on this section: we are requesting elevated privileges via UAC. Unfortunately, this is only possible
             # by launching the current script again as Administrator. This can cause some weird parsing bugs in
