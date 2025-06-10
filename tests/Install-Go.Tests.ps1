@@ -4,7 +4,7 @@ Describe '0007_Install-Go' -Skip:($IsLinux -or $IsMacOS) {
     BeforeAll { $script:ScriptPath = Join-Path $PSScriptRoot '..' 'runner_scripts' '0007_Install-Go.ps1' }
 
     It 'installs Go when enabled' {
-        $cfg = [pscustomobject]@{ InstallGo = $true; Go = @{ InstallerUrl = 'http://example.com/go.msi' } }
+        $cfg = [pscustomobject]@{ InstallGo = $true; Go = @{ InstallerUrl = 'http://example.com/go1.21.0.windows-amd64.msi' } }
         Mock Get-Command {} -ParameterFilter { $Name -eq 'go' }
         Mock Invoke-WebRequest {}
         Mock Start-Process {}
@@ -15,7 +15,7 @@ Describe '0007_Install-Go' -Skip:($IsLinux -or $IsMacOS) {
     }
 
     It 'skips when InstallGo is false' {
-        $cfg = [pscustomobject]@{ InstallGo = $false; Go = @{ InstallerUrl = 'http://example.com/go.msi' } }
+        $cfg = [pscustomobject]@{ InstallGo = $false; Go = @{ InstallerUrl = 'http://example.com/go1.21.0.windows-amd64.msi' } }
         Mock Invoke-WebRequest {}
         Mock Start-Process {}
         Mock Write-CustomLog {}
@@ -25,7 +25,7 @@ Describe '0007_Install-Go' -Skip:($IsLinux -or $IsMacOS) {
     }
 
     It 'does nothing when Go is already installed' {
-        $cfg = [pscustomobject]@{ InstallGo = $true; Go = @{ InstallerUrl = 'http://example.com/go.msi' } }
+        $cfg = [pscustomobject]@{ InstallGo = $true; Go = @{ InstallerUrl = 'http://example.com/go1.21.0.windows-amd64.msi' } }
         Mock Get-Command { @{ Name = 'go' } } -ParameterFilter { $Name -eq 'go' }
         Mock Invoke-WebRequest {}
         Mock Start-Process {}
