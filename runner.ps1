@@ -259,8 +259,14 @@ function Invoke-Scripts {
                 $vl = @{ silent = 0; normal = 1; detailed = 2 }
                 $script:ConsoleLevel = $vl[$verbosity]
                 $cfg = Get-Content -Raw -Path $cfgPath | ConvertFrom-Json
-                & $scr -Config $cfg
-                exit $LASTEXITCODE
+                try {
+                    & $scr -Config $cfg
+                    $exit = if ($LASTEXITCODE) { $LASTEXITCODE } elseif (-not $?) { 1 } else { 0 }
+                    exit $exit
+                } catch {
+                    $_ | Out-String | Write-Error
+                    exit 1
+                }
             }
 
             $output = & pwsh -NoLogo -NoProfile -Command $sb -Args $tempCfg, $scriptPath, $Verbosity *>&1
@@ -270,16 +276,6 @@ function Invoke-Scripts {
             }
 
             Remove-Item $tempCfg -ErrorAction SilentlyContinue
-
-        try {
-            $scriptOutput = & pwsh -NoLogo -NoProfile -Command $sb -Args $tempCfg, $scriptPath, $Verbosity 2>&1
-        }
-        catch {
-            $scriptOutput = & pwsh -NoLogo -NoProfile -Command $sb -Args $tempCfg, $scriptPath, $Verbosity *>&1
-        }
-        Write-Output $scriptOutput
-        Remove-Item $tempCfg -ErrorAction SilentlyContinue
-
 
             $results[$s.Name] = $LASTEXITCODE
             if ($LASTEXITCODE) {
