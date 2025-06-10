@@ -3,6 +3,7 @@ from typer.testing import CliRunner
 from labctl.cli import app
 
 CONFIG_PATH = Path(__file__).resolve().parents[2] / "config_files" / "default-config.json"
+assert CONFIG_PATH.exists(), f"Config file missing: {CONFIG_PATH}"
 
 
 def test_hv_facts():

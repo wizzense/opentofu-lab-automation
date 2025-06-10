@@ -13,6 +13,10 @@ tofu init && tofu apply
 
 The configuration reads variables from `lab_config.yaml`, which you can copy from `templates/lab_config.sample.yaml`.
 
+## Documentation
+
+Detailed guides and module references are located in the [docs](docs/) directory. Start with [docs/index.md](docs/index.md) for an overview.
+
 
   Kicker script for a fresh Windows Server Core setup
 

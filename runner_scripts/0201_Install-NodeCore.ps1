@@ -35,10 +35,16 @@ if (-not $nodeDeps) {
 
 if ($nodeDeps.InstallNode) {
     try {
-        $url = if ($nodeDeps.Node.InstallerUrl) {
-            $nodeDeps.Node.InstallerUrl
-        } else {
-            "https://nodejs.org/dist/v20.11.1/node-v20.11.1-x64.msi"
+        $url = $null
+        if ($nodeDeps.Node) {
+            if ($nodeDeps.Node -is [hashtable]) {
+                $url = $nodeDeps.Node['InstallerUrl']
+            } elseif ($nodeDeps.Node.PSObject.Properties.Match('InstallerUrl').Count -gt 0) {
+                $url = $nodeDeps.Node.InstallerUrl
+            }
+        }
+        if (-not $url) {
+            $url = "https://nodejs.org/dist/v20.11.1/node-v20.11.1-x64.msi"
         }
 
         $installerPath = Join-Path $env:TEMP "node-installer.msi"
