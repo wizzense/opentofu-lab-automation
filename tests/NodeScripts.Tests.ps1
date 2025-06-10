@@ -69,7 +69,6 @@ Describe 'Node installation scripts' {
     
         $global = (Resolve-Path -ErrorAction Stop (Join-Path $PSScriptRoot '..' 'runner_scripts' '0202_Install-NodeGlobalPackages.ps1')).Path
         . $global
-n
 
         Install-NodeGlobalPackages -Config @{ Node_Dependencies = @{ InstallYarn=$false; InstallVite=$false; InstallNodemon=$false } }
         function npm { param([string[]]$testArgs) }
