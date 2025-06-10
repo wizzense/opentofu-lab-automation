@@ -141,6 +141,8 @@ Describe 'OpenTofuInstaller' {
     }
     }
 
+    }
+
     Describe 'macOS defaults' {
         It 'allows -allUsers when Programfiles is missing' -Skip:(-not $IsMacOS) {
             $scriptPath = Join-Path $PSScriptRoot '..' 'runner_utility_scripts' 'OpenTofuInstaller.ps1'
