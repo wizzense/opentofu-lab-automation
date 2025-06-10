@@ -175,24 +175,24 @@ This guide explains how to pull the latest Windows job artifacts, analyse test &
 
 5. ### Fix & verify locally
 
-   1. Edit scripts or tests under `src/` or `tests/`.
-   2. Re‑run just the Windows‑affected tests:
-
-      ```powershell
-      Invoke-Pester tests/Install-OpenTofu.Tests.ps1 -Output Detailed
-      ```
-   3. Iterate until **all tests pass**.
+    1. Edit scripts or tests.
+    2. Commit changes to a new branch and push.
+    3. Wait for the **windows-latest** CI job.
+    4. Download results via `lab_utils/Get-WindowsJobArtifacts.ps1`.
+    5. Iterate until no failing tests remain.
 
 6. ### Commit & push
 
-   ```bash
-   git commit -am "Fix Windows test failures: <brief description>"
-   git push
-   ```
+    Windows tests run only in CI. Commit your changes and push to trigger a new workflow:
+
+    ```bash
+    git commit -am "Fix Windows test failures: <brief description>"
+    git push
+    ```
 
 7. ### Re‑run the CI workflow
 
-   *GitHub Actions will trigger automatically; confirm the **windows‑latest** job is green.*
+    *Windows tests run exclusively in CI. GitHub Actions triggers automatically—confirm the **windows‑latest** job is green.*
 
 ## Troubleshooting
 
