@@ -257,6 +257,7 @@ function Prompt-Scripts {
     $names = $ScriptFiles | ForEach-Object { $_.Name }
     $selNames = Get-MenuSelection -Items $names -Title 'Select scripts to run' -AllowAll
     if (-not $selNames) { return @() }
+    $selNames = @($selNames)  # ensure array semantics for single selections
     return $ScriptFiles | Where-Object { $selNames -contains $_.Name }
 }
 
