@@ -9,11 +9,15 @@ Describe 'Reset-Machine script' {
         Remove-Variable -Name LogFilePath -Scope Script -ErrorAction SilentlyContinue
     }
 
-    It 'calls Restart-Computer on Windows' {
+    It 'invokes sysprep on Windows' {
         Mock Get-Platform { 'Windows' }
-        Mock Restart-Computer {}
+        $sysprep = 'C:\\Windows\\System32\\Sysprep\\Sysprep.exe'
+        Mock Test-Path { $true } -ParameterFilter { $Path -eq $sysprep }
+        Mock Start-Process {}
         . $script:ScriptPath -Config ([pscustomobject]@{})
-        Assert-MockCalled Restart-Computer -Times 1
+        Assert-MockCalled Start-Process -Times 1 -ParameterFilter {
+            $FilePath -eq $sysprep -and $ArgumentList -eq '/generalize /oobe /shutdown /quiet' -and $Wait
+        }
     }
 
     It 'calls Restart-Computer on Linux' {

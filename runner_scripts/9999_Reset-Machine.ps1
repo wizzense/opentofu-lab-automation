@@ -7,7 +7,16 @@ Invoke-LabStep -Config $Config -Body {
     Write-CustomLog 'Running 9999_Reset-Machine.ps1'
     $platform = Get-Platform
     Write-CustomLog "Detected platform: $platform"
-    if ($platform -in @('Windows','Linux','MacOS')) {
+    if ($platform -eq 'Windows') {
+        $sysprep = 'C:\\Windows\\System32\\Sysprep\\Sysprep.exe'
+        if (Test-Path $sysprep) {
+            Write-CustomLog "Invoking sysprep at $sysprep"
+            Start-Process $sysprep -ArgumentList '/generalize /oobe /shutdown /quiet' -Wait
+        } else {
+            Write-CustomLog 'Sysprep not found; unable to reset.' -Level 'ERROR'
+            exit 1
+        }
+    } elseif ($platform -in @('Linux','MacOS')) {
         Write-CustomLog 'Initiating system reboot...'
         Restart-Computer
     } else {
