@@ -275,9 +275,14 @@ function Invoke-Scripts {
             $exitCode = $LASTEXITCODE
 
             foreach ($line in $output) {
-                if ($line) {
+                if (-not $line) { continue }
+                if ($line -is [System.Management.Automation.ErrorRecord]) {
+                    Write-Error $line.ToString()
+                } elseif ($line -is [System.Management.Automation.WarningRecord]) {
+                    Write-Warning $line.ToString()
+                } else {
                     Write-CustomLog $line.ToString()
-                    Write-Output $line.ToString()
+
                 }
             }
 
