@@ -248,7 +248,8 @@ and prevents Git from prompting for a username like `user@github.com`.
 ## Running tests
 
 PowerShell 7 or later is required to run the Pester suite. Install `pwsh` with
-your platform's package manager and then execute the tests:
+your platform's package manager, install the test dependencies, and then run
+the tests:
 
 ```bash
 # Windows
@@ -260,6 +261,7 @@ sudo apt-get update && sudo apt-get install -y powershell
 # macOS
 brew install --cask powershell
 
+pwsh -NoLogo -NoProfile -File ./install-test-deps.ps1
 pwsh -NoLogo -NoProfile -Command "Invoke-Pester"
 ```
 
