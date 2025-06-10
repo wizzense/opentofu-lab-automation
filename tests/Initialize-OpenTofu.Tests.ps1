@@ -1,7 +1,12 @@
 . (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
+. (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
 Describe 'Initialize-OpenTofu script' {
     BeforeAll {
         $script:ScriptPath = Join-Path $PSScriptRoot '..' 'runner_scripts' '0009_Initialize-OpenTofu.ps1'
+    }
+    AfterEach {
+        Remove-Item Function:gh -ErrorAction SilentlyContinue
+        Remove-Item Function:tofu -ErrorAction SilentlyContinue
     }
 
     It 'clones repo when InfraRepoUrl is provided' {

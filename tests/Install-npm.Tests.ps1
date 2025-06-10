@@ -1,5 +1,9 @@
 . (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
+. (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
 Describe '0203_Install-npm' {
+    AfterEach {
+        Remove-Item Function:npm -ErrorAction SilentlyContinue
+    }
     It 'runs npm install in configured NpmPath' {
         $script = Join-Path $PSScriptRoot '..' 'runner_scripts' '0203_Install-npm.ps1'
         $npmDir = Join-Path ([System.IO.Path]::GetTempPath()) ([System.Guid]::NewGuid())
@@ -21,7 +25,6 @@ Describe '0203_Install-npm' {
         $script:calledPath | Should -Be (Get-Item $npmDir).FullName
 
         Remove-Item -Recurse -Force $npmDir
-        Remove-Item function:npm -ErrorAction SilentlyContinue
     }
 
     It 'succeeds when NpmPath exists' {
@@ -43,7 +46,6 @@ Describe '0203_Install-npm' {
         $success | Should -BeTrue
 
         Remove-Item -Recurse -Force $npmDir
-        Remove-Item function:npm -ErrorAction SilentlyContinue
     }
 
     It 'errors when NpmPath is missing and CreateNpmPath is false' {
@@ -57,7 +59,6 @@ Describe '0203_Install-npm' {
         . $script -Config $cfg
         { Install-NpmDependencies -Config $cfg } | Should -Throw
         $script:called | Should -BeFalse
-        Remove-Item function:npm -ErrorAction SilentlyContinue
     }
 
     It 'errors when NpmPath is empty string' {
@@ -70,7 +71,6 @@ Describe '0203_Install-npm' {
         . $script -Config $cfg
         { Install-NpmDependencies -Config $cfg } | Should -Throw
         $script:called | Should -BeFalse
-        Remove-Item function:npm -ErrorAction SilentlyContinue
     }
 
     It 'creates NpmPath when CreateNpmPath is true' {

@@ -1,8 +1,12 @@
 . (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
+. (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
 Describe 'Get-MenuSelection' {
     BeforeAll {
         . (Join-Path $PSScriptRoot '..' 'lab_utils' 'Menu.ps1')
         . (Join-Path $PSScriptRoot '..' 'runner_utility_scripts' 'Logger.ps1')
+    }
+    AfterEach {
+        Remove-Item Function:Read-Host -ErrorAction SilentlyContinue
     }
     It 'returns all items when user types all' {
         $items = @('0001_Test.ps1','0002_Other.ps1')
