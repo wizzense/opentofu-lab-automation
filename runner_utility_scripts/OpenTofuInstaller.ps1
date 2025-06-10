@@ -610,13 +610,14 @@ function installStandalone() {
     } finally {
         for ($i = 0; $i -le ($dlFiles.Length - 1); $i++) {
             $target = Join-Path $tempPath $dlFiles[$i]
-            try
-            {
-                Remove-Item -force -recurse $target
-            } catch {
-                $msg = $_.ToString()
-                logError $msg
-                throw
+            if (Test-Path $target) {
+                try {
+                    Remove-Item -Force -Recurse $target
+                } catch {
+                    $msg = $_.ToString()
+                    logError $msg
+                    throw
+                }
             }
         }
         if ($logDir -and (Test-Path $logDir)) {

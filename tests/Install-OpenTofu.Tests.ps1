@@ -12,7 +12,7 @@ Describe '0008_Install-OpenTofu' -Skip:($IsLinux -or $IsMacOS) {
         $cfg = [pscustomobject]@{
             InstallOpenTofu = $true
             CosignPath      = 'C:\\temp'
-            OpenTofuVersion = '1.2.3'
+            OpenTofuVersion = '1.9.1'
         }
         $installerPath = (
             Resolve-Path (Join-Path $PSScriptRoot '..' 'runner_utility_scripts' 'OpenTofuInstaller.ps1')
