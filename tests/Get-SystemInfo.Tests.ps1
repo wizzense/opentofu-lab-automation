@@ -50,10 +50,16 @@ Describe 'runner.ps1 executing 0200_Get-SystemInfo' {
             Copy-Item $script:ScriptPath -Destination $scriptsDir
 
             Push-Location $tempDir
-            $output = & "$tempDir/runner.ps1" -Scripts '0200' -Auto
+            $script:logLines = @()
+            function global:Write-Host {
+                param([Parameter(Mandatory=$true,Position=0)][string]$Object,
+                      [Parameter(Position=1)][string]$ForegroundColor)
+                $script:logLines += $Object
+            }
+            & "$tempDir/runner.ps1" -Scripts '0200' -Auto | Out-Null
             Pop-Location
-            
-            $text = $output | Out-String
+
+            $text = $script:logLines -join [Environment]::NewLine
             $text | Should -Match 'ComputerName'
             $text | Should -Match 'IPAddresses'
             $text | Should -Match 'OSVersion'
@@ -66,6 +72,7 @@ Describe 'runner.ps1 executing 0200_Get-SystemInfo' {
         }
         finally {
             Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue
+            Remove-Item Function:Write-Host -ErrorAction SilentlyContinue
         }
     }
 }
