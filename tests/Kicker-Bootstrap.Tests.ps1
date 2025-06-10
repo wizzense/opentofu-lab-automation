@@ -13,4 +13,11 @@ Describe 'kicker-bootstrap utilities' {
         $content | Should -Match '& \\.\\\$runnerScriptName'
         $content | Should -Match 'exit \$LASTEXITCODE'
     }
+
+    It 'detects remote config URLs using -match' {
+        $scriptPath = Join-Path $PSScriptRoot '..' 'kicker-bootstrap.ps1'
+        $content = Get-Content $scriptPath -Raw
+        $content | Should -Match '\$configOption\s+-match\s+"https://"'
+        $content | Should -Not -Match '-ccontains'
+    }
 }

@@ -140,7 +140,7 @@ The script will do the following if you proceed:
 
 $configOption = Read-Host -prompt "`nEnter a remote URL or local path, or leave blank for default."
 
-if ($configOption -ccontains "https://") {
+if ($configOption -match "https://") {
     Invoke-WebRequest -Uri $configOption -OutFile '.\custom-config.json'
     $ConfigFile = (Join-Path $scriptRoot "custom-config.json")
 }
