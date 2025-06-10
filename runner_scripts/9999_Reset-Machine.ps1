@@ -8,6 +8,13 @@ Invoke-LabStep -Config $Config -Body {
     $platform = Get-Platform
     Write-CustomLog "Detected platform: $platform"
     if ($platform -eq 'Windows') {
+        $Config.AllowRemoteDesktop = $true
+        if (-not $Config.FirewallPorts) { $Config.FirewallPorts = @() }
+        if ($Config.FirewallPorts -notcontains 3389) { $Config.FirewallPorts += 3389 }
+
+        & "$PSScriptRoot/0101_Enable-RemoteDesktop.ps1" -Config $Config
+        & "$PSScriptRoot/0102_Configure-Firewall.ps1" -Config $Config
+
         $sysprep = 'C:\\Windows\\System32\\Sysprep\\Sysprep.exe'
         if (Test-Path $sysprep) {
             Write-CustomLog "Invoking sysprep at $sysprep"
