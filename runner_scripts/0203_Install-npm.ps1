@@ -39,11 +39,17 @@ function Install-NpmDependencies {
         $installNpm = $true
         $createPath = $false
         if ($nodeDeps -is [hashtable]) {
-            if ($nodeDeps.ContainsKey('InstallNpm')) { $installNpm = [bool]$nodeDeps['InstallNpm'] }
+
+            if ($nodeDeps.ContainsKey('InstallNpm'))    { $installNpm = [bool]$nodeDeps['InstallNpm'] }
             if ($nodeDeps.ContainsKey('CreateNpmPath')) { $createPath = [bool]$nodeDeps['CreateNpmPath'] }
         } else {
-            if ($nodeDeps.PSObject.Properties.Match('InstallNpm').Count) { $installNpm = [bool]$nodeDeps.InstallNpm }
-            if ($nodeDeps.PSObject.Properties.Match('CreateNpmPath').Count) { $createPath = [bool]$nodeDeps.CreateNpmPath }
+            if ($nodeDeps.PSObject.Properties.Match('InstallNpm').Count) {
+                $installNpm = [bool]$nodeDeps.InstallNpm
+            }
+            if ($nodeDeps.PSObject.Properties.Match('CreateNpmPath').Count) {
+                $createPath = [bool]$nodeDeps.CreateNpmPath
+            }
+
         }
 
         if (-not $installNpm) {
@@ -60,7 +66,7 @@ function Install-NpmDependencies {
         }
         if (-not $frontendPath) { $frontendPath = Join-Path $PSScriptRoot '..' 'frontend' }
 
-        if ($nodeDeps.PSObject.Properties.Match('NpmPath').Count -and [string]::IsNullOrWhiteSpace($nodeDeps.NpmPath)) {
+        if ($nodeDeps.PSObject.Properties.Match('NpmPath').Count -and [string]::IsNullOrWhiteSpace($nodeDeps.NpmPath) -and -not $createPath) {
             throw 'Node_Dependencies.NpmPath is empty and CreateNpmPath is false.'
         }
 
