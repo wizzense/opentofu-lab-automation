@@ -1,9 +1,10 @@
 ## Project status
 
 Phase 0 was completed in June 2025. `Get-Platform.ps1` now has Pester tests.
-Phase 1 tasks are pending: the Python `get_platform.py` and pytest suite have
-yet to be created, and both the Hypervisor abstraction and Poetry project remain
-unimplemented.
+Phase 1 is partially complete: `get_platform.py`, a pytest suite, and a basic
+Typer-based CLI under `py/` are present. The Hypervisor PowerShell module is in
+place with stub implementations. Further cross-platform work and provider
+support remain on the roadmap.
 
 ---
 
@@ -70,9 +71,9 @@ job-level results that can be inserted into the issue text.
 
 | #   | Task                                                                        | Codex Prompt                                                                                                                                                      |       |                                                                                    |
 | --- | --------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----- | ---------------------------------------------------------------------------------- |
-| 1.1 | **Platform detector** (PowerShell complete; Python/pytest pending)                                                       | > \*“Create `lab_utils/Get-Platform.ps1` returning \`Windows                                                                                                      | Linux | MacOS`.  Write equivalent `get\_platform.py\`.  Add cross-OS Pester and pytest.”\* |
-| 1.2 | **Hypervisor abstraction skeleton**                                         | > *“Produce `lab_utils/Hypervisor.psm1` with an interface: `Get-HVFacts`, `Enable-Provider`, `Deploy-VM`.  Implement stubs for `HyperV`; unit-test with Pester.”* |       |                                                                                    |
-| 1.3 | **Python scaffold**<br/>Poetry project in `/py` for future Linux/macOS work | > *“Init Poetry project `py/`.  Add Typer CLI `labctl` exposing `hv facts`, `hv deploy`, reading same JSON config.  Wire pytest.”*                                |       |                                                                                    |
+| ~~1.1~~ | ~~**Platform detector**~~ | > \*“Create `lab_utils/Get-Platform.ps1` returning \`Windows                                                                                                      | Linux | MacOS`.  Write equivalent `get\_platform.py\`.  Add cross-OS Pester and pytest.”\* |
+| ~~1.2~~ | ~~**Hypervisor abstraction skeleton**~~ | > *“Produce `lab_utils/Hypervisor.psm1` with an interface: `Get-HVFacts`, `Enable-Provider`, `Deploy-VM`.  Implement stubs for `HyperV`; unit-test with Pester.”* |       |                                                                                    |
+| ~~1.3~~ | ~~**Python scaffold**~~ | > *“Init Poetry project `py/`.  Add Typer CLI `labctl` exposing `hv facts`, `hv deploy`, reading same JSON config.  Wire pytest.”*                                |       |                                                                                    |
 
 ---
 
@@ -128,3 +129,10 @@ Week 6 – Phase 4 + polish
 
 **Anything missing?**
 Tell me which phase or task you’d like fleshed out further, or drop any new constraints, and I’ll update the plan (or draft the first PR for you).
+
+### Current Recommendations
+
+- Document the Python `labctl` CLI in the main README (done).
+- Package `config_files/` with the CLI so default paths work when installed.
+- Continue Phase 2 by adding VMware provider support and corresponding tests.
+- Enable `pytest` and `Invoke-Pester` locally before committing changes.
