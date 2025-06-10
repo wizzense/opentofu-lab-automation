@@ -20,10 +20,9 @@ if (-not (Test-Path (Join-Path $InfraPath '.git'))) {
     Write-CustomLog "Directory is not a git repository. Cloning repository..."
 
     # Prefer GitHub CLI if present; otherwise use plain git
-    $ghCmd = Get-Command gh -ErrorAction SilentlyContinue
-    if ($ghCmd) {
+    if (Get-Command gh -ErrorAction SilentlyContinue) {
         # Ensure the GitHub CLI is authenticated to avoid Git credential prompts
-        & $ghCmd.Path auth status 2>$null
+        gh auth status 2>$null
         if ($LASTEXITCODE -ne 0) {
             Write-Error "GitHub CLI is not authenticated. Run 'gh auth login' and re-run the script."
             return

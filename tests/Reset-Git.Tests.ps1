@@ -25,6 +25,7 @@ Describe '0001_Reset-Git' {
             }
 
             Mock Get-Command { @{ Name = 'gh'; Path = 'gh.exe' } } -ParameterFilter { $Name -eq 'gh' }
+            function global:gh {}
             Mock gh { $global:LASTEXITCODE = 0 }
             Mock git {}
 
@@ -45,7 +46,10 @@ Describe '0001_Reset-Git' {
             }
 
             Mock Get-Command { $null } -ParameterFilter { $Name -eq 'gh' }
-            Mock git { $global:LASTEXITCODE = 0 }
+            Mock git {
+                $global:LASTEXITCODE = 0
+                New-Item -ItemType Directory -Path (Join-Path $tempDir '.git') -Force | Out-Null
+            }
             Mock gh  {}
 
             & $script:ScriptPath -Config $config
@@ -93,6 +97,7 @@ Describe '0001_Reset-Git' {
             }
 
             Mock Get-Command { @{ Name = 'gh'; Path = 'gh.exe' } } -ParameterFilter { $Name -eq 'gh' }
+            function global:gh {}
             Mock gh {
                 param($Sub, $Action)
                 if ($Sub -eq 'auth' -and $Action -eq 'status') { $global:LASTEXITCODE = 1 }
@@ -120,7 +125,10 @@ Describe '0001_Reset-Git' {
             }
 
             Mock Get-Command { $null } -ParameterFilter { $Name -eq 'gh' }
-            Mock git { $global:LASTEXITCODE = 0 }
+            Mock git {
+                $global:LASTEXITCODE = 0
+                New-Item -ItemType Directory -Path (Join-Path $tempDir '.git') -Force | Out-Null
+            }
             Mock Write-CustomLog {}
 
             & $script:ScriptPath -Config $config
