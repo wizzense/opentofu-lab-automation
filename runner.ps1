@@ -157,7 +157,7 @@ function Invoke-Scripts {
         }
     }
 
-    if (-not $ScriptsToRun) { Write-CustomLog "No scripts selected."; return $true }
+    if ($ScriptsToRun.Count -eq 0) { Write-CustomLog "No scripts selected."; return $true }
 
     Write-CustomLog "`n==== Executing selected scripts ===="
     $failed = @()
@@ -225,7 +225,11 @@ while ($true) {
     $choice = Read-Host "Enter selection"
     if ($choice -match '^(?i)exit$') { break }
     $selected = Select-Scripts -Input $choice
-    if ($selected) { if (-not (Invoke-Scripts -ScriptsToRun $selected)) { $LASTEXITCODE = 1 } }
+    if ($selected.Count -gt 0) {
+        if (-not (Invoke-Scripts -ScriptsToRun $selected)) { $LASTEXITCODE = 1 }
+    } else {
+        Write-CustomLog 'No scripts selected.'
+    }
 }
 
 Write-CustomLog "`nAll done!"

@@ -249,6 +249,45 @@ exit 0' | Set-Content -Path $dummy
             Remove-Item -Recurse -Force $tempDir
         }
     }
+
+    It 'handles empty or invalid selection by logging and doing nothing' -Skip:($IsLinux -or $IsMacOS) {
+        $tempDir = Join-Path ([System.IO.Path]::GetTempPath()) ([System.Guid]::NewGuid())
+        $null = New-Item -ItemType Directory -Path $tempDir
+        try {
+            Copy-Item $script:runnerPath -Destination $tempDir
+            Copy-Item (Join-Path $PSScriptRoot '..' 'runner_utility_scripts') -Destination $tempDir -Recurse
+            Copy-Item (Join-Path $PSScriptRoot '..' 'lab_utils') -Destination $tempDir -Recurse
+            Copy-Item (Join-Path $PSScriptRoot '..' 'config_files') -Destination (Join-Path $tempDir 'config_files') -Recurse
+            $scriptsDir = Join-Path $tempDir 'runner_scripts'
+            $null = New-Item -ItemType Directory -Path $scriptsDir
+            $out = Join-Path $tempDir 'out.txt'
+            $scriptFile = Join-Path $scriptsDir '0001_Test.ps1'
+            @"
+Param([PSCustomObject]`$Config)
+'ran' | Out-File -FilePath "$out"
+exit 0
+"@ | Set-Content -Path $scriptFile
+
+            $responses = @('', 'exit')
+            $script:index = 0
+            function global:Read-Host {
+                param([string]$Prompt)
+                $responses[$script:index++]
+            }
+
+            Mock Write-CustomLog {}
+
+            Push-Location $tempDir
+            & "$tempDir/runner.ps1" -Auto | Out-Null
+            Pop-Location
+
+            Test-Path $out | Should -BeFalse
+            Assert-MockCalled Write-CustomLog -ParameterFilter { $Message -eq 'No scripts selected.' } -Times 1
+        }
+        finally {
+            Remove-Item -Recurse -Force $tempDir
+        }
+    }
 }
 
 Describe 'Set-LabConfig' {
