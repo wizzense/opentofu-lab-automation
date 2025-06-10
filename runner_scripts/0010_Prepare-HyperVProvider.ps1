@@ -77,13 +77,6 @@ function Get-HyperVProviderVersion {
 Invoke-LabStep -Config $Config -Body {
     Write-CustomLog 'Running 0010_Prepare-HyperVProvider.ps1'
 
-    $infraRepoPath = if ([string]::IsNullOrWhiteSpace($Config.InfraRepoPath)) {
-        Join-Path $PSScriptRoot 'my-infra'
-    } else {
-        $Config.InfraRepoPath
-    }
-    Write-CustomLog "InfraRepoPath for hyperv provider: $infraRepoPath"
-
 if ($Config.PrepareHyperVHost -eq $true) {
 
 
@@ -201,12 +194,8 @@ if (-not $rootCaCertificate) {
         Write-CustomLog "Creating Root CA..."
         $rootCaCertificate = New-SelfSignedCertificate @params
 
-        if ($rootCaCertificate -is [System.Security.Cryptography.X509Certificates.X509Certificate2]) {
-            Export-Certificate  -Cert $rootCaCertificate -FilePath $cerPath -Verbose
-            Export-PfxCertificate -Cert $rootCaCertificate -FilePath $pfxPath -Password $rootCaPassword -Verbose
-        } else {
-            Write-CustomLog "Mock certificate object detected – skipping Export-Certificate in test mode."
-        }
+        Export-Certificate -Cert $rootCaCertificate -FilePath $cerPath -Verbose
+        Export-PfxCertificate -Cert $rootCaCertificate -FilePath $pfxPath -Password $rootCaPassword -Verbose
 
         # Re-import to Root store & My store
         Get-ChildItem cert:\LocalMachine\My | Where-Object {$_.subject -eq "CN=$rootCaName"} | Remove-Item -Force -ErrorAction SilentlyContinue
@@ -216,12 +205,8 @@ if (-not $rootCaCertificate) {
         $rootCaCertificate = Get-ChildItem cert:\LocalMachine\My | Where-Object {$_.subject -eq "CN=$rootCaName"}
     }
 } else {
-    if ($rootCaCertificate -is [System.Security.Cryptography.X509Certificates.X509Certificate2]) {
-        Export-Certificate  -Cert $rootCaCertificate -FilePath ".\$rootCaName.cer" -Force -Verbose
-        Export-PfxCertificate -Cert $rootCaCertificate -FilePath ".\$rootCaName.pfx" -Password $rootCaPassword -Force -Verbose
-    } else {
-        Write-CustomLog "Mock certificate object detected – skipping Export-Certificate in test mode."
-    }
+    Export-Certificate -Cert $rootCaCertificate -FilePath ".\$rootCaName.cer" -Force -Verbose
+    Export-PfxCertificate -Cert $rootCaCertificate -FilePath ".\$rootCaName.pfx" -Password $rootCaPassword -Force -Verbose
 }
 
 # Create Host Certificate
@@ -258,24 +243,16 @@ if (-not $hostCertificate) {
     Write-CustomLog "Creating host certificate..."
     $hostCertificate = New-SelfSignedCertificate @params
 
-    if ($hostCertificate -is [System.Security.Cryptography.X509Certificates.X509Certificate2]) {
-        Export-Certificate  -Cert $hostCertificate -FilePath ".\$hostName.cer" -Verbose
-        Export-PfxCertificate -Cert $hostCertificate -FilePath ".\$hostName.pfx" -Password $hostPassword -Verbose
-    } else {
-        Write-CustomLog "Mock certificate object detected – skipping Export-Certificate in test mode."
-    }
+    Export-Certificate -Cert $hostCertificate -FilePath ".\$hostName.cer" -Verbose
+    Export-PfxCertificate -Cert $hostCertificate -FilePath ".\$hostName.pfx" -Password $hostPassword -Verbose
 
     Get-ChildItem cert:\LocalMachine\My | Where-Object {$_.Subject -eq "CN=$hostName"} | Remove-Item -Force -ErrorAction SilentlyContinue
     Import-PfxCertificate -FilePath ".\$hostName.pfx" -CertStoreLocation Cert:\LocalMachine\My -Password $hostPassword -Exportable -Verbose
 
     $hostCertificate = Get-ChildItem cert:\LocalMachine\My | Where-Object {$_.subject -eq "CN=$hostName"}
 } else {
-    if ($hostCertificate -is [System.Security.Cryptography.X509Certificates.X509Certificate2]) {
-        Export-Certificate  -Cert $hostCertificate -FilePath ".\$hostName.cer" -Force -Verbose
-        Export-PfxCertificate -Cert $hostCertificate -FilePath ".\$hostName.pfx" -Password $hostPassword -Force -Verbose
-    } else {
-        Write-CustomLog "Mock certificate object detected – skipping Export-Certificate in test mode."
-    }
+    Export-Certificate -Cert $hostCertificate -FilePath ".\$hostName.cer" -Force -Verbose
+    Export-PfxCertificate -Cert $hostCertificate -FilePath ".\$hostName.pfx" -Password $hostPassword -Force -Verbose
 }
 
     Convert-CerToPem -CerPath ".\$rootCaName.cer" -PemPath ".\$rootCaName.pem"
@@ -320,7 +297,14 @@ New-NetFirewallRule -DisplayName "Windows Remote Management (HTTP-In)" -Name "Wi
 # 4) Build & Install Hyper-V Provider in InfraRepoPath
 # ------------------------------
 
+# Use Config to find the infra repo path, fallback if empty
+$infraRepoPath = if ([string]::IsNullOrWhiteSpace($Config.InfraRepoPath)) {
+    Join-Path $PSScriptRoot "my-infra"
+} else {
+    $Config.InfraRepoPath
+}
 
+Write-CustomLog "InfraRepoPath for hyperv provider: $infraRepoPath"
 
 Write-CustomLog "Setting up Go environment..."
 $goWorkspace = "C:\\GoWorkspace"
