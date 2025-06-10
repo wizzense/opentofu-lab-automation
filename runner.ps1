@@ -3,9 +3,13 @@ param(
     [switch]$Auto,
     [string]$Scripts,
     [switch]$Force,
+    [switch]$Quiet,
     [ValidateSet('silent','normal','detailed')]
-    [string]$Verbosity = 'normal'
+    [string]$Verbosity = 'normal',
+    [switch]$Quiet
 )
+
+if ($Quiet) { $Verbosity = 'silent' }
 
 if ($PSVersionTable.PSVersion.Major -lt 7) {
     Write-Error "PowerShell 7 or later is required. Current version: $($PSVersionTable.PSVersion)"
@@ -13,8 +17,13 @@ if ($PSVersionTable.PSVersion.Major -lt 7) {
 }
 
 # expose quiet flag to logger
+if ($Quiet) { $Verbosity = 'silent' }
+
 $script:VerbosityLevels = @{ silent = 0; normal = 1; detailed = 2 }
+# honor -Quiet before calculating console level
+if ($Quiet) { $Verbosity = 'silent' }
 $script:ConsoleLevel    = $script:VerbosityLevels[$Verbosity]
+
 
 # ─── Load helpers ──────────────────────────────────────────────────────────────
 . (Join-Path $PSScriptRoot 'runner_utility_scripts' 'Logger.ps1')
@@ -208,9 +217,17 @@ function Invoke-Scripts {
                 exit $LASTEXITCODE
             }
 
-
+          try {
             & pwsh -NoLogo -NoProfile -Command $sb -Args $tempCfg, $scriptPath, $Verbosity 2>&1
 
+          }
+          catch {
+
+            & pwsh -NoLogo -NoProfile -Command $sb -Args $tempCfg, $scriptPath, $Verbosity *>&1
+
+          }
+
+            & pwsh -NoLogo -NoProfile -Command $sb -Args $tempCfg, $scriptPath, $Verbosity 2>&1
 
             Remove-Item $tempCfg -ErrorAction SilentlyContinue
 
