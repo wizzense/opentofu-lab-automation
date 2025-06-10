@@ -16,7 +16,11 @@ if ($Config.InstallHyperV -eq $true) {
 
     Write-CustomLog "Hyper-V is not installed. Proceeding with installation..."
 
-    $enableMgtTools = $Config.HyperV.EnableManagementTools -eq $true
+    $enableMgtTools = $true
+    if ($Config.PSObject.Properties.Name -contains 'HyperV' -and
+        $Config.HyperV.PSObject.Properties.Name -contains 'EnableManagementTools') {
+        $enableMgtTools = [bool]$Config.HyperV.EnableManagementTools
+    }
     $restart = $false  # Change to $true if you want an automatic restart
 
     try {
