@@ -1,4 +1,11 @@
 . (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
+
+BeforeAll {
+    $script:scriptPath = Join-Path $PSScriptRoot '..' 'runner_scripts' '0010_Prepare-HyperVProvider.ps1'
+    . $script:scriptPath
+    $script:origConvertCerToPem = (Get-Command Convert-CerToPem).ScriptBlock
+    $script:origConvertPfxToPem = (Get-Command Convert-PfxToPem).ScriptBlock
+}
 Describe 'Prepare-HyperVProvider path restoration' -Skip:($IsLinux -or $IsMacOS) {
     It 'restores location after execution' {
         . (Join-Path $PSScriptRoot '..' 'runner_utility_scripts' 'Logger.ps1')
@@ -64,8 +71,8 @@ Describe 'Prepare-HyperVProvider certificate handling' -Skip:($IsLinux -or $IsMa
         Mock Test-Path { $false }
         Mock git {}
         Mock go {}
-        Mock Convert-CerToPem {}
-        Mock Convert-PfxToPem {}
+        Mock Convert-CerToPem -MockWith { & $script:origConvertCerToPem @PSBoundParameters }
+        Mock Convert-PfxToPem -MockWith { & $script:origConvertPfxToPem @PSBoundParameters }
         Mock Copy-Item {}
         Mock Read-Host { 'pw' }
 
