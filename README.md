@@ -78,6 +78,12 @@ poetry install
 poetry run labctl hv facts
 ```
 
+Launch the experimental Textual interface:
+
+```bash
+poetry run labctl ui
+```
+
 See [docs/python-cli.md](docs/python-cli.md) for further details.
 
 

@@ -58,3 +58,9 @@ def test_load_config_invalid_yaml(tmp_path):
     conf.write_text("foo: [unclosed")
     with pytest.raises(yaml.YAMLError):
         load_config(conf)
+
+
+def test_ui_help():
+    runner = CliRunner()
+    result = runner.invoke(app, ["ui", "--help"])
+    assert result.exit_code == 0
