@@ -74,13 +74,14 @@ jobs:
               New-Item -ItemType Directory -Path coverage | Out-Null
           }
       - name: Run Pester
+        id: pester
         continue-on-error: ${{ runner.os != 'Windows' }}
         shell: pwsh
         run: |
           $cfg = New-PesterConfiguration -Hashtable (Import-PowerShellDataFile 'tests/PesterConfiguration.psd1')
           Invoke-Pester -Configuration $cfg -ErrorAction Stop
       - name: Upload coverage
-        if: always()
+        if: steps.pester.outcome == 'success'
         uses: actions/upload-artifact@v4
         with:
           name: pester-coverage-${{ matrix.os }}
