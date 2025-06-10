@@ -17,7 +17,8 @@ Describe 'Write-CustomLog' {
     }
 
     It 'writes to specified log file when provided' {
-        $tempFile = Join-Path ([System.IO.Path]::GetTempPath()) (([System.Guid]::NewGuid()).ToString() + '.log')
+
+        $tempFile = (Join-Path ([System.IO.Path]::GetTempPath()) ([System.Guid]::NewGuid().ToString())) + '.log'
         Remove-Variable -Name LogFilePath -Scope Script -ErrorAction SilentlyContinue
         Remove-Variable -Name LogFilePath -Scope Global -ErrorAction SilentlyContinue
         Write-CustomLog 'hello world' -LogFile $tempFile
@@ -27,7 +28,7 @@ Describe 'Write-CustomLog' {
     }
 
     It 'defaults to LogFilePath variable when not provided' {
-        $tempFile = Join-Path ([System.IO.Path]::GetTempPath()) (([System.Guid]::NewGuid()).ToString() + '.log')
+        $tempFile = (Join-Path ([System.IO.Path]::GetTempPath()) ([System.Guid]::NewGuid().ToString())) + '.log'
         $script:LogFilePath = $tempFile
         try {
             Write-CustomLog 'variable default works'
