@@ -5,7 +5,9 @@ Invoke-LabStep -Config $Config -Body {
 
     if ($Config.SetTrustedHosts -eq $true) {
         $args = "/d /c winrm set winrm/config/client @{TrustedHosts=`"$($Config.TrustedHosts)`"}"
+        Write-CustomLog "Configuring TrustedHosts with: $args"
         Start-Process -FilePath cmd.exe -ArgumentList $args
+        Write-CustomLog 'TrustedHosts configured'
     } else {
         Write-CustomLog "SetTrustedHosts flag is disabled. Skipping TrustedHosts configuration."
     }

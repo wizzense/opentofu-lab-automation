@@ -11,10 +11,11 @@ if ($Config.AllowRemoteDesktop -eq $true) {
         Write-CustomLog "Remote Desktop is already enabled."
     }
     else {
-        Write-CustomLog "Enabling Remote Desktop..."
+        Write-CustomLog "Enabling Remote Desktop via Set-ItemProperty"
         Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' `
                          -Name "fDenyTSConnections" `
                          -Value 0
+        Write-CustomLog "Remote Desktop enabled"
     }
 }
 else {
