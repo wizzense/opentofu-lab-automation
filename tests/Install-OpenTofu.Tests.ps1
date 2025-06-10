@@ -3,9 +3,8 @@ if ($IsLinux -or $IsMacOS) { return }
 Describe '0008_Install-OpenTofu' -Skip:($IsLinux -or $IsMacOS) {
     BeforeAll {
         $script:ScriptPath = (
-            Resolve-Path -ErrorAction Stop (
-                Join-Path $PSScriptRoot '..' 'runner_scripts' '0008_Install-OpenTofu.ps1'
-            )
+            Resolve-Path (Join-Path $PSScriptRoot '..' 'runner_scripts' '0008_Install-OpenTofu.ps1')
+
         ).Path
     }
 
@@ -16,7 +15,7 @@ Describe '0008_Install-OpenTofu' -Skip:($IsLinux -or $IsMacOS) {
             OpenTofuVersion = '1.2.3'
         }
         $installerPath = (
-            Resolve-Path -ErrorAction Stop (
+            Resolve-Path (
                 Join-Path $PSScriptRoot '..' 'runner_utility_scripts' 'OpenTofuInstaller.ps1'
             )
         ).Path
@@ -34,7 +33,7 @@ Describe '0008_Install-OpenTofu' -Skip:($IsLinux -or $IsMacOS) {
     It 'skips install when flag is false' {
         $cfg = [pscustomobject]@{ InstallOpenTofu = $false }
         $installerPath = (
-            Resolve-Path -ErrorAction Stop (
+            Resolve-Path (
                 Join-Path $PSScriptRoot '..' 'runner_utility_scripts' 'OpenTofuInstaller.ps1'
             )
         ).Path
