@@ -136,6 +136,8 @@ Describe 'OpenTofuInstaller' {
         $proc = Microsoft.PowerShell.Management\Start-Process pwsh -ArgumentList $arguments -Wait -PassThru
         $proc.ExitCode | Should -Be 2
 
+        }
+
     }
 
     Describe 'macOS defaults' {
