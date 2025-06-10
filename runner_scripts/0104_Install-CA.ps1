@@ -1,6 +1,9 @@
-Param([pscustomobject]$Config)
-. "$PSScriptRoot/../runner_utility_scripts/ScriptTemplate.ps1"
-Invoke-LabStep -Config $Config -Body {
+function Install-CA {
+    [CmdletBinding(SupportsShouldProcess = $true)]
+    param([pscustomobject]$Config)
+
+    . "$PSScriptRoot/../runner_utility_scripts/ScriptTemplate.ps1"
+    Invoke-LabStep -Config $Config -Body {
 
 if ($Config.InstallCA -eq $true) {
 Write-CustomLog "Checking for existing Certificate Authority (Standalone Root CA)..."
@@ -34,20 +37,24 @@ if ($role.Installed) {
     Write-CustomLog "CA role is installed but no CA is configured. Proceeding with installation."
 } else {
     Write-CustomLog "Installing Certificate Authority role..."
-    Install-WindowsFeature Adcs-Cert-Authority -IncludeManagementTools -ErrorAction Stop
+    if ($PSCmdlet.ShouldProcess('ADCS role', 'Install CA Windows feature')) {
+        Install-WindowsFeature Adcs-Cert-Authority -IncludeManagementTools -ErrorAction Stop
+    }
 }
 
 # If the script reaches this point, it means no existing CA is detected, and installation should proceed.
 Write-CustomLog "Configuring CA: $CAName with $($ValidityYears) year validity..."
 
-Install-AdcsCertificationAuthority `
-    -CAType StandaloneRootCA `
-    -CACommonName $CAName `
-    -KeyLength 2048 `
-    -HashAlgorithm SHA256 `
-    -ValidityPeriod Years `
-    -ValidityPeriodUnits $ValidityYears `
-    -Force
+if ($PSCmdlet.ShouldProcess($CAName, 'Configure Standalone Root CA')) {
+    Install-AdcsCertificationAuthority `
+        -CAType StandaloneRootCA `
+        -CACommonName $CAName `
+        -KeyLength 2048 `
+        -HashAlgorithm SHA256 `
+        -ValidityPeriod Years `
+        -ValidityPeriodUnits $ValidityYears `
+        -Force
+}
 
 Write-CustomLog "Standalone Root CA '$CAName' installation complete."
 
@@ -55,3 +62,5 @@ Write-CustomLog "Standalone Root CA '$CAName' installation complete."
     Write-CustomLog "InstallCA flag is disabled. Skipping CA installation."
 }
 }
+}
+if ($MyInvocation.InvocationName -ne '.') { Install-CA @PSBoundParameters }

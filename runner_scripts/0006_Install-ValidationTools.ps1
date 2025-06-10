@@ -4,6 +4,7 @@ Invoke-LabStep -Config $Config -Body {
 
 function Install-Cosign {
     [CmdletBinding(SupportsShouldProcess)]
+    param()
     # Check if cosign is available in the current PATH
     if (-not (Test-Path (Join-Path $Config.CosignPath "cosign-windows-amd64.exe") -ErrorAction SilentlyContinue)) {
         Write-CustomLog "Cosign is not found. Installing cosign..."
