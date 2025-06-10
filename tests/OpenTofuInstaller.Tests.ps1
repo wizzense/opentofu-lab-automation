@@ -16,6 +16,7 @@ if ($IsLinux -or $IsMacOS) { return }
     AfterEach {
         Remove-Item -Recurse -Force $script:temp -ErrorAction SilentlyContinue
         Remove-Item Function:Test-IsAdmin -ErrorAction SilentlyContinue
+        Remove-Variable -Name OpenTofuInstallerLogDir -Scope Global -ErrorAction SilentlyContinue
     }
 
 
@@ -42,19 +43,18 @@ if ($IsLinux -or $IsMacOS) { return }
             param($FilePath, $ArgumentList, $Verb, $WorkingDirectory, [switch]$Wait, [switch]$Passthru)
             $global:startProcessCalled = $true
 
-            $wrapperArgs = if ($ArgumentList -is [string]) { $ArgumentList -split '\s+' } else { $ArgumentList }
-            $wrapper = $wrapperArgs[3].Trim('"')
+            $logDir = $global:OpenTofuInstallerLogDir
+            if ($logDir) {
+                New-Item -ItemType File -Path (Join-Path $logDir 'stdout.log') -Force | Out-Null
+                New-Item -ItemType File -Path (Join-Path $logDir 'stderr.log') -Force | Out-Null
+            }
 
-            # make logDir visible in the test’s script scope
-            $script:logDir = Split-Path $wrapper -Parent
-            New-Item -ItemType File -Path (Join-Path $script:logDir 'stdout.log') -Force | Out-Null
-            New-Item -ItemType File -Path (Join-Path $script:logDir 'stderr.log') -Force | Out-Null
             [pscustomobject]@{ ExitCode = 0 } | Add-Member -MemberType ScriptMethod -Name WaitForExit -Value { } -PassThru
         }
         & $script:scriptPath -installMethod standalone -opentofuVersion '0.0.0' -installPath $temp -allUsers -skipVerify -skipChangePath | Out-Null
 
         $global:startProcessCalled | Should -BeTrue
-        $script:logDir | Should -Not -BeNullOrEmpty
+        $global:OpenTofuInstallerLogDir | Should -Not -BeNullOrEmpty
 
         if ($IsWindows) {
             $global:startProcessCalled | Should -BeTrue
@@ -63,7 +63,7 @@ if ($IsLinux -or $IsMacOS) { return }
             $global:startProcessCalled | Should -BeFalse
         }
 
-        (Test-Path $script:logDir) | Should -BeFalse
+        (Test-Path $global:OpenTofuInstallerLogDir) | Should -BeFalse
         Remove-Item Function:Start-Process -ErrorAction SilentlyContinue
         }
 
@@ -94,10 +94,8 @@ if ($IsLinux -or $IsMacOS) { return }
             )
             $global:startProcessCalled = $true
 
-            $wrapperArgs = if ($ArgumentList -is [string]) { $ArgumentList -split '\s+' } else { $ArgumentList }
-            $wrapper = $wrapperArgs[3].Trim('"')
-            $dir = Split-Path $wrapper -Parent
-            if (Test-Path $dir) { Remove-Item -Recurse -Force $dir }
+            $dir = $global:OpenTofuInstallerLogDir
+            if ($dir -and (Test-Path $dir)) { Remove-Item -Recurse -Force $dir }
             $proc = [pscustomobject]@{ ExitCode = 0 }
             $proc | Add-Member -MemberType ScriptMethod -Name WaitForExit -Value { }
             return $proc

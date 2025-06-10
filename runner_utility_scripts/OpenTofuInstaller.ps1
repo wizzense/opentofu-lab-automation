@@ -123,6 +123,9 @@ $WarningPreference = 'continue'
 $ErrorActionPreference = 'continue'
 $ProgressPreference = 'silentlyContinue'
 
+# expose elevation log directory for testing purposes
+Set-Variable -Name OpenTofuInstallerLogDir -Value $null -Scope Global -Force
+
 $esc = [char]27
 $bold = "$esc[1m"
 $orange = "$esc[33m"
@@ -565,6 +568,7 @@ function installStandalone() {
 
                 logInfo "Unpacking with elevated privileges..."
                 $logDir = tempdir
+                Set-Variable -Name OpenTofuInstallerLogDir -Value $logDir -Scope Global -Force
                 $outLog = Join-Path $logDir 'stdout.log'
                 $errLog = Join-Path $logDir 'stderr.log'
                 $wrapper = Join-Path $logDir 'wrapper.ps1'
