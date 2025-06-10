@@ -1,6 +1,7 @@
 Param([pscustomobject]$Config)
 . "$PSScriptRoot/../runner_utility_scripts/ScriptTemplate.ps1"
 Invoke-LabStep -Config $Config -Body {
+    Write-CustomLog 'Running 0101_Enable-RemoteDesktop.ps1'
 
 # Check current Remote Desktop status
 $currentStatus = Get-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -Name "fDenyTSConnections"

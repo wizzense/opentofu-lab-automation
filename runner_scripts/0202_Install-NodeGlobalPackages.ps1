@@ -4,6 +4,7 @@ function Install-NodeGlobalPackages {
 
     . "$PSScriptRoot/../runner_utility_scripts/ScriptTemplate.ps1"
     Invoke-LabStep -Config $Config -Body {
+    Write-CustomLog 'Running 0202_Install-NodeGlobalPackages.ps1'
 <#
 .SYNOPSIS
     Installs global npm packages like yarn, vite, and nodemon using config-based logic.
