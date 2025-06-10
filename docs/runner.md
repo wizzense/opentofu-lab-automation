@@ -22,8 +22,18 @@ Supply a comma-separated list of 4-digit script prefixes via `-Scripts` to run w
 
 To suppress informational output, pass `-Verbosity silent`:
 
+To suppress informational output, use the `-Quiet` switch (equivalent to
+`-Verbosity silent`). For example, to run scripts `0006` and `0007`
+silently and non-interactively:
+
 ```powershell
 ./runner.ps1 -Scripts '0006,0007' -Auto -Verbosity silent
 ```
 
 Use `-Force` to enable configuration flags detected in a script even when the current config sets them to `false`. The updated value is written back to the configuration file after the script completes.
+
+You can also specify the output level directly with the `-Verbosity`
+parameter (`silent`, `normal`, or `detailed`).
+
+The default configuration path (`./config_files/default-config.json`) and the `-Auto` switch are defined on lines 1-6. The logic that runs scripts directly when `-Scripts` is provided lives at lines 259-264. Prompts for editing the configuration or confirming cleanup only occur when `-Auto` is not specified, as shown on lines 135-168.
+
