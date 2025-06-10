@@ -1,7 +1,8 @@
 . (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
 . (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
 if ($SkipNonWindows) { return }
-Describe 'Node installation scripts' {
+$skipNpm = -not (Get-Command npm -ErrorAction SilentlyContinue)
+Describe 'Node installation scripts' -Skip:$skipNpm {
     BeforeAll {
 
         $script:nodeScripts = @(
@@ -16,6 +17,8 @@ Describe 'Node installation scripts' {
         $env:TEMP = Join-Path ([System.IO.Path]::GetTempPath()) 'pester-temp'
         New-Item -ItemType Directory -Path $env:TEMP -Force | Out-Null
         $script:config = [pscustomobject]@{}
+        Mock Get-Command { @{ Name = $Name } } -ParameterFilter { $Name -in 'npm','node' }
+        function node { param([Parameter(ValueFromRemainingArguments = $true)][string[]]$Args) }
     }
 
     It 'resolves script paths from the tests directory' -TestCases $script:nodeScripts {
@@ -53,7 +56,7 @@ Describe 'Node installation scripts' {
         Should -Invoke -CommandName Remove-Item -Times 0
     }
 
-    It 'installs packages listed under GlobalPackages' -Skip:(Get-Command npm -ErrorAction SilentlyContinue | ForEach-Object { $true }) {
+    It 'installs packages listed under GlobalPackages' {
         $cfg = @{ Node_Dependencies = @{ GlobalPackages = @('yarn','nodemon') } }
         $global = Get-RunnerScriptPath '0202_Install-NodeGlobalPackages.ps1'
         Mock Get-Command { @{Name='npm'} } -ParameterFilter { $Name -eq 'npm' }
@@ -70,7 +73,7 @@ Describe 'Node installation scripts' {
         Should -Invoke -CommandName npm -Times 0 -ParameterFilter { ($testArgs -join ' ') -eq 'install -g vite' }
     }
 
-    It 'falls back to boolean flags when GlobalPackages is missing' -Skip:(Get-Command npm -ErrorAction SilentlyContinue | ForEach-Object { $true }) {
+    It 'falls back to boolean flags when GlobalPackages is missing' {
         $cfg = @{ Node_Dependencies = @{ InstallYarn=$true; InstallVite=$false; InstallNodemon=$true } }
         $global = Get-RunnerScriptPath '0202_Install-NodeGlobalPackages.ps1'
         Mock Get-Command { @{Name='npm'} } -ParameterFilter { $Name -eq 'npm' }
@@ -140,6 +143,7 @@ Describe 'Node installation scripts' {
     }
 
     AfterAll {
+        Remove-Item Function:node -ErrorAction SilentlyContinue
         Remove-Item -Recurse -Force $env:TEMP -ErrorAction SilentlyContinue
         $env:TEMP = $script:origTemp
     }
