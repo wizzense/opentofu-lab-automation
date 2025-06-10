@@ -17,6 +17,7 @@
   "InstallWAC": false,
   "InstallGo": false,
   "InstallOpenTofu": false,
+  "OpenTofuVersion": "latest",
   "InitializeOpenTofu": false,
   "PrepareHyperVHost": false,
   "InstallCA": false,

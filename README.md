@@ -50,7 +50,7 @@ The runner script can run the following:
 
 0007_Install-Go.ps1 - downloads and installs Go
 
-0008_Install-OpenTofu.ps1 - Downloads and installs opentofu standalone (verified with cosign)
+0008_Install-OpenTofu.ps1 - Downloads and installs opentofu standalone (verified with cosign). The version used comes from `OpenTofuVersion` in `default-config.json` and defaults to `latest`.
 
 0009_Initialize-OpenTofu.ps1 - setups up opentofu and the lab-infra repo in C:\temp\base-infra
 
