@@ -9,6 +9,9 @@ on:
 jobs:
   pytest:
     name: Run Python tests
+    defaults:
+      run:
+        shell: bash
     strategy:
       fail-fast: false
       matrix:
