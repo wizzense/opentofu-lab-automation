@@ -78,8 +78,6 @@ if ($nodeDeps -is [hashtable] -and $nodeDeps.ContainsKey('GlobalPackages')) {
         Write-CustomLog "InstallVite flag is disabled. Skipping vite installation."
 
     }
-} elseif ($nodeDeps.PSObject.Properties.Name -contains 'GlobalPackages') {
-    $packages = $nodeDeps.GlobalPackages
 }
 
 if (-not $packages) {
