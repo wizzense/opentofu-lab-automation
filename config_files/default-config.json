@@ -67,6 +67,7 @@
   "InstallVite": true,
   "InstallNodemon": true,
   "InstallNpm": true,
+  "GlobalPackages": ["yarn", "vite", "nodemon"],
   "NpmPath": "C:\\Projects\\vde-mvp\\frontend",
   "CreateNpmPath": false,
   "Node": {
