@@ -23,7 +23,7 @@ Describe '0001_Reset-Git' {
                 InfraRepoPath = $tempDir
             }
 
-            Mock Get-Command { @{ Name = 'gh' } } -ParameterFilter { $Name -eq 'gh' }
+            Mock Get-Command { @{ Name = 'gh'; Path = 'gh.exe' } } -ParameterFilter { $Name -eq 'gh' }
             Mock gh { $global:LASTEXITCODE = 0 }
             Mock git {}
 
