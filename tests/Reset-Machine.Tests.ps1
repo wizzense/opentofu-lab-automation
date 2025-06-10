@@ -20,6 +20,7 @@ Describe 'Reset-Machine script' {
         }
         Mock New-NetFirewallRule {}
         $cfg = [pscustomobject]@{ AllowRemoteDesktop = $false; FirewallPorts = @() }
+        Mock Get-ItemProperty { [pscustomobject]@{ fDenyTSConnections = 1 } }
         . $script:ScriptPath -Config $cfg
         Assert-MockCalled Start-Process -Times 1 -ParameterFilter {
             $FilePath -eq $sysprep -and $ArgumentList -eq '/generalize /oobe /shutdown /quiet' -and $Wait

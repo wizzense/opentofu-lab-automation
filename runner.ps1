@@ -269,17 +269,8 @@ function Invoke-Scripts {
                 if ($line) { Write-CustomLog $line.ToString() }
             }
 
+            Write-Output $output
             Remove-Item $tempCfg -ErrorAction SilentlyContinue
-
-        try {
-            $scriptOutput = & pwsh -NoLogo -NoProfile -Command $sb -Args $tempCfg, $scriptPath, $Verbosity 2>&1
-        }
-        catch {
-            $scriptOutput = & pwsh -NoLogo -NoProfile -Command $sb -Args $tempCfg, $scriptPath, $Verbosity *>&1
-        }
-        Write-Output $scriptOutput
-        Remove-Item $tempCfg -ErrorAction SilentlyContinue
-
 
             $results[$s.Name] = $LASTEXITCODE
             if ($LASTEXITCODE) {

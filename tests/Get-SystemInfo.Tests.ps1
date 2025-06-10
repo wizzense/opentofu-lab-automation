@@ -50,7 +50,7 @@ Describe 'runner.ps1 executing 0200_Get-SystemInfo' {
             Push-Location $tempDir
             $output = & "$tempDir/runner.ps1" -Scripts '0200' -Auto
             Pop-Location
-
+            
             $text = $output | Out-String
             $text | Should -Match 'ComputerName'
             $text | Should -Match 'IPAddresses'
@@ -60,6 +60,7 @@ Describe 'runner.ps1 executing 0200_Get-SystemInfo' {
                 $text | Should -Match 'RolesFeatures'
                 $text | Should -Match 'LatestHotfix'
             }
+
         }
         finally {
             Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue
