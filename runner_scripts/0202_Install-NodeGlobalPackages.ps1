@@ -61,7 +61,9 @@ if (-not $nodeDeps) {
 }
 
 $packages = @()
-if ($nodeDeps.PSObject.Properties.Name -contains 'GlobalPackages') {
+if ($nodeDeps -is [hashtable] -and $nodeDeps.ContainsKey('GlobalPackages')) {
+    $packages = $nodeDeps['GlobalPackages']
+} elseif ($nodeDeps.PSObject.Properties.Name -contains 'GlobalPackages') {
     $packages = $nodeDeps.GlobalPackages
 } else {
     if ($nodeDeps.InstallYarn) {

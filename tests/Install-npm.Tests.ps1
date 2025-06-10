@@ -5,7 +5,7 @@ Describe '0203_Install-npm' {
         $npmDir = Join-Path ([System.IO.Path]::GetTempPath()) ([System.Guid]::NewGuid())
         $null = New-Item -ItemType Directory -Path $npmDir
         '{}' | Set-Content -Path (Join-Path $npmDir 'package.json')
-        $config = @{ Node_Dependencies = @{ NpmPath = $npmDir } }
+        $cfg = @{ Node_Dependencies = @{ NpmPath = $npmDir } }
 
         $script:calledPath = $null
         function npm {
@@ -15,8 +15,8 @@ Describe '0203_Install-npm' {
         }
 
 
-        . $script -Config @{}
-        Install-NpmDependencies -Config $config
+        . $script
+        Install-NpmDependencies -Config $cfg
 
         $script:calledPath | Should -Be (Get-Item $npmDir).FullName
 
@@ -28,15 +28,15 @@ Describe '0203_Install-npm' {
         $npmDir = Join-Path ([System.IO.Path]::GetTempPath()) ([System.Guid]::NewGuid())
         $null = New-Item -ItemType Directory -Path $npmDir
         '{}' | Set-Content -Path (Join-Path $npmDir 'package.json')
-        $config = @{ Node_Dependencies = @{ NpmPath = $npmDir } }
+        $cfg = @{ Node_Dependencies = @{ NpmPath = $npmDir } }
 
         function npm {
             param([string[]]$testArgs)
             $null = $testArgs
         }
 
-        . $script -Config @{}
-        Install-NpmDependencies -Config $config
+        . $script
+        Install-NpmDependencies -Config $cfg
         $success = $?
 
         $success | Should -BeTrue
@@ -47,13 +47,13 @@ Describe '0203_Install-npm' {
     It 'skips when NpmPath is missing' {
         $script = Join-Path $PSScriptRoot '..' 'runner_scripts' '0203_Install-npm.ps1'
         $npmDir = Join-Path ([System.IO.Path]::GetTempPath()) ([System.Guid]::NewGuid())
-        $config = @{ Node_Dependencies = @{ NpmPath = $npmDir; CreateNpmPath = $false } }
+        $cfg = @{ Node_Dependencies = @{ NpmPath = $npmDir; CreateNpmPath = $false } }
 
         $script:called = $false
         function npm { $script:called = $true }
 
-        . $script -Config @{}
-        Install-NpmDependencies -Config $config
+        . $script
+        Install-NpmDependencies -Config $cfg
         $success = $?
 
         $success | Should -BeTrue
@@ -63,13 +63,13 @@ Describe '0203_Install-npm' {
     It 'creates NpmPath when CreateNpmPath is true' {
         $script = Join-Path $PSScriptRoot '..' 'runner_scripts' '0203_Install-npm.ps1'
         $npmDir = Join-Path ([System.IO.Path]::GetTempPath()) ([System.Guid]::NewGuid())
-        $config = @{ Node_Dependencies = @{ NpmPath = $npmDir; CreateNpmPath = $true } }
+        $cfg = @{ Node_Dependencies = @{ NpmPath = $npmDir; CreateNpmPath = $true } }
 
         $script:calledPath = $null
         function npm { param([string[]]$Args) $script:calledPath = (Get-Location).ProviderPath }
 
-        . $script -Config @{}
-        Install-NpmDependencies -Config $config
+        . $script
+        Install-NpmDependencies -Config $cfg
 
         $script:calledPath | Should -Be (Get-Item $npmDir).FullName
         Test-Path $npmDir | Should -BeTrue
