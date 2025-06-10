@@ -1,4 +1,10 @@
 
+# OpenTofu Lab Automation Docs
+
+This folder contains early documentation for the project.
+
+- [labctl Python CLI](python-cli.md)
+
 # Documentation
 
 This folder will hold reference guides for automation scripts and modules.
@@ -23,5 +29,4 @@ The [root README](../README.md) provides quick start instructions. Additional gu
 - [Network switch module](../modules/network_switch/README.md)
 - [Example infrastructure](../example-infrastructure/README.md)
 - [Minimal example](../examples/minimal/README.md)
-
 
