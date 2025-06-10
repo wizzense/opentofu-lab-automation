@@ -14,7 +14,12 @@ function Get-LabConfig {
         $content = Get-Content -Raw -Path $Path
         if ($Path -match '\.ya?ml$') {
             if (-not (Get-Command ConvertFrom-Yaml -ErrorAction SilentlyContinue)) {
-                throw 'YAML support not available'
+                try {
+                    Import-Module powershell-yaml -ErrorAction Stop
+                }
+                catch {
+                    throw "YAML support requires the 'powershell-yaml' module. Install it with 'Install-Module powershell-yaml'."
+                }
             }
             return $content | ConvertFrom-Yaml
         }
