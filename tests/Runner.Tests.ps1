@@ -31,10 +31,36 @@ Describe 'runner.ps1 script selection' -Skip:($SkipNonWindows) {
         # Use script-scoped variable so PSScriptAnalyzer recognizes cross-block usage
         $script:runnerPath = Join-Path $PSScriptRoot '..' 'runner.ps1'
         . (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
-        $modulePath = Join-Path $PSScriptRoot '..' 'lab_utils' 'Get-LabConfig.ps1'
-        . $modulePath
-        . (Join-Path $PSScriptRoot '..' 'runner_utility_scripts' 'Logger.ps1')
-        . (Join-Path $PSScriptRoot '..' 'lab_utils' 'Menu.ps1')
+
+        function New-RunnerTestEnv {
+            $root = Join-Path $TestDrive ([guid]::NewGuid())
+            New-Item -ItemType Directory -Path $root | Out-Null
+            Copy-Item $script:runnerPath -Destination $root
+
+            $rsDir = Join-Path $root 'runner_scripts'
+            New-Item -ItemType Directory -Path $rsDir | Out-Null
+
+            $utils = Join-Path $root 'runner_utility_scripts'
+            New-Item -ItemType Directory -Path $utils | Out-Null
+            'function Write-CustomLog { param([string]$Message,[string]$Level) }' |
+                Set-Content -Path (Join-Path $utils 'Logger.ps1')
+
+            $labs = Join-Path $root 'lab_utils'
+            New-Item -ItemType Directory -Path $labs | Out-Null
+            'function Get-LabConfig { param([string]$Path) Get-Content -Raw $Path | ConvertFrom-Json }' |
+                Set-Content -Path (Join-Path $labs 'Get-LabConfig.ps1')
+            'function Format-Config { param($Config) $Config | ConvertTo-Json -Depth 5 }' |
+                Set-Content -Path (Join-Path $labs 'Format-Config.ps1')
+            'function Get-MenuSelection { }' |
+                Set-Content -Path (Join-Path $labs 'Menu.ps1')
+
+            $cfgDir = Join-Path $root 'config_files'
+            New-Item -ItemType Directory -Path $cfgDir | Out-Null
+            '{}' | Set-Content -Path (Join-Path $cfgDir 'default-config.json')
+            '{}' | Set-Content -Path (Join-Path $cfgDir 'recommended-config.json')
+
+            return $root
+        }
     }
     AfterEach {
         Remove-Item Function:Write-Host -ErrorAction SilentlyContinue
@@ -44,491 +70,314 @@ Describe 'runner.ps1 script selection' -Skip:($SkipNonWindows) {
     }
 
     It 'runs non-interactively when -Scripts is supplied' {
-        $tempDir = Join-Path ([System.IO.Path]::GetTempPath()) ([System.Guid]::NewGuid())
-        $null = New-Item -ItemType Directory -Path $tempDir
-        try {
-            Copy-Item $script:runnerPath -Destination $tempDir
-            Copy-Item (Join-Path $PSScriptRoot '..' 'runner_utility_scripts') -Destination $tempDir -Recurse
-            Copy-Item (Join-Path $PSScriptRoot '..' 'lab_utils') -Destination $tempDir -Recurse
-            Copy-Item (Join-Path $PSScriptRoot '..' 'config_files') -Destination (Join-Path $tempDir 'config_files') -Recurse
-            $scriptsDir = Join-Path $tempDir 'runner_scripts'
-            $null = New-Item -ItemType Directory -Path $scriptsDir
-            $dummy = Join-Path $scriptsDir '0001_Test.ps1'
-            'Param([PSCustomObject]$Config)
-exit 0' | Set-Content -Path $dummy
+        $tempDir   = New-RunnerTestEnv
+        $scriptsDir = Join-Path $tempDir 'runner_scripts'
+        $dummy      = Join-Path $scriptsDir '0001_Test.ps1'
+        "Param([PSCustomObject]`$Config)
+exit 0" | Set-Content -Path $dummy
 
-            Push-Location $tempDir
-            Mock Get-MenuSelection {}
-            Mock Read-Host { throw 'Read-Host should not be called' }
-            & "$tempDir/runner.ps1" -Scripts '0001' -Auto | Out-Null
-            Pop-Location
-            Should -Invoke -CommandName Get-MenuSelection -Times 0
-        } finally {
-            Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue
-        }
+        Push-Location $tempDir
+        Mock Get-MenuSelection {}
+        Mock Read-Host { throw 'Read-Host should not be called' }
+        & "$tempDir/runner.ps1" -Scripts '0001' -Auto | Out-Null
+        Pop-Location
+
+        Should -Invoke -CommandName Get-MenuSelection -Times 0
+
+        Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue
     }
 
     It 'uses pwsh from PSHOME when not in PATH' {
-        $tempDir = Join-Path ([System.IO.Path]::GetTempPath()) ([System.Guid]::NewGuid())
-        $null = New-Item -ItemType Directory -Path $tempDir
+        $tempDir   = New-RunnerTestEnv
+        $scriptsDir = Join-Path $tempDir 'runner_scripts'
+        $dummy      = Join-Path $scriptsDir '0001_Test.ps1'
+        "Param([PSCustomObject]`$Config)
+exit 0" | Set-Content -Path $dummy
+
+        $oldPath = $env:PATH
+        $env:PATH  = ''
         try {
-            Copy-Item $script:runnerPath -Destination $tempDir
-            Copy-Item (Join-Path $PSScriptRoot '..' 'runner_utility_scripts') -Destination $tempDir -Recurse
-            Copy-Item (Join-Path $PSScriptRoot '..' 'lab_utils') -Destination $tempDir -Recurse
-            Copy-Item (Join-Path $PSScriptRoot '..' 'config_files') -Destination (Join-Path $tempDir 'config_files') -Recurse
-            $scriptsDir = Join-Path $tempDir 'runner_scripts'
-            $null = New-Item -ItemType Directory -Path $scriptsDir
-            $dummy = Join-Path $scriptsDir '0001_Test.ps1'
-            'Param([PSCustomObject]$Config)
-exit 0' | Set-Content -Path $dummy
-
-            $oldPath = $env:PATH
-            $env:PATH = ''
-            try {
-                Push-Location $tempDir
-                Mock Read-Host { throw 'Read-Host should not be called' }
-                & "$tempDir/runner.ps1" -Scripts '0001' -Auto | Out-Null
-                $code = $LASTEXITCODE
-                Pop-Location
-            }
-            finally {
-                $env:PATH = $oldPath
-            }
-
-            $code | Should -Be 0
+            Push-Location $tempDir
+            Mock Read-Host { throw 'Read-Host should not be called' }
+            & "$tempDir/runner.ps1" -Scripts '0001' -Auto | Out-Null
+            $code = $LASTEXITCODE
+            Pop-Location
+        } finally {
+            $env:PATH = $oldPath
         }
-        finally {
-            Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue
-        }
+
+        $code | Should -Be 0
+
+        Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue
     }
 
     It 'exits with code 1 when -Scripts has no matching prefixes' {
-        $tempDir = Join-Path ([System.IO.Path]::GetTempPath()) ([System.Guid]::NewGuid())
-        $null = New-Item -ItemType Directory -Path $tempDir
-        try {
-            Copy-Item $script:runnerPath -Destination $tempDir
-            Copy-Item (Join-Path $PSScriptRoot '..' 'runner_utility_scripts') -Destination $tempDir -Recurse
-            Copy-Item (Join-Path $PSScriptRoot '..' 'lab_utils') -Destination $tempDir -Recurse
-            Copy-Item (Join-Path $PSScriptRoot '..' 'config_files') -Destination (Join-Path $tempDir 'config_files') -Recurse
-            $scriptsDir = Join-Path $tempDir 'runner_scripts'
-            $null = New-Item -ItemType Directory -Path $scriptsDir
+        $tempDir   = New-RunnerTestEnv
+        Push-Location $tempDir
+        Mock-WriteLog
+        & "$tempDir/runner.ps1" -Scripts '9999' -Auto | Out-Null
+        $code = $LASTEXITCODE
+        Pop-Location
 
-            Push-Location $tempDir
-            Mock-WriteLog
-            & "$tempDir/runner.ps1" -Scripts '9999' -Auto | Out-Null
-            $code = $LASTEXITCODE
-            Pop-Location
+        $code | Should -Be 1
 
-            $code | Should -Be 1
-        } finally {
-            Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue
-        }
+        Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue
     }
 
     It 'continues executing all scripts even if one fails' {
-        $tempDir = Join-Path ([System.IO.Path]::GetTempPath()) ([System.Guid]::NewGuid())
-        $null = New-Item -ItemType Directory -Path $tempDir
-        try {
-            Copy-Item $script:runnerPath -Destination $tempDir
-            Copy-Item (Join-Path $PSScriptRoot '..' 'runner_utility_scripts') -Destination $tempDir -Recurse
-            Copy-Item (Join-Path $PSScriptRoot '..' 'lab_utils') -Destination $tempDir -Recurse
-            Copy-Item (Join-Path $PSScriptRoot '..' 'config_files') -Destination (Join-Path $tempDir 'config_files') -Recurse
-            $scriptsDir = Join-Path $tempDir 'runner_scripts'
-            $null = New-Item -ItemType Directory -Path $scriptsDir
-            $out1 = Join-Path $tempDir 'out1.txt'
-            $out2 = Join-Path $tempDir 'out2.txt'
-            $fail = Join-Path $scriptsDir '0001_Fail.ps1'
-            @"
-Param([PSCustomObject]`$Config)
+        $tempDir   = New-RunnerTestEnv
+        $scriptsDir = Join-Path $tempDir 'runner_scripts'
+        $out1       = Join-Path $tempDir 'out1.txt'
+        $out2       = Join-Path $tempDir 'out2.txt'
+        @"Param([PSCustomObject]`$Config)
 '1' | Out-File -FilePath "$out1"
-exit 1
-"@ | Set-Content -Path $fail
-            $succ = Join-Path $scriptsDir '0002_Success.ps1'
-            @"
-Param([PSCustomObject]`$Config)
+exit 1"@ | Set-Content -Path (Join-Path $scriptsDir '0001_Fail.ps1')
+        @"Param([PSCustomObject]`$Config)
 '2' | Out-File -FilePath "$out2"
-exit 0
-"@ | Set-Content -Path $succ
+exit 0"@ | Set-Content -Path (Join-Path $scriptsDir '0002_Success.ps1')
 
-            Push-Location $tempDir
-            Mock Read-Host { throw 'Read-Host should not be called' }
-            & "$tempDir/runner.ps1" -Scripts '0001,0002' -Auto | Out-Null
-            $code = $LASTEXITCODE
-            Pop-Location
+        Push-Location $tempDir
+        Mock Read-Host { throw 'Read-Host should not be called' }
+        & "$tempDir/runner.ps1" -Scripts '0001,0002' -Auto | Out-Null
+        $code = $LASTEXITCODE
+        Pop-Location
 
-            Test-Path $out1 | Should -BeTrue
-            Test-Path $out2 | Should -BeTrue
-            $code | Should -Be 1
-        } finally {
-            Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue
-        }
+        Test-Path $out1 | Should -BeTrue
+        Test-Path $out2 | Should -BeTrue
+        $code | Should -Be 1
+
+        Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue
     }
 
     It 'continues executing all scripts when one throws' {
-        $tempDir = Join-Path ([System.IO.Path]::GetTempPath()) ([System.Guid]::NewGuid())
-        $null = New-Item -ItemType Directory -Path $tempDir
-        try {
-            Copy-Item $script:runnerPath -Destination $tempDir
-            Copy-Item (Join-Path $PSScriptRoot '..' 'runner_utility_scripts') -Destination $tempDir -Recurse
-            Copy-Item (Join-Path $PSScriptRoot '..' 'lab_utils') -Destination $tempDir -Recurse
-            Copy-Item (Join-Path $PSScriptRoot '..' 'config_files') -Destination (Join-Path $tempDir 'config_files') -Recurse
-            $scriptsDir = Join-Path $tempDir 'runner_scripts'
-            $null = New-Item -ItemType Directory -Path $scriptsDir
-            $out1 = Join-Path $tempDir 'out1_throw.txt'
-            $out2 = Join-Path $tempDir 'out2_throw.txt'
-            $fail = Join-Path $scriptsDir '0001_Throw.ps1'
-            @"
-Param([PSCustomObject]`$Config)
+        $tempDir   = New-RunnerTestEnv
+        $scriptsDir = Join-Path $tempDir 'runner_scripts'
+        $out1       = Join-Path $tempDir 'out1_throw.txt'
+        $out2       = Join-Path $tempDir 'out2_throw.txt'
+        @"Param([PSCustomObject]`$Config)
 '1' | Out-File -FilePath "$out1"
-throw 'bad'
-"@ | Set-Content -Path $fail
-            $succ = Join-Path $scriptsDir '0002_Success.ps1'
-            @"
-Param([PSCustomObject]`$Config)
+throw 'bad'"@ | Set-Content -Path (Join-Path $scriptsDir '0001_Throw.ps1')
+        @"Param([PSCustomObject]`$Config)
 '2' | Out-File -FilePath "$out2"
-exit 0
-"@ | Set-Content -Path $succ
+exit 0"@ | Set-Content -Path (Join-Path $scriptsDir '0002_Success.ps1')
 
-            Push-Location $tempDir
-            Mock Read-Host { throw 'Read-Host should not be called' }
-            & "$tempDir/runner.ps1" -Scripts '0001,0002' -Auto | Out-Null
-            $code = $LASTEXITCODE
-            Pop-Location
+        Push-Location $tempDir
+        Mock Read-Host { throw 'Read-Host should not be called' }
+        & "$tempDir/runner.ps1" -Scripts '0001,0002' -Auto | Out-Null
+        $code = $LASTEXITCODE
+        Pop-Location
 
-            Test-Path $out1 | Should -BeTrue
-            Test-Path $out2 | Should -BeTrue
-            $code | Should -Be 1
-        }
-        finally {
-            Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue
-        }
+        Test-Path $out1 | Should -BeTrue
+        Test-Path $out2 | Should -BeTrue
+        $code | Should -Be 1
+
+        Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue
     }
 
     It 'runs only cleanup script when 0000 is combined with others in Auto mode' {
-        $tempDir = Join-Path ([System.IO.Path]::GetTempPath()) ([System.Guid]::NewGuid())
-        $null = New-Item -ItemType Directory -Path $tempDir
-        try {
-            Copy-Item $script:runnerPath -Destination $tempDir
-            Copy-Item (Join-Path $PSScriptRoot '..' 'runner_utility_scripts') -Destination $tempDir -Recurse
-            Copy-Item (Join-Path $PSScriptRoot '..' 'lab_utils') -Destination $tempDir -Recurse
-            Copy-Item (Join-Path $PSScriptRoot '..' 'config_files') -Destination (Join-Path $tempDir 'config_files') -Recurse
-            $scriptsDir = Join-Path $tempDir 'runner_scripts'
-            $null = New-Item -ItemType Directory -Path $scriptsDir
-            $out1 = Join-Path $tempDir 'out_cleanup.txt'
-            $out2 = Join-Path $tempDir 'out_other.txt'
-            $clean = Join-Path $scriptsDir '0000_Cleanup.ps1'
-            @"
-Param([PSCustomObject]`$Config)
+        $tempDir   = New-RunnerTestEnv
+        $scriptsDir = Join-Path $tempDir 'runner_scripts'
+        $out1       = Join-Path $tempDir 'out_cleanup.txt'
+        $out2       = Join-Path $tempDir 'out_other.txt'
+        @"Param([PSCustomObject]`$Config)
 'c' | Out-File -FilePath "$out1"
-exit 0
-"@ | Set-Content -Path $clean
-            $other = Join-Path $scriptsDir '0001_Other.ps1'
-            @"
-Param([PSCustomObject]`$Config)
+exit 0"@ | Set-Content -Path (Join-Path $scriptsDir '0000_Cleanup.ps1')
+        @"Param([PSCustomObject]`$Config)
 'o' | Out-File -FilePath "$out2"
-exit 0
-"@ | Set-Content -Path $other
+exit 0"@ | Set-Content -Path (Join-Path $scriptsDir '0001_Other.ps1')
 
-            Push-Location $tempDir
-            Mock Read-Host { throw 'Read-Host should not be called' }
-            & "$tempDir/runner.ps1" -Scripts '0000,0001' -Auto | Out-Null
-            $code = $LASTEXITCODE
-            Pop-Location
+        Push-Location $tempDir
+        Mock Read-Host { throw 'Read-Host should not be called' }
+        & "$tempDir/runner.ps1" -Scripts '0000,0001' -Auto | Out-Null
+        $code = $LASTEXITCODE
+        Pop-Location
 
-            Test-Path $out1 | Should -BeTrue
-            Test-Path $out2 | Should -BeFalse
-            $code | Should -Be 0
-        } finally {
-            Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue
-        }
+        Test-Path $out1 | Should -BeTrue
+        Test-Path $out2 | Should -BeFalse
+        $code | Should -Be 0
+
+        Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue
     }
 
     It 'forces script execution when flag disabled using -Force' {
-        $tempDir = Join-Path ([System.IO.Path]::GetTempPath()) ([System.Guid]::NewGuid())
-        $null = New-Item -ItemType Directory -Path $tempDir
-        try {
-            Copy-Item $script:runnerPath -Destination $tempDir
-            Copy-Item (Join-Path $PSScriptRoot '..' 'runner_utility_scripts') -Destination $tempDir -Recurse
-            Copy-Item (Join-Path $PSScriptRoot '..' 'lab_utils') -Destination $tempDir -Recurse
-            $configDir = Join-Path $tempDir 'config_files'
-            $null = New-Item -ItemType Directory -Path $configDir
-            $configFile = Join-Path $configDir 'config.json'
-            '{ "RunFoo": false }' | Set-Content -Path $configFile
-            $scriptsDir = Join-Path $tempDir 'runner_scripts'
-            $null = New-Item -ItemType Directory -Path $scriptsDir
-            $out = Join-Path $tempDir 'out.txt'
-            $scriptFile = Join-Path $scriptsDir '0001_Test.ps1'
-            @"
-Param([PSCustomObject]`$Config)
-if (`$Config.RunFoo -eq `$true) { 'foo' | Out-File -FilePath "$out" } else { Write-Output 'skip' }
-"@ | Set-Content -Path $scriptFile
+        $tempDir   = New-RunnerTestEnv
+        $configDir = Join-Path $tempDir 'config_files'
+        $configFile = Join-Path $configDir 'config.json'
+        '{ "RunFoo": false }' | Set-Content -Path $configFile
+        $scriptsDir = Join-Path $tempDir 'runner_scripts'
+        $out = Join-Path $tempDir 'out.txt'
+        @"Param([PSCustomObject]`$Config)
+if (`$Config.RunFoo -eq `$true) { 'foo' | Out-File -FilePath "$out" } else { Write-Output 'skip' }"@ |
+            Set-Content -Path (Join-Path $scriptsDir '0001_Test.ps1')
 
-            Push-Location $tempDir
-            Mock Read-Host { throw 'Read-Host should not be called' }
-            & "$tempDir/runner.ps1" -Scripts '0001' -Auto -ConfigFile $configFile -Force | Out-Null
-            $updated = Get-Content -Raw $configFile | ConvertFrom-Json
-            Pop-Location
+        Push-Location $tempDir
+        Mock Read-Host { throw 'Read-Host should not be called' }
+        & "$tempDir/runner.ps1" -Scripts '0001' -Auto -ConfigFile $configFile -Force | Out-Null
+        $updated = Get-Content -Raw $configFile | ConvertFrom-Json
+        Pop-Location
 
-            Test-Path $out | Should -BeTrue
-            $updated.RunFoo | Should -BeTrue
-        }
-        finally { Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue }
+        Test-Path $out | Should -BeTrue
+        $updated.RunFoo | Should -BeTrue
+
+        Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue
     }
 
     It 'skips script action when flag disabled and -Force not used' {
-        $tempDir = Join-Path ([System.IO.Path]::GetTempPath()) ([System.Guid]::NewGuid())
-        $null = New-Item -ItemType Directory -Path $tempDir
-        try {
-            Copy-Item $script:runnerPath -Destination $tempDir
-            Copy-Item (Join-Path $PSScriptRoot '..' 'runner_utility_scripts') -Destination $tempDir -Recurse
-            Copy-Item (Join-Path $PSScriptRoot '..' 'lab_utils') -Destination $tempDir -Recurse
-            $configDir = Join-Path $tempDir 'config_files'
-            $null = New-Item -ItemType Directory -Path $configDir
-            $configFile = Join-Path $configDir 'config.json'
-            '{ "RunFoo": false }' | Set-Content -Path $configFile
-            $scriptsDir = Join-Path $tempDir 'runner_scripts'
-            $null = New-Item -ItemType Directory -Path $scriptsDir
-            $out = Join-Path $tempDir 'out.txt'
-            $scriptFile = Join-Path $scriptsDir '0001_Test.ps1'
-            @"
-Param([PSCustomObject]`$Config)
-if (`$Config.RunFoo -eq `$true) { 'foo' | Out-File -FilePath "$out" }
-"@ | Set-Content -Path $scriptFile
+        $tempDir   = New-RunnerTestEnv
+        $configDir = Join-Path $tempDir 'config_files'
+        $configFile = Join-Path $configDir 'config.json'
+        '{ "RunFoo": false }' | Set-Content -Path $configFile
+        $scriptsDir = Join-Path $tempDir 'runner_scripts'
+        $out = Join-Path $tempDir 'out.txt'
+        @"Param([PSCustomObject]`$Config)
+if (`$Config.RunFoo -eq `$true) { 'foo' | Out-File -FilePath "$out" }"@ |
+            Set-Content -Path (Join-Path $scriptsDir '0001_Test.ps1')
 
-            Push-Location $tempDir
-            Mock Read-Host { throw 'Read-Host should not be called' }
-            & "$tempDir/runner.ps1" -Scripts '0001' -Auto -ConfigFile $configFile | Out-Null
-            $updated = Get-Content -Raw $configFile | ConvertFrom-Json
-            Pop-Location
+        Push-Location $tempDir
+        Mock Read-Host { throw 'Read-Host should not be called' }
+        & "$tempDir/runner.ps1" -Scripts '0001' -Auto -ConfigFile $configFile | Out-Null
+        $updated = Get-Content -Raw $configFile | ConvertFrom-Json
+        Pop-Location
 
-            Test-Path $out | Should -BeFalse
-            $updated.RunFoo | Should -BeFalse
-        }
-        finally { Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue }
+        Test-Path $out | Should -BeFalse
+        $updated.RunFoo | Should -BeFalse
+
+        Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue
     }
 
     It 'reports success when script omits an exit statement' {
-        $tempDir = Join-Path ([System.IO.Path]::GetTempPath()) ([System.Guid]::NewGuid())
-        $null = New-Item -ItemType Directory -Path $tempDir
-        try {
-            Copy-Item $script:runnerPath -Destination $tempDir
-            Copy-Item (Join-Path $PSScriptRoot '..' 'runner_utility_scripts') -Destination $tempDir -Recurse
-            Copy-Item (Join-Path $PSScriptRoot '..' 'lab_utils') -Destination $tempDir -Recurse
-            Copy-Item (Join-Path $PSScriptRoot '..' 'config_files') -Destination (Join-Path $tempDir 'config_files') -Recurse
-            $scriptsDir = Join-Path $tempDir 'runner_scripts'
-            $null = New-Item -ItemType Directory -Path $scriptsDir
-            $out = Join-Path $tempDir 'out.txt'
-            $scriptFile = Join-Path $scriptsDir '0001_NoExit.ps1'
-            @"
-Param([PSCustomObject]`$Config)
-'ok' | Out-File -FilePath "$out"
-"@ | Set-Content -Path $scriptFile
+        $tempDir   = New-RunnerTestEnv
+        $scriptsDir = Join-Path $tempDir 'runner_scripts'
+        $out        = Join-Path $tempDir 'out.txt'
+        @"Param([PSCustomObject]`$Config)
+'ok' | Out-File -FilePath "$out""@ |
+            Set-Content -Path (Join-Path $scriptsDir '0001_NoExit.ps1')
 
-            Push-Location $tempDir
-            Mock Read-Host { throw 'Read-Host should not be called' }
-            & "$tempDir/runner.ps1" -Scripts '0001' -Auto | Out-Null
-            $code = $LASTEXITCODE
-            Pop-Location
+        Push-Location $tempDir
+        Mock Read-Host { throw 'Read-Host should not be called' }
+        & "$tempDir/runner.ps1" -Scripts '0001' -Auto | Out-Null
+        $code = $LASTEXITCODE
+        Pop-Location
 
-            Test-Path $out | Should -BeTrue
-            $code | Should -Be 0
-        }
-        finally { Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue }
+        Test-Path $out | Should -BeTrue
+        $code | Should -Be 0
+
+        Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue
     }
 
     It 'suppresses informational logs when -Verbosity silent is used' {
-        $tempDir = Join-Path ([System.IO.Path]::GetTempPath()) ([System.Guid]::NewGuid())
-        $null = New-Item -ItemType Directory -Path $tempDir
-        try {
-            Copy-Item $script:runnerPath -Destination $tempDir
-            Copy-Item (Join-Path $PSScriptRoot '..' 'runner_utility_scripts') -Destination $tempDir -Recurse
-            Copy-Item (Join-Path $PSScriptRoot '..' 'lab_utils') -Destination $tempDir -Recurse
-            Copy-Item (Join-Path $PSScriptRoot '..' 'config_files') -Destination (Join-Path $tempDir 'config_files') -Recurse
-            $scriptsDir = Join-Path $tempDir 'runner_scripts'
-            $null = New-Item -ItemType Directory -Path $scriptsDir
-            $scriptFile = Join-Path $scriptsDir '0001_Log.ps1'
-            @"
-Param([PSCustomObject]`$Config)
+        $tempDir   = New-RunnerTestEnv
+        $scriptsDir = Join-Path $tempDir 'runner_scripts'
+        @"Param([PSCustomObject]`$Config)
 Write-Warning 'warn message'
-Write-Error 'err message'
-"@ | Set-Content -Path $scriptFile
+Write-Error 'err message'"@ | Set-Content -Path (Join-Path $scriptsDir '0001_Log.ps1')
 
-            Push-Location $tempDir
-            $script:logLines = @()
-            $script:warnings  = @()
-            $script:errors    = @()
-            function global:Write-Host {
-                param(
-                    [Parameter(Mandatory=$true,Position=0,ValueFromPipeline=$true)]
-                    [object]$Object,
-                    [Parameter(Position=1)]
-                    [string]$ForegroundColor
-                )
-                process { $script:logLines += "$Object" }
-            }
-            function global:Write-Warning {
-                param([string]$Message)
-                $script:warnings += $Message
-            }
-            function global:Write-Error {
-                param([string]$Message)
-                $script:errors += $Message
-            }
-            $output = & "$tempDir/runner.ps1" -Scripts '0001' -Auto -Verbosity 'silent' *>&1
-            Pop-Location
+        Push-Location $tempDir
+        $script:logLines = @()
+        $script:warnings = @()
+        $script:errors   = @()
+        function global:Write-Host {
+            param([object]$Object,[string]$ForegroundColor)
+            process { $script:logLines += "$Object" }
+        }
+        function global:Write-Warning { param([string]$Message) $script:warnings += $Message }
+        function global:Write-Error   { param([string]$Message) $script:errors   += $Message }
+        $output = & "$tempDir/runner.ps1" -Scripts '0001' -Auto -Verbosity 'silent' *>&1
+        Pop-Location
 
         ($script:logLines | Measure-Object).Count | Should -Be 0
-        ($output | Out-String).Trim() | Should -BeEmpty
+        ($output | Out-String).Trim()       | Should -BeEmpty
         $script:warnings | Should -Contain 'warn message'
         $script:errors   | Should -Contain 'err message'
+
+        Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue
     }
-    finally { Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue }
 }
 
     It 'suppresses informational logs when -Verbosity silent is used' {
-        $tempDir = Join-Path ([System.IO.Path]::GetTempPath()) ([System.Guid]::NewGuid())
-        $null = New-Item -ItemType Directory -Path $tempDir
-        try {
-            Copy-Item $script:runnerPath -Destination $tempDir
-            Copy-Item (Join-Path $PSScriptRoot '..' 'runner_utility_scripts') -Destination $tempDir -Recurse
-            Copy-Item (Join-Path $PSScriptRoot '..' 'lab_utils') -Destination $tempDir -Recurse
-            Copy-Item (Join-Path $PSScriptRoot '..' 'config_files') -Destination (Join-Path $tempDir 'config_files') -Recurse
-            $scriptsDir = Join-Path $tempDir 'runner_scripts'
-            $null = New-Item -ItemType Directory -Path $scriptsDir
-            $scriptFile = Join-Path $scriptsDir '0001_Log.ps1'
-            @"
-Param([PSCustomObject]`$Config)
+        $tempDir   = New-RunnerTestEnv
+        $scriptsDir = Join-Path $tempDir 'runner_scripts'
+        @"Param([PSCustomObject]`$Config)
 Write-Warning 'warn message'
-Write-Error 'err message'
-"@ | Set-Content -Path $scriptFile
+Write-Error 'err message'"@ | Set-Content -Path (Join-Path $scriptsDir '0001_Log.ps1')
 
-            Push-Location $tempDir
-            $script:logLines = @()
-            $script:warnings  = @()
-            $script:errors    = @()
-            function global:Write-Host {
-                param(
-                    [Parameter(Mandatory=$true,Position=0,ValueFromPipeline=$true)]
-                    [object]$Object,
-                    [Parameter(Position=1)]
-                    [string]$ForegroundColor
-                )
-                process { $script:logLines += "$Object" }
-            }
-            function global:Write-Warning {
-                param([string]$Message)
-                $script:warnings += $Message
-            }
-            function global:Write-Error {
-                param([string]$Message)
-                $script:errors += $Message
-            }
-            $output = & "$tempDir/runner.ps1" -Scripts '0001' -Auto -Verbosity silent *>&1
-            Pop-Location
+        Push-Location $tempDir
+        $script:logLines = @()
+        $script:warnings = @()
+        $script:errors   = @()
+        function global:Write-Host { param([object]$Object,[string]$ForegroundColor) process { $script:logLines += "$Object" } }
+        function global:Write-Warning { param([string]$Message) $script:warnings += $Message }
+        function global:Write-Error   { param([string]$Message) $script:errors   += $Message }
+        $output = & "$tempDir/runner.ps1" -Scripts '0001' -Auto -Verbosity silent *>&1
+        Pop-Location
 
-            ($script:logLines | Measure-Object).Count | Should -Be 0
-            ($output | Out-String).Trim() | Should -BeEmpty
-            $script:warnings | Should -Contain 'warn message'
-            $script:errors   | Should -Contain 'err message'
-        }
-        finally { Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue }
+        ($script:logLines | Measure-Object).Count | Should -Be 0
+        ($output | Out-String).Trim()       | Should -BeEmpty
+        $script:warnings | Should -Contain 'warn message'
+        $script:errors   | Should -Contain 'err message'
+
+        Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue
     }
 
     It 'prompts twice when -Auto is used without -Scripts' -Skip:($SkipNonWindows) {
-        $tempDir = Join-Path ([System.IO.Path]::GetTempPath()) ([System.Guid]::NewGuid())
-        $null = New-Item -ItemType Directory -Path $tempDir
-        try {
-            Copy-Item $script:runnerPath -Destination $tempDir
-            Copy-Item (Join-Path $PSScriptRoot '..' 'runner_utility_scripts') -Destination $tempDir -Recurse
-            Copy-Item (Join-Path $PSScriptRoot '..' 'lab_utils') -Destination $tempDir -Recurse
-            Copy-Item (Join-Path $PSScriptRoot '..' 'config_files') -Destination (Join-Path $tempDir 'config_files') -Recurse
-            $scriptsDir = Join-Path $tempDir 'runner_scripts'
-            $null = New-Item -ItemType Directory -Path $scriptsDir
-            $dummy = Join-Path $scriptsDir '0001_Test.ps1'
-            'Param([PSCustomObject]$Config)
-exit 0' | Set-Content -Path $dummy
+        $tempDir   = New-RunnerTestEnv
+        $scriptsDir = Join-Path $tempDir 'runner_scripts'
+        "Param([PSCustomObject]`$Config)
+exit 0" | Set-Content -Path (Join-Path $scriptsDir '0001_Test.ps1')
 
-            $script:idx = 0
-            Mock Get-MenuSelection {
-                if ($script:idx -eq 0) {
-                    $script:idx++
-                    return '0001_Test.ps1'
-                }
-                return @()
-            }
-
-            Push-Location $tempDir
-            & "$tempDir/runner.ps1" -Auto | Out-Null
-            Pop-Location
-
-            Should -Invoke -CommandName Get-MenuSelection -Times 2
-        } finally {
-            Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue
+        $script:idx = 0
+        Mock Get-MenuSelection {
+            if ($script:idx -eq 0) { $script:idx++; return '0001_Test.ps1' }
+            return @()
         }
+
+        Push-Location $tempDir
+        & "$tempDir/runner.ps1" -Auto | Out-Null
+        Pop-Location
+
+        Should -Invoke -CommandName Get-MenuSelection -Times 2
+
+        Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue
     }
 
     It 'handles empty or invalid selection by logging and doing nothing' -Skip:($SkipNonWindows) {
-        $tempDir = Join-Path ([System.IO.Path]::GetTempPath()) ([System.Guid]::NewGuid())
-        $null = New-Item -ItemType Directory -Path $tempDir
-        try {
-            Copy-Item $script:runnerPath -Destination $tempDir
-            Copy-Item (Join-Path $PSScriptRoot '..' 'runner_utility_scripts') -Destination $tempDir -Recurse
-            Copy-Item (Join-Path $PSScriptRoot '..' 'lab_utils') -Destination $tempDir -Recurse
-            Copy-Item (Join-Path $PSScriptRoot '..' 'config_files') -Destination (Join-Path $tempDir 'config_files') -Recurse
-            $scriptsDir = Join-Path $tempDir 'runner_scripts'
-            $null = New-Item -ItemType Directory -Path $scriptsDir
-            $out = Join-Path $tempDir 'out.txt'
-            $scriptFile = Join-Path $scriptsDir '0001_Test.ps1'
-            @"
-Param([PSCustomObject]`$Config)
+        $tempDir   = New-RunnerTestEnv
+        $scriptsDir = Join-Path $tempDir 'runner_scripts'
+        $out        = Join-Path $tempDir 'out.txt'
+        @"Param([PSCustomObject]`$Config)
 'ran' | Out-File -FilePath "$out"
-exit 0
-"@ | Set-Content -Path $scriptFile
+exit 0"@ | Set-Content -Path (Join-Path $scriptsDir '0001_Test.ps1')
 
-            Mock Get-MenuSelection { @() }
-            Mock-WriteLog
+        Mock Get-MenuSelection { @() }
+        Mock-WriteLog
 
-            Push-Location $tempDir
-            & "$tempDir/runner.ps1" -Auto | Out-Null
-            Pop-Location
+        Push-Location $tempDir
+        & "$tempDir/runner.ps1" -Auto | Out-Null
+        Pop-Location
 
-            Test-Path $out | Should -BeFalse
-            Should -Invoke -CommandName Write-CustomLog -Times 1 -ParameterFilter { $Message -eq 'No scripts selected.' }
-            Should -Invoke -CommandName Get-MenuSelection -Times 1
-        }
-        finally {
-            Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue
-        }
+        Test-Path $out | Should -BeFalse
+        Should -Invoke -CommandName Write-CustomLog -Times 1 -ParameterFilter { $Message -eq 'No scripts selected.' }
+        Should -Invoke -CommandName Get-MenuSelection -Times 1
+
+        Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue
     }
 
     It 'logs script output exactly once' {
-        $tempDir = Join-Path ([System.IO.Path]::GetTempPath()) ([System.Guid]::NewGuid())
-        $null = New-Item -ItemType Directory -Path $tempDir
-        try {
-            Copy-Item $script:runnerPath -Destination $tempDir
-            Copy-Item (Join-Path $PSScriptRoot '..' 'runner_utility_scripts') -Destination $tempDir -Recurse
-            Copy-Item (Join-Path $PSScriptRoot '..' 'lab_utils') -Destination $tempDir -Recurse
-            Copy-Item (Join-Path $PSScriptRoot '..' 'config_files') -Destination (Join-Path $tempDir 'config_files') -Recurse
-            $scriptsDir = Join-Path $tempDir 'runner_scripts'
-            $null = New-Item -ItemType Directory -Path $scriptsDir
-            $scriptFile = Join-Path $scriptsDir '0001_Echo.ps1'
-            @"
-Param([PSCustomObject]`$Config)
-Write-Output 'hello world'
-"@ | Set-Content -Path $scriptFile
+        $tempDir   = New-RunnerTestEnv
+        $scriptsDir = Join-Path $tempDir 'runner_scripts'
+        @"Param([PSCustomObject]`$Config)
+Write-Output 'hello world'"@ | Set-Content -Path (Join-Path $scriptsDir '0001_Echo.ps1')
 
-            Push-Location $tempDir
-            $script:messages = @()
-            Mock-WriteLog
-            Set-Item -Path Function:Write-CustomLog -Value { param($Message,$Level) $script:messages += $Message }
-            & "$tempDir/runner.ps1" -Scripts '0001' -Auto | Out-Null
-            Pop-Location
+        Push-Location $tempDir
+        $script:messages = @()
+        Mock-WriteLog
+        Set-Item -Path Function:Write-CustomLog -Value { param($Message,$Level) $script:messages += $Message }
+        & "$tempDir/runner.ps1" -Scripts '0001' -Auto | Out-Null
+        Pop-Location
 
-            ($script:messages | Where-Object { $_ -match 'hello world' }).Count | Should -Be 1
-        }
-        finally {
-            Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue
-        }
+        ($script:messages | Where-Object { $_ -match 'hello world' }).Count | Should -Be 1
+
+        Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue
     }
 }
 
