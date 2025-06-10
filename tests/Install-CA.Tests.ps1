@@ -14,7 +14,8 @@ Describe '0104_Install-CA script' {
         Mock Get-Item { $null }
         Mock Install-AdcsCertificationAuthority {}
 
-        . $scriptPath -Config $config
+        . $scriptPath
+        Install-CA -Config $config
 
         Assert-MockCalled Install-AdcsCertificationAuthority -Times 1
     }
@@ -27,7 +28,8 @@ Describe '0104_Install-CA script' {
         Mock Write-CustomLog {}
         Mock Install-AdcsCertificationAuthority {}
 
-        . $scriptPath -Config $config
+        . $scriptPath
+        Install-CA -Config $config
 
         Assert-MockNotCalled Install-AdcsCertificationAuthority
     }
