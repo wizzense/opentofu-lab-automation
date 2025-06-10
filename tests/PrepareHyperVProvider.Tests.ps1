@@ -100,7 +100,6 @@ Describe 'Prepare-HyperVProvider certificate handling' -Skip:($IsLinux -or $IsMa
             param($PfxPath, $Password, $CertPath, $KeyPath)
             & $global:origConvertPfxToPem -PfxPath $PfxPath -Password $Password -CertPath $CertPath -KeyPath $KeyPath
         }
-        Mock Copy-Item {}
         # certificate operations should not touch the real store
         $rootStub = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2
         $hostStub = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2
@@ -124,6 +123,7 @@ Describe 'Prepare-HyperVProvider certificate handling' -Skip:($IsLinux -or $IsMa
         Copy-Item -Path $sourceCert -Destination (Join-Path $PWD "$rootCaName.cer") -Force
         'dummy' | Set-Content -Path (Join-Path $PWD "$rootCaName.pfx")
         'dummy' | Set-Content -Path (Join-Path $PWD "$hostName.pfx")
+        Mock Copy-Item {}
 
         $providerFile = Join-Path $tempDir 'providers.tf'
         @(
