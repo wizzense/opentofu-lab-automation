@@ -9,4 +9,8 @@ Describe 'Format-Config' {
         $result | Should -Match '"Foo"\s*:\s*"bar"'
         $result | Should -Match '"Baz"\s*:\s*1'
     }
+
+    It 'throws when Config is null' {
+        { Format-Config -Config $null } | Should -Throw
+    }
 }
