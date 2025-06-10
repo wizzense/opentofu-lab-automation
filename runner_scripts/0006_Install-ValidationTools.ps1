@@ -24,12 +24,12 @@ function Install-Cosign {
         try {
             if ($PSCmdlet.ShouldProcess($destination, 'Download cosign')) {
                 # Download the cosign executable
-                Invoke-WebRequest -Uri $config.cosignUrl -OutFile $destination -UseBasicParsing
+                Invoke-WebRequest -Uri $Config.CosignURL -OutFile $destination -UseBasicParsing
                 Write-CustomLog "Cosign downloaded and installed at $destination"
             }
         }
         catch {
-            Write-Error "Failed to download cosign from $cosignUrl. Please check your internet connection and try again."
+            Write-Error "Failed to download cosign from $Config.CosignURL. Please check your internet connection and try again."
             return
         }
 
