@@ -32,6 +32,7 @@ $ProgressPreference = 'SilentlyContinue'
 
 # Resolve script root even when $PSScriptRoot is not populated (e.g. -Command)
 $scriptRoot = if ($PSScriptRoot) { $PSScriptRoot } else { Split-Path -Parent $MyInvocation.MyCommand.Path }
+$isWindowsOS = [System.Environment]::OSVersion.Platform -eq 'Win32NT'
 
 # Ensure the logger utility is available even when this script is executed
 # standalone. If the logger script is missing, download it from the repository.
@@ -56,7 +57,7 @@ if (-not (Get-Variable -Name LogFilePath -Scope Script -ErrorAction SilentlyCont
     -not (Get-Variable -Name LogFilePath -Scope Global -ErrorAction SilentlyContinue)) {
     $logDir = $env:LAB_LOG_DIR
     if (-not $logDir) {
-        if ($IsWindows) { $logDir = 'C:\\temp' } else { $logDir = [System.IO.Path]::GetTempPath() }
+        if ($isWindowsOS) { $logDir = 'C:\\temp' } else { $logDir = [System.IO.Path]::GetTempPath() }
     }
     if (-not (Test-Path $logDir)) { New-Item -ItemType Directory -Path $logDir -Force | Out-Null }
     $script:LogFilePath = Join-Path $logDir 'lab.log'
@@ -210,7 +211,10 @@ try {
 # ------------------------------------------------
 # (2.5) Ensure PowerShell 7 is present
 # ------------------------------------------------
-if (-not $IsWindows) {
+
+$isWindowsOS = [System.Environment]::OSVersion.Platform -eq 'Win32NT'
+if (-not $isWindowsOS) {
+
     Write-Error "PowerShell 7 installation via this script is only supported on Windows."
     exit 1
 }
