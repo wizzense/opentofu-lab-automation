@@ -6,7 +6,7 @@
 
 $SkipNonWindows = $IsLinux -or $IsMacOS
 
-function Get-RunnerScriptPath {
+function global:Get-RunnerScriptPath {
     param(
         [Parameter(Mandatory=$true)][string]$Name
     )
