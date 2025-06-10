@@ -14,6 +14,7 @@ Describe 'runner.ps1 script selection' -Skip:($IsLinux -or $IsMacOS) {
         $script:runnerPath = Join-Path $PSScriptRoot '..' 'runner.ps1'
         $modulePath = Join-Path $PSScriptRoot '..' 'lab_utils' 'Get-LabConfig.ps1'
         . $modulePath
+        . (Join-Path $PSScriptRoot '..' 'runner_utility_scripts' 'Logger.ps1')
     }
 
     It 'runs non-interactively when -Scripts is supplied' {
