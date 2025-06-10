@@ -38,6 +38,23 @@ function Convert-PfxToPem {
     }
 }
 
+function Get-HyperVProviderVersion {
+    [CmdletBinding()]
+    param(
+        [string]$MainTfPath = (Join-Path $PSScriptRoot '..\example-infrastructure\main.tf')
+    )
+
+    if (-not (Test-Path $MainTfPath)) {
+        throw "main.tf not found at $MainTfPath"
+    }
+
+    $content = Get-Content -Path $MainTfPath -Raw
+    if ($content -match 'hyperv\s*=\s*\{[^\}]*?version\s*=\s*"([^"]+)"') {
+        return $matches[1]
+    }
+    throw "Failed to parse hyperv provider version from $MainTfPath"
+}
+
 if ($Config.PrepareHyperVHost -eq $true) {
 
 
@@ -276,8 +293,17 @@ Set-Location $providerDir
 Write-CustomLog "Building hyperv provider with go..."
 go build -o terraform-provider-hyperv.exe
 
-# The version in your default main.tf is 1.2.1, so place it accordingly
-$hypervProviderDir = Join-Path $infraRepoPath ".terraform\\providers\\registry.opentofu.org\\taliesins\\hyperv\\1.2.1"
+# Determine provider version from example-infrastructure/main.tf
+try {
+    $providerVersion = Get-HyperVProviderVersion
+    Write-CustomLog "Using Hyper-V provider version $providerVersion"
+} catch {
+    Write-Warning $_
+    $providerVersion = '1.2.1'
+    Write-CustomLog "Falling back to Hyper-V provider version $providerVersion"
+}
+
+$hypervProviderDir = Join-Path $infraRepoPath ".terraform\\providers\\registry.opentofu.org\\taliesins\\hyperv\\$providerVersion"
 if (!(Test-Path $hypervProviderDir)) {
     New-Item -ItemType Directory -Force -Path $hypervProviderDir | Out-Null
 }
