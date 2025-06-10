@@ -3,13 +3,10 @@ if ($IsLinux -or $IsMacOS) { return }
 
 BeforeAll {
     $script:scriptPath = Join-Path $PSScriptRoot '..' 'runner_scripts' '0010_Prepare-HyperVProvider.ps1'
-    $script:pfxBefore = Get-Command Convert-PfxToPem -ErrorAction SilentlyContinue
     . $script:scriptPath
-    $script:pfxAfterLoad = Get-Command Convert-PfxToPem
     $script:origConvertCerToPem = (Get-Command Convert-CerToPem).ScriptBlock
-    $script:origConvertPfxToPem = $script:pfxAfterLoad.ScriptBlock
+    $script:origConvertPfxToPem = (Get-Command Convert-PfxToPem).ScriptBlock
     Mock Convert-PfxToPem {}
-    $script:pfxAfterMock = Get-Command Convert-PfxToPem
 }
 Describe 'Prepare-HyperVProvider path restoration' -Skip:($IsLinux -or $IsMacOS) {
     It 'restores location after execution' {
@@ -90,6 +87,12 @@ Describe 'Prepare-HyperVProvider certificate handling' -Skip:($IsLinux -or $IsMa
             $pwd.MakeReadOnly()
             $pwd
         }
+
+        # create dummy certificate files for conversion
+        $rootCaName = $config.CertificateAuthority.CommonName
+        $hostName   = [System.Net.Dns]::GetHostName()
+        'dummy' | Set-Content -Path (Join-Path $PWD "$rootCaName.cer")
+        'dummy' | Set-Content -Path (Join-Path $PWD "$hostName.pfx")
 
         $providerFile = Join-Path $tempDir 'providers.tf'
         @(
