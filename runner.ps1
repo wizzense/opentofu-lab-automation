@@ -3,9 +3,12 @@ param(
     [switch]$Auto,
     [string]$Scripts,
     [switch]$Force,
+    [switch]$Quiet,
     [ValidateSet('silent','normal','detailed')]
     [string]$Verbosity = 'normal'
 )
+
+if ($Quiet) { $Verbosity = 'silent' }
 
 if ($PSVersionTable.PSVersion.Major -lt 7) {
     Write-Error "PowerShell 7 or later is required. Current version: $($PSVersionTable.PSVersion)"
@@ -208,8 +211,15 @@ function Invoke-Scripts {
                 exit $LASTEXITCODE
             }
 
+          try {
+            & pwsh -NoLogo -NoProfile -Command $sb -Args $tempCfg, $scriptPath, $Verbosity 2>&1
 
-            & pwsh -NoLogo -NoProfile -ExecutionPolicy Bypass -Command $sb -Args $tempCfg, $scriptPath, $Verbosity 2>&1
+          }
+          catch {
+
+                & pwsh -NoLogo -NoProfile -ExecutionPolicy Bypass -Command $sb -Args $tempCfg, $scriptPath, $Verbosity 2>&1
+
+          }
 
             Remove-Item $tempCfg -ErrorAction SilentlyContinue
 
