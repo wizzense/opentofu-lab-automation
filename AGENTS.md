@@ -41,6 +41,94 @@ pwsh -NoLogo -NoProfile -Command "Invoke-Pester"
 ### Contribution expectations
 
 - **Tests:** Any modification to scripts or functional code (PowerShell or Python) must pass `Invoke-Pester` (and `pytest` once available) before committing.
+- **Pester coverage:** When adding or modifying PowerShell scripts or modules, create or update Pester tests that exercise the new behaviour. Organise scenarios in `tests/` with `Describe` blocks named for the module or script, and cover both success and error paths where feasible.
+- ## Pester Testing Guidelines
+
+### Why Pester Tests Matter
+
+Robust Pester tests act as our first line of defense against regressions and unforeseen side‑effects. They make refactors safer, document expected behavior, and provide quick feedback during Continuous Integration (CI).
+
+### When to Add / Update Tests
+
+| Trigger                       | Required Test Work                                                            |
+| ----------------------------- | ----------------------------------------------------------------------------- |
+| **New feature**               | Add tests that cover the new public surface (functions, scripts, parameters). |
+| **Bug fix**                   | Add a failing test that reproduces the bug, then make it pass.                |
+| **Refactor**                  | Ensure existing tests still pass and add tests for any newly exposed logic.   |
+| **Config or pipeline change** | Add tests to validate parsing/handling of new options and CI paths.           |
+
+### Coverage Expectations
+
+* **Minimum**: One happy‑path test per public function or script.
+* **Recommended**: Happy path + at least one negative/edge case.
+* **Critical code** (installers, destructive actions): Branch coverage ≥ **80 %**.
+
+### Test Organization
+
+```
+/tests
+  ├── <ModuleName>/
+  │     ├── Unit/<Function>.Tests.ps1
+  │     └── Integration/<Scenario>.Tests.ps1
+  └── Shared/ (common mocks & helpers)
+```
+
+* **Unit** tests mock external dependencies and focus on logic.
+* **Integration** tests exercise real interactions (file system, network, external binaries) but should still be idempotent.
+
+### Naming Convention
+
+Use the *Given‑When‑Then* pattern in `Describe` blocks:
+
+```powershell
+Describe 'Install‑Npm' {
+    Context 'Given a valid NpmPath' {
+        It 'runs npm install' { … }
+    }
+}
+```
+
+### Mocking & Isolation
+
+* Mock calls to external tools (`git`, `npm`, registry, network) using `Mock`.
+* Keep mocks in `BeforeAll` / `AfterAll` to avoid bleed‑through.
+* NEVER hit the real network or registry in unit tests.
+
+### Cross‑Platform Requirements
+
+* All tests must run on **Windows, Linux, and macOS** runners.
+* Use `$IsWindows`, `$IsLinux`, `$IsMacOS` guards where platform‑specific behavior is unavoidable.
+
+### Performance
+
+* Keep individual test runs < **2 s** when possible.
+* Integration suites may run longer but should stay < **60 s** total.
+
+### CI Gate
+
+* The GitHub Actions job **`Test`** fails if `Invoke‑Pester` returns a non‑zero exit code.
+* A pull request **cannot be merged** unless all test jobs pass.
+
+### Helpful Patterns
+
+* **Data‑driven tests**: use `It -TestCases` to iterate over similar inputs.
+* **`Should -BeIn`** for set membership instead of multiple `-Be` assertions.
+* **`InModuleScope`** to test private functions without exposing them publicly.
+
+### Adding New Test Suites
+
+1. Create the directory shown above.
+2. Add a `RequiredModules` entry in `PesterConfiguration.psd1` if a module is needed.
+3. Commit with a message like `tests: add coverage for <feature>`.
+
+### Linting Your Tests
+
+Run `Invoke‑Pester -Script .\tests -EnableExit` locally before pushing. This matches the CI configuration and catches failures early.
+
+---
+
+**Shortcut**: `task test` (defined in `InvokeBuild`) runs the same command the CI pipeline executes.
+
 - **Style:** Run `Invoke-ScriptAnalyzer` for PowerShell and `ruff .` for Python to ensure code style.
 - **Docs:** Document-only changes belong under `docs/` and can skip tests but should still build successfully with `mkdocs build` once the docs site is implemented.
 
