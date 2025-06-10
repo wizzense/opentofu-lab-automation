@@ -13,6 +13,20 @@ function Install-NpmDependencies {
         param($Config)
 
         Write-CustomLog 'Running 0203_Install-npm.ps1'
+<#
+.SYNOPSIS
+    Installs npm dependencies for the frontend project.
+
+.DESCRIPTION
+    Runs `npm install` in the configured frontend directory.
+    Can create the directory and a blank package.json when enabled.
+
+.PARAMETER Config
+    Hashed config object passed from runner.ps1
+
+.EXAMPLE
+    .\0203_Install-npm.ps1 -Config $Config
+#>
 
         # Pull Node_Dependencies block
         $nodeDeps = if ($Config -is [hashtable]) { $Config['Node_Dependencies'] } else { $Config.Node_Dependencies }
