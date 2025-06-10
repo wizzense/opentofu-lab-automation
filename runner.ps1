@@ -294,28 +294,9 @@ function Invoke-Scripts {
 
 
         } catch {
-            Try {
-
-                  $results[$s.Name] = $exitCode
-                  if ($exitCode -ne 0) {
-                  Write-CustomLog "ERROR: $($s.Name) exited with code $exitCode."
-}
-
-            Catch {
-                  $results[$s.Name] = $LASTEXITCODE
-                   if ($LASTEXITCODE) {
-                      Write-CustomLog "ERROR: $($s.Name) exited with code $LASTEXITCODE."
-
-                      $failed += $s.Name
-            } else {
-                Write-CustomLog "$($s.Name) completed successfully."
-            }
-        } 
-        
-        catch {
-
             Write-CustomLog "ERROR: Exception in $($s.Name): $_"
             $global:LASTEXITCODE = 1
+            $results[$s.Name] = $LASTEXITCODE
             $failed += $s.Name
         }
     }
