@@ -14,29 +14,21 @@ Describe '0008_Install-OpenTofu' -Skip:($IsLinux -or $IsMacOS) {
             CosignPath      = 'C:\\temp'
             OpenTofuVersion = '1.9.1'
         }
-        $installerPath = (
-            Resolve-Path (Join-Path $PSScriptRoot '..' 'runner_utility_scripts' 'OpenTofuInstaller.ps1')
-        ).Path
 
-        Mock $installerPath {}
+        Mock Invoke-OpenTofuInstaller {}
         Mock Write-CustomLog {}
         & $script:ScriptPath -Config $cfg
-        Assert-MockCalled $installerPath -Times 1 -ParameterFilter {
-            $installMethod -eq 'standalone' -and
-            $cosignPath -eq (Join-Path $cfg.CosignPath 'cosign-windows-amd64.exe') -and
-            $opentofuVersion -eq $cfg.OpenTofuVersion
+        Assert-MockCalled Invoke-OpenTofuInstaller -Times 1 -ParameterFilter {
+            $CosignPath -eq (Join-Path $cfg.CosignPath 'cosign-windows-amd64.exe') -and
+            $OpenTofuVersion -eq $cfg.OpenTofuVersion
         }
     }
 
     It 'skips install when flag is false' {
         $cfg = [pscustomobject]@{ InstallOpenTofu = $false }
-        $installerPath = (
-            Resolve-Path (Join-Path $PSScriptRoot '..' 'runner_utility_scripts' 'OpenTofuInstaller.ps1')
-        ).Path
-
-        Mock $installerPath {}
+        Mock Invoke-OpenTofuInstaller {}
         Mock Write-CustomLog {}
         & $script:ScriptPath -Config $cfg
-        Assert-MockCalled $installerPath -Times 0
+        Assert-MockCalled Invoke-OpenTofuInstaller -Times 0
     }
 }
