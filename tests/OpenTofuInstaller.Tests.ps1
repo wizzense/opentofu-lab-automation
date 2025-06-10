@@ -35,30 +35,23 @@ if ($IsLinux -or $IsMacOS) { return }
         }
         Mock Expand-Archive {}
         Mock Test-IsAdmin { $false }
-        $script:logFile = $null
+        $script:logDir = $null
         $Env:Programfiles = $temp
         $global:startProcessCalled = $false
         function global:Start-Process {
             param(
                 $FilePath,
                 $ArgumentList,
-                $RedirectStandardOutput,
-                $RedirectStandardError,
                 $Verb,
                 $WorkingDirectory,
                 [switch]$Wait,
                 [switch]$Passthru
             )
             $global:startProcessCalled = $true
-            $null = $FilePath
-            $null = $ArgumentList
-            if ($RedirectStandardOutput) {
-                $script:logFile = $RedirectStandardOutput
-                New-Item -ItemType File -Path $RedirectStandardOutput -Force | Out-Null
-            }
-            if ($RedirectStandardError) {
-                New-Item -ItemType File -Path $RedirectStandardError -Force | Out-Null
-            }
+            $script:wrapper = $ArgumentList[3].Trim('"')
+            $script:logDir = Split-Path $script:wrapper -Parent
+            New-Item -ItemType File -Path (Join-Path $script:logDir 'stdout.log') -Force | Out-Null
+            New-Item -ItemType File -Path (Join-Path $script:logDir 'stderr.log') -Force | Out-Null
             $proc = [pscustomobject]@{ ExitCode = 0 }
             $proc | Add-Member -MemberType ScriptMethod -Name WaitForExit -Value { }
             return $proc
@@ -66,7 +59,7 @@ if ($IsLinux -or $IsMacOS) { return }
         & $script:scriptPath -installMethod standalone -opentofuVersion '0.0.0' -installPath $temp -allUsers -skipVerify -skipChangePath | Out-Null
 
         $global:startProcessCalled | Should -BeTrue
-        $script:logFile | Should -Not -BeNullOrEmpty
+        $script:logDir | Should -Not -BeNullOrEmpty
 
         if ($IsWindows) {
             $global:startProcessCalled | Should -BeTrue
@@ -75,7 +68,7 @@ if ($IsLinux -or $IsMacOS) { return }
             $global:startProcessCalled | Should -BeFalse
         }
 
-        (Test-Path $script:logFile) | Should -BeFalse
+        (Test-Path $script:logDir) | Should -BeFalse
         Remove-Item Function:Start-Process -ErrorAction SilentlyContinue
         }
 
@@ -99,15 +92,14 @@ if ($IsLinux -or $IsMacOS) { return }
             param(
                 $FilePath,
                 $ArgumentList,
-                $RedirectStandardOutput,
-                $RedirectStandardError,
                 $Verb,
                 $WorkingDirectory,
                 [switch]$Wait,
                 [switch]$Passthru
             )
             $global:startProcessCalled = $true
-            $dir = Split-Path $RedirectStandardOutput -Parent
+            $wrapper = $ArgumentList[3].Trim('"')
+            $dir = Split-Path $wrapper -Parent
             if (Test-Path $dir) { Remove-Item -Recurse -Force $dir }
             $proc = [pscustomobject]@{ ExitCode = 0 }
             $proc | Add-Member -MemberType ScriptMethod -Name WaitForExit -Value { }
