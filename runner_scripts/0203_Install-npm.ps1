@@ -42,7 +42,13 @@ if (-not $nodeDeps) {
     return
 }
 
-if ($nodeDeps.InstallNpm) {
+
+$installNpm = $true
+if ($Config.Node_Dependencies.PSObject.Properties.Name -contains 'InstallNpm') {
+    $installNpm = [bool]$Config.Node_Dependencies.InstallNpm
+}
+
+if ($installNpm) {
 
 # Determine frontend path
 $frontendPath = if ($nodeDeps.NpmPath) {
