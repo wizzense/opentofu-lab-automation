@@ -32,7 +32,7 @@ Describe 'Prepare-HyperVProvider path restoration' {
         Mock Read-Host { '' }
         Mock Resolve-Path { param([string]$Path) @{ Path = $Path } }
 
-        & $script:scriptPath -Config $config
+        . $script:scriptPath -Config $config
 
         $location | Should -Be 'C:\\Start'
     }
@@ -42,7 +42,7 @@ Describe 'Prepare-HyperVProvider certificate handling' {
     It 'creates PEM files and updates providers.tf' {
         . (Join-Path $PSScriptRoot '..\runner_utility_scripts\Logger.ps1')
         $script:scriptPath = Join-Path $PSScriptRoot '..\runner_scripts\0010_Prepare-HyperVProvider.ps1'
-        $tempDir = Join-Path ([System.IO.Path]::GetTempPath()) ([System.Guid]::NewGuid())
+        $tempDir = Join-Path $TestDrive ([System.Guid]::NewGuid())
         $null = New-Item -ItemType Directory -Path $tempDir
         $config = [pscustomobject]@{
             PrepareHyperVHost = $true
@@ -61,6 +61,8 @@ Describe 'Prepare-HyperVProvider certificate handling' {
         Mock Test-Path { $false }
         Mock git {}
         Mock go {}
+        Mock Convert-CerToPem {}
+        Mock Convert-PfxToPem {}
         Mock Copy-Item {}
         Mock Read-Host { 'pw' }
 
@@ -76,7 +78,9 @@ Describe 'Prepare-HyperVProvider certificate handling' {
           '}'
         ) | Set-Content -Path $providerFile
 
-        & $script:scriptPath -Config $config
+        . $script:scriptPath -Config $config
+        Assert-MockCalled Convert-CerToPem -Times 1
+        Assert-MockCalled Convert-PfxToPem -Times 1
 
         Test-Path (Join-Path $tempDir 'TestCA.pem') | Should -BeTrue
         Test-Path (Join-Path $tempDir ("$(hostname).pem")) | Should -BeTrue
@@ -89,8 +93,8 @@ Describe 'Convert certificate helpers honour -WhatIf' {
     It 'skips writing files when WhatIf is used' {
         $scriptPath = Join-Path $PSScriptRoot '..\runner_scripts\0010_Prepare-HyperVProvider.ps1'
         . $scriptPath -Config @{ PrepareHyperVHost = $false }
-        $cer = Join-Path $env:TEMP ([guid]::NewGuid()).ToString() + '.cer'
-        $pem = Join-Path $env:TEMP ([guid]::NewGuid()).ToString() + '.pem'
+        $cer = Join-Path $TestDrive (([guid]::NewGuid()).ToString() + '.cer')
+        $pem = Join-Path $TestDrive (([guid]::NewGuid()).ToString() + '.pem')
         'dummy' | Set-Content -Path $cer
         Mock Set-Content {}
         Convert-CerToPem -CerPath $cer -PemPath $pem -WhatIf
@@ -101,9 +105,9 @@ Describe 'Convert certificate helpers honour -WhatIf' {
     It 'skips writing PFX outputs when WhatIf is used' {
         $scriptPath = Join-Path $PSScriptRoot '..\runner_scripts\0010_Prepare-HyperVProvider.ps1'
         . $scriptPath -Config @{ PrepareHyperVHost = $false }
-        $pfx = Join-Path $env:TEMP ([guid]::NewGuid()).ToString() + '.pfx'
-        $cert = Join-Path $env:TEMP ([guid]::NewGuid()).ToString() + '.pem'
-        $key = Join-Path $env:TEMP ([guid]::NewGuid()).ToString() + '-key.pem'
+        $pfx = Join-Path $TestDrive (([guid]::NewGuid()).ToString() + '.pfx')
+        $cert = Join-Path $TestDrive (([guid]::NewGuid()).ToString() + '.pem')
+        $key = Join-Path $TestDrive (([guid]::NewGuid()).ToString() + '-key.pem')
         'dummy' | Set-Content -Path $pfx
         $rsa = New-Object psobject
         $rsa | Add-Member -MemberType ScriptMethod -Name ExportPkcs8PrivateKey -Value { @() }
