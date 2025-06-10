@@ -4,6 +4,10 @@ if ($SkipNonWindows) { return }
 
 if ($IsLinux -or $IsMacOS) { return }
 
+if (-not (Get-Command Get-MenuSelection -ErrorAction SilentlyContinue)) {
+    function global:Get-MenuSelection {}
+}
+
 Describe 'runner.ps1 syntax' {
     It 'parses without errors' {
         $path = Join-Path $PSScriptRoot '..' 'runner.ps1'
