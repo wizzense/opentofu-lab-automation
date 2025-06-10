@@ -7,8 +7,16 @@ function Convert-CerToPem {
         [string]$CerPath,
         [string]$PemPath
     )
+    if ([string]::IsNullOrWhiteSpace($CerPath)) {
+        throw 'Convert-CerToPem: CerPath is required'
+    }
+    if ([string]::IsNullOrWhiteSpace($PemPath)) {
+        throw 'Convert-CerToPem: PemPath is required'
+    }
     if (-not $PSCmdlet.ShouldProcess($PemPath, 'Create PEM file')) { return }
-    $bytes = Get-Content -Path $CerPath -AsByteStream
+
+    $bytes = [System.IO.File]::ReadAllBytes($CerPath)
+
     $b64   = [System.Convert]::ToBase64String($bytes, 'InsertLineBreaks')
     "-----BEGIN CERTIFICATE-----`n$b64`n-----END CERTIFICATE-----" | Set-Content -Path $PemPath
 }
@@ -23,6 +31,15 @@ function Convert-PfxToPem {
         [string]$CertPath,
         [string]$KeyPath
     )
+    if ([string]::IsNullOrWhiteSpace($PfxPath)) {
+        throw 'Convert-PfxToPem: PfxPath is required'
+    }
+    if ([string]::IsNullOrWhiteSpace($CertPath)) {
+        throw 'Convert-PfxToPem: CertPath is required'
+    }
+    if ([string]::IsNullOrWhiteSpace($KeyPath)) {
+        throw 'Convert-PfxToPem: KeyPath is required'
+    }
     if (-not $PSCmdlet.ShouldProcess($PfxPath, 'Convert PFX to PEM')) { return }
     $cert = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2($PfxPath,$Password,[System.Security.Cryptography.X509Certificates.X509KeyStorageFlags]::Exportable)
     $certBytes = $cert.Export([System.Security.Cryptography.X509Certificates.X509ContentType]::Cert)

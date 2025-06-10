@@ -1,5 +1,9 @@
 from pathlib import Path
+import sys
 from typer.testing import CliRunner
+
+sys.path.append(str(Path(__file__).resolve().parents[1]))
+
 from labctl.cli import app
 
 CONFIG_PATH = Path(__file__).resolve().parents[2] / "config_files" / "default-config.json"
