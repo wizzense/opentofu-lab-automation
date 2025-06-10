@@ -5,7 +5,7 @@ Describe '0203_Install-npm' {
         Remove-Item Function:npm -ErrorAction SilentlyContinue
     }
     It 'runs npm install in configured NpmPath' {
-        $script = Join-Path $PSScriptRoot '..' 'runner_scripts' '0203_Install-npm.ps1'
+        $script = Get-RunnerScriptPath '0203_Install-npm.ps1'
         $npmDir = Join-Path ([System.IO.Path]::GetTempPath()) ([System.Guid]::NewGuid())
         $null = New-Item -ItemType Directory -Path $npmDir
         '{}' | Set-Content -Path (Join-Path $npmDir 'package.json')
@@ -28,7 +28,7 @@ Describe '0203_Install-npm' {
     }
 
     It 'succeeds when NpmPath exists' {
-        $script = Join-Path $PSScriptRoot '..' 'runner_scripts' '0203_Install-npm.ps1'
+        $script = Get-RunnerScriptPath '0203_Install-npm.ps1'
         $npmDir = Join-Path ([System.IO.Path]::GetTempPath()) ([System.Guid]::NewGuid())
         $null = New-Item -ItemType Directory -Path $npmDir
         '{}' | Set-Content -Path (Join-Path $npmDir 'package.json')
@@ -49,7 +49,7 @@ Describe '0203_Install-npm' {
     }
 
     It 'errors when NpmPath is missing and CreateNpmPath is false' {
-        $script = Join-Path $PSScriptRoot '..' 'runner_scripts' '0203_Install-npm.ps1'
+        $script = Get-RunnerScriptPath '0203_Install-npm.ps1'
         $npmDir = Join-Path ([System.IO.Path]::GetTempPath()) ([System.Guid]::NewGuid())
         $cfg = @{ Node_Dependencies = @{ NpmPath = $npmDir; CreateNpmPath = $false } }
 
@@ -62,7 +62,7 @@ Describe '0203_Install-npm' {
     }
 
     It 'errors when NpmPath is empty string' {
-        $script = Join-Path $PSScriptRoot '..' 'runner_scripts' '0203_Install-npm.ps1'
+        $script = Get-RunnerScriptPath '0203_Install-npm.ps1'
         $cfg = @{ Node_Dependencies = @{ NpmPath = ''; CreateNpmPath = $false } }
 
         $script:called = $false
@@ -74,7 +74,7 @@ Describe '0203_Install-npm' {
     }
 
     It 'creates NpmPath when CreateNpmPath is true' {
-        $script = Join-Path $PSScriptRoot '..' 'runner_scripts' '0203_Install-npm.ps1'
+        $script = Get-RunnerScriptPath '0203_Install-npm.ps1'
         $npmDir = Join-Path ([System.IO.Path]::GetTempPath()) ([System.Guid]::NewGuid())
         $cfg = @{ Node_Dependencies = @{ NpmPath = $npmDir; CreateNpmPath = $true } }
 

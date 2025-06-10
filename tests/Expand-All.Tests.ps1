@@ -5,8 +5,7 @@ Describe 'Expand-All' {
         . (Join-Path $PSScriptRoot '..' 'lab_utils' 'Expand-All.ps1')
     }
     BeforeEach {
-        function global:Write-CustomLog {}
-        Mock Write-CustomLog {}
+        Mock-WriteLog
     }
     AfterEach {
         Remove-Item Function:Write-CustomLog -ErrorAction SilentlyContinue

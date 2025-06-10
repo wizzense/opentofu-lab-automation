@@ -2,7 +2,7 @@
 . (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
 Describe 'Initialize-OpenTofu script' {
     BeforeAll {
-        $script:ScriptPath = Join-Path $PSScriptRoot '..' 'runner_scripts' '0009_Initialize-OpenTofu.ps1'
+        $script:ScriptPath = Get-RunnerScriptPath '0009_Initialize-OpenTofu.ps1'
     }
     AfterEach {
         Remove-Item Function:gh -ErrorAction SilentlyContinue

@@ -15,7 +15,7 @@ if ($IsLinux -or $IsMacOS) { return }
 Describe '0001_Reset-Git' -Skip:($SkipNonWindows) {
 
     BeforeAll {
-        $script:ScriptPath = Join-Path $PSScriptRoot '..' 'runner_scripts' '0001_Reset-Git.ps1'
+        $script:ScriptPath = Get-RunnerScriptPath '0001_Reset-Git.ps1'
     }
     AfterEach {
         Remove-Item Function:gh -ErrorAction SilentlyContinue
@@ -145,7 +145,7 @@ Describe '0001_Reset-Git' -Skip:($SkipNonWindows) {
                 $global:LASTEXITCODE = 0
                 New-Item -ItemType Directory -Path (Join-Path $tempDir '.git') -Force | Out-Null
             }
-            Mock Write-CustomLog {}
+            Mock-WriteLog
 
             & $script:ScriptPath -Config $config
 

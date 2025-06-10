@@ -1,16 +1,16 @@
 . (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
+. (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
 Describe 'Node installation scripts' {
     BeforeAll {
 
-        $script:scriptRoot = Join-Path $PSScriptRoot '..' 'runner_scripts'
         $script:nodeScripts = @(
             '0201_Install-NodeCore.ps1'
             '0202_Install-NodeGlobalPackages.ps1'
             '0203_Install-npm.ps1'
         )
-        $script:core   = (Resolve-Path -ErrorAction Stop (Join-Path $script:scriptRoot $script:nodeScripts[0])).Path
-        $script:global = (Resolve-Path -ErrorAction Stop (Join-Path $script:scriptRoot $script:nodeScripts[1])).Path
-        $script:npm    = (Resolve-Path -ErrorAction Stop (Join-Path $script:scriptRoot $script:nodeScripts[2])).Path
+        $script:core   = Get-RunnerScriptPath $script:nodeScripts[0]
+        $script:global = Get-RunnerScriptPath $script:nodeScripts[1]
+        $script:npm    = Get-RunnerScriptPath $script:nodeScripts[2]
         $script:origTemp = $env:TEMP
         $env:TEMP = Join-Path ([System.IO.Path]::GetTempPath()) 'pester-temp'
         New-Item -ItemType Directory -Path $env:TEMP -Force | Out-Null
@@ -19,13 +19,13 @@ Describe 'Node installation scripts' {
 
     It 'resolves script paths from the tests directory' -TestCases $script:nodeScripts {
         param($scriptName)
-        $path = (Resolve-Path -ErrorAction Stop (Join-Path $PSScriptRoot '..' 'runner_scripts' $scriptName)).Path
+        $path = Get-RunnerScriptPath $scriptName
         Test-Path $path | Should -BeTrue
     }
 
     It 'uses Node_Dependencies.Node.InstallerUrl when installing Node' {
         $cfg = @{ Node_Dependencies = @{ InstallNode=$true; Node = @{ InstallerUrl = 'http://example.com/node.msi' } } }
-        $core = (Resolve-Path -ErrorAction Stop (Join-Path $PSScriptRoot '..' 'runner_scripts' '0201_Install-NodeCore.ps1')).Path
+        $core = Get-RunnerScriptPath '0201_Install-NodeCore.ps1'
         Mock Invoke-WebRequest {}
         Mock Start-Process {}
         Mock Remove-Item {}
@@ -38,7 +38,7 @@ Describe 'Node installation scripts' {
 
     It 'does nothing when InstallNode is $false' {
         $cfg = @{ Node_Dependencies = @{ InstallNode = $false } }
-        $core = (Resolve-Path -ErrorAction Stop (Join-Path $PSScriptRoot '..' 'runner_scripts' '0201_Install-NodeCore.ps1')).Path
+        $core = Get-RunnerScriptPath '0201_Install-NodeCore.ps1'
         Mock Invoke-WebRequest {}
         Mock Start-Process {}
         Mock Remove-Item {}
@@ -54,7 +54,7 @@ Describe 'Node installation scripts' {
 
     It 'installs packages listed under GlobalPackages' -Skip:(Get-Command npm -ErrorAction SilentlyContinue | ForEach-Object { $true }) {
         $cfg = @{ Node_Dependencies = @{ GlobalPackages = @('yarn','nodemon') } }
-        $global = (Resolve-Path -ErrorAction Stop (Join-Path $PSScriptRoot '..' 'runner_scripts' '0202_Install-NodeGlobalPackages.ps1')).Path
+        $global = Get-RunnerScriptPath '0202_Install-NodeGlobalPackages.ps1'
         Mock Get-Command { @{Name='npm'} } -ParameterFilter { $Name -eq 'npm' }
         function npm {
             param([Parameter(ValueFromRemainingArguments = $true)][string[]]$testArgs)
@@ -71,7 +71,7 @@ Describe 'Node installation scripts' {
 
     It 'falls back to boolean flags when GlobalPackages is missing' -Skip:(Get-Command npm -ErrorAction SilentlyContinue | ForEach-Object { $true }) {
         $cfg = @{ Node_Dependencies = @{ InstallYarn=$true; InstallVite=$false; InstallNodemon=$true } }
-        $global = (Resolve-Path -ErrorAction Stop (Join-Path $PSScriptRoot '..' 'runner_scripts' '0202_Install-NodeGlobalPackages.ps1')).Path
+        $global = Get-RunnerScriptPath '0202_Install-NodeGlobalPackages.ps1'
         Mock Get-Command { @{Name='npm'} } -ParameterFilter { $Name -eq 'npm' }
         function npm {
             param([Parameter(ValueFromRemainingArguments = $true)][string[]]$testArgs)
@@ -89,8 +89,8 @@ Describe 'Node installation scripts' {
     It 'logs start message when running each node script' -TestCases $script:nodeScripts {
         param($scriptName)
 
-        $path = (Resolve-Path -ErrorAction Stop (Join-Path $script:scriptRoot $scriptName)).Path
-        Mock Write-CustomLog {}
+        $path = Get-RunnerScriptPath $scriptName
+        Mock-WriteLog
         . $path
 
         switch ($scriptName) {
@@ -104,7 +104,7 @@ Describe 'Node installation scripts' {
 
     It 'honours -WhatIf for Install-GlobalPackage' {
     
-        $global = (Resolve-Path -ErrorAction Stop (Join-Path $PSScriptRoot '..' 'runner_scripts' '0202_Install-NodeGlobalPackages.ps1')).Path
+        $global = Get-RunnerScriptPath '0202_Install-NodeGlobalPackages.ps1'
 
         function npm { param([Parameter(ValueFromRemainingArguments = $true)][string[]]$testArgs) }
         Mock npm {}
@@ -122,7 +122,7 @@ Describe 'Node installation scripts' {
             param([Parameter(ValueFromRemainingArguments = $true)][string[]]$testArgs)
             $null = $testArgs
         }
-        $npmPath = (Resolve-Path -ErrorAction Stop (Join-Path $PSScriptRoot '..' 'runner_scripts' '0203_Install-npm.ps1')).Path
+        $npmPath = Get-RunnerScriptPath '0203_Install-npm.ps1'
         Mock npm {}
 
 

@@ -3,7 +3,7 @@
 if ($SkipNonWindows) { return }
 Describe '0101_Enable-RemoteDesktop' -Skip:($SkipNonWindows) {
     BeforeAll {
-        $script:ScriptPath = Join-Path $PSScriptRoot '..' 'runner_scripts' '0101_Enable-RemoteDesktop.ps1'
+        $script:ScriptPath = Get-RunnerScriptPath '0101_Enable-RemoteDesktop.ps1'
     }
 
     It 'enables RDP when allowed and currently disabled' {

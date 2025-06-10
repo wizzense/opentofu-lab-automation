@@ -1,11 +1,12 @@
 
 . (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
+. (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
 . (Join-Path $PSScriptRoot '..' 'lab_utils' 'Get-Platform.ps1')
 
 
 Describe '0200_Get-SystemInfo' {
     BeforeAll {
-        $script:ScriptPath = Join-Path $PSScriptRoot '..' 'runner_scripts' '0200_Get-SystemInfo.ps1'
+        $script:ScriptPath = Get-RunnerScriptPath '0200_Get-SystemInfo.ps1'
     }
 
     It 'runs without throwing and returns expected keys' {

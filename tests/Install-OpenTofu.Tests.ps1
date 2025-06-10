@@ -3,10 +3,7 @@
 if ($SkipNonWindows) { return }
 Describe '0008_Install-OpenTofu' -Skip:($SkipNonWindows) {
     BeforeAll {
-        $script:ScriptPath = (
-            Resolve-Path (Join-Path $PSScriptRoot '..' 'runner_scripts' '0008_Install-OpenTofu.ps1')
-
-        ).Path
+        $script:ScriptPath = Get-RunnerScriptPath '0008_Install-OpenTofu.ps1'
         . $script:ScriptPath
     }
 
@@ -18,7 +15,7 @@ Describe '0008_Install-OpenTofu' -Skip:($SkipNonWindows) {
         }
 
         Mock Invoke-OpenTofuInstaller {}
-        Mock Write-CustomLog {}
+        Mock-WriteLog
         
         & $script:ScriptPath -Config $cfg
 
@@ -31,7 +28,7 @@ Describe '0008_Install-OpenTofu' -Skip:($SkipNonWindows) {
     It 'skips install when flag is false' {
         $cfg = [pscustomobject]@{ InstallOpenTofu = $false }
         Mock Invoke-OpenTofuInstaller {}
-        Mock Write-CustomLog {}
+        Mock-WriteLog
 
         & $script:ScriptPath -Config $cfg
 

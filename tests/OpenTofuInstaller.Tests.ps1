@@ -1,5 +1,5 @@
-Describe 'OpenTofuInstaller' {
 . (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
+Describe 'OpenTofuInstaller' {
 
 if ($IsLinux -or $IsMacOS) { return }
 

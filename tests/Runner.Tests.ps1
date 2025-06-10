@@ -61,7 +61,7 @@ exit 0' | Set-Content -Path $dummy
             $null = New-Item -ItemType Directory -Path $scriptsDir
 
             Push-Location $tempDir
-            Mock Write-CustomLog {}
+            Mock-WriteLog
             & "$tempDir/runner.ps1" -Scripts '9999' -Auto | Out-Null
             $code = $LASTEXITCODE
             Pop-Location
@@ -403,7 +403,7 @@ exit 0
 "@ | Set-Content -Path $scriptFile
 
             Mock Get-MenuSelection { @() }
-            Mock Write-CustomLog {}
+            Mock-WriteLog
 
             Push-Location $tempDir
             & "$tempDir/runner.ps1" -Auto | Out-Null
@@ -436,7 +436,8 @@ Write-Output 'hello world'
 
             Push-Location $tempDir
             $script:messages = @()
-            Mock Write-CustomLog { param($Message,$Level) $script:messages += $Message }
+            Mock-WriteLog
+            Set-Item -Path Function:Write-CustomLog -Value { param($Message,$Level) $script:messages += $Message }
             & "$tempDir/runner.ps1" -Scripts '0001' -Auto | Out-Null
             Pop-Location
 
