@@ -38,14 +38,12 @@ function Install-NpmDependencies {
         # Determine flags
         $installNpm = $true
         $createPath = $false
-        foreach ($key in @('InstallNpm','CreateNpmPath')) {
-            if ($nodeDeps -is [hashtable]) {
-                if ($nodeDeps.ContainsKey($key)) {
-                    Set-Variable -Name $key.ToLower() -Value ([bool]$nodeDeps[$key]) -Scope Local
-                }
-            } elseif ($nodeDeps.PSObject.Properties.Match($key).Count) {
-                Set-Variable -Name $key.ToLower() -Value ([bool]$nodeDeps.$key) -Scope Local
-            }
+        if ($nodeDeps -is [hashtable]) {
+            if ($nodeDeps.ContainsKey('InstallNpm'))    { $installNpm = [bool]$nodeDeps['InstallNpm'] }
+            if ($nodeDeps.ContainsKey('CreateNpmPath')) { $createPath  = [bool]$nodeDeps['CreateNpmPath'] }
+        } else {
+            if ($nodeDeps.PSObject.Properties.Match('InstallNpm').Count)    { $installNpm = [bool]$nodeDeps.InstallNpm }
+            if ($nodeDeps.PSObject.Properties.Match('CreateNpmPath').Count) { $createPath  = [bool]$nodeDeps.CreateNpmPath }
         }
 
         if (-not $installNpm) {
