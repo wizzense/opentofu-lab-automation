@@ -48,7 +48,7 @@ Describe 'Node installation scripts' {
         Should -Invoke -CommandName Remove-Item -Times 0
     }
 
-    It 'installs packages listed under GlobalPackages' {
+    It 'installs packages listed under GlobalPackages' -Skip:(Get-Command npm -ErrorAction SilentlyContinue | ForEach-Object { $true }) {
         $cfg = @{ Node_Dependencies = @{ GlobalPackages = @('yarn','nodemon') } }
         $global = (Resolve-Path -ErrorAction Stop (Join-Path $PSScriptRoot '..' 'runner_scripts' '0202_Install-NodeGlobalPackages.ps1')).Path
         Mock Get-Command { @{Name='npm'} } -ParameterFilter { $Name -eq 'npm' }
@@ -56,17 +56,16 @@ Describe 'Node installation scripts' {
             param([string[]]$testArgs)
             $null = $testArgs
         }
-        Mock npm {}
-
         . $global -Config $config
-
+        Mock npm {}
+        $WhatIfPreference = $false
         Install-NodeGlobalPackages -Config $cfg
         Assert-MockCalled npm -ParameterFilter { $testArgs -eq @('install','-g','yarn') } -Times 1
         Assert-MockCalled npm -ParameterFilter { $testArgs -eq @('install','-g','nodemon') } -Times 1
         Should -Invoke -CommandName npm -Times 0 -ParameterFilter { $testArgs -eq @('install','-g','vite') }
     }
 
-    It 'falls back to boolean flags when GlobalPackages is missing' {
+    It 'falls back to boolean flags when GlobalPackages is missing' -Skip:(Get-Command npm -ErrorAction SilentlyContinue | ForEach-Object { $true }) {
         $cfg = @{ Node_Dependencies = @{ InstallYarn=$true; InstallVite=$false; InstallNodemon=$true } }
         $global = (Resolve-Path -ErrorAction Stop (Join-Path $PSScriptRoot '..' 'runner_scripts' '0202_Install-NodeGlobalPackages.ps1')).Path
         Mock Get-Command { @{Name='npm'} } -ParameterFilter { $Name -eq 'npm' }
@@ -74,10 +73,9 @@ Describe 'Node installation scripts' {
             param([string[]]$testArgs)
             $null = $testArgs
         }
-        Mock npm {}
-
         . $global -Config $config
-
+        Mock npm {}
+        $WhatIfPreference = $false
         Install-NodeGlobalPackages -Config $cfg
         Assert-MockCalled npm -ParameterFilter { $testArgs -eq @('install','-g','yarn') } -Times 1
         Assert-MockCalled npm -ParameterFilter { $testArgs -eq @('install','-g','nodemon') } -Times 1
