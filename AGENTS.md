@@ -1,9 +1,16 @@
 ## Project status
 
 Phase 0 was completed in June 2025. `Get-Platform.ps1` now has Pester tests.
-Phase 1 tasks are pending: the Python `get_platform.py` and pytest suite have
-yet to be created, and both the Hypervisor abstraction and Poetry project remain
-unimplemented.
+No Phase 1 work has started yet: there is no Python `get_platform.py` or pytest
+suite, and neither the Hypervisor abstraction nor the Poetry project exist in
+the repository.
+
+### Next steps
+
+* Implement `get_platform.py` and accompanying pytest tests.
+* Add `lab_utils/Hypervisor.psm1` skeleton with `Get-HVFacts`, `Enable-Provider`,
+  and `Deploy-VM` stubs.
+* Initialize a Poetry project under `py/` exposing a `labctl` Typer CLI.
 
 ---
 
