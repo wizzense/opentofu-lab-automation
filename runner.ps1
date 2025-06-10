@@ -14,7 +14,12 @@ if ($PSVersionTable.PSVersion.Major -lt 7) {
 . "$PSScriptRoot\runner_utility_scripts\Logger.ps1"
 . "$PSScriptRoot\lab_utils\Get-LabConfig.ps1"
 . "$PSScriptRoot\lab_utils\Format-Config.ps1"
-. "$PSScriptRoot\lab_utils\Menu.ps1"
+$menuPath = Join-Path $PSScriptRoot 'lab_utils' 'Menu.ps1'
+if (-not (Test-Path $menuPath)) {
+    Write-Error "Menu module not found at $menuPath"
+    exit 1
+}
+. $menuPath
 
 # ─── Default log path ─────────────────────────────────────────────────────────
 if (-not (Get-Variable -Name LogFilePath -Scope Script -ErrorAction SilentlyContinue) -and
