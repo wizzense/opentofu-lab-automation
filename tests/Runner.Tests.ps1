@@ -311,6 +311,10 @@ Describe 'Set-LabConfig' {
             [CmdletBinding(SupportsShouldProcess)]
             param([hashtable]$ConfigObject)
 
+            if (-not $PSCmdlet.ShouldProcess('ConfigObject', 'Update configuration prompts')) {
+                return $ConfigObject
+            }
+
         $installPrompts = [ordered]@{
             InstallGit      = 'Install Git'
             InstallGo       = 'Install Go'
