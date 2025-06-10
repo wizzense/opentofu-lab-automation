@@ -8,18 +8,21 @@ function Write-CustomLog {
     )
 
     if (-not $PSBoundParameters.ContainsKey('LogFile')) {
+        $candidate = $null
         if (Get-Variable -Name LogFilePath -Scope Script -ErrorAction SilentlyContinue) {
-            $LogFile = (Get-Variable -Name LogFilePath -Scope Script -ValueOnly)
+            $candidate = Get-Variable -Name LogFilePath -Scope Script -ValueOnly
+        } elseif (Get-Variable -Name LogFilePath -Scope Global -ErrorAction SilentlyContinue) {
+            $candidate = Get-Variable -Name LogFilePath -Scope Global -ValueOnly
+        }
+
+        if (-not [string]::IsNullOrWhiteSpace($candidate)) {
+            $LogFile = $candidate
         } else {
-            $LogFile = Get-Variable -Name LogFilePath -Scope Global -ErrorAction SilentlyContinue |
-                       Select-Object -ExpandProperty Value
-            if (-not $LogFile) {
-                $logDir = $env:LAB_LOG_DIR
-                if (-not $logDir) {
-                    if ($IsWindows) { $logDir = 'C:\\temp' } else { $logDir = [System.IO.Path]::GetTempPath() }
-                }
-                $LogFile = Join-Path $logDir 'lab.log'
+            $logDir = $env:LAB_LOG_DIR
+            if (-not $logDir) {
+                if ($IsWindows) { $logDir = 'C:\\temp' } else { $logDir = [System.IO.Path]::GetTempPath() }
             }
+            $LogFile = Join-Path $logDir 'lab.log'
         }
     }
     $timestamp = Get-Date -Format 'yyyy-MM-dd HH:mm:ss'

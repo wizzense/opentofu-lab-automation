@@ -1,5 +1,6 @@
 Describe 'Prepare-HyperVProvider path restoration' {
     It 'restores location after execution' {
+        . (Join-Path $PSScriptRoot '..\runner_utility_scripts\Logger.ps1')
         $script:scriptPath = Join-Path $PSScriptRoot '..\runner_scripts\0010_Prepare-HyperVProvider.ps1'
         $config = [pscustomobject]@{
             PrepareHyperVHost = $true
@@ -39,6 +40,7 @@ Describe 'Prepare-HyperVProvider path restoration' {
 
 Describe 'Prepare-HyperVProvider certificate handling' {
     It 'creates PEM files and updates providers.tf' {
+        . (Join-Path $PSScriptRoot '..\runner_utility_scripts\Logger.ps1')
         $script:scriptPath = Join-Path $PSScriptRoot '..\runner_scripts\0010_Prepare-HyperVProvider.ps1'
         $tempDir = Join-Path ([System.IO.Path]::GetTempPath()) ([System.Guid]::NewGuid())
         $null = New-Item -ItemType Directory -Path $tempDir

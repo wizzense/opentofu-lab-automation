@@ -1,3 +1,5 @@
+. ../runner_utility_scripts/Logger.ps1
+
 Describe 'Write-CustomLog' {
     It 'works when LogFilePath variable is not defined' {
         Remove-Variable -Name LogFilePath -Scope Script -ErrorAction SilentlyContinue
@@ -21,5 +23,18 @@ Describe 'Write-CustomLog' {
         $content = Get-Content $tempFile -Raw
         $content | Should -Match 'hello world'
         Remove-Item $tempFile -ErrorAction SilentlyContinue
+    }
+
+    It 'defaults to LogFilePath variable when not provided' {
+        $tempFile = Join-Path ([System.IO.Path]::GetTempPath()) ([System.Guid]::NewGuid()).ToString() + '.log'
+        $script:LogFilePath = $tempFile
+        try {
+            Write-CustomLog 'variable default works'
+            $content = Get-Content $tempFile -Raw
+            $content | Should -Match 'variable default works'
+        } finally {
+            Remove-Item $tempFile -ErrorAction SilentlyContinue
+            Remove-Variable -Name LogFilePath -Scope Script -ErrorAction SilentlyContinue
+        }
     }
 }

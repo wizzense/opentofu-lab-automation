@@ -25,6 +25,12 @@ gh run list --limit 20
 
 This shows recent workflow runs. You can also query the GitHub API directly.
 
+The repository has the **ChatGPT Connector** installed. This service can open
+issues and pull requests without depending on local GitHub CLI authentication.
+You still need a configured Git remote if you want to push commits yourself.
+`gh` commands are optional when using the connector, though they continue to
+work if `gh` is installed and authenticated.
+
 When PowerShell is available via `pwsh`, run tests locally:
 
 ```bash

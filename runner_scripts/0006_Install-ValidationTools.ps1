@@ -1,6 +1,7 @@
 Param([pscustomobject]$Config)
 . "$PSScriptRoot/../runner_utility_scripts/ScriptTemplate.ps1"
 Invoke-LabStep -Config $Config -Body {
+    Write-CustomLog 'Running 0006_Install-ValidationTools.ps1'
 
 function Install-Cosign {
     [CmdletBinding(SupportsShouldProcess)]
