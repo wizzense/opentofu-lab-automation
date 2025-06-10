@@ -1,7 +1,9 @@
-. (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
-if ($IsLinux -or $IsMacOS) { return }
 
-Describe '0200_Get-SystemInfo' -Skip:($IsLinux -or $IsMacOS) {
+. (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
+. (Join-Path $PSScriptRoot '..' 'lab_utils' 'Get-Platform.ps1')
+
+
+Describe '0200_Get-SystemInfo' {
     BeforeAll {
         $script:ScriptPath = Join-Path $PSScriptRoot '..' 'runner_scripts' '0200_Get-SystemInfo.ps1'
     }
@@ -14,12 +16,25 @@ Describe '0200_Get-SystemInfo' -Skip:($IsLinux -or $IsMacOS) {
         $obj.PSObject.Properties.Name | Should -Contain 'IPAddresses'
         $obj.PSObject.Properties.Name | Should -Contain 'OSVersion'
         $obj.PSObject.Properties.Name | Should -Contain 'DiskInfo'
-        $obj.PSObject.Properties.Name | Should -Contain 'RolesFeatures'
-        $obj.PSObject.Properties.Name | Should -Contain 'LatestHotfix'
+        if ($IsWindows) {
+            $obj.PSObject.Properties.Name | Should -Contain 'RolesFeatures'
+            $obj.PSObject.Properties.Name | Should -Contain 'LatestHotfix'
+        }
+    }
+
+    It 'returns exit code 1 for unsupported platform' {
+        Mock Get-Platform { 'Solaris' }
+        try {
+            & $script:ScriptPath -Config @{} -AsJson | Out-Null
+            $code = $LASTEXITCODE
+        } catch {
+            $code = 1
+        }
+        $code | Should -Be 1
     }
 }
 
-Describe 'runner.ps1 executing 0200_Get-SystemInfo' -Skip:($IsLinux -or $IsMacOS) {
+Describe 'runner.ps1 executing 0200_Get-SystemInfo' {
     It 'outputs system info when run via runner' {
         $tempDir = Join-Path ([System.IO.Path]::GetTempPath()) ([System.Guid]::NewGuid())
         $null = New-Item -ItemType Directory -Path $tempDir
@@ -41,8 +56,10 @@ Describe 'runner.ps1 executing 0200_Get-SystemInfo' -Skip:($IsLinux -or $IsMacOS
             $text | Should -Match 'IPAddresses'
             $text | Should -Match 'OSVersion'
             $text | Should -Match 'DiskInfo'
-            $text | Should -Match 'RolesFeatures'
-            $text | Should -Match 'LatestHotfix'
+            if ($IsWindows) {
+                $text | Should -Match 'RolesFeatures'
+                $text | Should -Match 'LatestHotfix'
+            }
         }
         finally {
             Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue
