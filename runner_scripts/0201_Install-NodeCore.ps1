@@ -22,7 +22,7 @@ function Install-NodeCore {
     .\0201_Install-NodeCore.ps1 -Config $Config
 #>
 
-Write-Output "Config parameter is: $Config"
+Write-CustomLog "Config parameter is: $Config"
 
 
 Write-CustomLog "==== [0201] Installing Node.js Core ===="

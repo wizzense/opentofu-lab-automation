@@ -52,7 +52,7 @@ function Install-NodeGlobalPackages {
     .\0202_Install-NodeGlobalPackages.ps1 -Config $Config
 #>
 
-Write-Output "Config parameter is: $Config"
+Write-CustomLog "Config parameter is: $Config"
 
 Write-CustomLog "==== [0202] Installing Global npm Packages ===="
 

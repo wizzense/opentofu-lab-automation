@@ -6,10 +6,10 @@ $adkInstaller    = Join-Path $PSScriptRoot "adksetup.exe"
 $peAddonInstaller = Join-Path $PSScriptRoot "adkwinpesetup.exe"
 
 # Install Windows ADK silently.
-Write-Output "Installing Windows ADK for Server 2025..."
+Write-CustomLog "Installing Windows ADK for Server 2025..."
 try {
     Start-Process -FilePath $adkInstaller -ArgumentList "/quiet", "/norestart", "/features optionid.deploymenttools optionid.userstatemigrationtool" -Wait -ErrorAction Stop
-    Write-Output "Windows ADK installation complete."
+    Write-CustomLog "Windows ADK installation complete."
 }
 catch {
     Write-Error "Installation of Windows ADK failed: $_"
@@ -17,10 +17,10 @@ catch {
 }
 
 # Install Windows PE Add-on silently.
-Write-Output "Installing Windows PE Add-on for Windows ADK..."
+Write-CustomLog "Installing Windows PE Add-on for Windows ADK..."
 try {
     Start-Process -FilePath $peAddonInstaller -ArgumentList "/quiet", "/norestart" -Wait -ErrorAction Stop
-    Write-Output "Windows PE Add-on installation complete."
+    Write-CustomLog "Windows PE Add-on installation complete."
 }
 catch {
     Write-Error "Installation of Windows PE Add-on failed: $_"
