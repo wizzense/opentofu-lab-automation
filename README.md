@@ -9,6 +9,9 @@
   2) Checks if command-line Git is installed and in PATH. (requirement)
      - Prompts to install a minimal version if missing.
      - Updates PATH if installed but not found in PATH.
+     - Configure your Git username and email manually with:
+       `git config --global user.name "Your Name"` and
+       `git config --global user.email "you@example.com"`.
   3) Checks if GitHub CLI is installed and in PATH. (requirement)
      - Prompts to installs GitHub CLI if missing.
      - Updates PATH if installed but not found in PATH.
