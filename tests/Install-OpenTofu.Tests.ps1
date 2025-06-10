@@ -20,6 +20,7 @@ Describe '0008_Install-OpenTofu' -Skip:($IsLinux -or $IsMacOS) {
                 Join-Path $PSScriptRoot '..' 'runner_utility_scripts' 'OpenTofuInstaller.ps1'
             )
         ).Path
+
         Mock $installerPath {}
         Mock Write-CustomLog {}
         & $script:ScriptPath -Config $cfg
@@ -37,6 +38,7 @@ Describe '0008_Install-OpenTofu' -Skip:($IsLinux -or $IsMacOS) {
                 Join-Path $PSScriptRoot '..' 'runner_utility_scripts' 'OpenTofuInstaller.ps1'
             )
         ).Path
+
         Mock $installerPath {}
         Mock Write-CustomLog {}
         & $script:ScriptPath -Config $cfg
