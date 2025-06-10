@@ -137,7 +137,7 @@ Describe 'Convert certificate helpers honour -WhatIf' -Skip:($IsLinux -or $IsMac
         $stub | Add-Member -MemberType ScriptMethod -Name Export -Value { param($t) @() }
         $stub | Add-Member -MemberType ScriptMethod -Name GetRSAPrivateKey -Value { $rsa }
         Mock Set-Content {}
-        Mock New-Object { $stub }
+        Mock New-Object { $stub } -ParameterFilter { $TypeName -eq 'System.Security.Cryptography.X509Certificates.X509Certificate2' }
         $securePass = New-Object System.Security.SecureString
         foreach ($c in 'pw'.ToCharArray()) { $securePass.AppendChar($c) }
         $securePass.MakeReadOnly()
