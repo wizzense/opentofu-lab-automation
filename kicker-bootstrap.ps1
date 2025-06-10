@@ -164,18 +164,35 @@ $configOption = Read-Host -prompt "`nEnter a remote URL or local path, or leave 
 if ($configOption -match "https://") {
     Invoke-WebRequest -Uri $configOption -OutFile '.\custom-config.json'
     $ConfigFile = (Join-Path $scriptRoot "custom-config.json")
-}
-elseif ($configOption -and (Test-Path -Path $configOption)) {
+} elseif ($configOption -and (Test-Path -Path $configOption)) {
     $ConfigFile = $configOption
-}
-else {
+} else {
     $localConfigDir = Join-Path $scriptRoot "config_files"
     if (!(Test-Path $localConfigDir)) {
         New-Item -ItemType Directory -Path $localConfigDir | Out-Null
     }
-    $localConfigPath = Join-Path $localConfigDir "default-config.json"
-    Invoke-WebRequest -Uri $defaultConfig -OutFile $localConfigPath
-    $ConfigFile = $localConfigPath
+    $configFiles = Get-ChildItem -Path $localConfigDir -Filter '*.json' -File
+    if ($configFiles.Count -gt 1) {
+        Write-CustomLog "Multiple configuration files found:" "INFO"
+        for ($i = 0; $i -lt $configFiles.Count; $i++) {
+            $num = $i + 1
+            Write-CustomLog ("{0}) {1}" -f $num, $configFiles[$i].Name) "INFO" | Write-Host
+        }
+        $ans = Read-Host 'Select configuration number'
+        if ($ans -match '^[0-9]+$' -and [int]$ans -ge 1 -and [int]$ans -le $configFiles.Count) {
+            $ConfigFile = $configFiles[[int]$ans - 1].FullName
+        } else {
+            $ConfigFile = $configFiles[0].FullName
+        }
+    } elseif ($configFiles.Count -eq 1) {
+        $ConfigFile = $configFiles[0].FullName
+    } else {
+        $localConfigPath = Join-Path $localConfigDir "default-config.json"
+        if (-not (Test-Path $localConfigPath)) {
+            Invoke-WebRequest -Uri $defaultConfig -OutFile $localConfigPath
+        }
+        $ConfigFile = $localConfigPath
+    }
 }
 
 # ------------------------------------------------
@@ -339,6 +356,34 @@ catch {
 }
 
 # ------------------------------------------------
+# Helper to update repo while preserving local config changes
+function Update-RepoPreserveConfig {
+    param(
+        [string]$RepoPath,
+        [string]$Branch,
+        [string]$GitPath
+    )
+    Push-Location $RepoPath
+    $configChanges = & $GitPath status --porcelain "config_files" 2>$null
+    $backupDir = $null
+    if ($configChanges) {
+        $backupDir = Join-Path $RepoPath 'config_backup'
+        Write-CustomLog "Backing up local config changes to $backupDir" 'INFO'
+        if (Test-Path $backupDir) { Remove-Item -Recurse -Force $backupDir }
+        Copy-Item -Path 'config_files' -Destination $backupDir -Recurse -Force
+        & $GitPath stash push -u -- 'config_files' | Out-Null
+    }
+    & $GitPath pull origin $Branch --quiet 2>&1 >> "$env:TEMP\git.log"
+    if ($configChanges) {
+        Write-CustomLog 'Restoring backed up config files' 'INFO'
+        Copy-Item -Path (Join-Path $backupDir '*') -Destination 'config_files' -Recurse -Force
+        Remove-Item -Recurse -Force $backupDir -ErrorAction SilentlyContinue
+        & $GitPath stash drop --quiet | Out-Null
+    }
+    Pop-Location
+}
+
+# ------------------------------------------------
 # (4) Clone or Update Repository (using explicit Git/gh)
 # ------------------------------------------------
 Write-CustomLog "==== Cloning or updating the target repository ===="
@@ -413,9 +458,7 @@ if (!(Test-Path $repoPath)) {
     }
 } else {
     Write-CustomLog "Repository already exists. Pulling latest changes..."
-    Push-Location $repoPath
-    & "$gitPath" pull origin $targetBranch --quiet 2>&1 >> "$env:TEMP\git.log"
-    Pop-Location
+    Update-RepoPreserveConfig -RepoPath $repoPath -Branch $targetBranch -GitPath $gitPath
 }
 
 # Ensure the desired branch is checked out and up to date

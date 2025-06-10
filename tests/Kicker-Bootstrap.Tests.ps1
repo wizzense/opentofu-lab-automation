@@ -30,4 +30,24 @@ Describe 'kicker-bootstrap utilities' -Skip:($SkipNonWindows) {
         $content = Get-Content $scriptPath -Raw
         $content | Should -Match 'gitPath"\s+config\s+--global\s+--add\s+safe.directory'
     }
+
+    It 'defines Update-RepoPreserveConfig function' {
+        $scriptPath = Join-Path $PSScriptRoot '..' 'kicker-bootstrap.ps1'
+        $ast = [System.Management.Automation.Language.Parser]::ParseFile($scriptPath, [ref]$null, [ref]$null)
+        $funcs = $ast.FindAll({ param($n) $n -is [System.Management.Automation.Language.FunctionDefinitionAst] }, $true)
+        ($funcs.Name -contains 'Update-RepoPreserveConfig') | Should -BeTrue
+    }
+
+    It 'prompts when multiple config files exist' {
+        $scriptPath = Join-Path $PSScriptRoot '..' 'kicker-bootstrap.ps1'
+        $content = Get-Content $scriptPath -Raw
+        $content | Should -Match 'Multiple configuration files found'
+        $content | Should -Match 'Select configuration number'
+    }
+
+    It 'stashes config changes before pulling' {
+        $scriptPath = Join-Path $PSScriptRoot '..' 'kicker-bootstrap.ps1'
+        $content = Get-Content $scriptPath -Raw
+        $content | Should -Match 'stash push'
+    }
 }
