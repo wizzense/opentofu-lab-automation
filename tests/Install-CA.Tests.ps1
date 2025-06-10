@@ -4,6 +4,12 @@ if ($SkipNonWindows) { return }
 
 if ($IsLinux -or $IsMacOS) { return }
 
+# Skip entirely if the required Windows modules are unavailable
+if (-not (Get-Module -ListAvailable -Name 'ServerManager') -or
+    -not (Get-Module -ListAvailable -Name 'ADCSDeployment')) {
+    return
+}
+
 Describe '0104_Install-CA script' {
     BeforeAll {
         $scriptPath = Get-RunnerScriptPath '0104_Install-CA.ps1'
