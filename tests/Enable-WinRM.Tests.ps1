@@ -1,6 +1,7 @@
 . (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
-if ($IsLinux -or $IsMacOS) { return }
-Describe '0100_Enable-WinRM' -Skip:($IsLinux -or $IsMacOS) {
+. (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
+if ($SkipNonWindows) { return }
+Describe '0100_Enable-WinRM' -Skip:($SkipNonWindows) {
     BeforeAll {
         $script:ScriptPath = Join-Path $PSScriptRoot '..' 'runner_scripts' '0100_Enable-WinRM.ps1'
     }

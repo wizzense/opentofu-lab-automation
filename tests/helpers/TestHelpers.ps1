@@ -1,0 +1,1 @@
+$SkipNonWindows = $IsLinux -or $IsMacOS

@@ -1,6 +1,7 @@
 . (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
-if ($IsLinux -or $IsMacOS) { return }
-Describe 'kicker-bootstrap utilities' -Skip:($IsLinux -or $IsMacOS) {
+. (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
+if ($SkipNonWindows) { return }
+Describe 'kicker-bootstrap utilities' -Skip:($SkipNonWindows) {
     It 'defines Write-CustomLog fallback' {
         $script:scriptPath = Join-Path $PSScriptRoot '..' 'kicker-bootstrap.ps1'
         $ast = [System.Management.Automation.Language.Parser]::ParseFile($script:scriptPath, [ref]$null, [ref]$null)

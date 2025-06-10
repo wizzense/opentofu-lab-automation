@@ -1,6 +1,7 @@
 . (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
-if ($IsLinux -or $IsMacOS) { return }
-Describe '0007_Install-Go' -Skip:($IsLinux -or $IsMacOS) {
+. (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
+if ($SkipNonWindows) { return }
+Describe '0007_Install-Go' -Skip:($SkipNonWindows) {
     BeforeAll { $script:ScriptPath = Join-Path $PSScriptRoot '..' 'runner_scripts' '0007_Install-Go.ps1' }
 
     It 'installs Go when enabled' {

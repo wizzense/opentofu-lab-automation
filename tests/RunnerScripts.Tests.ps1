@@ -5,13 +5,14 @@ if (-not (Test-Path $helperPath)) {
 }
 
 . (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
+. (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
 
-if ($IsLinux -or $IsMacOS) { return }
+if ($SkipNonWindows) { return }
 
 $scriptDir = Join-Path $PSScriptRoot '..' 'runner_scripts'
 $scripts = Get-ChildItem $scriptDir -Filter '*.ps1'
 
-Describe 'Runner scripts parameter and command checks' -Skip:($IsLinux -or $IsMacOS) {
+Describe 'Runner scripts parameter and command checks' -Skip:($SkipNonWindows) {
 
     BeforeAll {
         . (Join-Path $PSScriptRoot 'helpers' 'Get-ScriptAst.ps1')
