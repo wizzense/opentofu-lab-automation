@@ -7,9 +7,11 @@ function Install-GlobalPackage {
         [string]$package
     )
 
+    . "$PSScriptRoot/../runner_utility_scripts/Logger.ps1"
+
     if (Get-Command npm -ErrorAction SilentlyContinue) {
         Write-CustomLog "Installing npm package: $package..."
-        if ($PSCmdlet.ShouldProcess($package, 'Install npm package')) {
+        if ($PSCmdlet.ShouldProcess($package, 'Install npm package') -and -not $WhatIfPreference) {
             npm install -g $package
         }
     } else {
