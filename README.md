@@ -68,40 +68,6 @@ poetry run labctl hv facts
 See [docs/python-cli.md](docs/python-cli.md) for further details.
 
 
-  Kicker script for a fresh Windows Server Core setup
-
-  1) Downloads and loads `config_files/default-config.json` by default (override with `-ConfigFile`).
-
-  2) Checks if command-line Git is installed and in PATH. (requirement)
-     - Prompts to install a minimal version if missing.
-     - Updates PATH if installed but not found in PATH.
-     - Configure your Git username and email manually with:
-       `git config --global user.name "Your Name"` and
-       `git config --global user.email "you@example.com"`.
-  3) Checks if GitHub CLI is installed and in PATH. (requirement)
-     - Prompts to installs GitHub CLI if missing.
-     - Updates PATH if installed but not found in PATH.
-     - Prompts for authentication if not already authenticated.
-     - Run `gh auth login` before using `0001_Reset-Git.ps1` or `0009_Initialize-OpenTofu.ps1`.
-  4) Clones this repository from config.json -> RepoUrl to config.json -> LocalPath (or a default path).
-  5) Invokes runner.ps1 from this repo. Runner can be ran with optional parameters to automatically run, but it will prompt you to manually select which scripts to run by default. After a selection completes, the menu is shown again so you can run more scripts or type `exit` to quit.
-     - Use `-ConfigFile <path>` to specify an alternative configuration file. If omitted, `runner.ps1` loads `config_files/default-config.json`.
-
-     - Use `-Quiet` to hide most informational output. This is shorthand for
-       `-Verbosity silent`.
-     - Use `-Quiet` to hide most informational output (alias for `-Verbosity silent`).
-     - Use `-Verbosity <silent|normal|detailed>` for granular log control.
-
-     - See [docs/runner.md](docs/runner.md) for detailed usage including non-interactive mode.
-
-```
-
-
-Powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/refs/heads/main/kicker-bootstrap.ps1' -OutFile '.\kicker-bootstrap.ps1'; .\kicker-bootstrap.ps1 -Quiet"
-
-
-```
-**Note:** These scripts require PowerShell 7 or later. Install the latest `pwsh` and use it instead of `powershell.exe`.
 
 The repo expects the latest stable code on the `main` branch. When running
 `iso_tools/bootstrap.ps1`, you can override the branch with the `-Branch`
