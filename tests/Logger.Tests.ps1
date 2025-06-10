@@ -1,4 +1,6 @@
-. ../runner_utility_scripts/Logger.ps1
+
+. (Join-Path $PSScriptRoot '..' 'runner_utility_scripts' 'Logger.ps1')
+
 
 Describe 'Write-CustomLog' {
     It 'works when LogFilePath variable is not defined' {
