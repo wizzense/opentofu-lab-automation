@@ -37,6 +37,17 @@ When PowerShell is available via `pwsh`, run tests locally:
 pwsh -NoLogo -NoProfile -Command "Invoke-Pester"
 ```
 
+### Contribution expectations
+
+- **Tests:** Any modification to scripts or functional code (PowerShell or Python) must pass `Invoke-Pester` (and `pytest` once available) before committing.
+- **Style:** Run `Invoke-ScriptAnalyzer` for PowerShell and `ruff .` for Python to ensure code style.
+- **Docs:** Document-only changes belong under `docs/` and can skip tests but should still build successfully with `mkdocs build` once the docs site is implemented.
+
+To locate relevant `AGENTS.md` files, you can run:
+```bash
+find . -maxdepth 2 -name AGENTS.md -print
+```
+
 ### CI failure issues
 
 
