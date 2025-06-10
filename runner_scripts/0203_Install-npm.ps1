@@ -1,6 +1,9 @@
-Param([pscustomobject]$Config)
-. "$PSScriptRoot/../runner_utility_scripts/ScriptTemplate.ps1"
-Invoke-LabStep -Config $Config -Body {
+function Install-NpmDependencies {
+    [CmdletBinding(SupportsShouldProcess = $true)]
+    param([pscustomobject]$Config)
+
+    . "$PSScriptRoot/../runner_utility_scripts/ScriptTemplate.ps1"
+    Invoke-LabStep -Config $Config -Body {
 <#
 .SYNOPSIS
     Install frontend project dependencies using npm.
@@ -42,7 +45,9 @@ $frontendPath = if ($Config.Node_Dependencies.NpmPath) {
 if (-not (Test-Path $frontendPath)) {
     if ($Config.Node_Dependencies.CreateNpmPath) {
         Write-CustomLog "Creating missing frontend folder at: $frontendPath"
-        New-Item -ItemType Directory -Path $frontendPath -Force | Out-Null
+        if ($PSCmdlet.ShouldProcess($frontendPath, 'Create NpmPath')) {
+            New-Item -ItemType Directory -Path $frontendPath -Force | Out-Null
+        }
     } else {
         Write-CustomLog "Frontend folder not found at: $frontendPath. Skipping npm install."
         return
@@ -58,7 +63,9 @@ Push-Location $frontendPath
 
 try {
     Write-CustomLog "Running npm install in $frontendPath ..."
-    npm install
+    if ($PSCmdlet.ShouldProcess($frontendPath, 'Run npm install')) {
+        npm install
+    }
     Write-CustomLog "✅ npm install completed."
 } catch {
     Write-Error "ERROR: npm install failed: $_"
@@ -71,3 +78,5 @@ Write-CustomLog "==== Frontend dependency installation complete ===="
     Write-CustomLog "InstallNpm flag is disabled. Skipping project dependency installation."
 }
 }
+}
+if ($MyInvocation.InvocationName -ne '.') { Install-NpmDependencies @PSBoundParameters }

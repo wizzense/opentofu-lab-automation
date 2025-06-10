@@ -1,6 +1,9 @@
-Param([pscustomobject]$Config)
-. "$PSScriptRoot/../runner_utility_scripts/ScriptTemplate.ps1"
-Invoke-LabStep -Config $Config -Body {
+function Install-NodeCore {
+    [CmdletBinding(SupportsShouldProcess = $true)]
+    param([pscustomobject]$Config)
+
+    . "$PSScriptRoot/../runner_utility_scripts/ScriptTemplate.ps1"
+    Invoke-LabStep -Config $Config -Body {
 <#
 .SYNOPSIS
     Installs Node.js via MSI, using the existing config framework.
@@ -46,3 +49,5 @@ if ($Config.Node_Dependencies.InstallNode) {
     Write-CustomLog "InstallNode flag is disabled. Skipping Node.js installation."
 }
 }
+}
+if ($MyInvocation.InvocationName -ne '.') { Install-NodeCore @PSBoundParameters }

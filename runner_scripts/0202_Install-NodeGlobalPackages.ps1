@@ -1,6 +1,9 @@
-Param([pscustomobject]$Config)
-. "$PSScriptRoot/../runner_utility_scripts/ScriptTemplate.ps1"
-Invoke-LabStep -Config $Config -Body {
+function Install-NodeGlobalPackages {
+    [CmdletBinding(SupportsShouldProcess = $true)]
+    param([pscustomobject]$Config)
+
+    . "$PSScriptRoot/../runner_utility_scripts/ScriptTemplate.ps1"
+    Invoke-LabStep -Config $Config -Body {
 <#
 .SYNOPSIS
     Installs global npm packages like yarn, vite, and nodemon using config-based logic.
@@ -29,8 +32,9 @@ Invoke-LabStep -Config $Config -Body {
 Write-Output "Config parameter is: $Config"
 
 
-function Install-GlobalPackage($package) {
+function Install-GlobalPackage {
     [CmdletBinding(SupportsShouldProcess)]
+    param([string]$package)
     if (Get-Command npm -ErrorAction SilentlyContinue) {
         Write-CustomLog "Installing npm package: $package..."
         if ($PSCmdlet.ShouldProcess($package, 'Install npm package')) {
@@ -64,3 +68,5 @@ if ($Config.Node_Dependencies.InstallNodemon) {
 
 Write-CustomLog "==== Global npm package installation complete ===="
 }
+}
+if ($MyInvocation.InvocationName -ne '.') { Install-NodeGlobalPackages @PSBoundParameters }
