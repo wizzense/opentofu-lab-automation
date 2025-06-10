@@ -10,6 +10,9 @@ Describe 'Node installation scripts' {
     }
 
     It 'resolves script paths from the tests directory' {
+        $core   = (Resolve-Path -ErrorAction Stop (Join-Path $PSScriptRoot '..' 'runner_scripts' '0201_Install-NodeCore.ps1')).Path
+        $global = (Resolve-Path -ErrorAction Stop (Join-Path $PSScriptRoot '..' 'runner_scripts' '0202_Install-NodeGlobalPackages.ps1')).Path
+        $npm    = (Resolve-Path -ErrorAction Stop (Join-Path $PSScriptRoot '..' 'runner_scripts' '0203_Install-npm.ps1')).Path
         Test-Path $core | Should -BeTrue
         Test-Path $globalScript | Should -BeTrue
         Test-Path $npm   | Should -BeTrue
@@ -17,11 +20,12 @@ Describe 'Node installation scripts' {
 
     It 'uses Node_Dependencies.Node.InstallerUrl when installing Node' {
         $config = @{ Node_Dependencies = @{ InstallNode=$true; Node = @{ InstallerUrl = 'http://example.com/node.msi' } } }
+        $core = (Resolve-Path -ErrorAction Stop (Join-Path $PSScriptRoot '..' 'runner_scripts' '0201_Install-NodeCore.ps1')).Path
         Mock Invoke-WebRequest {}
         Mock Start-Process {}
         Mock Remove-Item {}
         Mock Get-Command { @{Name='node'} } -ParameterFilter { $Name -eq 'node' }
-        . (Resolve-Path -ErrorAction Stop $core)
+        . $core
 
         Install-NodeCore -Config $config
         Assert-MockCalled Invoke-WebRequest -ParameterFilter { $Uri -eq 'http://example.com/node.msi' } -Times 1
@@ -29,12 +33,13 @@ Describe 'Node installation scripts' {
 
     It 'does nothing when InstallNode is $false' {
         $config = @{ Node_Dependencies = @{ InstallNode = $false } }
+        $core = (Resolve-Path -ErrorAction Stop (Join-Path $PSScriptRoot '..' 'runner_scripts' '0201_Install-NodeCore.ps1')).Path
         Mock Invoke-WebRequest {}
         Mock Start-Process {}
         Mock Remove-Item {}
         Mock Get-Command {}
 
-        . (Resolve-Path -ErrorAction Stop $core)
+        . $core
 
         Install-NodeCore -Config $config
         Assert-MockNotCalled Invoke-WebRequest
@@ -44,13 +49,15 @@ Describe 'Node installation scripts' {
 
     It 'installs packages based on Node_Dependencies flags' {
         $config = @{ Node_Dependencies = @{ InstallYarn=$true; InstallVite=$false; InstallNodemon=$true } }
+        $global = (Resolve-Path -ErrorAction Stop (Join-Path $PSScriptRoot '..' 'runner_scripts' '0202_Install-NodeGlobalPackages.ps1')).Path
         Mock Get-Command { @{Name='npm'} } -ParameterFilter { $Name -eq 'npm' }
         function npm {
             param([string[]]$testArgs)
             $null = $testArgs
         }
         Mock npm {}
-        . (Resolve-Path -ErrorAction Stop $globalScript)
+
+        . $global
 
         Install-NodeGlobalPackages -Config $config
         Assert-MockCalled npm -ParameterFilter { $testArgs -eq @('install','-g','yarn') } -Times 1
@@ -60,7 +67,9 @@ Describe 'Node installation scripts' {
 
     It 'honours -WhatIf for Install-GlobalPackage' {
     
-        . (Resolve-Path -ErrorAction Stop $globalScript)
+        $global = (Resolve-Path -ErrorAction Stop (Join-Path $PSScriptRoot '..' 'runner_scripts' '0202_Install-NodeGlobalPackages.ps1')).Path
+        . $global
+n
 
         Install-NodeGlobalPackages -Config @{ Node_Dependencies = @{ InstallYarn=$false; InstallVite=$false; InstallNodemon=$false } }
         function npm { param([string[]]$testArgs) }
@@ -78,9 +87,10 @@ Describe 'Node installation scripts' {
             param([string[]]$testArgs)
             $null = $testArgs
         }
+        $npmPath = (Resolve-Path -ErrorAction Stop (Join-Path $PSScriptRoot '..' 'runner_scripts' '0203_Install-npm.ps1')).Path
         Mock npm {}
-        
-        . (Resolve-Path -ErrorAction Stop $npm)
+
+        . $npmPath
 
         Install-NpmDependencies -Config $config
         Assert-MockCalled npm -ParameterFilter { $testArgs[0] -eq 'install' } -Times 1
