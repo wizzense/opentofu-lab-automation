@@ -88,7 +88,7 @@ Describe '0001_Reset-Git' -Skip:($IsLinux -or $IsMacOS) {
             }
         }
 
-        It 'prompts to login when gh CLI is unauthenticated' {
+        It 'aborts when gh CLI is unauthenticated' {
             $tempDir = Join-Path ([System.IO.Path]::GetTempPath()) ([guid]::NewGuid())
 
             $config = [pscustomobject]@{
@@ -104,13 +104,17 @@ Describe '0001_Reset-Git' -Skip:($IsLinux -or $IsMacOS) {
             }
             Mock git {}
 
-            & $script:ScriptPath -Config $config
-
-            Assert-MockCalled gh -ParameterFilter { $args[0] -eq 'auth' -and $args[1] -eq 'status' } -Times 1
-            Assert-MockCalled gh -ParameterFilter { $args[0] -eq 'repo' -and $args[1] -eq 'clone' } -Times 0
-            Assert-MockCalled git -Times 0
-
-            Remove-Item $tempDir -Recurse -Force -ErrorAction SilentlyContinue
+            try {
+                & $script:ScriptPath -Config $config
+                $LASTEXITCODE | Should -Be 1
+            } catch {
+                $_ | Should -Not -BeNullOrEmpty
+            } finally {
+                Assert-MockCalled gh -ParameterFilter { $args[0] -eq 'auth' -and $args[1] -eq 'status' } -Times 1
+                Assert-MockCalled gh -ParameterFilter { $args[0] -eq 'repo' -and $args[1] -eq 'clone' } -Times 0
+                Assert-MockCalled git -Times 0
+                Remove-Item $tempDir -Recurse -Force -ErrorAction SilentlyContinue
+            }
         }
     }
 

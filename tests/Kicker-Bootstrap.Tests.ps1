@@ -10,7 +10,7 @@ Describe 'kicker-bootstrap utilities' -Skip:($IsLinux -or $IsMacOS) {
     It 'invokes runner with call operator and propagates exit code' {
         $scriptPath = Join-Path $PSScriptRoot '..' 'kicker-bootstrap.ps1'
         $content = Get-Content $scriptPath -Raw
-        $pattern = 'Start-Process -FilePath $pwshPath -ArgumentList .* -Wait -NoNewWindow'
+        $pattern = 'Start-Process -FilePath \$pwshPath -ArgumentList .* -Wait -NoNewWindow'
         $content | Should -Match $pattern
         $content | Should -Match 'exit \$LASTEXITCODE'
     }

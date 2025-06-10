@@ -1,6 +1,18 @@
 # opentofu-lab-automation
 [![CI](https://github.com/wizzense/opentofu-lab-automation/actions/workflows/ci.yml/badge.svg)](https://github.com/wizzense/opentofu-lab-automation/actions/workflows/ci.yml)
 
+## Quick start
+
+Clone this repository and apply the lab template:
+
+```bash
+git clone https://github.com/wizzense/opentofu-lab-automation.git
+cd opentofu-lab-automation
+tofu init && tofu apply
+```
+
+The configuration reads variables from `lab_config.yaml`, which you can copy from `templates/lab_config.sample.yaml`.
+
 
   Kicker script for a fresh Windows Server Core setup
 
