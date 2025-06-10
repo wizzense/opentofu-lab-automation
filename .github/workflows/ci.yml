@@ -15,6 +15,9 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
+      - name: Authenticate gh
+        shell: bash
+        run: gh auth login --with-token <<< "${{ secrets.GITHUB_TOKEN }}"
       - name: Install PowerShell
         if: runner.os != 'Windows'
         shell: bash
@@ -65,6 +68,9 @@ jobs:
     needs: lint
     steps:
       - uses: actions/checkout@v4
+      - name: Authenticate gh
+        shell: bash
+        run: gh auth login --with-token <<< "${{ secrets.GITHUB_TOKEN }}"
       - name: Install PowerShell
         if: runner.os != 'Windows'
         shell: bash
@@ -129,6 +135,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Authenticate gh
+        shell: bash
+        run: gh auth login --with-token <<< "${{ secrets.GITHUB_TOKEN }}"
       - uses: actions/setup-python@v4
         with:
           python-version: '3.x'
