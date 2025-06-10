@@ -67,6 +67,12 @@ jobs:
               Write-Error 'Get-ScriptAst helper not loaded'
               exit 1
           }
+      - name: Ensure coverage directory
+        shell: pwsh
+        run: |
+          if (-not (Test-Path coverage)) {
+              New-Item -ItemType Directory -Path coverage | Out-Null
+          }
       - name: Run Pester
         continue-on-error: ${{ runner.os != 'Windows' }}
         shell: bash
