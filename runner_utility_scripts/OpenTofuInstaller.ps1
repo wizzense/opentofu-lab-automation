@@ -567,23 +567,37 @@ function installStandalone() {
                 $logDir = tempdir
                 $outLog = Join-Path $logDir 'stdout.log'
                 $errLog = Join-Path $logDir 'stderr.log'
-                $argList = @("-NonInteractive", "-File", ($scriptCommand | escapePathArgument), "-internalContinue", "-allUsers", "-installMethod", "standalone", "-installPath", ($installPath | escapePathArgument), "-internalZipFile", ($internalZipFile | escapePathArgument))
-                if ($skipChangePath)
-                {
-                    $argList += "-skipChangePath"
+                $wrapper = Join-Path $logDir 'wrapper.ps1'
+
+                $argList = @(
+                    '-NonInteractive',
+                    '-File', ($scriptCommand | escapePathArgument),
+                    '-internalContinue',
+                    '-allUsers',
+                    '-installMethod', 'standalone',
+                    '-installPath', ($installPath | escapePathArgument),
+                    '-internalZipFile', ($internalZipFile | escapePathArgument)
+                )
+                if ($skipChangePath) {
+                    $argList += '-skipChangePath'
                 }
+
+                $wrapperCmd = "& $scriptCommand $($argList -join ' ') > $($outLog | escapePathArgument) 2> $($errLog | escapePathArgument)"
+                Set-Content -Path $wrapper -Value $wrapperCmd -Encoding utf8
+
                 $subprocess = Start-Process `
                     -Verb RunAs `
                     -WorkingDirectory (Get-Location) `
                     -Wait `
                     -Passthru `
                     -FilePath 'powershell' `
-                    -ArgumentList $argList `
-                    -RedirectStandardOutput $outLog `
-                    -RedirectStandardError $errLog
+                    -ArgumentList @('-NoLogo', '-NoProfile', '-File', ($wrapper | escapePathArgument))
+
                 $subprocess.WaitForExit()
                 if (Test-Path $outLog) { Get-Content $outLog }
                 if (Test-Path $errLog) { Get-Content $errLog }
+                Remove-Item -Force $wrapper -ErrorAction SilentlyContinue
+                Remove-Item -Recurse -Force $logDir -ErrorAction SilentlyContinue
                 if ($subprocess.ExitCode -ne 0) {
                     throw [InstallFailedException]::new("Unpack failed. (Exit code ${subprocess.ExitCode})")
                 }
