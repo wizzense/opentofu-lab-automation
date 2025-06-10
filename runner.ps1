@@ -212,12 +212,19 @@ function Invoke-Scripts {
 
 function Select-Scripts {
     param([string]$Input)
+
+    if (-not $Input) { Write-CustomLog 'No script selection provided.'; return @() }
     if ($Input -eq 'all') { return $ScriptFiles }
-    $clean    = $Input.Trim()
-    $prefixes = $clean -split ',' | ForEach-Object { $_.Trim() } | Where-Object { $_ -match '^\d{4}$' }
-    if (-not $prefixes)   { Write-CustomLog "No valid prefixes."; return @() }
-    $matches  = $ScriptFiles | Where-Object { $prefixes -contains $_.Name.Substring(0,4) }
-    if (-not $matches)    { Write-CustomLog "No matching scripts."; }
+
+    $prefixes = $Input -split ',' |
+        ForEach-Object { $_.Trim() } |
+        Where-Object { $_ -match '^\d{4}$' }
+
+    if (-not $prefixes) { Write-CustomLog 'No valid prefixes.'; return @() }
+
+    $matches = $ScriptFiles | Where-Object { $prefixes -contains $_.Name.Substring(0,4) }
+
+    if (-not $matches) { Write-CustomLog 'No matching scripts.' }
     return $matches
 }
 
