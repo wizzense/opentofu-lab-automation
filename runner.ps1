@@ -275,7 +275,10 @@ function Invoke-Scripts {
             $exitCode = $LASTEXITCODE
 
             foreach ($line in $output) {
-                if ($line) { Write-CustomLog $line.ToString() }
+                if ($line) {
+                    Write-CustomLog $line.ToString()
+                    Write-Output $line.ToString()
+                }
             }
 
             Remove-Item $tempCfg -ErrorAction SilentlyContinue
