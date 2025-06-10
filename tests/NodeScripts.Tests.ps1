@@ -43,9 +43,9 @@ Describe 'Node installation scripts' {
         . $core
 
         Install-NodeCore -Config $config
-        Assert-MockNotCalled Invoke-WebRequest
-        Assert-MockNotCalled Start-Process
-        Assert-MockNotCalled Remove-Item
+        Should -Invoke -CommandName Invoke-WebRequest -Times 0
+        Should -Invoke -CommandName Start-Process -Times 0
+        Should -Invoke -CommandName Remove-Item -Times 0
     }
 
     It 'installs packages based on Node_Dependencies flags' {
@@ -63,7 +63,7 @@ Describe 'Node installation scripts' {
         Install-NodeGlobalPackages -Config $config
         Assert-MockCalled npm -ParameterFilter { $testArgs -eq @('install','-g','yarn') } -Times 1
         Assert-MockCalled npm -ParameterFilter { $testArgs -eq @('install','-g','nodemon') } -Times 1
-        Assert-MockNotCalled npm -ParameterFilter { $testArgs -eq @('install','-g','vite') }
+        Should -Invoke -CommandName npm -Times 0 -ParameterFilter { $testArgs -eq @('install','-g','vite') }
     }
 
     It 'honours -WhatIf for Install-GlobalPackage' {
@@ -75,7 +75,7 @@ Describe 'Node installation scripts' {
         function npm { param([string[]]$testArgs) }
         Mock npm {}
         Install-GlobalPackage 'yarn' -WhatIf
-        Assert-MockNotCalled npm
+        Should -Invoke -CommandName npm -Times 0
     }
 
     It 'uses NpmPath from Node_Dependencies when installing project deps' {
