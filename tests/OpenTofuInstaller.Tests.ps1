@@ -39,22 +39,14 @@ if ($IsLinux -or $IsMacOS) { return }
         $Env:Programfiles = $temp
         $global:startProcessCalled = $false
         function global:Start-Process {
-            param(
-                $FilePath,
-                $ArgumentList,
-                $Verb,
-                $WorkingDirectory,
-                [switch]$Wait,
-                [switch]$Passthru
-            )
+            param($FilePath, $ArgumentList, $Verb, $WorkingDirectory, [switch]$Wait, [switch]$Passthru)
             $global:startProcessCalled = $true
-            $script:wrapper = $ArgumentList[3].Trim('"')
-            $script:logDir = Split-Path $script:wrapper -Parent
+            $wrapper = $ArgumentList[3].Trim('"')
+            # make logDir visible in the test’s script scope
+            Set-Variable -Scope Script -Name logDir -Value (Split-Path $wrapper -Parent)
             New-Item -ItemType File -Path (Join-Path $script:logDir 'stdout.log') -Force | Out-Null
             New-Item -ItemType File -Path (Join-Path $script:logDir 'stderr.log') -Force | Out-Null
-            $proc = [pscustomobject]@{ ExitCode = 0 }
-            $proc | Add-Member -MemberType ScriptMethod -Name WaitForExit -Value { }
-            return $proc
+            [pscustomobject]@{ ExitCode = 0 } | Add-Member -MemberType ScriptMethod -Name WaitForExit -Value { } -PassThru
         }
         & $script:scriptPath -installMethod standalone -opentofuVersion '0.0.0' -installPath $temp -allUsers -skipVerify -skipChangePath | Out-Null
 
