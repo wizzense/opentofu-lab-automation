@@ -153,13 +153,15 @@ This guide explains how to pull the latest Windows job artifacts, analyse test &
    | File                               | Typical path                                     |
    | ---------------------------------- | ------------------------------------------------ |
    | **coverage.xml**                   | `artifacts/windows‑latest/coverage/coverage.xml` |
-   | **results XML**<br>(VsTest/Pester) | `artifacts/windows‑latest/TestResults/**/*.xml`  |
+   | **testResults.xml**<br>(VsTest/Pester) | `artifacts/windows‑latest/coverage/testResults.xml` |
+
+   *The GitHub artifact is named `pester-results-${{ matrix.os }}` and contains this XML file.*
 
 3. ### Analyse the test results
 
    ```powershell
    # Quick one‑liner to see failed tests
-   Select-Xml -Path "artifacts/windows‑latest/TestResults/**/*.xml" -XPath "//UnitTestResult[@outcome='Failed']" |
+   Select-Xml -Path "artifacts/windows‑latest/coverage/testResults.xml" -XPath "//UnitTestResult[@outcome='Failed']" |
    ForEach-Object { $_.Node.testName }
    ```
 
