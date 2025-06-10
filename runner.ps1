@@ -275,7 +275,14 @@ function Invoke-Scripts {
             $exitCode = $LASTEXITCODE
 
             foreach ($line in $output) {
-                if ($line) { Write-CustomLog $line.ToString() }
+                if (-not $line) { continue }
+                if ($line -is [System.Management.Automation.ErrorRecord]) {
+                    Write-Error $line.ToString()
+                } elseif ($line -is [System.Management.Automation.WarningRecord]) {
+                    Write-Warning $line.ToString()
+                } else {
+                    Write-CustomLog $line.ToString()
+                }
             }
 
             Remove-Item $tempCfg -ErrorAction SilentlyContinue
