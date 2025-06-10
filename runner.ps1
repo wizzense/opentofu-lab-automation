@@ -282,6 +282,7 @@ function Invoke-Scripts {
                     Write-Warning $line.ToString()
                 } else {
                     Write-CustomLog $line.ToString()
+
                 }
             }
 
