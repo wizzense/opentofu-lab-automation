@@ -26,4 +26,11 @@ terraform {
             Remove-Item $tf -ErrorAction SilentlyContinue
         }
     }
+
+    It 'falls back to repository paths when missing' {
+        $scriptPath = Join-Path $PSScriptRoot '..' 'runner_scripts' '0010_Prepare-HyperVProvider.ps1'
+        . $scriptPath
+        $tf = Join-Path $env:TEMP ([guid]::NewGuid()).ToString() + '.tf'
+        Get-HyperVProviderVersion -MainTfPath $tf | Should -Be '1.2.1'
+    }
 }
