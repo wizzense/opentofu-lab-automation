@@ -720,3 +720,5 @@ try
     logError($_.ToString())
     exit $exitCodeInstallFailed
 }
+
+exit $exitCodeOK
