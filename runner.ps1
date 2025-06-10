@@ -264,12 +264,16 @@ if ($Scripts) {
     exit 0
 }
 
-$selection = Prompt-Scripts
-if ($selection.Count -eq 0) {
-    Write-CustomLog 'No scripts selected.'
-    exit 0
+$overallSuccess = $true
+while ($true) {
+    $selection = Prompt-Scripts
+    if ($selection.Count -eq 0) {
+        Write-CustomLog 'No scripts selected.'
+        break
+    }
+    if (-not (Invoke-Scripts -ScriptsToRun $selection)) { $overallSuccess = $false }
 }
-if (-not (Invoke-Scripts -ScriptsToRun $selection)) { exit 1 }
 
 Write-CustomLog "`nAll done!"
+if (-not $overallSuccess) { exit 1 }
 exit 0
