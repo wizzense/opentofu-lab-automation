@@ -29,8 +29,11 @@ Invoke-LabStep -Config $Config -Body {
 Write-Output "Config parameter is: $Config"
 
 
-function Install-GlobalPackage($package) {
+function Install-GlobalPackage {
     [CmdletBinding(SupportsShouldProcess)]
+    param(
+        [string]$package
+    )
     if (Get-Command npm -ErrorAction SilentlyContinue) {
         Write-CustomLog "Installing npm package: $package..."
         if ($PSCmdlet.ShouldProcess($package, 'Install npm package')) {

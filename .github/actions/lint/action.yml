@@ -28,8 +28,7 @@ runs:
           'PSAvoidUsingInvokeExpression',
           'PSAvoidUsingWriteHost',
           'PSReviewUnusedParameter',
-          'PSUseDeclaredVarsMoreThanAssignments',
-          'PSUseShouldProcessForStateChangingFunctions'
+          'PSUseDeclaredVarsMoreThanAssignments'
         )
         Invoke-ScriptAnalyzer -Path . -Recurse -Severity Error,Warning -ExcludeRule $rulesToExclude -EnableExit -ErrorAction Stop
     - name: Run ruff
