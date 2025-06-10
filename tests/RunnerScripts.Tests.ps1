@@ -1,3 +1,9 @@
+
+$helperPath = Join-Path $PSScriptRoot 'helpers' 'Get-ScriptAst.ps1'
+if (-not (Test-Path $helperPath)) {
+    throw "Required helper script is missing: $helperPath"
+}
+
 . (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
 
 if ($IsLinux -or $IsMacOS) { return }

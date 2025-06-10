@@ -78,8 +78,14 @@ Describe 'Prepare-HyperVProvider certificate handling' -Skip:($IsLinux -or $IsMa
         Mock Test-Path { $false }
         Mock git {}
         Mock go {}
-        Mock Convert-CerToPem -MockWith { & $script:origConvertCerToPem @PSBoundParameters }
-        Mock Convert-PfxToPem -MockWith { & $script:origConvertPfxToPem @PSBoundParameters }
+        Mock Convert-CerToPem {
+            param($CerPath, $PemPath)
+            & $script:origConvertCerToPem -CerPath $CerPath -PemPath $PemPath
+        }
+        Mock Convert-PfxToPem {
+            param($PfxPath, $Password, $CertPath, $KeyPath)
+            & $script:origConvertPfxToPem -PfxPath $PfxPath -Password $Password -CertPath $CertPath -KeyPath $KeyPath
+        }
         Mock Copy-Item {}
         Mock Read-Host {
             $pwd = New-Object System.Security.SecureString
@@ -161,5 +167,25 @@ Describe 'Convert certificate helpers honour -WhatIf' -Skip:($IsLinux -or $IsMac
         Convert-PfxToPem -PfxPath $pfx -Password $securePass -CertPath $cert -KeyPath $key -WhatIf
         Should -Invoke -CommandName Set-Content -Times 0
         Remove-Item $pfx -ErrorAction SilentlyContinue
+    }
+}
+
+Describe 'Convert certificate helpers validate paths' -Skip:($IsLinux -or $IsMacOS) {
+    It 'errors when CerPath or PemPath is missing' {
+        $scriptPath = Join-Path $PSScriptRoot '..' 'runner_scripts' '0010_Prepare-HyperVProvider.ps1'
+        . $scriptPath
+        { Convert-CerToPem -CerPath '' -PemPath 'x' } | Should -Throw 'Convert-CerToPem: CerPath is required'
+        { Convert-CerToPem -CerPath 'x' -PemPath '' } | Should -Throw 'Convert-CerToPem: PemPath is required'
+    }
+
+    It 'errors when PfxPath, CertPath, or KeyPath is missing' {
+        $scriptPath = Join-Path $PSScriptRoot '..' 'runner_scripts' '0010_Prepare-HyperVProvider.ps1'
+        . $scriptPath
+        $pwd = New-Object System.Security.SecureString
+        foreach ($c in 'pw'.ToCharArray()) { $pwd.AppendChar($c) }
+        $pwd.MakeReadOnly()
+        { Convert-PfxToPem -PfxPath '' -Password $pwd -CertPath 'c' -KeyPath 'k' } | Should -Throw 'Convert-PfxToPem: PfxPath is required'
+        { Convert-PfxToPem -PfxPath 'p' -Password $pwd -CertPath '' -KeyPath 'k' } | Should -Throw 'Convert-PfxToPem: CertPath is required'
+        { Convert-PfxToPem -PfxPath 'p' -Password $pwd -CertPath 'c' -KeyPath '' } | Should -Throw 'Convert-PfxToPem: KeyPath is required'
     }
 }

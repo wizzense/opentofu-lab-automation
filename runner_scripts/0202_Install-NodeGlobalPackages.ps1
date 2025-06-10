@@ -25,6 +25,7 @@ function Install-NodeGlobalPackages {
 
     . "$PSScriptRoot/../runner_utility_scripts/ScriptTemplate.ps1"
     Invoke-LabStep -Config $Config -Body {
+    param($Config)
     Write-CustomLog 'Running 0202_Install-NodeGlobalPackages.ps1'
 <#
 .SYNOPSIS
@@ -67,6 +68,26 @@ if ($nodeDeps -is [hashtable] -and $nodeDeps.ContainsKey('GlobalPackages')) {
     $packages = $nodeDeps['GlobalPackages']
 } elseif ($nodeDeps.PSObject.Properties.Name -contains 'GlobalPackages') {
     $packages = $nodeDeps.GlobalPackages
+
+} else {
+    if ($nodeDeps.InstallYarn) {
+        $packages += 'yarn'
+    } else {
+        Write-CustomLog "InstallYarn flag is disabled. Skipping yarn installation."
+    }
+
+    if ($nodeDeps.InstallVite) {
+        $packages += 'vite'
+    } else {
+        Write-CustomLog "InstallVite flag is disabled. Skipping vite installation."
+    }
+
+    if ($nodeDeps.InstallNodemon) {
+        $packages += 'nodemon'
+    } else {
+        Write-CustomLog "InstallNodemon flag is disabled. Skipping nodemon installation."
+    }
+
 }
 
 if (-not $packages) {
