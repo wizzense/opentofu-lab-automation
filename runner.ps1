@@ -167,7 +167,7 @@ function Invoke-Scripts {
     foreach ($s in $ScriptsToRun) {
         Write-CustomLog "`n--- Running: $($s.Name) ---"
         try {
-            $scriptPath = "$PSScriptRoot\runner_scripts\$($s.Name)"
+            $scriptPath = Join-Path $PSScriptRoot "runner_scripts" $($s.Name)
             if (-not (Test-Path $scriptPath)) {
                 Write-CustomLog "ERROR: Script not found at $scriptPath"
                 $failed += $s.Name
