@@ -583,7 +583,13 @@ Describe 'Set-LabConfig' {
             Node_Dependencies = @{ NpmPath = 'C:\\Old'; CreateNpmPath = $false }
         }
 
-        $answers = @('Y','C:\\Repo','C:\\Node','Y')
+        $answers = @(
+            'Y',      # InstallGit
+            'Y',      # InstallOpenTofu
+            'C:\\Repo',
+            'C:\\Node',
+            'Y'
+        )
         $script:idx = 0
         function global:Read-Host {
             param([string]$Prompt)
@@ -591,7 +597,13 @@ Describe 'Set-LabConfig' {
             $answers[$script:idx++]
         }
 
-        Mock Get-MenuSelection { 'InstallGit','LocalPath','Node_Dependencies','Done' }
+        Mock Get-MenuSelection {
+            'InstallGit',
+            'InstallOpenTofu',
+            'LocalPath',
+            'Node_Dependencies',
+            'Done'
+        }
 
         $updated = Set-LabConfig -ConfigObject $config
 
