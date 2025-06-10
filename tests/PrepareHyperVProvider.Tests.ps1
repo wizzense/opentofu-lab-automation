@@ -1,5 +1,6 @@
-. (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
-. (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
+$testRoot = if ($PSScriptRoot) { $PSScriptRoot } elseif ($PSCommandPath) { Split-Path $PSCommandPath } else { '.' }
+. (Join-Path $testRoot 'TestDriveCleanup.ps1')
+. (Join-Path $testRoot 'helpers' 'TestHelpers.ps1')
 if ($SkipNonWindows) { return }
 
 BeforeAll {
@@ -11,7 +12,7 @@ BeforeAll {
 }
 Describe 'Prepare-HyperVProvider path restoration' -Skip:($SkipNonWindows) {
     It 'restores location after execution' {
-        . (Join-Path $PSScriptRoot '..' 'runner_utility_scripts' 'Logger.ps1')
+        . (Join-Path $testRoot '..' 'runner_utility_scripts' 'Logger.ps1')
         $script:scriptPath = Get-RunnerScriptPath '0010_Prepare-HyperVProvider.ps1'
         $config = [pscustomobject]@{
             PrepareHyperVHost = $true
@@ -67,7 +68,7 @@ Describe 'Prepare-HyperVProvider path restoration' -Skip:($SkipNonWindows) {
 Describe 'Prepare-HyperVProvider certificate handling' -Skip:($SkipNonWindows) {
     It 'creates PEM files and updates providers.tf' {
 
-        . (Join-Path $PSScriptRoot '..' 'runner_utility_scripts' 'Logger.ps1')
+        . (Join-Path $testRoot '..' 'runner_utility_scripts' 'Logger.ps1')
         $script:scriptPath = Get-RunnerScriptPath '0010_Prepare-HyperVProvider.ps1'
         $tempDir = Join-Path ([System.IO.Path]::GetTempPath()) ([System.Guid]::NewGuid())
 
@@ -120,7 +121,7 @@ Describe 'Prepare-HyperVProvider certificate handling' -Skip:($SkipNonWindows) {
         # prepare certificate files for conversion using static test data
         $rootCaName = $config.CertificateAuthority.CommonName
         $hostName   = [System.Net.Dns]::GetHostName()
-        $sourceCert = Join-Path $PSScriptRoot 'data' 'TestCA.cer'
+        $sourceCert = Join-Path $testRoot 'data' 'TestCA.cer'
         Copy-Item -Path $sourceCert -Destination (Join-Path $PWD "$rootCaName.cer") -Force
         'dummy' | Set-Content -Path (Join-Path $PWD "$rootCaName.pfx")
         'dummy' | Set-Content -Path (Join-Path $PWD "$hostName.pfx")
@@ -209,8 +210,10 @@ Describe 'Convert certificate helpers honour -WhatIf' -Skip:($SkipNonWindows) {
 
 Describe 'Convert certificate helpers validate paths' -Skip:($SkipNonWindows) {
     BeforeAll {
-        Remove-Mock Convert-CerToPem -ErrorAction SilentlyContinue
-        Remove-Mock Convert-PfxToPem -ErrorAction SilentlyContinue
+        if (Get-Command Remove-Mock -ErrorAction SilentlyContinue) {
+            Remove-Mock Convert-CerToPem -ErrorAction SilentlyContinue
+            Remove-Mock Convert-PfxToPem -ErrorAction SilentlyContinue
+        }
         $scriptPath = Get-RunnerScriptPath '0010_Prepare-HyperVProvider.ps1'
         . $scriptPath
     }
