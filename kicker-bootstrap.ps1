@@ -357,6 +357,7 @@ if (-not $config.RepoUrl) {
 
 # Define local path (fallback if not in config)
 $localPath = $config.LocalPath
+
 $localPath = if (-not $localPath -or [string]::IsNullOrWhiteSpace($localPath)) {
     if ($isWindowsOS) {
         if ($env:TEMP) { $env:TEMP } else { 'C:\\temp' }
@@ -365,6 +366,7 @@ $localPath = if (-not $localPath -or [string]::IsNullOrWhiteSpace($localPath)) {
     }
 } else {
     $localPath
+
 }
 $localPath = [System.Environment]::ExpandEnvironmentVariables($localPath)
 
