@@ -11,10 +11,18 @@ if ($PSVersionTable.PSVersion.Major -lt 7) {
 }
 
 # ─── Load helpers ──────────────────────────────────────────────────────────────
-. "$PSScriptRoot\runner_utility_scripts\Logger.ps1"
-. "$PSScriptRoot\lab_utils\Get-LabConfig.ps1"
-. "$PSScriptRoot\lab_utils\Format-Config.ps1"
-. "$PSScriptRoot\lab_utils\Menu.ps1"
+. (Join-Path $PSScriptRoot 'runner_utility_scripts' 'Logger.ps1')
+. (Join-Path $PSScriptRoot 'lab_utils' 'Get-LabConfig.ps1')
+. (Join-Path $PSScriptRoot 'lab_utils' 'Format-Config.ps1')
+. (Join-Path $PSScriptRoot 'lab_utils' 'Menu.ps1')
+
+$menuPath = Join-Path $PSScriptRoot 'lab_utils' 'Menu.ps1'
+if (-not (Test-Path $menuPath)) {
+    Write-Error "Menu module not found at $menuPath"
+    exit 1
+}
+. $menuPath
+
 
 # ─── Default log path ─────────────────────────────────────────────────────────
 if (-not (Get-Variable -Name LogFilePath -Scope Script -ErrorAction SilentlyContinue) -and
@@ -183,11 +191,17 @@ function Invoke-Scripts {
                 }
             }
 
-            $cmd = Get-Command -Name $scriptPath -ErrorAction SilentlyContinue
-            $global:LASTEXITCODE = 0
+            $tempCfg = [System.IO.Path]::GetTempFileName()
+            $Config | ConvertTo-Json -Depth 5 | Out-File -FilePath $tempCfg -Encoding utf8
+            $sb = {
+                param($cfgPath, $scr)
+                $cfg = Get-Content -Raw -Path $cfgPath | ConvertFrom-Json
+                & $scr -Config $cfg
+                exit $LASTEXITCODE
+            }
 
-            if ($cmd -and $cmd.Parameters.ContainsKey('Config')) { . $scriptPath -Config $Config }
-            else                                               { . $scriptPath }
+            & pwsh -NoLogo -NoProfile -Command $sb -Args $tempCfg, $scriptPath
+            Remove-Item $tempCfg -ErrorAction SilentlyContinue
 
             $results[$s.Name] = $LASTEXITCODE
             if ($LASTEXITCODE) {
@@ -212,12 +226,12 @@ function Invoke-Scripts {
 }
 
 function Select-Scripts {
-    param([string]$Input)
+    param([string]$Spec)
 
-    if (-not $Input) { Write-CustomLog 'No script selection provided.'; return @() }
-    if ($Input -eq 'all') { return $ScriptFiles }
+    if (-not $Spec) { Write-CustomLog 'No script selection provided.'; return @() }
+    if ($Spec -eq 'all') { return $ScriptFiles }
 
-    $prefixes = $Input -split ',' |
+    $prefixes = $Spec -split ',' |
         ForEach-Object { $_.Trim() } |
         Where-Object { $_ -match '^\d{4}$' }
 
@@ -238,8 +252,8 @@ function Prompt-Scripts {
 
 # ─── Non-interactive or interactive execution ────────────────────────────────
 if ($Scripts) {
-    if ($Scripts -eq 'all') { $sel = Select-Scripts -Input 'all' }
-    else                    { $sel = Select-Scripts -Input $Scripts }
+    if ($Scripts -eq 'all') { $sel = Select-Scripts -Spec 'all' }
+    else                    { $sel = Select-Scripts -Spec $Scripts }
     if (-not $sel -or $sel.Count -eq 0) { exit 1 }
     if (-not (Invoke-Scripts -ScriptsToRun $sel)) { exit 1 }
     exit 0
