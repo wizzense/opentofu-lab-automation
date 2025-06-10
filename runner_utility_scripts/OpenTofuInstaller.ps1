@@ -132,14 +132,23 @@ $normal = "$esc[0m"
 $magenta = "$esc[35m"
 
 $defaultOpenTofuVersion = "latest"
-if (-not $Env:LOCALAPPDATA -and $IsLinux) {
-    # Fallback for Linux where LOCALAPPDATA may not be defined
-    $Env:LOCALAPPDATA = Join-Path $HOME ".local/share"
+# Provide cross-platform defaults when key environment variables are missing
+if (-not $Env:LOCALAPPDATA) {
+    if ($IsLinux) {
+        $Env:LOCALAPPDATA = Join-Path $HOME '.local/share'
+    } elseif ($IsMacOS) {
+        $Env:LOCALAPPDATA = Join-Path $HOME 'Library/Application Support'
+    }
+}
+if ($allUsers -and -not $Env:Programfiles) {
+    if ($IsMacOS -or $IsLinux) {
+        $Env:Programfiles = '/usr/local'
+    }
 }
 if ($allUsers) {
-    $defaultInstallPath = Join-Path $Env:Programfiles "OpenTofu"
+    $defaultInstallPath = Join-Path $Env:Programfiles 'OpenTofu'
 } else {
-    $defaultInstallPath = Join-Path (Join-Path $Env:LOCALAPPDATA "Programs") "OpenTofu"
+    $defaultInstallPath = Join-Path (Join-Path $Env:LOCALAPPDATA 'Programs') 'OpenTofu'
 }
 $defaultCosignPath = "cosign.exe"
 $defaultCosignOidcIssuer = "https://token.actions.githubusercontent.com"
