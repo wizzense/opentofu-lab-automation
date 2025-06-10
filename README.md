@@ -236,6 +236,15 @@ brew install --cask powershell
 pwsh -NoLogo -NoProfile -Command "Invoke-Pester"
 ```
 
+## Docker container
+
+Build and run the automation inside a container:
+
+```bash
+docker build -t tofu-lab .
+docker run --rm -it tofu-lab [-ConfigFile path/to/config.json]
+```
+
 ## Utility scripts
 
 `lab_utils/Get-Platform.ps1` detects the current platform.
