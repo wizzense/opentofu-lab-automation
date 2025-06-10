@@ -343,30 +343,14 @@ function installStandalone() {
         logInfo("Checking if cosign or GPG is available...")
 
         $cosignAvailable = $false
-        try {
-            $ErrorActionPreference = 'stop'
-            if(Get-Command $cosignPath){
-                $cosignAvailable = $true
-            }
-        } catch {
-            $msg = $_.ToString()
-            logError $msg
-            throw
+        if (Get-Command $cosignPath -ErrorAction SilentlyContinue) {
+            $cosignAvailable = $true
         }
-        $ErrorActionPreference = 'continue'
 
         $gpgAvailable = $false
-        try {
-            $ErrorActionPreference = 'stop'
-            if(Get-Command $gpgPath){
-                $gpgAvailable = $true
-            }
-        } catch {
-            $msg = $_.ToString()
-            logError $msg
-            throw
+        if (Get-Command $gpgPath -ErrorAction SilentlyContinue) {
+            $gpgAvailable = $true
         }
-        $ErrorActionPreference = 'continue'
 
         if ($cosignAvailable) {
             $verifyMethod = "cosign"
