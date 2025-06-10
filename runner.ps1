@@ -5,6 +5,11 @@ param(
     [switch]$Force
 )
 
+if ($PSVersionTable.PSVersion.Major -lt 7) {
+    Write-Error "PowerShell 7 or later is required. Current version: $($PSVersionTable.PSVersion)"
+    exit 1
+}
+
 # ─── Load helpers ──────────────────────────────────────────────────────────────
 . "$PSScriptRoot\runner_utility_scripts\Logger.ps1"
 . "$PSScriptRoot\lab_utils\Get-LabConfig.ps1"
@@ -16,7 +21,9 @@ if (-not (Get-Variable -Name LogFilePath -Scope Script -ErrorAction SilentlyCont
     -not (Get-Variable -Name LogFilePath -Scope Global -ErrorAction SilentlyContinue)) {
 
     $logDir = $env:LAB_LOG_DIR
-    if (-not $logDir) { $logDir = $IsWindows ? 'C:\temp' : [System.IO.Path]::GetTempPath() }
+    if (-not $logDir) {
+        if ($IsWindows) { $logDir = 'C:\temp' } else { $logDir = [System.IO.Path]::GetTempPath() }
+    }
     if (-not (Test-Path $logDir)) { New-Item -ItemType Directory -Path $logDir -Force | Out-Null }
     $script:LogFilePath = Join-Path $logDir 'lab.log'
 }
@@ -203,7 +210,8 @@ function Select-Scripts {
 
 # ─── Non-interactive or interactive execution ────────────────────────────────
 if ($Scripts) {
-    $sel = Select-Scripts -Input ($Scripts -eq 'all' ? 'all' : $Scripts)
+    if ($Scripts -eq 'all') { $sel = Select-Scripts -Input 'all' }
+    else                    { $sel = Select-Scripts -Input $Scripts }
     if (-not $sel) { exit 1 }
     if (-not (Invoke-Scripts -ScriptsToRun $sel)) { exit 1 }
     exit 0
