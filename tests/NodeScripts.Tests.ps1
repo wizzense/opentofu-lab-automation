@@ -33,7 +33,7 @@ Describe 'Node installation scripts' {
         . $core
 
         Install-NodeCore -Config $cfg
-        Assert-MockCalled Invoke-WebRequest -ParameterFilter { $Uri -eq 'http://example.com/node.msi' } -Times 1
+        Should -Invoke -CommandName Invoke-WebRequest -Times 1 -ParameterFilter { $Uri -eq 'http://example.com/node.msi' }
     }
 
     It 'does nothing when InstallNode is $false' {
@@ -64,8 +64,8 @@ Describe 'Node installation scripts' {
         Mock npm {}
         $WhatIfPreference = $false
         Install-NodeGlobalPackages -Config $cfg
-        Assert-MockCalled npm -ParameterFilter { ($testArgs -join ' ') -eq 'install -g yarn' } -Times 1
-        Assert-MockCalled npm -ParameterFilter { ($testArgs -join ' ') -eq 'install -g nodemon' } -Times 1
+        Should -Invoke -CommandName npm -Times 1 -ParameterFilter { ($testArgs -join ' ') -eq 'install -g yarn' }
+        Should -Invoke -CommandName npm -Times 1 -ParameterFilter { ($testArgs -join ' ') -eq 'install -g nodemon' }
         Should -Invoke -CommandName npm -Times 0 -ParameterFilter { ($testArgs -join ' ') -eq 'install -g vite' }
     }
 
@@ -81,8 +81,8 @@ Describe 'Node installation scripts' {
         Mock npm {}
         $WhatIfPreference = $false
         Install-NodeGlobalPackages -Config $cfg
-        Assert-MockCalled npm -ParameterFilter { ($testArgs -join ' ') -eq 'install -g yarn' } -Times 1
-        Assert-MockCalled npm -ParameterFilter { ($testArgs -join ' ') -eq 'install -g nodemon' } -Times 1
+        Should -Invoke -CommandName npm -Times 1 -ParameterFilter { ($testArgs -join ' ') -eq 'install -g yarn' }
+        Should -Invoke -CommandName npm -Times 1 -ParameterFilter { ($testArgs -join ' ') -eq 'install -g nodemon' }
         Should -Invoke -CommandName npm -Times 0 -ParameterFilter { ($testArgs -join ' ') -eq 'install -g vite' }
     }
 
@@ -99,7 +99,7 @@ Describe 'Node installation scripts' {
             '0203_Install-npm.ps1'                { Install-NpmDependencies -Config $script:config }
         }
 
-        Assert-MockCalled Write-CustomLog -ParameterFilter { $Message -eq "Running $scriptName" } -Times 1
+        Should -Invoke -CommandName Write-CustomLog -Times 1 -ParameterFilter { $Message -eq "Running $scriptName" }
     }
 
     It 'honours -WhatIf for Install-GlobalPackage' {
@@ -134,7 +134,7 @@ Describe 'Node installation scripts' {
         . $npmPath -Config $config
 
         Install-NpmDependencies -Config $cfg
-        Assert-MockCalled npm -ParameterFilter { $testArgs[0] -eq 'install' } -Times 1
+        Should -Invoke -CommandName npm -Times 1 -ParameterFilter { $testArgs[0] -eq 'install' }
         Remove-Item -Recurse -Force $temp
     }
 

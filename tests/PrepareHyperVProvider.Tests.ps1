@@ -142,11 +142,11 @@ Describe 'Prepare-HyperVProvider certificate handling' -Skip:($SkipNonWindows) {
         & $script:scriptPath -Config $config
         $cmdAfter  = Get-Command Convert-PfxToPem
         $cmdAfter | Should -Be $cmdBefore
-        Assert-MockCalled New-SelfSignedCertificate -Times 2
-        Assert-MockCalled Export-Certificate -Times 2
-        Assert-MockCalled Import-PfxCertificate -Times 3
-        Assert-MockCalled Convert-CerToPem -Times 1
-        Assert-MockCalled Convert-PfxToPem -Times 1
+        Should -Invoke -CommandName New-SelfSignedCertificate -Times 2
+        Should -Invoke -CommandName Export-Certificate -Times 2
+        Should -Invoke -CommandName Import-PfxCertificate -Times 3
+        Should -Invoke -CommandName Convert-CerToPem -Times 1
+        Should -Invoke -CommandName Convert-PfxToPem -Times 1
 
         Test-Path (Join-Path $tempDir 'TestCA.pem') | Should -BeTrue
         Test-Path (Join-Path $tempDir ("$(hostname).pem")) | Should -BeTrue

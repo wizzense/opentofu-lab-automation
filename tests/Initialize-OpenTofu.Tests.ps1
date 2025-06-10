@@ -31,9 +31,9 @@ Describe 'Initialize-OpenTofu script' {
 
         & $script:ScriptPath -Config $config
 
-        Assert-MockCalled gh  -ParameterFilter { $args[0] -eq 'repo' -and $args[1] -eq 'clone' } -Times 1
-        Assert-MockCalled git -Times 0
-        Assert-MockCalled tofu -ParameterFilter { $args[0] -eq 'init' } -Times 1
+        Should -Invoke -CommandName gh -Times 1 -ParameterFilter { $args[0] -eq 'repo' -and $args[1] -eq 'clone' }
+        Should -Invoke -CommandName git -Times 0
+        Should -Invoke -CommandName tofu -Times 1 -ParameterFilter { $args[0] -eq 'init' }
 
         Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue
     }
@@ -61,9 +61,9 @@ Describe 'Initialize-OpenTofu script' {
 
         & $script:ScriptPath -Config $config
 
-        Assert-MockCalled git -ParameterFilter { $args[0] -eq 'pull' } -Times 1
-        Assert-MockCalled git -ParameterFilter { $args[0] -eq 'clone' } -Times 0
-        Assert-MockCalled tofu -ParameterFilter { $args[0] -eq 'init' } -Times 1
+        Should -Invoke -CommandName git -Times 1 -ParameterFilter { $args[0] -eq 'pull' }
+        Should -Invoke -CommandName git -Times 0 -ParameterFilter { $args[0] -eq 'clone' }
+        Should -Invoke -CommandName tofu -Times 1 -ParameterFilter { $args[0] -eq 'init' }
 
         Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue
     }
@@ -93,7 +93,7 @@ Describe 'Initialize-OpenTofu script' {
 
         & $script:ScriptPath -Config $config
 
-        Assert-MockCalled tofu -ParameterFilter { $args[0] -eq 'init' } -Times 1
+        Should -Invoke -CommandName tofu -Times 1 -ParameterFilter { $args[0] -eq 'init' }
 
         Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue
     }

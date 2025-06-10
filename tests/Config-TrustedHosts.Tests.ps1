@@ -17,9 +17,9 @@ Describe '0114_Config-TrustedHosts' -Skip:($SkipNonWindows) {
 
         $expected = '/d /c winrm set winrm/config/client @{TrustedHosts="host1"}'
 
-        Assert-MockCalled Start-Process -ParameterFilter {
+        Should -Invoke -CommandName Start-Process -Times 1 -ParameterFilter {
             $FilePath -eq 'cmd.exe' -and $ArgumentList -eq $expected
-        } -Times 1
+        }
     }
 }
 
