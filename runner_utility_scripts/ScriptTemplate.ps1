@@ -4,7 +4,13 @@ function Invoke-LabStep {
 
     $prevEAP = $ErrorActionPreference
     $ErrorActionPreference = 'Stop'
-    try { & $Body $Config } catch { Write-CustomLog "ERROR: $_"; throw }
-
+    try {
+        . $Body $Config
+    } catch {
+        Write-CustomLog "ERROR: $_"
+        throw
+    } finally {
+        $ErrorActionPreference = $prevEAP
+    }
 }
 
