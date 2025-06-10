@@ -11,11 +11,72 @@ jobs:
     permissions:
       issues: write
     steps:
-      - name: Create issue
-        uses: actions-ecosystem/action-create-issue@v1
+      - name: Collect job results
+        id: jobs
+        uses: actions/github-script@v7
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          title: "${{ github.event.workflow_run.name }} failed on ${{ github.event.workflow_run.head_branch }}"
-          body: |
-            The workflow failed.
-            [View run](${{ github.event.workflow_run.html_url }})
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const runId = context.payload.workflow_run.id;
+            const jobs = await github.paginate(github.rest.actions.listJobsForWorkflowRun, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              run_id: runId,
+              per_page: 100
+            });
+            const summary = jobs.map(j => `- [${j.name}](${j.html_url}) - ${j.conclusion}`).join('\n');
+            const failed = jobs.filter(j => j.conclusion !== 'success').map(j => j.name).join(', ');
+            core.setOutput('summary', summary);
+            core.setOutput('failed', failed);
+
+      - name: Check existing issue
+        id: find
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const runId = context.payload.workflow_run.id;
+            const branch = context.payload.workflow_run.head_branch;
+            const search = await github.rest.search.issuesAndPullRequests({
+              q: `${runId} repo:${context.repo.owner}/${context.repo.repo} is:issue is:open`
+            });
+            let issue = search.data.items[0];
+            if (!issue) {
+              const issues = await github.paginate(github.rest.issues.listForRepo, {
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                state: 'open',
+                per_page: 100
+              });
+              issue = issues.find(i => i.title.includes(branch));
+            }
+            if (issue) {
+              core.setOutput('number', issue.number);
+            }
+
+      - name: Create or update issue
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const issueNumber = '${{ steps.find.outputs.number }}';
+            const branch = context.payload.workflow_run.head_branch;
+            const sha = context.payload.workflow_run.head_sha;
+            const runUrl = context.payload.workflow_run.html_url;
+            const summary = '${{ steps.jobs.outputs.summary }}';
+            const body = `Run [${runUrl}](${runUrl}) for commit \`${sha}\` on branch \`${branch}\` failed.\n\n### Failed jobs\n${summary}`;
+            if (issueNumber) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issueNumber,
+                body
+              });
+            } else {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: `${context.payload.workflow_run.name} failed on ${branch}`,
+                body
+              });
+            }
