@@ -191,6 +191,7 @@ Node-related installs are controlled under the `Node_Dependencies` section of
   "InstallVite": true,
   "InstallNodemon": true,
   "InstallNpm": true,
+  "GlobalPackages": ["yarn", "vite", "nodemon"],
   "NpmPath": "C:\\Projects\\vde-mvp\\frontend",
   "CreateNpmPath": false,
   "Node": {
@@ -198,6 +199,10 @@ Node-related installs are controlled under the `Node_Dependencies` section of
   }
 }
 ```
+
+The `GlobalPackages` array is the preferred way to list npm packages for
+`0202_Install-NodeGlobalPackages.ps1`. The older boolean flags (`InstallYarn`,
+`InstallVite`, `InstallNodemon`) are still honored for backward compatibility.
 
 The scripts `0201_Install-NodeCore.ps1`, `0202_Install-NodeGlobalPackages.ps1`
 and `0203_Install-npm.ps1` read these keys when installing Node, global npm
