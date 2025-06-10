@@ -79,11 +79,19 @@ jobs:
         shell: pwsh
         run: |
           $cfg = New-PesterConfiguration -Hashtable (Import-PowerShellDataFile 'tests/PesterConfiguration.psd1')
+
           $repoRoot = $env:GITHUB_WORKSPACE
           $cfg.TestResult.OutputPath   = Join-Path $repoRoot 'coverage/testResults.xml'
           $cfg.CodeCoverage.OutputPath = Join-Path $repoRoot 'coverage/coverage.xml'
-          Invoke-Pester -Configuration $cfg -ErrorAction Stop
+          Invoke-Pester -Configuration $cfg -ErrorAction Stop 2>&1 | Tee-Object -FilePath coverage/pester.log
+
           "pester_exit_code=$LASTEXITCODE" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+      - name: Upload Pester log
+        if: steps.pester.outputs.pester_exit_code != '0'
+        uses: actions/upload-artifact@v4
+        with:
+          name: pester-log-${{ matrix.os }}
+          path: coverage/pester.log
       - name: Upload coverage
         if: steps.pester.outcome == 'success'
         uses: actions/upload-artifact@v4

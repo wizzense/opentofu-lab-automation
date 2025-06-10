@@ -4,33 +4,51 @@ param(
     [string]$Workflow = 'pester.yml'
 )
 
-if (-not (Get-Command gh -ErrorAction SilentlyContinue)) {
-    throw "GitHub CLI 'gh' is required"
-}
-
-$tempDir = Join-Path ([System.IO.Path]::GetTempPath()) "gh-artifacts-$([System.Guid]::NewGuid().ToString())"
+$tempDir = Join-Path ([System.IO.Path]::GetTempPath()) "gh-artifacts-$([System.Guid]::NewGuid())"
 New-Item -ItemType Directory -Path $tempDir | Out-Null
 
-$runsJson = gh api "repos/$Repo/actions/workflows/$Workflow/runs?branch=main&status=completed&per_page=10"
-$runs = (ConvertFrom-Json $runsJson).workflow_runs
-
-$found = $false
-foreach ($run in $runs) {
-    $artJson = gh api "repos/$Repo/actions/runs/$($run.id)/artifacts"
-    $artifacts = (ConvertFrom-Json $artJson).artifacts
-    $cov = $artifacts | Where-Object { $_.name -match 'coverage.*windows-latest' }
-    $res = $artifacts | Where-Object { $_.name -match 'results.*windows-latest' }
-    if ($cov -and $res) {
-        gh api $cov.archive_download_url --output (Join-Path $tempDir 'coverage.zip')
-        gh api $res.archive_download_url --output (Join-Path $tempDir 'results.zip')
-        $found = $true
-        break
+$useGh = $false
+if (Get-Command gh -ErrorAction SilentlyContinue) {
+    try {
+        gh auth status --hostname github.com *> $null
+        $useGh = $true
+    } catch {
+        Write-Host 'gh authentication failed; using public download URLs.' -ForegroundColor Yellow
     }
 }
 
-if (-not $found) {
-    Write-Host 'No Windows artifacts found.' -ForegroundColor Yellow
-    exit 1
+if ($useGh) {
+    $runsJson = gh api "repos/$Repo/actions/workflows/$Workflow/runs?branch=main&status=completed&per_page=10"
+    $runs = (ConvertFrom-Json $runsJson).workflow_runs
+
+    $found = $false
+    foreach ($run in $runs) {
+        $artJson = gh api "repos/$Repo/actions/runs/$($run.id)/artifacts"
+        $artifacts = (ConvertFrom-Json $artJson).artifacts
+        $cov = $artifacts | Where-Object { $_.name -match 'coverage.*windows-latest' }
+        $res = $artifacts | Where-Object { $_.name -match 'results.*windows-latest' }
+        if ($cov -and $res) {
+            gh api $cov.archive_download_url --output (Join-Path $tempDir 'coverage.zip')
+            gh api $res.archive_download_url --output (Join-Path $tempDir 'results.zip')
+            $found = $true
+            break
+        }
+    }
+
+    if (-not $found) {
+        Write-Host 'No Windows artifacts found.' -ForegroundColor Yellow
+        exit 1
+    }
+} else {
+    $covUrl = "https://nightly.link/$Repo/workflows/$Workflow/main/pester-coverage-windows-latest.zip"
+    $resUrl = "https://nightly.link/$Repo/workflows/$Workflow/main/pester-results-windows-latest.zip"
+    try {
+        Invoke-WebRequest -Uri $covUrl -OutFile (Join-Path $tempDir 'coverage.zip') -UseBasicParsing
+        Invoke-WebRequest -Uri $resUrl -OutFile (Join-Path $tempDir 'results.zip') -UseBasicParsing
+    } catch {
+        Write-Host 'Failed to download artifacts anonymously.' -ForegroundColor Yellow
+        exit 1
+    }
 }
 
 $covDir = Join-Path $tempDir 'coverage'

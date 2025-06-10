@@ -365,6 +365,10 @@ The suite includes a YAML parsing test that is skipped unless the
 Install-Module powershell-yaml -Scope CurrentUser
 ```
 
+Download the latest Windows test results with `lab_utils/Get-WindowsJobArtifacts.ps1`.
+If the GitHub CLI isn't authenticated, the script falls back to public
+downloads via the nightly.link service.
+
 Python unit tests live under `py/`. Install the dependencies first using
 either Poetry or a direct `pip` install to get packages like `typer`:
 
