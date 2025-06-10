@@ -58,5 +58,36 @@ Describe 'Expand-All' {
         Should -Invoke -CommandName Expand-Archive -Times 1 -ParameterFilter { $Path -eq $zip2 -and $DestinationPath -eq (Join-Path $subDir 'b') }
         Should -Invoke -CommandName Get-ChildItem -Times 1
     }
+
+    It 'logs message when specified ZIP file does not exist' {
+        $zipPath = Join-Path $TestDrive 'missing.zip'
+
+        Mock Expand-Archive {}
+        Mock Read-Host {}
+
+        Expand-All -ZipFile $zipPath
+
+        Should -Invoke -CommandName Expand-Archive -Times 0
+        Should -Invoke -CommandName Write-CustomLog -Times 1 -ParameterFilter {
+            $Message -Like '*does not exist*'
+        }
+    }
+
+    It 'cancels when user declines expansion' {
+        $temp = Join-Path $TestDrive ([guid]::NewGuid())
+        New-Item -ItemType Directory -Path $temp | Out-Null
+        $zipPath = Join-Path $temp 'archive.zip'
+        New-Item -ItemType File -Path $zipPath | Out-Null
+
+        Mock Expand-Archive {}
+        Mock Read-Host { 'n' }
+
+        Expand-All -ZipFile $zipPath
+
+        Should -Invoke -CommandName Expand-Archive -Times 0
+        Should -Invoke -CommandName Write-CustomLog -Times 1 -ParameterFilter {
+            $Message -eq 'Operation canceled.'
+        }
+    }
 }
 
