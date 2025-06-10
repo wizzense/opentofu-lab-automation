@@ -63,12 +63,17 @@ Describe 'OpenTofuInstaller' {
             return $proc
         }
         & $script:scriptPath -installMethod standalone -opentofuVersion '0.0.0' -installPath $temp -allUsers -skipVerify -skipChangePath | Out-Null
+
+        $global:startProcessCalled | Should -BeTrue
+        $script:logFile | Should -Not -BeNullOrEmpty
+
         if ($IsWindows) {
             $global:startProcessCalled | Should -BeTrue
         } else {
             # Privilege escalation is skipped on non-Windows platforms.
             $global:startProcessCalled | Should -BeFalse
         }
+
         (Test-Path $script:logFile) | Should -BeFalse
         Remove-Item Function:Start-Process -ErrorAction SilentlyContinue
         }
