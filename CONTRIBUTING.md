@@ -40,5 +40,4 @@ When adding Windows‑specific tests, guard them with
 `-Skip:($IsLinux -or $IsMacOS)` so the suite succeeds across all platforms.
 
 ## CI failure issues
-
-If the `CI` workflow fails, the `issue-on-fail.yml` workflow automatically opens a GitHub issue summarizing which jobs failed. This helps track flaky tests without manual intervention.
+executes the same steps as the lint, Pester and Pytest workflows.
