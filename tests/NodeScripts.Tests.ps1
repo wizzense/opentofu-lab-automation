@@ -1,10 +1,10 @@
 Describe 'Node installation scripts' {
     BeforeAll {
-        $scriptRoot = Join-Path $PSScriptRoot '..' 'runner_scripts'
-        $script:core   = (Resolve-Path -ErrorAction Stop (Join-Path $scriptRoot '0201_Install-NodeCore.ps1')).Path
-        $script:global = (Resolve-Path -ErrorAction Stop (Join-Path $scriptRoot '0202_Install-NodeGlobalPackages.ps1')).Path
-        $script:npm    = (Resolve-Path -ErrorAction Stop (Join-Path $scriptRoot '0203_Install-npm.ps1')).Path
 
+        $script:scriptRoot = Join-Path $PSScriptRoot '..' 'runner_scripts'
+        $script:core   = (Resolve-Path -ErrorAction Stop (Join-Path $script:scriptRoot '0201_Install-NodeCore.ps1')).Path
+        $script:global = (Resolve-Path -ErrorAction Stop (Join-Path $script:scriptRoot '0202_Install-NodeGlobalPackages.ps1')).Path
+        $script:npm    = (Resolve-Path -ErrorAction Stop (Join-Path $script:scriptRoot '0203_Install-npm.ps1')).Path
         $env:TEMP = Join-Path ([System.IO.Path]::GetTempPath()) 'pester-temp'
         New-Item -ItemType Directory -Path $env:TEMP -Force | Out-Null
     }
@@ -14,7 +14,7 @@ Describe 'Node installation scripts' {
         $global = (Resolve-Path -ErrorAction Stop (Join-Path $PSScriptRoot '..' 'runner_scripts' '0202_Install-NodeGlobalPackages.ps1')).Path
         $npm    = (Resolve-Path -ErrorAction Stop (Join-Path $PSScriptRoot '..' 'runner_scripts' '0203_Install-npm.ps1')).Path
         Test-Path $core | Should -BeTrue
-        Test-Path $globalScript | Should -BeTrue
+        Test-Path $global | Should -BeTrue
         Test-Path $npm   | Should -BeTrue
     }
 

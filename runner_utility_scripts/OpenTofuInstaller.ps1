@@ -132,6 +132,10 @@ $normal = "$esc[0m"
 $magenta = "$esc[35m"
 
 $defaultOpenTofuVersion = "latest"
+if (-not $Env:LOCALAPPDATA -and $IsLinux) {
+    # Fallback for Linux where LOCALAPPDATA may not be defined
+    $Env:LOCALAPPDATA = Join-Path $HOME ".local/share"
+}
 if ($allUsers) {
     $defaultInstallPath = Join-Path $Env:Programfiles "OpenTofu"
 } else {
