@@ -8,7 +8,7 @@ Describe '0203_Install-npm' {
         $cfg = @{ Node_Dependencies = @{ NpmPath = $npmDir } }
 
         $script:calledPath = $null
-        function npm {
+        function global:npm {
             param([string[]]$NpmArgs)
             $script:calledPath = (Get-Location).Path
             $null = $NpmArgs
@@ -30,7 +30,7 @@ Describe '0203_Install-npm' {
         '{}' | Set-Content -Path (Join-Path $npmDir 'package.json')
         $cfg = @{ Node_Dependencies = @{ NpmPath = $npmDir } }
 
-        function npm {
+        function global:npm {
             param([string[]]$testArgs)
             $null = $testArgs
         }
@@ -50,7 +50,7 @@ Describe '0203_Install-npm' {
         $cfg = @{ Node_Dependencies = @{ NpmPath = $npmDir; CreateNpmPath = $false } }
 
         $script:called = $false
-        function npm { $script:called = $true }
+        function global:npm { $script:called = $true }
 
         . $script
         Install-NpmDependencies -Config $cfg
@@ -66,7 +66,7 @@ Describe '0203_Install-npm' {
         $cfg = @{ Node_Dependencies = @{ NpmPath = $npmDir; CreateNpmPath = $true } }
 
         $script:calledPath = $null
-        function npm { param([string[]]$Args) $script:calledPath = (Get-Location).Path }
+        function global:npm { param([string[]]$Args) $script:calledPath = (Get-Location).Path }
 
         . $script
         Install-NpmDependencies -Config $cfg
