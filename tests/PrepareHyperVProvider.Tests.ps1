@@ -37,7 +37,12 @@ Describe 'Prepare-HyperVProvider path restoration' -Skip:($IsLinux -or $IsMacOS)
         Mock git {}
         Mock go {}
         Mock Copy-Item {}
-        Mock Read-Host { (New-Object System.Net.NetworkCredential('', '')).SecurePassword }
+        Mock Read-Host {
+            $pwd = New-Object System.Security.SecureString
+            foreach ($c in ''.ToCharArray()) { $pwd.AppendChar($c) }
+            $pwd.MakeReadOnly()
+            $pwd
+        }
         Mock Resolve-Path { param([string]$Path) @{ Path = $Path } }
 
         . $script:scriptPath -Config $config
@@ -74,7 +79,12 @@ Describe 'Prepare-HyperVProvider certificate handling' -Skip:($IsLinux -or $IsMa
         Mock Convert-CerToPem -MockWith { & $script:origConvertCerToPem @PSBoundParameters }
         Mock Convert-PfxToPem -MockWith { & $script:origConvertPfxToPem @PSBoundParameters }
         Mock Copy-Item {}
-        Mock Read-Host { (New-Object System.Net.NetworkCredential('', 'pw')).SecurePassword }
+        Mock Read-Host {
+            $pwd = New-Object System.Security.SecureString
+            foreach ($c in 'pw'.ToCharArray()) { $pwd.AppendChar($c) }
+            $pwd.MakeReadOnly()
+            $pwd
+        }
 
         $providerFile = Join-Path $tempDir 'providers.tf'
         @(
@@ -127,7 +137,9 @@ Describe 'Convert certificate helpers honour -WhatIf' -Skip:($IsLinux -or $IsMac
         $stub | Add-Member -MemberType ScriptMethod -Name GetRSAPrivateKey -Value { $rsa }
         Mock Set-Content {}
         Mock New-Object { $stub }
-        $securePass = (New-Object System.Net.NetworkCredential('', 'pw')).SecurePassword
+        $securePass = New-Object System.Security.SecureString
+        foreach ($c in 'pw'.ToCharArray()) { $securePass.AppendChar($c) }
+        $securePass.MakeReadOnly()
         Convert-PfxToPem -PfxPath $pfx -Password $securePass -CertPath $cert -KeyPath $key -WhatIf
         Should -Invoke -CommandName Set-Content -Times 0
         Remove-Item $pfx -ErrorAction SilentlyContinue
