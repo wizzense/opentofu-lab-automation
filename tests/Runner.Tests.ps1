@@ -215,6 +215,38 @@ if (`$Config.RunFoo -eq `$true) { 'foo' | Out-File -FilePath "$out" } else { Wri
         finally { Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue }
     }
 
+    It 'skips script action when flag disabled and -Force not used' {
+        $tempDir = Join-Path ([System.IO.Path]::GetTempPath()) ([System.Guid]::NewGuid())
+        $null = New-Item -ItemType Directory -Path $tempDir
+        try {
+            Copy-Item $script:runnerPath -Destination $tempDir
+            Copy-Item (Join-Path $PSScriptRoot '..' 'runner_utility_scripts') -Destination $tempDir -Recurse
+            Copy-Item (Join-Path $PSScriptRoot '..' 'lab_utils') -Destination $tempDir -Recurse
+            $configDir = Join-Path $tempDir 'config_files'
+            $null = New-Item -ItemType Directory -Path $configDir
+            $configFile = Join-Path $configDir 'config.json'
+            '{ "RunFoo": false }' | Set-Content -Path $configFile
+            $scriptsDir = Join-Path $tempDir 'runner_scripts'
+            $null = New-Item -ItemType Directory -Path $scriptsDir
+            $out = Join-Path $tempDir 'out.txt'
+            $scriptFile = Join-Path $scriptsDir '0001_Test.ps1'
+            @"
+Param([PSCustomObject]`$Config)
+if (`$Config.RunFoo -eq `$true) { 'foo' | Out-File -FilePath "$out" }
+"@ | Set-Content -Path $scriptFile
+
+            Push-Location $tempDir
+            Mock Read-Host { throw 'Read-Host should not be called' }
+            & "$tempDir/runner.ps1" -Scripts '0001' -Auto -ConfigFile $configFile | Out-Null
+            $updated = Get-Content -Raw $configFile | ConvertFrom-Json
+            Pop-Location
+
+            Test-Path $out | Should -BeFalse
+            $updated.RunFoo | Should -BeFalse
+        }
+        finally { Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue }
+    }
+
     It 'reports success when script omits an exit statement' {
         $tempDir = Join-Path ([System.IO.Path]::GetTempPath()) ([System.Guid]::NewGuid())
         $null = New-Item -ItemType Directory -Path $tempDir
