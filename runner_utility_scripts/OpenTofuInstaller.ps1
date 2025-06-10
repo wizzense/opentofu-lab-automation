@@ -307,6 +307,7 @@ function unpackStandalone() {
 # On Windows the Administrators group membership is queried. Other
 # platforms always return `$false` as privilege escalation is not
 # supported.
+if (-not (Get-Command Test-IsAdmin -ErrorAction SilentlyContinue)) {
 function Test-IsAdmin {
     $hasAdmin = $false
     if ($IsWindows) {
@@ -323,6 +324,7 @@ function Test-IsAdmin {
         $hasAdmin = $false
     }
     return $hasAdmin
+}
 }
 
 function installStandalone() {
