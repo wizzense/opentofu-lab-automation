@@ -37,7 +37,7 @@ exit 0' | Set-Content -Path $dummy
             & "$tempDir/runner.ps1" -Scripts '0001' -Auto | Out-Null
             Pop-Location
         } finally {
-            Remove-Item -Recurse -Force $tempDir
+            Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue
         }
     }
 
@@ -60,7 +60,7 @@ exit 0' | Set-Content -Path $dummy
 
             $code | Should -Be 1
         } finally {
-            Remove-Item -Recurse -Force $tempDir
+            Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue
         }
     }
 
@@ -99,7 +99,7 @@ exit 0
             Test-Path $out2 | Should -BeTrue
             $code | Should -Be 1
         } finally {
-            Remove-Item -Recurse -Force $tempDir
+            Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue
         }
     }
 
@@ -139,7 +139,7 @@ exit 0
             $code | Should -Be 1
         }
         finally {
-            Remove-Item -Recurse -Force $tempDir
+            Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue
         }
     }
 
@@ -178,7 +178,7 @@ exit 0
             Test-Path $out2 | Should -BeFalse
             $code | Should -Be 0
         } finally {
-            Remove-Item -Recurse -Force $tempDir
+            Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue
         }
     }
 
@@ -211,7 +211,7 @@ if (`$Config.RunFoo -eq `$true) { 'foo' | Out-File -FilePath "$out" } else { Wri
             Test-Path $out | Should -BeTrue
             $updated.RunFoo | Should -BeTrue
         }
-        finally { Remove-Item -Recurse -Force $tempDir }
+        finally { Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue }
     }
 
     It 'reports success when script omits an exit statement' {
@@ -240,7 +240,7 @@ Param([PSCustomObject]`$Config)
             Test-Path $out | Should -BeTrue
             $code | Should -Be 0
         }
-        finally { Remove-Item -Recurse -Force $tempDir }
+        finally { Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue }
     }
 
     It 'prompts for script selection when no -Scripts argument is supplied' -Skip:($IsLinux -or $IsMacOS) {
@@ -265,7 +265,7 @@ exit 0' | Set-Content -Path $dummy
 
             Assert-MockCalled Get-MenuSelection -Times 1
         } finally {
-            Remove-Item -Recurse -Force $tempDir
+            Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue
         }
     }
 
@@ -299,7 +299,7 @@ exit 0
             Assert-MockCalled Get-MenuSelection -Times 1
         }
         finally {
-            Remove-Item -Recurse -Force $tempDir
+            Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue
         }
     }
 }
