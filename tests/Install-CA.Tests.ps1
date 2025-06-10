@@ -20,7 +20,9 @@ Describe '0104_Install-CA script' {
 
         & $scriptPath -Config $config -Confirm:$false
 
-        Assert-MockCalled Install-AdcsCertificationAuthority -Times 1
+        Should -Invoke -CommandName Install-AdcsCertificationAuthority -Times 1 -ParameterFilter {
+            $CACommonName -eq 'TestCA' -and $CAType -eq 'StandaloneRootCA'
+        }
     }
 
     It 'skips CA installation when InstallCA is false' -Skip:($IsLinux -or $IsMacOS) {

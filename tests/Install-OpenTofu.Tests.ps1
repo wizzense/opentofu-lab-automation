@@ -21,7 +21,7 @@ Describe '0008_Install-OpenTofu' -Skip:($IsLinux -or $IsMacOS) {
         
         & $script:ScriptPath -Config $cfg
 
-        Assert-MockCalled Invoke-OpenTofuInstaller -Times 1 -ParameterFilter {
+        Should -Invoke -CommandName Invoke-OpenTofuInstaller -Times 1 -ParameterFilter {
             $CosignPath -eq (Join-Path $cfg.CosignPath 'cosign-windows-amd64.exe') -and
             $OpenTofuVersion -eq $cfg.OpenTofuVersion
         }
@@ -34,6 +34,6 @@ Describe '0008_Install-OpenTofu' -Skip:($IsLinux -or $IsMacOS) {
 
         & $script:ScriptPath -Config $cfg
 
-        Assert-MockCalled Invoke-OpenTofuInstaller -Times 0
+        Should -Invoke -CommandName Invoke-OpenTofuInstaller -Times 0
     }
 }
