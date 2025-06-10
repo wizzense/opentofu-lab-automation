@@ -26,9 +26,17 @@ if ($useGh) {
         $res = $artifacts | Where-Object { $_.name -match 'results.*windows-latest' }
         if ($cov -and $res) {
             gh api $cov.archive_download_url --output (Join-Path $tempDir 'coverage.zip')
+            if ($LASTEXITCODE -ne 0) {
+                Write-Host 'Failed to download coverage artifact.' -ForegroundColor Yellow
+                exit 1
+            }
             gh api $res.archive_download_url --output (Join-Path $tempDir 'results.zip')
+            if ($LASTEXITCODE -ne 0) {
+                Write-Host 'Failed to download results artifact.' -ForegroundColor Yellow
+                exit 1
+            }
         } else {
-            Write-Host "No Windows artifacts found for run $RunId." -ForegroundColor Yellow
+            Write-Host "No artifacts for windows-latest found on run $RunId. Use gh run view $RunId for details." -ForegroundColor Yellow
             exit 1
         }
     } else {
@@ -50,7 +58,7 @@ if ($useGh) {
         }
 
         if (-not $found) {
-            Write-Host 'No Windows artifacts found.' -ForegroundColor Yellow
+            Write-Host 'No Windows artifacts found in recent runs. Try specifying -RunId to select a specific run.' -ForegroundColor Yellow
             exit 1
         }
     }
@@ -64,7 +72,15 @@ if ($useGh) {
     }
     try {
         Invoke-WebRequest -Uri $covUrl -OutFile (Join-Path $tempDir 'coverage.zip') -UseBasicParsing
+        if (-not $?) {
+            Write-Host 'Failed to download coverage artifact anonymously.' -ForegroundColor Yellow
+            exit 1
+        }
         Invoke-WebRequest -Uri $resUrl -OutFile (Join-Path $tempDir 'results.zip') -UseBasicParsing
+        if (-not $?) {
+            Write-Host 'Failed to download results artifact anonymously.' -ForegroundColor Yellow
+            exit 1
+        }
     } catch {
         Write-Host 'Failed to download artifacts anonymously.' -ForegroundColor Yellow
         exit 1
