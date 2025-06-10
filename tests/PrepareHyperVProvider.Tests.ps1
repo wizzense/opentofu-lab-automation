@@ -3,6 +3,9 @@ $script:testRoot = if ($PSScriptRoot) { $PSScriptRoot } elseif ($PSCommandPath) 
 . (Join-Path $script:testRoot 'helpers' 'TestHelpers.ps1')
 if ($SkipNonWindows) { return }
 
+# Skip tests if the Hyper-V module isn't available
+if (-not (Get-Module -ListAvailable -Name 'Hyper-V')) { return }
+
 BeforeAll {
     $script:scriptPath = Get-RunnerScriptPath '0010_Prepare-HyperVProvider.ps1'
     . $script:scriptPath
