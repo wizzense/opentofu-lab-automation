@@ -50,4 +50,45 @@ Describe 'Get-WindowsJobArtifacts' {
         Should -Invoke -CommandName gh -ParameterFilter { $args[0] -like "*runs/$id/artifacts" } -Times 1
         Should -Not -Invoke -CommandName Invoke-WebRequest
     }
+
+    It 'uses provided run ID with nightly.link when gh auth fails' {
+        $id = 456
+        Mock Get-Command { [pscustomobject]@{ Name = 'gh' } } -ParameterFilter { $Name -eq 'gh' }
+        Mock gh { throw 'unauthenticated' } -ParameterFilter { $args[0] -eq 'auth status' }
+        Mock Invoke-WebRequest {}
+        Mock Expand-Archive {}
+        Mock Get-ChildItem { [pscustomobject]@{ FullName = 'dummy.xml' } }
+        Mock Select-Xml { @() }
+
+        & $scriptPath -RunId $id
+
+        Should -Invoke -CommandName Invoke-WebRequest -ParameterFilter { $Uri -match "$id" } -Times 2
+    }
+
+    It 'emits a clear message when artifacts are missing' {
+        $id = 789
+        Mock Get-Command { [pscustomobject]@{ Name = 'gh' } } -ParameterFilter { $Name -eq 'gh' }
+        Mock gh {} -ParameterFilter { $args[0] -eq 'auth status' }
+        Mock gh { '{"artifacts":[]}' } -ParameterFilter { $args[0] -like "*runs/$id/artifacts" }
+        Mock Expand-Archive {}
+        Mock Get-ChildItem { [pscustomobject]@{ FullName = 'dummy.xml' } }
+        Mock Select-Xml { @() }
+        $messages = @()
+        function global:Write-Host { param($Object, $Color); $script:messages += $Object }
+
+        & $scriptPath -RunId $id 2>$null
+
+        $LASTEXITCODE | Should -Be 1
+        ($messages | Select-Object -Last 1) | Should -Match 'No artifacts'
+    }
+
+    It 'returns nonzero exit code when download fails' {
+        Mock Get-Command { $null } -ParameterFilter { $Name -eq 'gh' }
+        Mock Invoke-WebRequest { throw '404' }
+        $messages = @()
+        function global:Write-Host { param($Object,$Color); $script:messages += $Object }
+        try { & $scriptPath } catch {}
+
+        $LASTEXITCODE | Should -Be 1
+    }
 }
