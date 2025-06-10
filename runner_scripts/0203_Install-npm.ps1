@@ -38,6 +38,7 @@ function Install-NpmDependencies {
         # Determine flags
         $installNpm = $true
         $createPath = $false
+
         foreach ($key in @('InstallNpm','CreateNpmPath')) {
             if ($nodeDeps -is [hashtable]) {
                 if ($nodeDeps.ContainsKey($key)) {
@@ -51,7 +52,12 @@ function Install-NpmDependencies {
                     'InstallNpm'    { $installNpm  = [bool]$nodeDeps.$key }
                     'CreateNpmPath' { $createPath  = [bool]$nodeDeps.$key }
                 }
+
             }
+            if ($nodeDeps.PSObject.Properties.Match('CreateNpmPath').Count) {
+                $createPath = [bool]$nodeDeps.CreateNpmPath
+            }
+
         }
 
         if (-not $installNpm) {
@@ -68,7 +74,7 @@ function Install-NpmDependencies {
         }
         if (-not $frontendPath) { $frontendPath = Join-Path $PSScriptRoot '..' 'frontend' }
 
-        if ($nodeDeps.PSObject.Properties.Match('NpmPath').Count -and [string]::IsNullOrWhiteSpace($nodeDeps.NpmPath)) {
+        if ($nodeDeps.PSObject.Properties.Match('NpmPath').Count -and [string]::IsNullOrWhiteSpace($nodeDeps.NpmPath) -and -not $createPath) {
             throw 'Node_Dependencies.NpmPath is empty and CreateNpmPath is false.'
         }
 
