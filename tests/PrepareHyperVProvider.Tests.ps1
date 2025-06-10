@@ -39,6 +39,7 @@ Describe 'Prepare-HyperVProvider path restoration' -Skip:($IsLinux -or $IsMacOS)
         Mock git {}
         Mock go {}
         Mock Copy-Item {}
+        Mock Convert-CerToPem {}
         Mock Read-Host {
             $pwd = New-Object System.Security.SecureString
             foreach ($c in ''.ToCharArray()) { $pwd.AppendChar($c) }
@@ -79,6 +80,9 @@ Describe 'Prepare-HyperVProvider certificate handling' -Skip:($IsLinux -or $IsMa
         Mock git {}
         Mock go {}
         Mock Get-ChildItem { $null } -ParameterFilter { $Path -like 'cert:*' }
+        Mock Import-PfxCertificate {}
+        Mock New-SelfSignedCertificate {}
+
         Mock Convert-CerToPem {
             param($CerPath, $PemPath)
             & $script:origConvertCerToPem -CerPath $CerPath -PemPath $PemPath
@@ -108,6 +112,7 @@ Describe 'Prepare-HyperVProvider certificate handling' -Skip:($IsLinux -or $IsMa
         $hostName   = [System.Net.Dns]::GetHostName()
         $sourceCert = Join-Path $PSScriptRoot 'data' 'TestCA.cer'
         Copy-Item -Path $sourceCert -Destination (Join-Path $PWD "$rootCaName.cer") -Force
+        'dummy' | Set-Content -Path (Join-Path $PWD "$rootCaName.pfx")
         'dummy' | Set-Content -Path (Join-Path $PWD "$hostName.pfx")
 
         $providerFile = Join-Path $tempDir 'providers.tf'
@@ -140,6 +145,7 @@ Describe 'Prepare-HyperVProvider certificate handling' -Skip:($IsLinux -or $IsMa
         Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue
         Remove-Item (Join-Path $PWD "$rootCaName.cer") -ErrorAction SilentlyContinue
         Remove-Item (Join-Path $PWD "$rootCaName.pem") -ErrorAction SilentlyContinue
+        Remove-Item (Join-Path $PWD "$rootCaName.pfx") -ErrorAction SilentlyContinue
         Remove-Item (Join-Path $PWD "$hostName.pfx") -ErrorAction SilentlyContinue
         Remove-Item (Join-Path $PWD "$hostName.pem") -ErrorAction SilentlyContinue
         Remove-Item (Join-Path $PWD "$hostName-key.pem") -ErrorAction SilentlyContinue
@@ -191,6 +197,11 @@ Describe 'Convert certificate helpers honour -WhatIf' -Skip:($IsLinux -or $IsMac
 }
 
 Describe 'Convert certificate helpers validate paths' -Skip:($IsLinux -or $IsMacOS) {
+    BeforeAll {
+        Remove-Mock -CommandName Convert-PfxToPem -ErrorAction SilentlyContinue
+        $scriptPath = Join-Path $PSScriptRoot '..' 'runner_scripts' '0010_Prepare-HyperVProvider.ps1'
+        . $scriptPath
+    }
     It 'errors when CerPath or PemPath is missing' {
         $scriptPath = Join-Path $PSScriptRoot '..' 'runner_scripts' '0010_Prepare-HyperVProvider.ps1'
         . $scriptPath

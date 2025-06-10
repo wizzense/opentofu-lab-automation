@@ -8,6 +8,7 @@ Describe 'Node installation scripts' {
         $script:npm    = (Resolve-Path -ErrorAction Stop (Join-Path $script:scriptRoot '0203_Install-npm.ps1')).Path
         $env:TEMP = Join-Path ([System.IO.Path]::GetTempPath()) 'pester-temp'
         New-Item -ItemType Directory -Path $env:TEMP -Force | Out-Null
+        $script:config = [pscustomobject]@{}
     }
 
     It 'resolves script paths from the tests directory' {
@@ -104,6 +105,9 @@ Describe 'Node installation scripts' {
         }
         $npmPath = (Resolve-Path -ErrorAction Stop (Join-Path $PSScriptRoot '..' 'runner_scripts' '0203_Install-npm.ps1')).Path
         Mock npm {}
+
+        # Dot-source the script with a minimal config object
+        $config = [pscustomobject]@{}
 
         . $npmPath -Config $config
 
