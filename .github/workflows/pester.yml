@@ -75,9 +75,10 @@ jobs:
           }
       - name: Run Pester
         continue-on-error: ${{ runner.os != 'Windows' }}
-        shell: bash
+        shell: pwsh
         run: |
-          pwsh -NoLogo -NoProfile -ExecutionPolicy Bypass -Command '$cfg = New-PesterConfiguration -Hashtable (Import-PowerShellDataFile "tests/PesterConfiguration.psd1"); Invoke-Pester -Configuration $cfg -ErrorAction Stop'
+          $cfg = New-PesterConfiguration -Hashtable (Import-PowerShellDataFile 'tests/PesterConfiguration.psd1')
+          Invoke-Pester -Configuration $cfg -ErrorAction Stop
       - name: Upload coverage
         if: always()
         uses: actions/upload-artifact@v4
