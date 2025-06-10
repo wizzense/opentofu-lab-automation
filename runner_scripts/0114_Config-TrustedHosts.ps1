@@ -3,11 +3,10 @@ Param([pscustomobject]$Config)
 Invoke-LabStep -Config $Config -Body {
     Write-CustomLog 'Running 0114_Config-TrustedHosts.ps1'
 
-if ($Config.SetTrustedHosts -eq $true) {
-    
-    Start-Process -FilePath cmd.exe -ArgumentList "/d /c winrm set winrm/config/client @{TrustedHosts=`"$Config.TrustedHosts`"}
-
-} else {
-    Write-CustomLog "SetTrustedHosts flag is disabled. Skipping TrustedHosts configuration."
-}
+    if ($Config.SetTrustedHosts -eq $true) {
+        $args = "/d /c winrm set winrm/config/client @{TrustedHosts=`"$($Config.TrustedHosts)`"}"
+        Start-Process -FilePath cmd.exe -ArgumentList $args
+    } else {
+        Write-CustomLog "SetTrustedHosts flag is disabled. Skipping TrustedHosts configuration."
+    }
 }
