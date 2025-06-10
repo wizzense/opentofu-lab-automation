@@ -11,7 +11,6 @@ if ($IsLinux -or $IsMacOS) { return }
     BeforeEach {
         $script:temp = Join-Path $TestDrive ([System.Guid]::NewGuid())
         New-Item -ItemType Directory -Path $script:temp | Out-Null
-        function global:Test-IsAdmin {}
     }
 
     AfterEach {
@@ -34,8 +33,9 @@ if ($IsLinux -or $IsMacOS) { return }
             } else { 'dummy' | Set-Content $OutFile }
         }
         Mock Expand-Archive {}
-        Mock Test-IsAdmin { $false }
-        $script:logDir = $null
+        function global:Test-IsAdmin { $false }
+        $script:logFile = $null
+
         $Env:Programfiles = $temp
         $global:startProcessCalled = $false
         function global:Start-Process {
@@ -85,7 +85,7 @@ if ($IsLinux -or $IsMacOS) { return }
             } else { 'dummy' | Set-Content $OutFile }
         }
         Mock Expand-Archive {}
-        Mock Test-IsAdmin { $false }
+        function global:Test-IsAdmin { $false }
         $Env:Programfiles = $temp
         $global:startProcessCalled = $false
         function global:Start-Process {
