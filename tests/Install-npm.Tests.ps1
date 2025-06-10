@@ -15,7 +15,7 @@ Describe '0203_Install-npm' {
         }
 
 
-        . $script
+        . $script -Config $cfg
         Install-NpmDependencies -Config $cfg
 
         $script:calledPath | Should -Be (Get-Item $npmDir).FullName
@@ -36,7 +36,7 @@ Describe '0203_Install-npm' {
             $null = $testArgs
         }
 
-        . $script
+        . $script -Config $cfg
         Install-NpmDependencies -Config $cfg
         $success = $?
 
@@ -54,7 +54,7 @@ Describe '0203_Install-npm' {
         $script:called = $false
         function global:npm { $script:called = $true }
 
-        . $script
+        . $script -Config $cfg
         { Install-NpmDependencies -Config $cfg } | Should -Throw
         $script:called | Should -BeFalse
         Remove-Item function:npm -ErrorAction SilentlyContinue
@@ -67,7 +67,7 @@ Describe '0203_Install-npm' {
         $script:called = $false
         function global:npm { $script:called = $true }
 
-        . $script
+        . $script -Config $cfg
         { Install-NpmDependencies -Config $cfg } | Should -Throw
         $script:called | Should -BeFalse
         Remove-Item function:npm -ErrorAction SilentlyContinue
@@ -81,7 +81,7 @@ Describe '0203_Install-npm' {
         $script:calledPath = $null
         function global:npm { param([string[]]$Args) $script:calledPath = (Get-Location).Path }
 
-        . $script
+        . $script -Config $cfg
         Install-NpmDependencies -Config $cfg
 
         $script:calledPath | Should -Be (Get-Item $npmDir).FullName
