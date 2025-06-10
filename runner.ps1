@@ -301,8 +301,6 @@ function Invoke-Scripts {
             $results[$s.Name] = $LASTEXITCODE
             $failed += $s.Name
         }
-        }
-
     }
 
 
