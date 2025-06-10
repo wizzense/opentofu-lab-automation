@@ -118,6 +118,97 @@
 5. **CI**
    • GitHub Actions: `lint` → `test` gate `main`.
    • `.github/workflows/issue-on-fail.yml` opens an issue on CI failure; include log excerpts when debugging.
+# Windows Artifact Review & Remediation Workflow
+
+> **Audience:** Continuous‑integration maintainers & contributors responsible for keeping the Windows test matrix green.
+
+---
+
+## Overview
+
+This guide explains how to pull the latest Windows job artifacts, analyse test & coverage reports, and quickly repair any failing tests or scripts so that the **`windows‑latest`** job passes again.
+
+## Prerequisites
+
+| Requirement                                | Notes                                                                                   |
+| ------------------------------------------ | --------------------------------------------------------------------------------------- |
+| **PowerShell 7+**                          | The workflow is automated with `pwsh`.                                                  |
+| **lab\_utils/Get‑WindowsJobArtifacts.ps1** | Must exist in your local clone (or fetch it).                                           |
+| **GitHub access**                          | The script relies on GitHub REST API; set `GITHUB_TOKEN` or authenticate interactively. |
+| **Unzip utility**                          | Built‑in `Expand‑Archive` is sufficient.                                                |
+| (Optional) **Pester v5+**                  | For local re‑runs of updated tests.                                                     |
+
+## Step‑by‑Step
+
+1. ### Download the latest Windows artifacts
+
+   ```powershell
+   pwsh lab_utils/Get-WindowsJobArtifacts.ps1
+   ```
+
+   *The script locates the most recent workflow run on **windows‑latest**, downloads the artifact ZIP(s) and extracts them into* `artifacts/windows‑latest/`.
+
+2. ### Locate key report files
+
+   | File                               | Typical path                                     |
+   | ---------------------------------- | ------------------------------------------------ |
+   | **coverage.xml**                   | `artifacts/windows‑latest/coverage/coverage.xml` |
+   | **results XML**<br>(VsTest/Pester) | `artifacts/windows‑latest/TestResults/**/*.xml`  |
+
+3. ### Analyse the test results
+
+   ```powershell
+   # Quick one‑liner to see failed tests
+   Select-Xml -Path "artifacts/windows‑latest/TestResults/**/*.xml" -XPath "//UnitTestResult[@outcome='Failed']" |
+   ForEach-Object { $_.Node.testName }
+   ```
+
+   *Tip: pipe to `Format-Table` or open in VS Code for easier reading.*
+
+4. ### Diagnose root cause
+
+   * For each failing test, view its **ErrorMessage**/**StackTrace** nodes.
+   * Cross‑check against `coverage.xml` to see which files lack execution hits—often reveals un‑run code paths on Windows.
+   * Look for platform‑specific issues (path separators, ACLs, registry, `Mock` parameter names, etc.).
+
+5. ### Fix & verify locally
+
+   1. Edit scripts or tests under `src/` or `tests/`.
+   2. Re‑run just the Windows‑affected tests:
+
+      ```powershell
+      Invoke-Pester tests/Install-OpenTofu.Tests.ps1 -Output Detailed
+      ```
+   3. Iterate until **all tests pass**.
+
+6. ### Commit & push
+
+   ```bash
+   git commit -am "Fix Windows test failures: <brief description>"
+   git push
+   ```
+
+7. ### Re‑run the CI workflow
+
+   *GitHub Actions will trigger automatically; confirm the **windows‑latest** job is green.*
+
+## Troubleshooting
+
+| Symptom                          | Likely cause                                    | Remedy                                                                           |
+| -------------------------------- | ----------------------------------------------- | -------------------------------------------------------------------------------- |
+| `Should -Invoke` fails (0 calls) | Mock parameter names don’t match implementation | Align names or remove filter while debugging.                                    |
+| Zero tests discovered on CI      | `$SkipNonWindows` guard triggered               | Ensure `.ps1` runs **only** on Windows runner or set `$ENV:OS` override locally. |
+| Artifacts script fails with 404  | No successful run yet for branch                | Manually specify run ID: `-RunId <id>` in the script.                            |
+
+## References
+
+* **scripts/lab\_utils/Get-WindowsJobArtifacts.ps1** – download helper
+* **.github/workflows/ci.yml** – Windows job definition
+* **docs/testing.md** – general test guidelines
+
+---
+
+*Last updated {{DATE}}; keep this page in sync with CI changes.*
 
 ---
 
