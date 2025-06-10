@@ -58,9 +58,11 @@ Describe 'runner.ps1 script selection' -Skip:($SkipNonWindows) {
 exit 0' | Set-Content -Path $dummy
 
             Push-Location $tempDir
+            Mock Get-MenuSelection {}
             Mock Read-Host { throw 'Read-Host should not be called' }
             & "$tempDir/runner.ps1" -Scripts '0001' -Auto | Out-Null
             Pop-Location
+            Should -Invoke -CommandName Get-MenuSelection -Times 0
         } finally {
             Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue
         }
@@ -375,7 +377,7 @@ Write-Error 'err message'
             $output = & "$tempDir/runner.ps1" -Scripts '0001' -Auto -Verbosity 'silent' *>&1
             Pop-Location
 
-        $script:logLines | Should -Not -Contain '==== Loading configuration ===='
+        ($script:logLines | Measure-Object).Count | Should -Be 0
         ($output | Out-String).Trim() | Should -BeEmpty
         $script:warnings | Should -Contain 'warn message'
         $script:errors   | Should -Contain 'err message'
@@ -424,7 +426,7 @@ Write-Error 'err message'
             $output = & "$tempDir/runner.ps1" -Scripts '0001' -Auto -Verbosity silent *>&1
             Pop-Location
 
-            $script:logLines | Should -Not -Contain '==== Loading configuration ===='
+            ($script:logLines | Measure-Object).Count | Should -Be 0
             ($output | Out-String).Trim() | Should -BeEmpty
             $script:warnings | Should -Contain 'warn message'
             $script:errors   | Should -Contain 'err message'
