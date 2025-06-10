@@ -18,3 +18,34 @@ Describe '0200_Get-SystemInfo' -Skip:($IsLinux -or $IsMacOS) {
         $obj.PSObject.Properties.Name | Should -Contain 'LatestHotfix'
     }
 }
+
+Describe 'runner.ps1 executing 0200_Get-SystemInfo' -Skip:($IsLinux -or $IsMacOS) {
+    It 'outputs system info when run via runner' {
+        $tempDir = Join-Path ([System.IO.Path]::GetTempPath()) ([System.Guid]::NewGuid())
+        $null = New-Item -ItemType Directory -Path $tempDir
+        try {
+            Copy-Item (Join-Path $PSScriptRoot '..' 'runner.ps1') -Destination $tempDir
+            Copy-Item (Join-Path $PSScriptRoot '..' 'lab_utils') -Destination $tempDir -Recurse
+            Copy-Item (Join-Path $PSScriptRoot '..' 'runner_utility_scripts') -Destination $tempDir -Recurse
+            Copy-Item (Join-Path $PSScriptRoot '..' 'config_files') -Destination (Join-Path $tempDir 'config_files') -Recurse
+            $scriptsDir = Join-Path $tempDir 'runner_scripts'
+            $null = New-Item -ItemType Directory -Path $scriptsDir
+            Copy-Item $script:ScriptPath -Destination $scriptsDir
+
+            Push-Location $tempDir
+            $output = & "$tempDir/runner.ps1" -Scripts '0200' -Auto
+            Pop-Location
+
+            $text = $output | Out-String
+            $text | Should -Match 'ComputerName'
+            $text | Should -Match 'IPAddresses'
+            $text | Should -Match 'OSVersion'
+            $text | Should -Match 'DiskInfo'
+            $text | Should -Match 'RolesFeatures'
+            $text | Should -Match 'LatestHotfix'
+        }
+        finally {
+            Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue
+        }
+    }
+}

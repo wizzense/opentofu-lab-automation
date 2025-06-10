@@ -271,6 +271,16 @@ function Invoke-Scripts {
 
             Remove-Item $tempCfg -ErrorAction SilentlyContinue
 
+        try {
+            $scriptOutput = & pwsh -NoLogo -NoProfile -Command $sb -Args $tempCfg, $scriptPath, $Verbosity 2>&1
+        }
+        catch {
+            $scriptOutput = & pwsh -NoLogo -NoProfile -Command $sb -Args $tempCfg, $scriptPath, $Verbosity *>&1
+        }
+        Write-Output $scriptOutput
+        Remove-Item $tempCfg -ErrorAction SilentlyContinue
+
+
             $results[$s.Name] = $LASTEXITCODE
             if ($LASTEXITCODE) {
                 Write-CustomLog "ERROR: $($s.Name) exited with code $LASTEXITCODE."
