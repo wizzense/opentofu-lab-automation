@@ -16,6 +16,14 @@ if ($PSVersionTable.PSVersion.Major -lt 7) {
 . (Join-Path $PSScriptRoot 'lab_utils' 'Format-Config.ps1')
 . (Join-Path $PSScriptRoot 'lab_utils' 'Menu.ps1')
 
+$menuPath = Join-Path $PSScriptRoot 'lab_utils' 'Menu.ps1'
+if (-not (Test-Path $menuPath)) {
+    Write-Error "Menu module not found at $menuPath"
+    exit 1
+}
+. $menuPath
+
+
 # ─── Default log path ─────────────────────────────────────────────────────────
 if (-not (Get-Variable -Name LogFilePath -Scope Script -ErrorAction SilentlyContinue) -and
     -not (Get-Variable -Name LogFilePath -Scope Global -ErrorAction SilentlyContinue)) {
@@ -183,11 +191,17 @@ function Invoke-Scripts {
                 }
             }
 
-            $cmd = Get-Command -Name $scriptPath -ErrorAction SilentlyContinue
-            $global:LASTEXITCODE = 0
+            $tempCfg = [System.IO.Path]::GetTempFileName()
+            $Config | ConvertTo-Json -Depth 5 | Out-File -FilePath $tempCfg -Encoding utf8
+            $sb = {
+                param($cfgPath, $scr)
+                $cfg = Get-Content -Raw -Path $cfgPath | ConvertFrom-Json
+                & $scr -Config $cfg
+                exit $LASTEXITCODE
+            }
 
-            if ($cmd -and $cmd.Parameters.ContainsKey('Config')) { . $scriptPath -Config $Config }
-            else                                               { . $scriptPath }
+            & pwsh -NoLogo -NoProfile -Command $sb -Args $tempCfg, $scriptPath
+            Remove-Item $tempCfg -ErrorAction SilentlyContinue
 
             $results[$s.Name] = $LASTEXITCODE
             if ($LASTEXITCODE) {
