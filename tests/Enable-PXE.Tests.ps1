@@ -11,6 +11,7 @@ Describe '0112_Enable-PXE' {
         $script:LogFilePath = $logPath
         try {
             & $script:scriptPath -Config $Config | Out-Null
+            (Test-Path $logPath) | Should -BeTrue
             $log = Get-Content -Raw $logPath
             $log | Should -Match 'prov-pxe-67'
             $log | Should -Match 'prov-pxe-69'
