@@ -8,7 +8,7 @@ Describe 'runner.ps1 configuration' {
     }
 }
 
-Describe 'runner.ps1 script selection' {
+Describe 'runner.ps1 script selection' -Skip:($IsLinux -or $IsMacOS) {
     BeforeAll {
         # Use script-scoped variable so PSScriptAnalyzer recognizes cross-block usage
         $script:runnerPath = Join-Path $PSScriptRoot '..' 'runner.ps1'

@@ -1,6 +1,6 @@
 . (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
-Describe 'Prepare-HyperVProvider path restoration' {
-    It 'restores location after execution' -Skip:($IsLinux -or $IsMacOS) {
+Describe 'Prepare-HyperVProvider path restoration' -Skip:($IsLinux -or $IsMacOS) {
+    It 'restores location after execution' {
         . (Join-Path $PSScriptRoot '..' 'runner_utility_scripts' 'Logger.ps1')
         $script:scriptPath = Join-Path $PSScriptRoot '..' 'runner_scripts' '0010_Prepare-HyperVProvider.ps1'
         $config = [pscustomobject]@{
@@ -39,8 +39,9 @@ Describe 'Prepare-HyperVProvider path restoration' {
     }
 }
 
-Describe 'Prepare-HyperVProvider certificate handling' {
-    It 'creates PEM files and updates providers.tf' -Skip:($IsLinux -or $IsMacOS) {
+Describe 'Prepare-HyperVProvider certificate handling' -Skip:($IsLinux -or $IsMacOS) {
+    It 'creates PEM files and updates providers.tf' {
+
         . (Join-Path $PSScriptRoot '..' 'runner_utility_scripts' 'Logger.ps1')
         $script:scriptPath = Join-Path $PSScriptRoot '..' 'runner_scripts' '0010_Prepare-HyperVProvider.ps1'
         $tempDir = Join-Path ([System.IO.Path]::GetTempPath()) ([System.Guid]::NewGuid())
@@ -91,8 +92,9 @@ Describe 'Prepare-HyperVProvider certificate handling' {
     }
 }
 
-Describe 'Convert certificate helpers honour -WhatIf' {
-    It 'skips writing files when WhatIf is used' -Skip:($IsLinux -or $IsMacOS) {
+
+Describe 'Convert certificate helpers honour -WhatIf' -Skip:($IsLinux -or $IsMacOS) {
+    It 'skips writing files when WhatIf is used' {
         $scriptPath = Join-Path $PSScriptRoot '..' 'runner_scripts' '0010_Prepare-HyperVProvider.ps1'
         . $scriptPath
         $cer = Join-Path $TestDrive (([guid]::NewGuid()).ToString() + '.cer')

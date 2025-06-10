@@ -2,6 +2,9 @@
 $scriptDir = Join-Path $PSScriptRoot '..' 'runner_scripts'
 $scripts = Get-ChildItem $scriptDir -Filter '*.ps1'
 
+
+Describe 'Runner scripts parameter and command checks' -Skip:($IsLinux -or $IsMacOS) {
+
 function Parse-ScriptFile {
     param([string]$Path)
     $text = Get-Content -Raw -Encoding UTF8 $Path

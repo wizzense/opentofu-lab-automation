@@ -8,7 +8,7 @@
     • Verifies that it exits with a non-zero code (or throws) when the clone fails.
 #>
 
-Describe '0001_Reset-Git' {
+Describe '0001_Reset-Git' -Skip:($IsLinux -or $IsMacOS) {
 
     BeforeAll {
         $script:ScriptPath = Join-Path $PSScriptRoot '..' 'runner_scripts' '0001_Reset-Git.ps1'
