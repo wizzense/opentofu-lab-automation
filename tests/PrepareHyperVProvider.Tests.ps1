@@ -3,9 +3,13 @@ if ($IsLinux -or $IsMacOS) { return }
 
 BeforeAll {
     $script:scriptPath = Join-Path $PSScriptRoot '..' 'runner_scripts' '0010_Prepare-HyperVProvider.ps1'
+    $script:pfxBefore = Get-Command Convert-PfxToPem -ErrorAction SilentlyContinue
     . $script:scriptPath
+    $script:pfxAfterLoad = Get-Command Convert-PfxToPem
     $script:origConvertCerToPem = (Get-Command Convert-CerToPem).ScriptBlock
-    $script:origConvertPfxToPem = (Get-Command Convert-PfxToPem).ScriptBlock
+    $script:origConvertPfxToPem = $script:pfxAfterLoad.ScriptBlock
+    Mock Convert-PfxToPem {}
+    $script:pfxAfterMock = Get-Command Convert-PfxToPem
 }
 Describe 'Prepare-HyperVProvider path restoration' -Skip:($IsLinux -or $IsMacOS) {
     It 'restores location after execution' {
@@ -99,7 +103,10 @@ Describe 'Prepare-HyperVProvider certificate handling' -Skip:($IsLinux -or $IsMa
           '}'
         ) | Set-Content -Path $providerFile
 
+        $cmdBefore = Get-Command Convert-PfxToPem
         . $script:scriptPath -Config $config
+        $cmdAfter  = Get-Command Convert-PfxToPem
+        $cmdAfter | Should -Be $cmdBefore
         Assert-MockCalled Convert-CerToPem -Times 1
         Assert-MockCalled Convert-PfxToPem -Times 1
 
@@ -107,6 +114,13 @@ Describe 'Prepare-HyperVProvider certificate handling' -Skip:($IsLinux -or $IsMa
         Test-Path (Join-Path $tempDir ("$(hostname).pem")) | Should -BeTrue
         Test-Path (Join-Path $tempDir ("$(hostname)-key.pem")) | Should -BeTrue
         (Get-Content $providerFile -Raw) | Should -Match 'insecure\s*=\s*false'
+    }
+
+    It 'does not redefine Convert-PfxToPem when sourced twice' {
+        $cmdFirst = Get-Command Convert-PfxToPem
+        . $script:scriptPath -Config ([pscustomobject]@{ PrepareHyperVHost = $false })
+        $cmdSecond = Get-Command Convert-PfxToPem
+        $cmdSecond | Should -Be $cmdFirst
     }
 }
 
