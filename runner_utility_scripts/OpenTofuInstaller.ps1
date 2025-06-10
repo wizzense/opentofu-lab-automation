@@ -643,8 +643,8 @@ function escapePathArgument {
     )
 
     process {
-        if ($Path -contains '"') {
-            throw [InvalidArgumentException]::new("Invalid path: ${Path}")
+        if ($Path -match '"') {
+            throw [InvalidArgumentException]::new("Invalid path: $Path")
         }
 
         "`"${Path}`""
