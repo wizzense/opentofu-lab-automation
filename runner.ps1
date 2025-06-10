@@ -2,13 +2,17 @@ param(
     [string]$ConfigFile = "./config_files/default-config.json",
     [switch]$Auto,
     [string]$Scripts,
-    [switch]$Force
+    [switch]$Force,
+    [switch]$Quiet
 )
 
 if ($PSVersionTable.PSVersion.Major -lt 7) {
     Write-Error "PowerShell 7 or later is required. Current version: $($PSVersionTable.PSVersion)"
     exit 1
 }
+
+# expose quiet flag to logger
+$script:Quiet = $Quiet.IsPresent
 
 # ─── Load helpers ──────────────────────────────────────────────────────────────
 . (Join-Path $PSScriptRoot 'runner_utility_scripts' 'Logger.ps1')
@@ -194,13 +198,14 @@ function Invoke-Scripts {
             $tempCfg = [System.IO.Path]::GetTempFileName()
             $Config | ConvertTo-Json -Depth 5 | Out-File -FilePath $tempCfg -Encoding utf8
             $sb = {
-                param($cfgPath, $scr)
+                param($cfgPath, $scr, $quietFlag)
+                if ($quietFlag) { $script:Quiet = $true }
                 $cfg = Get-Content -Raw -Path $cfgPath | ConvertFrom-Json
                 & $scr -Config $cfg
                 exit $LASTEXITCODE
             }
 
-            & pwsh -NoLogo -NoProfile -Command $sb -Args $tempCfg, $scriptPath
+            & pwsh -NoLogo -NoProfile -Command $sb -Args $tempCfg, $scriptPath, $Quiet.IsPresent
             Remove-Item $tempCfg -ErrorAction SilentlyContinue
 
             $results[$s.Name] = $LASTEXITCODE
