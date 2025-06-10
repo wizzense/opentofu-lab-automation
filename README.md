@@ -24,31 +24,46 @@ Powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "Invoke-WebRequest -U
 Interactive mode:
 
 ```powershell
-./runner.ps1
+pwsh -File runner.ps1
 ```
 
 Fully automated Hyper-V setup:
 
 ```powershell
-./runner.ps1 -Scripts '0006,0007,0008,0009,0010' -Auto
+pwsh -File runner.ps1 -Scripts '0006,0007,0008,0009,0010' -Auto
 ```
 
 Silence most output:
 
 ```powershell
-./runner.ps1 -Scripts '0006,0007,0008,0009,0010' -Auto -Quiet
+pwsh -File runner.ps1 -Scripts '0006,0007,0008,0009,0010' -Auto -Quiet
 ```
 
 Use a custom configuration file:
 
 ```powershell
-./runner.ps1 -ConfigFile path\to\config.json -Scripts '0006,0007,0008,0009,0010' -Auto
+pwsh -File runner.ps1 -ConfigFile path\to\config.json -Scripts '0006,0007,0008,0009,0010' -Auto
 ```
 
 Force optional script flags and show detailed logs:
 
 ```powershell
-./runner.ps1 -Scripts '0006,0007' -Auto -Force -Verbosity detailed
+pwsh -File runner.ps1 -Scripts '0006,0007' -Auto -Force -Verbosity detailed
+```
+
+### CI usage
+
+In automation scenarios or CI jobs, call the runner using `pwsh -File` so each
+child script sees a valid `$PSScriptRoot`:
+
+```powershell
+pwsh -File runner.ps1 -Scripts all -Auto
+```
+
+Individual step scripts can also be invoked this way when debugging:
+
+```powershell
+pwsh -File runner_scripts/0001_Reset-Git.ps1 -Config ./config_files/default-config.json
 ```
 
 

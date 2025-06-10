@@ -12,7 +12,11 @@ function Write-CustomLog {
     }
 
     if (-not (Get-Variable -Name ConsoleLevel -Scope Script -ErrorAction SilentlyContinue)) {
-        $script:ConsoleLevel = 1
+        if ($env:LAB_CONSOLE_LEVEL) {
+            $script:ConsoleLevel = [int]$env:LAB_CONSOLE_LEVEL
+        } else {
+            $script:ConsoleLevel = 1
+        }
     }
 
     $ts  = Get-Date -Format 'yyyy-MM-dd HH:mm:ss'
