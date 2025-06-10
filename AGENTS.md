@@ -85,6 +85,29 @@
 2. **Coverage**
    • Add or update Pester/pytest tests for every functional change, covering success and failure paths.
 
+### Pester test tips
+
+* Import helper scripts at the top of each test file:
+  ```powershell
+  . (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
+  . (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
+  ```
+* Dot-source scripts or modules under test in a `BeforeAll` block using
+  `(Join-Path $PSScriptRoot ..)` to build the path.  This keeps paths
+  consistent and avoids module import issues.
+* Use `$script:` scope for variables that need to be shared between `BeforeAll`,
+  `BeforeEach` and individual `It` blocks.
+* Remove mocked functions in `AfterEach` with
+  `Remove-Item Function:<Name> -ErrorAction SilentlyContinue` to prevent
+  cross‑test pollution.
+* Reset any environment variables or modules changed by the test inside
+  `AfterEach`.
+* Use `Get-RunnerScriptPath` from `tests/helpers/TestHelpers.ps1` to resolve
+  paths to scripts under `runner_scripts`.
+* Guard Windows‑only tests with `if ($SkipNonWindows) { return }` or
+  `-Skip:($SkipNonWindows)`.
+
+
 3. **Style**
    • PowerShell: `Invoke‑ScriptAnalyzer`
    • Python: `ruff .`
