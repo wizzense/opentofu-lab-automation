@@ -47,4 +47,11 @@ Describe 'Reset-Machine script' {
         $code | Should -Be 1
         Assert-MockCalled Restart-Computer -Times 0
     }
+
+    AfterAll {
+        $cmd = Get-Command New-NetFirewallRule -ErrorAction SilentlyContinue
+        if ($cmd -and $cmd.CommandType -eq 'Function') {
+            Remove-Item Function:\New-NetFirewallRule -ErrorAction SilentlyContinue
+        }
+    }
 }
