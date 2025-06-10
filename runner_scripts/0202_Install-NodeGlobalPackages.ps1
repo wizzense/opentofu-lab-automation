@@ -1,5 +1,22 @@
 Param([pscustomobject]$Config)
 
+function Install-GlobalPackage {
+    [CmdletBinding(SupportsShouldProcess)]
+
+    param(
+        [string]$package
+    )
+
+    if (Get-Command npm -ErrorAction SilentlyContinue) {
+        Write-CustomLog "Installing npm package: $package..."
+        if ($PSCmdlet.ShouldProcess($package, 'Install npm package')) {
+            npm install -g $package
+        }
+    } else {
+        Write-Error "npm is not available. Node.js may not have installed correctly."
+    }
+}
+
 function Install-NodeGlobalPackages {
     [CmdletBinding(SupportsShouldProcess = $true)]
     param([pscustomobject]$Config)
@@ -33,24 +50,6 @@ function Install-NodeGlobalPackages {
 #>
 
 Write-Output "Config parameter is: $Config"
-
-
-function Install-GlobalPackage {
-    [CmdletBinding(SupportsShouldProcess)]
-    
-    param(
-        [string]$package
-    )
-
-    if (Get-Command npm -ErrorAction SilentlyContinue) {
-        Write-CustomLog "Installing npm package: $package..."
-        if ($PSCmdlet.ShouldProcess($package, 'Install npm package')) {
-            npm install -g $package
-        }
-    } else {
-        Write-Error "npm is not available. Node.js may not have installed correctly."
-    }
-}
 
 Write-CustomLog "==== [0202] Installing Global npm Packages ===="
 
