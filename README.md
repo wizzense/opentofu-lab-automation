@@ -36,12 +36,13 @@ Detailed guides and module references are located in the [docs](docs/) directory
   4) Clones this repository from config.json -> RepoUrl to config.json -> LocalPath (or a default path).
   5) Invokes runner.ps1 from this repo. Runner can be ran with optional parameters to automatically run, but it will prompt you to manually select which scripts to run by default.
      - Use `-ConfigFile <path>` to specify an alternative configuration file. If omitted, `runner.ps1` loads `config_files/default-config.json`.
+     - Use `-Quiet` to hide most informational output.
      - See [docs/runner.md](docs/runner.md) for detailed usage including non-interactive mode.
 
 ```
 
 
-pwsh -NoProfile -ExecutionPolicy Bypass -Command "Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/refs/heads/main/kicker-bootstrap.ps1' -OutFile '.\kicker-bootstrap.ps1'; .\kicker-bootstrap.ps1"
+pwsh -NoProfile -ExecutionPolicy Bypass -Command "Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/refs/heads/main/kicker-bootstrap.ps1' -OutFile '.\kicker-bootstrap.ps1'; .\kicker-bootstrap.ps1 -Quiet"
 
 **Note:** These scripts require PowerShell 7 or later. Install the latest `pwsh` and use it instead of `powershell.exe`.
 
@@ -112,7 +113,7 @@ The runner script can run the following:
 Scripts `0006`–`0010` form the minimal path to a working Hyper‑V provider. On Server Core 2025 you can run them non‑interactively with:
 
 ```powershell
-./runner.ps1 -Scripts '0006,0007,0008,0009,0010' -Auto
+./runner.ps1 -Scripts '0006,0007,0008,0009,0010' -Auto -Quiet
 ```
 
 Completely optional scripts I use for other tasks:

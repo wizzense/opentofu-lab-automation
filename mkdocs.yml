@@ -1,0 +1,7 @@
+site_name: OpenTofu Lab Automation
+nav:
+  - Home: docs/index.md
+  - Runner: docs/runner.md
+  - Lab Utils: docs/lab_utils.md
+  - ISO Tools: docs/iso_tools.md
+  - Python CLI: docs/python-cli.md

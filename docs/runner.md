@@ -21,5 +21,12 @@ Supply a comma-separated list of 4-digit script prefixes via `-Scripts` to run w
 ./runner.ps1 -Scripts '0006,0007,0008,0009,0010' -Auto
 ```
 
+To suppress informational output, append the `-Quiet` switch. For
+example, to run scripts `0006` and `0007` silently and non-interactively:
+
+```powershell
+./runner.ps1 -Scripts '0006,0007' -Auto -Quiet
+```
+
 The default configuration path (`./config_files/default-config.json`) and the `-Auto` switch are defined on lines 1-6. The logic that runs scripts directly when `-Scripts` is provided lives at lines 259-264. Prompts for editing the configuration or confirming cleanup only occur when `-Auto` is not specified, as shown on lines 135-168.
 
