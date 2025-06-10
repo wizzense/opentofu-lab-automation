@@ -417,7 +417,7 @@ if (!(Test-Path $runnerScriptName)) {
 }
 
 Write-CustomLog "Running $runnerScriptName from $repoPath ..."
-& .\$runnerScriptName -ConfigFile $ConfigFile
+& $pwshPath -NoLogo -NoProfile -File .\$runnerScriptName -ConfigFile $ConfigFile
 
 if ($LASTEXITCODE -ne 0) {
     Write-CustomLog "Runner script failed with exit code $LASTEXITCODE"
