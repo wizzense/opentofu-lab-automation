@@ -59,11 +59,16 @@ if ($Config.Node_Dependencies -is [hashtable]) {
 if ($installNpm) {
 
 # Determine frontend path
-$frontendPath = if ($nodeDeps.NpmPath) {
-
-    $nodeDeps.NpmPath
-} else {
-    Join-Path $PSScriptRoot "..\frontend"
+$frontendPath = $null
+if ($nodeDeps -is [hashtable]) {
+    if ($nodeDeps.ContainsKey('NpmPath')) {
+        $frontendPath = $nodeDeps['NpmPath']
+    }
+} elseif ($nodeDeps.PSObject.Properties.Match('NpmPath').Count -gt 0) {
+    $frontendPath = $nodeDeps.NpmPath
+}
+if (-not $frontendPath) {
+    $frontendPath = Join-Path $PSScriptRoot "..\frontend"
 }
 
 $createPath = $false
