@@ -39,6 +39,7 @@ function Install-NpmDependencies {
         $installNpm = $true
         $createPath = $false
         if ($nodeDeps -is [hashtable]) {
+
             if ($nodeDeps.ContainsKey('InstallNpm'))    { $installNpm = [bool]$nodeDeps['InstallNpm'] }
             if ($nodeDeps.ContainsKey('CreateNpmPath')) { $createPath = [bool]$nodeDeps['CreateNpmPath'] }
         } else {
@@ -48,6 +49,7 @@ function Install-NpmDependencies {
             if ($nodeDeps.PSObject.Properties.Match('CreateNpmPath').Count) {
                 $createPath = [bool]$nodeDeps.CreateNpmPath
             }
+
         }
 
         if (-not $installNpm) {
