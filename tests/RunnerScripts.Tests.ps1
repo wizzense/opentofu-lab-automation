@@ -66,4 +66,17 @@ Describe 'Runner scripts parameter and command checks' -Skip:($SkipNonWindows) {
         }
         ($found | Measure-Object).Count | Should -BeGreaterThan 0
     }
+
+    It 'dot-sources ScriptTemplate.ps1' -TestCases $testCases {
+        param($File)
+        $ast = Get-ScriptAst $File.FullName
+        $commands = if ($ast) { $ast.FindAll({ param($n) $n -is [System.Management.Automation.Language.CommandAst] }, $true) } else { @() }
+        $found = $commands | Where-Object {
+            $_.GetCommandName() -eq '.' -and $_.CommandElements.Count -gt 1 -and $_.CommandElements[1].Extent.Text -match 'ScriptTemplate\.ps1'
+        }
+        if (-not $found) {
+            Write-Host "ScriptTemplate.ps1 not dot-sourced in $($File.FullName)"
+        }
+        ($found | Measure-Object).Count | Should -BeGreaterThan 0
+    }
 }
