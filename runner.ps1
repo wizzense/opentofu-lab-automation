@@ -3,12 +3,10 @@ param(
     [switch]$Auto,
     [string]$Scripts,
     [switch]$Force,
-    [switch]$Quiet,
-    [ValidateSet('silent','normal','detailed')]
-    [string]$Verbosity = 'normal'
+    [switch]$Quiet
 )
 
-if ($Quiet) { $Verbosity = 'silent' }
+if ($Quiet) { $Verbosity = 'silent' } else { $Verbosity = 'normal' }
 
 if ($PSVersionTable.PSVersion.Major -lt 7) {
     Write-Error "PowerShell 7 or later is required. Current version: $($PSVersionTable.PSVersion)"

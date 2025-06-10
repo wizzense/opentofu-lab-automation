@@ -21,7 +21,7 @@
   4) Clones this repository from config.json -> RepoUrl to config.json -> LocalPath (or a default path).
   5) Invokes runner.ps1 from this repo. Runner can be ran with optional parameters to automatically run, but it will prompt you to manually select which scripts to run by default. After a selection completes, the menu is shown again so you can run more scripts or type `exit` to quit.
      - Use `-ConfigFile <path>` to specify an alternative configuration file. If omitted, `runner.ps1` loads `config_files/default-config.json`.
-     - Use `-Quiet` to hide most informational output.
+    - Use `-Quiet` to hide most informational output. The previous `-Verbosity` option has been removed.
      - See [docs/runner.md](docs/runner.md) for detailed usage including non-interactive mode.
 
 ```
@@ -81,7 +81,7 @@ See [docs/python-cli.md](docs/python-cli.md) for further details.
   4) Clones this repository from config.json -> RepoUrl to config.json -> LocalPath (or a default path).
   5) Invokes runner.ps1 from this repo. Runner can be ran with optional parameters to automatically run, but it will prompt you to manually select which scripts to run by default. After a selection completes, the menu is shown again so you can run more scripts or type `exit` to quit.
      - Use `-ConfigFile <path>` to specify an alternative configuration file. If omitted, `runner.ps1` loads `config_files/default-config.json`.
-     - Use `-Quiet` to hide most informational output.
+    - Use `-Quiet` to hide most informational output. The previous `-Verbosity` option has been removed.
      - See [docs/runner.md](docs/runner.md) for detailed usage including non-interactive mode.
 
 ```

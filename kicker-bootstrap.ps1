@@ -16,11 +16,11 @@
 
 param(
     [string]$ConfigFile,
-    [ValidateSet('silent','normal','detailed')]
-    [string]$Verbosity = 'normal'
+    [switch]$Quiet
 )
 
 $script:VerbosityLevels = @{ silent = 0; normal = 1; detailed = 2 }
+if ($Quiet) { $Verbosity = 'silent' } else { $Verbosity = 'normal' }
 $script:ConsoleLevel    = $script:VerbosityLevels[$Verbosity]
 
 $targetBranch = 'main'
@@ -446,7 +446,8 @@ if (!(Test-Path $runnerScriptName)) {
 
 Write-CustomLog "Running $runnerScriptName from $repoPath ..."
 
-$args = @('-NoLogo','-NoProfile','-File',".\$runnerScriptName",'-ConfigFile',$ConfigFile,'-Verbosity',$Verbosity)
+$args = @('-NoLogo','-NoProfile','-File',".\$runnerScriptName",'-ConfigFile',$ConfigFile)
+if ($Quiet) { $args += '-Quiet' }
 $proc = Start-Process -FilePath $pwshPath -ArgumentList $args -Wait -NoNewWindow -PassThru
 $exitCode = $proc.ExitCode
 

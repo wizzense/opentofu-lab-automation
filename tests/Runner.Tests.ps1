@@ -244,7 +244,7 @@ Param([PSCustomObject]`$Config)
         finally { Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue }
     }
 
-    It 'suppresses informational logs when -Quiet is used' {
+    It 'suppresses informational logs when -Quiet is used (no -Verbosity parameter)' {
         $tempDir = Join-Path ([System.IO.Path]::GetTempPath()) ([System.Guid]::NewGuid())
         $null = New-Item -ItemType Directory -Path $tempDir
         try {
