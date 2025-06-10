@@ -142,6 +142,7 @@ Describe 'Prepare-HyperVProvider certificate handling' -Skip:($SkipNonWindows) {
           '  key_path        = ""',
           '}'
         ) | Set-Content -Path $providerFile
+        Mock Test-Path { $true } -ParameterFilter { $_ -eq $providerFile }
 
         $cmdBefore = Get-Command Convert-PfxToPem
         & $script:scriptPath -Config $config
