@@ -234,3 +234,21 @@ Use this output to branch your automation logic according to the host
 operating system. Check the other `lab_utils` scripts for additional
 cross-platform helpers.
 
+
+## GitHub Models
+
+Some scripts rely on GitHub Models for text generation. Create a token with the **ai-inference** scope from your account settings and set it as `GITHUB_MODEL_TOKEN`:
+
+```powershell
+$env:GITHUB_MODEL_TOKEN = 'ghu_your_token'
+```
+
+Example usage:
+
+```powershell
+# Generate configuration from a prompt
+./runner_scripts/0015_Generate-ConfigFromPrompt.ps1 -Prompt "produce a minimal hyper-v config" -Model 'llama3-8b'
+
+# Append a summary section to README
+./runner_scripts/0016_Generate-Docs.ps1 -Prompt "summarize the infra modules"
+```
