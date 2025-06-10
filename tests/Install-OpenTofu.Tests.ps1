@@ -9,7 +9,7 @@ Describe '0008_Install-OpenTofu' -Skip:($IsLinux -or $IsMacOS) {
             CosignPath      = 'C:\\temp'
             OpenTofuVersion = '1.2.3'
         }
-        $installerPath = Join-Path $PSScriptRoot '..' 'runner_utility_scripts' 'OpenTofuInstaller.ps1'
+        $installerPath = (Resolve-Path -ErrorAction Stop (Join-Path $PSScriptRoot '..' 'runner_utility_scripts' 'OpenTofuInstaller.ps1')).Path
         Mock $installerPath {}
         Mock Write-CustomLog {}
         & $script:ScriptPath -Config $cfg
@@ -22,7 +22,7 @@ Describe '0008_Install-OpenTofu' -Skip:($IsLinux -or $IsMacOS) {
 
     It 'skips install when flag is false' {
         $cfg = [pscustomobject]@{ InstallOpenTofu = $false }
-        $installerPath = Join-Path $PSScriptRoot '..' 'runner_utility_scripts' 'OpenTofuInstaller.ps1'
+        $installerPath = (Resolve-Path -ErrorAction Stop (Join-Path $PSScriptRoot '..' 'runner_utility_scripts' 'OpenTofuInstaller.ps1')).Path
         Mock $installerPath {}
         Mock Write-CustomLog {}
         & $script:ScriptPath -Config $cfg
