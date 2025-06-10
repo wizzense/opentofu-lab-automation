@@ -3,6 +3,8 @@ from pathlib import Path
 import typer
 import yaml
 
+BASE_DIR = Path(__file__).resolve().parents[1]
+
 app = typer.Typer()
 hv_app = typer.Typer()
 app.add_typer(hv_app, name="hv")
@@ -16,7 +18,11 @@ def load_config(path: Path) -> dict:
 
 
 @hv_app.command()
-def facts(config: Path = typer.Option(Path("../config_files/default-config.json"), exists=True)):
+def facts(
+    config: Path = typer.Option(
+        Path(BASE_DIR / "config_files" / "default-config.json"), exists=True
+    )
+):
     """Show hypervisor facts from config."""
     cfg = load_config(config)
     hv = cfg.get("HyperV", {})
@@ -24,7 +30,11 @@ def facts(config: Path = typer.Option(Path("../config_files/default-config.json"
 
 
 @hv_app.command()
-def deploy(config: Path = typer.Option(Path("../config_files/default-config.json"), exists=True)):
+def deploy(
+    config: Path = typer.Option(
+        Path(BASE_DIR / "config_files" / "default-config.json"), exists=True
+    )
+):
     """Pretend to deploy using the hypervisor config."""
     cfg = load_config(config)
     hv = cfg.get("HyperV", {})
