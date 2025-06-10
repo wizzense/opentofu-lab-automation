@@ -36,6 +36,7 @@
     "Https": true,
     "Insecure": true,
     "UseNtlm": true,
+    "EnableManagementTools": true,
     "TlsServerName": "",
     "CacertPath": "",
     "CertPath": "",

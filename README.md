@@ -203,6 +203,25 @@ The scripts `0201_Install-NodeCore.ps1`, `0202_Install-NodeGlobalPackages.ps1`
 and `0203_Install-npm.ps1` read these keys when installing Node, global npm
   packages, or project dependencies.
 
+## Hyper-V configuration
+
+Hyper-V installation options are defined under the `HyperV` section of
+`default-config.json`. The `EnableManagementTools` flag controls whether the
+Hyper-V management tools are installed alongside the main feature.
+
+```json
+"HyperV": {
+  "EnableManagementTools": true,
+  "User": "",
+  "Password": "",
+  ...
+}
+```
+
+`0105_Install-HyperV.ps1` reads this value when calling
+`Install-WindowsFeature`. If the property is missing, the script defaults to
+`true`.
+
 ## Troubleshooting
 
 If you encounter `fatal: Class not registered` after a browser window briefly opens,
