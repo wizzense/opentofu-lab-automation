@@ -98,9 +98,9 @@ Describe 'Runner scripts parameter and command checks' -Skip:($SkipNonWindows) {
         New-Item -ItemType Directory -Path $tempDir | Out-Null
         try {
             $dummy = Join-Path $tempDir 'dummy.ps1'
-            @"\
+            @"
 Param([pscustomobject]`$Config)
-. `"$PSScriptRoot/../runner_utility_scripts/ScriptTemplate.ps1`"
+. "$PSScriptRoot/../runner_utility_scripts/ScriptTemplate.ps1"
 Invoke-LabStep -Config `$Config -Body { Write-Output `$PSScriptRoot }
 "@ | Set-Content -Path $dummy
 
