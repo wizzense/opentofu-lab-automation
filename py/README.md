@@ -24,6 +24,9 @@ poetry run labctl hv facts
 
 See `labctl --help` for available options.
 
+Further examples of the available subcommands are provided in
+[the Python CLI documentation](../docs/python-cli.md).
+
 ## Running tests
 
 Execute the pytest suite from this directory:
