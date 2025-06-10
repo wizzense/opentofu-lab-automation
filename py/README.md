@@ -15,10 +15,11 @@ Poetry creates a virtual environment with `labctl` and the test tools.
 
 ## Running the CLI
 
-Invoke the helper commands through Poetry:
+Invoke the helper commands through Poetry. The CLI loads
+`config_files/default-config.json` automatically:
 
 ```bash
-poetry run labctl hv facts --config ../config_files/default-config.json
+poetry run labctl hv facts
 ```
 
 See `labctl --help` for available options.
