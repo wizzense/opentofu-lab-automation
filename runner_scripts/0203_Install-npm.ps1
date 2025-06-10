@@ -36,15 +36,12 @@ Write-Output "Config parameter is: $Config"
 
 Write-CustomLog "==== [0203] Installing Frontend npm Dependencies ===="
 
-if ($Config -is [hashtable]) {
-    if (-not $Config.ContainsKey('Node_Dependencies')) {
-        Write-CustomLog "Config missing Node_Dependencies; skipping npm install."
-        return
-    }
-} elseif (-not $Config.PSObject.Properties.Match('Node_Dependencies')) {
+$nodeDeps = if ($Config -is [hashtable]) { $Config['Node_Dependencies'] } else { $Config.Node_Dependencies }
+if (-not $nodeDeps) {
     Write-CustomLog "Config missing Node_Dependencies; skipping npm install."
     return
 }
+
 
 $installNpm = $true
 if ($Config.Node_Dependencies.PSObject.Properties.Name -contains 'InstallNpm') {
@@ -54,15 +51,15 @@ if ($Config.Node_Dependencies.PSObject.Properties.Name -contains 'InstallNpm') {
 if ($installNpm) {
 
 # Determine frontend path
-$frontendPath = if ($Config.Node_Dependencies.NpmPath) {
+$frontendPath = if ($nodeDeps.NpmPath) {
 
-    $Config.Node_Dependencies.NpmPath
+    $nodeDeps.NpmPath
 } else {
     Join-Path $PSScriptRoot "..\frontend"
 }
 
 if (-not (Test-Path $frontendPath)) {
-    if ($Config.Node_Dependencies.CreateNpmPath) {
+    if ($nodeDeps.CreateNpmPath) {
         Write-CustomLog "Creating missing frontend folder at: $frontendPath"
         if ($PSCmdlet.ShouldProcess($frontendPath, 'Create NpmPath')) {
             New-Item -ItemType Directory -Path $frontendPath -Force | Out-Null
