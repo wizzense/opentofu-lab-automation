@@ -6,6 +6,7 @@ Describe 'Node installation scripts' {
         $script:core   = (Resolve-Path -ErrorAction Stop (Join-Path $script:scriptRoot '0201_Install-NodeCore.ps1')).Path
         $script:global = (Resolve-Path -ErrorAction Stop (Join-Path $script:scriptRoot '0202_Install-NodeGlobalPackages.ps1')).Path
         $script:npm    = (Resolve-Path -ErrorAction Stop (Join-Path $script:scriptRoot '0203_Install-npm.ps1')).Path
+        $script:origTemp = $env:TEMP
         $env:TEMP = Join-Path ([System.IO.Path]::GetTempPath()) 'pester-temp'
         New-Item -ItemType Directory -Path $env:TEMP -Force | Out-Null
     }
@@ -26,7 +27,7 @@ Describe 'Node installation scripts' {
         Mock Start-Process {}
         Mock Remove-Item {}
         Mock Get-Command { @{Name='node'} } -ParameterFilter { $Name -eq 'node' }
-        . $core -Config $config
+        . $core
 
         Install-NodeCore -Config $cfg
         Assert-MockCalled Invoke-WebRequest -ParameterFilter { $Uri -eq 'http://example.com/node.msi' } -Times 1
@@ -40,7 +41,7 @@ Describe 'Node installation scripts' {
         Mock Remove-Item {}
         Mock Get-Command {}
 
-        . $core -Config $config
+        . $core
 
         Install-NodeCore -Config $cfg
         Should -Invoke -CommandName Invoke-WebRequest -Times 0
@@ -56,7 +57,7 @@ Describe 'Node installation scripts' {
             param([Parameter(ValueFromRemainingArguments = $true)][string[]]$testArgs)
             $null = $testArgs
         }
-        . $global -Config $config
+        . $global
         Mock npm {}
         $WhatIfPreference = $false
         Install-NodeGlobalPackages -Config $cfg
@@ -73,7 +74,7 @@ Describe 'Node installation scripts' {
             param([Parameter(ValueFromRemainingArguments = $true)][string[]]$testArgs)
             $null = $testArgs
         }
-        . $global -Config $config
+        . $global
         Mock npm {}
         $WhatIfPreference = $false
         Install-NodeGlobalPackages -Config $cfg
@@ -105,7 +106,7 @@ Describe 'Node installation scripts' {
         $npmPath = (Resolve-Path -ErrorAction Stop (Join-Path $PSScriptRoot '..' 'runner_scripts' '0203_Install-npm.ps1')).Path
         Mock npm {}
 
-        . $npmPath -Config $config
+        . $npmPath -Config $cfg
 
         Install-NpmDependencies -Config $cfg
         Assert-MockCalled npm -ParameterFilter { $testArgs[0] -eq 'install' } -Times 1
@@ -114,5 +115,6 @@ Describe 'Node installation scripts' {
 
     AfterAll {
         Remove-Item -Recurse -Force $env:TEMP -ErrorAction SilentlyContinue
+        $env:TEMP = $script:origTemp
     }
 }

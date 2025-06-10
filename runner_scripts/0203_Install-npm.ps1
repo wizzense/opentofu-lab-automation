@@ -41,10 +41,16 @@ function Install-NpmDependencies {
         foreach ($key in @('InstallNpm','CreateNpmPath')) {
             if ($nodeDeps -is [hashtable]) {
                 if ($nodeDeps.ContainsKey($key)) {
-                    Set-Variable -Name $key.ToLower() -Value ([bool]$nodeDeps[$key]) -Scope Local
+                    switch ($key) {
+                        'InstallNpm'    { $installNpm  = [bool]$nodeDeps[$key] }
+                        'CreateNpmPath' { $createPath  = [bool]$nodeDeps[$key] }
+                    }
                 }
             } elseif ($nodeDeps.PSObject.Properties.Match($key).Count) {
-                Set-Variable -Name $key.ToLower() -Value ([bool]$nodeDeps.$key) -Scope Local
+                switch ($key) {
+                    'InstallNpm'    { $installNpm  = [bool]$nodeDeps.$key }
+                    'CreateNpmPath' { $createPath  = [bool]$nodeDeps.$key }
+                }
             }
         }
 
