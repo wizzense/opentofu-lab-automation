@@ -4,6 +4,10 @@
 # running on Linux or macOS so we can verify behaviour in CI.
 $script:SkipNonWindows = $false
 
+if (-not (Get-Command Get-MenuSelection -ErrorAction SilentlyContinue)) {
+    function global:Get-MenuSelection {}
+}
+
 Describe 'runner.ps1 syntax' {
     It 'parses without errors' {
         $path = Join-Path $PSScriptRoot '..' 'runner.ps1'
