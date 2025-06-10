@@ -59,18 +59,29 @@ function Convert-PfxToPem {
 function Get-HyperVProviderVersion {
     [CmdletBinding()]
     param(
-        [string]$MainTfPath = (Join-Path $PSScriptRoot '..\example-infrastructure\main.tf')
+        [string]$MainTfPath
     )
 
-    if (-not (Test-Path $MainTfPath)) {
-        throw "main.tf not found at $MainTfPath"
+    $defaultVersion = '1.2.1'
+    $searchPaths = @()
+
+    if ($MainTfPath) { $searchPaths += $MainTfPath }
+    $searchPaths += Join-Path $PSScriptRoot '..\example-infrastructure\main.tf'
+    $searchPaths += Join-Path $PSScriptRoot '..\main.tf'
+
+    foreach ($path in $searchPaths) {
+        if (Test-Path $path) {
+            $content = Get-Content -Path $path -Raw
+            if ($content -match 'hyperv\s*=\s*\{[^\}]*?version\s*=\s*"([^"]+)"') {
+                return $matches[1]
+            }
+            Write-Warning "Failed to parse hyperv provider version from $path"
+            return $defaultVersion
+        }
     }
 
-    $content = Get-Content -Path $MainTfPath -Raw
-    if ($content -match 'hyperv\s*=\s*\{[^\}]*?version\s*=\s*"([^"]+)"') {
-        return $matches[1]
-    }
-    throw "Failed to parse hyperv provider version from $MainTfPath"
+    Write-Warning "main.tf not found. Using default Hyper-V provider version $defaultVersion"
+    return $defaultVersion
 }
 
 . "$PSScriptRoot/../runner_utility_scripts/ScriptTemplate.ps1"
