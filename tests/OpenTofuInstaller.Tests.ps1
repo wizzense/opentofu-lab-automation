@@ -123,24 +123,19 @@ Describe 'OpenTofuInstaller' {
 
     Describe 'error handling' {
         It 'returns install failed exit code when cosign is missing' {
-        $script:scriptPath = Join-Path $PSScriptRoot '..' 'runner_utility_scripts' 'OpenTofuInstaller.ps1'
-        $arguments = @(
-            '-NoLogo',
-            '-NoProfile',
-            '-File', $script:scriptPath,
-            '-installMethod', 'standalone',
-            '-cosignPath', 'nonexistent.exe',
-            '-gpgPath', 'nonexistent.exe'
-        )
-        $Env:Programfiles = $script:temp
-        $proc = Microsoft.PowerShell.Management\Start-Process pwsh -ArgumentList $arguments -Wait -PassThru
-        $proc.ExitCode | Should -Be 2
-
+            $script:scriptPath = Join-Path $PSScriptRoot '..' 'runner_utility_scripts' 'OpenTofuInstaller.ps1'
+            $arguments = @(
+                '-NoLogo',
+                '-NoProfile',
+                '-File', $script:scriptPath,
+                '-installMethod', 'standalone',
+                '-cosignPath', 'nonexistent.exe',
+                '-gpgPath', 'nonexistent.exe'
+            )
+            $Env:Programfiles = $script:temp
+            $proc = Microsoft.PowerShell.Management\Start-Process pwsh -ArgumentList $arguments -Wait -PassThru
+            $proc.ExitCode | Should -Be 2
         }
-
-    }
-    }
-
     }
 
     Describe 'macOS defaults' {
