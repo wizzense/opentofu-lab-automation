@@ -1,7 +1,7 @@
 Describe 'Prepare-HyperVProvider path restoration' {
     It 'restores location after execution' {
-        . (Join-Path $PSScriptRoot '..\runner_utility_scripts\Logger.ps1')
-        $script:scriptPath = Join-Path $PSScriptRoot '..\runner_scripts\0010_Prepare-HyperVProvider.ps1'
+        . (Join-Path $PSScriptRoot '..' 'runner_utility_scripts' 'Logger.ps1')
+        $script:scriptPath = Join-Path $PSScriptRoot '..' 'runner_scripts' '0010_Prepare-HyperVProvider.ps1'
         $config = [pscustomobject]@{
             PrepareHyperVHost = $true
             InfraRepoPath = 'C:\\Infra'
@@ -40,8 +40,8 @@ Describe 'Prepare-HyperVProvider path restoration' {
 
 Describe 'Prepare-HyperVProvider certificate handling' {
     It 'creates PEM files and updates providers.tf' {
-        . (Join-Path $PSScriptRoot '..\runner_utility_scripts\Logger.ps1')
-        $script:scriptPath = Join-Path $PSScriptRoot '..\runner_scripts\0010_Prepare-HyperVProvider.ps1'
+        . (Join-Path $PSScriptRoot '..' 'runner_utility_scripts' 'Logger.ps1')
+        $script:scriptPath = Join-Path $PSScriptRoot '..' 'runner_scripts' '0010_Prepare-HyperVProvider.ps1'
         $tempDir = Join-Path ([System.IO.Path]::GetTempPath()) ([System.Guid]::NewGuid())
         $null = New-Item -ItemType Directory -Path $tempDir
         $config = [pscustomobject]@{
@@ -87,7 +87,7 @@ Describe 'Prepare-HyperVProvider certificate handling' {
 
 Describe 'Convert certificate helpers honour -WhatIf' {
     It 'skips writing files when WhatIf is used' {
-        $scriptPath = Join-Path $PSScriptRoot '..\runner_scripts\0010_Prepare-HyperVProvider.ps1'
+        $scriptPath = Join-Path $PSScriptRoot '..' 'runner_scripts' '0010_Prepare-HyperVProvider.ps1'
         . $scriptPath -Config @{ PrepareHyperVHost = $false }
         $cer = Join-Path $env:TEMP ([guid]::NewGuid()).ToString() + '.cer'
         $pem = Join-Path $env:TEMP ([guid]::NewGuid()).ToString() + '.pem'
@@ -99,7 +99,7 @@ Describe 'Convert certificate helpers honour -WhatIf' {
     }
 
     It 'skips writing PFX outputs when WhatIf is used' {
-        $scriptPath = Join-Path $PSScriptRoot '..\runner_scripts\0010_Prepare-HyperVProvider.ps1'
+        $scriptPath = Join-Path $PSScriptRoot '..' 'runner_scripts' '0010_Prepare-HyperVProvider.ps1'
         . $scriptPath -Config @{ PrepareHyperVHost = $false }
         $pfx = Join-Path $env:TEMP ([guid]::NewGuid()).ToString() + '.pfx'
         $cert = Join-Path $env:TEMP ([guid]::NewGuid()).ToString() + '.pem'
