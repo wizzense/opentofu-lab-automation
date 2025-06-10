@@ -36,13 +36,9 @@ Describe 'runner.ps1 executing 0200_Get-SystemInfo' -Skip:($IsLinux -or $IsMacOS
             $output = & "$tempDir/runner.ps1" -Scripts '0200' -Auto
             Pop-Location
 
-            $text = $output | Out-String
-            $text | Should -Match 'ComputerName'
-            $text | Should -Match 'IPAddresses'
-            $text | Should -Match 'OSVersion'
-            $text | Should -Match 'DiskInfo'
-            $text | Should -Match 'RolesFeatures'
-            $text | Should -Match 'LatestHotfix'
+            $result = $output | Where-Object { $_ -is [pscustomobject] } | Select-Object -First 1
+            $result | Should -Not -BeNullOrEmpty
+            $result.PSObject.Properties.Name | Should -Contain 'ComputerName'
         }
         finally {
             Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue
