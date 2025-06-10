@@ -307,6 +307,15 @@ gh repo clone <owner/repo>
 Using `gh` avoids the COM initialization issues seen with some Git installations
 and prevents Git from prompting for a username like `user@github.com`.
 
+The bootstrap script automatically marks the cloned repository as a
+`safe.directory` in your global Git config. If you encounter a
+"detected dubious ownership" error when running Git manually,
+add the path yourself:
+
+```powershell
+git config --global --add safe.directory <path>
+```
+
 ## Running tests
 
 PowerShell 7 or later is required to run the Pester suite. Install `pwsh` with

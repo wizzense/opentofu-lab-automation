@@ -375,6 +375,10 @@ if (-not $repoPath) {
     exit 1
 }
 
+# Configure git safe.directory to avoid dubious ownership errors
+$resolvedRepoPath = (Resolve-Path $repoPath).ProviderPath
+& "$gitPath" config --global --add safe.directory $resolvedRepoPath 2>$null
+
 if (!(Test-Path $repoPath)) {
     Write-CustomLog "Cloning repository from $($config.RepoUrl) to $repoPath..."
 
