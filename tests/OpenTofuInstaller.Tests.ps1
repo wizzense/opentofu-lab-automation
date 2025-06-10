@@ -1,10 +1,4 @@
-BeforeAll {
-    # Ensure no lingering TestDrive from previous test runs
-    if (Get-PSDrive -Name TestDrive -ErrorAction SilentlyContinue) {
-        Remove-PSDrive -Name TestDrive -Force -ErrorAction SilentlyContinue
-    }
-}
-
+. (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
 Describe 'OpenTofuInstaller logging' {
     It 'creates log files and removes them for elevated unpack' -Skip:($IsLinux -or $IsMacOS) {
         $script:scriptPath = Join-Path $PSScriptRoot '..\runner_utility_scripts\OpenTofuInstaller.ps1'

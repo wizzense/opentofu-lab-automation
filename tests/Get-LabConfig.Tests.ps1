@@ -1,3 +1,4 @@
+. (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
 Describe 'Get-LabConfig' {
 
     It 'returns PSCustomObject for valid JSON' {

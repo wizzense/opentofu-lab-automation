@@ -1,3 +1,4 @@
+. (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
 ﻿<#
 .SYNOPSIS
     Tests for runner_scripts\0001_Reset-Git.ps1

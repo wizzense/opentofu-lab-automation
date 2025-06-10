@@ -1,3 +1,4 @@
+. (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
 Describe 'kicker-bootstrap utilities' {
     It 'defines Write-CustomLog fallback' {
         $script:scriptPath = Join-Path $PSScriptRoot '..' 'kicker-bootstrap.ps1'

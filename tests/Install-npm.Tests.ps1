@@ -1,3 +1,4 @@
+. (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
 Describe '0203_Install-npm' {
     It 'runs npm install in configured NpmPath' {
         $script = Join-Path $PSScriptRoot '..\runner_scripts\0203_Install-npm.ps1'
