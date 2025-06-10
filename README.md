@@ -76,7 +76,10 @@ The repo expects the latest stable code on the `main` branch. When running
 `iso_tools/bootstrap.ps1`, you can override the branch with the `-Branch`
 parameter if needed.
 
-It will prompt print the current config and prompt you to customize it interactively. 
+The bootstrap script shows your current configuration and opens a simple menu
+based editor so you can tweak only the settings you care about. A menu option
+lets you apply the recommended defaults from `config_files/recommended-config.json`
+for a quick start.
 
 
 Example opentofu-infra repo: https://github.com/wizzense/tofu-base-lab.git
