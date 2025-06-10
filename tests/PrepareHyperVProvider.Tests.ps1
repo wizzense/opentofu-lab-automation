@@ -48,7 +48,7 @@ Describe 'Prepare-HyperVProvider path restoration' -Skip:($IsLinux -or $IsMacOS)
         }
         Mock Resolve-Path { param([string]$Path) @{ Path = $Path } }
 
-        . $script:scriptPath -Config $config
+        & $script:scriptPath -Config $config
 
         $location | Should -Be 'C:\\Start'
     }
@@ -93,8 +93,8 @@ Describe 'Prepare-HyperVProvider certificate handling' -Skip:($IsLinux -or $IsMa
         }
         Mock Copy-Item {}
         # certificate operations should not touch the real store
-        $rootStub = [pscustomobject]@{ Thumbprint = 'ROOT123'; Subject = "CN=$($config.CertificateAuthority.CommonName)" }
-        $hostStub = [pscustomobject]@{ Thumbprint = 'HOST123'; Subject = "CN=$(hostname)" }
+        $rootStub = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2
+        $hostStub = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2
         $certCall = 0
         Mock New-SelfSignedCertificate { if ($certCall++ -eq 0) { $rootStub } else { $hostStub } }
         Mock Export-Certificate {}
@@ -128,7 +128,7 @@ Describe 'Prepare-HyperVProvider certificate handling' -Skip:($IsLinux -or $IsMa
         ) | Set-Content -Path $providerFile
 
         $cmdBefore = Get-Command Convert-PfxToPem
-        . $script:scriptPath -Config $config
+        & $script:scriptPath -Config $config
         $cmdAfter  = Get-Command Convert-PfxToPem
         $cmdAfter | Should -Be $cmdBefore
         Assert-MockCalled New-SelfSignedCertificate -Times 2
@@ -198,7 +198,11 @@ Describe 'Convert certificate helpers honour -WhatIf' -Skip:($IsLinux -or $IsMac
 
 Describe 'Convert certificate helpers validate paths' -Skip:($IsLinux -or $IsMacOS) {
     BeforeAll {
-        Remove-Mock -CommandName Convert-PfxToPem -ErrorAction SilentlyContinue
+        if (Get-Command Unmock -ErrorAction SilentlyContinue) {
+            Unmock Convert-PfxToPem -ErrorAction SilentlyContinue
+        } elseif (Get-Command Remove-Mock -ErrorAction SilentlyContinue) {
+            Remove-Mock -CommandName Convert-PfxToPem -ErrorAction SilentlyContinue
+        }
         $scriptPath = Join-Path $PSScriptRoot '..' 'runner_scripts' '0010_Prepare-HyperVProvider.ps1'
         . $scriptPath
     }

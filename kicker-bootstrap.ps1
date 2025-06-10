@@ -16,9 +16,12 @@
 
 param(
     [string]$ConfigFile,
+    [switch]$Quiet,
     [ValidateSet('silent','normal','detailed')]
     [string]$Verbosity = 'normal'
 )
+
+if ($Quiet.IsPresent) { $Verbosity = 'silent' }
 
 $script:VerbosityLevels = @{ silent = 0; normal = 1; detailed = 2 }
 $script:ConsoleLevel    = $script:VerbosityLevels[$Verbosity]

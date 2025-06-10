@@ -244,7 +244,7 @@ Param([PSCustomObject]`$Config)
         finally { Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue }
     }
 
-    It 'suppresses informational logs when -Quiet is used' {
+    It 'suppresses informational logs when -Verbosity silent is used' {
         $tempDir = Join-Path ([System.IO.Path]::GetTempPath()) ([System.Guid]::NewGuid())
         $null = New-Item -ItemType Directory -Path $tempDir
         try {
@@ -268,7 +268,42 @@ Write-Error 'err message'
                       [Parameter(Position=1)][string]$ForegroundColor)
                 $script:logLines += $Object
             }
-            $output = & "$tempDir/runner.ps1" -Scripts '0001' -Auto -Quiet *>&1
+            $output = & "$tempDir/runner.ps1" -Scripts '0001' -Auto -Verbosity 'silent' *>&1
+            Remove-Item Function:\Write-Host -ErrorAction SilentlyContinue
+            Pop-Location
+
+        $script:logLines | Should -Not -Contain '==== Loading configuration ===='
+        ($output | Out-String) | Should -Match 'warn message'
+        ($output | Out-String) | Should -Match 'err message'
+    }
+    finally { Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue }
+}
+
+    It 'suppresses informational logs when -Verbosity silent is used' {
+        $tempDir = Join-Path ([System.IO.Path]::GetTempPath()) ([System.Guid]::NewGuid())
+        $null = New-Item -ItemType Directory -Path $tempDir
+        try {
+            Copy-Item $script:runnerPath -Destination $tempDir
+            Copy-Item (Join-Path $PSScriptRoot '..' 'runner_utility_scripts') -Destination $tempDir -Recurse
+            Copy-Item (Join-Path $PSScriptRoot '..' 'lab_utils') -Destination $tempDir -Recurse
+            Copy-Item (Join-Path $PSScriptRoot '..' 'config_files') -Destination (Join-Path $tempDir 'config_files') -Recurse
+            $scriptsDir = Join-Path $tempDir 'runner_scripts'
+            $null = New-Item -ItemType Directory -Path $scriptsDir
+            $scriptFile = Join-Path $scriptsDir '0001_Log.ps1'
+            @"
+Param([PSCustomObject]`$Config)
+Write-Warning 'warn message'
+Write-Error 'err message'
+"@ | Set-Content -Path $scriptFile
+
+            Push-Location $tempDir
+            $script:logLines = @()
+            function global:Write-Host {
+                param([Parameter(Mandatory=$true,Position=0)][string]$Object,
+                      [Parameter(Position=1)][string]$ForegroundColor)
+                $script:logLines += $Object
+            }
+            $output = & "$tempDir/runner.ps1" -Scripts '0001' -Auto -Verbosity silent *>&1
             Remove-Item Function:\Write-Host -ErrorAction SilentlyContinue
             Pop-Location
 
