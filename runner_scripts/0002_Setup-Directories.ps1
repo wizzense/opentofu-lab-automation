@@ -11,6 +11,13 @@ Invoke-LabStep -Config $Config -Body {
         $dirs += $Config.Directories.IsoSharePath
     }
 
+    if (-not $dirs) {
+        Write-CustomLog 'No directories specified for creation.'
+        return
+    }
+
+    Write-CustomLog ("Preparing directories: {0}" -f ($dirs -join ', '))
+
     foreach ($dir in $dirs) {
         Write-CustomLog "Ensuring directory '$dir' exists..."
         if (-not (Test-Path $dir)) {

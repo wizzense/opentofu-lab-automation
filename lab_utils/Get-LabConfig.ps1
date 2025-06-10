@@ -28,14 +28,21 @@ function Get-LabConfig {
         }
 
         $repoRoot = Resolve-Path (Join-Path $PSScriptRoot '..')
-        $dirs = [pscustomobject]@{
-            RepoRoot       = $repoRoot.Path
-            RunnerScripts  = Join-Path $repoRoot 'runner_scripts'
-            UtilityScripts = Join-Path $repoRoot 'runner_utility_scripts'
-            ConfigFiles    = Join-Path $repoRoot 'config_files'
-            InfraRepo      = if ($config.InfraRepoPath) { $config.InfraRepoPath } else { 'C:\\Temp\\base-infra' }
+        $dirs     = @{}
+        if ($config.PSObject.Properties['Directories']) {
+            # Preserve any user-defined directory settings
+            $config.Directories.PSObject.Properties | ForEach-Object {
+                $dirs[$_.Name] = $_.Value
+            }
         }
-        Add-Member -InputObject $config -MemberType NoteProperty -Name Directories -Value $dirs -Force
+
+        $dirs['RepoRoot']       = $repoRoot.Path
+        $dirs['RunnerScripts']  = Join-Path $repoRoot 'runner_scripts'
+        $dirs['UtilityScripts'] = Join-Path $repoRoot 'runner_utility_scripts'
+        $dirs['ConfigFiles']    = Join-Path $repoRoot 'config_files'
+        $dirs['InfraRepo']      = if ($config.InfraRepoPath) { $config.InfraRepoPath } else { 'C:\\Temp\\base-infra' }
+
+        Add-Member -InputObject $config -MemberType NoteProperty -Name Directories -Value ([pscustomobject]$dirs) -Force
         return $config
     }
     catch {
