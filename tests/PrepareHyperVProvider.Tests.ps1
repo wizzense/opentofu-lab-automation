@@ -1,5 +1,4 @@
 . (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
-Import-Module Pester -Force
 if ($IsLinux -or $IsMacOS) { return }
 
 BeforeAll {
@@ -199,7 +198,7 @@ Describe 'Convert certificate helpers honour -WhatIf' -Skip:($IsLinux -or $IsMac
 
 Describe 'Convert certificate helpers validate paths' -Skip:($IsLinux -or $IsMacOS) {
     BeforeAll {
-        Reset-Mock Convert-PfxToPem -ErrorAction SilentlyContinue
+        Remove-Mock -CommandName Convert-PfxToPem -ErrorAction SilentlyContinue
         $scriptPath = Join-Path $PSScriptRoot '..' 'runner_scripts' '0010_Prepare-HyperVProvider.ps1'
         . $scriptPath
     }
