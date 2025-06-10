@@ -89,14 +89,7 @@ jobs:
           key: ${{ runner.os }}-pwsh-modules-${{ hashFiles('.github/actions/lint/requirements.txt') }}
           restore-keys: ${{ runner.os }}-pwsh-modules-
       
-      - name: Install Pester (Windows PowerShell)
-        if: runner.os == 'Windows'
-        shell: powershell
-        run: |
-          Install-Module -Name Pester -Force -Scope CurrentUser
-          
-      - name: Install Pester (pwsh)
-        if: runner.os != 'Windows'
+      - name: Install Pester
         shell: pwsh
         run: |
           Install-Module -Name Pester -Force -Scope CurrentUser
@@ -107,7 +100,6 @@ jobs:
           Install-Module -Name powershell-yaml -Force -Scope CurrentUser
           
       - name: Run Pester
-        if: runner.os != 'Windows'
         shell: pwsh
         run: |
           Invoke-Pester -CI -ErrorAction Stop
