@@ -1,3 +1,4 @@
+. (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
 Describe 'Get-MenuSelection' {
     BeforeAll {
         . (Join-Path $PSScriptRoot '..' 'lab_utils' 'Menu.ps1')

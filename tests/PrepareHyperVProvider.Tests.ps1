@@ -1,3 +1,4 @@
+. (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
 Describe 'Prepare-HyperVProvider path restoration' {
     It 'restores location after execution' {
         . (Join-Path $PSScriptRoot '..\runner_utility_scripts\Logger.ps1')
