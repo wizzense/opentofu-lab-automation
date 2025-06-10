@@ -1,0 +1,21 @@
+name: Create Issue on Failure
+on:
+  workflow_run:
+    workflows: ["Lint", "Pester", "Pytest"]
+    types: [completed]
+
+jobs:
+  create-issue:
+    if: ${{ github.event.workflow_run.conclusion == 'failure' }}
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    steps:
+      - name: Create issue
+        uses: actions-ecosystem/action-create-issue@v1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          title: "${{ github.event.workflow_run.name }} failed on ${{ github.event.workflow_run.head_branch }}"
+          body: |
+            The workflow failed.
+            [View run](${{ github.event.workflow_run.html_url }})
