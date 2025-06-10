@@ -7,12 +7,13 @@ Describe 'kicker-bootstrap utilities' -Skip:($IsLinux -or $IsMacOS) {
         ($funcs.Name -contains 'Write-CustomLog') | Should -BeTrue
     }
 
-    It 'invokes runner with call operator and propagates exit code' {
+    It 'invokes runner and propagates exit code using PassThru' {
         $scriptPath = Join-Path $PSScriptRoot '..' 'kicker-bootstrap.ps1'
         $content = Get-Content $scriptPath -Raw
-        $pattern = 'Start-Process -FilePath \$pwshPath -ArgumentList .* -Wait -NoNewWindow'
+        $pattern = 'Start-Process -FilePath \$pwshPath -ArgumentList .* -Wait -NoNewWindow -PassThru'
         $content | Should -Match $pattern
-        $content | Should -Match 'exit \$LASTEXITCODE'
+        $content | Should -Match '\$exitCode\s*=\s*\$proc.ExitCode'
+        $content | Should -Match 'exit \$exitCode'
     }
 
     It 'detects remote config URLs using -match' {
