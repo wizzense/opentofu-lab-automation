@@ -19,6 +19,26 @@ Describe 'Get-LabConfig' {
         }
     }
 
+    It 'uses custom Directories from JSON file' {
+        $modulePath = Join-Path $PSScriptRoot '..' 'lab_utils' 'Get-LabConfig.ps1'
+        . $modulePath
+        $tempFile = Join-Path ([System.IO.Path]::GetTempPath()) ([guid]::NewGuid().ToString() + '.json')
+        @{
+            InfraRepoPath = 'C:\\Infra'
+            Directories   = @{
+                HyperVPath   = 'D:\\HyperV'
+                IsoSharePath = 'D:\\ISO'
+            }
+        } | ConvertTo-Json | Set-Content -Path $tempFile
+        try {
+            $result = Get-LabConfig -Path $tempFile
+            $result.Directories.HyperVPath   | Should -Be 'D:\\HyperV'
+            $result.Directories.IsoSharePath | Should -Be 'D:\\ISO'
+        } finally {
+            Remove-Item $tempFile
+        }
+    }
+
     It 'throws when file does not exist' {
         $modulePath = Join-Path $PSScriptRoot '..' 'lab_utils' 'Get-LabConfig.ps1'
         . $modulePath
