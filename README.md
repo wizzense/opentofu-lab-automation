@@ -89,6 +89,8 @@ The runner script can run the following:
 
 0001_Reset-Git.ps1 - resets the lab-infra opentofu repository if you modify any files and want to re-pull or reset them
 
+0002_Setup-Directories.ps1 - creates directories for Hyper-V data and ISO sharing
+
 0006_Install-ValidationTools.ps1 - downloads the  cosign exe to C:\temp\cosign
 
 0007_Install-Go.ps1 - downloads and installs Go
@@ -252,6 +254,21 @@ The `GlobalPackages` array is the preferred way to list npm packages for
 The scripts `0201_Install-NodeCore.ps1`, `0202_Install-NodeGlobalPackages.ps1`
 and `0203_Install-npm.ps1` read these keys when installing Node, global npm
   packages, or project dependencies.
+
+## Directory configuration
+
+Directories used by several scripts are defined under the `Directories` section
+of `default-config.json`:
+
+```json
+"Directories": {
+  "HyperVPath": "C:\\HyperV",
+  "IsoSharePath": "C:\\iso_share"
+}
+```
+
+`0002_Setup-Directories.ps1` ensures these locations exist before other steps
+run.
 
 ## Hyper-V configuration
 
