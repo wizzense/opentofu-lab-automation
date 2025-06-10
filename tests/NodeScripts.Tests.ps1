@@ -1,7 +1,7 @@
 Describe 'Node installation scripts' {
     $scriptRoot = Join-Path $PSScriptRoot '..' 'runner_scripts'
     $core = (Resolve-Path -ErrorAction Stop (Join-Path $scriptRoot '0201_Install-NodeCore.ps1')).Path
-    $global = (Resolve-Path -ErrorAction Stop (Join-Path $scriptRoot '0202_Install-NodeGlobalPackages.ps1')).Path
+    $globalScript = (Resolve-Path -ErrorAction Stop (Join-Path $scriptRoot '0202_Install-NodeGlobalPackages.ps1')).Path
     $npm = (Resolve-Path -ErrorAction Stop (Join-Path $scriptRoot '0203_Install-npm.ps1')).Path
 
     BeforeAll {
@@ -11,7 +11,7 @@ Describe 'Node installation scripts' {
 
     It 'resolves script paths from the tests directory' {
         Test-Path $core | Should -BeTrue
-        Test-Path $global | Should -BeTrue
+        Test-Path $globalScript | Should -BeTrue
         Test-Path $npm   | Should -BeTrue
     }
 
@@ -50,7 +50,7 @@ Describe 'Node installation scripts' {
             $null = $testArgs
         }
         Mock npm {}
-        . (Resolve-Path -ErrorAction Stop $global)
+        . (Resolve-Path -ErrorAction Stop $globalScript)
 
         Install-NodeGlobalPackages -Config $config
         Assert-MockCalled npm -ParameterFilter { $testArgs -eq @('install','-g','yarn') } -Times 1
@@ -60,7 +60,7 @@ Describe 'Node installation scripts' {
 
     It 'honours -WhatIf for Install-GlobalPackage' {
     
-        . (Resolve-Path -ErrorAction Stop $global)
+        . (Resolve-Path -ErrorAction Stop $globalScript)
 
         Install-NodeGlobalPackages -Config @{ Node_Dependencies = @{ InstallYarn=$false; InstallVite=$false; InstallNodemon=$false } }
         function npm { param([string[]]$testArgs) }
