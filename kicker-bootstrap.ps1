@@ -323,6 +323,13 @@ catch {
 # ------------------------------------------------
 Write-CustomLog "==== Cloning or updating the target repository ===="
 
+try {
+    & "$ghExePath" auth status 2>&1 | Out-Null
+} catch {
+    Write-Error "GitHub CLI is not authenticated. Please run '$ghExePath auth login' and re-run this script."
+    exit 1
+}
+
 if (-not $config.RepoUrl) {
     Write-Error "ERROR: config.json does not specify 'RepoUrl'."
     exit 1
