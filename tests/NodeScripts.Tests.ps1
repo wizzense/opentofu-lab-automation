@@ -1,9 +1,10 @@
 Describe 'Node installation scripts' {
     BeforeAll {
         $scriptRoot = Join-Path $PSScriptRoot '..' 'runner_scripts'
-        $core    = (Resolve-Path -ErrorAction Stop (Join-Path $scriptRoot '0201_Install-NodeCore.ps1')).Path
-        $global  = (Resolve-Path -ErrorAction Stop (Join-Path $scriptRoot '0202_Install-NodeGlobalPackages.ps1')).Path
-        $npm     = (Resolve-Path -ErrorAction Stop (Join-Path $scriptRoot '0203_Install-npm.ps1')).Path
+
+        $script:core   = (Resolve-Path -ErrorAction Stop (Join-Path $scriptRoot '0201_Install-NodeCore.ps1')).Path
+        $script:global = (Resolve-Path -ErrorAction Stop (Join-Path $scriptRoot '0202_Install-NodeGlobalPackages.ps1')).Path
+        $script:npm    = (Resolve-Path -ErrorAction Stop (Join-Path $scriptRoot '0203_Install-npm.ps1')).Path
 
         $env:TEMP = Join-Path ([System.IO.Path]::GetTempPath()) 'pester-temp'
         New-Item -ItemType Directory -Path $env:TEMP -Force | Out-Null
@@ -11,7 +12,7 @@ Describe 'Node installation scripts' {
 
     It 'resolves script paths from the tests directory' {
         Test-Path $core | Should -BeTrue
-        Test-Path $global | Should -BeTrue
+        Test-Path $globalScript | Should -BeTrue
         Test-Path $npm   | Should -BeTrue
     }
 
@@ -50,6 +51,7 @@ Describe 'Node installation scripts' {
             $null = $testArgs
         }
         Mock npm {}
+
         . $global
 
         Install-NodeGlobalPackages -Config $config
@@ -59,8 +61,9 @@ Describe 'Node installation scripts' {
     }
 
     It 'honours -WhatIf for Install-GlobalPackage' {
-    
+
         . $global
+
 
         Install-NodeGlobalPackages -Config @{ Node_Dependencies = @{ InstallYarn=$false; InstallVite=$false; InstallNodemon=$false } }
         function npm { param([string[]]$testArgs) }
