@@ -3,7 +3,7 @@ Describe '0104_Install-CA script' {
         $scriptPath = Join-Path $PSScriptRoot '..' 'runner_scripts' '0104_Install-CA.ps1'
     }
 
-    It 'invokes CA installation when InstallCA is true' {
+    It 'invokes CA installation when InstallCA is true' -Skip:($IsLinux -or $IsMacOS) {
         . (Join-Path $PSScriptRoot '..\runner_utility_scripts\Logger.ps1')
         $config = [pscustomobject]@{
             InstallCA = $true
@@ -21,7 +21,7 @@ Describe '0104_Install-CA script' {
         Assert-MockCalled Install-AdcsCertificationAuthority -Times 1
     }
 
-    It 'skips CA installation when InstallCA is false' {
+    It 'skips CA installation when InstallCA is false' -Skip:($IsLinux -or $IsMacOS) {
         . (Join-Path $PSScriptRoot '..\runner_utility_scripts\Logger.ps1')
         $config = [pscustomobject]@{
             InstallCA = $false
