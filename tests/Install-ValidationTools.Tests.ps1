@@ -1,6 +1,7 @@
 . (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
-if ($IsLinux -or $IsMacOS) { return }
-Describe '0006_Install-ValidationTools' -Skip:($IsLinux -or $IsMacOS) {
+. (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
+if ($SkipNonWindows) { return }
+Describe '0006_Install-ValidationTools' -Skip:($SkipNonWindows) {
     BeforeAll {
         $script:ScriptPath = Join-Path $PSScriptRoot '..' 'runner_scripts' '0006_Install-ValidationTools.ps1'
         . (Join-Path $PSScriptRoot '..' 'runner_utility_scripts' 'Logger.ps1')

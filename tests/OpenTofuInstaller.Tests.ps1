@@ -1,5 +1,6 @@
 Describe 'OpenTofuInstaller' {
 . (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
+
 if ($IsLinux -or $IsMacOS) { return }
 
     BeforeAll {
@@ -22,7 +23,7 @@ if ($IsLinux -or $IsMacOS) { return }
     }
 
 
-    Describe 'logging' -Skip:($IsLinux -or $IsMacOS) {
+    Describe 'logging' -Skip:($SkipNonWindows) {
         It 'creates log files and removes them for elevated unpack' {
         $script:scriptPath = Join-Path $PSScriptRoot '..' 'runner_utility_scripts' 'OpenTofuInstaller.ps1'
         $temp = $script:temp

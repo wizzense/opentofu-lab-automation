@@ -14,5 +14,7 @@ Describe 'escapePathArgument' {
     It 'accepts pipeline input' {
         'C:\Temp' | escapePathArgument | Should -Be '"C:\Temp"'
     }
-
+    It 'throws when path contains quotes' {
+        { escapePathArgument -Path 'C:\Bad"Path' } | Should -Throw
+    }
 }

@@ -1,6 +1,8 @@
 . (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
 . (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
+
 if ($IsLinux -or $IsMacOS) { return }
+
 Describe 'runner.ps1 configuration' {
     It 'loads default configuration without errors' {
         $modulePath = Join-Path $PSScriptRoot '..' 'lab_utils' 'Get-LabConfig.ps1'
@@ -10,7 +12,7 @@ Describe 'runner.ps1 configuration' {
     }
 }
 
-Describe 'runner.ps1 script selection' -Skip:($IsLinux -or $IsMacOS) {
+Describe 'runner.ps1 script selection' -Skip:($SkipNonWindows) {
     BeforeAll {
         # Use script-scoped variable so PSScriptAnalyzer recognizes cross-block usage
         $script:runnerPath = Join-Path $PSScriptRoot '..' 'runner.ps1'
@@ -349,7 +351,7 @@ Write-Error 'err message'
         finally { Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue }
     }
 
-    It 'prompts for script selection when no -Scripts argument is supplied' -Skip:($IsLinux -or $IsMacOS) {
+    It 'prompts for script selection when no -Scripts argument is supplied' -Skip:($SkipNonWindows) {
         $tempDir = Join-Path ([System.IO.Path]::GetTempPath()) ([System.Guid]::NewGuid())
         $null = New-Item -ItemType Directory -Path $tempDir
         try {
@@ -382,7 +384,7 @@ exit 0' | Set-Content -Path $dummy
         }
     }
 
-    It 'handles empty or invalid selection by logging and doing nothing' -Skip:($IsLinux -or $IsMacOS) {
+    It 'handles empty or invalid selection by logging and doing nothing' -Skip:($SkipNonWindows) {
         $tempDir = Join-Path ([System.IO.Path]::GetTempPath()) ([System.Guid]::NewGuid())
         $null = New-Item -ItemType Directory -Path $tempDir
         try {
@@ -489,7 +491,7 @@ Describe 'Set-LabConfig' {
         }
     }
 
-    It 'updates selections and saves to JSON' -Skip:($IsLinux -or $IsMacOS) {
+    It 'updates selections and saves to JSON' -Skip:($SkipNonWindows) {
         $config = @{
             InstallGit = $false
             InstallGo  = $false

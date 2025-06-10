@@ -1,7 +1,8 @@
 . (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
-if ($IsLinux -or $IsMacOS) { return }
+. (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
+if ($SkipNonWindows) { return }
 
-Describe 'Get-HyperVProviderVersion' -Skip:($IsLinux -or $IsMacOS) {
+Describe 'Get-HyperVProviderVersion' -Skip:($SkipNonWindows) {
     It 'parses version from main.tf' {
         $scriptPath = Join-Path $PSScriptRoot '..' 'runner_scripts' '0010_Prepare-HyperVProvider.ps1'
         . $scriptPath
