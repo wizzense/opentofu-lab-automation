@@ -3,6 +3,7 @@ Param(
     [switch]$AsJson
 )
 
+. "$PSScriptRoot/../runner_utility_scripts/ScriptTemplate.ps1"
 function Get-SystemInfo {
     [CmdletBinding()]
     param(

@@ -1,4 +1,5 @@
 Param([pscustomobject]$Config)
+. "$PSScriptRoot/../runner_utility_scripts/ScriptTemplate.ps1"
 function Install-CA {
     [CmdletBinding(SupportsShouldProcess = $true)]
     param([pscustomobject]$Config)

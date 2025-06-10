@@ -1,4 +1,5 @@
 Param([pscustomobject]$Config)
+. "$PSScriptRoot/../runner_utility_scripts/ScriptTemplate.ps1"
 
 if (-not (Get-Command Convert-CerToPem -ErrorAction SilentlyContinue)) {
 function Convert-CerToPem {
