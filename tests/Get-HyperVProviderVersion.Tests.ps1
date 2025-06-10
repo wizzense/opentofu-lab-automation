@@ -1,6 +1,6 @@
 . (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
 Describe 'Get-HyperVProviderVersion' {
-    It 'parses version from main.tf' {
+    It 'parses version from main.tf' -Skip:($IsLinux -or $IsMacOS) {
         $scriptPath = Join-Path $PSScriptRoot '..' 'runner_scripts' '0010_Prepare-HyperVProvider.ps1'
         . $scriptPath
         $tf = [System.IO.Path]::ChangeExtension(

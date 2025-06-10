@@ -1,6 +1,6 @@
 . (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
 Describe 'Prepare-HyperVProvider path restoration' {
-    It 'restores location after execution' {
+    It 'restores location after execution' -Skip:($IsLinux -or $IsMacOS) {
         . (Join-Path $PSScriptRoot '..' 'runner_utility_scripts' 'Logger.ps1')
         $script:scriptPath = Join-Path $PSScriptRoot '..' 'runner_scripts' '0010_Prepare-HyperVProvider.ps1'
         $config = [pscustomobject]@{
@@ -40,7 +40,7 @@ Describe 'Prepare-HyperVProvider path restoration' {
 }
 
 Describe 'Prepare-HyperVProvider certificate handling' {
-    It 'creates PEM files and updates providers.tf' {
+    It 'creates PEM files and updates providers.tf' -Skip:($IsLinux -or $IsMacOS) {
         . (Join-Path $PSScriptRoot '..' 'runner_utility_scripts' 'Logger.ps1')
         $script:scriptPath = Join-Path $PSScriptRoot '..' 'runner_scripts' '0010_Prepare-HyperVProvider.ps1'
         $tempDir = Join-Path ([System.IO.Path]::GetTempPath()) ([System.Guid]::NewGuid())
@@ -92,7 +92,7 @@ Describe 'Prepare-HyperVProvider certificate handling' {
 }
 
 Describe 'Convert certificate helpers honour -WhatIf' {
-    It 'skips writing files when WhatIf is used' {
+    It 'skips writing files when WhatIf is used' -Skip:($IsLinux -or $IsMacOS) {
         $scriptPath = Join-Path $PSScriptRoot '..' 'runner_scripts' '0010_Prepare-HyperVProvider.ps1'
         . $scriptPath -Config @{ PrepareHyperVHost = $false }
         $cer = Join-Path $TestDrive (([guid]::NewGuid()).ToString() + '.cer')
@@ -104,7 +104,7 @@ Describe 'Convert certificate helpers honour -WhatIf' {
         Remove-Item $cer -ErrorAction SilentlyContinue
     }
 
-    It 'skips writing PFX outputs when WhatIf is used' {
+    It 'skips writing PFX outputs when WhatIf is used' -Skip:($IsLinux -or $IsMacOS) {
         $scriptPath = Join-Path $PSScriptRoot '..' 'runner_scripts' '0010_Prepare-HyperVProvider.ps1'
         . $scriptPath -Config @{ PrepareHyperVHost = $false }
         $pfx = Join-Path $TestDrive (([guid]::NewGuid()).ToString() + '.pfx')
