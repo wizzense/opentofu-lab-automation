@@ -17,7 +17,7 @@ Describe 'OpenTofuInstaller' {
     }
 
 
-    Describe 'logging' {
+    Describe 'logging' -Skip:($IsLinux -or $IsMacOS) {
         It 'creates log files and removes them for elevated unpack' {
         $script:scriptPath = Join-Path $PSScriptRoot '..' 'runner_utility_scripts' 'OpenTofuInstaller.ps1'
         $temp = $script:temp
