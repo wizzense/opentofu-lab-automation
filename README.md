@@ -263,6 +263,13 @@ brew install --cask powershell
 pwsh -NoLogo -NoProfile -Command "Invoke-Pester"
 ```
 
+The suite includes a YAML parsing test that is skipped unless the
+`powershell-yaml` module is installed. Install it (optionally) with:
+
+```powershell
+Install-Module powershell-yaml -Scope CurrentUser
+```
+
 ## Utility scripts
 
 `lab_utils/Get-Platform.ps1` detects the current platform.
