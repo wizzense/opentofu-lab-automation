@@ -3,6 +3,7 @@ if ($IsLinux -or $IsMacOS) { return }
 Describe '0006_Install-ValidationTools' -Skip:($IsLinux -or $IsMacOS) {
     BeforeAll {
         $script:ScriptPath = Join-Path $PSScriptRoot '..' 'runner_scripts' '0006_Install-ValidationTools.ps1'
+        . (Join-Path $PSScriptRoot '..' 'runner_utility_scripts' 'Logger.ps1')
     }
 
     It 'downloads cosign when InstallCosign is true' {
