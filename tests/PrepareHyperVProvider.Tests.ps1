@@ -25,7 +25,16 @@ Describe 'Prepare-HyperVProvider path restoration' -Skip:($IsLinux -or $IsMacOS)
         Mock Get-Location { $script:location }
         Mock Push-Location { $script:stack += $script:location }
         Mock Set-Location { param($Path) $script:location = $Path }
-        Mock Pop-Location { $script:location = $script:stack[-1]; $script:stack = $script:stack[0..($script:stack.Count-2)] }
+        Mock Pop-Location {
+            if ($script:stack.Count -gt 0) {
+                $script:location = $script:stack[-1]
+                if ($script:stack.Count -gt 1) {
+                    $script:stack = $script:stack[0..($script:stack.Count-2)]
+                } else {
+                    $script:stack = @()
+                }
+            }
+        }
 
         Mock Write-CustomLog {}
         Mock Get-WindowsOptionalFeature { @{State='Enabled'} }
@@ -98,6 +107,7 @@ Describe 'Prepare-HyperVProvider certificate handling' -Skip:($IsLinux -or $IsMa
         $certCall = 0
         Mock New-SelfSignedCertificate { if ($certCall++ -eq 0) { $rootStub } else { $hostStub } }
         Mock Export-Certificate {}
+        Mock Export-PfxCertificate {}
         Mock Import-PfxCertificate {}
         Mock Remove-Item {}
         Mock Read-Host {
@@ -198,10 +208,10 @@ Describe 'Convert certificate helpers honour -WhatIf' -Skip:($IsLinux -or $IsMac
 
 Describe 'Convert certificate helpers validate paths' -Skip:($IsLinux -or $IsMacOS) {
     BeforeAll {
-        if (Get-Command Unmock -ErrorAction SilentlyContinue) {
-            Unmock Convert-PfxToPem -ErrorAction SilentlyContinue
-        } elseif (Get-Command Remove-Mock -ErrorAction SilentlyContinue) {
+        if (Get-Command Remove-Mock -ErrorAction SilentlyContinue) {
             Remove-Mock -CommandName Convert-PfxToPem -ErrorAction SilentlyContinue
+        } elseif (Get-Command Unmock -ErrorAction SilentlyContinue) {
+            Unmock Convert-PfxToPem -ErrorAction SilentlyContinue
         }
         $scriptPath = Join-Path $PSScriptRoot '..' 'runner_scripts' '0010_Prepare-HyperVProvider.ps1'
         . $scriptPath
