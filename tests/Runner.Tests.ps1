@@ -424,27 +424,37 @@ Describe 'Set-LabConfig' {
                 return $ConfigObject
             }
 
-        $installPrompts = [ordered]@{
-            InstallGit      = 'Install Git'
-            InstallGo       = 'Install Go'
-            InstallOpenTofu = 'Install OpenTofu'
+            $menu = @('InstallGit','InstallGo','InstallOpenTofu','LocalPath','Node_Dependencies','Done')
+            $selection = Get-MenuSelection -Items $menu -Title 'Edit configuration'
+            foreach ($choice in $selection) {
+                switch ($choice) {
+                    'Done' { return $ConfigObject }
+                    'InstallGit' {
+                        $ans = Read-Host "InstallGit? (Y/N) [$($ConfigObject.InstallGit)]"
+                        if ($ans) { $ConfigObject.InstallGit = $ans -match '^(?i)y' }
+                    }
+                    'InstallGo' {
+                        $ans = Read-Host "InstallGo? (Y/N) [$($ConfigObject.InstallGo)]"
+                        if ($ans) { $ConfigObject.InstallGo = $ans -match '^(?i)y' }
+                    }
+                    'InstallOpenTofu' {
+                        $ans = Read-Host "InstallOpenTofu? (Y/N) [$($ConfigObject.InstallOpenTofu)]"
+                        if ($ans) { $ConfigObject.InstallOpenTofu = $ans -match '^(?i)y' }
+                    }
+                    'LocalPath' {
+                        $ans = Read-Host "Local repo path [$($ConfigObject.LocalPath)]"
+                        if ($ans) { $ConfigObject.LocalPath = $ans }
+                    }
+                    'Node_Dependencies' {
+                        $p1 = Read-Host "Path to Node project [$($ConfigObject.Node_Dependencies.NpmPath)]"
+                        if ($p1) { $ConfigObject.Node_Dependencies.NpmPath = $p1 }
+                        $p2 = Read-Host "Create NpmPath if missing? (Y/N) [$($ConfigObject.Node_Dependencies.CreateNpmPath)]"
+                        if ($p2) { $ConfigObject.Node_Dependencies.CreateNpmPath = $p2 -match '^(?i)y' }
+                    }
+                }
+            }
+            return $ConfigObject
         }
-        foreach ($key in $installPrompts.Keys) {
-            $current = [bool]$ConfigObject[$key]
-            $answer  = Read-Host "$($installPrompts[$key])? (Y/N) [$current]"
-            if ($answer) { $ConfigObject[$key] = $answer -match '^(?i)y' }
-        }
-
-        $localPath = Read-Host "Local repo path [$($ConfigObject['LocalPath'])]"
-        if ($localPath) { $ConfigObject['LocalPath'] = $localPath }
-
-        $npmPath = Read-Host "Path to Node project [$($ConfigObject.Node_Dependencies.NpmPath)]"
-        if ($npmPath) { $ConfigObject.Node_Dependencies.NpmPath = $npmPath }
-        $createPath = Read-Host "Create NpmPath if missing? (Y/N) [$($ConfigObject.Node_Dependencies.CreateNpmPath)]"
-        if ($createPath) { $ConfigObject.Node_Dependencies.CreateNpmPath = $createPath -match '^(?i)y' }
-
-        return $ConfigObject
-    }
     }
 
     It 'updates selections and saves to JSON' -Skip:($IsLinux -or $IsMacOS) {
@@ -456,13 +466,15 @@ Describe 'Set-LabConfig' {
             Node_Dependencies = @{ NpmPath = 'C:\\Old'; CreateNpmPath = $false }
         }
 
-        $answers = @('Y','N','Y','C:\\Repo','C:\\Node','Y')
+        $answers = @('Y','C:\\Repo','C:\\Node','Y')
         $script:idx = 0
         function global:Read-Host {
             param([string]$Prompt)
             $null = $Prompt
             $answers[$script:idx++]
         }
+
+        Mock Get-MenuSelection { 'InstallGit','LocalPath','Node_Dependencies','Done' }
 
         $updated = Set-LabConfig -ConfigObject $config
 

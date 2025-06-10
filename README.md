@@ -3,33 +3,9 @@
 
 ## Quick start
 
- Kicker script for a fresh Windows Server Core setup
-
-  1) Downloads and loads `config_files/default-config.json` by default (override with `-ConfigFile`).
-     - Edit the `LocalPath` field in this file to change where the repo is cloned.
-
-  2) Checks if command-line Git is installed and in PATH. (requirement)
-     - Prompts to install a minimal version if missing.
-     - Updates PATH if installed but not found in PATH.
-     - Configure your Git username and email manually with:
-       `git config --global user.name "Your Name"` and
-       `git config --global user.email "you@example.com"`.
-  3) Checks if GitHub CLI is installed and in PATH. (requirement)
-     - Prompts to installs GitHub CLI if missing.
-     - Updates PATH if installed but not found in PATH.
-     - Prompts for authentication if not already authenticated.
-     - Run `gh auth login` before using `0001_Reset-Git.ps1` or `0009_Initialize-OpenTofu.ps1`.
-
-  4) Clones this repository from config.json -> RepoUrl to config.json -> LocalPath. If `LocalPath` is empty, the repo is cloned to `C:\temp` by default (configurable in `default-config.json`).
-
-  5) Invokes runner.ps1 from this repo. Runner can be ran with optional parameters to automatically run, but it will prompt you to manually select which scripts to run by default. After a selection completes, the menu is shown again so you can run more scripts or type `exit` to quit.
-     - Use `-ConfigFile <path>` to specify an alternative configuration file. If omitted, `runner.ps1` loads `config_files/default-config.json`.
-    - Use `-Quiet` to hide most informational output. This is shorthand for
-      `-Verbosity silent`.
-     - See [docs/runner.md](docs/runner.md) for detailed usage including non-interactive mode.
-    - Use `-Quiet` to hide most informational output (alias for `-Verbosity silent`).
-    - Use `-Verbosity <silent|normal|detailed>` for granular log control.
-    - See [docs/runner.md](docs/runner.md) for detailed usage including non-interactive mode.
+The easiest way to bootstrap a fresh Windows host is to run the project’s
+`kicker-bootstrap.ps1` script. It installs Git and the GitHub CLI if needed,
+clones this repository and then launches `runner.ps1`.
 
 
 ```
@@ -40,6 +16,38 @@ Powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "Invoke-WebRequest -U
 
 ```
 **Note:** These scripts require PowerShell 7 or later. Install the latest `pwsh` and use it instead of `powershell.exe`.
+
+### Runner usage
+
+Interactive mode:
+
+```powershell
+./runner.ps1
+```
+
+Fully automated Hyper-V setup:
+
+```powershell
+./runner.ps1 -Scripts '0006,0007,0008,0009,0010' -Auto
+```
+
+Silence most output:
+
+```powershell
+./runner.ps1 -Scripts '0006,0007,0008,0009,0010' -Auto -Quiet
+```
+
+Use a custom configuration file:
+
+```powershell
+./runner.ps1 -ConfigFile path\to\config.json -Scripts '0006,0007,0008,0009,0010' -Auto
+```
+
+Force optional script flags and show detailed logs:
+
+```powershell
+./runner.ps1 -Scripts '0006,0007' -Auto -Force -Verbosity detailed
+```
 
 
 Clone this repository and apply the lab template:
@@ -80,6 +88,11 @@ Linux users can run `./kickstart-bootstrap.sh` to download the example
 `kickstart.cfg` and launch a Kickstart-based install via `virt-install`.
 
 It will prompt print the current config and prompt you to customize it interactively. 
+The bootstrap script shows your current configuration and opens a simple menu
+based editor so you can tweak only the settings you care about. A menu option
+lets you apply the recommended defaults from `config_files/recommended-config.json`
+for a quick start.
+
 
 
 Example opentofu-infra repo: https://github.com/wizzense/tofu-base-lab.git
