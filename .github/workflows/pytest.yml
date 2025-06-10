@@ -24,7 +24,7 @@ jobs:
           python-version: '3.x'
           cache: 'pip'
       - name: Install Poetry
-        run: pip install --user poetry
+        uses: snok/install-poetry@v1
       - name: Install dependencies
         run: |
           cd py
