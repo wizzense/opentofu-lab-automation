@@ -6,7 +6,9 @@ Invoke-LabStep -Config $Config -Body {
 if ($Config.InstallOpenTofu -eq $true) {
     
     $Cosign = Join-Path $Config.CosignPath "cosign-windows-amd64.exe"
-    $installer = Join-Path $PSScriptRoot "..\runner_utility_scripts\OpenTofuInstaller.ps1"
+    $installer = (
+        Resolve-Path (Join-Path $PSScriptRoot '..' 'runner_utility_scripts' 'OpenTofuInstaller.ps1')
+    ).Path
     $openTofuVersion = if ($Config.OpenTofuVersion) { $Config.OpenTofuVersion } else { 'latest' }
     & $installer -installMethod standalone -cosignPath $Cosign -opentofuVersion $openTofuVersion
 } else {
