@@ -28,7 +28,7 @@ if (-not $CAName) {
 $role = Get-WindowsFeature -Name Adcs-Cert-Authority
 if ($role.Installed) {
     Write-CustomLog "Certificate Authority role is already installed. Checking CA configuration..."
-    
+
     # Check if a CA is already configured
     $existingCA = Get-Item -Path 'HKLM:\SYSTEM\CurrentControlSet\Services\CertSvc\Configuration' -ErrorAction SilentlyContinue
     if ($existingCA) {
@@ -49,9 +49,11 @@ Write-CustomLog "Configuring CA: $CAName with $($ValidityYears) year validity...
 
 if ($PSCmdlet.ShouldProcess($CAName, 'Configure Standalone Root CA')) {
     # Resolve the cmdlet after any Pester mocks have been defined
-    $adcsCmd = Get-Command Install-AdcsCertificationAuthority -ErrorAction SilentlyContinue
-    if (-not $adcsCmd) {
-        Write-CustomLog 'Install-AdcsCertificationAuthority command not found. Ensure AD CS features are available. Skipping CA installation.'
+
+    $installCmd = Get-Command Install-AdcsCertificationAuthority -ErrorAction SilentlyContinue
+    if (-not $installCmd) {
+        Write-CustomLog 'Install-AdcsCertificationAuthority command not found. Ensure AD CS features are available.'
+
         return
     }
     Install-AdcsCertificationAuthority `
