@@ -41,6 +41,7 @@ pwsh -NoLogo -NoProfile -Command "Invoke-Pester"
 ### Contribution expectations
 
 - **Tests:** Any modification to scripts or functional code (PowerShell or Python) must pass `Invoke-Pester` (and `pytest` once available) before committing.
+- **Pester coverage:** When adding or modifying PowerShell scripts or modules, create or update Pester tests that exercise the new behaviour. Organise scenarios in `tests/` with `Describe` blocks named for the module or script, and cover both success and error paths where feasible.
 - **Style:** Run `Invoke-ScriptAnalyzer` for PowerShell and `ruff .` for Python to ensure code style.
 - **Docs:** Document-only changes belong under `docs/` and can skip tests but should still build successfully with `mkdocs build` once the docs site is implemented.
 
