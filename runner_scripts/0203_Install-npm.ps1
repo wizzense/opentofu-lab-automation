@@ -4,8 +4,10 @@ function Install-NpmDependencies {
     [CmdletBinding(SupportsShouldProcess = $true)]
     param([pscustomobject]$Config)
 
+    $StepConfig = $Config
     . "$PSScriptRoot/../runner_utility_scripts/ScriptTemplate.ps1"
-    Invoke-LabStep -Config $Config -Body {
+    Invoke-LabStep -Config $StepConfig -Body {
+    param($Config)
     Write-CustomLog 'Running 0203_Install-npm.ps1'
 
 <#
@@ -46,7 +48,17 @@ if ($Config -is [hashtable]) {
     return
 }
 
-if ($Config.Node_Dependencies.InstallNpm) {
+# default to true when InstallNpm is not specified
+$installNpm = $true
+if ($Config.Node_Dependencies -is [hashtable]) {
+    if ($Config.Node_Dependencies.ContainsKey('InstallNpm')) {
+        $installNpm = [bool]$Config.Node_Dependencies['InstallNpm']
+    }
+} elseif ($Config.Node_Dependencies.PSObject.Properties.Match('InstallNpm').Count -gt 0) {
+    $installNpm = [bool]$Config.Node_Dependencies.InstallNpm
+}
+
+if ($installNpm) {
 
 # Determine frontend path
 $frontendPath = if ($Config.Node_Dependencies.NpmPath) {
@@ -56,12 +68,19 @@ $frontendPath = if ($Config.Node_Dependencies.NpmPath) {
     Join-Path $PSScriptRoot "..\frontend"
 }
 
+$createPath = $false
+if ($Config.Node_Dependencies -is [hashtable]) {
+    if ($Config.Node_Dependencies.ContainsKey('CreateNpmPath')) {
+        $createPath = [bool]$Config.Node_Dependencies['CreateNpmPath']
+    }
+} elseif ($Config.Node_Dependencies.PSObject.Properties.Match('CreateNpmPath').Count -gt 0) {
+    $createPath = [bool]$Config.Node_Dependencies.CreateNpmPath
+}
+
 if (-not (Test-Path $frontendPath)) {
-    if ($Config.Node_Dependencies.CreateNpmPath) {
+    if ($createPath) {
         Write-CustomLog "Creating missing frontend folder at: $frontendPath"
-        if ($PSCmdlet.ShouldProcess($frontendPath, 'Create NpmPath')) {
-            New-Item -ItemType Directory -Path $frontendPath -Force | Out-Null
-        }
+        New-Item -ItemType Directory -Path $frontendPath -Force | Out-Null
     } else {
         Write-CustomLog "Frontend folder not found at: $frontendPath. Skipping npm install."
         return
@@ -69,8 +88,12 @@ if (-not (Test-Path $frontendPath)) {
 }
 
 if (-not (Test-Path (Join-Path $frontendPath "package.json"))) {
-    Write-CustomLog "No package.json found in $frontendPath. Skipping npm install."
-    return
+    if ($createPath) {
+        '{}' | Set-Content -Path (Join-Path $frontendPath 'package.json')
+    } else {
+        Write-CustomLog "No package.json found in $frontendPath. Skipping npm install."
+        return
+    }
 }
 
 Push-Location $frontendPath
@@ -78,9 +101,7 @@ Push-Location $frontendPath
 try {
     Write-CustomLog "Running npm install in $frontendPath ..."
 
-    if ($PSCmdlet.ShouldProcess($frontendPath, 'Run npm install')) {
-        npm install
-    }
+    npm install
     Write-CustomLog "npm install completed."
 
 } catch {

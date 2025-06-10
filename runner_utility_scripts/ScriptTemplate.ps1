@@ -3,6 +3,6 @@ function Invoke-LabStep {
     . $PSScriptRoot/Logger.ps1
     Set-StrictMode -Version Latest
     $ErrorActionPreference = 'Stop'
-    try { . $Body } catch { Write-CustomLog "ERROR: $_"; exit 1 }
+    try { & $Body $Config } catch { Write-CustomLog "ERROR: $_"; exit 1 }
 }
 
