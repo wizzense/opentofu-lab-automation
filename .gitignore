@@ -11,3 +11,10 @@ __pycache__/
 
 # Ignore log files
 *.log
+
+# Ignore development caches
+.ruff_cache/
+.terraform/
+
+# Ignore Terraform state files
+*.tfstate*
