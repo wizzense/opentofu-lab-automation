@@ -10,13 +10,13 @@ Describe '0102_Configure-Firewall' -Skip:($SkipNonWindows) {
         $cfg = [pscustomobject]@{ FirewallPorts = @(80, 443) }
         Mock New-NetFirewallRule {}
         & $script:ScriptPath -Config $cfg
-        Assert-MockCalled New-NetFirewallRule -Times 2
+        Should -Invoke -CommandName New-NetFirewallRule -Times 2
     }
 
     It 'skips when no FirewallPorts are provided' {
         $cfg = [pscustomobject]@{ FirewallPorts = $null }
         Mock New-NetFirewallRule {}
         & $script:ScriptPath -Config $cfg
-        Assert-MockCalled New-NetFirewallRule -Times 0
+        Should -Invoke -CommandName New-NetFirewallRule -Times 0
     }
 }

@@ -18,7 +18,7 @@ Describe '0006_Install-ValidationTools' -Skip:($SkipNonWindows) {
         Mock Test-Path { $false }
         Mock Write-CustomLog {}
         & $script:ScriptPath -Config $cfg
-        Assert-MockCalled Invoke-WebRequest -Times 1 -ParameterFilter { $Uri -eq $cfg.CosignURL }
+        Should -Invoke -CommandName Invoke-WebRequest -Times 1 -ParameterFilter { $Uri -eq $cfg.CosignURL }
     }
 
     It 'checks for gpg when InstallGpg is true' {
@@ -26,13 +26,13 @@ Describe '0006_Install-ValidationTools' -Skip:($SkipNonWindows) {
         Mock Get-Command {} -ParameterFilter { $Name -eq 'gpg' }
         Mock Write-CustomLog {}
         & $script:ScriptPath -Config $cfg
-        Assert-MockCalled Get-Command -ParameterFilter { $Name -eq 'gpg' } -Times 1
+        Should -Invoke -CommandName Get-Command -Times 1 -ParameterFilter { $Name -eq 'gpg' }
     }
 
     It 'logs a message when no option specified' {
         $cfg = [pscustomobject]@{ InstallCosign = $false; InstallGpg = $false }
         Mock Write-CustomLog {}
         & $script:ScriptPath -Config $cfg
-        Assert-MockCalled Write-CustomLog -ParameterFilter { $Message -like 'No installation option*' } -Times 1
+        Should -Invoke -CommandName Write-CustomLog -Times 1 -ParameterFilter { $Message -like 'No installation option*' }
     }
 }

@@ -14,9 +14,9 @@ Describe '0113_Config-DNS' {
 
         & $script -Config $config
 
-        Assert-MockCalled Set-DnsClientServerAddress -ParameterFilter {
+        Should -Invoke -CommandName Set-DnsClientServerAddress -Times 1 -ParameterFilter {
             $InterfaceIndex -eq 99 -and $ServerAddresses -eq '1.2.3.4'
-        } -Times 1
+        }
     }
 }
 

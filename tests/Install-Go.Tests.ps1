@@ -11,8 +11,8 @@ Describe '0007_Install-Go' -Skip:($SkipNonWindows) {
         Mock Start-Process {}
         Mock Write-CustomLog {}
         & $script:ScriptPath -Config $cfg
-        Assert-MockCalled Invoke-WebRequest -ParameterFilter { $Uri -eq $cfg.Go.InstallerUrl } -Times 1
-        Assert-MockCalled Start-Process -ParameterFilter { $FilePath -eq 'msiexec.exe' } -Times 1
+        Should -Invoke -CommandName Invoke-WebRequest -Times 1 -ParameterFilter { $Uri -eq $cfg.Go.InstallerUrl }
+        Should -Invoke -CommandName Start-Process -Times 1 -ParameterFilter { $FilePath -eq 'msiexec.exe' }
     }
 
     It 'skips when InstallGo is false' {
@@ -21,8 +21,8 @@ Describe '0007_Install-Go' -Skip:($SkipNonWindows) {
         Mock Start-Process {}
         Mock Write-CustomLog {}
         & $script:ScriptPath -Config $cfg
-        Assert-MockCalled Invoke-WebRequest -Times 0
-        Assert-MockCalled Start-Process -Times 0
+        Should -Invoke -CommandName Invoke-WebRequest -Times 0
+        Should -Invoke -CommandName Start-Process -Times 0
     }
 
     It 'does nothing when Go is already installed' {
@@ -32,7 +32,7 @@ Describe '0007_Install-Go' -Skip:($SkipNonWindows) {
         Mock Start-Process {}
         Mock Write-CustomLog {}
         & $script:ScriptPath -Config $cfg
-        Assert-MockCalled Invoke-WebRequest -Times 0
-        Assert-MockCalled Start-Process -Times 0
+        Should -Invoke -CommandName Invoke-WebRequest -Times 0
+        Should -Invoke -CommandName Start-Process -Times 0
     }
 }

@@ -11,7 +11,7 @@ Describe '0100_Enable-WinRM' -Skip:($SkipNonWindows) {
         Mock Get-Service { [pscustomobject]@{ Status = 'Stopped' } } -ParameterFilter { $Name -eq 'WinRM' }
         Mock Enable-PSRemoting {}
         & $script:ScriptPath -Config $cfg
-        Assert-MockCalled Enable-PSRemoting -ParameterFilter { $Force } -Times 1
+        Should -Invoke -CommandName Enable-PSRemoting -Times 1 -ParameterFilter { $Force }
     }
 
     It 'skips enabling when WinRM already running' {
@@ -19,6 +19,6 @@ Describe '0100_Enable-WinRM' -Skip:($SkipNonWindows) {
         Mock Get-Service { [pscustomobject]@{ Status = 'Running' } } -ParameterFilter { $Name -eq 'WinRM' }
         Mock Enable-PSRemoting {}
         & $script:ScriptPath -Config $cfg
-        Assert-MockCalled Enable-PSRemoting -Times 0
+        Should -Invoke -CommandName Enable-PSRemoting -Times 0
     }
 }

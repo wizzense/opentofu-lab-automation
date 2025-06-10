@@ -11,7 +11,7 @@ Describe '0101_Enable-RemoteDesktop' -Skip:($SkipNonWindows) {
         Mock Get-ItemProperty { [pscustomobject]@{ fDenyTSConnections = 1 } }
         Mock Set-ItemProperty {}
         & $script:ScriptPath -Config $cfg
-        Assert-MockCalled Set-ItemProperty -Times 1
+        Should -Invoke -CommandName Set-ItemProperty -Times 1
     }
 
     It 'skips registry change when already enabled' {
@@ -19,7 +19,7 @@ Describe '0101_Enable-RemoteDesktop' -Skip:($SkipNonWindows) {
         Mock Get-ItemProperty { [pscustomobject]@{ fDenyTSConnections = 0 } }
         Mock Set-ItemProperty {}
         & $script:ScriptPath -Config $cfg
-        Assert-MockCalled Set-ItemProperty -Times 0
+        Should -Invoke -CommandName Set-ItemProperty -Times 0
     }
 
     It 'does nothing when AllowRemoteDesktop is false' {
@@ -27,6 +27,6 @@ Describe '0101_Enable-RemoteDesktop' -Skip:($SkipNonWindows) {
         Mock Get-ItemProperty { [pscustomobject]@{ fDenyTSConnections = 1 } }
         Mock Set-ItemProperty {}
         & $script:ScriptPath -Config $cfg
-        Assert-MockCalled Set-ItemProperty -Times 0
+        Should -Invoke -CommandName Set-ItemProperty -Times 0
     }
 }

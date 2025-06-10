@@ -374,7 +374,7 @@ exit 0' | Set-Content -Path $dummy
             & "$tempDir/runner.ps1" -Auto | Out-Null
             Pop-Location
 
-            Assert-MockCalled Get-MenuSelection -Times 2
+            Should -Invoke -CommandName Get-MenuSelection -Times 2
         } finally {
             Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue
         }
@@ -406,8 +406,8 @@ exit 0
             Pop-Location
 
             Test-Path $out | Should -BeFalse
-            Assert-MockCalled Write-CustomLog -ParameterFilter { $Message -eq 'No scripts selected.' } -Times 1
-            Assert-MockCalled Get-MenuSelection -Times 1
+            Should -Invoke -CommandName Write-CustomLog -Times 1 -ParameterFilter { $Message -eq 'No scripts selected.' }
+            Should -Invoke -CommandName Get-MenuSelection -Times 1
         }
         finally {
             Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue
