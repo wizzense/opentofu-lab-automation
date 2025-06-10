@@ -303,6 +303,28 @@ function unpackStandalone() {
     }
 }
 
+# Helper to check whether the current user has administrative privileges.
+# On Windows the Administrators group membership is queried. Other
+# platforms always return `$false` as privilege escalation is not
+# supported.
+function Test-IsAdmin {
+    $hasAdmin = $false
+    if ($IsWindows) {
+        try {
+            $principal = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
+            $hasAdmin = $principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
+        } catch {
+            logWarning "Could not determine admin privileges: $_"
+            $hasAdmin = $false
+        }
+    } else {
+        # On Linux and macOS there is no built-in equivalent of Start-Process -Verb RunAs.
+        # We therefore skip privilege detection/escalation and continue with current permissions.
+        $hasAdmin = $false
+    }
+    return $hasAdmin
+}
+
 function installStandalone() {
     if ($internalContinue) {
         logInfo "Continuing standalone installation..."
@@ -531,20 +553,7 @@ function installStandalone() {
 
         $internalZipFile = Join-Path $tempPath $zipName
 
-        $hasAdminPrivileges = $false
-        if ($IsWindows) {
-            try {
-                $principal = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
-                $hasAdminPrivileges = $principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
-            } catch {
-                logWarning "Could not determine admin privileges: $_"
-                $hasAdminPrivileges = $false
-            }
-        } else {
-            # On Linux and macOS there is no built-in equivalent of Start-Process -Verb RunAs.
-            # We therefore skip privilege detection/escalation and continue with current permissions.
-            $hasAdminPrivileges = $false
-        }
+        $hasAdminPrivileges = Test-IsAdmin
 
         if ($allUsers -and (-not $hasAdminPrivileges))
         {
@@ -720,3 +729,5 @@ try
     logError($_.ToString())
     exit $exitCodeInstallFailed
 }
+
+exit $exitCodeOK

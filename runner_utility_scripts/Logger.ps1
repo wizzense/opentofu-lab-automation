@@ -37,6 +37,7 @@ function Write-CustomLog {
     if ($quiet -and $Level -eq 'INFO') { return }
 
     $timestamp = Get-Date -Format 'yyyy-MM-dd HH:mm:ss'
+
     $formatted = "[$timestamp] [$Level] $Message"
     $color = 'White'
     switch ($Level) {
@@ -44,11 +45,14 @@ function Write-CustomLog {
         'ERROR' { $color = 'Red'    }
     }
     Write-Host $formatted -ForegroundColor $color
+
     if ($LogFile) {
         try {
             $formatted | Out-File -FilePath $LogFile -Encoding utf8 -Append
         } catch {
+        
             Write-Host "[ERROR] Failed to write to log file ${LogFile}: $_" -ForegroundColor 'Red'
+
         }
     }
 }
