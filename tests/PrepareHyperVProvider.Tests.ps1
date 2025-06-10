@@ -102,7 +102,7 @@ Describe 'Convert certificate helpers honour -WhatIf' -Skip:($IsLinux -or $IsMac
         'dummy' | Set-Content -Path $cer
         Mock Set-Content {}
         Convert-CerToPem -CerPath $cer -PemPath $pem -WhatIf
-        Assert-MockNotCalled Set-Content
+        Should -Invoke -CommandName Set-Content -Times 0
         Remove-Item $cer -ErrorAction SilentlyContinue
     }
 
@@ -122,7 +122,7 @@ Describe 'Convert certificate helpers honour -WhatIf' -Skip:($IsLinux -or $IsMac
         Mock New-Object { $stub }
         $securePass = (New-Object System.Net.NetworkCredential('', 'pw')).SecurePassword
         Convert-PfxToPem -PfxPath $pfx -Password $securePass -CertPath $cert -KeyPath $key -WhatIf
-        Assert-MockNotCalled Set-Content
+        Should -Invoke -CommandName Set-Content -Times 0
         Remove-Item $pfx -ErrorAction SilentlyContinue
     }
 }

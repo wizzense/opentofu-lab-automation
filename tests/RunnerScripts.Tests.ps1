@@ -42,3 +42,4 @@ function Parse-ScriptFile {
         $commands.Count | Should -BeGreaterThan 0
     }
 }
+}

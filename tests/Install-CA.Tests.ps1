@@ -34,6 +34,6 @@ Describe '0104_Install-CA script' {
         . $scriptPath
         Install-CA -Config $config
 
-        Assert-MockNotCalled Install-AdcsCertificationAuthority
+        Should -Invoke -CommandName Install-AdcsCertificationAuthority -Times 0
     }
 }

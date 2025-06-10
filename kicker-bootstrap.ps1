@@ -211,8 +211,10 @@ try {
 # ------------------------------------------------
 # (2.5) Ensure PowerShell 7 is present
 # ------------------------------------------------
+
 $isWindowsOS = [System.Environment]::OSVersion.Platform -eq 'Win32NT'
 if (-not $isWindowsOS) {
+
     Write-Error "PowerShell 7 installation via this script is only supported on Windows."
     exit 1
 }
