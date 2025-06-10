@@ -1,4 +1,5 @@
 . (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
+. (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
 if ($IsLinux -or $IsMacOS) { return }
 <#
 .SYNOPSIS
@@ -13,6 +14,9 @@ Describe '0001_Reset-Git' -Skip:($IsLinux -or $IsMacOS) {
 
     BeforeAll {
         $script:ScriptPath = Join-Path $PSScriptRoot '..' 'runner_scripts' '0001_Reset-Git.ps1'
+    }
+    AfterEach {
+        Remove-Item Function:gh -ErrorAction SilentlyContinue
     }
 
     Context 'Clone command selection' {

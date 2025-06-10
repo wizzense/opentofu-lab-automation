@@ -1,4 +1,5 @@
 Describe 'OpenTofuInstaller' {
+. (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
 if ($IsLinux -or $IsMacOS) { return }
 
     BeforeAll {
@@ -16,6 +17,7 @@ if ($IsLinux -or $IsMacOS) { return }
     AfterEach {
         Remove-Item -Recurse -Force $script:temp -ErrorAction SilentlyContinue
         Remove-Item Function:Test-IsAdmin -ErrorAction SilentlyContinue
+        Remove-Item Function:Start-Process -ErrorAction SilentlyContinue
         Remove-Variable -Name OpenTofuInstallerLogDir -Scope Global -ErrorAction SilentlyContinue
     }
 
@@ -64,7 +66,6 @@ if ($IsLinux -or $IsMacOS) { return }
         }
 
         (Test-Path $global:OpenTofuInstallerLogDir) | Should -BeFalse
-        Remove-Item Function:Start-Process -ErrorAction SilentlyContinue
         }
 
         It 'gracefully handles missing log directory' {
@@ -103,7 +104,6 @@ if ($IsLinux -or $IsMacOS) { return }
         & $script:scriptPath -installMethod standalone -opentofuVersion '0.0.0' -installPath $temp -allUsers -skipVerify -skipChangePath | Out-Null
         $global:startProcessCalled | Should -BeTrue
         $LASTEXITCODE | Should -Be 0
-        Remove-Item Function:Start-Process -ErrorAction SilentlyContinue
         }
     }
 
