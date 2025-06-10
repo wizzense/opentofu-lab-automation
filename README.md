@@ -365,6 +365,24 @@ The suite includes a YAML parsing test that is skipped unless the
 Install-Module powershell-yaml -Scope CurrentUser
 ```
 
+Python unit tests live under `py/`. Install the dependencies first using
+either Poetry or a direct `pip` install to get packages like `typer`:
+
+```bash
+# with Poetry
+poetry install
+
+# or with pip
+pip install -e ./py
+```
+
+Once installed, run the pytest suite:
+
+```bash
+cd py
+poetry run pytest
+```
+
 ## Utility scripts
 
 `lab_utils/Get-Platform.ps1` detects the current platform.
