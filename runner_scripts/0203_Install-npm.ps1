@@ -6,6 +6,7 @@ function Install-NpmDependencies {
 
     . "$PSScriptRoot/../runner_utility_scripts/ScriptTemplate.ps1"
     Invoke-LabStep -Config $Config -Body {
+    Write-CustomLog 'Running 0203_Install-npm.ps1'
 
 <#
 .SYNOPSIS

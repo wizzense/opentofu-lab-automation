@@ -1,6 +1,7 @@
 Param([pscustomobject]$Config)
 . "$PSScriptRoot/../runner_utility_scripts/ScriptTemplate.ps1"
 Invoke-LabStep -Config $Config -Body {
+    Write-CustomLog 'Running 0010_Prepare-HyperVProvider.ps1'
 
 function Convert-CerToPem {
     [CmdletBinding(SupportsShouldProcess)]

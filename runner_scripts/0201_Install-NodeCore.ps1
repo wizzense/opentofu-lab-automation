@@ -6,6 +6,7 @@ function Install-NodeCore {
 
     . "$PSScriptRoot/../runner_utility_scripts/ScriptTemplate.ps1"
     Invoke-LabStep -Config $Config -Body {
+    Write-CustomLog 'Running 0201_Install-NodeCore.ps1'
 <#
 .SYNOPSIS
     Installs Node.js via MSI, using the existing config framework.

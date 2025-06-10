@@ -1,6 +1,7 @@
 Param([pscustomobject]$Config)
 . "$PSScriptRoot/../runner_utility_scripts/ScriptTemplate.ps1"
 Invoke-LabStep -Config $Config -Body {
+    Write-CustomLog 'Running 0113_Config-DNS.ps1'
 
 if ($Config.SetDNSServers -eq $true) {
     
