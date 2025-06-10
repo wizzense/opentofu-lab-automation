@@ -36,6 +36,7 @@ Detailed guides and module references are located in the [docs](docs/) directory
   4) Clones this repository from config.json -> RepoUrl to config.json -> LocalPath (or a default path).
   5) Invokes runner.ps1 from this repo. Runner can be ran with optional parameters to automatically run, but it will prompt you to manually select which scripts to run by default.
      - Use `-ConfigFile <path>` to specify an alternative configuration file. If omitted, `runner.ps1` loads `config_files/default-config.json`.
+     - See [docs/runner.md](docs/runner.md) for detailed usage including non-interactive mode.
 
 ```
 
