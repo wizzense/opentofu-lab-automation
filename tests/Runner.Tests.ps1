@@ -132,8 +132,10 @@ exit 0
             $null = New-Item -ItemType Directory -Path $scriptsDir
             $out = Join-Path $tempDir 'out.txt'
             $scriptFile = Join-Path $scriptsDir '0001_Test.ps1'
-            @"`nparam([PSCustomObject]`$Config)
-if (`$Config.RunFoo -eq `$true) { 'foo' | Out-File -FilePath '$out' } else { Write-Output 'skip' }"@ | Set-Content -Path $scriptFile
+            @"
+Param([PSCustomObject]`$Config)
+if (`$Config.RunFoo -eq `$true) { 'foo' | Out-File -FilePath '$out' } else { Write-Output 'skip' }
+"@ | Set-Content -Path $scriptFile
 
             Push-Location $tempDir
             Mock Read-Host { throw 'Read-Host should not be called' }
@@ -143,6 +145,35 @@ if (`$Config.RunFoo -eq `$true) { 'foo' | Out-File -FilePath '$out' } else { Wri
 
             Test-Path $out | Should -BeTrue
             $updated.RunFoo | Should -BeTrue
+        }
+        finally { Remove-Item -Recurse -Force $tempDir }
+    }
+
+    It 'reports success when script omits an exit statement' {
+        $tempDir = Join-Path ([System.IO.Path]::GetTempPath()) ([System.Guid]::NewGuid())
+        $null = New-Item -ItemType Directory -Path $tempDir
+        try {
+            Copy-Item $script:runnerPath -Destination $tempDir
+            Copy-Item (Join-Path $PSScriptRoot '..\runner_utility_scripts') -Destination $tempDir -Recurse
+            Copy-Item (Join-Path $PSScriptRoot '..\lab_utils') -Destination $tempDir -Recurse
+            Copy-Item (Join-Path $PSScriptRoot '..\config_files') -Destination (Join-Path $tempDir 'config_files') -Recurse
+            $scriptsDir = Join-Path $tempDir 'runner_scripts'
+            $null = New-Item -ItemType Directory -Path $scriptsDir
+            $out = Join-Path $tempDir 'out.txt'
+            $scriptFile = Join-Path $scriptsDir '0001_NoExit.ps1'
+            @"
+Param([PSCustomObject]`$Config)
+'ok' | Out-File -FilePath '$out'
+"@ | Set-Content -Path $scriptFile
+
+            Push-Location $tempDir
+            Mock Read-Host { throw 'Read-Host should not be called' }
+            & "$tempDir/runner.ps1" -Scripts '0001' -Auto | Out-Null
+            $code = $LASTEXITCODE
+            Pop-Location
+
+            Test-Path $out | Should -BeTrue
+            $code | Should -Be 0
         }
         finally { Remove-Item -Recurse -Force $tempDir }
     }
