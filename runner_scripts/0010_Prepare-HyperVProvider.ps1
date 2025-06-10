@@ -79,6 +79,15 @@ Invoke-LabStep -Config $Config -Body {
 
 if ($Config.PrepareHyperVHost -eq $true) {
 
+# Use Config to find the infra repo path early so certificate
+# operations can copy files correctly.
+    $infraRepoPath = if ([string]::IsNullOrWhiteSpace($Config.InfraRepoPath)) {
+        Join-Path $PSScriptRoot "my-infra"
+    } else {
+        $Config.InfraRepoPath
+    }
+
+
 
 # ------------------------------
 # 1) Environment Preparation
@@ -297,12 +306,9 @@ New-NetFirewallRule -DisplayName "Windows Remote Management (HTTP-In)" -Name "Wi
 # 4) Build & Install Hyper-V Provider in InfraRepoPath
 # ------------------------------
 
-# Use Config to find the infra repo path, fallback if empty
-$infraRepoPath = if ([string]::IsNullOrWhiteSpace($Config.InfraRepoPath)) {
-    Join-Path $PSScriptRoot "my-infra"
-} else {
-    $Config.InfraRepoPath
-}
+
+# infraRepoPath is already set earlier; ensure it exists before build
+$null = New-Item -ItemType Directory -Force -Path $infraRepoPath -ErrorAction SilentlyContinue
 
 Write-CustomLog "InfraRepoPath for hyperv provider: $infraRepoPath"
 

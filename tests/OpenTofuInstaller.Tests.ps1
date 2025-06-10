@@ -41,7 +41,10 @@ if ($IsLinux -or $IsMacOS) { return }
         function global:Start-Process {
             param($FilePath, $ArgumentList, $Verb, $WorkingDirectory, [switch]$Wait, [switch]$Passthru)
             $global:startProcessCalled = $true
-            $wrapper = $ArgumentList[3].Trim('"')
+
+            $wrapperArgs = if ($ArgumentList -is [string]) { $ArgumentList -split '\s+' } else { $ArgumentList }
+            $wrapper = $wrapperArgs[3].Trim('"')
+
             # make logDir visible in the test’s script scope
             $script:logDir = Split-Path $wrapper -Parent
             New-Item -ItemType File -Path (Join-Path $script:logDir 'stdout.log') -Force | Out-Null
@@ -90,7 +93,9 @@ if ($IsLinux -or $IsMacOS) { return }
                 [switch]$Passthru
             )
             $global:startProcessCalled = $true
-            $wrapper = $ArgumentList[3].Trim('"')
+
+            $wrapperArgs = if ($ArgumentList -is [string]) { $ArgumentList -split '\s+' } else { $ArgumentList }
+            $wrapper = $wrapperArgs[3].Trim('"')
             $dir = Split-Path $wrapper -Parent
             if (Test-Path $dir) { Remove-Item -Recurse -Force $dir }
             $proc = [pscustomobject]@{ ExitCode = 0 }

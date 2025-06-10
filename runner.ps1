@@ -211,8 +211,15 @@ function Invoke-Scripts {
                 exit $LASTEXITCODE
             }
 
-
+          try {
             & pwsh -NoLogo -NoProfile -Command $sb -Args $tempCfg, $scriptPath, $Verbosity 2>&1
+
+          }
+          catch {
+
+                & pwsh -NoLogo -NoProfile -ExecutionPolicy Bypass -Command $sb -Args $tempCfg, $scriptPath, $Verbosity 2>&1
+
+          }
 
             Remove-Item $tempCfg -ErrorAction SilentlyContinue
 
@@ -260,6 +267,7 @@ function Prompt-Scripts {
     $names = $ScriptFiles | ForEach-Object { $_.Name }
     $selNames = Get-MenuSelection -Items $names -Title 'Select scripts to run' -AllowAll
     if (-not $selNames) { return @() }
+    $selNames = @($selNames)  # ensure array semantics for single selections
     return $ScriptFiles | Where-Object { $selNames -contains $_.Name }
 }
 
