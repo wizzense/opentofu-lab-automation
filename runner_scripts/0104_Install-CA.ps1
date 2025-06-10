@@ -48,6 +48,8 @@ if ($role.Installed) {
 Write-CustomLog "Configuring CA: $CAName with $($ValidityYears) year validity..."
 
 if ($PSCmdlet.ShouldProcess($CAName, 'Configure Standalone Root CA')) {
+    # Resolve the cmdlet after any Pester mocks have been defined
+    Get-Command Install-AdcsCertificationAuthority -ErrorAction SilentlyContinue | Out-Null
     Install-AdcsCertificationAuthority `
         -CAType StandaloneRootCA `
         -CACommonName $CAName `
