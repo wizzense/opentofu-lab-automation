@@ -139,9 +139,6 @@ Describe 'OpenTofuInstaller' {
         }
 
     }
-    }
-
-    }
 
     Describe 'macOS defaults' {
         It 'allows -allUsers when Programfiles is missing' -Skip:(-not $IsMacOS) {
