@@ -259,13 +259,20 @@ Param([PSCustomObject]`$Config)
             'Param([PSCustomObject]$Config)
 exit 0' | Set-Content -Path $dummy
 
-            Mock Get-MenuSelection { '0001_Test.ps1' }
+            $script:idx = 0
+            Mock Get-MenuSelection {
+                if ($script:idx -eq 0) {
+                    $script:idx++
+                    return '0001_Test.ps1'
+                }
+                return @()
+            }
 
             Push-Location $tempDir
             & "$tempDir/runner.ps1" -Auto | Out-Null
             Pop-Location
 
-            Assert-MockCalled Get-MenuSelection -Times 1
+            Assert-MockCalled Get-MenuSelection -Times 2
         } finally {
             Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue
         }

@@ -11,7 +11,7 @@ Simply invoke the script with no parameters:
 ./runner.ps1
 ```
 
-You will be shown a menu to choose which scripts to run. This path is taken when the `-Scripts` parameter is omitted, as seen around lines 259-275 of `runner.ps1`.
+You will be shown a menu to choose which scripts to run. After the selected scripts complete, the menu will appear again so you can run additional scripts without restarting the runner. Type `exit` at the prompt when you are finished.
 
 ## Non-interactive mode
 
