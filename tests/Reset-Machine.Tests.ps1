@@ -9,14 +9,18 @@ Describe 'Reset-Machine script' {
         Remove-Variable -Name LogFilePath -Scope Script -ErrorAction SilentlyContinue
     }
 
-    It 'invokes sysprep and configures Remote Desktop on Windows' {
+    It 'invokes sysprep and configures Remote Desktop on Windows' -Skip:($IsLinux -or $IsMacOS) {
         Mock Get-Platform { 'Windows' }
         $sysprep = 'C:\\Windows\\System32\\Sysprep\\Sysprep.exe'
         Mock Test-Path { $true } -ParameterFilter { $Path -eq $sysprep }
         Mock Start-Process {}
         Mock Set-ItemProperty {}
+        if (-not (Get-Command New-NetFirewallRule -ErrorAction SilentlyContinue)) {
+            function global:New-NetFirewallRule {}
+        }
         Mock New-NetFirewallRule {}
-        . $script:ScriptPath -Config ([pscustomobject]@{})
+        $cfg = [pscustomobject]@{ AllowRemoteDesktop = $false; FirewallPorts = @() }
+        . $script:ScriptPath -Config $cfg
         Assert-MockCalled Start-Process -Times 1 -ParameterFilter {
             $FilePath -eq $sysprep -and $ArgumentList -eq '/generalize /oobe /shutdown /quiet' -and $Wait
         }
