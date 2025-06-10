@@ -306,7 +306,12 @@ function Invoke-Scripts {
         Join-String -Separator ', '
     Write-CustomLog "Results: $summary"
     Write-CustomLog "`n==== Script run complete ===="
-    if ($failed) { Write-CustomLog "Failures: $($failed -join ', ')"; return $false }
+    if ($failed) {
+        Write-CustomLog "Failures: $($failed -join ', ')"
+        $global:LASTEXITCODE = 1
+        return $false
+    }
+    $global:LASTEXITCODE = 0
     return $true
 }
 
@@ -340,9 +345,9 @@ function Prompt-Scripts {
 if ($Scripts) {
     if ($Scripts -eq 'all') { $sel = Select-Scripts -Spec 'all' }
     else                    { $sel = Select-Scripts -Spec $Scripts }
-    if (-not $sel -or $sel.Count -eq 0) { exit 1 }
-    if (-not (Invoke-Scripts -ScriptsToRun $sel)) { exit 1 }
-    exit 0
+    if (-not $sel -or $sel.Count -eq 0) { $global:LASTEXITCODE = 1; exit 1 }
+    Invoke-Scripts -ScriptsToRun $sel | Out-Null
+    exit $LASTEXITCODE
 }
 
 $overallSuccess = $true
@@ -356,5 +361,5 @@ while ($true) {
 }
 
 Write-CustomLog "`nAll done!"
-if (-not $overallSuccess) { exit 1 }
-exit 0
+if (-not $overallSuccess) { $global:LASTEXITCODE = 1 } else { $global:LASTEXITCODE = 0 }
+exit $LASTEXITCODE
