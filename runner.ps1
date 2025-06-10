@@ -219,7 +219,7 @@ function Select-Scripts {
 if ($Scripts) {
     if ($Scripts -eq 'all') { $sel = Select-Scripts -Input 'all' }
     else                    { $sel = Select-Scripts -Input $Scripts }
-    if (-not $sel) { exit 1 }
+    if (-not $sel -or $sel.Count -eq 0) { exit 1 }
     if (-not (Invoke-Scripts -ScriptsToRun $sel)) { exit 1 }
     exit 0
 }
