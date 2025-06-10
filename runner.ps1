@@ -282,7 +282,6 @@ function Invoke-Scripts {
                 if ($line) { Write-CustomLog $line.ToString() }
             }
 
-            Write-Output $output
             Remove-Item $tempCfg -ErrorAction SilentlyContinue
 
             $results[$s.Name] = $exitCode
@@ -305,7 +304,10 @@ function Invoke-Scripts {
 
 
     $Config | ConvertTo-Json -Depth 5 | Out-File $ConfigFile -Encoding utf8
-    $summary = $results.GetEnumerator() | ForEach-Object { "${($_.Key)}=$($_.Value)" } | Sort-Object | Join-String -Separator ', '
+    $summary = $results.GetEnumerator() |
+        ForEach-Object { "$(($_.Key))=$($_.Value)" } |
+        Sort-Object |
+        Join-String -Separator ', '
     Write-CustomLog "Results: $summary"
     Write-CustomLog "`n==== Script run complete ===="
     if ($failed) { Write-CustomLog "Failures: $($failed -join ', ')"; return $false }
