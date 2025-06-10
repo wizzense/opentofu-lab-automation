@@ -412,6 +412,35 @@ exit 0
             Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue
         }
     }
+
+    It 'logs script output exactly once' {
+        $tempDir = Join-Path ([System.IO.Path]::GetTempPath()) ([System.Guid]::NewGuid())
+        $null = New-Item -ItemType Directory -Path $tempDir
+        try {
+            Copy-Item $script:runnerPath -Destination $tempDir
+            Copy-Item (Join-Path $PSScriptRoot '..' 'runner_utility_scripts') -Destination $tempDir -Recurse
+            Copy-Item (Join-Path $PSScriptRoot '..' 'lab_utils') -Destination $tempDir -Recurse
+            Copy-Item (Join-Path $PSScriptRoot '..' 'config_files') -Destination (Join-Path $tempDir 'config_files') -Recurse
+            $scriptsDir = Join-Path $tempDir 'runner_scripts'
+            $null = New-Item -ItemType Directory -Path $scriptsDir
+            $scriptFile = Join-Path $scriptsDir '0001_Echo.ps1'
+            @"
+Param([PSCustomObject]`$Config)
+Write-Output 'hello world'
+"@ | Set-Content -Path $scriptFile
+
+            Push-Location $tempDir
+            $script:messages = @()
+            Mock Write-CustomLog { param($Message,$Level) $script:messages += $Message }
+            & "$tempDir/runner.ps1" -Scripts '0001' -Auto | Out-Null
+            Pop-Location
+
+            ($script:messages | Where-Object { $_ -match 'hello world' }).Count | Should -Be 1
+        }
+        finally {
+            Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue
+        }
+    }
 }
 
 Describe 'Set-LabConfig' {

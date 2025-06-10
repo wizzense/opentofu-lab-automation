@@ -263,17 +263,11 @@ function Invoke-Scripts {
                 exit $LASTEXITCODE
             }
 
-          try {
-            & pwsh -NoLogo -NoProfile -Command $sb -Args $tempCfg, $scriptPath, $Verbosity 2>&1
+            $output = & pwsh -NoLogo -NoProfile -Command $sb -Args $tempCfg, $scriptPath, $Verbosity *>&1
 
-          }
-          catch {
-
-            & pwsh -NoLogo -NoProfile -Command $sb -Args $tempCfg, $scriptPath, $Verbosity *>&1
-
-          }
-
-            & pwsh -NoLogo -NoProfile -Command $sb -Args $tempCfg, $scriptPath, $Verbosity 2>&1
+            foreach ($line in $output) {
+                if ($line) { Write-CustomLog $line.ToString() }
+            }
 
             Remove-Item $tempCfg -ErrorAction SilentlyContinue
 
