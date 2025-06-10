@@ -18,7 +18,7 @@ try {
     $localBase = if ($Config.LocalPath) {
         $Config.LocalPath
     } else {
-        Join-Path $env:USERPROFILE 'Documents\ServerSetup'
+        'C:\\temp'
     }
     $localBase = [System.Environment]::ExpandEnvironmentVariables($localBase)
     $repoName  = ($Config.RepoUrl -split '/')[-1] -replace '\.git$',''
