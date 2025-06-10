@@ -369,7 +369,10 @@ while ($true) {
         Write-CustomLog 'No scripts selected.'
         break
     }
+
     if (-not (Invoke-Scripts -ScriptsToRun $selection)) { $overallSuccess = $false }
+
+    if ($Auto) { continue }
 }
 
 Write-CustomLog "`nAll done!"
