@@ -42,6 +42,7 @@
     "CacertPath": "",
     "CertPath": "",
     "KeyPath": "",
+    "ProviderVersion": "1.2.1",
     "ScriptPath": "C:/Temp/tofu_%RAND%.cmd",
     "Timeout": "30s"
   },

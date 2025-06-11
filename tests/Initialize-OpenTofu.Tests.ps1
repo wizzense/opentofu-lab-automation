@@ -175,7 +175,7 @@ InModuleScope LabSetup {
             OpenTofuVersion   = 'latest'
         }
 
-        $install = Get-RunnerScriptPath '0008_Install-OpenTofu.ps1'
+        $install = Join-Path $PSScriptRoot '..' 'lab_utils' 'LabRunner' 'InvokeOpenTofuInstaller.ps1'
         $backup  = "$install.bak"
         Move-Item -Path $install -Destination $backup
         try {
