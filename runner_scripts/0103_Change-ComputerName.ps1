@@ -1,7 +1,7 @@
 Param([pscustomobject]$Config)
 Import-Module "$PSScriptRoot/../runner_utility_scripts/LabRunner.psd1"
 Invoke-LabStep -Config $Config -Body {
-    Write-CustomLog 'Running 0103_Change-ComputerName.ps1'
+    Write-CustomLog "Running $($MyInvocation.MyCommand.Name)"
 
 if ($config.SetComputerName -eq $true) {
 

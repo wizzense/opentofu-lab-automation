@@ -57,7 +57,7 @@ function Find-Gpg {
 }
 
 Invoke-LabStep -Config $Config -Body {
-    Write-CustomLog 'Running 0006_Install-ValidationTools.ps1'
+    Write-CustomLog "Running $($MyInvocation.MyCommand.Name)"
 
 # Execute based on provided switches
 if ($Config.InstallCosign -eq $true) {

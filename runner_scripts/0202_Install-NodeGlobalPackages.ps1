@@ -26,7 +26,7 @@ function Install-NodeGlobalPackages {
 
     Invoke-LabStep -Config $Config -Body {
     param($Config)
-    Write-CustomLog 'Running 0202_Install-NodeGlobalPackages.ps1'
+    Write-CustomLog "Running $($MyInvocation.MyCommand.Name)"
 <#
 .SYNOPSIS
     Installs global npm packages like yarn, vite, and nodemon using config-based logic.

@@ -12,7 +12,7 @@ function Get-SystemInfo {
     )
 
     Invoke-LabStep -Config $Config -Body {
-        Write-CustomLog 'Running 0200_Get-SystemInfo.ps1'
+        Write-CustomLog "Running $($MyInvocation.MyCommand.Name)"
         $platform = Get-Platform
         Write-CustomLog "Detected platform: $platform"
 
