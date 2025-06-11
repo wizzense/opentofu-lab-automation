@@ -29,4 +29,5 @@ jobs:
             gh copilot suggest "Fix issue #$num in ${{ github.repository }}" > suggestion.md || true
             # Post it back to the issue
             gh issue comment "$num" -F suggestion.md
+
           done
