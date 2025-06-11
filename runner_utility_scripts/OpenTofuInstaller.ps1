@@ -578,6 +578,7 @@ function installStandalone() {
                 $wrapperCmd = "& $scriptCommand $($argList -join ' ') > $($outLog | escapePathArgument) 2> $($errLog | escapePathArgument)"
                 Set-Content -Path $wrapper -Value $wrapperCmd -Encoding utf8
 
+                $global:startProcessCalled = $true
                 $subprocess = Start-Process `
                     -Verb RunAs `
                     -WorkingDirectory (Get-Location) `
