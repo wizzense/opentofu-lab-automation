@@ -531,6 +531,19 @@ if (-not $runnerScriptName) {
 Set-Location $repoPath
 if (!(Test-Path $runnerScriptName)) {
     Write-Error "ERROR: Could not find $runnerScriptName in $repoPath. Exiting."
+    Write-Host "Directory listing for $repoPath:" -ForegroundColor Yellow
+    Get-ChildItem -Path $repoPath -Recurse | Select-Object FullName
+    Write-Host @"
+Possible causes:
+- The repository clone failed or is incomplete.
+- The repository does not contain $runnerScriptName at its root.
+- The wrong branch or an empty repo was cloned.
+
+Next steps:
+- Check the output above for missing files.
+- Verify your config.RepoUrl is correct and points to a valid repository.
+- Try deleting $repoPath and rerunning this script.
+"@ -ForegroundColor Yellow
     exit 1
 }
 
