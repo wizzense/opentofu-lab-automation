@@ -2,7 +2,7 @@ from pathlib import Path
 import sys
 from types import SimpleNamespace
 
-sys.path.append(str(Path(__file__).resolve().parents[1]))
+# Line removed as the package should be installed in editable mode for testing.
 
 from labctl import lint_failures
 
