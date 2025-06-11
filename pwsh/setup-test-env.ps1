@@ -48,11 +48,11 @@ if ($UsePoetry) {
 } else {
     $pip = Get-Command pip -ErrorAction SilentlyContinue
     if (-not $pip) {
-        $pipCmd = 'python -m pip'
+        $pipCmd = @('python', '-m', 'pip')
     } else {
-        $pipCmd = $pip.Path
+        $pipCmd = @($pip.Path)
     }
-    & $pipCmd install -e "$repoRoot/py"
+    & $pipCmd install '-e' "$repoRoot/py"
 }
 
 Write-Host 'Test environment ready.'
