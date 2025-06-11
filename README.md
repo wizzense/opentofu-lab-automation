@@ -373,6 +373,16 @@ brew install --cask powershell
 pwsh -NoLogo -NoProfile -Command "Invoke-Pester"
 ```
 
+Windows-specific tests must run on a Windows host. If you don't have one
+available, rely on the CI pipeline and fetch the job results with
+`lab_utils/Get-WindowsJobArtifacts.ps1` once the run completes. A quick
+workflow is:
+
+1. Edit your files.
+2. `git commit -am "<message>"`
+3. `git push`
+4. Run `lab_utils/Get-WindowsJobArtifacts.ps1` to download the artifacts.
+
 The suite includes a YAML parsing test that is skipped unless the
 `powershell-yaml` module is installed. Install it (optionally) with:
 
