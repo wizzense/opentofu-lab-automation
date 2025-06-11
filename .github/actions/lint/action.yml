@@ -25,6 +25,7 @@ runs:
       run: |
           $settingsPath = Join-Path $PWD 'PSScriptAnalyzerSettings.psd1'
           $settings = Import-PowerShellDataFile -Path $settingsPath
+
           $files = Get-ChildItem -Path . -Recurse -Include *.ps1,*.psm1,*.psd1 -File | Select-Object -ExpandProperty FullName
           $results = $files | Invoke-ScriptAnalyzer -Severity Error,Warning -Settings $settings
           $results | Format-Table
@@ -35,7 +36,7 @@ runs:
     - name: Run Custom Script Analyzer
       shell: pwsh
       run: |
-        ./scripts/CustomLint.ps1
+        ./tools/iso/CustomLint.ps1
     - name: Run ruff
       shell: bash
       run: ruff check .

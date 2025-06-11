@@ -5,7 +5,7 @@
 #     AfterEach { Remove-Item Function:npm -ErrorAction SilentlyContinue }
 
 $SkipNonWindows = $IsLinux -or $IsMacOS
-. (Join-Path $PSScriptRoot '..' '..' 'lab_utils' 'Resolve-ProjectPath.ps1')
+. (Join-Path $PSScriptRoot '..' '..' 'pwsh' 'lab_utils' 'Resolve-ProjectPath.ps1')
 
 function global:Get-RunnerScriptPath {
     param(

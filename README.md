@@ -24,39 +24,39 @@ Powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "Invoke-WebRequest -U
 Interactive mode:
 
 ```powershell
-./runner.ps1
+./pwsh/runner.ps1
 ```
 
 Fully automated Hyper-V setup:
 
 ```powershell
-./runner.ps1 -Scripts '0006,0007,0008,0009,0010' -Auto
+./pwsh/runner.ps1 -Scripts '0006,0007,0008,0009,0010' -Auto
 ```
 
 Silence most output:
 
 ```powershell
-./runner.ps1 -Scripts '0006,0007,0008,0009,0010' -Auto -Quiet
+./pwsh/runner.ps1 -Scripts '0006,0007,0008,0009,0010' -Auto -Quiet
 ```
 
 Use a custom configuration file:
 
 ```powershell
 
-./runner.ps1 -ConfigFile path\to\config.json -Scripts '0006,0007,0008,0009,0010' -Auto
+./pwsh/runner.ps1 -ConfigFile path\to\config.json -Scripts '0006,0007,0008,0009,0010' -Auto
 
-pwsh -File runner.ps1 -ConfigFile ./config_files/full-config.json -Scripts all -Auto
+pwsh -File pwsh/runner.ps1 -ConfigFile ./configs/config_files/full-config.json -Scripts all -Auto
 
 ```
 
 Force optional script flags and show detailed logs:
 
 ```powershell
-./runner.ps1 -Scripts '0006,0007' -Auto -Force -Verbosity detailed
+./pwsh/runner.ps1 -Scripts '0006,0007' -Auto -Force -Verbosity detailed
 ```
 
 ```powershell
-pwsh -File runner.ps1 -Scripts '0006,0007,0008,0009,0010,0100,0101,0102,0103,0105,0106,0111,0112,0113,0114'
+pwsh -File pwsh/runner.ps1 -Scripts '0006,0007,0008,0009,0010,0100,0101,0102,0103,0105,0106,0111,0112,0113,0114'
 ```
 
 ### CI usage
@@ -65,25 +65,25 @@ In automation scenarios or CI jobs, call the runner using `pwsh -File` so each
 child script sees a valid `$PSScriptRoot`:
 
 ```powershell
-./runner.ps1 -Scripts all -Auto
+./pwsh/runner.ps1 -Scripts all -Auto
 ```
 
 Individual step scripts can also be invoked this way when debugging:
 
 ```powershell
-pwsh -File runner_scripts/0001_Reset-Git.ps1 -Config ./config_files/default-config.json
+pwsh -File pwsh/runner_scripts/0001_Reset-Git.ps1 -Config ./configs/config_files/default-config.json
 ```
 
 The lint workflow installs the GitHub Copilot CLI and runs `github-copilot-cli suggest`
 after linting. The command scans the repository and provides additional
 improvement ideas directly in the workflow logs.
 
-`scripts/CustomLint.ps1` performs an additional pass with project specific
-rules defined in `PSScriptAnalyzerSettings.psd1`. Run it locally to check your
+`tools/iso/CustomLint.ps1` performs an additional pass with project specific
+rules defined in `pwsh/PSScriptAnalyzerSettings.psd1`. Run it locally to check your
 PowerShell files before pushing:
 
 ```powershell
-pwsh -File scripts/CustomLint.ps1 -Target ./runner_scripts
+pwsh -File tools/iso/CustomLint.ps1 -Target ./pwsh/runner_scripts
 ```
 
 The script exits with code `1` when Script Analyzer reports any errors.
@@ -104,12 +104,12 @@ tofu apply -var="lab_config_path=./lab_config.json"
 ```
 
 The OpenTofu configuration loads its variables from a JSON file. Copy any
-example in `config_files/` (for instance `full-config.json`) to
+example in `configs/config_files/` (for instance `full-config.json`) to
 `lab_config.json` and edit it with your Hyper-V credentials, switch details and
 VM parameters. `main.tf` reads from this file via the `lab_config_path`
 variable.
 
-See [example-infrastructure/README.md](example-infrastructure/README.md) for a
+See [examples/hyperv/README.md](examples/hyperv/README.md) for a
 detailed description of each field.
 
 ## Documentation
@@ -169,16 +169,16 @@ See [docs/python-cli.md](docs/python-cli.md) for further details.
 
 
 The repo expects the latest stable code on the `main` branch. When running
-`iso_tools/bootstrap.ps1`, you can override the branch with the `-Branch`
+`tools/iso/bootstrap.ps1`, you can override the branch with the `-Branch`
 parameter if needed.
 
-Linux users can run `./kickstart-bootstrap.sh` to download the example
+Linux users can run `./pwsh/kickstart-bootstrap.sh` to download the example
 `kickstart.cfg` and launch a Kickstart-based install via `virt-install`.
 
 It will prompt print the current config and prompt you to customize it interactively. 
 The bootstrap script shows your current configuration and opens a simple menu
 based editor so you can tweak only the settings you care about. A menu option
-lets you apply the recommended defaults from `config_files/recommended-config.json`
+lets you apply the recommended defaults from `configs/config_files/recommended-config.json`
 for a quick start.
 
 
@@ -242,7 +242,7 @@ The runner script can run the following:
 Scripts `0006`–`0010` form the minimal path to a working Hyper‑V provider. On Server Core 2025 you can run them non‑interactively with:
 
 ```powershell
-./runner.ps1 -Scripts '0006,0007,0008,0009,0010' -Auto -Quiet
+./pwsh/runner.ps1 -Scripts '0006,0007,0008,0009,0010' -Auto -Quiet
 ```
 You can also pass `-Verbosity` with `silent`, `normal`, or `detailed` to control
 the amount of console logging.

@@ -8,11 +8,11 @@ def update_index() -> Path:
     data = {
         "config_files": sorted(
             str(p.relative_to(repo_root))
-            for p in (repo_root / "config_files").glob("*.json")
+            for p in (repo_root / "configs" / "config_files").glob("*.json")
         ),
         "runner_scripts": sorted(
             str(p.relative_to(repo_root))
-            for p in (repo_root / "runner_scripts").glob("*.ps1")
+            for p in (repo_root / "pwsh" / "runner_scripts").glob("*.ps1")
         ),
     }
     index_path = repo_root / "py" / "labctl" / "config_files" / "index.json"

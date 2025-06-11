@@ -2,7 +2,7 @@
 . (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
 Describe 'Format-Config' {
     BeforeAll {
-        . (Join-Path $PSScriptRoot '..' 'lab_utils' 'Format-Config.ps1')
+        . (Join-Path $PSScriptRoot '..' 'pwsh' 'lab_utils' 'Format-Config.ps1')
     }
     It 'formats config as indented JSON' {
         $cfg = [pscustomobject]@{ Foo = 'bar'; Baz = 1 }

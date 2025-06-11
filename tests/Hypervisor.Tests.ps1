@@ -2,7 +2,7 @@
 . (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
 Describe 'Hypervisor module' {
     BeforeAll {
-        Import-Module (Join-Path $PSScriptRoot '..' 'lab_utils' 'Hypervisor.psm1') -Force
+        Import-Module (Join-Path $PSScriptRoot '..' 'pwsh' 'lab_utils' 'Hypervisor.psm1') -Force
     }
 
     It 'Get-HVFacts returns provider information' {

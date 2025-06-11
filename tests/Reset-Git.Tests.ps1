@@ -133,7 +133,7 @@ Describe '0001_Reset-Git' -Skip:($SkipNonWindows) {
 
     Context 'Logging' {
         It 'logs a success message when clone succeeds' {
-            . (Join-Path $PSScriptRoot '..' 'lab_utils' 'LabRunner' 'Logger.ps1')
+            . (Join-Path $PSScriptRoot '..' 'pwsh' 'lab_utils' 'LabRunner' 'Logger.ps1')
             $tempDir = Join-Path ([System.IO.Path]::GetTempPath()) ([guid]::NewGuid())
 
             $config = [pscustomobject]@{
@@ -156,7 +156,7 @@ Describe '0001_Reset-Git' -Skip:($SkipNonWindows) {
         }
 
         It 'logs a completion message when clone succeeds' {
-            . (Join-Path $PSScriptRoot '..' 'lab_utils' 'LabRunner' 'Logger.ps1')
+            . (Join-Path $PSScriptRoot '..' 'pwsh' 'lab_utils' 'LabRunner' 'Logger.ps1')
             $tempDir = Join-Path ([System.IO.Path]::GetTempPath()) ([guid]::NewGuid())
 
             $config = [pscustomobject]@{

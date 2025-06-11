@@ -2,7 +2,7 @@
 .SYNOPSIS
   Kicker script for a fresh Windows Server Core setup with robust error handling.
 
-  1) Loads config_files/default-config.json by default (override with -ConfigFile).
+  1) Loads configs/config_files/default-config.json by default (override with -ConfigFile).
   2) Checks if command-line Git is installed and in PATH.
      - Installs a minimal version if missing.
      - Updates PATH if installed but not found in PATH.
@@ -27,7 +27,7 @@ $script:VerbosityLevels = @{ silent = 0; normal = 1; detailed = 2 }
 $script:ConsoleLevel    = $script:VerbosityLevels[$Verbosity]
 
 $targetBranch = 'main'
-$defaultConfig = "https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/refs/heads/main/config_files/default-config.json"
+$defaultConfig = "https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/refs/heads/main/configs/config_files/default-config.json"
 
 
 # example: https://raw.githubusercontent.com/wizzense/tofu-base-lab/refs/heads/main/configs/bootstrap-config.json
@@ -162,7 +162,7 @@ At the time of this writing that feature may be broken... oh well.
 
 The script will do the following if you proceed:
 
-  1) Loads config_files/default-config.json by default (override with -ConfigFile).
+  1) Loads configs/config_files/default-config.json by default (override with -ConfigFile).
   2) Checks if command-line Git is installed and in PATH.
      - Installs a minimal version if missing.
      - Updates PATH if installed but not found in PATH.
@@ -185,7 +185,7 @@ if ($configOption -match "https://") {
 } elseif ($configOption -and (Test-Path -Path $configOption)) {
     $ConfigFile = $configOption
 } else {
-    $localConfigDir = Join-Path $scriptRoot "config_files"
+    $localConfigDir = Join-Path $scriptRoot "configs" "config_files"
     if (!(Test-Path $localConfigDir)) {
         New-Item -ItemType Directory -Path $localConfigDir | Out-Null
     }
@@ -382,19 +382,19 @@ function Update-RepoPreserveConfig {
         [string]$GitPath
     )
     Push-Location $RepoPath
-    $configChanges = & $GitPath status --porcelain "config_files" 2>$null
+    $configChanges = & $GitPath status --porcelain "configs/config_files" 2>$null
     $backupDir = $null
     if ($configChanges) {
         $backupDir = Join-Path $RepoPath 'config_backup'
         Write-CustomLog "Backing up local config changes to $backupDir" 'INFO'
         if (Test-Path $backupDir) { Remove-Item -Recurse -Force $backupDir }
-        Copy-Item -Path 'config_files' -Destination $backupDir -Recurse -Force
-        & $GitPath stash push -u -- 'config_files' | Out-Null
+        Copy-Item -Path 'configs/config_files' -Destination $backupDir -Recurse -Force
+        & $GitPath stash push -u -- 'configs/config_files' | Out-Null
     }
     & $GitPath pull origin $Branch --quiet 2>&1 >> "$env:TEMP\git.log"
     if ($configChanges) {
         Write-CustomLog 'Restoring backed up config files' 'INFO'
-        Copy-Item -Path (Join-Path $backupDir '*') -Destination 'config_files' -Recurse -Force
+        Copy-Item -Path (Join-Path $backupDir '*') -Destination 'configs/config_files' -Recurse -Force
         Remove-Item -Recurse -Force $backupDir -ErrorAction SilentlyContinue
         & $GitPath stash drop --quiet | Out-Null
     }

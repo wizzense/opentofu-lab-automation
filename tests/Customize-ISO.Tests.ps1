@@ -3,7 +3,7 @@
 
 Describe 'Customize-ISO.ps1'  {
     BeforeAll {
-        $script:ScriptPath = Join-Path $PSScriptRoot '..' 'iso_tools' 'Customize-ISO.ps1'
+        $script:ScriptPath = Join-Path $PSScriptRoot '..' 'tools' 'iso' 'Customize-ISO.ps1'
     }
 
     It 'parses without errors' {

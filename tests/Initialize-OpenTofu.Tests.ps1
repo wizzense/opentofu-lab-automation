@@ -1,7 +1,7 @@
 . (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
 . (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
 Describe 'Initialize-OpenTofu script' {
-    Import-Module (Join-Path $PSScriptRoot '..' 'lab_utils' 'LabRunner' 'LabRunner.psd1') -Force
+    Import-Module (Join-Path $PSScriptRoot '..' 'pwsh' 'lab_utils' 'LabRunner' 'LabRunner.psd1') -Force
 InModuleScope LabRunner {
     BeforeAll {
         $script:ScriptPath = Get-RunnerScriptPath '0009_Initialize-OpenTofu.ps1'
@@ -175,7 +175,7 @@ InModuleScope LabRunner {
             OpenTofuVersion   = 'latest'
         }
 
-        $install = Join-Path $PSScriptRoot '..' 'lab_utils' 'LabRunner' 'InvokeOpenTofuInstaller.ps1'
+        $install = Join-Path $PSScriptRoot '..' 'pwsh' 'lab_utils' 'LabRunner' 'InvokeOpenTofuInstaller.ps1'
         $backup  = "$install.bak"
         Move-Item -Path $install -Destination $backup
         try {
