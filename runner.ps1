@@ -1,5 +1,12 @@
-[CmdletBinding(SupportsShouldProcess)]
+[CmdletBinding(SupportsShouldProcess, DefaultParameterSetName='Verbose')]
 param(
+    [Parameter(ParameterSetName='Quiet')]
+    [switch]$Quiet,
+
+    [Parameter(ParameterSetName='Verbose')]
+    [ValidateSet('silent','normal','detailed')]
+    [string]$Verbosity = 'normal',
+
     [string]$ConfigFile = (Join-Path $PSScriptRoot 'config_files/default-config.json'),
     #[string]$ConfigFile = (Join-Path $PSScriptRoot 'config_files' 'default-config.json'),
 
@@ -8,12 +15,7 @@ param(
 
     [string]$Scripts,
 
-    [switch]$Force,
-
-    [switch]$Quiet,
-
-    [ValidateSet('silent','normal','detailed')]
-    [string]$Verbosity = 'normal'
+    [switch]$Force
 )
 
 
