@@ -13,7 +13,8 @@ if (Get-Command gh -ErrorAction SilentlyContinue) {
     try {
         gh auth status --hostname github.com *> $null
         $useGh = $true
-    } else {
+    }
+    catch {
         Write-Host 'gh authentication failed; using public download URLs.' -ForegroundColor Yellow
     }
 }
