@@ -22,6 +22,7 @@ lab_utils/LabSetup/Logger.ps1: lab_utils/LabSetup/Logger.ps1
 lab_utils/LabSetup/ScriptTemplate.ps1: lab_utils/LabSetup/ScriptTemplate.ps1
 lab_utils/Menu.ps1: lab_utils/Menu.ps1
 lab_utils/Network.ps1: lab_utils/Network.ps1
+lab_utils/Resolve-ProjectPath.ps1: lab_utils/Resolve-ProjectPath.ps1
 lab_utils/__init__.py: lab_utils/__init__.py
 lab_utils/get_platform.py: lab_utils/get_platform.py
 py/labctl/__init__.py: py/labctl/__init__.py
