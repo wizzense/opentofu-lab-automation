@@ -3,18 +3,17 @@
 Describe '0102_Configure-Firewall'  {
     BeforeAll {
         $script:ScriptPath = Get-RunnerScriptPath '0102_Configure-Firewall.ps1'
+        Mock New-NetFirewallRule {}
     }
 
     It 'creates firewall rules for each port when ports are specified' {
         $cfg = [pscustomobject]@{ FirewallPorts = @(80, 443) }
-        Mock New-NetFirewallRule {}
         & $script:ScriptPath -Config $cfg
         Should -Invoke -CommandName New-NetFirewallRule -Times 2
     }
 
     It 'skips when no FirewallPorts are provided' {
         $cfg = [pscustomobject]@{ FirewallPorts = $null }
-        Mock New-NetFirewallRule {}
         & $script:ScriptPath -Config $cfg
         Should -Invoke -CommandName New-NetFirewallRule -Times 0
     }

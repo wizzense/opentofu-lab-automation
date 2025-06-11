@@ -17,6 +17,14 @@ Describe 'CustomLint.ps1' {
         $LASTEXITCODE | Should -Be 1
     }
 
+    It 'fails when Invoke-WebRequest mock lacks ParameterFilter' {
+        Mock Invoke-ScriptAnalyzer { @() }
+        $temp = Join-Path $TestDrive 'bad.ps1'
+        "Mock Invoke-WebRequest {}" | Set-Content $temp
+        & $script:ScriptPath -Target $TestDrive > $null
+        $LASTEXITCODE | Should -Be 1
+    }
+
     It 'returns exit code 0 when no errors' {
         Mock Invoke-ScriptAnalyzer { @() }
         & $script:ScriptPath -Target $PSScriptRoot > $null
