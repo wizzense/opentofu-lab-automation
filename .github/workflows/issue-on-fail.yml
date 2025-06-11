@@ -42,6 +42,7 @@ jobs:
           COMMIT_SHA: ${{ github.event.workflow_run.head_sha }}
           BRANCH_NAME: ${{ github.event.workflow_run.head_branch }}
         run: |
+          export GH_TOKEN="${GH_TOKEN}"
           run_id="${RUN_ID:-${{ github.event.workflow_run.id }}}"
           gh run download "$run_id" -D artifacts || true
 
