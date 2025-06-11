@@ -12,6 +12,12 @@
   * Hypervisor PowerShell module skeleton available.
   * **Next:** Finish cross‑platform provider implementations.
 
+### Bootstrapping
+
+Use the provided bootstrap helpers to spin up a test environment quickly. Run
+`kicker-bootstrap.ps1` on Windows or `kickstart-bootstrap.sh` on Linux. See the
+[README](README.md#quick-start) for example usage and configuration pointers.
+
 ---
 
 ## Phase 0 – House‑Keeping (1 day)
