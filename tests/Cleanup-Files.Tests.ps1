@@ -3,6 +3,7 @@
 Describe 'Cleanup-Files script' {
     BeforeAll {
         $script:scriptPath = Get-RunnerScriptPath '0000_Cleanup-Files.ps1'
+        $script:ast = Get-ScriptAst $script:scriptPath
     }
 
     BeforeEach {
@@ -13,6 +14,18 @@ Describe 'Cleanup-Files script' {
     AfterEach {
         Remove-Item -Recurse -Force $script:temp -ErrorAction SilentlyContinue
         Remove-Variable -Name LogFilePath -Scope Script -ErrorAction SilentlyContinue
+    }
+
+    It 'uses ErrorAction Stop for Remove-Item calls' {
+        $removes = $script:ast.FindAll({ param($n) $n -is [System.Management.Automation.Language.CommandAst] -and $n.GetCommandName() -eq 'Remove-Item' }, $true)
+        $removes.Count | Should -BeGreaterThan 0
+        foreach ($cmd in $removes) {
+            $ea = $cmd.CommandElements | Where-Object {
+                $_ -is [System.Management.Automation.Language.CommandParameterAst] -and $_.ParameterName -eq 'ErrorAction'
+            }
+            ($ea | Measure-Object).Count | Should -BeGreaterThan 0
+            $ea[-1].Argument.Value | Should -Be 'Stop'
+        }
     }
 
     It 'removes repo and infra directories when they exist' {
@@ -109,6 +122,26 @@ Describe 'Cleanup-Files script' {
         (Get-Location).Path | Should -Not -Be $repoPath
 
         Set-Location $orig
+    }
+
+    It 'throws when repo removal fails' {
+        $temp = $script:temp
+        $repoName = 'opentofu-lab-automation'
+        $repoPath = Join-Path $temp $repoName
+        $infraPath = Join-Path $temp 'infra'
+        $null = New-Item -ItemType Directory -Path $repoPath
+        $null = New-Item -ItemType Directory -Path $infraPath
+
+        $config = [PSCustomObject]@{
+            LocalPath     = $temp
+            RepoUrl       = "https://github.com/wizzense/$repoName.git"
+            InfraRepoPath = $infraPath
+        }
+
+        Mock Remove-Item { throw [System.IO.IOException]::new('in use') } -ParameterFilter { $Path -eq $repoPath }
+
+        { & $script:scriptPath -Config $config } |
+            Should -Throw -ErrorMessage 'Cleanup failed:'
     }
 }
 

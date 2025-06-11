@@ -37,7 +37,7 @@ try {
 
     if (Test-Path $repoPath) {
         Write-CustomLog "Removing repo path '$repoPath'..."
-        Remove-Item -Recurse -Force -Path $repoPath
+        Remove-Item -Recurse -Force -Path $repoPath -ErrorAction Stop
     } else {
         Write-CustomLog "Repo path '$repoPath' not found; skipping."
     }
@@ -45,7 +45,7 @@ try {
     $infraPath = if ($Config.InfraRepoPath) { $Config.InfraRepoPath } else { 'C:\\Temp\\base-infra' }
     if (Test-Path $infraPath) {
         Write-CustomLog "Removing infra path '$infraPath'..."
-        Remove-Item -Recurse -Force -Path $infraPath
+        Remove-Item -Recurse -Force -Path $infraPath -ErrorAction Stop
     } else {
         Write-CustomLog "Infra path '$infraPath' not found; skipping."
     }
