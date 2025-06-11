@@ -40,11 +40,12 @@ The `repo` group wraps a few common GitHub tasks. These commands require the
 ```bash
 poetry run labctl repo close-pr 123
 poetry run labctl repo close-issue 42
+poetry run labctl repo view-issue 99
 poetry run labctl repo cleanup
 ```
 
-`cleanup` removes merged remote branches while keeping the most recent branch
-per hour.
+`view-issue` prints the issue title and body as JSON, while `cleanup` removes
+merged remote branches and keeps the most recent branch per hour.
 
 ### `ui`
 Launch a simple Textual interface showing runner scripts, log output and

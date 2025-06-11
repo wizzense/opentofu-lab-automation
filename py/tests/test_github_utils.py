@@ -83,3 +83,26 @@ def test_create_issue_with_repo(monkeypatch):
     ]
 
 
+def test_view_issue(monkeypatch):
+    called = {}
+
+    def fake_check_output(cmd):
+        called["cmd"] = cmd
+        return b'{"title":"T","body":"B"}'
+
+    monkeypatch.setattr(subprocess, "check_output", fake_check_output)
+
+    runner = CliRunner()
+    result = runner.invoke(app, ["repo", "view-issue", "7"])
+    assert result.exit_code == 0
+    assert result.stdout.strip() == '{"title":"T","body":"B"}'
+    assert called["cmd"] == [
+        "gh",
+        "issue",
+        "view",
+        "7",
+        "--json",
+        "title,body",
+    ]
+
+
