@@ -18,7 +18,7 @@ jobs:
         with:
           node-version: '20'
       - name: Install Copilot CLI
-        run: npm install -g @githubnext/copilot-cli
+        run: npm install -g @githubnext/github-copilot-cli
       - name: Run Copilot suggestions
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
