@@ -2,10 +2,10 @@ if (-not $PSScriptRoot) {
     $PSScriptRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
 }
 
-#Param([pscustomobject]$Config)
+#Param([object]$Config)
 
 function Invoke-LabStep {
-    param([scriptblock]$Body, [pscustomobject]$Config)
+    param([scriptblock]$Body, [object]$Config)
     if ($Config -is [string]) {
         if (Test-Path $Config) {
             $Config = Get-Content -Raw -Path $Config | ConvertFrom-Json
