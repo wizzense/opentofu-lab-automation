@@ -4,7 +4,7 @@ function Format-Config {
         [Parameter(
             ValueFromPipeline = $true,
             ValueFromPipelineByPropertyName = $true,
-            Mandatory = $true
+            Mandatory
         )]
         [AllowNull()]
         [psobject]$Config
