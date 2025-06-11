@@ -5,7 +5,7 @@
 
 Describe '0200_Get-SystemInfo' {
     BeforeAll {
-        Import-Module (Join-Path $PSScriptRoot '..' 'runner_utility_scripts' 'LabRunner.psd1')
+        Import-Module (Join-Path $PSScriptRoot '..' 'lab_utils' 'LabRunner' 'LabRunner.psd1')
         $script:ScriptPath = Get-RunnerScriptPath '0200_Get-SystemInfo.ps1'
     }
 
@@ -42,7 +42,7 @@ Describe 'runner.ps1 executing 0200_Get-SystemInfo' {
         try {
             Copy-Item (Join-Path $PSScriptRoot '..' 'runner.ps1') -Destination $tempDir
             Copy-Item (Join-Path $PSScriptRoot '..' 'lab_utils') -Destination $tempDir -Recurse
-            Copy-Item (Join-Path $PSScriptRoot '..' 'runner_utility_scripts') -Destination $tempDir -Recurse
+            Copy-Item (Join-Path $PSScriptRoot '..' 'lab_utils' 'LabRunner') -Destination (Join-Path $tempDir 'lab_utils' 'LabRunner') -Recurse
             Copy-Item (Join-Path $PSScriptRoot '..' 'config_files') -Destination (Join-Path $tempDir 'config_files') -Recurse
             $scriptsDir = Join-Path $tempDir 'runner_scripts'
             $null = New-Item -ItemType Directory -Path $scriptsDir

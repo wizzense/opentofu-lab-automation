@@ -1,7 +1,7 @@
 . (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
 . (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
 Describe 'Initialize-OpenTofu script' {
-    Import-Module (Join-Path $PSScriptRoot '..' 'runner_utility_scripts' 'LabRunner.psd1') -Force
+    Import-Module (Join-Path $PSScriptRoot '..' 'lab_utils' 'LabRunner' 'LabRunner.psd1') -Force
 InModuleScope LabSetup {
     BeforeAll {
         $script:ScriptPath = Get-RunnerScriptPath '0009_Initialize-OpenTofu.ps1'

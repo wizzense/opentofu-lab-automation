@@ -11,7 +11,7 @@ function Invoke-OpenTofuInstaller {
         [string]$OpenTofuVersion
     )
     $installer = (
-        Resolve-Path (Join-Path $PSScriptRoot '..' 'runner_utility_scripts' 'OpenTofuInstaller.ps1')
+        Resolve-Path (Join-Path $PSScriptRoot '..' 'lab_utils' 'LabRunner' 'OpenTofuInstaller.ps1')
     ).Path
     Write-CustomLog "Running OpenTofuInstaller.ps1 with version $OpenTofuVersion"
     & $installer -installMethod standalone -cosignPath $CosignPath -opentofuVersion $OpenTofuVersion

@@ -1,6 +1,6 @@
 # ensure logging utilities are available
 if (-not (Get-Command Read-LoggedInput -ErrorAction SilentlyContinue)) {
-    $logger = Join-Path $PSScriptRoot '..' 'runner_utility_scripts' 'Logger.ps1'
+    $logger = Join-Path $PSScriptRoot '..' 'LabRunner' 'Logger.ps1'
     if (Test-Path $logger) { . $logger }
     if (-not (Get-Command Read-LoggedInput -ErrorAction SilentlyContinue)) {
         function Read-LoggedInput { param($Prompt) Read-Host $Prompt }

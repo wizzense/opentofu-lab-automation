@@ -98,7 +98,7 @@ Describe 'Runner scripts parameter and command checks'  {
             @"
 Param([pscustomobject]`$Config)
 $env:LAB_CONSOLE_LEVEL = '0'
-Import-Module "$PSScriptRoot/../runner_utility_scripts/LabRunner.psm1"
+Import-Module "$PSScriptRoot/../lab_utils/LabRunner/LabRunner.psm1"
 Invoke-LabStep -Config `$Config -Body { Write-Output `$PSScriptRoot }
 "@ | Set-Content -Path $dummy
 
