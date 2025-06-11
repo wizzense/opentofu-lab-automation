@@ -2,6 +2,11 @@ if (-not $PSScriptRoot) {
     $PSScriptRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
 }
 
+if (-not (Get-Command Get-Platform -ErrorAction SilentlyContinue)) {
+    $platformPath = Join-Path $PSScriptRoot '..' 'lab_utils' 'Get-Platform.ps1'
+    if (Test-Path $platformPath) { . $platformPath }
+}
+
 function Invoke-LabStep {
     param([scriptblock]$Body, [pscustomobject]$Config)
     if ($Config -is [string]) {
