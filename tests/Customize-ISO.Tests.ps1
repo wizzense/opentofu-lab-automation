@@ -40,6 +40,7 @@ Describe 'Customize-ISO.ps1'  {
         Mock robocopy {}
         Mock Copy-Item {}
         Mock New-Item {}
+        Mock Remove-Item {}
 
         & $script:ScriptPath -ISOPath $iso -ExtractPath $extract -MountPath $mount -SetupScript $setup -UnattendXML $unattend -OutputISO $outIso -OscdimgExe $oscExe -WIMIndex $index
 

@@ -2,7 +2,11 @@
 . (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
 Describe 'Expand-All' {
     BeforeAll {
-        . (Join-Path $PSScriptRoot '..' 'lab_utils' 'Expand-All.ps1')
+        $modulePath = Join-Path $PSScriptRoot '..' 'lab_utils' 'Expand-All.psm1'
+        if (-not (Test-Path $modulePath)) {
+            throw "Required module is missing: $modulePath"
+        }
+        Import-Module $modulePath -Force
     }
     BeforeEach {
         Mock-WriteLog

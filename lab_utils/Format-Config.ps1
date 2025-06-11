@@ -3,11 +3,19 @@ function Format-Config {
     param(
         [Parameter(Mandatory, ValueFromPipeline = $true,
                    ValueFromPipelineByPropertyName = $true)]
+        [AllowNull()]
         [pscustomobject]$Config
     )
 
     begin {
         $hasInput = $false
+
+        # Preserve validation behavior when -Config $null is passed explicitly
+        if ($PSBoundParameters.ContainsKey('Config') -and $null -eq $Config) {
+            throw [System.Management.Automation.ParameterBindingValidationException]::new(
+                "Cannot validate argument on parameter 'Config'. The argument is null or empty. Provide an argument that is not null or empty, and then try the command again."
+            )
+        }
     }
 
     process {

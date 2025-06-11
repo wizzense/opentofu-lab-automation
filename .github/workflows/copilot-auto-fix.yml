@@ -10,6 +10,8 @@ permissions:
 jobs:
   copilot-suggest:
     runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.GH_PAT_AUTOPILOT }}
 
     steps:
       - uses: actions/checkout@v4
@@ -17,14 +19,8 @@ jobs:
       # Authenticate gh with the PAT
       - name: Authenticate gh
         run: echo "${{ secrets.GH_PAT_AUTOPILOT }}" | gh auth login --hostname github.com --git-protocol https --with-token
-        
-      - uses: actions/checkout@v4
 
-      # Write the token into the gh credential store (Copilot respects this)
-      - name: Authenticate gh once
-        env:
-          GH_TOKEN: ''
-        run: echo "${{ secrets.GH_PAT_AUTOPILOT }}" | gh auth login --hostname github.com --git-protocol https --with-token
+      - uses: actions/checkout@v4
 
       # Headless defaults – never prompt
       - name: Pre-seed Copilot config
