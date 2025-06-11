@@ -2,6 +2,7 @@
 . (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
 Describe '0006_Install-ValidationTools'  {
     BeforeAll {
+        Import-Module (Join-Path $PSScriptRoot '..' 'lab_utils' 'LabRunner' 'LabRunner.psd1') -Force
         $script:ScriptPath = Get-RunnerScriptPath '0006_Install-ValidationTools.ps1'
         . (Join-Path $PSScriptRoot '..' 'lab_utils' 'LabRunner' 'Logger.ps1')
     }
