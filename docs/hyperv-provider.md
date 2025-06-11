@@ -26,3 +26,15 @@ Each argument can instead be sourced from environment variables such as `HYPERV_
 
 The `runner_scripts/0010_Prepare-HyperVHost.ps1` script installs the provider and converts the generated certificates into PEM files so that `providers.tf` works without additional steps.
 
+## Provider version
+
+Specify the Hyper-V provider version in your lab configuration under the `HyperV` section:
+
+```json
+"HyperV": {
+  "ProviderVersion": "1.2.1"
+}
+```
+
+If omitted, the scripts fall back to `1.2.1`.
+
