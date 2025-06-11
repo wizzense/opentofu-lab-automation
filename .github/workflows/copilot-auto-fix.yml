@@ -17,8 +17,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-      - name: Install GitHub CLI
-        uses: cli/cli@v2.74.1
       - name: Authenticate gh
         run: gh auth login --with-token <<< "$GITHUB_TOKEN"
         env:
