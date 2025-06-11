@@ -125,3 +125,7 @@ jobs:
                 body
               });
             }
+        - name: Set up Copilot
+          run: npm install -g @githubnext/copilot-cli
+        - name: Copilot remediation tips
+          run: copilot suggest --repo ${{ github.repository }}
