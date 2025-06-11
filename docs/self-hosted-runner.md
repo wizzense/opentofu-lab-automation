@@ -6,7 +6,11 @@ This repository can use your own machine to execute workflow jobs. The following
 
    ```powershell
    mkdir actions-runner; cd actions-runner
-   Invoke-WebRequest -Uri https://github.com/actions/runner/releases/latest/download/actions-runner-win-x64.zip -OutFile actions-runner-win-x64.zip
+   $runnerVersion = "2.325.0"
+   $runnerChecksum = "8601aa56828c084b29bdfda574af1fcde0943ce275fdbafb3e6d4a8611245b1b"
+   mkdir actions-runner; cd actions-runner
+   Invoke-WebRequest -Uri "https://github.com/actions/runner/releases/download/v$runnerVersion/actions-runner-win-x64-$runnerVersion.zip" -OutFile "actions-runner-win-x64-$runnerVersion.zip"
+
    ```
 
 2. **Configure the runner**
