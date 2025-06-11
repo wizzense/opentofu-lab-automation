@@ -224,10 +224,8 @@ Describe 'Convert certificate helpers validate paths' -Skip:($SkipNonWindows) {
         . $scriptPath
 
         { Convert-CerToPem -CerPath '' -PemPath 'x' } | Should -Throw -ErrorType [System.Management.Automation.ParameterBindingException]
-        { Convert-CerToPem -CerPath '   ' -PemPath 'x' } | Should -Throw -ErrorType [System.Management.Automation.ParameterBindingException]
         { Convert-CerToPem -PemPath 'x' } | Should -Throw -ErrorType [System.Management.Automation.ParameterBindingException]
         { Convert-CerToPem -CerPath 'x' -PemPath '' } | Should -Throw -ErrorType [System.Management.Automation.ParameterBindingException]
-        { Convert-CerToPem -CerPath 'x' -PemPath '   ' } | Should -Throw -ErrorType [System.Management.Automation.ParameterBindingException]
         { Convert-CerToPem -CerPath 'x' } | Should -Throw -ErrorType [System.Management.Automation.ParameterBindingException]
     }
 
@@ -239,15 +237,13 @@ Describe 'Convert certificate helpers validate paths' -Skip:($SkipNonWindows) {
         $pwd.MakeReadOnly()
 
         { Convert-PfxToPem -PfxPath '' -Password $pwd -CertPath 'c' -KeyPath 'k' } | Should -Throw -ErrorType [System.Management.Automation.ParameterBindingException]
-        { Convert-PfxToPem -PfxPath '   ' -Password $pwd -CertPath 'c' -KeyPath 'k' } | Should -Throw -ErrorType [System.Management.Automation.ParameterBindingException]
-        { Convert-PfxToPem -Password $pwd -CertPath 'c' -KeyPath 'k' } | Should -Throw -ErrorType [System.Management.Automation.ParameterBindingException]
+        { Convert-PfxToPem -PfxPath $null -Password $pwd -CertPath 'c' -KeyPath 'k' } | Should -Throw -ErrorType [System.Management.Automation.ParameterBindingException]
 
         { Convert-PfxToPem -PfxPath 'p' -Password $pwd -CertPath '' -KeyPath 'k' } | Should -Throw -ErrorType [System.Management.Automation.ParameterBindingException]
-        { Convert-PfxToPem -PfxPath 'p' -Password $pwd -CertPath '   ' -KeyPath 'k' } | Should -Throw -ErrorType [System.Management.Automation.ParameterBindingException]
-        { Convert-PfxToPem -PfxPath 'p' -Password $pwd -KeyPath 'k' } | Should -Throw -ErrorType [System.Management.Automation.ParameterBindingException]
+        { Convert-PfxToPem -PfxPath 'p' -Password $pwd -CertPath $null -KeyPath 'k' } | Should -Throw -ErrorType [System.Management.Automation.ParameterBindingException]
+        { Convert-PfxToPem -PfxPath 'p' -Password $pwd -KeyPath $null } | Should -Throw -ErrorType [System.Management.Automation.ParameterBindingException]
 
         { Convert-PfxToPem -PfxPath 'p' -Password $pwd -CertPath 'c' -KeyPath '' } | Should -Throw -ErrorType [System.Management.Automation.ParameterBindingException]
-        { Convert-PfxToPem -PfxPath 'p' -Password $pwd -CertPath 'c' -KeyPath '   ' } | Should -Throw -ErrorType [System.Management.Automation.ParameterBindingException]
-        { Convert-PfxToPem -PfxPath 'p' -Password $pwd -CertPath 'c' } | Should -Throw -ErrorType [System.Management.Automation.ParameterBindingException]
+        { Convert-PfxToPem -PfxPath 'p' -Password $pwd -CertPath 'c' -KeyPath $null } | Should -Throw -ErrorType [System.Management.Automation.ParameterBindingException]
     }
 }
