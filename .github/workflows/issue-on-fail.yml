@@ -45,6 +45,12 @@ jobs:
           run_id="${RUN_ID:-${{ github.event.workflow_run.id }}}"
           gh run download "$run_id" -D artifacts || true
 
+          if ls artifacts/*.zip >/dev/null 2>&1; then
+            for z in artifacts/*.zip; do
+              unzip -q "$z" -d artifacts
+            done
+          fi
+
           summary=""
           while IFS= read -r -d '' f; do
             out=$(python -m labctl.pester_failures "$f" --summary || true)
