@@ -215,6 +215,9 @@ gh run list --limit 20
 * **.github/workflows/ci.yml** – Windows job definition
 * **docs/testing.md** – general test guidelines
 
+For step-by-step examples of reading `testResults.xml` and `coverage.xml`, see
+[docs/troubleshooting.md](docs/troubleshooting.md).
+
 ---
 
 *Last updated {{DATE}}; keep this page in sync with CI changes.*
