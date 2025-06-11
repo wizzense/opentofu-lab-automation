@@ -24,7 +24,9 @@ runs:
       shell: pwsh
       run: |
           $settings = Join-Path $PWD 'PSScriptAnalyzerSettings.psd1'
-          $files = Get-ChildItem -Path . -Recurse -Include *.ps1,*.psm1,*.psd1 -File | Select-Object -ExpandProperty FullName
+          $files = Get-ChildItem -Path . -Recurse -Include *.ps1,*.psm1,*.psd1 -File |
+              Where-Object { $_.FullName -ne $settings } |
+              Select-Object -ExpandProperty FullName
           $results = $files | Invoke-ScriptAnalyzer -Severity Error,Warning -Settings $settings
           $results | Format-Table
           if ($results | Where-Object Severity -eq 'Error') {
