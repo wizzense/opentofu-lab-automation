@@ -27,6 +27,44 @@ This repository can use your own machine to execute workflow jobs. The following
    ./run.cmd
    ```
 
-   Leave this terminal open while jobs are running, or install the runner as a service.
+Leave this terminal open while jobs are running, or install the runner as a service.
+
+4. **Run as a service (optional)**
+
+   To keep the runner online after you log out, install it as a service. On Linux or macOS run:
+
+   ```bash
+   sudo ./svc.sh install
+   sudo ./svc.sh start
+   ```
+
+   On Windows use:
+
+   ```powershell
+   ./svc install
+   ./svc start
+   ```
+
+5. **Add labels and a custom name**
+
+   You can supply a friendly name and labels during configuration. For example:
+
+   ```powershell
+   ./config.cmd --url https://github.com/wizzense/opentofu-lab-automation `
+       --token <token> --name MyRunner --labels lab
+   ```
+
+   Target these labels in workflows using `runs-on: [self-hosted, lab]`.
+
+6. **Removing the runner**
+
+   Stop the service and unregister the runner when no longer needed:
+
+   ```bash
+   ./svc.sh stop && ./svc.sh uninstall   # Linux/macOS
+   ./svc stop && ./svc uninstall         # Windows
+   ```
+
+   Then run `./config.sh remove --token <token>` to delete the registration.
 
 Use `runs-on: self-hosted` in a workflow job to target your machine.
