@@ -23,20 +23,20 @@ runs:
     - name: Run Script Analyzer
       shell: pwsh
       run: |
-          $settingsPath = Join-Path $PWD 'PSScriptAnalyzerSettings.psd1'
-          $settings = Import-PowerShellDataFile -Path $settingsPath
-
-          $files = Get-ChildItem -Path . -Recurse -Include *.ps1,*.psm1,*.psd1 -File | Select-Object -ExpandProperty FullName
+          $settings = Join-Path $PWD 'PSScriptAnalyzerSettings.psd1'
+          $files = Get-ChildItem -Path . -Recurse -Include *.ps1,*.psm1,*.psd1 -File |
+              Where-Object { $_.FullName -ne $settings } |
+              Select-Object -ExpandProperty FullName
           $results = $files | Invoke-ScriptAnalyzer -Severity Error,Warning -Settings $settings
           $results | Format-Table
           if ($results | Where-Object Severity -eq 'Error') {
-            Write-Error 'ScriptAnalyzer errors detected'
-            exit 1
+              Write-Error 'ScriptAnalyzer errors detected'
+              exit 1
           }
     - name: Run Custom Script Analyzer
       shell: pwsh
       run: |
-        ./tools/iso/CustomLint.ps1
+        ./scripts/CustomLint.ps1
     - name: Run ruff
       shell: bash
       run: ruff check .
