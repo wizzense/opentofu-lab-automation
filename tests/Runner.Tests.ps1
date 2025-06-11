@@ -46,7 +46,7 @@ Describe 'runner.ps1 script selection'  {
                 Set-Content -Path (Join-Path $utils 'Logger.ps1')
 
             $labs = Join-Path $root 'lab_utils'
-            New-Item -ItemType Directory -Path $labs | Out-Null
+            New-Item -ItemType Directory -Path $labs -Force | Out-Null
             'function Get-LabConfig { param([string]$Path) Get-Content -Raw $Path | ConvertFrom-Json }' |
                 Set-Content -Path (Join-Path $labs 'Get-LabConfig.ps1')
             'function Format-Config { param($Config) $Config | ConvertTo-Json -Depth 5 }' |
