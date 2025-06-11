@@ -101,6 +101,23 @@ if (-not (Get-Command Write-CustomLog -ErrorAction SilentlyContinue)) {
             Write-Host $fmt -ForegroundColor $color
         }
     }
+
+    function Read-LoggedInput {
+        [CmdletBinding()]
+        param(
+            [Parameter(Mandatory)][string]$Prompt,
+            [switch]$AsSecureString
+        )
+
+        if ($AsSecureString) {
+            Write-CustomLog "$Prompt (secure input)"
+            return Microsoft.PowerShell.Utility\Read-Host -Prompt $Prompt -AsSecureString
+        }
+
+        $answer = Microsoft.PowerShell.Utility\Read-Host -Prompt $Prompt
+        Write-CustomLog "$($Prompt): $answer"
+        return $answer
+    }
 }
 
 # Load config helper
