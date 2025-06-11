@@ -1,4 +1,6 @@
 Param([object]$Config)
+
+Import-Module "$PSScriptRoot/../lab_utils/LabRunner/LabRunner.psm1"
 Import-Module "$PSScriptRoot/../lab_utils/LabRunner/LabRunner.psd1"
 
 # Param([pscustomobject]$Config)

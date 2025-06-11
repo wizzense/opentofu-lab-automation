@@ -3,7 +3,7 @@ Param(
     [switch]$AsJson
 )
 
-Import-Module (Join-Path $PSScriptRoot '..' 'lab_utils' 'LabRunner' 'LabRunner.psm1')
+Import-Module "$PSScriptRoot/../lab_utils/LabRunner/LabRunner.psm1"
 Write-CustomLog "Starting $MyInvocation.MyCommand"
 function Get-SystemInfo {
     [CmdletBinding()]
