@@ -74,7 +74,7 @@ if ($nodeDeps.InstallNode) {
 } else {
     Write-CustomLog "InstallNode flag is disabled. Skipping Node.js installation."
 }
-}
-}
+    }
     Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
+}
 if ($MyInvocation.InvocationName -ne '.') { Install-NodeCore @PSBoundParameters }
