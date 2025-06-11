@@ -49,6 +49,8 @@ Describe 'Customize-ISO.ps1'  {
         Should -Invoke -CommandName dism -Times 1 -ParameterFilter { $dismArgs[0] -eq '/Mount-Image' -and $dismArgs[1] -eq "/ImageFile:$wimFile" -and $dismArgs[2] -eq "/Index:$index" -and $dismArgs[3] -eq "/MountDir:$mount" }
         Should -Invoke -CommandName dism -Times 1 -ParameterFilter { $dismArgs[0] -eq '/Unmount-Image' -and $dismArgs[1] -eq "/MountDir:$mount" -and $dismArgs[2] -eq '/Commit' }
         Should -Invoke -CommandName Start-Process -Times 1 -ParameterFilter { $FilePath -eq $oscExe -and $ArgumentList[-1] -eq "`"$outIso`"" }
+        Should -Invoke -CommandName New-Item -Times 1 -ParameterFilter { $ItemType -eq 'Directory' -and $Path -eq $extract }
+        Should -Invoke -CommandName New-Item -Times 1 -ParameterFilter { $ItemType -eq 'Directory' -and $Path -eq $mount }
 
         Should -Invoke -CommandName Write-CustomLog -Times 1 -ParameterFilter { $Message -eq 'Mounting Windows ISO...' }
         Should -Invoke -CommandName Write-CustomLog -Times 1 -ParameterFilter { $Message -eq "Extracting ISO contents to $extract..." }
