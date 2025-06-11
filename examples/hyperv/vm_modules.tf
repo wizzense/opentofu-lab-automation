@@ -1,7 +1,7 @@
 # Example usage of the hyperv_vm module for various operating systems.
 
 module "tanos" {
-  source               = "../modules/vm"
+  source               = "../../modules/vm"
   vm_count             = var.tanos_vm_count
   vm_name_prefix       = "TanOS"
   hyperv_vm_path       = var.hyperv_vm_path
@@ -16,7 +16,7 @@ module "tanos" {
 }
 
 module "server_core_2025" {
-  source               = "../modules/vm"
+  source               = "../../modules/vm"
   vm_count             = var.windows_server_core_vm_count
   vm_name_prefix       = "Server-Core-2025"
   hyperv_vm_path       = var.hyperv_vm_path
@@ -31,7 +31,7 @@ module "server_core_2025" {
 }
 
 module "win11" {
-  source               = "../modules/vm"
+  source               = "../../modules/vm"
   vm_count             = var.windows_11_vm_count
   vm_name_prefix       = "Win11"
   hyperv_vm_path       = var.hyperv_vm_path
@@ -46,7 +46,7 @@ module "win11" {
 }
 
 module "win10" {
-  source               = "../modules/vm"
+  source               = "../../modules/vm"
   vm_count             = var.windows_10_vm_count
   vm_name_prefix       = "Win10"
   hyperv_vm_path       = var.hyperv_vm_path
@@ -61,7 +61,7 @@ module "win10" {
 }
 
 module "rocky94" {
-  source               = "../modules/vm"
+  source               = "../../modules/vm"
   vm_count             = var.rocky_94_vm_count
   vm_name_prefix       = "rocky94"
   hyperv_vm_path       = var.hyperv_vm_path
