@@ -16,7 +16,7 @@ jobs:
 
       # Authenticate gh with the PAT
       - name: Authenticate gh
-        run: echo "${{ secrets.GH_PAT_AUTOPILOT }}" | gh auth login --with-token
+        run: echo "${{ secrets.GH_PAT_AUTOPILOT }}" | gh auth login --hostname github.com --git-protocol https --with-token
         
       - uses: actions/checkout@v4
 
@@ -24,7 +24,7 @@ jobs:
       - name: Authenticate gh once
         env:
           GH_TOKEN: ''
-        run: echo "${{ secrets.GH_PAT_AUTOPILOT }}" | gh auth login --with-token
+        run: echo "${{ secrets.GH_PAT_AUTOPILOT }}" | gh auth login --hostname github.com --git-protocol https --with-token
 
       # Headless defaults – never prompt
       - name: Pre-seed Copilot config
