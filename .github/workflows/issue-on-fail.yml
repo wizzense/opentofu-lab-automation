@@ -28,15 +28,18 @@ jobs:
             });
             const summary = jobs.map(j => `- [${j.name}](${j.html_url}) - ${j.conclusion}`).join('\n');
             const failed = jobs.filter(j => j.conclusion !== 'success').map(j => j.name).join(', ');
-            core.setOutput('summary', summary);
-            core.setOutput('failed', failed);
+          core.setOutput('summary', summary);
+          core.setOutput('failed', failed);
+
+      - name: Install labctl
+        run: python -m pip install --quiet ./py
 
       - name: Download test results and open issues
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           RUN_URL: ${{ github.event.workflow_run.html_url }}
-          COMMIT_SHA: ${{ github.event.workflow_run.head_sha }}
-          BRANCH_NAME: ${{ github.event.workflow_run.head_branch }}
+        COMMIT_SHA: ${{ github.event.workflow_run.head_sha }}
+        BRANCH_NAME: ${{ github.event.workflow_run.head_branch }}
         # Use the triggering run ID unless RUN_ID is explicitly provided
         run: |
           run_id="${RUN_ID:-${{ github.event.workflow_run.id }}}"
