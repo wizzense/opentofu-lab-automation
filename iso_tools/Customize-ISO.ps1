@@ -65,12 +65,14 @@ if (-not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdent
     Write-CustomLog $warnMsg1 -Level WARN
     Write-Host $warnMsg1 -ForegroundColor Red
 
-    $warnMsg2 = "Rerun using: Start-Process powershell -Verb RunAs -ArgumentList '-File `\"$scriptPath`\"'"
+    $warnMsg2 = 'Rerun using: Start-Process powershell -Verb RunAs -ArgumentList ''-File "{0}"''' -f $scriptPath
     Write-CustomLog $warnMsg2 -Level WARN
     Write-Host $warnMsg2 -ForegroundColor Yellow
     if ($scriptPath) {
         try {
-            Start-Process -FilePath (Get-Process -Id $PID).Path -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `\"$scriptPath`\"" -Verb RunAs -ErrorAction Stop
+            Start-Process -FilePath (Get-Process -Id $PID).Path `
+                -ArgumentList ('-NoProfile -ExecutionPolicy Bypass -File "{0}"' -f $scriptPath) `
+                -Verb RunAs -ErrorAction Stop
             exit
         } catch {
             Write-Warning "Automatic elevation failed: $_"
