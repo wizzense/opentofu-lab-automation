@@ -1,7 +1,5 @@
 [CmdletBinding(SupportsShouldProcess)]
 param(
-    [Parameter(ParameterSetName='Normal')]
-    [Parameter(ParameterSetName='Quiet')]
     [string]$ConfigFile = (Join-Path $PSScriptRoot 'config_files/default-config.json'),
     #[string]$ConfigFile = (Join-Path $PSScriptRoot 'config_files' 'default-config.json'),
 
