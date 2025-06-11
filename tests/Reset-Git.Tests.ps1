@@ -154,5 +154,28 @@ Describe '0001_Reset-Git' -Skip:($SkipNonWindows) {
 
             Remove-Item $tempDir -Recurse -Force -ErrorAction SilentlyContinue
         }
+
+        It 'logs a completion message when clone succeeds' {
+            . (Join-Path $PSScriptRoot '..' 'runner_utility_scripts' 'Logger.ps1')
+            $tempDir = Join-Path ([System.IO.Path]::GetTempPath()) ([guid]::NewGuid())
+
+            $config = [pscustomobject]@{
+                InfraRepoUrl  = 'https://example.com/repo.git'
+                InfraRepoPath = $tempDir
+            }
+
+            Mock Get-Command { $null } -ParameterFilter { $Name -eq 'gh' }
+            Mock git {
+                $global:LASTEXITCODE = 0
+                New-Item -ItemType Directory -Path (Join-Path $tempDir '.git') -Force | Out-Null
+            }
+            Mock-WriteLog
+
+            & $script:ScriptPath -Config $config
+
+            Should -Invoke -CommandName Write-CustomLog -Times 1 -ParameterFilter { $Message -eq 'Completed 0001_Reset-Git.ps1' }
+
+            Remove-Item $tempDir -Recurse -Force -ErrorAction SilentlyContinue
+        }
     }
 }
