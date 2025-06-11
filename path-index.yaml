@@ -26,6 +26,7 @@ pwsh/lab_utils/Resolve-ProjectPath.ps1: pwsh/lab_utils/Resolve-ProjectPath.ps1
 pwsh/lab_utils/__init__.py: pwsh/lab_utils/__init__.py
 pwsh/lab_utils/get_platform.py: pwsh/lab_utils/get_platform.py
 pwsh/runner.ps1: pwsh/runner.ps1
+runner.ps1: pwsh/runner.ps1
 pwsh/runner_scripts/0000_Cleanup-Files.ps1: pwsh/runner_scripts/0000_Cleanup-Files.ps1
 pwsh/runner_scripts/0001_Reset-Git.ps1: pwsh/runner_scripts/0001_Reset-Git.ps1
 pwsh/runner_scripts/0002_Setup-Directories.ps1: pwsh/runner_scripts/0002_Setup-Directories.ps1
