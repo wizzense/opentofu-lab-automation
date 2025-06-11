@@ -11,7 +11,7 @@ New-Item -ItemType Directory -Path $tempDir | Out-Null
 $useGh = $false
 if (Get-Command gh -ErrorAction SilentlyContinue) {
     try {
-        gh 'auth status' --hostname github.com *> $null
+        gh auth status --hostname github.com *> $null
         $useGh = $true
     } catch {
         Write-Host 'gh authentication failed; using public download URLs.' -ForegroundColor Yellow
