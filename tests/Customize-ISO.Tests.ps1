@@ -7,6 +7,12 @@ Describe 'Customize-ISO.ps1' -Skip:($SkipNonWindows) {
         $script:ScriptPath = Join-Path $PSScriptRoot '..' 'iso_tools' 'Customize-ISO.ps1'
     }
 
+    It 'parses without errors' {
+        $errs = $null
+        [System.Management.Automation.Language.Parser]::ParseFile($script:ScriptPath, [ref]$null, [ref]$errs) | Out-Null
+        ($errs ? $errs.Count : 0) | Should -Be 0
+    }
+
     It 'honours parameters and logs each step' {
         $temp = Join-Path $TestDrive ([guid]::NewGuid())
         New-Item -ItemType Directory -Path $temp | Out-Null
