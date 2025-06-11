@@ -35,6 +35,12 @@ jobs:
               brew install --cask powershell
             fi
           fi
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+          cache: 'pip'
+          cache-dependency-path: .github/actions/lint/requirements.txt
       - name: Cache PowerShell modules (Windows)
         if: runner.os == 'Windows'
         uses: actions/cache@v4
@@ -65,11 +71,43 @@ jobs:
       - name: Install yamllint
         shell: bash
         run: pip install yamllint
-      - uses: ./.github/actions/lint
+      - name: Set log path
+        run: echo "LOG_FILE=lint-${{ matrix.os }}.txt" >> $GITHUB_ENV
+      - name: Install ruff
+        shell: bash
+        run: pip install "ruff>=0.1"
+      - name: Run Script Analyzer
+        shell: pwsh
+        run: |
+          $log = $env:LOG_FILE
+          $settings = Join-Path $PWD 'PSScriptAnalyzerSettings.psd1'
+          $files = Get-ChildItem -Path . -Recurse -Include *.ps1,*.psm1,*.psd1 -File |
+              Where-Object { $_.FullName -ne $settings } |
+              Select-Object -ExpandProperty FullName
+          $results = $files | Invoke-ScriptAnalyzer -Severity Error,Warning -Settings $settings
+          $results | Format-Table | Tee-Object -FilePath $log
+          if ($results | Where-Object Severity -eq 'Error') {
+              Write-Error 'ScriptAnalyzer errors detected'
+              exit 1
+          }
+      - name: Run Custom Script Analyzer
+        shell: pwsh
+        run: |
+          ./scripts/CustomLint.ps1 2>&1 | Tee-Object -FilePath $env:LOG_FILE -Append
+      - name: Run ruff
+        shell: bash
+        run: |
+          ruff check . 2>&1 | tee -a "$LOG_FILE"
       - name: Run yamllint
         shell: bash
         run: |
-          yamllint .github/workflows $(git ls-files '*.yml' '*.yaml')
+          yamllint .github/workflows $(git ls-files '*.yml' '*.yaml') 2>&1 | tee -a "$LOG_FILE"
+      - name: Upload lint log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lint-${{ matrix.os }}
+          path: ${{ env.LOG_FILE }}
       - name: Install Copilot extension
         run: gh extension install github/gh-copilot --force
       - name: Run Copilot suggestions
