@@ -43,7 +43,12 @@ Describe 'Format-Config' {
     }
 
     It 'throws when Config is null' {
-        { Format-Config -Config $null } | Should -Throw -ErrorType [System.ArgumentException]
+        try {
+            Format-Config -Config $null
+            $false | Should -BeTrue
+        } catch {
+            $_.Exception | Should -BeOfType [System.ArgumentException]
+        }
     }
 
     It 'is a terminating error when Config is null' {
