@@ -67,6 +67,7 @@ pwsh/runner_scripts/0215_Install-Chocolatey.ps1: pwsh/runner_scripts/0215_Instal
 pwsh/runner_scripts/0216_Set-LabProfile.ps1: pwsh/runner_scripts/0216_Set-LabProfile.ps1
 pwsh/runner_scripts/9999_Reset-Machine.ps1: pwsh/runner_scripts/9999_Reset-Machine.ps1
 py/labctl/__init__.py: py/labctl/__init__.py
+py/labctl/chrome_utils.py: py/labctl/chrome_utils.py
 py/labctl/cli.py: py/labctl/cli.py
 py/labctl/config_files/default-config.json: py/labctl/config_files/default-config.json
 py/labctl/config_files/full-config.json: py/labctl/config_files/full-config.json
@@ -79,6 +80,7 @@ py/labctl/pester_failures.py: py/labctl/pester_failures.py
 py/labctl/pytest_failures.py: py/labctl/pytest_failures.py
 py/labctl/ui.py: py/labctl/ui.py
 py/labctl/update_index.py: py/labctl/update_index.py
+py/tests/test_chrome_utils.py: py/tests/test_chrome_utils.py
 py/tests/test_cli.py: py/tests/test_cli.py
 py/tests/test_get_platform.py: py/tests/test_get_platform.py
 py/tests/test_github_utils.py: py/tests/test_github_utils.py
