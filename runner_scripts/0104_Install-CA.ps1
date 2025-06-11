@@ -84,3 +84,4 @@ Write-CustomLog "Standalone Root CA '$CAName' installation complete."
 }
     Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
 if ($MyInvocation.InvocationName -ne '.') { Install-CA @PSBoundParameters }
+Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"

@@ -27,3 +27,4 @@ function Install-Packer {
     Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
 }
 if ($MyInvocation.InvocationName -ne '.') { Install-Packer @PSBoundParameters }
+Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"

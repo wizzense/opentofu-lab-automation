@@ -25,3 +25,4 @@ function Install-Python {
     Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
 }
 if ($MyInvocation.InvocationName -ne '.') { Install-Python @PSBoundParameters }
+Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"

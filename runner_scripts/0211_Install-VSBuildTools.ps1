@@ -25,3 +25,4 @@ function Install-VSBuildTools {
     Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
 }
 if ($MyInvocation.InvocationName -ne '.') { Install-VSBuildTools @PSBoundParameters }
+Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"

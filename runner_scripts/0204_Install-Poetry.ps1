@@ -33,3 +33,4 @@ function Install-Poetry {
 }
 
 if ($MyInvocation.InvocationName -ne '.') { Install-Poetry @PSBoundParameters }
+Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"

@@ -25,3 +25,4 @@ function Install-Git {
     Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
 }
 if ($MyInvocation.InvocationName -ne '.') { Install-Git @PSBoundParameters }
+Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"

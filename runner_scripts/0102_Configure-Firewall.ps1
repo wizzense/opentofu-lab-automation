@@ -25,3 +25,4 @@ if ($null -ne $Config.FirewallPorts) {
 }
     Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
 }
+Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"

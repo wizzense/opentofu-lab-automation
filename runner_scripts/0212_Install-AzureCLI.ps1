@@ -25,3 +25,4 @@ function Install-AzureCLI {
     Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
 }
 if ($MyInvocation.InvocationName -ne '.') { Install-AzureCLI @PSBoundParameters }
+Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"

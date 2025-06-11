@@ -116,3 +116,4 @@ function Install-NpmDependencies {
 
     Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
 if ($MyInvocation.InvocationName -ne '.') { Install-NpmDependencies @PSBoundParameters }
+Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"

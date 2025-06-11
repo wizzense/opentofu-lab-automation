@@ -25,3 +25,4 @@ function Install-AWSCLI {
     Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
 }
 if ($MyInvocation.InvocationName -ne '.') { Install-AWSCLI @PSBoundParameters }
+Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"

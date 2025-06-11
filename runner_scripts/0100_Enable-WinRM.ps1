@@ -29,3 +29,4 @@ if ($winrmStatus -and $winrmStatus.Status -eq 'Running') {
 }
     Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
 }
+Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"

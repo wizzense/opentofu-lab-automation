@@ -51,3 +51,4 @@ if ($Config.InstallGo -eq $true) {
 }
     Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
 }
+Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"

@@ -25,3 +25,4 @@ function Install-7Zip {
     Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
 }
 if ($MyInvocation.InvocationName -ne '.') { Install-7Zip @PSBoundParameters }
+Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"

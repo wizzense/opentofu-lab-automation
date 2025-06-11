@@ -78,3 +78,4 @@ if ($nodeDeps.InstallNode) {
     Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
 }
 if ($MyInvocation.InvocationName -ne '.') { Install-NodeCore @PSBoundParameters }
+Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"

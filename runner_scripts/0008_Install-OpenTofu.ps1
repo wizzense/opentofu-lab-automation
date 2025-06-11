@@ -26,3 +26,4 @@ function Install-OpenTofu {
 }
 
 if ($MyInvocation.InvocationName -ne '.') { Install-OpenTofu @PSBoundParameters }
+Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
