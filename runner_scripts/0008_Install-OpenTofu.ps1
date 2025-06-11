@@ -1,5 +1,5 @@
 Param([pscustomobject]$Config)
-Import-Module "$PSScriptRoot/../lab_utils/LabRunner/LabRunner.psd1"
+Import-Module (Join-Path $PSScriptRoot '..' 'lab_utils' 'LabRunner' 'LabRunner.psm1')
 Write-CustomLog "Starting $MyInvocation.MyCommand"
 function Invoke-OpenTofuInstaller {
     param(
@@ -28,6 +28,7 @@ function Install-OpenTofu {
         } else {
             Write-CustomLog "InstallOpenTofu flag is disabled. Skipping OpenTofu installation."
         }
+        Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
     }
 }
 

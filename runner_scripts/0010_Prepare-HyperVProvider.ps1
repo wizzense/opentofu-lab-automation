@@ -1,5 +1,5 @@
 Param([pscustomobject]$Config)
-Import-Module "$PSScriptRoot/../lab_utils/LabRunner/LabRunner.psd1"
+Import-Module (Join-Path $PSScriptRoot '..' 'lab_utils' 'LabRunner' 'LabRunner.psm1')
 Write-CustomLog "Starting $MyInvocation.MyCommand"
 
 if (-not (Get-Command Convert-CerToPem -ErrorAction SilentlyContinue)) {
@@ -426,4 +426,5 @@ You can now run 'tofu plan'/'tofu apply' in $infraRepoPath.
     Write-CustomLog "PrepareHyperVHost flag is disabled. Skipping Hyper-V host preparation."
 }
 }
+    Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
 }

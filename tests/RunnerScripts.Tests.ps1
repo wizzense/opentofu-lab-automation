@@ -81,7 +81,7 @@ Describe 'Runner scripts parameter and command checks' -Skip:($SkipNonWindows) {
                 $_.CommandElements[1] -is [System.Management.Automation.Language.StringConstantExpressionAst] -or
                 $_.CommandElements[1] -is [System.Management.Automation.Language.ExpandableStringExpressionAst]
             ) -and
-            ([System.IO.Path]::GetFileName($_.CommandElements[1].Value) -eq 'LabRunner.psd1')
+            ([System.IO.Path]::GetFileName($_.CommandElements[1].Value) -eq 'LabRunner.psm1')
         }
 
         if (-not $found) {
@@ -98,7 +98,7 @@ Describe 'Runner scripts parameter and command checks' -Skip:($SkipNonWindows) {
             $dummy = Join-Path $tempDir 'dummy.ps1'
             @"
 Param([pscustomobject]`$Config)
-Import-Module "$PSScriptRoot/../runner_utility_scripts/LabRunner.psd1"
+Import-Module "$PSScriptRoot/../runner_utility_scripts/LabRunner.psm1"
 Invoke-LabStep -Config `$Config -Body { Write-Output `$PSScriptRoot }
 "@ | Set-Content -Path $dummy
 

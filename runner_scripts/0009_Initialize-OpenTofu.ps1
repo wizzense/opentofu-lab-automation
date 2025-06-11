@@ -1,6 +1,6 @@
 Param([pscustomobject]$Config)
 $scriptRoot = $PSScriptRoot
-Import-Module "$scriptRoot/../lab_utils/LabRunner/LabRunner.psd1"
+Import-Module (Join-Path $PSScriptRoot '..' 'lab_utils' 'LabRunner' 'LabRunner.psm1')
 Write-CustomLog "Starting $MyInvocation.MyCommand"
 $installScript      = Join-Path $scriptRoot '0008_Install-OpenTofu.ps1'
 $installerAvailable = Test-Path $installScript
@@ -217,4 +217,5 @@ exit 0
 } else {
     Write-CustomLog "InitializeOpenTofu flag is disabled. Skipping initialization."
 }
+    Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
 }
