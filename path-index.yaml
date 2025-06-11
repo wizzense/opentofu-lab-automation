@@ -84,7 +84,6 @@ py/tests/test_lint_failures.py: py/tests/test_lint_failures.py
 py/tests/test_path_index.py: py/tests/test_path_index.py
 py/tests/test_pester_failures.py: py/tests/test_pester_failures.py
 py/tests/test_pytest_failures.py: py/tests/test_pytest_failures.py
-tools/iso/CustomLint.ps1: tools/iso/CustomLint.ps1
 tools/iso/Customize-ISO.ps1: tools/iso/Customize-ISO.ps1
 tools/iso/autounattend - generic.xml: tools/iso/autounattend - generic.xml
 tools/iso/bootstrap.ps1: tools/iso/bootstrap.ps1
