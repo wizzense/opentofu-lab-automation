@@ -5,17 +5,13 @@
 
 ## Quick start
 
-The easiest way to bootstrap a fresh Windows host is to run the project’s
-`kicker-bootstrap.ps1` script. It installs Git and the GitHub CLI if needed,
-clones this repository and then launches `runner.ps1`.
+Clone this repository and run `runner.ps1` directly. PowerShell 7 or later is
+required:
 
-
-```
-
-
-Powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/refs/heads/main/kicker-bootstrap.ps1' -OutFile '.\kicker-bootstrap.ps1'; .\kicker-bootstrap.ps1 -Quiet"
-
-
+```powershell
+git clone https://github.com/wizzense/opentofu-lab-automation.git
+cd opentofu-lab-automation
+pwsh -File runner.ps1
 ```
 **Note:** These scripts require PowerShell 7 or later. Install the latest `pwsh` and use it instead of `powershell.exe`.
 
@@ -65,6 +61,22 @@ Individual step scripts can also be invoked this way when debugging:
 ```powershell
 pwsh -File runner_scripts/0001_Reset-Git.ps1 -Config ./config_files/default-config.json
 ```
+
+### Writing new runner scripts
+
+All runner steps follow a small template. Import the helper module and wrap your
+logic in `Invoke-LabScript`:
+
+```powershell
+Param([pscustomobject]$Config)
+Import-Module "$PSScriptRoot/../runner_utility_scripts/LabRunner.psm1"
+
+Invoke-LabScript -Config $Config -Body {
+    Write-CustomLog "Hello from $($MyInvocation.MyCommand.Name)"
+    # your commands here
+}
+```
+
 
 
 Clone this repository and apply the lab template:

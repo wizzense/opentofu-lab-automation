@@ -68,9 +68,14 @@ Step scripts import a small PowerShell module that provides common helpers:
 
 ```powershell
 Param([pscustomobject]$Config)
-Import-Module "$PSScriptRoot/../runner_utility_scripts/LabRunner.psd1"
+Import-Module "$PSScriptRoot/../runner_utility_scripts/LabRunner.psm1"
+
+Invoke-LabScript -Config $Config -Body {
+    Write-CustomLog "Running $($MyInvocation.MyCommand.Name)"
+    # script body goes here
+}
 ```
 
-`LabRunner` exposes functions like `Invoke-LabStep`, `Write-CustomLog` and
+`LabRunner` exposes functions like `Invoke-LabScript`, `Write-CustomLog` and
 `Get-Platform` so every script shares the same logging and platform detection
 logic.

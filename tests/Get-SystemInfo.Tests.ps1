@@ -6,7 +6,7 @@ if ($SkipNonWindows) { return }
 
 Describe '0200_Get-SystemInfo' {
     BeforeAll {
-        Import-Module (Join-Path $PSScriptRoot '..' 'runner_utility_scripts' 'LabRunner.psd1')
+        Import-Module (Join-Path $PSScriptRoot '..' 'runner_utility_scripts' 'LabRunner.psm1')
         $script:ScriptPath = Get-RunnerScriptPath '0200_Get-SystemInfo.ps1'
     }
 
