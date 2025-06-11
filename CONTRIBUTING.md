@@ -36,6 +36,14 @@ cd py && pytest
 The `task test` shortcut (defined in InvokeBuild) wraps these commands and
 executes the same steps as the CI pipeline.
 
+Whenever paths to scripts or config files change, run:
+
+```bash
+poetry run labctl repo index
+```
+
+This regenerates the packaged index used by the CLI.
+
 When adding Windows‑specific tests, guard them with
 `-Skip:($IsLinux -or $IsMacOS)` so the suite succeeds across all platforms.
 
