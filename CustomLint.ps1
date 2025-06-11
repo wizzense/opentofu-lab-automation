@@ -1,0 +1,42 @@
+name: Lint
+runs:
+  using: composite
+  steps:
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.x'
+        cache: 'pip'
+        cache-dependency-path: .github/actions/lint/requirements.txt
+    - name: Cache PowerShell modules
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.local/share/powershell/Modules
+          ~/Documents/PowerShell/Modules
+        key: ${{ runner.os }}-lint-psmodules-${{ hashFiles('.github/actions/lint/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-lint-psmodules-
+    - name: Install ruff
+      shell: bash
+      run: pip install "ruff>=0.1"
+    - name: Run Script Analyzer
+      shell: pwsh
+      run: |
+          $settings = Join-Path $PWD 'PSScriptAnalyzerSettings.psd1'
+          $files = Get-ChildItem -Path . -Recurse -Include *.ps1,*.psm1,*.psd1 -File |
+              Where-Object { $_.FullName -ne $settings } |
+              Select-Object -ExpandProperty FullName
+          $results = $files | Invoke-ScriptAnalyzer -Severity Error,Warning -Settings $settings
+          $results | Format-Table
+          if ($results | Where-Object Severity -eq 'Error') {
+              Write-Error 'ScriptAnalyzer errors detected'
+              exit 1
+          }
+    - name: Run Custom Script Analyzer
+      shell: pwsh
+      run: |
+        ./scripts/CustomLint.ps1
+    - name: Run ruff
+      shell: bash
+      run: ruff check .
