@@ -3,7 +3,6 @@ function Format-Config {
     param(
         [Parameter(Mandatory, ValueFromPipeline = $true,
                    ValueFromPipelineByPropertyName = $true)]
-        [ValidateNotNullOrEmpty()]
         [pscustomobject]$Config
     )
 
@@ -13,6 +12,13 @@ function Format-Config {
 
     process {
         $hasInput = $true
+
+        if ($null -eq $Config) {
+            throw [System.ArgumentException]::new(
+                'A configuration object must be provided via -Config or the pipeline.',
+                'Config'
+            )
+        }
 
         # Serialize the configuration object to indented JSON so nested
         # properties are easier to read in the console output.  Depth 10

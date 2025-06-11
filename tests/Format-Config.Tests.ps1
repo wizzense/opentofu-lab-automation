@@ -29,7 +29,7 @@ Describe 'Format-Config' {
             Format-Config -Config $null
             $false | Should -BeTrue
         } catch {
-            $_.Exception | Should -BeOfType [System.Management.Automation.ParameterBindingException]
+            $_.Exception | Should -BeOfType [System.ArgumentException]
         }
     }
 
@@ -43,7 +43,7 @@ Describe 'Format-Config' {
     }
 
     It 'throws when Config is null' {
-        { Format-Config -Config $null } | Should -Throw
+        { Format-Config -Config $null } | Should -Throw -ErrorType [System.ArgumentException]
     }
 
     It 'is a terminating error when Config is null' {
@@ -51,7 +51,7 @@ Describe 'Format-Config' {
             Format-Config -Config $null
             $false | Should -BeTrue
         } catch {
-            $_.Exception | Should -BeOfType [System.Management.Automation.ParameterBindingException]
+            $_.Exception | Should -BeOfType [System.ArgumentException]
         }
     }
 
