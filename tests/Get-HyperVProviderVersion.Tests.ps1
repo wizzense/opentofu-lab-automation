@@ -1,8 +1,7 @@
 . (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
 . (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
-if ($SkipNonWindows) { return }
 
-Describe 'Get-HyperVProviderVersion' -Skip:($SkipNonWindows) {
+Describe 'Get-HyperVProviderVersion'  {
     It 'parses version from main.tf' {
         $scriptPath = Get-RunnerScriptPath '0010_Prepare-HyperVProvider.ps1'
         . $scriptPath

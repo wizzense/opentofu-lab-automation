@@ -1,7 +1,6 @@
 . (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
 . (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
-if ($SkipNonWindows) { return }
-Describe '0102_Configure-Firewall' -Skip:($SkipNonWindows) {
+Describe '0102_Configure-Firewall'  {
     BeforeAll {
         $script:ScriptPath = Get-RunnerScriptPath '0102_Configure-Firewall.ps1'
     }

@@ -1,7 +1,6 @@
 . (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
 . (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
-if ($SkipNonWindows) { return }
-Describe '0100_Enable-WinRM' -Skip:($SkipNonWindows) {
+Describe '0100_Enable-WinRM'  {
     BeforeAll {
         $script:ScriptPath = Get-RunnerScriptPath '0100_Enable-WinRM.ps1'
     }

@@ -1,8 +1,7 @@
 . (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
 . (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
-if ($SkipNonWindows) { return }
 
-Describe 'Customize-ISO.ps1' -Skip:($SkipNonWindows) {
+Describe 'Customize-ISO.ps1'  {
     BeforeAll {
         $script:ScriptPath = Join-Path $PSScriptRoot '..' 'iso_tools' 'Customize-ISO.ps1'
     }

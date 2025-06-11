@@ -1,8 +1,7 @@
 . (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
 . (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
-if ($SkipNonWindows) { return }
 
-Describe '0114_Config-TrustedHosts' -Skip:($SkipNonWindows) {
+Describe '0114_Config-TrustedHosts'  {
     It 'calls Start-Process with winrm arguments using config value' {
 
         $script = Get-RunnerScriptPath '0114_Config-TrustedHosts.ps1'
