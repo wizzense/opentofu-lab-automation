@@ -65,7 +65,7 @@ if (-not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdent
     Write-CustomLog $warnMsg1 -Level WARN
     Write-Host $warnMsg1 -ForegroundColor Red
 
-    $warnMsg2 = "Rerun using: Start-Process -FilePath (Get-Process -Id `$PID).Path -ArgumentList \"-NoProfile -ExecutionPolicy Bypass -File `\"$scriptPath`\"\" -Verb RunAs -ErrorAction Stop"
+    $warnMsg2 = 'Rerun using: Start-Process -FilePath (Get-Process -Id `$PID).Path -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"{0}`"" -Verb RunAs -ErrorAction Stop' -f $scriptPath
 
     Write-CustomLog $warnMsg2 -Level WARN
     Write-Host $warnMsg2 -ForegroundColor Yellow
