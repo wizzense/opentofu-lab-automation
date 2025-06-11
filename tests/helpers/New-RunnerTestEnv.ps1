@@ -25,7 +25,7 @@ function global:New-RunnerTestEnv {
 
     $labs = Join-Path $pwshDir 'lab_utils'
     New-Item -ItemType Directory -Path $labs | Out-Null
-    Copy-Item (Join-Path $repoRoot 'pwsh' 'lab_utils' 'Resolve-ProjectPath.ps1') -Destination $labs -ErrorAction SilentlyContinue
+    Copy-Item (Join-Path $repoRoot 'pwsh' 'lab_utils' 'Resolve-ProjectPath.ps1') -Destination $labs -Force -ErrorAction SilentlyContinue
     'function Get-LabConfig { param([string]$Path) Get-Content -Raw $Path | ConvertFrom-Json }' |
         Set-Content -Path (Join-Path $labs 'Get-LabConfig.ps1')
     'function Format-Config { param($Config) $Config | ConvertTo-Json -Depth 5 }' |
