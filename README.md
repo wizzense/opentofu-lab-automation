@@ -17,38 +17,38 @@ Powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "Invoke-WebRequest -U
 
 
 ```
-**Note:** These scripts require PowerShell 7 or later. Install the latest `pwsh` and use it instead of `powershell.exe`.
+**Note:** `runner.ps1` automatically restarts with `pwsh` when invoked from Windows PowerShell. Ensure PowerShell 7 is installed and available in `PATH`.
 
 ### Runner usage
 
 Interactive mode:
 
 ```powershell
-pwsh -File runner.ps1
+./runner.ps1
 ```
 
 Fully automated Hyper-V setup:
 
 ```powershell
-pwsh -File runner.ps1 -Scripts '0006,0007,0008,0009,0010' -Auto
+./runner.ps1 -Scripts '0006,0007,0008,0009,0010' -Auto
 ```
 
 Silence most output:
 
 ```powershell
-pwsh -File runner.ps1 -Scripts '0006,0007,0008,0009,0010' -Auto -Quiet
+./runner.ps1 -Scripts '0006,0007,0008,0009,0010' -Auto -Quiet
 ```
 
 Use a custom configuration file:
 
 ```powershell
-pwsh -File runner.ps1 -ConfigFile path\to\config.json -Scripts '0006,0007,0008,0009,0010' -Auto
+./runner.ps1 -ConfigFile path\to\config.json -Scripts '0006,0007,0008,0009,0010' -Auto
 ```
 
 Force optional script flags and show detailed logs:
 
 ```powershell
-pwsh -File runner.ps1 -Scripts '0006,0007' -Auto -Force -Verbosity detailed
+./runner.ps1 -Scripts '0006,0007' -Auto -Force -Verbosity detailed
 ```
 
 ### CI usage
@@ -57,7 +57,7 @@ In automation scenarios or CI jobs, call the runner using `pwsh -File` so each
 child script sees a valid `$PSScriptRoot`:
 
 ```powershell
-pwsh -File runner.ps1 -Scripts all -Auto
+./runner.ps1 -Scripts all -Auto
 ```
 
 Individual step scripts can also be invoked this way when debugging:
