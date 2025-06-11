@@ -23,9 +23,9 @@ runs:
     - name: Run Script Analyzer
       shell: pwsh
       run: |
-          $settings = Join-Path $PWD 'PSScriptAnalyzerSettings.psd1'
-          $files = Get-ChildItem -Path . -Recurse -Include *.ps1,*.psm1,*.psd1 -File | Select-Object -ExpandProperty FullName
-          $results = $files | Invoke-ScriptAnalyzer -Severity Error,Warning -Settings $settings
+          $settingsPath = Join-Path $env:GITHUB_WORKSPACE 'PSScriptAnalyzerSettings.psd1'
+          $files = Get-ChildItem -Path $env:GITHUB_WORKSPACE -Recurse -Include *.ps1,*.psm1,*.psd1 -File | Select-Object -ExpandProperty FullName
+          $results = $files | Invoke-ScriptAnalyzer -Severity Error,Warning -Settings $settingsPath
           $results | Format-Table
           if ($results | Where-Object Severity -eq 'Error') {
             Write-Error 'ScriptAnalyzer errors detected'
