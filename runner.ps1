@@ -312,9 +312,6 @@ function Invoke-Scripts {
                     Write-Error $line.ToString()
                 } elseif ($line -is [System.Management.Automation.WarningRecord]) {
                     Write-Warning $line.ToString()
-                } elseif ($line -match '^\[\d{4}-\d{2}-\d{2} .*\] \[(INFO|WARN|ERROR)\]') {
-                    # Already logged by Write-CustomLog within the script
-                    continue
                 } else {
                     Write-CustomLog $line.ToString()
                 }
