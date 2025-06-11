@@ -428,3 +428,4 @@ You can now run 'tofu plan'/'tofu apply' in $infraRepoPath.
 }
     Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
 }
+}
