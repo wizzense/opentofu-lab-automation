@@ -9,7 +9,7 @@ Describe 'Get-WindowsJobArtifacts' {
 
     It 'uses gh CLI when authenticated' {
         Mock Get-Command { [pscustomobject]@{ Name = 'gh' } } -ParameterFilter { $Name -eq 'gh' }
-        Mock gh {} -ParameterFilter { $args[0] -eq 'auth status' }
+        Mock gh {} -ParameterFilter { $args[0] -eq 'auth' -and $args[1] -eq 'status' }
         Mock gh { '{"workflow_runs":[{"id":1}]}' } -ParameterFilter { $args[0] -like '*runs?*' }
         Mock gh { '{"artifacts":[{"name":"pester-coverage-windows-latest","archive_download_url":"cov"},{"name":"pester-results-windows-latest","archive_download_url":"res"}]}' } -ParameterFilter { $args[0] -like '*artifacts*' }
         Mock gh {} -ParameterFilter { $args[0] -eq 'cov' -or $args[0] -eq 'res' }
@@ -19,13 +19,13 @@ Describe 'Get-WindowsJobArtifacts' {
 
         & $scriptPath
 
-        Should -Invoke -CommandName gh -ParameterFilter { $args[0] -eq 'auth status' } -Times 1
+        Should -Invoke -CommandName gh -ParameterFilter { $args[0] -eq 'auth' -and $args[1] -eq 'status' } -Times 1
         Should -Not -Invoke -CommandName Invoke-WebRequest
     }
 
     It 'falls back to nightly.link when gh auth fails' {
         Mock Get-Command { [pscustomobject]@{ Name = 'gh' } } -ParameterFilter { $Name -eq 'gh' }
-        Mock gh { throw 'unauthenticated' } -ParameterFilter { $args[0] -eq 'auth status' }
+        Mock gh { throw 'unauthenticated' } -ParameterFilter { $args[0] -eq 'auth' -and $args[1] -eq 'status' }
         Mock Invoke-WebRequest {}
         Mock Expand-Archive {}
         Mock Get-ChildItem { [pscustomobject]@{ FullName = 'dummy.xml' } }
@@ -39,7 +39,7 @@ Describe 'Get-WindowsJobArtifacts' {
     It 'uses provided run ID with gh' {
         $id = 123
         Mock Get-Command { [pscustomobject]@{ Name = 'gh' } } -ParameterFilter { $Name -eq 'gh' }
-        Mock gh {} -ParameterFilter { $args[0] -eq 'auth status' }
+        Mock gh {} -ParameterFilter { $args[0] -eq 'auth' -and $args[1] -eq 'status' }
         Mock gh { '{"artifacts":[]}' } -ParameterFilter { $args[0] -like "*runs/$id/artifacts" }
         Mock Expand-Archive {}
         Mock Get-ChildItem { [pscustomobject]@{ FullName = 'dummy.xml' } }
@@ -54,7 +54,7 @@ Describe 'Get-WindowsJobArtifacts' {
     It 'uses provided run ID with nightly.link when gh auth fails' {
         $id = 456
         Mock Get-Command { [pscustomobject]@{ Name = 'gh' } } -ParameterFilter { $Name -eq 'gh' }
-        Mock gh { throw 'unauthenticated' } -ParameterFilter { $args[0] -eq 'auth status' }
+        Mock gh { throw 'unauthenticated' } -ParameterFilter { $args[0] -eq 'auth' -and $args[1] -eq 'status' }
         Mock Invoke-WebRequest {}
         Mock Expand-Archive {}
         Mock Get-ChildItem { [pscustomobject]@{ FullName = 'dummy.xml' } }
@@ -68,7 +68,7 @@ Describe 'Get-WindowsJobArtifacts' {
     It 'emits a clear message when artifacts are missing' {
         $id = 789
         Mock Get-Command { [pscustomobject]@{ Name = 'gh' } } -ParameterFilter { $Name -eq 'gh' }
-        Mock gh {} -ParameterFilter { $args[0] -eq 'auth status' }
+        Mock gh {} -ParameterFilter { $args[0] -eq 'auth' -and $args[1] -eq 'status' }
         Mock gh { '{"artifacts":[]}' } -ParameterFilter { $args[0] -like "*runs/$id/artifacts" }
         Mock Expand-Archive {}
         Mock Get-ChildItem { [pscustomobject]@{ FullName = 'dummy.xml' } }
