@@ -11,7 +11,7 @@ New-Item -ItemType Directory -Path $tempDir | Out-Null
 $useGh = $false
 if (Get-Command gh -ErrorAction SilentlyContinue) {
     try {
-        gh auth status --hostname github.com *> $null
+        gh 'auth status' --hostname github.com *> $null
         $useGh = $true
     } catch {
         Write-Host 'gh authentication failed; using public download URLs.' -ForegroundColor Yellow
@@ -20,41 +20,41 @@ if (Get-Command gh -ErrorAction SilentlyContinue) {
 
 if ($useGh) {
     if ($RunId) {
-        $artJson = gh api "repos/$Repo/actions/runs/$RunId/artifacts"
+        $artJson = gh "api repos/$Repo/actions/runs/$RunId/artifacts"
         $artifacts = (ConvertFrom-Json $artJson).artifacts
         $cov = $artifacts | Where-Object { $_.name -match 'coverage.*windows-latest' }
         $res = $artifacts | Where-Object { $_.name -match 'results.*windows-latest' }
         if ($res) {
             if ($cov) {
-                gh api $cov.archive_download_url --output (Join-Path $tempDir 'coverage.zip')
+                gh $cov.archive_download_url --output (Join-Path $tempDir 'coverage.zip')
                 if ($LASTEXITCODE -ne 0) {
                     Write-Host 'Failed to download coverage artifact.' -ForegroundColor Yellow
                 }
             }
-            gh api $res.archive_download_url --output (Join-Path $tempDir 'results.zip')
+            gh $res.archive_download_url --output (Join-Path $tempDir 'results.zip')
             if ($LASTEXITCODE -ne 0) {
                 Write-Host 'Failed to download results artifact.' -ForegroundColor Yellow
                 exit 1
             }
         } else {
-            Write-Host "No Windows test results found on run $RunId. Use gh run view $RunId for details." -ForegroundColor Yellow
+            Write-Host "No artifacts for windows-latest found on run $RunId. Use gh run view $RunId for details." -ForegroundColor Yellow
             exit 1
         }
     } else {
-        $runsJson = gh api "repos/$Repo/actions/workflows/$Workflow/runs?branch=main&status=completed&per_page=10"
+        $runsJson = gh "api repos/$Repo/actions/workflows/$Workflow/runs?branch=main&status=completed&per_page=10"
         $runs = (ConvertFrom-Json $runsJson).workflow_runs
 
         $found = $false
         foreach ($run in $runs) {
-            $artJson = gh api "repos/$Repo/actions/runs/$($run.id)/artifacts"
+            $artJson = gh "api repos/$Repo/actions/runs/$($run.id)/artifacts"
             $artifacts = (ConvertFrom-Json $artJson).artifacts
             $cov = $artifacts | Where-Object { $_.name -match 'coverage.*windows-latest' }
             $res = $artifacts | Where-Object { $_.name -match 'results.*windows-latest' }
             if ($res) {
                 if ($cov) {
-                    gh api $cov.archive_download_url --output (Join-Path $tempDir 'coverage.zip')
+                    gh $cov.archive_download_url --output (Join-Path $tempDir 'coverage.zip')
                 }
-                gh api $res.archive_download_url --output (Join-Path $tempDir 'results.zip')
+                gh $res.archive_download_url --output (Join-Path $tempDir 'results.zip')
                 $found = $true
                 break
             }
