@@ -1,4 +1,4 @@
-[CmdletBinding()]
+[CmdletBinding(SupportsShouldProcess)]
 param(
     [string]$ConfigFile = (Join-Path $PSScriptRoot 'config_files' 'default-config.json'),
     [switch]$Auto,
