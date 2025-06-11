@@ -59,7 +59,14 @@ jobs:
         shell: pwsh
         run: |
           Install-Module -Name powershell-yaml -Force -Scope CurrentUser
+      - name: Install yamllint
+        shell: bash
+        run: pip install yamllint
       - uses: ./.github/actions/lint
+      - name: Run yamllint
+        shell: bash
+        run: |
+          yamllint .github/workflows $(git ls-files '*.yml' '*.yaml')
       - name: Set up Copilot
         run: npm install -g @githubnext/github-copilot-cli
       - name: Run Copilot suggestions
