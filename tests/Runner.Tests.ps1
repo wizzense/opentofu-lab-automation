@@ -355,6 +355,33 @@ Write-Error 'err message'
         Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue
     }
 
+    It 'suppresses informational logs when -Verbosity silent is used' {
+        $tempDir   = New-RunnerTestEnv
+        $scriptsDir = Join-Path $tempDir 'runner_scripts'
+        @"
+Param([PSCustomObject]`$Config)
+Write-Warning 'warn message'
+Write-Error 'err message'
+"@ | Set-Content -Path (Join-Path $scriptsDir '0001_Log.ps1')
+
+        Push-Location $tempDir
+        $script:logLines = @()
+        $script:warnings = @()
+        $script:errors   = @()
+        function global:Write-Host { param([object]$Object,[string]$ForegroundColor) process { $script:logLines += "$Object" } }
+        function global:Write-Warning { param([string]$Message) $script:warnings += $Message }
+        function global:Write-Error   { param([string]$Message) $script:errors   += $Message }
+        $output = & "$tempDir/runner.ps1" -Scripts '0001' -Auto -Quiet *>&1
+        Pop-Location
+
+        ($script:logLines | Measure-Object).Count | Should -Be 0
+        ($output | Out-String).Trim()       | Should -BeEmpty
+        $script:warnings | Should -Contain 'warn message'
+        $script:errors   | Should -Contain 'err message'
+
+        Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue
+    }
+
     It 'prompts twice when -Auto is used without -Scripts' -Skip:($SkipNonWindows) {
         $tempDir   = New-RunnerTestEnv
         $scriptsDir = Join-Path $tempDir 'runner_scripts'
