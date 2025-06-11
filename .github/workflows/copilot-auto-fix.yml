@@ -4,47 +4,49 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write          # push patches
-  pull-requests: write     # open/update PRs
-  issues: write            # add comments
+  contents: write
+  pull-requests: write
+  issues: write
 
 jobs:
-  comment-suggestions:
+  copilot-suggest:
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v4
 
-      # 1 Authenticate the GitHub CLI with your PAT (OAuth token)
+      # Authenticate once with your PAT
       - name: Authenticate gh
         run: echo "${{ secrets.GH_PAT_AUTOPILOT }}" | gh auth login --with-token
 
-      # 2 Disable analytics + interactive confirmations so the step never hangs
-      - name: Pre-seed Copilot config (headless)
+      # Headless defaults so the CLI never pauses
+      - name: Pre-seed Copilot config
         run: |
-          mkdir -p $HOME/.config/gh-copilot
+          mkdir -p "$HOME/.config/gh-copilot"
           printf '%s\n' \
             'optional_analytics: false' \
             'suggest_execute_confirm_default: false' \
-            > $HOME/.config/gh-copilot/config.yml
+            > "$HOME/.config/gh-copilot/config.yml"
 
-      # 3 Install / upgrade the Copilot CLI extension
-      - name: Install (or upgrade) Copilot extension
+      # Install / upgrade the Copilot extension
+      - name: Install Copilot extension
         run: gh extension install github/gh-copilot --force
 
-      # 4 Post a Copilot suggestion back to every open issue
+      # Loop through every open issue, ask Copilot, post the answer
       - name: Suggest fixes for each open issue
         env:
-          GH_TOKEN: ${{ secrets.GH_PAT_AUTOPILOT }}   # reused inside loop
+          GH_TOKEN: ${{ secrets.GH_PAT_AUTOPILOT }}
         run: |
           for num in $(gh issue list --state open --json number -q '.[].number'); do
             title=$(gh issue view "$num" --json title -q .title)
-            body=$(gh issue view "$num" --json body  -q .body)
+            body=$(gh issue view "$num"  --json body  -q .body)
 
-            prompt="Please propose a concise patch diff to fix issue #$num ($title) in ${{ github.repository }}. Context:\n$body"
-            # -t code → ask for a code patch
-            # -w 0    → no “watch”/re-ask loop (returns once)
-            gh copilot suggest "$prompt" -t code -w 0 > suggestion.md || true
+            prompt="Propose a concise git diff or detailed steps to fix issue #$num ($title) in ${{ github.repository }}.\n\nContext:\n$body"
+            gh copilot suggest "$prompt" -w 0 > suggestion.md || true
 
-            gh issue comment "$num" -F suggestion.md
+            if [ -s suggestion.md ]; then
+              gh issue comment "$num" -F suggestion.md
+            else
+              echo "No suggestion generated for issue #$num"
+            fi
           done
