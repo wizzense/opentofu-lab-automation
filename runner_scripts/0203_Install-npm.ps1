@@ -3,13 +3,13 @@ Param(
     [pscustomobject]$Config
 )
 
-Import-Module "$PSScriptRoot/../runner_utility_scripts/LabRunner.psd1"
+Import-Module "$PSScriptRoot/../lab_utils/LabRunner.psd1"
 function Install-NpmDependencies {
     [CmdletBinding(SupportsShouldProcess = $true)]
     param([pscustomobject]$Config)
 
 
-    Invoke-LabStep -Config $Config -Body {
+    Invoke-LabScript -Config $Config -Body {
         param($Config)
 
         Write-CustomLog "Running $($MyInvocation.MyCommand.Name)"

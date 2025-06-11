@@ -3,9 +3,9 @@ if (-not $PSScriptRoot) {
 }
 
 #Param([pscustomobject]$Config)
-Import-Module "$PSScriptRoot/../runner_utility_scripts/LabRunner.psd1"
+Import-Module "$PSScriptRoot/../lab_utils/LabRunner.psd1"
 
-function Invoke-LabStep {
+function Invoke-LabScript {
     param([scriptblock]$Body, [pscustomobject]$Config)
     if ($Config -is [string]) {
         if (Test-Path $Config) {
@@ -30,7 +30,12 @@ function Invoke-LabStep {
     }
 }
 
-Invoke-LabStep -Config $Config -Body {
+function Invoke-LabStep {
+    param([scriptblock]$Body, [pscustomobject]$Config)
+    Invoke-LabScript -Body $Body -Config $Config
+}
+
+Invoke-LabScript -Config $Config -Body {
     Write-CustomLog "Running $($MyInvocation.MyCommand.Name)"
 
 }

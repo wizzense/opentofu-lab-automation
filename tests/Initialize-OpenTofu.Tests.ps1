@@ -3,6 +3,7 @@
 if ($SkipNonWindows) { return }
 Describe 'Initialize-OpenTofu script' {
     BeforeAll {
+        Import-Module (Join-Path $PSScriptRoot '..' 'lab_utils' 'LabRunner.psd1')
         $script:ScriptPath = Get-RunnerScriptPath '0009_Initialize-OpenTofu.ps1'
     }
     AfterEach {

@@ -56,13 +56,13 @@ Describe 'Runner scripts parameter and command checks' -Skip:($SkipNonWindows) {
         }
     }
 
-    It 'contains Invoke-LabStep call' -TestCases $testCases {
+    It 'contains Invoke-LabScript call' -TestCases $testCases {
         param($File, $Commands)
         $ast = Get-ScriptAst $File.FullName
         $commands = if ($ast) { $ast.FindAll({ param($n) $n -is [System.Management.Automation.Language.CommandAst] }, $true) } else { @() }
-        $found = $commands | Where-Object { $_.GetCommandName() -eq 'Invoke-LabStep' }
+        $found = $commands | Where-Object { $_.GetCommandName() -eq 'Invoke-LabScript' }
         if (-not $found) {
-            Write-Host "Invoke-LabStep not found in $($File.FullName)"
+            Write-Host "Invoke-LabScript not found in $($File.FullName)"
         }
         ($found | Measure-Object).Count | Should -BeGreaterThan 0
     }
@@ -98,8 +98,8 @@ Describe 'Runner scripts parameter and command checks' -Skip:($SkipNonWindows) {
             $dummy = Join-Path $tempDir 'dummy.ps1'
             @"
 Param([pscustomobject]`$Config)
-Import-Module "$PSScriptRoot/../runner_utility_scripts/LabRunner.psd1"
-Invoke-LabStep -Config `$Config -Body { Write-Output `$PSScriptRoot }
+Import-Module "$PSScriptRoot/../lab_utils/LabRunner.psd1"
+Invoke-LabScript -Config `$Config -Body { Write-Output `$PSScriptRoot }
 "@ | Set-Content -Path $dummy
 
             $pwsh = (Get-Command pwsh).Source

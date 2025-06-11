@@ -1,6 +1,6 @@
 Param([pscustomobject]$Config)
-Import-Module "$PSScriptRoot/../runner_utility_scripts/LabRunner.psd1"
-Invoke-LabStep -Config $Config -Body {
+Import-Module "$PSScriptRoot/../lab_utils/LabRunner.psd1"
+Invoke-LabScript -Config $Config -Body {
     Write-CustomLog "Running $($MyInvocation.MyCommand.Name)"
 
 # Check current Remote Desktop status

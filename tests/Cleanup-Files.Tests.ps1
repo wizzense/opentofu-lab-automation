@@ -3,6 +3,7 @@
 if ($SkipNonWindows) { return }
 Describe 'Cleanup-Files script' {
     BeforeAll {
+        Import-Module (Join-Path $PSScriptRoot '..' 'lab_utils' 'LabRunner.psd1')
         $script:scriptPath = Get-RunnerScriptPath '0000_Cleanup-Files.ps1'
     }
 

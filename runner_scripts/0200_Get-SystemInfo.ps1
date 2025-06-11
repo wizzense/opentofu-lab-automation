@@ -3,7 +3,7 @@ Param(
     [switch]$AsJson
 )
 
-Import-Module "$PSScriptRoot/../runner_utility_scripts/LabRunner.psd1"
+Import-Module "$PSScriptRoot/../lab_utils/LabRunner.psd1"
 function Get-SystemInfo {
     [CmdletBinding()]
     param(
@@ -11,7 +11,7 @@ function Get-SystemInfo {
         [pscustomobject]$Config
     )
 
-    Invoke-LabStep -Config $Config -Body {
+    Invoke-LabScript -Config $Config -Body {
         Write-CustomLog "Running $($MyInvocation.MyCommand.Name)"
         $platform = Get-Platform
         Write-CustomLog "Detected platform: $platform"

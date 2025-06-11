@@ -1,5 +1,5 @@
 Param([pscustomobject]$Config)
-Import-Module "$PSScriptRoot/../runner_utility_scripts/LabRunner.psd1"
+Import-Module "$PSScriptRoot/../lab_utils/LabRunner.psd1"
 
 function Get-WacRegistryInstallation {
     param(
@@ -16,7 +16,7 @@ function Get-WacRegistryInstallation {
     return $null
 }
 
-Invoke-LabStep -Config $Config -Body {
+Invoke-LabScript -Config $Config -Body {
     Write-CustomLog "Running $($MyInvocation.MyCommand.Name)"
 
 if ($Config.InstallWAC -eq $true) {
