@@ -2,14 +2,10 @@ Param([object]$Config)
 Import-Module "$PSScriptRoot/../lab_utils/LabRunner/LabRunner.psd1"
 $scriptRoot = $PSScriptRoot
 Write-CustomLog "Starting $MyInvocation.MyCommand"
-$installScript      = Join-Path $scriptRoot '0008_Install-OpenTofu.ps1'
-$installerAvailable = Test-Path $installScript
-if ($installerAvailable) {
-    if (-not (Get-Command Invoke-OpenTofuInstaller -ErrorAction SilentlyContinue)) {
-        . $installScript
-    }
-} else {
-    Write-Warning "Install script '$installScript' not found. OpenTofu installation commands will be unavailable."
+$installerPath      = Join-Path $scriptRoot '..' 'lab_utils' 'LabRunner' 'OpenTofuInstaller.ps1'
+$installerAvailable = Test-Path $installerPath
+if (-not $installerAvailable) {
+    Write-Warning "Install script '$installerPath' not found. OpenTofu installation commands will be unavailable."
 }
 Invoke-LabStep -Config $Config -Body {
     Write-CustomLog "Running $($MyInvocation.MyCommand.Name)"
@@ -152,7 +148,7 @@ if (-not $tofuCmd) {
         if ($installerAvailable -and (Get-Command Invoke-OpenTofuInstaller -ErrorAction SilentlyContinue)) {
             Invoke-OpenTofuInstaller -CosignPath $cosign -OpenTofuVersion $version
         } else {
-            Write-Error "Cannot install OpenTofu because the installer script '$installScript' is missing."
+            Write-Error "Cannot install OpenTofu because the installer script '$installerPath' is missing."
             exit 1
         }
         $tofuCmd = Get-Command tofu -ErrorAction SilentlyContinue
