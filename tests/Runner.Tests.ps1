@@ -1,5 +1,6 @@
 . (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
 . (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
+. (Join-Path $PSScriptRoot 'helpers' 'New-RunnerTestEnv.ps1')
 # These tests exercise logic that works on all platforms. Avoid skipping when
 # running on Linux or macOS so we can verify behaviour in CI.
 $script:SkipNonWindows = $false
@@ -72,7 +73,13 @@ Describe 'runner.ps1 script selection'  {
             return $root
         }
     }
+    
     AfterEach {
+        try {
+            Remove-RunnerTestEnv
+        } catch {
+            Write-Warning "Failed to clean up test environment: $_"
+        }
         Remove-Item Function:Write-Host -ErrorAction SilentlyContinue
         Remove-Item Function:Read-LoggedInput -ErrorAction SilentlyContinue
         Remove-Item Function:Write-Warning -ErrorAction SilentlyContinue
@@ -94,7 +101,6 @@ exit 0" | Set-Content -Path $dummy
 
         Should -Invoke -CommandName Get-MenuSelection -Times 0
 
-        Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue
     }
 
     It 'uses pwsh from PSHOME when not in PATH' {
@@ -118,7 +124,6 @@ exit 0" | Set-Content -Path $dummy
 
         $code | Should -Be 0
 
-        Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue
     }
 
     It 'relaunches under pwsh when invoked from PowerShell 5' {
@@ -154,9 +159,7 @@ echo stub > \"$outFile\"
         }
 
         Test-Path $outFile | Should -BeTrue
-        Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue
     }
-
     It 'exits with code 1 when -Scripts has no matching prefixes' {
         $tempDir   = New-RunnerTestEnv
         Push-Location $tempDir
@@ -167,9 +170,7 @@ echo stub > \"$outFile\"
 
         $code | Should -Be 1
 
-        Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue
     }
-
     It 'continues executing all scripts even if one fails' {
         $tempDir   = New-RunnerTestEnv
         $scriptsDir = Join-Path $tempDir 'runner_scripts'
@@ -198,9 +199,7 @@ exit 0
         Test-Path $out2 | Should -BeTrue
         $code | Should -Be 1
 
-        Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue
     }
-
     It 'continues executing all scripts when one throws' {
         $tempDir   = New-RunnerTestEnv
         $scriptsDir = Join-Path $tempDir 'runner_scripts'
@@ -229,9 +228,7 @@ exit 0
         Test-Path $out2 | Should -BeTrue
         $code | Should -Be 1
 
-        Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue
     }
-
     It 'runs only cleanup script when 0000 is combined with others in Auto mode' {
         $tempDir   = New-RunnerTestEnv
         $scriptsDir = Join-Path $tempDir 'runner_scripts'
@@ -260,9 +257,7 @@ exit 0
         Test-Path $out2 | Should -BeFalse
         $code | Should -Be 0
 
-        Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue
     }
-
     It 'forces script execution when flag disabled using -Force' {
         $tempDir   = New-RunnerTestEnv
         $configDir = Join-Path $tempDir 'config_files'
@@ -289,9 +284,7 @@ if (`$Config.RunFoo -eq `$true) { 'foo' | Out-File -FilePath "$out" } else { Wri
         $updated1.RunFoo | Should -BeTrue
         $updated2.RunFoo | Should -BeTrue
 
-        Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue
     }
-
     It 'skips script action when flag disabled and -Force not used' {
         $tempDir   = New-RunnerTestEnv
         $configDir = Join-Path $tempDir 'config_files'
@@ -318,9 +311,7 @@ if (`$Config.RunFoo -eq `$true) { 'foo' | Out-File -FilePath "$out" }
         $updated1.RunFoo | Should -BeFalse
         $updated2.RunFoo | Should -BeFalse
 
-        Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue
     }
-
     It 'reports success when script omits an exit statement' {
         $tempDir   = New-RunnerTestEnv
         $scriptsDir = Join-Path $tempDir 'runner_scripts'
@@ -340,9 +331,7 @@ Param([PSCustomObject]`$Config)
         Test-Path $out | Should -BeTrue
         $code | Should -Be 0
 
-        Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue
     }
-
     It 'suppresses informational logs when -Verbosity silent is used' {
         $tempDir   = New-RunnerTestEnv
         $scriptsDir = Join-Path $tempDir 'runner_scripts'
@@ -371,9 +360,7 @@ Write-Error 'err message'
         $script:warnings | Should -Contain 'warn message'
         $script:errors   | Should -Contain 'err message'
 
-        Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue
     }
-
     It 'suppresses informational logs when -Quiet is used' {
         $tempDir   = New-RunnerTestEnv
         $scriptsDir = Join-Path $tempDir 'runner_scripts'
@@ -399,9 +386,7 @@ Write-Error 'err message'
         $script:warnings | Should -Contain 'warn message'
         $script:errors   | Should -Contain 'err message'
 
-        Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue
     }
-
     It 'suppresses informational logs when -Verbosity silent is used' {
         $tempDir   = New-RunnerTestEnv
         $scriptsDir = Join-Path $tempDir 'runner_scripts'
@@ -427,9 +412,7 @@ Write-Error 'err message'
         $script:warnings | Should -Contain 'warn message'
         $script:errors   | Should -Contain 'err message'
 
-        Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue
     }
-
     It 'prompts twice when -Auto is used without -Scripts'  {
         $tempDir   = New-RunnerTestEnv
         $scriptsDir = Join-Path $tempDir 'runner_scripts'
@@ -448,9 +431,7 @@ exit 0" | Set-Content -Path (Join-Path $scriptsDir '0001_Test.ps1')
 
         Should -Invoke -CommandName Get-MenuSelection -Times 2
 
-        Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue
     }
-
     It 'handles empty or invalid selection by logging and doing nothing'  {
         $tempDir   = New-RunnerTestEnv
         $scriptsDir = Join-Path $tempDir 'runner_scripts'
@@ -473,9 +454,7 @@ exit 0
         Should -Invoke -CommandName Write-CustomLog -Times 1 -ParameterFilter { $Message -eq 'No scripts selected.' }
         Should -Invoke -CommandName Get-MenuSelection -Times 1
 
-        Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue
     }
-
     It 'logs script output exactly once' {
         $tempDir   = New-RunnerTestEnv
         $scriptsDir = Join-Path $tempDir 'runner_scripts'
@@ -496,9 +475,7 @@ Write-CustomLog 'hello world'
         ($script:messages | Where-Object { $_ -like 'Starting *' }).Count | Should -Be 1
         ($script:messages | Where-Object { $_ -like 'Completed *' }).Count | Should -Be 1
 
-        Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue
     }
-
     It 'pipes Get-SystemInfo output to the caller' {
         $tempDir   = New-RunnerTestEnv
         $scriptsDir = Join-Path $tempDir 'runner_scripts'
@@ -515,9 +492,7 @@ Write-CustomLog 'hello world'
         $text = $output -join [Environment]::NewLine
         $text | Should -Match 'ComputerName'
 
-        Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue
     }
-}
 
 Describe 'Set-LabConfig' {
     BeforeAll {

@@ -60,8 +60,8 @@ Describe 'Read-LoggedInput' {
     }
     It 'handles secure strings without logging value' {
         Mock Write-CustomLog {}
-        $sec = New-Object System.Security.SecureString
-        function global:Read-Host { param($Prompt, [switch]$AsSecureString) $sec }
+        $sec = [System.Security.SecureString]::new()
+        function global:Read-Host { param([string]$Prompt, [switch]$AsSecureString) if ($AsSecureString) { return $sec } 'val' }
         Read-LoggedInput -Prompt 'Secret' -AsSecureString | Should -Be $sec
         Should -Invoke -CommandName Write-CustomLog -Times 1 -ParameterFilter { $Message -eq 'Secret (secure input)' }
     }

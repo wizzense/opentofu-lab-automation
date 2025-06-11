@@ -418,4 +418,4 @@ Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
 }
 }
 }
-Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
+
