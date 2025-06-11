@@ -24,9 +24,14 @@ Describe 'Format-Config' {
         $result | Should -Match '"Foo"\s*:\s*"prop"'
     }
 
-    It 'fails when no Config is provided' {
+    It 'throws when no Config is provided' {
         { Format-Config } |
-            Should -Throw -ErrorType System.Management.Automation.ParameterBindingException
+            Should -Throw -ErrorType System.ArgumentException
+    }
+
+    It 'throws when pipeline is empty' {
+        { @() | Format-Config } |
+            Should -Throw -ErrorType System.ArgumentException
     }
 
     It 'throws when Config is null' {
