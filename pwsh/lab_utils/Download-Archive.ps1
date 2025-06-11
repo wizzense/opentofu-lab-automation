@@ -11,7 +11,9 @@ function Download-Archive {
         gh api $Url --output $Destination
         if ($LASTEXITCODE -ne 0) {
             Write-Host "Failed to download $(Split-Path $Destination -Leaf) artifact." -ForegroundColor Yellow
-            if ($Required) { exit 1 }
+            if ($Required) {
+                throw "Download failed for required artifact: $(Split-Path $Destination -Leaf)."
+            }
         }
     }
     else {
@@ -21,7 +23,9 @@ function Download-Archive {
         }
         catch {
             Write-Host "Failed to download $(Split-Path $Destination -Leaf) artifact anonymously." -ForegroundColor Yellow
-            if ($Required) { exit 1 }
+            if ($Required) {
+                throw "Download failed for required artifact: $(Split-Path $Destination -Leaf)."
+            }
         }
     }
 }

@@ -5,7 +5,7 @@ Import-Module (Join-Path $PSScriptRoot '..' 'pwsh' 'lab_utils' 'LabRunner' 'LabR
 InModuleScope LabSetup {
 Describe 'Get-WindowsJobArtifacts' {
     BeforeAll {
-        $scriptPath = Join-Path $PSScriptRoot '..' 'pwsh' 'lab_utils' 'Get-WindowsJobArtifacts.ps1'
+        $global:scriptPath = Join-Path $PSScriptRoot '..' 'pwsh' 'lab_utils' 'Get-WindowsJobArtifacts.ps1'
     }
 
     BeforeAll {
@@ -16,53 +16,58 @@ Describe 'Get-WindowsJobArtifacts' {
     }
 
     It 'uses gh CLI when authenticated' {
+        function global:gh {}
         Mock Get-Command { [pscustomobject]@{ Name = 'gh' } } -ParameterFilter { $Name -eq 'gh' }
         Mock gh {} -ParameterFilter { $args[0] -eq 'auth' -and $args[1] -eq 'status' }
         Mock gh { '{"workflow_runs":[{"id":1}]}' } -ParameterFilter { $args[1] -like '*runs?*' }
         Mock gh { '{"artifacts":[{"name":"pester-coverage-windows-latest","archive_download_url":"cov"},{"name":"pester-results-windows-latest","archive_download_url":"res"}]}' } -ParameterFilter { $args[1] -like '*artifacts*' }
         Mock gh {} -ParameterFilter { $args[1] -eq 'cov' -or $args[1] -eq 'res' }
 
-        & $scriptPath
+        & $global:scriptPath
 
         Should -Invoke -CommandName gh -ParameterFilter { $args[0] -eq 'auth' -and $args[1] -eq 'status' } -Times 1
         Should -Not -Invoke -CommandName Invoke-WebRequest
     }
 
     It 'falls back to nightly.link when gh auth fails' {
+        function global:gh {}
         Mock Get-Command { [pscustomobject]@{ Name = 'gh' } } -ParameterFilter { $Name -eq 'gh' }
         Mock gh { throw 'unauthenticated' } -ParameterFilter { $args[0] -eq 'auth' -and $args[1] -eq 'status' }
 
 
-        & $scriptPath
+        & $global:scriptPath
 
         Should -Invoke -CommandName Invoke-WebRequest -Times 1 -ParameterFilter { $Uri -match 'nightly\.link' }
     }
 
     It 'uses provided run ID with gh' {
+        function global:gh {}
         $id = 123
         Mock Get-Command { [pscustomobject]@{ Name = 'gh' } } -ParameterFilter { $Name -eq 'gh' }
         Mock gh {} -ParameterFilter { $args[0] -eq 'auth' -and $args[1] -eq 'status' }
         Mock gh { '{"artifacts":[]}' } -ParameterFilter { $args[1] -like "*runs/$id/artifacts" }
 
 
-        & $scriptPath -RunId $id
+        & $global:scriptPath -RunId $id
 
         Should -Invoke -CommandName gh -ParameterFilter { $args[1] -like "*runs/$id/artifacts" } -Times 1
         Should -Not -Invoke -CommandName Invoke-WebRequest
     }
 
     It 'uses provided run ID with nightly.link when gh auth fails' {
+        function global:gh {}
         $id = 456
         Mock Get-Command { [pscustomobject]@{ Name = 'gh' } } -ParameterFilter { $Name -eq 'gh' }
         Mock gh { throw 'unauthenticated' } -ParameterFilter { $args[0] -eq 'auth' -and $args[1] -eq 'status' }
         Mock Invoke-WebRequest -ModuleName LabSetup {}
 
-        & $scriptPath -RunId $id
+        & $global:scriptPath -RunId $id
 
         Should -Invoke -CommandName Invoke-WebRequest -ParameterFilter { $Uri -match "$id" } -Times 2
     }
 
     It 'emits a clear message when artifacts are missing' {
+        function global:gh {}
         $id = 789
         Mock Get-Command { [pscustomobject]@{ Name = 'gh' } } -ParameterFilter { $Name -eq 'gh' }
         Mock gh {} -ParameterFilter { $args[0] -eq 'auth' -and $args[1] -eq 'status' }
@@ -70,7 +75,7 @@ Describe 'Get-WindowsJobArtifacts' {
         $messages = @()
         function global:Write-Host { param($Object, $Color); $script:messages += $Object }
 
-        & $scriptPath -RunId $id 2>$null
+        & $global:scriptPath -RunId $id 2>$null
 
         $LASTEXITCODE | Should -Be 1
         ($messages | Select-Object -Last 1) | Should -Match 'No artifacts'
@@ -81,7 +86,7 @@ Describe 'Get-WindowsJobArtifacts' {
         Mock Invoke-WebRequest -ModuleName LabSetup { throw '404' }
         $messages = @()
         function global:Write-Host { param($Object,$Color); $script:messages += $Object }
-        try { & $scriptPath } catch {}
+        try { & $global:scriptPath } catch {}
 
         $LASTEXITCODE | Should -Be 1
     }
