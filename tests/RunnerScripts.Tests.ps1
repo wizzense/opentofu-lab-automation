@@ -97,6 +97,7 @@ Describe 'Runner scripts parameter and command checks'  {
             $dummy = Join-Path $tempDir 'dummy.ps1'
             @"
 Param([pscustomobject]`$Config)
+$env:LAB_CONSOLE_LEVEL = '0'
 Import-Module "$PSScriptRoot/../runner_utility_scripts/LabRunner.psm1"
 Invoke-LabStep -Config `$Config -Body { Write-Output `$PSScriptRoot }
 "@ | Set-Content -Path $dummy
