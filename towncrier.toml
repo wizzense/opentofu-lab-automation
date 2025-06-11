@@ -1,0 +1,9 @@
+[tool.towncrier]
+package = "labctl"
+package_dir = "py"
+filename = "CHANGELOG.md"
+directory = "newsfragments"
+
+# Start new entries under the 'Unreleased' heading
+start_string = "## [Unreleased]"
+issue_format = "#{issue}"
