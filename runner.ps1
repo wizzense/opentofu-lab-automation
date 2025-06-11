@@ -261,10 +261,12 @@ function Invoke-Scripts {
                 if (-not $current) {
                     if ($Force) {
                         Set-NestedConfigValue -Config $Config -Path $flag -Value $true
+                        $Config | ConvertTo-Json -Depth 5 | Out-File -FilePath $ConfigFile -Encoding utf8
                         $current = $true
                     }
                     elseif (-not $Auto -and (Read-Host "Enable flag '$flag' and run? (Y/N)") -match '^(?i)y') {
                         Set-NestedConfigValue -Config $Config -Path $flag -Value $true
+                        $Config | ConvertTo-Json -Depth 5 | Out-File -FilePath $ConfigFile -Encoding utf8
                         $current = $true
                     }
                 }
