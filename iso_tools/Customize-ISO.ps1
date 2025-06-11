@@ -55,7 +55,9 @@ param(
 # Derived path to the WIM file inside the extracted ISO
 $WIMFile = Join-Path $ExtractPath "sources\install.wim"
 
-Remove-Item -Recurse -Force $MountPath
+if (Test-Path $MountPath) {
+    Remove-Item -Recurse -Force $MountPath
+}
 
 # Ensure running as Administrator
 if (-not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) {
