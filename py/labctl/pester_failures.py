@@ -1,9 +1,22 @@
+import argparse
 import os
 import sys
 from pathlib import Path
 import xml.etree.ElementTree as ET
 
 from .github_utils import create_issue
+
+
+def summarize_failures(xml_path: Path) -> str:
+    """Return a markdown list of failing tests in the results file."""
+    tree = ET.parse(xml_path)
+    root = tree.getroot()
+    lines = []
+    for case in root.findall(".//test-case[@result='Failed']"):
+        name = case.get("name", "Pester test failed")
+        message = case.findtext("failure/message", default="").strip()
+        lines.append(f"- **{name}**: {message}")
+    return "\n".join(lines)
 
 
 def report_failures(xml_path: Path) -> None:
@@ -27,8 +40,16 @@ def report_failures(xml_path: Path) -> None:
         create_issue(title, body)
 
 
+def _main(argv: list[str] | None = None) -> None:
+    parser = argparse.ArgumentParser(description="Report or summarize Pester failures")
+    parser.add_argument("xml", type=Path, help="Path to testResults.xml")
+    parser.add_argument("--summary", action="store_true", help="Print summary instead of creating issues")
+    args = parser.parse_args(argv)
+    if args.summary:
+        print(summarize_failures(args.xml))
+    else:
+        report_failures(args.xml)
+
+
 if __name__ == "__main__":
-    if len(sys.argv) != 2:
-        print("Usage: pester_failures.py <testResults.xml>")
-        sys.exit(1)
-    report_failures(Path(sys.argv[1]))
+    _main()

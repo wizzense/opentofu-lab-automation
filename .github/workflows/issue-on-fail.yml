@@ -34,26 +34,35 @@ jobs:
       - name: Install labctl
         run: python -m pip install --quiet ./py
 
-      - name: Download test results and open issues
+      - name: Download test results
+        id: summary
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           RUN_URL: ${{ github.event.workflow_run.html_url }}
           COMMIT_SHA: ${{ github.event.workflow_run.head_sha }}
           BRANCH_NAME: ${{ github.event.workflow_run.head_branch }}
-        # Use the triggering run ID unless RUN_ID is explicitly provided
         run: |
           run_id="${RUN_ID:-${{ github.event.workflow_run.id }}}"
-          # Download all artifacts from the triggering run. Wildcards are not
-          # supported by `gh run download`, so grab everything and filter locally.
           gh run download "$run_id" -D artifacts || true
 
-          find artifacts -name testResults.xml -print0 | while IFS= read -r -d '' f; do
-            python -m labctl.pester_failures "$f" || true
-          done
+          summary=""
+          while IFS= read -r -d '' f; do
+            out=$(python -m labctl.pester_failures "$f" --summary || true)
+            if [ -n "$out" ]; then
+              summary="$summary$out\n"
+            fi
+          done < <(find artifacts -name testResults.xml -print0)
 
-          find artifacts -name junit.xml -print0 | while IFS= read -r -d '' f; do
-            python -m labctl.pytest_failures "$f" || true
-          done
+          while IFS= read -r -d '' f; do
+            out=$(python -m labctl.pytest_failures "$f" --summary || true)
+            if [ -n "$out" ]; then
+              summary="$summary$out\n"
+            fi
+          done < <(find artifacts -name junit.xml -print0)
+
+          echo "failures<<EOF" >> "$GITHUB_OUTPUT"
+          echo -e "$summary" >> "$GITHUB_OUTPUT"
+          echo "EOF" >> "$GITHUB_OUTPUT"
 
       - name: Check existing issue
         id: find
@@ -83,7 +92,8 @@ jobs:
       - name: Create or update issue
         uses: actions/github-script@v7
         env:
-          SUMMARY: ${{ steps.jobs.outputs.summary }}
+          JOB_SUMMARY: ${{ steps.jobs.outputs.summary }}
+          TEST_SUMMARY: ${{ steps.summary.outputs.failures }}
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -91,8 +101,9 @@ jobs:
             const branch = context.payload.workflow_run.head_branch;
             const sha = context.payload.workflow_run.head_sha;
             const runUrl = context.payload.workflow_run.html_url;
-            const summary = process.env.SUMMARY;
-            const body = `Run [${runUrl}](${runUrl}) for commit \`${sha}\` on branch \`${branch}\` failed.\n\n### Failed jobs\n${summary}`;
+            const jobSummary = process.env.JOB_SUMMARY;
+            const failSummary = process.env.TEST_SUMMARY;
+            const body = `Run [${runUrl}](${runUrl}) for commit \`${sha}\` on branch \`${branch}\` failed.\n\n### Failed jobs\n${jobSummary}\n\n### Failing tests\n${failSummary}`;
             if (issueNumber) {
               await github.rest.issues.createComment({
                 owner: context.repo.owner,

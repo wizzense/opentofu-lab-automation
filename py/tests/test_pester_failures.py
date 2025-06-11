@@ -42,3 +42,24 @@ def test_report_failures(tmp_path, monkeypatch):
     assert calls[0].title == "Fail.Test"
     assert "boom" in calls[0].body
     assert "http://run" in calls[0].body
+
+
+def test_summarize_failures(tmp_path):
+    xml = tmp_path / "testResults.xml"
+    xml.write_text(
+        """
+<test-results>
+  <test-suite>
+    <results>
+      <test-case name='Fail.Test' result='Failed'>
+        <failure>
+          <message>boom</message>
+        </failure>
+      </test-case>
+    </results>
+  </test-suite>
+</test-results>
+"""
+    )
+    summary = pester_failures.summarize_failures(xml)
+    assert summary.strip() == "- **Fail.Test**: boom"

@@ -34,3 +34,18 @@ def test_report_failures(tmp_path, monkeypatch):
     assert calls[0].title == "pkg.TestCase.test_fail"
     assert "oops" in calls[0].body
     assert "http://run" in calls[0].body
+
+
+def test_summarize_failures(tmp_path):
+    xml = tmp_path / "junit.xml"
+    xml.write_text(
+        """
+<testsuite>
+  <testcase classname='pkg.TestCase' name='test_fail'>
+    <failure message='oops'>AssertionError</failure>
+  </testcase>
+</testsuite>
+"""
+    )
+    summary = pytest_failures.summarize_failures(xml)
+    assert summary.strip() == "- **pkg.TestCase.test_fail**: oops"
