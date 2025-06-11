@@ -1,6 +1,6 @@
 Param([object]$Config)
 $scriptRoot = $PSScriptRoot
-Import-Module (Join-Path $PSScriptRoot '..' 'lab_utils' 'LabRunner' 'LabRunner.psm1')
+Import-Module "$PSScriptRoot/../lab_utils/LabRunner/LabRunner.psm1"
 Write-CustomLog "Starting $MyInvocation.MyCommand"
 $installScript      = Join-Path $scriptRoot '0008_Install-OpenTofu.ps1'
 $installerAvailable = Test-Path $installScript
