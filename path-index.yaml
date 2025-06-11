@@ -3,6 +3,8 @@ configs/config_files/full-config.json: configs/config_files/full-config.json
 configs/config_files/recommended-config.json: configs/config_files/recommended-config.json
 pwsh/kicker-bootstrap.ps1: pwsh/kicker-bootstrap.ps1
 pwsh/kickstart-bootstrap.sh: pwsh/kickstart-bootstrap.sh
+pwsh/lab_utils/Download-Archive.ps1: pwsh/lab_utils/Download-Archive.ps1
+pwsh/lab_utils/Download-Archive.psm1: pwsh/lab_utils/Download-Archive.psm1
 pwsh/lab_utils/Expand-All.ps1: pwsh/lab_utils/Expand-All.ps1
 pwsh/lab_utils/Expand-All.psm1: pwsh/lab_utils/Expand-All.psm1
 pwsh/lab_utils/Format-Config.ps1: pwsh/lab_utils/Format-Config.ps1
@@ -26,7 +28,6 @@ pwsh/lab_utils/Resolve-ProjectPath.ps1: pwsh/lab_utils/Resolve-ProjectPath.ps1
 pwsh/lab_utils/__init__.py: pwsh/lab_utils/__init__.py
 pwsh/lab_utils/get_platform.py: pwsh/lab_utils/get_platform.py
 pwsh/runner.ps1: pwsh/runner.ps1
-runner.ps1: pwsh/runner.ps1
 pwsh/runner_scripts/0000_Cleanup-Files.ps1: pwsh/runner_scripts/0000_Cleanup-Files.ps1
 pwsh/runner_scripts/0001_Reset-Git.ps1: pwsh/runner_scripts/0001_Reset-Git.ps1
 pwsh/runner_scripts/0002_Setup-Directories.ps1: pwsh/runner_scripts/0002_Setup-Directories.ps1
@@ -85,6 +86,7 @@ py/tests/test_lint_failures.py: py/tests/test_lint_failures.py
 py/tests/test_path_index.py: py/tests/test_path_index.py
 py/tests/test_pester_failures.py: py/tests/test_pester_failures.py
 py/tests/test_pytest_failures.py: py/tests/test_pytest_failures.py
+py/tests/test_ui.py: py/tests/test_ui.py
 tools/iso/Customize-ISO.ps1: tools/iso/Customize-ISO.ps1
 tools/iso/autounattend - generic.xml: tools/iso/autounattend - generic.xml
 tools/iso/bootstrap.ps1: tools/iso/bootstrap.ps1

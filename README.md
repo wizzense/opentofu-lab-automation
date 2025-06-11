@@ -132,8 +132,8 @@ subcommands via `poetry run`. Set `InstallPoetry` in your configuration to have
 the version with `PoetryVersion`.
 
 Important script locations are tracked in `path-index.yaml`. A GitHub workflow regenerates it on each push to `main`, but you can also run `python scripts/update_index.py` manually. Use `labctl.path_index.resolve_path()` to look up paths from Python or the helper in `runner.ps1`.
-When running a packaged install, set the `LAB_REPO_ROOT` environment variable to your repository root if the CLI cannot locate `path-index.yaml` automatically.
 
+When running a packaged install, set the `LAB_REPO_ROOT` environment variable to your repository root if the CLI cannot locate `path-index.yaml` automatically.
 
 ```bash
 cd py
