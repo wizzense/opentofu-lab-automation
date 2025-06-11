@@ -21,4 +21,6 @@ The [root README](../README.md) provides quick start instructions. Additional gu
 - [Example infrastructure](../opentofu/examples/hyperv/README.md)
 - [Hyper-V provider configuration](hyperv-provider.md)
 - [Troubleshooting CI](troubleshooting.md)
+- [Testing guidelines](testing.md)
+- [Debugging with Copilot Codespaces](copilot-codespaces.md)
 

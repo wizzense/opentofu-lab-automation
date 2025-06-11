@@ -448,7 +448,10 @@ Run `pwsh/setup-test-env.ps1` to install Python, Pester and the required dev pac
 
 
 PowerShell 7 or later is required to run the Pester suite. Install `pwsh` with
-your platform's package manager and then execute the tests:
+your platform's package manager and run `tools/setup-tests.ps1` to install
+all required modules. On Linux and macOS the wrapper `tools/setup-tests.sh`
+invokes the same script using PowerShell. After bootstrapping, execute the
+tests with:
 
 ```bash
 # Windows
@@ -492,8 +495,10 @@ gh run list --limit 20
 lab_utils/Get-WindowsJobArtifacts.ps1 -RunId "<id>"
 ```
 
+
 Python unit tests live under `py/`. `pwsh/setup-test-env.ps1` installs the required packages automatically, but you can also install them manually using
 either Poetry or a direct `pip` install to get packages like `typer`:
+
 
 ```bash
 # with Poetry

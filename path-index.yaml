@@ -70,6 +70,7 @@ py/labctl/__init__.py: py/labctl/__init__.py
 py/labctl/cli.py: py/labctl/cli.py
 py/labctl/config_files/default-config.json: py/labctl/config_files/default-config.json
 py/labctl/config_files/full-config.json: py/labctl/config_files/full-config.json
+py/labctl/config_files/index.json: py/labctl/config_files/index.json
 py/labctl/github_utils.py: py/labctl/github_utils.py
 py/labctl/issue_parser.py: py/labctl/issue_parser.py
 py/labctl/lint_failures.py: py/labctl/lint_failures.py
