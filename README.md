@@ -110,6 +110,7 @@ Terraform modules:
 
 - [Hyper-V VM module](modules/vm/README.md)
 - [Network switch module](modules/network_switch/README.md)
+- [Hyper-V provider configuration](docs/hyperv-provider.md)
 
 ## Python CLI
 
@@ -275,6 +276,9 @@ provider "hyperv" {
   script_path     = "C:/Temp/tofu_%RAND%.cmd"
   timeout         = "30s"
 }
+
+See [docs/hyperv-provider.md](docs/hyperv-provider.md) for a description of each
+argument and the matching environment variables.
 
 
 variable "hyperv_host_name" {
