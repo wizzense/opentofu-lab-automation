@@ -4,7 +4,8 @@ This folder houses the Python CLI used for cross-platform tasks.
 
 ## Installing dependencies
 
-Install [Poetry](https://python-poetry.org/) and run:
+Install [Poetry](https://python-poetry.org/) or execute
+`runner_scripts/0204_Install-Poetry.ps1` to bootstrap it automatically, then run:
 
 ```bash
 cd py

@@ -117,7 +117,9 @@ Terraform modules:
 The optional `labctl` command line utility lives in the [py](py/) folder.
 It requires Python 3.10 or newer (see [py/pyproject.toml](py/pyproject.toml)).
 Install its dependencies with [Poetry](https://python-poetry.org/) and run the
-subcommands via `poetry run`:
+subcommands via `poetry run`. Set `InstallPoetry` in your configuration to have
+`runner.ps1` execute `0204_Install-Poetry.ps1` automatically. You can override
+the version with `PoetryVersion`.
 
 
 ```bash
