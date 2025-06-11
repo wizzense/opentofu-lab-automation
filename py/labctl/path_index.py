@@ -30,7 +30,12 @@ def load_index() -> dict:
         index_path = repo_root() / 'path-index.yaml'
         if index_path.exists() and yaml is not None:
             with index_path.open('r') as f:
-                _INDEX = yaml.safe_load(f) or {}
+                data = yaml.safe_load(f) or {}
+            _INDEX = dict(data)
+            # also allow lookup by base filename
+            for key, val in data.items():
+                basename = Path(key).name
+                _INDEX.setdefault(basename, val)
         else:
             _INDEX = {}
     return _INDEX
