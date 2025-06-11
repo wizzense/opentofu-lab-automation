@@ -28,4 +28,4 @@ function Invoke-LabStep {
     }
 }
 
-Export-ModuleMember -Function Invoke-LabStep, Write-CustomLog, Get-Platform
+Export-ModuleMember -Function Invoke-LabStep, Write-CustomLog, Read-LoggedInput, Get-Platform

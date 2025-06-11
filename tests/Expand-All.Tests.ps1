@@ -10,6 +10,7 @@ Describe 'Expand-All' {
     }
     AfterEach {
         Remove-Item Function:Write-CustomLog -ErrorAction SilentlyContinue
+        Remove-Item Function:Read-LoggedInput -ErrorAction SilentlyContinue
     }
 
     It 'expands a specific ZIP file when provided' {
@@ -19,7 +20,7 @@ Describe 'Expand-All' {
         New-Item -ItemType File -Path $zipPath | Out-Null
 
         Mock Expand-Archive {}
-        Mock Read-Host { 'y' }
+        Mock Read-LoggedInput { 'y' }
 
         Expand-All -ZipFile $zipPath
 
@@ -37,7 +38,7 @@ Describe 'Expand-All' {
         $zip2 = Join-Path $subDir 'b.zip'
 
         Mock Expand-Archive {}
-        Mock Read-Host { 'y' }
+        Mock Read-LoggedInput { 'y' }
         Mock Get-ChildItem {
             @(
                 [pscustomobject]@{ FullName = $zip1; DirectoryName = $temp; BaseName = 'a' },
@@ -63,7 +64,7 @@ Describe 'Expand-All' {
         $zipPath = Join-Path $TestDrive 'missing.zip'
 
         Mock Expand-Archive {}
-        Mock Read-Host {}
+        Mock Read-LoggedInput {}
 
         Expand-All -ZipFile $zipPath
 
@@ -80,7 +81,7 @@ Describe 'Expand-All' {
         New-Item -ItemType File -Path $zipPath | Out-Null
 
         Mock Expand-Archive {}
-        Mock Read-Host { 'n' }
+        Mock Read-LoggedInput { 'n' }
 
         Expand-All -ZipFile $zipPath
 

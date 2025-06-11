@@ -207,6 +207,8 @@ system temporary directory on other platforms). Set the `LAB_LOG_DIR`
 environment variable or `$script:LogFilePath` to override the location. The
 `labctl` Python CLI uses the same variable and writes to `lab.log` within that
 directory.
+Prompts displayed during script execution use `Read-LoggedInput`, so user
+responses are recorded in the same log file (except secure inputs).
 
 Make sure to modify the 'main.tf' so it uses your admin credentials and hostname/IP of the host machine if you don't have a customized config.json or choose not to customize.
 

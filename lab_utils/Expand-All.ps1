@@ -13,7 +13,7 @@ function Expand-All {
             return
         }
         Write-CustomLog "Specified ZIP file: $ZipFile"
-        $confirmation = Read-Host "Do you want to expand this archive? (y/n)"
+        $confirmation = Read-LoggedInput "Do you want to expand this archive? (y/n)"
         if ($confirmation -ne 'y') {
             Write-CustomLog "Operation canceled."
             return
@@ -27,7 +27,7 @@ function Expand-All {
         # Expand all zip files recursively in the current directory
         $currentDir = Get-Location
         Write-CustomLog "Current Directory: $currentDir"
-        $confirmation = Read-Host "Do you want to expand all archives in this directory and its subdirectories? (y/n)"
+        $confirmation = Read-LoggedInput "Do you want to expand all archives in this directory and its subdirectories? (y/n)"
         if ($confirmation -ne 'y') {
             Write-CustomLog "Operation canceled."
             return
