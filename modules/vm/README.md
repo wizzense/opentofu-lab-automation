@@ -1,72 +1,46 @@
 # Hyper-V VM Module
 
-This module provisions a Hyper-V virtual machine and its associated VHD.  It is
-intended to replace the repetitive VM resource blocks in the root configuration
-with a single reusable component.
+Provision one or more Hyper-V virtual machines and their accompanying VHD files.
 
-## Required Variables
-- `vm_count` - number of VMs to create
-- `vm_name_prefix` - prefix used for VM names and VHD files
-- `hyperv_vm_path` - base path on the Hyper-V host for storing VHDs
-- `vhd_size_bytes` - size of the VHD to create
-- `iso_path` - installation media attached as a DVD drive
-- `switch_name` - name of the Hyper-V virtual switch for networking
-- `switch_dependency` - resource to depend on for switch creation
-- `memory_startup_bytes`, `memory_maximum_bytes`, `memory_minimum_bytes` - memory settings
-- `processor_count` - number of virtual processors
+## Inputs
 
-## Example Usage
+| Variable | Type | Description |
+| -------- | ---- | ----------- |
+| `vm_count` | number | Number of VMs to create. |
+| `vm_name_prefix` | string | Prefix used for VM names and VHD file paths. |
+| `hyperv_vm_path` | string | Base directory on the Hyper-V host where VHDs are stored. |
+| `vhd_size_bytes` | number | Size of each VHD in bytes. |
+| `iso_path` | string | Path to the installation ISO attached as a DVD drive. |
+| `switch_name` | string | Name of the Hyper-V virtual switch for networking. |
+| `switch_dependency` | any | Resource that ensures the switch exists before VMs are created. |
+| `memory_startup_bytes` | number | Startup memory allocation. |
+| `memory_maximum_bytes` | number | Maximum memory allocation. |
+| `memory_minimum_bytes` | number | Minimum memory allocation. |
+| `processor_count` | number | Number of virtual processors. |
 
-The module requires the `hyperv` provider.  A minimal provider configuration
-looks like the following:
+## Outputs
+
+This module defines no explicit outputs. Access the generated resources directly if needed, for example:
 
 ```hcl
-terraform {
-  required_providers {
-    hyperv = {
-      source  = "taliesins/hyperv"
-      version = ">=1.2.1"
-    }
-  }
-}
-
-provider "hyperv" {
-  host     = var.hyperv_host_name
-  user     = var.hyperv_user
-  password = var.hyperv_password
-  https    = true
-  insecure = true
-}
+module.demo_vm.hyperv_machine_instance.this[0].id
 ```
 
-After the provider is configured you can call the module from a Terraform
-configuration:
+## Minimal Example
 
 ```hcl
 module "demo_vm" {
-  source               = "./modules/hyperv_vm"
+  source               = "../../modules/vm"
   vm_count             = 1
   vm_name_prefix       = "demo"
   hyperv_vm_path       = "D:/VMs/demo"
   vhd_size_bytes       = 50_000_000_000
   iso_path             = var.demo_iso_path
-  switch_name          = hyperv_network_switch.wan.name
-  switch_dependency    = hyperv_network_switch.wan
+  switch_name          = module.switch.switch_name
+  switch_dependency    = module.switch.switch_resource
   memory_startup_bytes = 2147483648
   memory_maximum_bytes = 4294967296
   memory_minimum_bytes = 536870912
   processor_count      = 2
 }
 ```
-
-### Expected Outputs
-
-The module does not define explicit outputs but you can reference the created
-resources directly.  For example, to obtain the IP address of the first VM:
-
-```hcl
-output "vm_ip" {
-  value = module.demo_vm.hyperv_machine_instance.this[0].ip_addresses
-}
-```
-

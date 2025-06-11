@@ -1,10 +1,11 @@
 # Network Switch Module
 
-This module creates a Hyper-V virtual switch. It wraps the `hyperv_network_switch` resource so the switch can be reused by other modules.
+Use this module to create a reusable Hyper‑V virtual switch via the
+`hyperv_network_switch` resource.
 
 ## Provider Requirements
 
-The module depends on the `hyperv` provider from the `taliesins` namespace. Include the following in your configuration:
+Add the `hyperv` provider from the `taliesins` namespace to your configuration:
 
 ```hcl
 terraform {
@@ -18,11 +19,34 @@ terraform {
 ```
 
 ## Inputs
-- `name` - name of the switch
-- `net_adapter_names` - list of adapters
-- `allow_management_os` - whether to allow management OS (default `true`)
-- `switch_type` - switch type (default `External`)
+
+| Variable | Type | Description | Default |
+| -------- | ---- | ----------- | ------- |
+| `name` | string | Name of the switch. | required |
+| `net_adapter_names` | list(string) | Host adapters backing the switch. | required |
+| `allow_management_os` | bool | Allow the management OS to share the NIC. | `true` |
+| `switch_type` | string | Switch type such as `External` or `Internal`. | `"External"` |
 
 ## Outputs
-- `switch_name` - the name of the created switch
-- `switch_resource` - the underlying resource
+
+| Name | Description |
+| ---- | ----------- |
+| `switch_name` | Name of the created switch. |
+| `switch_resource` | The `hyperv_network_switch` resource. |
+
+## Minimal Example
+
+```hcl
+module "wan_switch" {
+  source            = "../../modules/network_switch"
+  name              = "wan"
+  net_adapter_names = ["Ethernet0"]
+}
+```
+
+Use the outputs when attaching VMs:
+
+```hcl
+switch_name        = module.wan_switch.switch_name
+switch_dependency  = module.wan_switch.switch_resource
+```

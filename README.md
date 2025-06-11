@@ -91,7 +91,12 @@ The configuration reads variables from `lab_config.yaml`, which you can copy fro
 
 ## Documentation
 
-Detailed guides and module references are located in the [docs](docs/) directory. Start with [docs/index.md](docs/index.md) for an overview.
+Detailed guides and module references are located in the [docs](docs/) directory.
+Start with [docs/index.md](docs/index.md) for an overview. Direct links to the
+Terraform modules:
+
+- [Hyper-V VM module](modules/vm/README.md)
+- [Network switch module](modules/network_switch/README.md)
 
 ## Python CLI
 
