@@ -7,7 +7,7 @@ param(
     [ValidateSet('silent','normal','detailed')]
     [string]$Verbosity = 'normal',
     [string]$ConfigFile,
-    #[string]$ConfigFile = (Join-Path (Join-Path $PSScriptRoot 'config_files') 'default-config.json'),
+    #[string]$ConfigFile = (Join-Path $PSScriptRoot 'config_files' 'default-config.json'),
     [switch]$Auto,
     [string]$Scripts,
     [switch]$Force
@@ -80,14 +80,14 @@ $configFilesDir = Resolve-IndexPath 'config_files'
 if (-not $configFilesDir) { $configFilesDir = Join-Path $repoRoot 'config_files' }
 
 if (-not (Get-Command Write-CustomLog -ErrorAction SilentlyContinue)) {
-    . (Join-Path (Join-Path $labUtilsDir 'LabRunner') 'Logger.ps1')
+    . (Join-Path $labUtilsDir 'LabRunner' 'Logger.ps1')
 }
 $env:LAB_CONSOLE_LEVEL = $script:VerbosityLevels[$Verbosity]
-. (Join-Path (Join-Path $PSScriptRoot 'lab_utils') 'Get-LabConfig.ps1')
-. (Join-Path (Join-Path $PSScriptRoot 'lab_utils') 'Format-Config.ps1')
-. (Join-Path (Join-Path $PSScriptRoot 'lab_utils') 'Get-Platform.ps1')
-. (Join-Path (Join-Path $PSScriptRoot 'lab_utils') 'Resolve-ProjectPath.ps1')
-$menuPath = Join-Path (Join-Path $PSScriptRoot 'lab_utils') 'Menu.ps1'
+. (Join-Path $PSScriptRoot 'lab_utils' 'Get-LabConfig.ps1')
+. (Join-Path $PSScriptRoot 'lab_utils' 'Format-Config.ps1')
+. (Join-Path $PSScriptRoot 'lab_utils' 'Get-Platform.ps1')
+. (Join-Path $PSScriptRoot 'lab_utils' 'Resolve-ProjectPath.ps1')
+$menuPath = Join-Path $PSScriptRoot 'lab_utils' 'Menu.ps1'
 
 if (-not (Test-Path $menuPath)) {
     Write-Error "Menu module not found at $menuPath"
