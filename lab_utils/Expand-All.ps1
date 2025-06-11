@@ -1,3 +1,6 @@
+# ensure logging utilities are available
+. (Join-Path $PSScriptRoot '..' 'runner_utility_scripts' 'Logger.ps1')
+
 function Expand-All {
     
     # Expand-All -ZipFile "C:\path\to\your\archive.zip"
