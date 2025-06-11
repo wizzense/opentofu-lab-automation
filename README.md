@@ -84,14 +84,27 @@ Clone this repository and apply the lab template:
 ```bash
 git clone https://github.com/wizzense/opentofu-lab-automation.git
 cd opentofu-lab-automation
-tofu init && tofu apply
+tofu init
+tofu apply -var="lab_config_path=./lab_config.json"
 ```
 
-The configuration reads variables from `lab_config.yaml`, which you can copy from `templates/lab_config.sample.yaml`.
+The OpenTofu configuration loads its variables from a JSON file. Copy any
+example in `config_files/` (for instance `full-config.json`) to
+`lab_config.json` and edit it with your Hyper-V credentials, switch details and
+VM parameters. `main.tf` reads from this file via the `lab_config_path`
+variable.
+
+See [example-infrastructure/README.md](example-infrastructure/README.md) for a
+detailed description of each field.
 
 ## Documentation
 
-Detailed guides and module references are located in the [docs](docs/) directory. Start with [docs/index.md](docs/index.md) for an overview.
+Detailed guides and module references are located in the [docs](docs/) directory.
+Start with [docs/index.md](docs/index.md) for an overview. Direct links to the
+Terraform modules:
+
+- [Hyper-V VM module](modules/vm/README.md)
+- [Network switch module](modules/network_switch/README.md)
 
 ## Python CLI
 
@@ -100,10 +113,29 @@ It requires Python 3.10 or newer (see [py/pyproject.toml](py/pyproject.toml)).
 Install its dependencies with [Poetry](https://python-poetry.org/) and run the
 subcommands via `poetry run`:
 
+
 ```bash
 cd py
 poetry install
-poetry run labctl hv facts
+```
+
+### Hyper-V helpers
+
+```bash
+poetry run labctl hv facts       # print Hyper-V configuration
+poetry run labctl hv deploy      # simulate a Hyper-V deployment
+```
+
+### Repository helpers
+
+These require the [GitHub CLI](https://cli.github.com/) to be available and
+authenticated:
+
+```bash
+poetry run labctl repo close-pr 123
+poetry run labctl repo close-issue 42
+poetry run labctl repo view-issue 99
+poetry run labctl repo cleanup
 ```
 
 Launch the experimental Textual interface:
@@ -237,7 +269,7 @@ provider "hyperv" {
   cacert_path     = ""    # Leave empty if skipping SSL validation
   cert_path       = ""    # Leave empty if skipping SSL validation
   key_path        = ""    # Leave empty if skipping SSL validation
-  script_path     = "C:/Temp/terraform_%RAND%.cmd"
+  script_path     = "C:/Temp/tofu_%RAND%.cmd"
   timeout         = "30s"
 }
 

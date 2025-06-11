@@ -1,0 +1,36 @@
+name: Copilot Auto Fix
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: read
+
+jobs:
+  copilot-fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install GitHub CLI
+        uses: cli/cli@v2.74.1
+      - name: Authenticate gh
+        run: gh auth login --with-token <<< "$GITHUB_TOKEN"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Install Copilot CLI
+        run: npm install -g @githubnext/copilot-cli
+      - name: Run Copilot suggestions
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          for num in $(gh issue list --state open --json number -q '.[].number'); do
+            body=$(gh issue view "$num" --json body -q .body)
+            echo "$body" > issue.txt
+            copilot suggest --repo ${{ github.repository }} --issue issue.txt || true
+          done

@@ -45,7 +45,7 @@ def parse_issue_body(text: str) -> Dict[str, Any]:
             })
 
     # Parse failing tests lines
-    tests = [l for l in sections.get("Failing tests", []) if l.strip()]
+    tests = [line for line in sections.get("Failing tests", []) if line.strip()]
     result["tests"] = tests
 
     return result
