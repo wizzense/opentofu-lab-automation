@@ -1,5 +1,9 @@
-import yaml
+"""Regenerate the repository path index."""
+
+import subprocess
 from pathlib import Path
+
+import yaml
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 
@@ -20,23 +24,23 @@ ROOT_FILES = [
 ]
 
 
-def build_index():
-    index = {}
-    for name in ROOT_FILES:
-        p = REPO_ROOT / name
-        if p.exists():
-            index[name] = name
-    excluded_dirs = {'__pycache__', '.git', '.svn'}
-    for d in SCAN_DIRS:
-        dir_path = REPO_ROOT / d
-        if not dir_path.exists():
+
+def tracked_files():
+    """Return a list of git-tracked files relative to the repository root."""
+
+    out = subprocess.check_output(["git", "ls-files"], cwd=REPO_ROOT, text=True)
+    return [Path(line) for line in out.splitlines()]
+
+
+def build_index() -> dict[str, str]:
+    index: dict[str, str] = {}
+
+    for path in tracked_files():
+        if path.name == "path-index.yaml":
             continue
-        for path in dir_path.rglob('*'):
-            if any(part in excluded_dirs for part in path.parts):
-                continue
-            if path.is_file():
-                rel = path.relative_to(REPO_ROOT)
-                index[str(rel)] = str(rel)
+        if str(path) in ROOT_FILES or any(str(path).startswith(f"{d}/") for d in SCAN_DIRS):
+            index[str(path)] = str(path)
+
     return index
 
 

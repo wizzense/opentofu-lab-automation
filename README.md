@@ -131,7 +131,7 @@ subcommands via `poetry run`. Set `InstallPoetry` in your configuration to have
 `runner.ps1` execute `0204_Install-Poetry.ps1` automatically. You can override
 the version with `PoetryVersion`.
 
-Important script locations are tracked in `path-index.yaml`. Run `python scripts/update_index.py` after adding new files. Use `labctl.path_index.resolve_path()` to look up paths from Python or the helper in `runner.ps1`.
+Important script locations are tracked in `path-index.yaml`. A GitHub workflow regenerates it on each push to `main`, but you can also run `python scripts/update_index.py` manually. Use `labctl.path_index.resolve_path()` to look up paths from Python or the helper in `runner.ps1`.
 
 
 ```bash
