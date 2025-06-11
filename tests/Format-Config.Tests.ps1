@@ -28,6 +28,6 @@ Describe 'Format-Config' {
     }
 
     It 'is a terminating error when piped null' {
-        { $null | Format-Config } | Should -Throw -ErrorType System.ArgumentNullException
+        { ,$null | Format-Config } | Should -Throw -ErrorType System.ArgumentNullException
     }
 }

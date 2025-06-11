@@ -10,8 +10,6 @@ Older versions attempted to fetch `pester-results-*` or `pytest-results-*` with 
 
 | Test Name | Error Message |
 |-----------|--------------|
-| Format-Config.is a terminating error when Config is null | ParameterBindingException: The input object cannot be bound to any parameters for the command either because the command does not take pipeline input or the input and its properties do not match any of the parameters that take pipeline input. |
-| Format-Config.is a terminating error when piped null | ParameterBindingException: The input object cannot be bound to any parameters for the command either because the command does not take pipeline input or the input and its properties do not match any of the parameters that take pipeline input. |
 | runner.ps1 executing 0200_Get-SystemInfo.outputs system info when run via runner | Expected regular expression 'ComputerName' to match <empty>, but it did not match. |
 | Get-WindowsJobArtifacts.uses gh CLI when authenticated | Expected gh.exe to be called at least 1 times, but was called 0 times |
 | Get-WindowsJobArtifacts.falls back to nightly.link when gh auth fails | Expected Invoke-WebRequest to be called at least 1 times, but was called 0 times |
