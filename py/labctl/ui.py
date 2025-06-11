@@ -4,6 +4,8 @@ import json
 import os
 from pathlib import Path
 
+from .path_index import resolve_path
+
 from textual.app import App, ComposeResult
 from textual.widgets import Header, Footer, DataTable, TextLog, TabPane, TabbedContent, Markdown
 
@@ -59,10 +61,21 @@ class LabUI(App):
 def run_ui() -> None:
     """Launch the Textual UI."""
     repo_root = Path(__file__).resolve().parents[2]
-    script_dir = repo_root / "pwsh" / "runner_scripts"
+
+    script_dir = resolve_path("pwsh/runner_scripts")
+    if script_dir is None:
+        script_dir = repo_root / "pwsh" / "runner_scripts"
     scripts = sorted(p.name for p in script_dir.glob("????_*.ps1"))
+
     log_dir = Path(os.environ.get("LAB_LOG_DIR", Path.cwd()))
     log_path = log_dir / "lab.log"
-    default_cfg = repo_root / "configs" / "config_files" / "default-config.json"
-    recommended_cfg = repo_root / "configs" / "config_files" / "recommended-config.json"
+
+    default_cfg = resolve_path("configs/config_files/default-config.json")
+    if default_cfg is None:
+        default_cfg = repo_root / "configs" / "config_files" / "default-config.json"
+
+    recommended_cfg = resolve_path("configs/config_files/recommended-config.json")
+    if recommended_cfg is None:
+        recommended_cfg = repo_root / "configs" / "config_files" / "recommended-config.json"
+
     LabUI(scripts, log_path, default_cfg, recommended_cfg).run()
