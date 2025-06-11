@@ -10,12 +10,11 @@ if (-not (Test-Path $SettingsPath)) {
     throw "Settings file not found: $SettingsPath"
 }
 
-$results = Get-ChildItem -Path $Target -Recurse -Include *.ps1,*.psm1,*.psd1 -File |
-    Select-Object -ExpandProperty FullName |
-    Invoke-ScriptAnalyzer -Severity Error,Warning -Settings $SettingsPath
-$results | Format-Table
+# Discover all PowerShell files to analyze
+$files = Get-ChildItem -Path $Target -Recurse -Include *.ps1,*.psm1,*.psd1 -File |
+    Select-Object -ExpandProperty FullName
 
-
+# Run Script Analyzer against the collected files
 $results = $files | Invoke-ScriptAnalyzer -Severity Error,Warning -Settings $SettingsPath
 # Use Write-Output so callers can capture or redirect the formatted results
 $results | Format-Table | Out-String | Write-Output
@@ -36,7 +35,7 @@ foreach ($file in $files) {
         if ($first -and $first.Extent.Text -match 'Invoke-WebRequest') {
             $hasFilter = $c.CommandElements | Where-Object { $_ -is [System.Management.Automation.Language.CommandParameterAst] -and $_.ParameterName -eq 'ParameterFilter' }
             if (-not $hasFilter) {
-                $mockIssues += "$file:$($c.Extent.StartLineNumber) Mock Invoke-WebRequest missing -ParameterFilter"
+                $mockIssues += "${file}:$($c.Extent.StartLineNumber) Mock Invoke-WebRequest missing -ParameterFilter"
             }
         }
     }
