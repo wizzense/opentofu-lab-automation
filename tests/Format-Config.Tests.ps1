@@ -18,6 +18,18 @@ Describe 'Format-Config' {
         $result | Should -Match '"Foo"\s*:\s*"pipe"'
     }
 
+    It 'accepts pipeline input by property name' {
+        $cfg = [pscustomobject]@{ Foo = 'prop' }
+        $wrapper = [pscustomobject]@{ Config = $cfg }
+        $result = $wrapper | Format-Config
+        $result | Should -Match '"Foo"\s*:\s*"prop"'
+    }
+
+    It 'fails when no Config is provided' {
+        { Format-Config } |
+            Should -Throw -ErrorType System.Management.Automation.ParameterBindingException
+    }
+
     It 'throws when Config is null' {
         { Format-Config -Config $null } | Should -Throw
     }
