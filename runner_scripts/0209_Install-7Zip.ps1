@@ -11,10 +11,10 @@ function Install-7Zip {
         if ($Config.Install7Zip -eq $true) {
             if (-not (Get-Command 7z -ErrorAction SilentlyContinue)) {
                 $url = 'https://www.7-zip.org/a/7z2301-x64.exe'
-                $installer = Join-Path $env:TEMP '7zip.exe'
-                Invoke-LabWebRequest -Uri $url -OutFile $installer -UseBasicParsing
-                Start-Process -FilePath $installer -ArgumentList '/S' -Wait
-                Remove-Item $installer -Force
+                Invoke-LabDownload -Uri $url -Prefix '7zip' -Extension '.exe' -Action {
+                    param($installer)
+                    Start-Process -FilePath $installer -ArgumentList '/S' -Wait
+                }
             } else {
                 Write-CustomLog '7-Zip already installed.'
             }

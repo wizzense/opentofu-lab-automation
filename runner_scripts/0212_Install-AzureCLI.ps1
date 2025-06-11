@@ -11,10 +11,10 @@ function Install-AzureCLI {
         if ($Config.InstallAzureCLI -eq $true) {
             if (-not (Get-Command az -ErrorAction SilentlyContinue)) {
                 $url = 'https://aka.ms/installazurecliwindows'
-                $msi = Join-Path $env:TEMP 'azure-cli.msi'
-                Invoke-LabWebRequest -Uri $url -OutFile $msi -UseBasicParsing
-                Start-Process msiexec.exe -ArgumentList "/i `"$msi`" /quiet /norestart" -Wait -NoNewWindow
-                Remove-Item $msi -Force
+                Invoke-LabDownload -Uri $url -Prefix 'azure-cli' -Extension '.msi' -Action {
+                    param($msi)
+                    Start-Process msiexec.exe -ArgumentList "/i `"$msi`" /quiet /norestart" -Wait -NoNewWindow
+                }
             } else {
                 Write-CustomLog 'Azure CLI already installed.'
             }

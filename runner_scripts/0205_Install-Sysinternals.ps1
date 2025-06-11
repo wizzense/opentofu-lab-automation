@@ -17,18 +17,11 @@ Invoke-LabStep -Config $Config -Body {
     }
 
     $zipUrl  = 'https://download.sysinternals.com/files/SysinternalsSuite.zip'
-    $zipPath = Join-Path $env:TEMP ("SysinternalsSuite_{0}.zip" -f (New-Guid))
-    Write-CustomLog "Downloading Sysinternals Suite from $zipUrl to $zipPath"
-    try {
-        Invoke-LabWebRequest -Uri $zipUrl -OutFile $zipPath -UseBasicParsing
-    } catch {
-        Write-CustomLog "Error: Failed to download Sysinternals Suite from $zipUrl. $_"
-        throw
+    Invoke-LabDownload -Uri $zipUrl -Prefix 'SysinternalsSuite' -Extension '.zip' -Action {
+        param($zipPath)
+        Write-CustomLog "Extracting to $destDir"
+        Expand-Archive -Path $zipPath -DestinationPath $destDir -Force
     }
-
-    Write-CustomLog "Extracting to $destDir"
-    Expand-Archive -Path $zipPath -DestinationPath $destDir -Force
-    Remove-Item $zipPath -Force
 
     $psInfo = Join-Path $destDir 'PsInfo.exe'
     if (Test-Path $psInfo) {

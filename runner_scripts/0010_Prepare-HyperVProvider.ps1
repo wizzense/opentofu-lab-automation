@@ -374,10 +374,11 @@ $arch = if ($info.OsArchitecture -match '64') { 'amd64' } else { '386' }
 $registryEndpoint = "https://registry.terraform.io/v1/providers/taliesins/hyperv/$providerVersion/download/$os/$arch"
 Write-CustomLog "Querying provider registry: $registryEndpoint"
 $downloadInfo = Invoke-RestMethod -Uri $registryEndpoint
-$zipPath  = Join-Path $env:TEMP "hyperv_provider_$($providerVersion).zip"
-Invoke-WebRequest -Uri $downloadInfo.download_url -OutFile $zipPath
 $tempDir = Join-Path $env:TEMP "hyperv_provider_$($providerVersion)"
-Expand-Archive -Path $zipPath -DestinationPath $tempDir -Force
+Invoke-LabDownload -Uri $downloadInfo.download_url -Prefix 'hyperv_provider' -Extension '.zip' -Action {
+    param($zipPath)
+    Expand-Archive -Path $zipPath -DestinationPath $tempDir -Force
+}
 
 $providerExePath = Join-Path $tempDir "terraform-provider-hyperv_${providerVersion}.exe"
 $hypervProviderDir = Join-Path $infraRepoPath ".terraform\providers\registry.opentofu.org\taliesins\hyperv\$providerVersion\${os}_${arch}"

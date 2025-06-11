@@ -11,10 +11,10 @@ function Install-VSBuildTools {
         if ($Config.InstallVSBuildTools -eq $true) {
             if (-not (Get-Command vswhere -ErrorAction SilentlyContinue)) {
                 $url = 'https://aka.ms/vs/17/release/vs_BuildTools.exe'
-                $installer = Join-Path $env:TEMP 'vs_buildtools.exe'
-                Invoke-LabWebRequest -Uri $url -OutFile $installer -UseBasicParsing
-                Start-Process -FilePath $installer -ArgumentList '--quiet --wait --norestart --nocache --installPath C:\BuildTools' -Wait
-                Remove-Item $installer -Force
+                Invoke-LabDownload -Uri $url -Prefix 'vs_buildtools' -Extension '.exe' -Action {
+                    param($installer)
+                    Start-Process -FilePath $installer -ArgumentList '--quiet --wait --norestart --nocache --installPath C:\BuildTools' -Wait
+                }
             } else {
                 Write-CustomLog 'VS Build Tools already installed.'
             }

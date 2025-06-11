@@ -11,10 +11,10 @@ function Install-Git {
         if ($Config.InstallGit -eq $true) {
             if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
                 $url = 'https://github.com/git-for-windows/git/releases/download/v2.48.1.windows.1/Git-2.48.1-64-bit.exe'
-                $installer = Join-Path $env:TEMP 'git-installer.exe'
-                Invoke-LabWebRequest -Uri $url -OutFile $installer -UseBasicParsing
-                Start-Process -FilePath $installer -ArgumentList '/SILENT' -Wait
-                Remove-Item $installer -Force
+                Invoke-LabDownload -Uri $url -Prefix 'git-installer' -Extension '.exe' -Action {
+                    param($installer)
+                    Start-Process -FilePath $installer -ArgumentList '/SILENT' -Wait
+                }
             } else {
                 Write-CustomLog 'Git already installed.'
             }

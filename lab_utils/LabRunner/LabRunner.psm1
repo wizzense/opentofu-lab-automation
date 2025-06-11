@@ -45,4 +45,29 @@ function Invoke-LabStep {
     }
 }
 
+function Invoke-LabDownload {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)][string]$Uri,
+        [Parameter(Mandatory)][scriptblock]$Action,
+        [string]$Prefix = 'download',
+        [string]$Extension
+    )
+
+    $ext = if ($Extension) {
+        if ($Extension.StartsWith('.')) { $Extension } else { ".$Extension" }
+    } else {
+        try { [System.IO.Path]::GetExtension($Uri).Split('?')[0] } catch { '' }
+    }
+
+    $path = Join-Path $env:TEMP ("{0}_{1}{2}" -f $Prefix, [guid]::NewGuid(), $ext)
+    Write-CustomLog "Downloading $Uri to $path"
+    try {
+        Invoke-LabWebRequest -Uri $Uri -OutFile $path -UseBasicParsing
+        & $Action $path
+    } finally {
+        Remove-Item $path -Force -ErrorAction SilentlyContinue
+    }
+}
+
 Export-ModuleMember -Function Invoke-LabStep, Write-CustomLog, Read-LoggedInput, Get-Platform, Invoke-LabWebRequest, Invoke-LabNpm

@@ -56,17 +56,13 @@ if ($Config.InstallWAC -eq $true) {
 
     # Download the Windows Admin Center MSI
     $downloadUrl = "https://aka.ms/wacdownload"
-    $installerPath = "$env:TEMP\WindowsAdminCenter.msi"
-
     $ProgressPreference = 'SilentlyContinue'
-
-    Write-CustomLog "Downloading WAC from $downloadUrl"
-    Invoke-WebRequest -Uri $downloadUrl -OutFile $installerPath -UseBasicParsing
-
-    Write-CustomLog "Installing WAC silently on port $installPort"
-    Start-Process msiexec.exe -Wait -ArgumentList "/i `"$installerPath`" /qn /L*v `"$env:TEMP\WacInstall.log`" SME_PORT=$installPort ACCEPT_EULA=1"
-
-    Write-CustomLog "WAC installation complete."
+    Invoke-LabDownload -Uri $downloadUrl -Prefix 'WindowsAdminCenter' -Extension '.msi' -Action {
+        param($installerPath)
+        Write-CustomLog "Installing WAC silently on port $installPort"
+        Start-Process msiexec.exe -Wait -ArgumentList "/i `"$installerPath`" /qn /L*v `"$env:TEMP\WacInstall.log`" SME_PORT=$installPort ACCEPT_EULA=1"
+        Write-CustomLog "WAC installation complete."
+    }
 } else {
     Write-CustomLog "InstallWAC flag is disabled. Skipping Windows Admin Center installation."
 }

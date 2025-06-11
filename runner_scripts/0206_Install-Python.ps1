@@ -11,10 +11,10 @@ function Install-Python {
         if ($Config.InstallPython -eq $true) {
             if (-not (Get-Command python -ErrorAction SilentlyContinue)) {
                 $url = 'https://www.python.org/ftp/python/3.12.3/python-3.12.3-amd64.exe'
-                $installer = Join-Path $env:TEMP 'python-installer.exe'
-                Invoke-LabWebRequest -Uri $url -OutFile $installer -UseBasicParsing
-                Start-Process -FilePath $installer -ArgumentList '/quiet InstallAllUsers=1 PrependPath=1' -Wait
-                Remove-Item $installer -Force
+                Invoke-LabDownload -Uri $url -Prefix 'python-installer' -Extension '.exe' -Action {
+                    param($installer)
+                    Start-Process -FilePath $installer -ArgumentList '/quiet InstallAllUsers=1 PrependPath=1' -Wait
+                }
             } else {
                 Write-CustomLog 'Python already installed.'
             }

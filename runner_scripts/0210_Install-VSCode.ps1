@@ -11,10 +11,10 @@ function Install-VSCode {
         if ($Config.InstallVSCode -eq $true) {
             if (-not (Get-Command code -ErrorAction SilentlyContinue)) {
                 $url = 'https://update.code.visualstudio.com/latest/win32-x64-user/stable'
-                $installer = Join-Path $env:TEMP 'vscode.exe'
-                Invoke-LabWebRequest -Uri $url -OutFile $installer -UseBasicParsing
-                Start-Process -FilePath $installer -ArgumentList '/verysilent /suppressmsgboxes /mergetasks=!runcode' -Wait
-                Remove-Item $installer -Force
+                Invoke-LabDownload -Uri $url -Prefix 'vscode' -Extension '.exe' -Action {
+                    param($installer)
+                    Start-Process -FilePath $installer -ArgumentList '/verysilent /suppressmsgboxes /mergetasks=!runcode' -Wait
+                }
             } else {
                 Write-CustomLog 'VS Code already installed.'
             }
