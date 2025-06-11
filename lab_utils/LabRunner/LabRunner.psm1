@@ -1,6 +1,7 @@
 #. dot-source utilities
 . $PSScriptRoot/Logger.ps1
 . $PSScriptRoot/../Get-Platform.ps1
+. $PSScriptRoot/../Network.ps1
 
 function Invoke-LabStep {
     param(
@@ -28,4 +29,4 @@ function Invoke-LabStep {
     }
 }
 
-Export-ModuleMember -Function Invoke-LabStep, Write-CustomLog, Read-LoggedInput, Get-Platform
+Export-ModuleMember -Function Invoke-LabStep, Write-CustomLog, Read-LoggedInput, Get-Platform, Invoke-LabWebRequest, Invoke-LabNpm

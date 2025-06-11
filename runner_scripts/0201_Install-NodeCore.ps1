@@ -58,7 +58,7 @@ if ($nodeDeps.InstallNode) {
 
         $installerPath = Join-Path $env:TEMP "node-installer.msi"
         Write-CustomLog "Downloading Node.js from: $url"
-        Invoke-WebRequest -Uri $url -OutFile $installerPath -UseBasicParsing
+        Invoke-LabWebRequest -Uri $url -OutFile $installerPath -UseBasicParsing
 
         Start-Process msiexec.exe -ArgumentList "/i `"$installerPath`" /quiet /norestart" -Wait -NoNewWindow
         Remove-Item $installerPath -Force

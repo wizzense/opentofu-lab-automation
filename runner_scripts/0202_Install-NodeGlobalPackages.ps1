@@ -18,7 +18,7 @@ function Install-GlobalPackage {
     if (Get-Command npm -ErrorAction SilentlyContinue) {
         Write-CustomLog "Installing npm package: $package..."
         if ($PSCmdlet.ShouldProcess($package, 'Install npm package') -and -not $WhatIfPreference) {
-            npm install -g $package
+            Invoke-LabNpm install -g $package
         }
     } else {
         Write-Error "npm is not available. Node.js may not have installed correctly."

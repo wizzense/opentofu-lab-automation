@@ -29,20 +29,20 @@ Describe 'Node installation scripts' -Skip:$skipNpm {
     It 'uses Node_Dependencies.Node.InstallerUrl when installing Node' {
         $cfg = @{ Node_Dependencies = @{ InstallNode=$true; Node = @{ InstallerUrl = 'http://example.com/node.msi' } } }
         $core = Get-RunnerScriptPath '0201_Install-NodeCore.ps1'
-        Mock Invoke-WebRequest -ModuleName LabSetup {}
+        Mock Invoke-LabWebRequest -ModuleName LabSetup {}
         Mock Start-Process {}
         Mock Remove-Item {}
         Mock Get-Command { @{Name='node'} } -ParameterFilter { $Name -eq 'node' }
         . $core
 
         Install-NodeCore -Config $cfg
-        Should -Invoke -CommandName Invoke-WebRequest -Times 1 -ParameterFilter { $Uri -eq 'http://example.com/node.msi' }
+        Should -Invoke -CommandName Invoke-LabWebRequest -Times 1 -ParameterFilter { $Uri -eq 'http://example.com/node.msi' }
     }
 
     It 'does nothing when InstallNode is $false' {
         $cfg = @{ Node_Dependencies = @{ InstallNode = $false } }
         $core = Get-RunnerScriptPath '0201_Install-NodeCore.ps1'
-        Mock Invoke-WebRequest -ModuleName LabSetup {}
+        Mock Invoke-LabWebRequest -ModuleName LabSetup {}
         Mock Start-Process {}
         Mock Remove-Item {}
         Mock Get-Command {}
@@ -50,7 +50,7 @@ Describe 'Node installation scripts' -Skip:$skipNpm {
         . $core
 
         Install-NodeCore -Config $cfg
-        Should -Invoke -CommandName Invoke-WebRequest -Times 0
+        Should -Invoke -CommandName Invoke-LabWebRequest -Times 0
         Should -Invoke -CommandName Start-Process -Times 0
         Should -Invoke -CommandName Remove-Item -Times 0
     }
@@ -59,34 +59,34 @@ Describe 'Node installation scripts' -Skip:$skipNpm {
         $cfg = @{ Node_Dependencies = @{ GlobalPackages = @('yarn','nodemon') } }
         $global = Get-RunnerScriptPath '0202_Install-NodeGlobalPackages.ps1'
         Mock Get-Command { @{Name='npm'} } -ParameterFilter { $Name -eq 'npm' }
-        function npm {
+        function Invoke-LabNpm {
             param([Parameter(ValueFromRemainingArguments = $true)][string[]]$testArgs)
             $null = $testArgs
         }
         . $global
-        Mock npm {}
+        Mock Invoke-LabNpm -ModuleName LabSetup {}
         $WhatIfPreference = $false
         Install-NodeGlobalPackages -Config $cfg
-        Should -Invoke -CommandName npm -Times 1 -ParameterFilter { ($testArgs -join ' ') -eq 'install -g yarn' }
-        Should -Invoke -CommandName npm -Times 1 -ParameterFilter { ($testArgs -join ' ') -eq 'install -g nodemon' }
-        Should -Invoke -CommandName npm -Times 0 -ParameterFilter { ($testArgs -join ' ') -eq 'install -g vite' }
+        Should -Invoke -CommandName Invoke-LabNpm -Times 1 -ParameterFilter { ($testArgs -join ' ') -eq 'install -g yarn' }
+        Should -Invoke -CommandName Invoke-LabNpm -Times 1 -ParameterFilter { ($testArgs -join ' ') -eq 'install -g nodemon' }
+        Should -Invoke -CommandName Invoke-LabNpm -Times 0 -ParameterFilter { ($testArgs -join ' ') -eq 'install -g vite' }
     }
 
     It 'falls back to boolean flags when GlobalPackages is missing' {
         $cfg = @{ Node_Dependencies = @{ InstallYarn=$true; InstallVite=$false; InstallNodemon=$true } }
         $global = Get-RunnerScriptPath '0202_Install-NodeGlobalPackages.ps1'
         Mock Get-Command { @{Name='npm'} } -ParameterFilter { $Name -eq 'npm' }
-        function npm {
+        function Invoke-LabNpm {
             param([Parameter(ValueFromRemainingArguments = $true)][string[]]$testArgs)
             $null = $testArgs
         }
         . $global
-        Mock npm {}
+        Mock Invoke-LabNpm -ModuleName LabSetup {}
         $WhatIfPreference = $false
         Install-NodeGlobalPackages -Config $cfg
-        Should -Invoke -CommandName npm -Times 1 -ParameterFilter { ($testArgs -join ' ') -eq 'install -g yarn' }
-        Should -Invoke -CommandName npm -Times 1 -ParameterFilter { ($testArgs -join ' ') -eq 'install -g nodemon' }
-        Should -Invoke -CommandName npm -Times 0 -ParameterFilter { ($testArgs -join ' ') -eq 'install -g vite' }
+        Should -Invoke -CommandName Invoke-LabNpm -Times 1 -ParameterFilter { ($testArgs -join ' ') -eq 'install -g yarn' }
+        Should -Invoke -CommandName Invoke-LabNpm -Times 1 -ParameterFilter { ($testArgs -join ' ') -eq 'install -g nodemon' }
+        Should -Invoke -CommandName Invoke-LabNpm -Times 0 -ParameterFilter { ($testArgs -join ' ') -eq 'install -g vite' }
     }
 
     It 'logs start message when running each node script' -TestCases $script:nodeScripts {
@@ -109,11 +109,11 @@ Describe 'Node installation scripts' -Skip:$skipNpm {
     
         $global = Get-RunnerScriptPath '0202_Install-NodeGlobalPackages.ps1'
 
-        function npm { param([Parameter(ValueFromRemainingArguments = $true)][string[]]$testArgs) }
-        Mock npm {}
+        function Invoke-LabNpm { param([Parameter(ValueFromRemainingArguments = $true)][string[]]$testArgs) }
+        Mock Invoke-LabNpm -ModuleName LabSetup {}
         . $global
         Install-NodeGlobalPackages -Config @{ Node_Dependencies = @{ InstallYarn=$false; InstallVite=$false; InstallNodemon=$false } } -WhatIf
-        Should -Invoke -CommandName npm -Times 0
+        Should -Invoke -CommandName Invoke-LabNpm -Times 0
     }
 
     It 'uses NpmPath from Node_Dependencies when installing project deps' {
@@ -121,12 +121,12 @@ Describe 'Node installation scripts' -Skip:$skipNpm {
         New-Item -ItemType Directory -Path $temp | Out-Null
         New-Item -ItemType File -Path (Join-Path $temp 'package.json') | Out-Null
         $cfg = @{ Node_Dependencies = @{ NpmPath = $temp } }
-        function npm {
+        function Invoke-LabNpm {
             param([Parameter(ValueFromRemainingArguments = $true)][string[]]$testArgs)
             $null = $testArgs
         }
         $npmPath = Get-RunnerScriptPath '0203_Install-npm.ps1'
-        Mock npm {}
+        Mock Invoke-LabNpm -ModuleName LabSetup {}
 
 
         . $npmPath -Config $cfg
@@ -137,7 +137,7 @@ Describe 'Node installation scripts' -Skip:$skipNpm {
         . $npmPath -Config $config
 
         Install-NpmDependencies -Config $cfg
-        Should -Invoke -CommandName npm -Times 1 -ParameterFilter { $testArgs[0] -eq 'install' }
+        Should -Invoke -CommandName Invoke-LabNpm -Times 1 -ParameterFilter { $testArgs[0] -eq 'install' }
         Remove-Item -Recurse -Force $temp
     }
 
