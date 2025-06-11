@@ -1,10 +1,10 @@
 Param([pscustomobject]$Config)
-Import-Module "$PSScriptRoot/../runner_utility_scripts/LabRunner.psd1"
+Import-Module "$PSScriptRoot/../lab_utils/LabRunner/LabRunner.psd1"
 function Install-CA {
     [CmdletBinding(SupportsShouldProcess = $true)]
     param([pscustomobject]$Config)
 
-    Invoke-LabStep -Config $Config -Body {
+    Invoke-LabScript -Config $Config -ScriptBlock {
     Write-CustomLog "Running $($MyInvocation.MyCommand.Name)"
 
 if ($Config.InstallCA -eq $true) {

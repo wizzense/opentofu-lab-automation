@@ -1,6 +1,6 @@
 Param([pscustomobject]$Config)
-Import-Module "$PSScriptRoot/../runner_utility_scripts/LabRunner.psd1"
-Invoke-LabStep -Config $Config -Body {
+Import-Module "$PSScriptRoot/../lab_utils/LabRunner/LabRunner.psd1"
+Invoke-LabScript -Config $Config -ScriptBlock {
     Write-CustomLog "Running $($MyInvocation.MyCommand.Name)"
 
 if ($Config.DisableTCPIP6 -eq $true) {
