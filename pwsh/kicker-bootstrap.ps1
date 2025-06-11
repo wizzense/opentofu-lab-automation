@@ -202,7 +202,7 @@ if ($configOption -match "https://") {
 } elseif ($configOption -and (Test-Path -Path $configOption)) {
     $ConfigFile = $configOption
 } else {
-    $localConfigDir = Join-Path $scriptRoot "configs" "config_files"
+    $localConfigDir = Join-Path (Join-Path $scriptRoot "configs") "config_files"
     if (!(Test-Path $localConfigDir)) {
         New-Item -ItemType Directory -Path $localConfigDir | Out-Null
     }
