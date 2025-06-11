@@ -405,7 +405,7 @@ exit 0
         $scriptsDir = Join-Path $tempDir 'runner_scripts'
         @"
 Param([PSCustomObject]`$Config)
-Write-Output 'hello world'
+Write-CustomLog 'hello world'
 "@ | Set-Content -Path (Join-Path $scriptsDir '0001_Echo.ps1')
 
         Push-Location $tempDir
