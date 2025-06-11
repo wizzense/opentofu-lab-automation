@@ -32,6 +32,15 @@ Describe '0204_Install-Poetry' {
         Should -Invoke -CommandName python -Times 0
     }
 
+    It 'throws when python is missing' {
+        $cfg = [pscustomobject]@{ InstallPoetry = $true }
+        Mock Invoke-LabWebRequest {}
+        Remove-Item function:python -ErrorAction SilentlyContinue
+        Mock-WriteLog
+
+        { Install-Poetry -Config $cfg } | Should -Throw 'Python executable'
+    }
+
     AfterEach {
         Remove-Item function:python -ErrorAction SilentlyContinue
     }
