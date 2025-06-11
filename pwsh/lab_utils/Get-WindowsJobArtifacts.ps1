@@ -8,18 +8,10 @@ param(
 $tempDir = Join-Path ([System.IO.Path]::GetTempPath()) "gh-artifacts-$([System.Guid]::NewGuid())"
 New-Item -ItemType Directory -Path $tempDir | Out-Null
 
-$useGh = $false
-if (Get-Command gh -ErrorAction SilentlyContinue) {
-    try {
-        gh auth status --hostname github.com *> $null
-        $useGh = $true
-    }
-    catch {
-        Write-Host 'gh authentication failed; using public download URLs.' -ForegroundColor Yellow
-    }
-}
-
+$downloadArgs = @{}
 . $PSScriptRoot/Download-Archive.ps1
+$downloadArgs = Get-GhDownloadArgs
+$useGh = $downloadArgs.ContainsKey('UseGh')
 
 if ($useGh) {
     if ($RunId) {
@@ -33,9 +25,9 @@ if ($useGh) {
         $res = $artifacts | Where-Object { $_.name -match 'results.*windows-latest' }
         if ($res) {
             if ($cov) {
-                Download-Archive $cov.archive_download_url (Join-Path $tempDir 'coverage.zip') -UseGh:$useGh
+                Download-Archive $cov.archive_download_url (Join-Path $tempDir 'coverage.zip') @downloadArgs
             }
-            Download-Archive $res.archive_download_url (Join-Path $tempDir 'results.zip') -Required -UseGh:$useGh
+            Download-Archive $res.archive_download_url (Join-Path $tempDir 'results.zip') -Required @downloadArgs
 
         } else {
             Write-Host "No artifacts for windows-latest found on run $RunId. Use gh run view $RunId for details." -ForegroundColor Yellow
@@ -53,9 +45,9 @@ if ($useGh) {
             $res = $artifacts | Where-Object { $_.name -match 'results.*windows-latest' }
             if ($res) {
                 if ($cov) {
-                    Download-Archive $cov.archive_download_url (Join-Path $tempDir 'coverage.zip') -UseGh:$useGh
+                    Download-Archive $cov.archive_download_url (Join-Path $tempDir 'coverage.zip') @downloadArgs
                 }
-                Download-Archive $res.archive_download_url (Join-Path $tempDir 'results.zip') -Required -UseGh:$useGh
+                Download-Archive $res.archive_download_url (Join-Path $tempDir 'results.zip') -Required @downloadArgs
 
                 $found = $true
                 break
@@ -76,8 +68,8 @@ if ($useGh) {
         $resUrl = "https://nightly.link/$Repo/workflows/$Workflow/main/pester-results-windows-latest.zip"
     }
 
-    Download-Archive $covUrl (Join-Path $tempDir 'coverage.zip') -UseGh:$useGh
-    Download-Archive $resUrl (Join-Path $tempDir 'results.zip') -Required -UseGh:$useGh
+    Download-Archive $covUrl (Join-Path $tempDir 'coverage.zip') @downloadArgs
+    Download-Archive $resUrl (Join-Path $tempDir 'results.zip') -Required @downloadArgs
 
 }
 
