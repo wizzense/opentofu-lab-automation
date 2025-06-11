@@ -25,6 +25,7 @@ function global:New-RunnerTestEnv {
 
     $labs = Join-Path $pwshDir 'lab_utils'
     New-Item -ItemType Directory -Path $labs | Out-Null
+    Copy-Item (Join-Path $repoRoot 'pwsh' 'lab_utils' 'Resolve-ProjectPath.ps1') -Destination $labs -Force -ErrorAction SilentlyContinue
     'function Get-LabConfig { param([string]$Path) Get-Content -Raw $Path | ConvertFrom-Json }' |
         Set-Content -Path (Join-Path $labs 'Get-LabConfig.ps1')
     'function Format-Config { param($Config) $Config | ConvertTo-Json -Depth 5 }' |
@@ -38,6 +39,12 @@ function global:New-RunnerTestEnv {
         Set-Content -Path (Join-Path $labs 'Get-Platform.ps1')
     'function Get-MenuSelection { }' |
         Set-Content -Path (Join-Path $labs 'Menu.ps1')
+
+    # Also expose Resolve-ProjectPath from the repository root so tests invoking
+    # runner.ps1 can locate it via $root/lab_utils
+    $rootLabs = Join-Path $root 'lab_utils'
+    New-Item -ItemType Directory -Path $rootLabs -Force | Out-Null
+    Copy-Item (Join-Path $repoRoot 'pwsh' 'lab_utils' 'Resolve-ProjectPath.ps1') -Destination $rootLabs -ErrorAction SilentlyContinue
 
     $cfgDir = Join-Path $root 'configs' 'config_files'
     New-Item -ItemType Directory -Path $cfgDir | Out-Null
