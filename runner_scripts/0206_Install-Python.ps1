@@ -14,6 +14,11 @@ function Install-Python {
                 Invoke-LabDownload -Uri $url -Prefix 'python-installer' -Extension '.exe' -Action {
                     param($installer)
                     Start-Process -FilePath $installer -ArgumentList '/quiet InstallAllUsers=1 PrependPath=1' -Wait
+                    # Refresh PATH for the current session so subsequent scripts can find python
+                    $userPath = [Environment]::GetEnvironmentVariable('PATH', 'User')
+                    $machinePath = [Environment]::GetEnvironmentVariable('PATH', 'Machine')
+                    $env:PATH = (($userPath, $machinePath) -join ';')
+                    Write-CustomLog 'PATH refreshed with new Python location.'
                 }
             } else {
                 Write-CustomLog 'Python already installed.'
