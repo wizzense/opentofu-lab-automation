@@ -11,7 +11,7 @@ if (-not (Test-Path $SettingsPath)) {
 }
 
     $files = Get-ChildItem -Path $Target -Recurse -Include *.ps1,*.psm1,*.psd1 -File |
-        Where-Object { $_.FullName -ne (Resolve-Path $SettingsPath) }
+        Where-Object { $_.FullName -ne (Resolve-Path $SettingsPath).Path }
     $results = $files |
         Select-Object -ExpandProperty FullName |
         Invoke-ScriptAnalyzer -Severity Error,Warning -Settings $SettingsPath
