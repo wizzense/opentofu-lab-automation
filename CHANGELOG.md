@@ -37,6 +37,11 @@ No significant changes.
 
 # Labctl 0.0.0 (2025-06-11)
 
+No significant changes.
+
+
+# Labctl 0.0.0 (2025-06-11)
+
 ### Bugfixes
 
 - Fix bootstrap script URLs. (#fix-bootstrap-url)
