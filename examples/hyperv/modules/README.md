@@ -9,4 +9,4 @@ This directory is created by `tofu init` and records which modules were pulled f
 
 ## Relationship to the examples
 
-The files under `example-infrastructure` demonstrate how to apply these modules. `vm_modules.tf` shows repeated invocations of the `vm` module to spin up different operating systems. `WAN-vSwitch.tf` defines the network switch directly for simplicity, but the same result could be achieved by calling the `network_switch` module. The `modules.json` file in this directory is generated automatically and lists the modules used after running `tofu init`.
+The files under `examples/hyperv` demonstrate how to apply these modules. `vm_modules.tf` shows repeated invocations of the `vm` module to spin up different operating systems. `WAN-vSwitch.tf` defines the network switch directly for simplicity, but the same result could be achieved by calling the `network_switch` module. The `modules.json` file in this directory is generated automatically and lists the modules used after running `tofu init`.

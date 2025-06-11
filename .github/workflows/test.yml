@@ -11,7 +11,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: opentofu/setup-opentofu@v1
       - name: Init and validate
-        working-directory: example-infrastructure
+        working-directory: examples/hyperv
         run: |
           tofu init -input=false 2>&1 | tee init.log
           tofu validate 2>&1 | tee validate.log
@@ -21,14 +21,14 @@ jobs:
         with:
           name: linux-validate-logs
           path: |
-            example-infrastructure/init.log
-            example-infrastructure/validate.log
+            examples/hyperv/init.log
+            examples/hyperv/validate.log
       - name: Upload artifacts
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: linux-validate-artifacts
-          path: example-infrastructure/.terraform
+          path: examples/hyperv/.terraform
 
   windows-validate:
     runs-on: windows-latest
@@ -39,7 +39,7 @@ jobs:
           tofu_wrapper: false
       - name: Init and validate
         shell: pwsh
-        working-directory: example-infrastructure
+        working-directory: examples/hyperv
         run: |
           tofu init -input=false | Tee-Object -FilePath init.log
           tofu validate | Tee-Object -FilePath validate.log
@@ -49,12 +49,12 @@ jobs:
         with:
           name: windows-validate-logs
           path: |
-            example-infrastructure/init.log
-            example-infrastructure/validate.log
+            examples/hyperv/init.log
+            examples/hyperv/validate.log
       - name: Upload artifacts
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: windows-validate-artifacts
-          path: example-infrastructure/.terraform
+          path: examples/hyperv/.terraform
 

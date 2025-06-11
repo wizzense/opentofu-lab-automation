@@ -344,7 +344,7 @@ $null = New-Item -ItemType Directory -Force -Path $infraRepoPath -ErrorAction Si
 
 Write-CustomLog "InfraRepoPath for hyperv provider: $infraRepoPath"
 
-# Determine provider version from example-infrastructure/main.tf
+# Determine provider version from examples/hyperv/main.tf
 try {
     $providerVersion = Get-HyperVProviderVersion
     Write-CustomLog "Using Hyper-V provider version $providerVersion"
