@@ -52,6 +52,14 @@ param(
     [int]$WIMIndex = 3
 )
 
+# Ensure target paths exist for extraction and mounting
+if (-not (Test-Path $ExtractPath)) {
+    New-Item -Path $ExtractPath -ItemType Directory | Out-Null
+}
+if (-not (Test-Path $MountPath)) {
+    New-Item -Path $MountPath -ItemType Directory | Out-Null
+}
+
 # Derived path to the WIM file inside the extracted ISO
 $WIMFile = Join-Path $ExtractPath "sources\install.wim"
 
