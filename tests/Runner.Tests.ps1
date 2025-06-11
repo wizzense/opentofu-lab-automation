@@ -40,13 +40,13 @@ Describe 'runner.ps1 script selection'  {
             $rsDir = Join-Path $root 'runner_scripts'
             New-Item -ItemType Directory -Path $rsDir | Out-Null
 
-            $utils = Join-Path $root 'lab_utils' 'LabRunner'
+            $labs = Join-Path $root 'lab_utils'
+            New-Item -ItemType Directory -Path $labs -Force | Out-Null
+
+            $utils = Join-Path $labs 'LabRunner'
             New-Item -ItemType Directory -Path $utils -Force | Out-Null
             'function Write-CustomLog { param([string]$Message,[string]$Level) }' |
                 Set-Content -Path (Join-Path $utils 'Logger.ps1')
-
-            $labs = Join-Path $root 'lab_utils'
-            New-Item -ItemType Directory -Path $labs | Out-Null
             'function Get-LabConfig { param([string]$Path) Get-Content -Raw $Path | ConvertFrom-Json }' |
                 Set-Content -Path (Join-Path $labs 'Get-LabConfig.ps1')
             'function Format-Config { param($Config) $Config | ConvertTo-Json -Depth 5 }' |
