@@ -14,7 +14,7 @@ $files = Get-ChildItem -Path $Target -Recurse -Include *.ps1,*.psm1,*.psd1 -File
     Select-Object -ExpandProperty FullName
 
 $results = $files | Invoke-ScriptAnalyzer -Severity Error,Warning -Settings $SettingsPath
-$results | Format-Table | Out-String | Write-Host
+$results | Format-Table | Out-String | Write-Output
 
 if ($results | Where-Object Severity -eq 'Error') {
     Write-Error 'ScriptAnalyzer errors detected'
