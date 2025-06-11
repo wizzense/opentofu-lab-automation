@@ -8,7 +8,7 @@ param(
     [string]$Verbosity = 'normal',
 
     [string]$ConfigFile = (Join-Path $PSScriptRoot 'config_files/default-config.json'),
-    #[string]$ConfigFile = (Join-Path $PSScriptRoot 'config_files' 'default-config.json'),
+    #[string]$ConfigFile = (Join-Path (Join-Path $PSScriptRoot 'config_files') 'default-config.json'),
 
 
     [switch]$Auto,
@@ -56,13 +56,13 @@ $script:ConsoleLevel    = $script:VerbosityLevels[$Verbosity]
 
 # ─── Load helpers ──────────────────────────────────────────────────────────────
 if (-not (Get-Command Write-CustomLog -ErrorAction SilentlyContinue)) {
-    . (Join-Path $PSScriptRoot 'lab_utils' 'LabRunner' 'Logger.ps1')
+    . (Join-Path (Join-Path (Join-Path $PSScriptRoot 'lab_utils') 'LabRunner') 'Logger.ps1')
 }
 $env:LAB_CONSOLE_LEVEL = $script:VerbosityLevels[$Verbosity]
-. (Join-Path $PSScriptRoot 'lab_utils' 'Get-LabConfig.ps1')
-. (Join-Path $PSScriptRoot 'lab_utils' 'Format-Config.ps1')
-. (Join-Path $PSScriptRoot 'lab_utils' 'Get-Platform.ps1')
-$menuPath = Join-Path $PSScriptRoot 'lab_utils' 'Menu.ps1'
+. (Join-Path (Join-Path $PSScriptRoot 'lab_utils') 'Get-LabConfig.ps1')
+. (Join-Path (Join-Path $PSScriptRoot 'lab_utils') 'Format-Config.ps1')
+. (Join-Path (Join-Path $PSScriptRoot 'lab_utils') 'Get-Platform.ps1')
+$menuPath = Join-Path (Join-Path $PSScriptRoot 'lab_utils') 'Menu.ps1'
 if (-not (Test-Path $menuPath)) {
     Write-Error "Menu module not found at $menuPath"
     exit 1
@@ -138,7 +138,7 @@ function Set-NestedConfigValue {
 function Apply-RecommendedDefaults {
     param([hashtable]$ConfigObject)
 
-    $recommendedPath = Join-Path $PSScriptRoot 'config_files' 'recommended-config.json'
+    $recommendedPath = Join-Path (Join-Path $PSScriptRoot 'config_files') 'recommended-config.json'
     if (-not (Test-Path $recommendedPath)) { return $ConfigObject }
     try {
         $recommended = Get-Content -Raw -Path $recommendedPath | ConvertFrom-Json
