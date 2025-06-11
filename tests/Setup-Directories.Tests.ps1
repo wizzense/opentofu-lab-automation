@@ -4,7 +4,7 @@ if ($SkipNonWindows) { return }
 Describe '0002_Setup-Directories' -Skip:($SkipNonWindows) {
     BeforeAll {
         $script:ScriptPath = Get-RunnerScriptPath '0002_Setup-Directories.ps1'
-        . (Join-Path $PSScriptRoot '..' 'runner_utility_scripts' 'Logger.ps1')
+        . (Join-Path $PSScriptRoot '..' 'lab_utils' 'LabRunner' 'Logger.ps1')
     }
 
     BeforeEach {

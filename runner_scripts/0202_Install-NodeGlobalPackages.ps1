@@ -1,5 +1,5 @@
 Param([pscustomobject]$Config)
-Import-Module "$PSScriptRoot/../runner_utility_scripts/LabRunner.psd1"
+Import-Module "$PSScriptRoot/../lab_utils/LabRunner/LabRunner.psd1"
 
 function Install-GlobalPackage {
     [CmdletBinding(SupportsShouldProcess)]
@@ -8,7 +8,7 @@ function Install-GlobalPackage {
         [string]$package
     )
 
-    . "$PSScriptRoot/../runner_utility_scripts/Logger.ps1"
+    . "$PSScriptRoot/../lab_utils/LabRunner/Logger.ps1"
 
     if (Get-Command npm -ErrorAction SilentlyContinue) {
         Write-CustomLog "Installing npm package: $package..."

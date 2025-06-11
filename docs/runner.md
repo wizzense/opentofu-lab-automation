@@ -68,7 +68,7 @@ Step scripts import a small PowerShell module that provides common helpers:
 
 ```powershell
 Param([pscustomobject]$Config)
-Import-Module "$PSScriptRoot/../runner_utility_scripts/LabRunner.psd1"
+Import-Module "$PSScriptRoot/../lab_utils/LabRunner/LabRunner.psd1"
 ```
 
 `LabRunner` exposes functions like `Invoke-LabStep`, `Write-CustomLog` and

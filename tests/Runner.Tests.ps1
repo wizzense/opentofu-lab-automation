@@ -42,11 +42,15 @@ Describe 'runner.ps1 script selection' -Skip:($SkipNonWindows) {
 
             $utils = Join-Path $root 'runner_utility_scripts'
             New-Item -ItemType Directory -Path $utils | Out-Null
-            'function Write-CustomLog { param([string]$Message,[string]$Level) }' |
-                Set-Content -Path (Join-Path $utils 'Logger.ps1')
 
             $labs = Join-Path $root 'lab_utils'
             New-Item -ItemType Directory -Path $labs | Out-Null
+
+            $labRunner = Join-Path $labs 'LabRunner'
+            New-Item -ItemType Directory -Path $labRunner | Out-Null
+            'function Write-CustomLog { param([string]$Message,[string]$Level) }' |
+                Set-Content -Path (Join-Path $labRunner 'Logger.ps1')
+
             'function Get-LabConfig { param([string]$Path) Get-Content -Raw $Path | ConvertFrom-Json }' |
                 Set-Content -Path (Join-Path $labs 'Get-LabConfig.ps1')
             'function Format-Config { param($Config) $Config | ConvertTo-Json -Depth 5 }' |

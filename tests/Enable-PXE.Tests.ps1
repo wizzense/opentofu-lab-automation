@@ -4,7 +4,7 @@ if ($SkipNonWindows) { return }
 Describe '0112_Enable-PXE' {
     BeforeAll {
         $script:scriptPath = Get-RunnerScriptPath '0112_Enable-PXE.ps1'
-        $loggerPath = Join-Path $PSScriptRoot '..' 'runner_utility_scripts' 'Logger.ps1'
+        $loggerPath = Join-Path $PSScriptRoot '..' 'lab_utils' 'LabRunner' 'Logger.ps1'
         . $loggerPath
     }
 

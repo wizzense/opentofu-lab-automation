@@ -4,7 +4,7 @@ if ($SkipNonWindows) { return }
 Describe 'Get-MenuSelection' {
     BeforeAll {
         . (Join-Path $PSScriptRoot '..' 'lab_utils' 'Menu.ps1')
-        . (Join-Path $PSScriptRoot '..' 'runner_utility_scripts' 'Logger.ps1')
+        . (Join-Path $PSScriptRoot '..' 'lab_utils' 'LabRunner' 'Logger.ps1')
     }
     AfterEach {
         Remove-Item Function:Read-Host -ErrorAction SilentlyContinue

@@ -4,7 +4,7 @@ if ($SkipNonWindows) { return }
 Describe '0006_Install-ValidationTools' -Skip:($SkipNonWindows) {
     BeforeAll {
         $script:ScriptPath = Get-RunnerScriptPath '0006_Install-ValidationTools.ps1'
-        . (Join-Path $PSScriptRoot '..' 'runner_utility_scripts' 'Logger.ps1')
+        . (Join-Path $PSScriptRoot '..' 'lab_utils' 'LabRunner' 'Logger.ps1')
     }
 
     It 'downloads cosign when InstallCosign is true' {

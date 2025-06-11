@@ -51,7 +51,7 @@ $script:ConsoleLevel    = $script:VerbosityLevels[$Verbosity]
 
 # ─── Load helpers ──────────────────────────────────────────────────────────────
 if (-not (Get-Command Write-CustomLog -ErrorAction SilentlyContinue)) {
-    . (Join-Path $PSScriptRoot 'runner_utility_scripts' 'Logger.ps1')
+    . (Join-Path $PSScriptRoot 'lab_utils/LabRunner/Logger.ps1')
 }
 $env:LAB_CONSOLE_LEVEL = $script:VerbosityLevels[$Verbosity]
 . (Join-Path $PSScriptRoot 'lab_utils' 'Get-LabConfig.ps1')

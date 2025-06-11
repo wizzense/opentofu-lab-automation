@@ -3,7 +3,7 @@ Param(
     [switch]$AsJson
 )
 
-Import-Module "$PSScriptRoot/../runner_utility_scripts/LabRunner.psd1"
+Import-Module "$PSScriptRoot/../lab_utils/LabRunner/LabRunner.psd1"
 function Get-SystemInfo {
     [CmdletBinding()]
     param(

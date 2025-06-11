@@ -133,7 +133,7 @@ Describe '0001_Reset-Git' -Skip:($SkipNonWindows) {
 
     Context 'Logging' {
         It 'logs a success message when clone succeeds' {
-            . (Join-Path $PSScriptRoot '..' 'runner_utility_scripts' 'Logger.ps1')
+            . (Join-Path $PSScriptRoot '..' 'lab_utils' 'LabRunner' 'Logger.ps1')
             $tempDir = Join-Path ([System.IO.Path]::GetTempPath()) ([guid]::NewGuid())
 
             $config = [pscustomobject]@{
