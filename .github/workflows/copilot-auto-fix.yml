@@ -15,24 +15,24 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # Authenticate once with your PAT
+      # Authenticate the GitHub CLI once with your PAT
       - name: Authenticate gh
         run: echo "${{ secrets.GH_PAT_AUTOPILOT }}" | gh auth login --with-token
 
-      # Headless defaults so the CLI never pauses
-      - name: Pre-seed Copilot config
+      # Disable analytics / prompts so the CLI never pauses
+      - name: Pre-seed Copilot config (headless)
         run: |
           mkdir -p "$HOME/.config/gh-copilot"
-          printf '%s\n' \
-            'optional_analytics: false' \
-            'suggest_execute_confirm_default: false' \
-            > "$HOME/.config/gh-copilot/config.yml"
+          cat <<EOF > "$HOME/.config/gh-copilot/config.yml"
+          optional_analytics: false
+          suggest_execute_confirm_default: false
+          EOF
 
-      # Install / upgrade the Copilot extension
+      # Install or upgrade the Copilot CLI extension
       - name: Install Copilot extension
         run: gh extension install github/gh-copilot --force
 
-      # Loop through every open issue, ask Copilot, post the answer
+      # Loop through open issues → ask Copilot → add comment
       - name: Suggest fixes for each open issue
         env:
           GH_TOKEN: ${{ secrets.GH_PAT_AUTOPILOT }}
