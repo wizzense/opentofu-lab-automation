@@ -11,8 +11,8 @@ Describe 'Get-WindowsJobArtifacts' {
     It 'uses gh CLI when authenticated' {
         Mock Get-Command { [pscustomobject]@{ Name = 'gh' } } -ParameterFilter { $Name -eq 'gh' }
         Mock gh {} -ParameterFilter { $args[0] -eq 'auth' -and $args[1] -eq 'status' }
-        Mock gh { '{"workflow_runs":[{"id":1}]}' } -ParameterFilter { $args[0] -like '*runs?*' }
-        Mock gh { '{"artifacts":[{"name":"pester-coverage-windows-latest","archive_download_url":"cov"},{"name":"pester-results-windows-latest","archive_download_url":"res"}]}' } -ParameterFilter { $args[0] -like '*artifacts*' }
+        Mock gh { '{"workflow_runs":[{"id":1}]}' } -ParameterFilter { $args[1] -like '*runs?*' }
+        Mock gh { '{"artifacts":[{"name":"pester-coverage-windows-latest","archive_download_url":"cov"},{"name":"pester-results-windows-latest","archive_download_url":"res"}]}' } -ParameterFilter { $args[1] -like '*artifacts*' }
         Mock gh {} -ParameterFilter { $args[0] -eq 'cov' -or $args[0] -eq 'res' }
         Mock Invoke-WebRequest -ModuleName LabSetup { [pscustomobject]@{ Content = 'Dummy content' } }
         Mock Expand-Archive {}
@@ -50,7 +50,7 @@ Describe 'Get-WindowsJobArtifacts' {
 
         & $scriptPath -RunId $id
 
-        Should -Invoke -CommandName gh -ParameterFilter { $args[0] -like "*runs/$id/artifacts" } -Times 1
+        Should -Invoke -CommandName gh -ParameterFilter { $args[1] -like "*runs/$id/artifacts" } -Times 1
         Should -Not -Invoke -CommandName Invoke-WebRequest
     }
 
@@ -72,7 +72,7 @@ Describe 'Get-WindowsJobArtifacts' {
         $id = 789
         Mock Get-Command { [pscustomobject]@{ Name = 'gh' } } -ParameterFilter { $Name -eq 'gh' }
         Mock gh {} -ParameterFilter { $args[0] -eq 'auth' -and $args[1] -eq 'status' }
-        Mock gh { '{"artifacts":[]}' } -ParameterFilter { $args[0] -like "*runs/$id/artifacts" }
+        Mock gh { '{"artifacts":[]}' } -ParameterFilter { $args[1] -like "*runs/$id/artifacts" }
         Mock Expand-Archive {}
         Mock Get-ChildItem { [pscustomobject]@{ FullName = 'dummy.xml' } }
         Mock Select-Xml { @() }

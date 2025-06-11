@@ -6,18 +6,6 @@ Import-Module "$PSScriptRoot/../lab_utils/LabRunner/LabRunner.psd1"
 # Import-Module (Join-Path $PSScriptRoot '..' 'lab_utils' 'LabRunner' 'LabRunner.psd1')
 
 Write-CustomLog "Starting $MyInvocation.MyCommand"
-function Invoke-OpenTofuInstaller {
-    param(
-        [string]$CosignPath,
-        [string]$OpenTofuVersion
-    )
-    $installer = (
-        Resolve-Path (Join-Path $PSScriptRoot '..' 'lab_utils' 'LabRunner' 'OpenTofuInstaller.ps1')
-    ).Path
-    Write-CustomLog "Running OpenTofuInstaller.ps1 with version $OpenTofuVersion"
-    & $installer -installMethod standalone -cosignPath $CosignPath -opentofuVersion $OpenTofuVersion
-    Write-CustomLog 'OpenTofu installer completed'
-}
 
 function Install-OpenTofu {
     [CmdletBinding()]
