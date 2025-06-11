@@ -84,10 +84,18 @@ Clone this repository and apply the lab template:
 ```bash
 git clone https://github.com/wizzense/opentofu-lab-automation.git
 cd opentofu-lab-automation
-tofu init && tofu apply
+tofu init
+tofu apply -var="lab_config_path=./lab_config.json"
 ```
 
-The configuration reads variables from `lab_config.yaml`, which you can copy from `templates/lab_config.sample.yaml`.
+The OpenTofu configuration loads its variables from a JSON file. Copy any
+example in `config_files/` (for instance `full-config.json`) to
+`lab_config.json` and edit it with your Hyper-V credentials, switch details and
+VM parameters. `main.tf` reads from this file via the `lab_config_path`
+variable.
+
+See [example-infrastructure/README.md](example-infrastructure/README.md) for a
+detailed description of each field.
 
 ## Documentation
 
