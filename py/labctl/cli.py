@@ -6,7 +6,7 @@ from importlib.resources import files
 import typer
 import yaml
 
-from . import github_utils
+from . import github_utils, issue_parser
 
 
 def default_config_path() -> Path:
@@ -105,6 +105,15 @@ def view_issue(issue_number: int):
     """Output issue details as JSON."""
     data = github_utils.view_issue(issue_number)
     typer.echo(data)
+
+
+@repo_app.command("parse-issue")
+def parse_issue(issue_number: int):
+    """Parse an issue created by the failure workflow."""
+    raw = github_utils.view_issue(issue_number)
+    info = json.loads(raw)
+    parsed = issue_parser.parse_issue_body(info.get("body", ""))
+    typer.echo(json.dumps(parsed))
 
 
 @repo_app.command()
