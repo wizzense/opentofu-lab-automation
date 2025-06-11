@@ -1,10 +1,25 @@
-[CmdletBinding(SupportsShouldProcess)]
+[CmdletBinding(SupportsShouldProcess, DefaultParameterSetName='Normal')]
 param(
+    [Parameter(ParameterSetName='Normal')]
+    [Parameter(ParameterSetName='Quiet')]
     [string]$ConfigFile = (Join-Path $PSScriptRoot 'config_files' 'default-config.json'),
+
+    [Parameter(ParameterSetName='Normal')]
+    [Parameter(ParameterSetName='Quiet')]
     [switch]$Auto,
+
+    [Parameter(ParameterSetName='Normal')]
+    [Parameter(ParameterSetName='Quiet')]
     [string]$Scripts,
+
+    [Parameter(ParameterSetName='Normal')]
+    [Parameter(ParameterSetName='Quiet')]
     [switch]$Force,
+
+    [Parameter(ParameterSetName='Quiet', Mandatory=$true)]
     [switch]$Quiet,
+
+    [Parameter(ParameterSetName='Normal')]
     [ValidateSet('silent','normal','detailed')]
     [string]$Verbosity = 'normal'
 )
