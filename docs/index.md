@@ -20,6 +20,5 @@ The [root README](../README.md) provides quick start instructions. Additional gu
 - [Network switch module](../modules/network_switch/README.md)
 - [Example infrastructure](../example-infrastructure/README.md)
 - [Hyper-V provider configuration](hyperv-provider.md)
-- [Minimal example](../examples/minimal/README.md)
 - [Troubleshooting CI](troubleshooting.md)
 
