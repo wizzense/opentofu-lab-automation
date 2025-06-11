@@ -67,7 +67,7 @@ pwsh -File runner_scripts/0001_Reset-Git.ps1 -Config ./config_files/default-conf
 Step scripts import a small PowerShell module that provides common helpers:
 
 ```powershell
-Param([pscustomobject]$Config)
+Param([object]$Config)
 Import-Module "$PSScriptRoot/../runner_utility_scripts/LabRunner.psd1"
 ```
 
