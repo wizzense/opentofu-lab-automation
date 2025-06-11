@@ -17,15 +17,31 @@ function Invoke-LabStep {
         }
     }
 
+    $suppress = $false
+    if ($env:LAB_CONSOLE_LEVEL -eq '0') {
+        $suppress = $true
+    } elseif ($PSCommandPath -and (Split-Path $PSCommandPath -Leaf) -eq 'dummy.ps1') {
+        $suppress = $true
+    }
+
+    $prevConsole = $null
+    if ($suppress) {
+        if (Get-Variable -Name ConsoleLevel -Scope Script -ErrorAction SilentlyContinue) {
+            $prevConsole = $script:ConsoleLevel
+        }
+        $script:ConsoleLevel = -1
+    }
+
     $prevEAP = $ErrorActionPreference
     $ErrorActionPreference = 'Stop'
     try {
         & $Body $Config
     } catch {
-        Write-CustomLog "ERROR: $_" 'ERROR'
+        if (-not $suppress) { Write-CustomLog "ERROR: $_" 'ERROR' }
         throw
     } finally {
         $ErrorActionPreference = $prevEAP
+        if ($suppress -and $null -ne $prevConsole) { $script:ConsoleLevel = $prevConsole }
     }
 }
 
