@@ -60,7 +60,7 @@ if ($PSCmdlet.ShouldProcess($CAName, 'Configure Standalone Root CA')) {
         Write-CustomLog 'Install-AdcsCertificationAuthority command not found. Ensure AD CS features are available.'
         return
     }
-    Install-AdcsCertificationAuthority `
+    & $installCmd `
         -CAType StandaloneRootCA `
         -CACommonName $CAName `
         -KeyLength 2048 `

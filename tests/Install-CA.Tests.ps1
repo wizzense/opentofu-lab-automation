@@ -38,6 +38,24 @@ Describe '0104_Install-CA script' {
         }
     }
 
+    It 'honours -WhatIf for CA installation' -Skip:($SkipNonWindows) {
+        . (Join-Path $PSScriptRoot '..' 'runner_utility_scripts' 'Logger.ps1')
+        $config = [pscustomobject]@{
+            InstallCA = $true
+            CertificateAuthority = @{ CommonName = 'TestCA'; ValidityYears = 1 }
+        }
+        Mock-WriteLog
+        Mock Get-WindowsFeature { @{ Installed = $false } } -ParameterFilter { $Name -eq 'Adcs-Cert-Authority' }
+        Mock Install-WindowsFeature {}
+        Mock Get-Item { $null }
+        function global:Install-AdcsCertificationAuthority {}
+        Mock Install-AdcsCertificationAuthority {}
+
+        & $scriptPath -Config $config -WhatIf
+
+        Should -Invoke -CommandName Install-AdcsCertificationAuthority -Times 0
+    }
+
     It 'skips CA installation when InstallCA is false' -Skip:($SkipNonWindows) {
         . (Join-Path $PSScriptRoot '..' 'runner_utility_scripts' 'Logger.ps1')
         $config = [pscustomobject]@{
