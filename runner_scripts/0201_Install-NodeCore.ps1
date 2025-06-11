@@ -1,10 +1,14 @@
-Param([pscustomobject]$Config)
+Param([object]$Config)
 Import-Module "$PSScriptRoot/../lab_utils/LabRunner/LabRunner.psd1"
+
+# Param([pscustomobject]$Config)
+# Import-Module (Join-Path $PSScriptRoot '..' 'lab_utils' 'LabRunner' 'LabRunner.psm1')
+
 Write-CustomLog "Starting $MyInvocation.MyCommand"
 
 function Install-NodeCore {
     [CmdletBinding(SupportsShouldProcess = $true)]
-    param([pscustomobject]$Config)
+    param([object]$Config)
 
     Invoke-LabStep -Config $Config -Body {
     Write-CustomLog "Running $($MyInvocation.MyCommand.Name)"
@@ -70,4 +74,5 @@ if ($nodeDeps.InstallNode) {
 }
 }
 }
+    Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
 if ($MyInvocation.InvocationName -ne '.') { Install-NodeCore @PSBoundParameters }

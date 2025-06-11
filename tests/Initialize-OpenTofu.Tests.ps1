@@ -2,6 +2,7 @@
 . (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
 if ($SkipNonWindows) { return }
 Describe 'Initialize-OpenTofu script' {
+    Import-Module (Join-Path $PSScriptRoot '..' 'runner_utility_scripts' 'LabRunner.psd1') -Force
 InModuleScope LabSetup {
     BeforeAll {
         $script:ScriptPath = Get-RunnerScriptPath '0009_Initialize-OpenTofu.ps1'
@@ -63,8 +64,8 @@ InModuleScope LabSetup {
 
         & $script:ScriptPath -Config $config
 
-        Should -Invoke -CommandName git -Times 1 -ParameterFilter { $args[0] -eq 'pull' }
-        Should -Invoke -CommandName git -Times 0 -ParameterFilter { $args[0] -eq 'clone' }
+        Should -Invoke -CommandName git -Times 1 -ParameterFilter { $args[0] -eq '-C' -and $args[2] -eq 'pull' }
+        Should -Invoke -CommandName git -Times 0 -ParameterFilter { $args[2] -eq 'clone' }
         Should -Invoke -CommandName tofu -Times 1 -ParameterFilter { $args[0] -eq 'init' }
 
         Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue

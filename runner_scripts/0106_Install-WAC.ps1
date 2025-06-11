@@ -1,5 +1,9 @@
-Param([pscustomobject]$Config)
+Param([object]$Config)
 Import-Module "$PSScriptRoot/../lab_utils/LabRunner/LabRunner.psd1"
+
+# Param([pscustomobject]$Config)
+# Import-Module (Join-Path $PSScriptRoot '..' 'lab_utils' 'LabRunner' 'LabRunner.psm1')
+
 Write-CustomLog "Starting $MyInvocation.MyCommand"
 
 function Get-WacRegistryInstallation {
@@ -66,4 +70,5 @@ if ($Config.InstallWAC -eq $true) {
 } else {
     Write-CustomLog "InstallWAC flag is disabled. Skipping Windows Admin Center installation."
 }
+    Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
 }
