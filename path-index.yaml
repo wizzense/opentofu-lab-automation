@@ -24,6 +24,7 @@ pwsh/lab_utils/LabSetup/Logger.ps1: pwsh/lab_utils/LabSetup/Logger.ps1
 pwsh/lab_utils/LabSetup/ScriptTemplate.ps1: pwsh/lab_utils/LabSetup/ScriptTemplate.ps1
 pwsh/lab_utils/Menu.ps1: pwsh/lab_utils/Menu.ps1
 pwsh/lab_utils/Network.ps1: pwsh/lab_utils/Network.ps1
+pwsh/lab_utils/PathUtils.ps1: pwsh/lab_utils/PathUtils.ps1
 pwsh/lab_utils/Resolve-ProjectPath.ps1: pwsh/lab_utils/Resolve-ProjectPath.ps1
 pwsh/lab_utils/__init__.py: pwsh/lab_utils/__init__.py
 pwsh/lab_utils/get_platform.py: pwsh/lab_utils/get_platform.py
