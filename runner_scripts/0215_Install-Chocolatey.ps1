@@ -11,7 +11,7 @@ function Install-Chocolatey {
         if ($Config.InstallChocolatey -eq $true) {
             if (-not (Get-Command choco.exe -ErrorAction SilentlyContinue)) {
                 $command = "Set-ExecutionPolicy Bypass -Scope Process -Force; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))"
-                Start-Process powershell.exe -ArgumentList "-NoProfile -ExecutionPolicy Bypass -Command `$command`" -Wait
+                Start-Process powershell.exe -ArgumentList "-NoProfile -ExecutionPolicy Bypass -Command $command" -Wait
             } else {
                 Write-CustomLog 'Chocolatey already installed.'
             }
