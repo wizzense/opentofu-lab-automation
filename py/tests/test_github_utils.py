@@ -1,6 +1,7 @@
 from pathlib import Path
 import sys
 import subprocess
+import json
 from typer.testing import CliRunner
 
 sys.path.append(str(Path(__file__).resolve().parents[1]))
@@ -104,5 +105,22 @@ def test_view_issue(monkeypatch):
         "--json",
         "title,body",
     ]
+
+
+def test_parse_issue_command(monkeypatch):
+    def fake_view_issue(num):
+        body = (
+            "Run [https://run](https://run) for commit `dead` on branch `main` failed.\n\n"
+            "### Failed jobs\n- [Lint](https://job) - failure\n\n"
+            "### Failing tests\n- **t**: oops\n"
+        )
+        return json.dumps({"title": "t", "body": body})
+
+    monkeypatch.setattr(github_utils, "view_issue", fake_view_issue)
+    runner = CliRunner()
+    result = runner.invoke(app, ["repo", "parse-issue", "1"])
+    assert result.exit_code == 0
+    parsed = json.loads(result.stdout)
+    assert parsed["commit"] == "dead"
 
 
