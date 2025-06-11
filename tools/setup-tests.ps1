@@ -17,7 +17,7 @@ function Ensure-Module($Name, $Version) {
 }
 
 Write-Host 'Installing PowerShell modules...'
-Ensure-Module -Name 'Pester' -Version '5.6.1'
+Ensure-Module -Name 'Pester' -Version '5.7.1'
 Ensure-Module -Name 'powershell-yaml' -Version '0.4.2'
 
 $repoRoot = Split-Path $PSScriptRoot -Parent
