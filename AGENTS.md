@@ -266,6 +266,14 @@ Ongoing – Phase 5
 
 ---
 
+## ISO Customization
+
+`iso_tools/Customize-ISO.ps1` mounts a Windows ISO, injects `bootstrap.ps1` and
+an answer file, then rebuilds a bootable image using the Windows ADK. See
+[docs/iso_tools.md](docs/iso_tools.md) for full usage details.
+
+---
+
 ## Next Steps
 
 * **Document** `labctl` commands in the main `README` ✔️
