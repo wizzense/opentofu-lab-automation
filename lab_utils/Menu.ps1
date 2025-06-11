@@ -21,7 +21,7 @@ function Get-MenuSelection {
     }
     while ($true) {
         $prompt = if ($AllowAll) { "Enter numbers/prefixes (comma separated), 'all', or 'exit'" } else { "Enter numbers/prefixes or 'exit'" }
-        $input = Read-Host $prompt
+        $input = Read-LoggedInput $prompt
         if ($input -match '^(?i)exit$') { return @() }
         if ($AllowAll -and $input -eq 'all') { return $Items }
         $tokens = $input -split ',' | ForEach-Object { $_.Trim() } | Where-Object { $_ }

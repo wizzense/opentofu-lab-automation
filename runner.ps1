@@ -1,25 +1,19 @@
-[CmdletBinding(SupportsShouldProcess, DefaultParameterSetName='Normal')]
+[CmdletBinding(SupportsShouldProcess)]
 param(
     [Parameter(ParameterSetName='Normal')]
     [Parameter(ParameterSetName='Quiet')]
     [string]$ConfigFile = (Join-Path $PSScriptRoot 'config_files/default-config.json'),
+    #[string]$ConfigFile = (Join-Path $PSScriptRoot 'config_files' 'default-config.json'),
 
-    [Parameter(ParameterSetName='Normal')]
-    [Parameter(ParameterSetName='Quiet')]
+
     [switch]$Auto,
 
-    [Parameter(ParameterSetName='Normal')]
-    [Parameter(ParameterSetName='Quiet')]
     [string]$Scripts,
 
-    [Parameter(ParameterSetName='Normal')]
-    [Parameter(ParameterSetName='Quiet')]
     [switch]$Force,
 
-    [Parameter(ParameterSetName='Quiet', Mandatory=$true)]
     [switch]$Quiet,
 
-    [Parameter(ParameterSetName='Normal')]
     [ValidateSet('silent','normal','detailed')]
     [string]$Verbosity = 'normal'
 )
@@ -164,7 +158,7 @@ function Set-LabConfig {
     function Edit-PrimitiveValue {
         param([string]$Path, [object]$Current)
         $prompt = "New value for '$Path' [$Current]"
-        $ans = Read-Host $prompt
+        $ans = Read-LoggedInput $prompt
         if (-not $ans) { return $Current }
         if ($Current -is [bool]) { return $ans -match '^(?i)y|true$' }
         if ($Current -is [int])  { return [int]$ans }
@@ -230,7 +224,7 @@ Write-CustomLog (Format-Config -Config $ConfigRaw)
 
 # ─── Optional customization ──────────────────────────────────────────────────
 if (-not $Auto) {
-    if ((Read-Host "Customize configuration? (Y/N)") -match '^(?i)y') {
+    if ((Read-LoggedInput "Customize configuration? (Y/N)") -match '^(?i)y') {
         $Config = Set-LabConfig -ConfigObject $Config
         if ($PSCmdlet.ShouldProcess($ConfigFile, 'Save updated configuration')) {
             $Config | ConvertTo-Json -Depth 5 | Out-File $ConfigFile -Encoding utf8
@@ -258,7 +252,7 @@ function Invoke-Scripts {
         if ($cleanup) {
             Write-CustomLog "WARNING: Cleanup script 0000 will remove local files."
             if (-not $Auto) {
-                if ((Read-Host "Continue with cleanup and exit? (Y/N)") -notmatch '^(?i)y') {
+                if ((Read-LoggedInput "Continue with cleanup and exit? (Y/N)") -notmatch '^(?i)y') {
                     Write-CustomLog 'Aborting per user request.'; return $false
                 }
             }
@@ -290,7 +284,7 @@ function Invoke-Scripts {
                         $Config | ConvertTo-Json -Depth 5 | Out-File -FilePath $ConfigFile -Encoding utf8
                         $current = $true
                     }
-                    elseif (-not $Auto -and (Read-Host "Enable flag '$flag' and run? (Y/N)") -match '^(?i)y') {
+                    elseif (-not $Auto -and (Read-LoggedInput "Enable flag '$flag' and run? (Y/N)") -match '^(?i)y') {
                         Set-NestedConfigValue -Config $Config -Path $flag -Value $true
                         $Config | ConvertTo-Json -Depth 5 | Out-File -FilePath $ConfigFile -Encoding utf8
                         $current = $true

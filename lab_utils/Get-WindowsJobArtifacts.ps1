@@ -66,7 +66,7 @@ if ($useGh) {
         }
 
         if (-not $found) {
-            Write-Host 'No Windows artifacts found in recent runs. Try specifying -RunId to select a specific run.' -ForegroundColor Yellow
+            Write-Host 'No artifacts found in recent Windows runs. Try specifying -RunId to select a specific run.' -ForegroundColor Yellow
             exit 1
         }
     }

@@ -58,6 +58,12 @@ When running in CI or other automated environments, you can call the runner dire
 ./runner.ps1 -Scripts all -Auto
 ```
 
+Use the provided full configuration file to enable every feature:
+
+```powershell
+pwsh -File runner.ps1 -ConfigFile ./config_files/full-config.json -Scripts all -Auto
+```
+
 Individual scripts can also be executed directly:
 
 ```powershell
@@ -67,9 +73,14 @@ pwsh -File runner_scripts/0001_Reset-Git.ps1 -Config ./config_files/default-conf
 Step scripts import a small PowerShell module that provides common helpers:
 
 ```powershell
-Param([pscustomobject]$Config)
+Param([object]$Config)
 Import-Module "$PSScriptRoot/../runner_utility_scripts/LabRunner.psd1"
 ```
+
+The `-Config` parameter can be either a path to a JSON file or a
+PowerShell object that has already been parsed. The runner passes an
+object to each step script, while manual invocation may supply the file
+path as shown above.
 
 `LabRunner` exposes functions like `Invoke-LabStep`, `Write-CustomLog` and
 `Get-Platform` so every script shares the same logging and platform detection

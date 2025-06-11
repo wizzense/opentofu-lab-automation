@@ -24,7 +24,7 @@ InModuleScope LabSetup {
             param($Name)
             if ($Name -eq 'gh') { return @{ Name = 'gh' } }
             if ($Name -eq 'tofu') { return @{ Name = 'tofu' } }
-        }
+        } -ParameterFilter { $Name -in @('gh','tofu') }
         function global:gh {}
         function global:tofu {}
         Mock gh { $global:LASTEXITCODE = 0 }
@@ -54,7 +54,7 @@ InModuleScope LabSetup {
             param($Name)
             if ($Name -eq 'gh') { return @{ Name = 'gh' } }
             if ($Name -eq 'tofu') { return @{ Name = 'tofu' } }
-        }
+        } -ParameterFilter { $Name -in @('gh','tofu') }
         function global:gh {}
         function global:tofu {}
         Mock git {}
@@ -63,8 +63,8 @@ InModuleScope LabSetup {
 
         & $script:ScriptPath -Config $config
 
-        Should -Invoke -CommandName git -Times 1 -ParameterFilter { $args[0] -eq 'pull' }
-        Should -Invoke -CommandName git -Times 0 -ParameterFilter { $args[0] -eq 'clone' }
+        Should -Invoke -CommandName git -Times 1 -ParameterFilter { $args[0] -eq '-C' -and $args[2] -eq 'pull' }
+        Should -Invoke -CommandName git -Times 0 -ParameterFilter { $args[2] -eq 'clone' }
         Should -Invoke -CommandName tofu -Times 1 -ParameterFilter { $args[0] -eq 'init' }
 
         Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue
@@ -84,7 +84,7 @@ InModuleScope LabSetup {
             param($Name)
             if ($Name -eq 'gh') { return @{ Name = 'gh' } }
             if ($Name -eq 'tofu') { return @{ Name = 'tofu' } }
-        }
+        } -ParameterFilter { $Name -in @('gh','tofu') }
         function global:gh {}
         function global:tofu {}
         Mock gh { $global:LASTEXITCODE = 0 }
@@ -120,7 +120,7 @@ InModuleScope LabSetup {
                 $script:getCalls++
                 if ($script:getCalls -eq 1) { return $null } else { return @{ Name = 'tofu' } }
             }
-        }
+        } -ParameterFilter { $Name -in @('gh','tofu') }
         function global:gh {}
         function global:tofu {}
         Mock gh { $global:LASTEXITCODE = 0 }
@@ -152,7 +152,7 @@ InModuleScope LabSetup {
             param($Name)
             if ($Name -eq 'gh') { return @{ Name = 'gh' } }
             if ($Name -eq 'tofu') { return $null }
-        }
+        } -ParameterFilter { $Name -in @('gh','tofu') }
         function global:gh {}
         Mock gh { $global:LASTEXITCODE = 0 }
         Mock git {}
@@ -183,7 +183,7 @@ InModuleScope LabSetup {
                 param($Name)
                 if ($Name -eq 'gh')   { return @{ Name = 'gh' } }
                 if ($Name -eq 'tofu') { return $null }
-            }
+            } -ParameterFilter { $Name -in @('gh','tofu') }
             function global:gh {}
             Mock gh { $global:LASTEXITCODE = 0 }
             Mock git {}

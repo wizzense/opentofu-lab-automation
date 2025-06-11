@@ -71,7 +71,7 @@ Describe 'runner.ps1 script selection' -Skip:($SkipNonWindows) {
     }
     AfterEach {
         Remove-Item Function:Write-Host -ErrorAction SilentlyContinue
-        Remove-Item Function:Read-Host -ErrorAction SilentlyContinue
+        Remove-Item Function:Read-LoggedInput -ErrorAction SilentlyContinue
         Remove-Item Function:Write-Warning -ErrorAction SilentlyContinue
         Remove-Item Function:Write-Error -ErrorAction SilentlyContinue
     }
@@ -85,7 +85,7 @@ exit 0" | Set-Content -Path $dummy
 
         Push-Location $tempDir
         Mock Get-MenuSelection {}
-        Mock Read-Host { throw 'Read-Host should not be called' }
+        Mock Read-LoggedInput { throw 'Read-LoggedInput should not be called' }
         & "$tempDir/runner.ps1" -Scripts '0001' -Auto | Out-Null
         Pop-Location
 
@@ -105,7 +105,7 @@ exit 0" | Set-Content -Path $dummy
         $env:PATH  = ''
         try {
             Push-Location $tempDir
-            Mock Read-Host { throw 'Read-Host should not be called' }
+            Mock Read-LoggedInput { throw 'Read-LoggedInput should not be called' }
             & "$tempDir/runner.ps1" -Scripts '0001' -Auto | Out-Null
             $code = $LASTEXITCODE
             Pop-Location
@@ -186,7 +186,7 @@ exit 0
         Set-Content -Path (Join-Path $scriptsDir '0002_Success.ps1') -Value $successContent
 
         Push-Location $tempDir
-        Mock Read-Host { throw 'Read-Host should not be called' }
+        Mock Read-LoggedInput { throw 'Read-LoggedInput should not be called' }
         & "$tempDir/runner.ps1" -Scripts '0001,0002' -Auto | Out-Null
         $code = $LASTEXITCODE
         Pop-Location
@@ -217,7 +217,7 @@ exit 0
         Set-Content -Path (Join-Path $scriptsDir '0002_Success.ps1') -Value $successContent
 
         Push-Location $tempDir
-        Mock Read-Host { throw 'Read-Host should not be called' }
+        Mock Read-LoggedInput { throw 'Read-LoggedInput should not be called' }
         & "$tempDir/runner.ps1" -Scripts '0001,0002' -Auto | Out-Null
         $code = $LASTEXITCODE
         Pop-Location
@@ -248,7 +248,7 @@ exit 0
         Set-Content -Path (Join-Path $scriptsDir '0001_Other.ps1') -Value $otherContent
 
         Push-Location $tempDir
-        Mock Read-Host { throw 'Read-Host should not be called' }
+        Mock Read-LoggedInput { throw 'Read-LoggedInput should not be called' }
         & "$tempDir/runner.ps1" -Scripts '0000,0001' -Auto | Out-Null
         $code = $LASTEXITCODE
         Pop-Location
@@ -274,7 +274,7 @@ if (`$Config.RunFoo -eq `$true) { 'foo' | Out-File -FilePath "$out" } else { Wri
             Set-Content -Path (Join-Path $scriptsDir '0001_Test.ps1')
 
         Push-Location $tempDir
-        Mock Read-Host { throw 'Read-Host should not be called' }
+        Mock Read-LoggedInput { throw 'Read-LoggedInput should not be called' }
         & "$tempDir/runner.ps1" -Scripts '0001' -Auto -ConfigFile $configFile -Force | Out-Null
         $updated1 = Get-Content -Raw $configFile | ConvertFrom-Json
 
@@ -303,7 +303,7 @@ if (`$Config.RunFoo -eq `$true) { 'foo' | Out-File -FilePath "$out" }
             Set-Content -Path (Join-Path $scriptsDir '0001_Test.ps1')
 
         Push-Location $tempDir
-        Mock Read-Host { throw 'Read-Host should not be called' }
+        Mock Read-LoggedInput { throw 'Read-LoggedInput should not be called' }
         & "$tempDir/runner.ps1" -Scripts '0001' -Auto -ConfigFile $configFile | Out-Null
         $updated1 = Get-Content -Raw $configFile | ConvertFrom-Json
 
@@ -329,7 +329,7 @@ Param([PSCustomObject]`$Config)
             Set-Content -Path (Join-Path $scriptsDir '0001_NoExit.ps1')
 
         Push-Location $tempDir
-        Mock Read-Host { throw 'Read-Host should not be called' }
+        Mock Read-LoggedInput { throw 'Read-LoggedInput should not be called' }
         & "$tempDir/runner.ps1" -Scripts '0001' -Auto | Out-Null
         $code = $LASTEXITCODE
         Pop-Location
@@ -531,25 +531,25 @@ Describe 'Set-LabConfig' {
                 switch ($choice) {
                     'Done' { return $ConfigObject }
                     'InstallGit' {
-                        $ans = Read-Host "InstallGit? (Y/N) [$($ConfigObject.InstallGit)]"
+                        $ans = Read-LoggedInput "InstallGit? (Y/N) [$($ConfigObject.InstallGit)]"
                         if ($ans) { $ConfigObject.InstallGit = $ans -match '^(?i)y' }
                     }
                     'InstallGo' {
-                        $ans = Read-Host "InstallGo? (Y/N) [$($ConfigObject.InstallGo)]"
+                        $ans = Read-LoggedInput "InstallGo? (Y/N) [$($ConfigObject.InstallGo)]"
                         if ($ans) { $ConfigObject.InstallGo = $ans -match '^(?i)y' }
                     }
                     'InstallOpenTofu' {
-                        $ans = Read-Host "InstallOpenTofu? (Y/N) [$($ConfigObject.InstallOpenTofu)]"
+                        $ans = Read-LoggedInput "InstallOpenTofu? (Y/N) [$($ConfigObject.InstallOpenTofu)]"
                         if ($ans) { $ConfigObject.InstallOpenTofu = $ans -match '^(?i)y' }
                     }
                     'LocalPath' {
-                        $ans = Read-Host "Local repo path [$($ConfigObject.LocalPath)]"
+                        $ans = Read-LoggedInput "Local repo path [$($ConfigObject.LocalPath)]"
                         if ($ans) { $ConfigObject.LocalPath = $ans }
                     }
                     'Node_Dependencies' {
-                        $p1 = Read-Host "Path to Node project [$($ConfigObject.Node_Dependencies.NpmPath)]"
+                        $p1 = Read-LoggedInput "Path to Node project [$($ConfigObject.Node_Dependencies.NpmPath)]"
                         if ($p1) { $ConfigObject.Node_Dependencies.NpmPath = $p1 }
-                        $p2 = Read-Host "Create NpmPath if missing? (Y/N) [$($ConfigObject.Node_Dependencies.CreateNpmPath)]"
+                        $p2 = Read-LoggedInput "Create NpmPath if missing? (Y/N) [$($ConfigObject.Node_Dependencies.CreateNpmPath)]"
                         if ($p2) { $ConfigObject.Node_Dependencies.CreateNpmPath = $p2 -match '^(?i)y' }
                     }
                 }
@@ -575,7 +575,7 @@ Describe 'Set-LabConfig' {
             'Y'
         )
         $script:idx = 0
-        function global:Read-Host {
+        function global:Read-LoggedInput {
             param([string]$Prompt)
             $null = $Prompt
             $answers[$script:idx++]

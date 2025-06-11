@@ -7,4 +7,4 @@ Import-Module (Join-Path $PSScriptRoot '..' 'lab_utils' 'LabSetup' 'LabSetup.psd
 
 # Only this side (LabRunner) brings ScriptTemplate in.
 
-Export-ModuleMember -Function Invoke-LabStep, Write-CustomLog, Get-Platform, Get-LabConfig
+Export-ModuleMember -Function Invoke-LabStep, Write-CustomLog, Read-LoggedInput, Get-Platform, Get-LabConfig

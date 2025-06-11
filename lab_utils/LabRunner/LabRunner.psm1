@@ -5,7 +5,7 @@
 function Invoke-LabStep {
     param(
         [scriptblock]$Body,
-        [pscustomobject]$Config
+        [object]$Config
     )
 
     if ($Config -is [string]) {
@@ -28,4 +28,4 @@ function Invoke-LabStep {
     }
 }
 
-Export-ModuleMember -Function Invoke-LabStep, Write-CustomLog, Get-Platform
+Export-ModuleMember -Function Invoke-LabStep, Write-CustomLog, Read-LoggedInput, Get-Platform

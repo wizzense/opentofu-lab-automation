@@ -42,13 +42,21 @@ Silence most output:
 Use a custom configuration file:
 
 ```powershell
+
 ./runner.ps1 -ConfigFile path\to\config.json -Scripts '0006,0007,0008,0009,0010' -Auto
+
+pwsh -File runner.ps1 -ConfigFile ./config_files/full-config.json -Scripts all -Auto
+
 ```
 
 Force optional script flags and show detailed logs:
 
 ```powershell
 ./runner.ps1 -Scripts '0006,0007' -Auto -Force -Verbosity detailed
+```
+
+```powershell
+pwsh -File runner.ps1 -Scripts '0006,0007,0008,0009,0010,0100,0101,0102,0103,0105,0106,0111,0112,0113,0114'
 ```
 
 ### CI usage
@@ -207,6 +215,8 @@ system temporary directory on other platforms). Set the `LAB_LOG_DIR`
 environment variable or `$script:LogFilePath` to override the location. The
 `labctl` Python CLI uses the same variable and writes to `lab.log` within that
 directory.
+Prompts displayed during script execution use `Read-LoggedInput`, so user
+responses are recorded in the same log file (except secure inputs).
 
 Make sure to modify the 'main.tf' so it uses your admin credentials and hostname/IP of the host machine if you don't have a customized config.json or choose not to customize.
 
