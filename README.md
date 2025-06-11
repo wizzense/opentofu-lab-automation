@@ -51,6 +51,10 @@ Force optional script flags and show detailed logs:
 pwsh -File runner.ps1 -Scripts '0006,0007' -Auto -Force -Verbosity detailed
 ```
 
+```powershell
+pwsh -File runner.ps1 -Scripts '0006,0007,0008,0009,0010,0100,0101,0102,0103,0105,0106,0111,0112,0113,0114'
+```
+
 ### CI usage
 
 In automation scenarios or CI jobs, call the runner using `pwsh -File` so each
