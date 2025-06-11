@@ -531,7 +531,8 @@ if (-not $runnerScriptName) {
 Set-Location $repoPath
 if (!(Test-Path $runnerScriptName)) {
     Write-Error "ERROR: Could not find $runnerScriptName in $repoPath. Exiting."
-    Write-Host "Directory listing for $repoPath:" -ForegroundColor Yellow
+    # Use ${repoPath} to avoid parsing error when followed by a colon
+    Write-Host "Directory listing for ${repoPath}:" -ForegroundColor Yellow
     Get-ChildItem -Path $repoPath -Recurse | Select-Object FullName
     Write-Host @"
 Possible causes:
