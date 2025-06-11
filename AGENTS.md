@@ -107,6 +107,9 @@
 * Guard Windows‑only tests with `if ($SkipNonWindows) { return }` or
   `-Skip:($SkipNonWindows)`.
 
+* Use `$SkipNonWindows` only for tests that rely on Windows-specific functionality (e.g., the registry). Tests that simply use mocks or platform-neutral cmdlets should run on all operating systems.
+* CI runs Pester on Windows, Linux, and macOS, so avoid skipping cross-platform tests as it reduces coverage.
+
 
 3. **Style**
    • PowerShell: `Invoke‑ScriptAnalyzer`
