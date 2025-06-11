@@ -74,6 +74,10 @@ Individual step scripts can also be invoked this way when debugging:
 pwsh -File runner_scripts/0001_Reset-Git.ps1 -Config ./config_files/default-config.json
 ```
 
+The lint workflow installs the GitHub Copilot CLI and runs `copilot suggest`
+after linting. The command scans the repository and provides additional
+improvement ideas directly in the workflow logs.
+
 
 Clone this repository and apply the lab template:
 

@@ -55,8 +55,12 @@ jobs:
         shell: pwsh
         run: |
           Install-Module -Name PSScriptAnalyzer -RequiredVersion 1.24.0 -Force -Scope CurrentUser
-      - name: Install powershell-yaml
-        shell: pwsh
-        run: |
-          Install-Module -Name powershell-yaml -Force -Scope CurrentUser
-      - uses: ./.github/actions/lint
+        - name: Install powershell-yaml
+          shell: pwsh
+          run: |
+            Install-Module -Name powershell-yaml -Force -Scope CurrentUser
+        - uses: ./.github/actions/lint
+        - name: Set up Copilot
+          run: npm install -g @githubnext/copilot-cli
+        - name: Run Copilot suggestions
+          run: copilot suggest --repo ${{ github.repository }}
