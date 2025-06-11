@@ -2,6 +2,7 @@
 . (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
 if ($SkipNonWindows) { return }
 Describe 'Initialize-OpenTofu script' {
+InModuleScope LabSetup {
     BeforeAll {
         $script:ScriptPath = Get-RunnerScriptPath '0009_Initialize-OpenTofu.ps1'
     }
@@ -195,4 +196,5 @@ Describe 'Initialize-OpenTofu script' {
             Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue
         }
     }
+}
 }

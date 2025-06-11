@@ -1,4 +1,5 @@
 #. dot-source utilities
+Import-Module (Join-Path $PSScriptRoot '..' 'lab_utils' 'LabSetup' 'LabSetup.psd1')
 
 . (Join-Path $PSScriptRoot 'ScriptTemplate.ps1')   # pulls in Invoke-LabStep, etc.
 . $PSScriptRoot/Logger.ps1

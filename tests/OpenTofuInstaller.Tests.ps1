@@ -31,7 +31,7 @@ if ($IsLinux -or $IsMacOS) { return }
         $zipPath = Join-Path $temp 'tofu_0.0.0_windows_amd64.zip'
         'dummy' | Set-Content $zipPath
         $hash = (Get-FileHash -Algorithm SHA256 $zipPath).Hash
-        Mock Invoke-WebRequest {
+        Mock Invoke-WebRequest -ModuleName LabSetup {
             param([string]$Uri, [string]$OutFile)
             if ($Uri -match 'SHA256SUMS$') {
                 "${hash}  tofu_0.0.0_windows_amd64.zip" | Set-Content $OutFile
@@ -76,7 +76,7 @@ if ($IsLinux -or $IsMacOS) { return }
         $zipPath = Join-Path $temp 'tofu_0.0.0_windows_amd64.zip'
         'dummy' | Set-Content $zipPath
         $hash = (Get-FileHash -Algorithm SHA256 $zipPath).Hash
-        Mock Invoke-WebRequest {
+        Mock Invoke-WebRequest -ModuleName LabSetup {
             param([string]$Uri, [string]$OutFile)
             if ($Uri -match 'SHA256SUMS$') {
                 "${hash}  tofu_0.0.0_windows_amd64.zip" | Set-Content $OutFile

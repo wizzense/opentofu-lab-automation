@@ -13,7 +13,7 @@ Describe '0006_Install-ValidationTools' -Skip:($SkipNonWindows) {
             CosignURL     = 'http://example.com/cosign.exe'
             CosignPath    = Join-Path $env:TEMP ([guid]::NewGuid())
         }
-        Mock Invoke-WebRequest {}
+        Mock Invoke-WebRequest -ModuleName LabSetup {}
         Mock New-Item {}
         Mock Test-Path { $false }
         Mock-WriteLog
