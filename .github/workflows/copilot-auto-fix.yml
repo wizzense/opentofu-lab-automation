@@ -1,36 +1,52 @@
-name: Copilot Auto Fix
+name: Copilot Auto FIx
 
 on:
+  schedule:
+    - cron: '0 * * * *'  # Run hourly
   workflow_dispatch:
 
-permissions:
-  contents: write
-  pull-requests: write
-  issues: read
-
 jobs:
-  copilot-fix:
+  resolve_issues:
     runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      contents: read
     steps:
-      - uses: actions/checkout@v4
-      - name: Install Node
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-      - name: Install GitHub CLI
-        uses: cli/cli@v2.74.1
-      - name: Authenticate gh
-        run: gh auth login --with-token <<< "$GITHUB_TOKEN"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Install Copilot CLI
-        run: npm install -g @githubnext/copilot-cli
-      - name: Run Copilot suggestions
+        run: |
+          npm install -g @githubnext/copilot-cli
+
+      - name: Authenticate with GitHub token
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          for num in $(gh issue list --state open --json number -q '.[].number'); do
-            body=$(gh issue view "$num" --json body -q .body)
-            echo "$body" > issue.txt
-            copilot suggest --repo ${{ github.repository }} --issue issue.txt || true
+          echo "Authenticated via GitHub Actions token."
+
+      - name: Get open issues
+        id: fetch_issues
+        run: |
+          gh issue list --state open --limit 10 --json number,title,body > issues.json
+
+      - name: Run Copilot on issues
+        run: |
+          for row in $(jq -c '.[]' issues.json); do
+            number=$(echo "$row" | jq -r '.number')
+            title=$(echo "$row" | jq -r '.title')
+            body=$(echo "$row" | jq -r '.body')
+            suggestion=$(copilot suggest --context "$body")
+
+            if [ -n "$suggestion" ]; then
+              echo "Posting suggestion to issue #$number..."
+              gh issue comment $number --body "🤖 Copilot suggests:
+
+$suggestion"
+            fi
           done
