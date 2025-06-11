@@ -54,7 +54,8 @@ jobs:
       - name: Install PSScriptAnalyzer
         shell: pwsh
         run: |
-          if (-not (Get-Module -ListAvailable -Name PSScriptAnalyzer -RequiredVersion 1.24.0)) {
+          if (-not (Get-Module -ListAvailable -Name PSScriptAnalyzer |
+              Where-Object { $_.Version -ge [version]'1.24.0' })) {
             Install-Module -Name PSScriptAnalyzer -RequiredVersion 1.24.0 -Scope CurrentUser -Force
           }
       - name: Install powershell-yaml

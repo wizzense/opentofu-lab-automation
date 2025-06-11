@@ -1,0 +1,1 @@
+Fixes the Windows lint job by checking the installed PSScriptAnalyzer version without using the unsupported `RequiredVersion` parameter.
