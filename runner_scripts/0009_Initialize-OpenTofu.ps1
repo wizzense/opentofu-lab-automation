@@ -1,6 +1,6 @@
 Param([pscustomobject]$Config)
 $scriptRoot = $PSScriptRoot
-Import-Module "$scriptRoot/../runner_utility_scripts/LabRunner.psd1"
+Import-Module "$scriptRoot/../lab_utils/LabRunner/LabRunner.psd1"
 $installScript      = Join-Path $scriptRoot '0008_Install-OpenTofu.ps1'
 $installerAvailable = Test-Path $installScript
 if ($installerAvailable) {
@@ -10,7 +10,7 @@ if ($installerAvailable) {
 } else {
     Write-Warning "Install script '$installScript' not found. OpenTofu installation commands will be unavailable."
 }
-Invoke-LabStep -Config $Config -Body {
+Invoke-LabScript -Config $Config -ScriptBlock {
     Write-CustomLog "Running $($MyInvocation.MyCommand.Name)"
 <#
 .SYNOPSIS

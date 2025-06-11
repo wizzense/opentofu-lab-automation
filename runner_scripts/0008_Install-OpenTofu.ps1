@@ -1,5 +1,5 @@
 Param([pscustomobject]$Config)
-Import-Module "$PSScriptRoot/../runner_utility_scripts/LabRunner.psd1"
+Import-Module "$PSScriptRoot/../lab_utils/LabRunner/LabRunner.psd1"
 function Invoke-OpenTofuInstaller {
     param(
         [string]$CosignPath,
@@ -17,7 +17,7 @@ function Install-OpenTofu {
     [CmdletBinding()]
     param([pscustomobject]$Config)
 
-    Invoke-LabStep -Config $Config -Body {
+    Invoke-LabScript -Config $Config -ScriptBlock {
         Write-CustomLog "Running $($MyInvocation.MyCommand.Name)"
 
         if ($Config.InstallOpenTofu -eq $true) {
@@ -28,6 +28,6 @@ function Install-OpenTofu {
             Write-CustomLog "InstallOpenTofu flag is disabled. Skipping OpenTofu installation."
         }
     }
-}
 
+}
 if ($MyInvocation.InvocationName -ne '.') { Install-OpenTofu @PSBoundParameters }

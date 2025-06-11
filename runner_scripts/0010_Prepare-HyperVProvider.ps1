@@ -1,5 +1,5 @@
 Param([pscustomobject]$Config)
-Import-Module "$PSScriptRoot/../runner_utility_scripts/LabRunner.psd1"
+Import-Module "$PSScriptRoot/../lab_utils/LabRunner/LabRunner.psd1"
 
 if (-not (Get-Command Convert-CerToPem -ErrorAction SilentlyContinue)) {
 function Convert-CerToPem {
@@ -80,10 +80,10 @@ function Get-HyperVProviderVersion {
     Write-Warning "main.tf not found. Using default Hyper-V provider version $defaultVersion"
     return $defaultVersion
 }
-}
 
+}
 if ($MyInvocation.InvocationName -ne '.') {
-Invoke-LabStep -Config $Config -Body {
+Invoke-LabScript -Config $Config -ScriptBlock {
     Write-CustomLog "Running $($MyInvocation.MyCommand.Name)"
 
 if ($Config.PrepareHyperVHost -eq $true) {
