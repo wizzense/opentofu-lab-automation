@@ -16,9 +16,9 @@ The [root README](../README.md) provides quick start instructions. Additional gu
 - [Lab Utility Scripts](lab_utils.md)
 - [ISO Customization Tools](iso_tools.md)
 - [Python CLI](../py/README.md)
-- [Hyper-V VM module](../modules/vm/README.md)
-- [Network switch module](../modules/network_switch/README.md)
-- [Example infrastructure](../examples/hyperv/README.md)
+- [Hyper-V VM module](../opentofu/modules/vm/README.md)
+- [Network switch module](../opentofu/modules/network_switch/README.md)
+- [Example infrastructure](../opentofu/examples/hyperv/README.md)
 - [Hyper-V provider configuration](hyperv-provider.md)
 - [Troubleshooting CI](troubleshooting.md)
 

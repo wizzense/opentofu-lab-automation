@@ -118,6 +118,7 @@ param(
 )
 
 . $PSScriptRoot/Logger.ps1
+. $PSScriptRoot/../Download-Archive.ps1
 
 $scriptCommand = $MyInvocation.MyCommand.Source
 $InformationPreference = 'continue'
@@ -438,7 +439,7 @@ function installStandalone() {
                 $target = Join-Path $tempPath $dlFiles[$i]
                 $uri = $urlPrefix + $dlFiles[$i]
                 logInfo "Downloading ${uri} to ${target} ..."
-                Invoke-WebRequest -outfile "${target}" -uri "${uri}"
+                Download-Archive $uri $target -Required
             } catch {
                 $msg = $_.ToString()
                 throw [InstallFailedException]::new("Failed to download OpenTofu ${opentofuVersion} release file ${dlFiles[i]}. (${msg})")
@@ -451,7 +452,7 @@ function installStandalone() {
             logInfo "Fetching OpenTofu GPG key from ${gpgURL}..."
             try
             {
-                Invoke-WebRequest -outfile "${gpgKeyPath}" -uri "${gpgURL}"
+                Download-Archive $gpgURL $gpgKeyPath -Required
             }
             catch
             {

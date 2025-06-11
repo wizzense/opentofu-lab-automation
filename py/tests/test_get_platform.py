@@ -2,7 +2,8 @@ import platform
 import sys
 from pathlib import Path
 
-sys.path.append(str(Path(__file__).resolve().parents[2]))
+# Add the PowerShell helper directory so `lab_utils` can be imported.
+sys.path.append(str(Path(__file__).resolve().parents[2] / "pwsh"))
 
 from lab_utils.get_platform import get_platform
 

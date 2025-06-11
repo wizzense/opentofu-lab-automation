@@ -35,14 +35,14 @@ provider "hyperv" {
 }
 
 module "switch" {
-  source            = "./modules/network_switch"
+  source            = "./opentofu/modules/network_switch"
   name              = local.lab.switch.name
   net_adapter_names = local.lab.switch.net_adapter_names
 }
 
 module "vm" {
   for_each            = { for vm in local.lab.vms : vm.name_prefix => vm }
-  source              = "./modules/vm"
+  source              = "./opentofu/modules/vm"
   vm_count            = each.value.count
   vm_name_prefix      = each.value.name_prefix
   hyperv_vm_path      = local.lab.hyperv.vm_path
