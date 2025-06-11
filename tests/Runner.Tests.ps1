@@ -312,7 +312,6 @@ Write-Error 'err message'
 
         Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue
     }
-}
 
     It 'suppresses informational logs when -Verbosity silent is used' {
         $tempDir   = New-RunnerTestEnv
