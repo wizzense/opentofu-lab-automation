@@ -36,6 +36,13 @@
 
 * Flesh out provider‑specific classes in both PowerShell and Python.
 * Map shared config schema across languages.
+* Useful `labctl` subcommands:
+  * `labctl hv facts` – display hypervisor configuration details.
+  * `labctl hv deploy` – deploy a host or VM using the config.
+  * `labctl repo cleanup` – remove merged branches from the remote.
+  * `labctl ui` – launch the Textual user interface.
+
+See `py/README.md` for detailed instructions on installing and running the CLI.
 
 ---
 
