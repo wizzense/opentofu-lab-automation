@@ -63,3 +63,14 @@ Individual scripts can also be executed directly:
 ```powershell
 pwsh -File runner_scripts/0001_Reset-Git.ps1 -Config ./config_files/default-config.json
 ```
+
+Step scripts import a small PowerShell module that provides common helpers:
+
+```powershell
+Param([pscustomobject]$Config)
+Import-Module "$PSScriptRoot/../runner_utility_scripts/LabRunner.psd1"
+```
+
+`LabRunner` exposes functions like `Invoke-LabStep`, `Write-CustomLog` and
+`Get-Platform` so every script shares the same logging and platform detection
+logic.

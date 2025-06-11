@@ -67,7 +67,7 @@ Describe 'Runner scripts parameter and command checks' -Skip:($SkipNonWindows) {
         ($found | Measure-Object).Count | Should -BeGreaterThan 0
     }
 
-    It 'imports ScriptTemplate.ps1 using dot-source' -TestCases $testCases {
+    It 'imports LabRunner module' -TestCases $testCases {
         param($File)
         $ast = Get-ScriptAst $File.FullName
         $commands = if ($ast) {
@@ -75,19 +75,14 @@ Describe 'Runner scripts parameter and command checks' -Skip:($SkipNonWindows) {
         } else { @() }
 
         $found = $commands | Where-Object {
+            $_.GetCommandName() -eq 'Import-Module' -and
             $_.CommandElements.Count -ge 2 -and
-            $_.CommandElements[0] -is [System.Management.Automation.Language.StringConstantExpressionAst] -and
-            $_.CommandElements[0].Value -eq '.' -and
-            (
-                ($_.CommandElements[1] -is [System.Management.Automation.Language.StringConstantExpressionAst] -and
-                    ([System.IO.Path]::GetFileName($_.CommandElements[1].Value) -eq 'ScriptTemplate.ps1')) -or
-                ($_.CommandElements[1] -is [System.Management.Automation.Language.ExpandableStringExpressionAst] -and
-                    ([System.IO.Path]::GetFileName($_.CommandElements[1].Value) -eq 'ScriptTemplate.ps1'))
-            )
+            ($_.CommandElements[1] -is [System.Management.Automation.Language.StringConstantExpressionAst]) -and
+            ([System.IO.Path]::GetFileName($_.CommandElements[1].Value) -eq 'LabRunner.psd1')
         }
 
         if (-not $found) {
-            Write-Host "ScriptTemplate.ps1 not dot-sourced in $($File.FullName)"
+            Write-Host "LabRunner module not imported in $($File.FullName)"
         }
 
         ($found | Measure-Object).Count | Should -BeGreaterThan 0
@@ -100,7 +95,7 @@ Describe 'Runner scripts parameter and command checks' -Skip:($SkipNonWindows) {
             $dummy = Join-Path $tempDir 'dummy.ps1'
             @"
 Param([pscustomobject]`$Config)
-. "$PSScriptRoot/../runner_utility_scripts/ScriptTemplate.ps1"
+Import-Module "$PSScriptRoot/../runner_utility_scripts/LabRunner.psd1"
 Invoke-LabStep -Config `$Config -Body { Write-Output `$PSScriptRoot }
 "@ | Set-Content -Path $dummy
 
