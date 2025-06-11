@@ -1,9 +1,10 @@
 . (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
 . (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
 
-Describe '0205_Install-Sysinternals' {
+Describe '0205_Install-Sysinternals' -Skip:$SkipNonWindows {
     InModuleScope LabRunner {
         BeforeAll { 
+            Enable-WindowsMocks
             $script:ScriptPath = Get-RunnerScriptPath '0205_Install-Sysinternals.ps1'
         }
 

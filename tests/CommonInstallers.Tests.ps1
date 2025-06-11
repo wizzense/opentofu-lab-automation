@@ -4,6 +4,7 @@ Import-Module (Join-Path $PSScriptRoot '..' 'pwsh' 'lab_utils' 'LabSetup' 'LabSe
 InModuleScope LabSetup {
 Describe 'Additional installer scripts' {
     BeforeAll {
+        Enable-WindowsMocks
         $script:cases = @(
             @{ Flag='InstallPython';        Script='0206_Install-Python.ps1';        Command='Start-Process' },
             @{ Flag='InstallGit';           Script='0207_Install-Git.ps1';           Command='Start-Process' },

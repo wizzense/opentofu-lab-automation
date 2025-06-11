@@ -4,6 +4,7 @@
 Describe '0007_Install-Go' {
     InModuleScope LabRunner {
         BeforeAll { 
+            Enable-WindowsMocks
             $script:ScriptPath = Get-RunnerScriptPath '0007_Install-Go.ps1'
             if (-not $script:ScriptPath -or -not (Test-Path $script:ScriptPath)) {
                 throw "Script under test not found: 0007_Install-Go.ps1 (resolved path: $script:ScriptPath)"

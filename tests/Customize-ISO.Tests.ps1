@@ -3,6 +3,7 @@
 
 Describe 'Customize-ISO.ps1'  {
     BeforeAll {
+        Enable-WindowsMocks
         $script:ScriptPath = Join-Path $PSScriptRoot '..' 'tools' 'iso' 'Customize-ISO.ps1'
     }
 

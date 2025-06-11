@@ -5,6 +5,18 @@
 
 $SkipNonWindows = $IsLinux -or $IsMacOS
 
+# Ensure Pester v5.6.1 is loaded, not v3.x
+$desiredPesterVersion = '5.6.1'
+$pesterModule = Get-Module -Name Pester -ListAvailable | Where-Object { $_.Version -ge [version]$desiredPesterVersion } | Sort-Object Version -Descending | Select-Object -First 1
+if (-not $pesterModule) {
+    Write-Error "Pester $desiredPesterVersion or newer is required. Run 'Install-Module -Name Pester -RequiredVersion $desiredPesterVersion -Force -Scope CurrentUser'."
+    exit 1
+}
+# Remove any loaded Pester v3 modules
+Get-Module -Name Pester | Where-Object { $_.Version -lt [version]'5.0.0' } | Remove-Module -Force -ErrorAction SilentlyContinue
+# Import the correct Pester version
+Import-Module $pesterModule -Force
+
 # Use the same LabRunner module that the actual scripts use to avoid conflicts
 $LabRunnerModulePath = (Resolve-Path (Join-Path $PSScriptRoot '..' '..' 'pwsh' 'lab_utils' 'LabRunner')).Path
 

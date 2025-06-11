@@ -18,7 +18,11 @@ $repoRoot = Split-Path $PSScriptRoot -Parent
 . "$repoRoot/pwsh/lab_utils/Get-Platform.ps1"
 
 function Ensure-Pester {
-    if (-not (Get-Module -ListAvailable -Name Pester)) {
+    # Remove any old Pester v3 modules
+    Get-Module -ListAvailable -Name Pester | Where-Object { $_.Version -lt [version]'5.0.0' } | ForEach-Object {
+        Remove-Item -Recurse -Force $_.ModuleBase -ErrorAction SilentlyContinue
+    }
+    if (-not (Get-Module -ListAvailable -Name Pester | Where-Object { $_.Version -ge [version]'5.6.1' })) {
         Install-Module -Name Pester -RequiredVersion 5.6.1 -Force -Scope CurrentUser
     }
 }

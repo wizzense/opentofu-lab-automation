@@ -51,6 +51,14 @@ jobs:
           path: ~/.local/share/powershell/Modules
           key: ${{ runner.os }}-pwsh-modules-${{ hashFiles('.github/actions/lint/requirements.txt') }}
           restore-keys: ${{ runner.os }}-pwsh-modules-
+      - name: Remove old Pester (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $old = Get-Module -ListAvailable -Name Pester | Where-Object { $_.Version -lt [version]'5.0.0' }
+          foreach ($mod in $old) {
+            Remove-Item -Recurse -Force $mod.ModuleBase -ErrorAction SilentlyContinue
+          }
       - name: Install Pester
         shell: pwsh
         run: |
