@@ -35,3 +35,7 @@ Select-String -Path path\to\coverage.xml -Pattern 'your-module.ps1'
 ```
 
 Missing or zero-hit sections often reveal code paths that were not exercised on Windows, hinting at platform-specific issues. Compare the uncovered lines with the failing tests to narrow down the root cause.
+
+## Automatic failure issues
+
+The workflow `.github/workflows/issue-on-fail.yml` opens a single GitHub issue whenever any CI job fails. It gathers Pester and pytest results from the run artifacts and posts a summary of failing tests in the issue body. Subsequent failed runs append a comment rather than creating new issues.
