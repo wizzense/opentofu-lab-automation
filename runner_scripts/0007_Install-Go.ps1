@@ -1,7 +1,7 @@
 Param([pscustomobject]$Config)
 Import-Module "$PSScriptRoot/../runner_utility_scripts/LabRunner.psd1"
 Invoke-LabStep -Config $Config -Body {
-    Write-CustomLog 'Running 0007_Install-Go.ps1'
+    Write-CustomLog "Running $($MyInvocation.MyCommand.Name)"
 if ($Config.InstallGo -eq $true) {
     $GoConfig = $Config.Go
     if ($null -eq $GoConfig) {

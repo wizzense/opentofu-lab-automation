@@ -9,7 +9,7 @@ if ($installerAvailable) {
     Write-Warning "Install script '$installScript' not found. OpenTofu installation commands will be unavailable."
 }
 Invoke-LabStep -Config $Config -Body {
-    Write-CustomLog 'Running 0009_Initialize-OpenTofu.ps1'
+    Write-CustomLog "Running $($MyInvocation.MyCommand.Name)"
 <#
 .SYNOPSIS
   Initialize OpenTofu using Hyper-V settings from config.json.

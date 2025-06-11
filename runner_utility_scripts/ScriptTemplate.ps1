@@ -2,6 +2,9 @@ if (-not $PSScriptRoot) {
     $PSScriptRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
 }
 
+Param([pscustomobject]$Config)
+Import-Module "$PSScriptRoot/../runner_utility_scripts/LabRunner.psd1"
+
 function Invoke-LabStep {
     param([scriptblock]$Body, [pscustomobject]$Config)
     if ($Config -is [string]) {
@@ -25,5 +28,10 @@ function Invoke-LabStep {
     } finally {
         $ErrorActionPreference = $prevEAP
     }
+}
+
+Invoke-LabStep -Config $Config -Body {
+    Write-CustomLog "Running $($MyInvocation.MyCommand.Name)"
+
 }
 

@@ -17,7 +17,7 @@ function Get-WacRegistryInstallation {
 }
 
 Invoke-LabStep -Config $Config -Body {
-    Write-CustomLog 'Running 0106_Install-WAC.ps1'
+    Write-CustomLog "Running $($MyInvocation.MyCommand.Name)"
 
 if ($Config.InstallWAC -eq $true) {
     # Retrieve configuration for WAC from the config object

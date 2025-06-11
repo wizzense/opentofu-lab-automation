@@ -1,7 +1,7 @@
 Param([pscustomobject]$Config)
 Import-Module "$PSScriptRoot/../runner_utility_scripts/LabRunner.psd1"
 Invoke-LabStep -Config $Config -Body {
-    Write-CustomLog 'Running 0100_Enable-WinRM.ps1'
+    Write-CustomLog "Running $($MyInvocation.MyCommand.Name)"
 
 
 

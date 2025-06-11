@@ -1,7 +1,7 @@
 Param([pscustomobject]$Config)
 Import-Module "$PSScriptRoot/../runner_utility_scripts/LabRunner.psd1"
 Invoke-LabStep -Config $Config -Body {
-    Write-CustomLog 'Running 9999_Reset-Machine.ps1'
+    Write-CustomLog "Running $($MyInvocation.MyCommand.Name)"
     $platform = Get-Platform
     Write-CustomLog "Detected platform: $platform"
     if ($platform -eq 'Windows') {

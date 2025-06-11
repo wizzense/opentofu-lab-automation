@@ -18,7 +18,7 @@ function Install-OpenTofu {
     param([pscustomobject]$Config)
 
     Invoke-LabStep -Config $Config -Body {
-        Write-CustomLog 'Running 0008_Install-OpenTofu.ps1'
+        Write-CustomLog "Running $($MyInvocation.MyCommand.Name)"
 
         if ($Config.InstallOpenTofu -eq $true) {
             $Cosign = Join-Path $Config.CosignPath "cosign-windows-amd64.exe"
