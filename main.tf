@@ -30,7 +30,7 @@ provider "hyperv" {
   cacert_path     = local.lab.hyperv.cacert_path
   cert_path       = local.lab.hyperv.cert_path
   key_path        = local.lab.hyperv.key_path
-  script_path     = "C:/Temp/terraform_%RAND%.cmd"
+  script_path     = "C:/Temp/tofu_%RAND%.cmd"
   timeout         = "30s"
 }
 

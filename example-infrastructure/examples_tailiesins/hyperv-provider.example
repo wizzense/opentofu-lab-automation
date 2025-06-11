@@ -11,7 +11,7 @@ provider "hyperv" {
   cacert_path     = ""
   cert_path       = ""
   key_path        = ""
-  script_path     = "C:/Temp/terraform_%RAND%.cmd"
+  script_path     = "C:/Temp/tofu_%RAND%.cmd"
   timeout         = "30s"
 }
 
@@ -40,7 +40,7 @@ kerberos_service_principal_name (String) Use Kerberos Service Principal Name for
 key_path (String) The path to the certificate private key to use for authentication for HyperV api calls. Can also be sourced from the HYPERV_KEY_PATH environment variable otherwise defaults to empty string.
 password (String) The password associated with the username to use for HyperV api calls. It can also be sourced from the HYPERV_PASSWORD environment variable`.
 port (Number) The port to run HyperV api calls against. It can also be sourced from the HYPERV_PORT environment variable otherwise defaults to 5986.
-script_path (String) The path used to copy scripts meant for remote execution for HyperV api calls. Can also be sourced from the HYPERV_SCRIPT_PATH environment variable otherwise defaults to C:/Temp/terraform_%RAND%.cmd.
+script_path (String) The path used to copy scripts meant for remote execution for HyperV api calls. Can also be sourced from the HYPERV_SCRIPT_PATH environment variable otherwise defaults to C:/Temp/tofu_%RAND%.cmd.
 timeout (String) The timeout to wait for the connection to become available for HyperV api calls. Should be provided as a string like 30s or 5m. Can also be sourced from the HYPERV_TIMEOUT environment variable otherwise defaults to 30s.
 tls_server_name (String) The TLS server name for the host used for HyperV api calls. It can also be sourced from the HYPERV_TLS_SERVER_NAME environment variable otherwise defaults to empty string.
 use_ntlm (Boolean) Use NTLM for authentication for HyperV api calls. Can also be set via setting the HYPERV_USE_NTLM environment variable to true otherwise defaults to true.
