@@ -14,7 +14,7 @@ Describe 'Get-WindowsJobArtifacts' {
         Mock gh { '{"workflow_runs":[{"id":1}]}' } -ParameterFilter { $args[0] -like '*runs?*' }
         Mock gh { '{"artifacts":[{"name":"pester-coverage-windows-latest","archive_download_url":"cov"},{"name":"pester-results-windows-latest","archive_download_url":"res"}]}' } -ParameterFilter { $args[0] -like '*artifacts*' }
         Mock gh {} -ParameterFilter { $args[0] -eq 'cov' -or $args[0] -eq 'res' }
-        Mock Invoke-WebRequest -ModuleName LabSetup {}
+        Mock Invoke-WebRequest -ModuleName LabSetup { [pscustomobject]@{ Content = 'Dummy content' } }
         Mock Expand-Archive {}
         Mock Get-ChildItem { [pscustomobject]@{ FullName = 'dummy.xml' } }
         Mock Select-Xml { @() }
