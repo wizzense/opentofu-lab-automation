@@ -18,6 +18,8 @@ jobs:
 
       # Write the token into the gh credential store (Copilot respects this)
       - name: Authenticate gh once
+        env:
+          GH_TOKEN: ''
         run: echo "${{ secrets.GH_PAT_AUTOPILOT }}" | gh auth login --with-token
 
       # Headless defaults – never prompt
