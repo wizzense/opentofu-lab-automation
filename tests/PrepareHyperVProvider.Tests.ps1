@@ -218,13 +218,6 @@ Describe 'Convert certificate helpers honour -WhatIf' -Skip:($SkipNonWindows) {
 
 Describe 'Convert certificate helpers validate paths' -Skip:($SkipNonWindows) {
     BeforeAll {
-        if (Get-Command Remove-Mock -ErrorAction SilentlyContinue) {
-            Remove-Mock Convert-CerToPem -ErrorAction SilentlyContinue
-            Remove-Mock Convert-PfxToPem -ErrorAction SilentlyContinue
-        } else {
-            Remove-Item Function:Convert-CerToPem -ErrorAction SilentlyContinue
-            Remove-Item Function:Convert-PfxToPem -ErrorAction SilentlyContinue
-        }
         $scriptPath = Get-RunnerScriptPath '0010_Prepare-HyperVProvider.ps1'
         . $scriptPath
     }
