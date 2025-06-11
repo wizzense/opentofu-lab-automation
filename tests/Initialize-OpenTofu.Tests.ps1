@@ -23,7 +23,7 @@ Describe 'Initialize-OpenTofu script' {
             param($Name)
             if ($Name -eq 'gh') { return @{ Name = 'gh' } }
             if ($Name -eq 'tofu') { return @{ Name = 'tofu' } }
-        }
+        } -ParameterFilter { $Name -in @('gh','tofu') }
         function global:gh {}
         function global:tofu {}
         Mock gh { $global:LASTEXITCODE = 0 }
@@ -53,7 +53,7 @@ Describe 'Initialize-OpenTofu script' {
             param($Name)
             if ($Name -eq 'gh') { return @{ Name = 'gh' } }
             if ($Name -eq 'tofu') { return @{ Name = 'tofu' } }
-        }
+        } -ParameterFilter { $Name -in @('gh','tofu') }
         function global:gh {}
         function global:tofu {}
         Mock git {}
@@ -83,7 +83,7 @@ Describe 'Initialize-OpenTofu script' {
             param($Name)
             if ($Name -eq 'gh') { return @{ Name = 'gh' } }
             if ($Name -eq 'tofu') { return @{ Name = 'tofu' } }
-        }
+        } -ParameterFilter { $Name -in @('gh','tofu') }
         function global:gh {}
         function global:tofu {}
         Mock gh { $global:LASTEXITCODE = 0 }
@@ -119,7 +119,7 @@ Describe 'Initialize-OpenTofu script' {
                 $script:getCalls++
                 if ($script:getCalls -eq 1) { return $null } else { return @{ Name = 'tofu' } }
             }
-        }
+        } -ParameterFilter { $Name -in @('gh','tofu') }
         function global:gh {}
         function global:tofu {}
         Mock gh { $global:LASTEXITCODE = 0 }
@@ -151,7 +151,7 @@ Describe 'Initialize-OpenTofu script' {
             param($Name)
             if ($Name -eq 'gh') { return @{ Name = 'gh' } }
             if ($Name -eq 'tofu') { return $null }
-        }
+        } -ParameterFilter { $Name -in @('gh','tofu') }
         function global:gh {}
         Mock gh { $global:LASTEXITCODE = 0 }
         Mock git {}
@@ -182,7 +182,7 @@ Describe 'Initialize-OpenTofu script' {
                 param($Name)
                 if ($Name -eq 'gh')   { return @{ Name = 'gh' } }
                 if ($Name -eq 'tofu') { return $null }
-            }
+            } -ParameterFilter { $Name -in @('gh','tofu') }
             function global:gh {}
             Mock gh { $global:LASTEXITCODE = 0 }
             Mock git {}
