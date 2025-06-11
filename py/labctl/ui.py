@@ -7,7 +7,7 @@ from pathlib import Path
 from .path_index import resolve_path
 
 from textual.app import App, ComposeResult
-from textual.widgets import Header, Footer, DataTable, TextLog, TabPane, TabbedContent, Markdown
+from textual.widgets import Header, Footer, DataTable, Log, TabPane, TabbedContent, Markdown
 
 
 class LabUI(App):
@@ -42,8 +42,8 @@ class LabUI(App):
             table.add_row(name[:4], name)
         return table
 
-    def build_log_view(self) -> TextLog:
-        log = TextLog(highlight=False, wrap=False)
+    def build_log_view(self) -> Log:
+        log = Log(highlight=False, wrap=False)
         if self.log_path.exists():
             log.write(self.log_path.read_text())
         return log
