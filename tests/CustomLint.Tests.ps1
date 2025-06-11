@@ -2,7 +2,7 @@
 
 Describe 'CustomLint.ps1' {
     BeforeAll {
-        $script:ScriptPath = Join-Path $PSScriptRoot '..' 'scripts' 'CustomLint.ps1'
+        $script:ScriptPath = Join-Path $PSScriptRoot '..' 'tools' 'iso' 'CustomLint.ps1'
     }
 
     It 'parses without errors' {
@@ -27,7 +27,11 @@ Describe 'CustomLint.ps1' {
 
     It 'returns exit code 0 when no errors' {
         Mock Invoke-ScriptAnalyzer { @() }
-        & $script:ScriptPath -Target $PSScriptRoot > $null
+        $goodDir = Join-Path $TestDrive 'clean'
+        New-Item -ItemType Directory -Path $goodDir | Out-Null
+        $good = Join-Path $goodDir 'good.ps1'
+        'Write-Host hello' | Set-Content $good
+        & $script:ScriptPath -Target $goodDir > $null
         $LASTEXITCODE | Should -Be 0
     }
 }
