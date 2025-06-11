@@ -1,25 +1,18 @@
 function Format-Config {
     [CmdletBinding()]
     param(
-        [Parameter(
-            ValueFromPipeline = $true,
-            ValueFromPipelineByPropertyName = $true
-        )]
-        [psobject]$Config
+        [Parameter(Mandatory, ValueFromPipeline = $true,
+                   ValueFromPipelineByPropertyName = $true)]
+        [ValidateNotNullOrEmpty()]
+        [pscustomobject]$Config
     )
 
     begin {
         $hasInput = $false
-        if ($PSBoundParameters.ContainsKey('Config') -and $null -eq $Config) {
-            throw [System.ArgumentNullException]::new('Config','Config cannot be null.')
-        }
     }
 
     process {
         $hasInput = $true
-        if ($null -eq $Config) {
-            throw [System.ArgumentNullException]::new('Config','Config cannot be null.')
-        }
 
         # Serialize the configuration object to indented JSON so nested
         # properties are easier to read in the console output.  Depth 10

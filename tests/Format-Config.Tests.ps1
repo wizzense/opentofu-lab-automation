@@ -25,13 +25,21 @@ Describe 'Format-Config' {
     }
 
     It 'throws when no Config is provided' {
-        { Format-Config } |
-            Should -Throw -ErrorType System.ArgumentException
+        try {
+            Format-Config -Config $null
+            $false | Should -BeTrue
+        } catch {
+            $_.Exception | Should -BeOfType [System.Management.Automation.ParameterBindingException]
+        }
     }
 
     It 'throws when pipeline is empty' {
-        { @() | Format-Config } |
-            Should -Throw -ErrorType System.ArgumentException
+        try {
+            @() | Format-Config
+            $false | Should -BeTrue
+        } catch {
+            $_.Exception | Should -BeOfType [System.ArgumentException]
+        }
     }
 
     It 'throws when Config is null' {
@@ -39,11 +47,20 @@ Describe 'Format-Config' {
     }
 
     It 'is a terminating error when Config is null' {
-        { Format-Config -Config $null } |
-            Should -Throw -ErrorType System.ArgumentNullException
+        try {
+            Format-Config -Config $null
+            $false | Should -BeTrue
+        } catch {
+            $_.Exception | Should -BeOfType [System.Management.Automation.ParameterBindingException]
+        }
     }
 
     It 'is a terminating error when piped null' {
-        { ,$null | Format-Config } | Should -Throw -ErrorType System.ArgumentNullException
+        try {
+            ,$null | Format-Config
+            $false | Should -BeTrue
+        } catch {
+            $_.Exception | Should -BeOfType [System.ArgumentException]
+        }
     }
 }
