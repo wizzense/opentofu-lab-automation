@@ -8,6 +8,12 @@ Describe 'kicker-bootstrap utilities' -Skip:($SkipNonWindows) {
         $content | Should -Match 'function\s+Write-CustomLog'
     }
 
+    It 'defines Read-LoggedInput fallback' {
+        $scriptPath = Join-Path $PSScriptRoot '..' 'kicker-bootstrap.ps1'
+        $content = Get-Content $scriptPath -Raw
+        $content | Should -Match 'function\s+Read-LoggedInput'
+    }
+
     It 'invokes runner and propagates exit code using PassThru' {
         $scriptPath = Join-Path $PSScriptRoot '..' 'kicker-bootstrap.ps1'
         $content = Get-Content $scriptPath -Raw
