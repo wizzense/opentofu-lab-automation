@@ -5,7 +5,7 @@ function Install-CA {
     param([pscustomobject]$Config)
 
     Invoke-LabStep -Config $Config -Body {
-    Write-CustomLog 'Running 0104_Install-CA.ps1'
+    Write-CustomLog "Running $($MyInvocation.MyCommand.Name)"
 
 if ($Config.InstallCA -eq $true) {
 Write-CustomLog "Checking for existing Certificate Authority (Standalone Root CA)..."

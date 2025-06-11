@@ -6,7 +6,7 @@ function Install-NodeCore {
     param([pscustomobject]$Config)
 
     Invoke-LabStep -Config $Config -Body {
-    Write-CustomLog 'Running 0201_Install-NodeCore.ps1'
+    Write-CustomLog "Running $($MyInvocation.MyCommand.Name)"
 <#
 .SYNOPSIS
     Installs Node.js via MSI, using the existing config framework.

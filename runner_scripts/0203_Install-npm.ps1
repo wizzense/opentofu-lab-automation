@@ -12,7 +12,7 @@ function Install-NpmDependencies {
     Invoke-LabStep -Config $Config -Body {
         param($Config)
 
-        Write-CustomLog 'Running 0203_Install-npm.ps1'
+        Write-CustomLog "Running $($MyInvocation.MyCommand.Name)"
 <#
 .SYNOPSIS
     Installs npm dependencies for the frontend project.

@@ -84,7 +84,7 @@ function Get-HyperVProviderVersion {
 
 if ($MyInvocation.InvocationName -ne '.') {
 Invoke-LabStep -Config $Config -Body {
-    Write-CustomLog 'Running 0010_Prepare-HyperVProvider.ps1'
+    Write-CustomLog "Running $($MyInvocation.MyCommand.Name)"
 
 if ($Config.PrepareHyperVHost -eq $true) {
 
