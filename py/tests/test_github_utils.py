@@ -52,9 +52,34 @@ def test_create_issue(monkeypatch):
         called["cmd"] = cmd
 
     monkeypatch.setattr(subprocess, "run", fake_run)
+    monkeypatch.delenv("GITHUB_REPOSITORY", raising=False)
 
     github_utils.create_issue("title", "body")
 
     assert called["cmd"] == ["gh", "issue", "create", "-t", "title", "-b", "body"]
+
+
+def test_create_issue_with_repo(monkeypatch):
+    called = {}
+
+    def fake_run(cmd, check=True):
+        called["cmd"] = cmd
+
+    monkeypatch.setattr(subprocess, "run", fake_run)
+    monkeypatch.setenv("GITHUB_REPOSITORY", "owner/repo")
+
+    github_utils.create_issue("title", "body")
+
+    assert called["cmd"] == [
+        "gh",
+        "issue",
+        "create",
+        "-t",
+        "title",
+        "-b",
+        "body",
+        "-R",
+        "owner/repo",
+    ]
 
 
