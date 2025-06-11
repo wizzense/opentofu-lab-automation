@@ -15,7 +15,7 @@ provider "hyperv" {
   cert_path       = "certs/host.pem"
   key_path        = "certs/host-key.pem"
 
-  script_path     = "C:/Temp/terraform_%RAND%.cmd"
+  script_path     = "C:/Temp/tofu_%RAND%.cmd"
   timeout         = "30s"
 }
 

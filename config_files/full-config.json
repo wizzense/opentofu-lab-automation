@@ -49,7 +49,7 @@
     "CacertPath": "",
     "CertPath": "",
     "KeyPath": "",
-    "ScriptPath": "C:/Temp/terraform_%RAND%.cmd",
+    "ScriptPath": "C:/Temp/tofu_%RAND%.cmd",
     "Timeout": "30s"
   },
   "WAC": {

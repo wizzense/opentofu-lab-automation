@@ -19,6 +19,6 @@ provider "hyperv" {
   cacert_path     = "" # Leave empty if skipping SSL validation
   cert_path       = "" # Leave empty if skipping SSL validation
   key_path        = "" # Leave empty if skipping SSL validation
-  script_path     = "C:/Temp/terraform_%RAND%.cmd"
+  script_path     = "C:/Temp/tofu_%RAND%.cmd"
   timeout         = "30s"
 }
