@@ -161,4 +161,38 @@ Describe 'Initialize-OpenTofu script' {
 
         Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue
     }
+
+    It 'errors when Install-OpenTofu script is missing' {
+        $tempDir = Join-Path ([System.IO.Path]::GetTempPath()) ([guid]::NewGuid())
+        $env:LOCALAPPDATA = $tempDir
+        $config = [pscustomobject]@{
+            InitializeOpenTofu = $true
+            InfraRepoUrl      = 'https://example.com/repo.git'
+            InfraRepoPath     = $tempDir
+            HyperV            = @{}
+            CosignPath        = 'C:\\temp'
+            OpenTofuVersion   = 'latest'
+        }
+
+        $install = Get-RunnerScriptPath '0008_Install-OpenTofu.ps1'
+        $backup  = "$install.bak"
+        Move-Item -Path $install -Destination $backup
+        try {
+            Mock Get-Command {
+                param($Name)
+                if ($Name -eq 'gh')   { return @{ Name = 'gh' } }
+                if ($Name -eq 'tofu') { return $null }
+            }
+            function global:gh {}
+            Mock gh { $global:LASTEXITCODE = 0 }
+            Mock git {}
+
+            { & $script:ScriptPath -Config $config } |
+                Should -Throw 'installer script'
+        }
+        finally {
+            Move-Item -Path $backup -Destination $install
+            Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue
+        }
+    }
 }
