@@ -20,7 +20,7 @@ Describe 'Get-WindowsJobArtifacts' {
         Mock gh {} -ParameterFilter { $args[0] -eq 'auth' -and $args[1] -eq 'status' }
         Mock gh { '{"workflow_runs":[{"id":1}]}' } -ParameterFilter { $args[1] -like '*runs?*' }
         Mock gh { '{"artifacts":[{"name":"pester-coverage-windows-latest","archive_download_url":"cov"},{"name":"pester-results-windows-latest","archive_download_url":"res"}]}' } -ParameterFilter { $args[1] -like '*artifacts*' }
-        Mock gh {} -ParameterFilter { $args[0] -eq 'cov' -or $args[0] -eq 'res' }
+        Mock gh {} -ParameterFilter { $args[1] -eq 'cov' -or $args[1] -eq 'res' }
 
         & $scriptPath
 
