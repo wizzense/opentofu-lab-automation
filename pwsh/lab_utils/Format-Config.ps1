@@ -10,10 +10,12 @@ function Format-Config {
     begin {
         $hasInput = $false
 
-        # Preserve validation behavior when -Config $null is passed explicitly
+        # Throw if -Config $null is supplied explicitly so callers get a
+        # consistent ArgumentException regardless of how input is provided.
         if ($PSBoundParameters.ContainsKey('Config') -and $null -eq $Config) {
-            throw [System.Management.Automation.ParameterBindingValidationException]::new(
-                "Cannot validate argument on parameter 'Config'. The argument is null or empty. Provide an argument that is not null or empty, and then try the command again."
+            throw [System.ArgumentException]::new(
+                'A configuration object must be provided via -Config or the pipeline.',
+                'Config'
             )
         }
     }
