@@ -50,7 +50,7 @@ $isWindowsOS = [System.Environment]::OSVersion.Platform -eq 'Win32NT'
 
 # Ensure the logger utility is available even when this script is executed
 # standalone. If the logger script is missing, download it from the repository.
-$loggerDir  = Join-Path $scriptRoot 'lab_utils' 'LabRunner'
+$loggerDir  = Join-Path (Join-Path $scriptRoot 'lab_utils') 'LabRunner'
 $loggerPath = Join-Path $loggerDir 'Logger.ps1'
 if (-not (Test-Path $loggerPath)) {
     if (-not (Test-Path $loggerDir)) {
