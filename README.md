@@ -445,7 +445,10 @@ git config --global --add safe.directory <path>
 ## Running tests
 
 PowerShell 7 or later is required to run the Pester suite. Install `pwsh` with
-your platform's package manager and then execute the tests:
+your platform's package manager and run `tools/setup-tests.ps1` to install
+all required modules. On Linux and macOS the wrapper `tools/setup-tests.sh`
+invokes the same script using PowerShell. After bootstrapping, execute the
+tests with:
 
 ```bash
 # Windows
@@ -489,8 +492,9 @@ gh run list --limit 20
 lab_utils/Get-WindowsJobArtifacts.ps1 -RunId "<id>"
 ```
 
-Python unit tests live under `py/`. Install the dependencies first using
-either Poetry or a direct `pip` install to get packages like `typer`:
+Python unit tests live under `py/`. The `tools/setup-tests` helpers also
+bootstrap the Python dependencies. If you prefer manual control, install
+them using Poetry or a direct `pip` call:
 
 ```bash
 # with Poetry
