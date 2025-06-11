@@ -26,4 +26,5 @@ Invoke-LabStep -Config $Config -Body {
     } else {
         Write-CustomLog 'Unknown platform; cannot reset.'
         exit 1
+    }
 }
