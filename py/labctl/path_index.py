@@ -31,6 +31,10 @@ def load_index() -> dict:
         if index_path.exists() and yaml is not None:
             with index_path.open('r') as f:
                 _INDEX = yaml.safe_load(f) or {}
+            # add basename shortcuts for quick lookup
+            for key, rel in list(_INDEX.items()):
+                name = Path(key).name
+                _INDEX.setdefault(name, rel)
         else:
             _INDEX = {}
     return _INDEX
