@@ -8,6 +8,7 @@ import pytest
 sys.path.append(str(Path(__file__).resolve().parents[1]))
 
 from labctl.cli import app, default_config_path, load_config
+from labctl import update_index
 
 
 def test_default_config_packaged():
@@ -64,3 +65,17 @@ def test_ui_help():
     runner = CliRunner()
     result = runner.invoke(app, ["ui", "--help"])
     assert result.exit_code == 0
+
+
+def test_repo_index(monkeypatch, tmp_path):
+    called = {}
+
+    def fake_update():
+        called["ran"] = True
+        return tmp_path / "index.json"
+
+    monkeypatch.setattr(update_index, "update_index", fake_update)
+    runner = CliRunner()
+    result = runner.invoke(app, ["repo", "index"])
+    assert result.exit_code == 0
+    assert called.get("ran")

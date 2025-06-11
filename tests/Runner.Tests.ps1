@@ -494,6 +494,8 @@ Write-CustomLog 'hello world'
 
     }
 
+}
+
 Describe 'Set-LabConfig' {
     BeforeAll {
         . (Join-Path $PSScriptRoot '..' 'lab_utils' 'Menu.ps1')

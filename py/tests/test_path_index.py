@@ -3,6 +3,7 @@ import os
 from pathlib import Path
 
 import labctl.path_index as pi
+from labctl import path_index
 
 
 def test_resolve_after_move(tmp_path, monkeypatch):
@@ -24,3 +25,21 @@ def test_resolve_after_move(tmp_path, monkeypatch):
     file.rename(new_dir / "file.txt")
     path2 = pi.resolve_path("file.txt")
     assert path2 == new_dir / "file.txt"
+
+
+def test_load_index_contains_runner():
+    idx = path_index.load_index()
+    assert "runner.ps1" in idx
+
+
+def test_resolve_path_missing(monkeypatch):
+    monkeypatch.setattr(path_index, "_index", {})
+    p = path_index.resolve_path("does-not-exist")
+    assert p is None
+
+
+def test_default_config_fallback(monkeypatch):
+    monkeypatch.setattr(path_index, "_index", {})
+    from labctl.cli import default_config_path
+    path = default_config_path()
+    assert path.exists()

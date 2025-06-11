@@ -96,6 +96,7 @@ See `py/README.md` for detailed instructions on installing and running the CLI.
 
 2. **Coverage**
    • Add or update Pester/pytest tests for every functional change, covering success and failure paths.
+   • Run `labctl repo index` whenever paths to scripts or config files change.
 
 ### Pester test tips
 

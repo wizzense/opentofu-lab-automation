@@ -3,15 +3,20 @@ import logging
 import os
 from pathlib import Path
 from importlib.resources import files
+
+from .path_index import resolve_path
 import typer
 import yaml
 
-from . import github_utils, issue_parser
+from . import github_utils, issue_parser, update_index
 
 
 def default_config_path() -> Path:
-    """Return the path to the packaged default configuration file."""
+    """Return the path to the default configuration file."""
 
+    resolved = resolve_path("config_files/default-config.json")
+    if resolved:
+        return resolved
     return Path(files("labctl").joinpath("config_files", "default-config.json"))
 
 logger = logging.getLogger("labctl")
@@ -114,6 +119,13 @@ def parse_issue(issue_number: int):
     info = json.loads(raw)
     parsed = issue_parser.parse_issue_body(info.get("body", ""))
     typer.echo(json.dumps(parsed))
+
+
+@repo_app.command()
+def index() -> None:
+    """Update the repository file index."""
+    path = update_index.update_index()
+    logger.info("Updated index at %s", path)
 
 
 @repo_app.command()
