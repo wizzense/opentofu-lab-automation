@@ -1,7 +1,8 @@
 . (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
 . (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
-Describe '0102_Configure-Firewall'  {
+Describe '0102_Configure-Firewall' -Skip:$SkipNonWindows {
     BeforeAll {
+        Enable-WindowsMocks
         $script:ScriptPath = Get-RunnerScriptPath '0102_Configure-Firewall.ps1'
         Mock New-NetFirewallRule {}
     }

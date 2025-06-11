@@ -1,6 +1,9 @@
 . (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
 . (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
-Describe '0113_Config-DNS' {
+Describe '0113_Config-DNS' -Skip:$SkipNonWindows {
+    BeforeAll {
+        Enable-WindowsMocks
+    }
     It 'calls Set-DnsClientServerAddress with value from config'  {
         $script = Get-RunnerScriptPath '0113_Config-DNS.ps1'
         $config = [pscustomobject]@{

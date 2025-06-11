@@ -1,6 +1,6 @@
 . (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
 . (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
-Describe '0112_Enable-PXE' {
+Describe '0112_Enable-PXE' -Skip:$SkipNonWindows {
     BeforeAll {
         $script:scriptPath = Get-RunnerScriptPath '0112_Enable-PXE.ps1'
         $loggerPath = Join-Path $PSScriptRoot '..' 'pwsh' 'lab_utils' 'LabRunner' 'Logger.ps1'

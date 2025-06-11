@@ -1,6 +1,6 @@
 . (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
 . (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
-Describe '0101_Enable-RemoteDesktop'  {
+Describe '0101_Enable-RemoteDesktop' -Skip:$SkipNonWindows  {
     BeforeAll {
         $script:ScriptPath = Get-RunnerScriptPath '0101_Enable-RemoteDesktop.ps1'
     }

@@ -138,4 +138,4 @@ try {
     Write-Verbose "Failed to import Resolve-ProjectPath.psm1: $_"
 }
 
-Export-ModuleMember -Function Invoke-LabStep, Invoke-LabDownload, Write-CustomLog, Read-LoggedInput, Get-Platform, Invoke-LabWebRequest, Invoke-LabNpm, Resolve-ProjectPath, Get-CrossPlatformTempPath, Invoke-CrossPlatformCommand
+Export-ModuleMember -Function Invoke-LabStep, Invoke-LabDownload, Write-CustomLog, Read-LoggedInput, Get-Platform, Invoke-LabWebRequest, Invoke-LabNpm, Resolve-ProjectPath, Get-CrossPlatformTempPath, Invoke-CrossPlatformCommand, Expand-All, Format-Config, Normalize-RelativePath, Get-LabConfig, Download-Archive, Get-GhDownloadArgs

@@ -287,28 +287,37 @@ function global:New-StandardMocks {
                     # Log the mock call for verification
                     Write-Verbose "Mock Invoke-LabNpm called with: $($Args -join ' ')"
                 }
+                # Mock file system operations with module scoping
+                Mock New-Item -ModuleName $ModuleName {}
+                Mock Remove-Item -ModuleName $ModuleName {}
+                Mock Copy-Item -ModuleName $ModuleName {}
+                Mock Move-Item -ModuleName $ModuleName {}
+                # Mock archive operations with module scoping
+                Mock Expand-Archive -ModuleName $ModuleName {}
+                Mock Compress-Archive -ModuleName $ModuleName {}
+                # Mock process operations with module scoping
+                Mock Start-Process -ModuleName $ModuleName {}
+                Mock Stop-Process -ModuleName $ModuleName {}
+                Mock Get-Process -ModuleName $ModuleName { @() }
             } else {
                 Mock Invoke-LabNpm {
                     param([Parameter(ValueFromRemainingArguments = $true)][string[]]$Args)
                     # Log the mock call for verification
                     Write-Verbose "Mock Invoke-LabNpm called with: $($Args -join ' ')"
                 }
+                # Mock file system operations
+                Mock New-Item {}
+                Mock Remove-Item {}
+                Mock Copy-Item {}
+                Mock Move-Item {}
+                # Mock archive operations
+                Mock Expand-Archive {}
+                Mock Compress-Archive {}
+                # Mock process operations
+                Mock Start-Process {}
+                Mock Stop-Process {}
+                Mock Get-Process { @() }
             }
-            
-            # Mock file system operations
-            Mock New-Item {}
-            Mock Remove-Item {}
-            Mock Copy-Item {}
-            Mock Move-Item {}
-            
-            # Mock archive operations  
-            Mock Expand-Archive {}
-            Mock Compress-Archive {}
-            
-            # Mock process operations
-            Mock Start-Process {}
-            Mock Stop-Process {}
-            Mock Get-Process { @() }
         }
     } catch {
         Write-Verbose "Failed to set up some mocks: $_"
