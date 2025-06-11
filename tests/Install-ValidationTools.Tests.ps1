@@ -4,20 +4,27 @@ Describe '0006_Install-ValidationTools'  {
     BeforeAll {
         $script:ScriptPath = Get-RunnerScriptPath '0006_Install-ValidationTools.ps1'
         . (Join-Path $PSScriptRoot '..' 'lab_utils' 'LabRunner' 'Logger.ps1')
+        Import-Module (Join-Path $PSScriptRoot '..' 'lab_utils' 'LabRunner' 'LabRunner.psd1') -Force
+        if (-not $env:TEMP) { $env:TEMP = [System.IO.Path]::GetTempPath() }
+    }
+
+    AfterEach {
+        [Environment]::SetEnvironmentVariable('PATH',$null,'User')
     }
 
     It 'downloads cosign when InstallCosign is true' {
         $cfg = [pscustomobject]@{
             InstallCosign = $true
-            CosignURL     = 'http://example.com/cosign.exe'
+            CosignURL     = 'http://dummy.local/cosign.exe'
             CosignPath    = Join-Path $env:TEMP ([guid]::NewGuid())
         }
-        Mock Invoke-WebRequest -ModuleName LabSetup {}
+        [Environment]::SetEnvironmentVariable('PATH','dummy','User')
+        Mock Invoke-LabWebRequest {}
         Mock New-Item {}
         Mock Test-Path { $false }
         Mock-WriteLog
         & $script:ScriptPath -Config $cfg
-        Should -Invoke -CommandName Invoke-WebRequest -Times 1 -ParameterFilter { $Uri -eq $cfg.CosignURL }
+        Should -Invoke -CommandName Invoke-LabWebRequest -Times 1 -ParameterFilter { $Uri -eq $cfg.CosignURL }
     }
 
     It 'checks for gpg when InstallGpg is true' {
