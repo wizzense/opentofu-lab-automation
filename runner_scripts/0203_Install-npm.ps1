@@ -1,13 +1,13 @@
 Param(
     [Parameter(Mandatory)]
-    [pscustomobject]$Config
+    [object]$Config
 )
 
 Import-Module (Join-Path $PSScriptRoot '..' 'lab_utils' 'LabRunner' 'LabRunner.psm1')
 Write-CustomLog "Starting $MyInvocation.MyCommand"
 function Install-NpmDependencies {
     [CmdletBinding(SupportsShouldProcess = $true)]
-    param([pscustomobject]$Config)
+    param([object]$Config)
 
 
     Invoke-LabStep -Config $Config -Body {

@@ -1,5 +1,5 @@
 Param(
-    [pscustomobject]$Config,
+    [object]$Config,
     [switch]$AsJson
 )
 
@@ -9,7 +9,7 @@ function Get-SystemInfo {
     [CmdletBinding()]
     param(
         [switch]$AsJson,
-        [pscustomobject]$Config
+        [object]$Config
     )
 
     Invoke-LabStep -Config $Config -Body {

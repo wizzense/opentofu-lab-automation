@@ -1,4 +1,4 @@
-Param([pscustomobject]$Config)
+Param([object]$Config)
 $scriptRoot = $PSScriptRoot
 Import-Module (Join-Path $PSScriptRoot '..' 'lab_utils' 'LabRunner' 'LabRunner.psm1')
 Write-CustomLog "Starting $MyInvocation.MyCommand"
@@ -61,31 +61,13 @@ if ($Config.InitializeOpenTofu -eq $true) {
 if (-not [string]::IsNullOrWhiteSpace($infraRepoUrl)) {
     Write-CustomLog "InfraRepoUrl detected: $infraRepoUrl"
 
-    # If infraRepoPath is already a Git repo, do a pull instead of clone
-    if (Test-Path (Join-Path $infraRepoPath ".git")) {
-        Write-CustomLog "This directory is already a Git repository. Pulling latest changes..."
-        Push-Location $infraRepoPath
-        try {
-            git pull
-        }
-        finally {
-            Pop-Location
-        }
+    if (Test-Path (Join-Path $infraRepoPath '.git')) {
+        Write-CustomLog "Directory exists. Pulling latest changes..."
+        git -C $infraRepoPath pull
     }
     else {
-        # If you want a clean slate each time, uncomment the lines below to remove existing files
-        # Remove-Item -Path (Join-Path $infraRepoPath "*") -Recurse -Force -ErrorAction SilentlyContinue
-
-
-        Write-CustomLog "Cloning $infraRepoUrl to $infraRepoPath..."
-        $ghCmd = Get-Command gh -ErrorAction SilentlyContinue
-        if ($ghCmd) {
-            gh repo clone $infraRepoUrl $infraRepoPath
-        }
-        else {
-            git clone $infraRepoUrl $infraRepoPath
-        }
-        
+        Write-CustomLog "Repository not found. Cloning $infraRepoUrl to $infraRepoPath..."
+        gh repo clone $infraRepoUrl $infraRepoPath
         if ($LASTEXITCODE -ne 0) {
             Write-Error "ERROR: Failed to clone $infraRepoUrl"
             exit 1
