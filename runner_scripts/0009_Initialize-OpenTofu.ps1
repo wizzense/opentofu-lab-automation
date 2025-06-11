@@ -152,7 +152,7 @@ if (-not $tofuCmd) {
         if ($installerAvailable -and (Get-Command Invoke-OpenTofuInstaller -ErrorAction SilentlyContinue)) {
             Invoke-OpenTofuInstaller -CosignPath $cosign -OpenTofuVersion $version
         } else {
-            throw "Cannot install OpenTofu because the installer script '$installScript' is missing."
+            throw [System.InvalidOperationException]::new("Cannot install OpenTofu because the installer script '$installScript' is missing.")
         }
         $tofuCmd = Get-Command tofu -ErrorAction SilentlyContinue
         if (-not $tofuCmd) {
