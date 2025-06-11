@@ -47,5 +47,5 @@ jobs:
           for num in $(gh issue list --state open --json number -q '.[].number'); do
             body=$(gh issue view "$num" --json body -q .body)
             echo "$body" > issue.txt
-            copilot suggest --repo ${{ github.repository }} --issue issue.txt || true
+            github-copilot-cli suggest --repo ${{ github.repository }} --issue issue.txt || true
           done
