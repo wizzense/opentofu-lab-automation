@@ -17,7 +17,7 @@ function Install-Python {
                     # Refresh PATH for the current session so subsequent scripts can find python
                     $userPath = [Environment]::GetEnvironmentVariable('PATH', 'User')
                     $machinePath = [Environment]::GetEnvironmentVariable('PATH', 'Machine')
-                    $env:PATH = ($userPath, $machinePath -join ';')
+                    $env:PATH = (($userPath, $machinePath) -join ';')
                     Write-CustomLog 'PATH refreshed with new Python location.'
                 }
             } else {
