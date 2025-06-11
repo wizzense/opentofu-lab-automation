@@ -9,7 +9,7 @@ Describe 'Get-WindowsJobArtifacts' {
     }
 
     BeforeAll {
-        Mock Invoke-WebRequest -ModuleName LabSetup {}
+        Mock Invoke-WebRequest -ModuleName LabSetup {} -ParameterFilter { $Uri -match 'nightly\.link' }
         Mock Expand-Archive {}
         Mock Get-ChildItem { [pscustomobject]@{ FullName = 'dummy.xml' } }
         Mock Select-Xml { @() }
