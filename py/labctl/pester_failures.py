@@ -11,10 +11,14 @@ def summarize_failures(xml_path: Path) -> str:
     tree = ET.parse(xml_path)
     root = tree.getroot()
     lines = []
-    for case in root.findall(".//test-case[@result='Failed']"):
-        name = case.get("name", "Pester test failed")
-        message = case.findtext("failure/message", default="").strip()
-        lines.append(f"- **{name}**: {message}")
+    cases = list(root.findall(".//test-case[@result='Failed']"))
+    cases += list(root.findall(".//UnitTestResult[@outcome='Failed']"))
+
+    for case in cases:
+        name = case.get("name") or case.get("testName") or "Pester test failed"
+        # Support both NUnitXml (<failure><message>) and VSTest (<Output><ErrorInfo><Message>)
+        message = case.findtext("failure/message") or case.findtext("Output/ErrorInfo/Message") or ""
+        lines.append(f"- **{name}**: {message.strip()}")
     return "\n".join(lines)
 
 
@@ -32,9 +36,12 @@ def report_failures(xml_path: Path) -> None:
         details.append(f"Commit `{commit}` on branch `{branch}`")
     details.append(f"OS: {os_name}")
     extra = "\n".join(details)
-    for case in root.findall(".//test-case[@result='Failed']"):
-        title = case.get("name", "Pester test failed")
-        message = case.findtext("failure/message", default="")
+    cases = list(root.findall(".//test-case[@result='Failed']"))
+    cases += list(root.findall(".//UnitTestResult[@outcome='Failed']"))
+
+    for case in cases:
+        title = case.get("name") or case.get("testName") or "Pester test failed"
+        message = case.findtext("failure/message") or case.findtext("Output/ErrorInfo/Message") or ""
         body = f"{message}\n\n{extra}" if message else extra
         create_issue(title, body)
 
