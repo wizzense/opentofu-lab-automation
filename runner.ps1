@@ -38,6 +38,7 @@ $script:ConsoleLevel    = $script:VerbosityLevels[$Verbosity]
 if (-not (Get-Command Write-CustomLog -ErrorAction SilentlyContinue)) {
     . (Join-Path $PSScriptRoot 'runner_utility_scripts' 'Logger.ps1')
 }
+$env:LAB_CONSOLE_LEVEL = $script:VerbosityLevels[$Verbosity]
 . (Join-Path $PSScriptRoot 'lab_utils' 'Get-LabConfig.ps1')
 . (Join-Path $PSScriptRoot 'lab_utils' 'Format-Config.ps1')
 $menuPath = Join-Path $PSScriptRoot 'lab_utils' 'Menu.ps1'
@@ -375,4 +376,5 @@ while ($true) {
 
 Write-CustomLog "`nAll done!"
 if (-not $overallSuccess) { $global:LASTEXITCODE = 1 } else { $global:LASTEXITCODE = 0 }
+Remove-Item Env:LAB_CONSOLE_LEVEL -ErrorAction SilentlyContinue
 exit $LASTEXITCODE
