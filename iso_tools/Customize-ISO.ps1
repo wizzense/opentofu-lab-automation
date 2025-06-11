@@ -100,7 +100,7 @@ if (-not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdent
 # Step 1: Mount the Windows ISO
 Write-CustomLog "Mounting Windows ISO..."
 $ISO = Mount-DiskImage -ImagePath $ISOPath -PassThru
-$DriveLetter = ($ISO | Get-Volume).DriveLetter + ":"
+$DriveLetter = (Get-Volume -DiskImage $ISO).DriveLetter + ":"
 
 # Step 2: Extract ISO contents
 Write-CustomLog "Extracting ISO contents to $ExtractPath..."
