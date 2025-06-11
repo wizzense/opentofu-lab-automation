@@ -10,18 +10,22 @@ New-Item -ItemType Directory -Path $tempDir | Out-Null
 
 $useGh = $false
 if (Get-Command gh -ErrorAction SilentlyContinue) {
-    try {
-        gh 'auth status' --hostname github.com *> $null
+    gh auth status --hostname github.com *> $null
+    if ($LASTEXITCODE -eq 0) {
         $useGh = $true
-    } catch {
+    } else {
         Write-Host 'gh authentication failed; using public download URLs.' -ForegroundColor Yellow
     }
 }
 
 if ($useGh) {
     if ($RunId) {
-        $artJson = gh "api repos/$Repo/actions/runs/$RunId/artifacts"
-        $artifacts = (ConvertFrom-Json $artJson).artifacts
+        $artJson = gh api "repos/$Repo/actions/runs/$RunId/artifacts"
+        if ($artJson) {
+            $artifacts = (ConvertFrom-Json $artJson).artifacts
+        } else {
+            $artifacts = @()
+        }
         $cov = $artifacts | Where-Object { $_.name -match 'coverage.*windows-latest' }
         $res = $artifacts | Where-Object { $_.name -match 'results.*windows-latest' }
         if ($res) {
@@ -41,13 +45,13 @@ if ($useGh) {
             exit 1
         }
     } else {
-        $runsJson = gh "api repos/$Repo/actions/workflows/$Workflow/runs?branch=main&status=completed&per_page=10"
-        $runs = (ConvertFrom-Json $runsJson).workflow_runs
+        $runsJson = gh api "repos/$Repo/actions/workflows/$Workflow/runs?branch=main&status=completed&per_page=10"
+        $runs = if ($runsJson) { (ConvertFrom-Json $runsJson).workflow_runs } else { @() }
 
         $found = $false
         foreach ($run in $runs) {
-            $artJson = gh "api repos/$Repo/actions/runs/$($run.id)/artifacts"
-            $artifacts = (ConvertFrom-Json $artJson).artifacts
+            $artJson = gh api "repos/$Repo/actions/runs/$($run.id)/artifacts"
+            $artifacts = if ($artJson) { (ConvertFrom-Json $artJson).artifacts } else { @() }
             $cov = $artifacts | Where-Object { $_.name -match 'coverage.*windows-latest' }
             $res = $artifacts | Where-Object { $_.name -match 'results.*windows-latest' }
             if ($res) {
