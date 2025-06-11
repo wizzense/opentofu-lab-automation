@@ -49,30 +49,26 @@ Describe 'runner.ps1 executing 0200_Get-SystemInfo' {
             $null = New-Item -ItemType Directory -Path $scriptsDir
             Copy-Item $script:ScriptPath -Destination $scriptsDir
 
-            Push-Location $tempDir
-            $script:logLines = @()
-            function global:Write-Host {
-                param([Parameter(Mandatory=$true,Position=0)][string]$Object,
-                      [Parameter(Position=1)][string]$ForegroundColor)
-                $script:logLines += $Object
-            }
-            & "$tempDir/runner.ps1" -Scripts '0200' -Auto | Out-Null
-            Pop-Location
+        Push-Location $tempDir
+        $pwsh = (Get-Command pwsh).Source
+        $output = & $pwsh -NoLogo -NoProfile -File './runner.ps1' -Scripts '0200' -Auto
+        $code   = $LASTEXITCODE
+        Pop-Location
 
-            $text = $script:logLines -join [Environment]::NewLine
-            $text | Should -Match 'ComputerName'
-            $text | Should -Match 'IPAddresses'
-            $text | Should -Match 'OSVersion'
-            $text | Should -Match 'DiskInfo'
-            if ($IsWindows) {
-                $text | Should -Match 'RolesFeatures'
-                $text | Should -Match 'LatestHotfix'
-            }
+        $code | Should -Be 0
+        $text = $output -join [Environment]::NewLine
+        $text | Should -Match 'ComputerName'
+        $text | Should -Match 'IPAddresses'
+        $text | Should -Match 'OSVersion'
+        $text | Should -Match 'DiskInfo'
+        if ($IsWindows) {
+            $text | Should -Match 'RolesFeatures'
+            $text | Should -Match 'LatestHotfix'
+        }
 
         }
         finally {
             Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue
-            Remove-Item Function:Write-Host -ErrorAction SilentlyContinue
         }
     }
 }
