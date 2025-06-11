@@ -261,10 +261,16 @@ function Invoke-Scripts {
                 if (-not $current) {
                     if ($Force) {
                         Set-NestedConfigValue -Config $Config -Path $flag -Value $true
+                        $current = $true
                     }
                     elseif (-not $Auto -and (Read-Host "Enable flag '$flag' and run? (Y/N)") -match '^(?i)y') {
                         Set-NestedConfigValue -Config $Config -Path $flag -Value $true
+                        $current = $true
                     }
+                }
+                if (-not $current) {
+                    Write-CustomLog "Flag '$flag' disabled - skipping $($s.Name)"
+                    continue
                 }
             }
 
@@ -284,9 +290,11 @@ function Invoke-Scripts {
                     Write-Error $line.ToString()
                 } elseif ($line -is [System.Management.Automation.WarningRecord]) {
                     Write-Warning $line.ToString()
+                } elseif ($line -match '^\[\d{4}-\d{2}-\d{2} .*\] \[(INFO|WARN|ERROR)\]') {
+                    # Already logged by Write-CustomLog within the script
+                    continue
                 } else {
                     Write-CustomLog $line.ToString()
-
                 }
             }
 
@@ -366,17 +374,14 @@ if ($Scripts) {
 }
 
 $overallSuccess = $true
-while ($true) {
+do {
     $selection = Prompt-Scripts
     if ($selection.Count -eq 0) {
         Write-CustomLog 'No scripts selected.'
-        break
+    } else {
+        if (-not (Invoke-Scripts -ScriptsToRun $selection)) { $overallSuccess = $false }
     }
-
-    if (-not (Invoke-Scripts -ScriptsToRun $selection)) { $overallSuccess = $false }
-
-    if ($Auto) { continue }
-}
+} while ($Auto -and $selection.Count -gt 0)
 
 Write-CustomLog "`nAll done!"
 if (-not $overallSuccess) { $global:LASTEXITCODE = 1 } else { $global:LASTEXITCODE = 0 }

@@ -405,7 +405,7 @@ exit 0
         $scriptsDir = Join-Path $tempDir 'runner_scripts'
         @"
 Param([PSCustomObject]`$Config)
-Write-Output 'hello world'
+Write-CustomLog 'hello world'
 "@ | Set-Content -Path (Join-Path $scriptsDir '0001_Echo.ps1')
 
         Push-Location $tempDir
@@ -416,6 +416,25 @@ Write-Output 'hello world'
         Pop-Location
 
         ($script:messages | Where-Object { $_ -match 'hello world' }).Count | Should -Be 1
+
+        Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue
+    }
+
+    It 'pipes Get-SystemInfo output to the caller' {
+        $tempDir   = New-RunnerTestEnv
+        $scriptsDir = Join-Path $tempDir 'runner_scripts'
+        Copy-Item (Join-Path $PSScriptRoot '..' 'runner_scripts' '0200_Get-SystemInfo.ps1') -Destination $scriptsDir
+        Copy-Item (Join-Path $PSScriptRoot '..' 'runner_utility_scripts') -Destination $tempDir -Recurse
+        Copy-Item (Join-Path $PSScriptRoot '..' 'lab_utils') -Destination $tempDir -Recurse
+        Copy-Item (Join-Path $PSScriptRoot '..' 'config_files') -Destination (Join-Path $tempDir 'config_files') -Recurse
+
+        Push-Location $tempDir
+        $pwsh = (Get-Command pwsh).Source
+        $output = & $pwsh -NoLogo -NoProfile -File './runner.ps1' -Scripts '0200' -Auto
+        Pop-Location
+
+        $text = $output -join [Environment]::NewLine
+        $text | Should -Match 'ComputerName'
 
         Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue
     }
