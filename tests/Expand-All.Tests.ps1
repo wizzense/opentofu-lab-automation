@@ -23,7 +23,7 @@ Describe 'Expand-All' {
         New-Item -ItemType File -Path $zipPath | Out-Null
 
         Mock Expand-Archive {}
-        Mock Read-LoggedInput { 'y' }
+        Mock Read-LoggedInput { 'y' } -ModuleName Expand-All
 
         Expand-All -ZipFile $zipPath
 
@@ -41,7 +41,7 @@ Describe 'Expand-All' {
         $zip2 = Join-Path $subDir 'b.zip'
 
         Mock Expand-Archive {}
-        Mock Read-LoggedInput { 'y' }
+        Mock Read-LoggedInput { 'y' } -ModuleName Expand-All
         Mock Get-ChildItem {
             @(
                 [pscustomobject]@{ FullName = $zip1; DirectoryName = $temp; BaseName = 'a' },
@@ -67,7 +67,7 @@ Describe 'Expand-All' {
         $zipPath = Join-Path $TestDrive 'missing.zip'
 
         Mock Expand-Archive {}
-        Mock Read-LoggedInput {}
+        Mock Read-LoggedInput {} -ModuleName Expand-All
 
         Expand-All -ZipFile $zipPath
 
@@ -84,7 +84,7 @@ Describe 'Expand-All' {
         New-Item -ItemType File -Path $zipPath | Out-Null
 
         Mock Expand-Archive {}
-        Mock Read-LoggedInput { 'n' }
+        Mock Read-LoggedInput { 'n' } -ModuleName Expand-All
 
         Expand-All -ZipFile $zipPath
 
