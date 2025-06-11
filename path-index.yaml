@@ -17,6 +17,7 @@ pwsh/lab_utils/LabRunner/LabRunner.psd1: pwsh/lab_utils/LabRunner/LabRunner.psd1
 pwsh/lab_utils/LabRunner/LabRunner.psm1: pwsh/lab_utils/LabRunner/LabRunner.psm1
 pwsh/lab_utils/LabRunner/Logger.ps1: pwsh/lab_utils/LabRunner/Logger.ps1
 pwsh/lab_utils/LabRunner/OpenTofuInstaller.ps1: pwsh/lab_utils/LabRunner/OpenTofuInstaller.ps1
+pwsh/lab_utils/LabRunner/Resolve-ProjectPath.psm1: pwsh/lab_utils/LabRunner/Resolve-ProjectPath.psm1
 pwsh/lab_utils/LabRunner/ScriptTemplate.ps1: pwsh/lab_utils/LabRunner/ScriptTemplate.ps1
 pwsh/lab_utils/LabSetup/LabSetup.psd1: pwsh/lab_utils/LabSetup/LabSetup.psd1
 pwsh/lab_utils/LabSetup/LabSetup.psm1: pwsh/lab_utils/LabSetup/LabSetup.psm1
@@ -26,6 +27,7 @@ pwsh/lab_utils/Menu.ps1: pwsh/lab_utils/Menu.ps1
 pwsh/lab_utils/Network.ps1: pwsh/lab_utils/Network.ps1
 pwsh/lab_utils/PathUtils.ps1: pwsh/lab_utils/PathUtils.ps1
 pwsh/lab_utils/Resolve-ProjectPath.ps1: pwsh/lab_utils/Resolve-ProjectPath.ps1
+pwsh/lab_utils/Resolve-ProjectPath.psm1: pwsh/lab_utils/Resolve-ProjectPath.psm1
 pwsh/lab_utils/__init__.py: pwsh/lab_utils/__init__.py
 pwsh/lab_utils/get_platform.py: pwsh/lab_utils/get_platform.py
 pwsh/runner.ps1: pwsh/runner.ps1
