@@ -1,7 +1,6 @@
 name: Copilot Auto Fix
 
-on:
-  workflow_dispatch:
+on: workflow_dispatch
 
 permissions:
   contents: write
@@ -11,27 +10,30 @@ permissions:
 jobs:
   copilot-suggest:
     runs-on: ubuntu-latest
-    # ① Expose the PAT so every gh command is already authenticated
     env:
-      GH_TOKEN: ${{ secrets.GH_PAT_AUTOPILOT }}
+      GH_TOKEN: ${{ secrets.GH_PAT_AUTOPILOT }}  # gh commands pick this up
 
     steps:
       - uses: actions/checkout@v4
 
-      # ② Disable analytics / confirmation prompts
-      - name: Pre-seed Copilot config (headless)
+      # Write the token into the gh credential store (Copilot respects this)
+      - name: Authenticate gh once
+        run: echo "${{ secrets.GH_PAT_AUTOPILOT }}" | gh auth login --with-token
+
+      # Headless defaults – never prompt
+      - name: Pre-seed Copilot config
         run: |
           mkdir -p "$HOME/.config/gh-copilot"
-          cat >"$HOME/.config/gh-copilot/config.yml" <<'EOF'
+          cat >"$HOME/.config/gh-copilot/config.yml" <<'YAML'
           optional_analytics: false
           suggest_execute_confirm_default: false
-          EOF
+          YAML
 
-      # ③ Install or upgrade the Copilot CLI extension
+      # Install or upgrade the Copilot extension
       - name: Install Copilot extension
         run: gh extension install github/gh-copilot --force
 
-      # ④ Loop through open issues → ask Copilot → comment the answer
+      # Ask Copilot and comment back
       - name: Suggest fixes for each open issue
         run: |
           for num in $(gh issue list --state open --json number -q '.[].number'); do
