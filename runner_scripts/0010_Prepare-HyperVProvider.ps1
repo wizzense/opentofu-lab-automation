@@ -5,15 +5,13 @@ if (-not (Get-Command Convert-CerToPem -ErrorAction SilentlyContinue)) {
 function Convert-CerToPem {
     [CmdletBinding(SupportsShouldProcess)]
     param(
+        [Parameter(Mandatory)]
+        [ValidateNotNullOrEmpty()]
         [string]$CerPath,
+        [Parameter(Mandatory)]
+        [ValidateNotNullOrEmpty()]
         [string]$PemPath
     )
-    if (-not $PSBoundParameters.ContainsKey('CerPath') -or [string]::IsNullOrWhiteSpace($CerPath)) {
-        throw 'Convert-CerToPem: CerPath is required'
-    }
-    if (-not $PSBoundParameters.ContainsKey('PemPath') -or [string]::IsNullOrWhiteSpace($PemPath)) {
-        throw 'Convert-CerToPem: PemPath is required'
-    }
     if (-not $PSCmdlet.ShouldProcess($PemPath, 'Create PEM file')) { return }
 
     $bytes = [System.IO.File]::ReadAllBytes($CerPath)
@@ -27,20 +25,17 @@ if (-not (Get-Command Convert-PfxToPem -ErrorAction SilentlyContinue)) {
 function Convert-PfxToPem {
     [CmdletBinding(SupportsShouldProcess)]
     param(
+        [Parameter(Mandatory)]
+        [ValidateNotNullOrEmpty()]
         [string]$PfxPath,
         [securestring]$Password,
+        [Parameter(Mandatory)]
+        [ValidateNotNullOrEmpty()]
         [string]$CertPath,
+        [Parameter(Mandatory)]
+        [ValidateNotNullOrEmpty()]
         [string]$KeyPath
     )
-    if (-not $PSBoundParameters.ContainsKey('PfxPath') -or [string]::IsNullOrWhiteSpace($PfxPath)) {
-        throw 'Convert-PfxToPem: PfxPath is required'
-    }
-    if (-not $PSBoundParameters.ContainsKey('CertPath') -or [string]::IsNullOrWhiteSpace($CertPath)) {
-        throw 'Convert-PfxToPem: CertPath is required'
-    }
-    if (-not $PSBoundParameters.ContainsKey('KeyPath') -or [string]::IsNullOrWhiteSpace($KeyPath)) {
-        throw 'Convert-PfxToPem: KeyPath is required'
-    }
     if (-not $PSCmdlet.ShouldProcess($PfxPath, 'Convert PFX to PEM')) { return }
     $cert = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2($PfxPath,$Password,[System.Security.Cryptography.X509Certificates.X509KeyStorageFlags]::Exportable)
     $certBytes = $cert.Export([System.Security.Cryptography.X509Certificates.X509ContentType]::Cert)
