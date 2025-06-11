@@ -3,7 +3,7 @@ Param(
     [object]$Config
 )
 
-Import-Module (Join-Path $PSScriptRoot '..' 'lab_utils' 'LabRunner' 'LabRunner.psm1')
+Import-Module "$PSScriptRoot/../lab_utils/LabRunner/LabRunner.psm1"
 Write-CustomLog "Starting $MyInvocation.MyCommand"
 function Install-NpmDependencies {
     [CmdletBinding(SupportsShouldProcess = $true)]
