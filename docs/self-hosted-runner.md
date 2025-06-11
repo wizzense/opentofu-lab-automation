@@ -6,20 +6,7 @@ This repository can use your own machine to execute workflow jobs. The following
 
    ```powershell
    mkdir actions-runner; cd actions-runner
-   Invoke-WebRequest -Uri https://github.com/actions/runner/releases/download/v2.325.0/actions-runner-win-x64-2.325.0.zip -OutFile actions-runner-win-x64-2.325.0.zip
-   ```
-
-   Optionally validate the package hash:
-
-   ```powershell
-   if((Get-FileHash -Path actions-runner-win-x64-2.325.0.zip -Algorithm SHA256).Hash.ToUpper() -ne '8601aa56828c084b29bdfda574af1fcde0943ce275fdbafb3e6d4a8611245b1b'.ToUpper()){ throw 'Computed checksum did not match' }
-   ```
-
-   Extract the archive:
-
-   ```powershell
-   Add-Type -AssemblyName System.IO.Compression.FileSystem
-   [System.IO.Compression.ZipFile]::ExtractToDirectory("$PWD/actions-runner-win-x64-2.325.0.zip", "$PWD")
+   Invoke-WebRequest -Uri https://github.com/actions/runner/releases/latest/download/actions-runner-win-x64.zip -OutFile actions-runner-win-x64.zip
    ```
 
 2. **Configure the runner**
