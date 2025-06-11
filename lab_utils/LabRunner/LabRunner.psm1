@@ -2,6 +2,7 @@
 . $PSScriptRoot/Logger.ps1
 . $PSScriptRoot/../Get-Platform.ps1
 . $PSScriptRoot/../Network.ps1
+. $PSScriptRoot/InvokeOpenTofuInstaller.ps1
 
 function Invoke-LabStep {
     param(
@@ -70,4 +71,4 @@ function Invoke-LabDownload {
     }
 }
 
-Export-ModuleMember -Function Invoke-LabStep, Write-CustomLog, Read-LoggedInput, Get-Platform, Invoke-LabWebRequest, Invoke-LabNpm, Invoke-LabDownload
+Export-ModuleMember -Function Invoke-LabStep, Invoke-LabDownload, Write-CustomLog, Read-LoggedInput, Get-Platform, Invoke-LabWebRequest, Invoke-LabNpm
