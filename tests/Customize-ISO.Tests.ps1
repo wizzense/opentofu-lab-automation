@@ -30,7 +30,8 @@ Describe 'Customize-ISO.ps1'  {
         New-Item -ItemType File -Path $unattend | Out-Null
 
         Mock-WriteLog
-        Mock Mount-DiskImage { [pscustomobject]@{ DevicePath = $iso } } -ParameterFilter { $ImagePath -eq $iso -and $PassThru }
+        $diskImage = New-CimInstance -ClassName MSFT_DiskImage -Property @{ DevicePath = $iso } -ClientOnly
+        Mock Mount-DiskImage { $diskImage } -ParameterFilter { $ImagePath -eq $iso -and $PassThru }
         Mock Get-Volume { [pscustomobject]@{ DriveLetter = 'Z' } }
         Mock Dismount-DiskImage {} -ParameterFilter { $ImagePath -eq $iso }
         function dism { param([Parameter(ValueFromRemainingArguments=$true)][string[]]$dismArgs) }
