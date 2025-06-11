@@ -74,7 +74,7 @@ Step scripts import a small PowerShell module that provides common helpers:
 
 ```powershell
 Param([object]$Config)
-Import-Module "$PSScriptRoot/../runner_utility_scripts/LabRunner.psd1"
+Import-Module "$PSScriptRoot/../lab_utils/LabRunner/LabRunner.psd1"
 ```
 
 The `-Config` parameter can be either a path to a JSON file or a

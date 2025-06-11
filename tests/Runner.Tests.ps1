@@ -40,8 +40,8 @@ Describe 'runner.ps1 script selection'  {
             $rsDir = Join-Path $root 'runner_scripts'
             New-Item -ItemType Directory -Path $rsDir | Out-Null
 
-            $utils = Join-Path $root 'runner_utility_scripts'
-            New-Item -ItemType Directory -Path $utils | Out-Null
+            $utils = Join-Path $root 'lab_utils' 'LabRunner'
+            New-Item -ItemType Directory -Path $utils -Force | Out-Null
             'function Write-CustomLog { param([string]$Message,[string]$Level) }' |
                 Set-Content -Path (Join-Path $utils 'Logger.ps1')
 
@@ -500,7 +500,7 @@ Write-CustomLog 'hello world'
         $tempDir   = New-RunnerTestEnv
         $scriptsDir = Join-Path $tempDir 'runner_scripts'
         Copy-Item (Join-Path $PSScriptRoot '..' 'runner_scripts' '0200_Get-SystemInfo.ps1') -Destination $scriptsDir
-        Copy-Item (Join-Path $PSScriptRoot '..' 'runner_utility_scripts') -Destination $tempDir -Recurse
+        Copy-Item (Join-Path $PSScriptRoot '..' 'lab_utils' 'LabRunner') -Destination (Join-Path $tempDir 'lab_utils' 'LabRunner') -Recurse
         Copy-Item (Join-Path $PSScriptRoot '..' 'lab_utils') -Destination $tempDir -Recurse
         Copy-Item (Join-Path $PSScriptRoot '..' 'config_files') -Destination (Join-Path $tempDir 'config_files') -Recurse
 
