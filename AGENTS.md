@@ -124,7 +124,7 @@ See `py/README.md` for detailed instructions on installing and running the CLI.
 
 
 3. **Style**
-   • PowerShell: `Invoke‑ScriptAnalyzer`
+   • PowerShell: `Invoke‑ScriptAnalyzer` with `PSScriptAnalyzerSettings.psd1`
    • Python: `ruff .`
 
 4. **Documentation**

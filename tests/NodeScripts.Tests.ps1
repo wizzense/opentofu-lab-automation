@@ -29,7 +29,9 @@ Describe 'Node installation scripts' -Skip:$skipNpm {
     It 'uses Node_Dependencies.Node.InstallerUrl when installing Node' {
         $cfg = @{ Node_Dependencies = @{ InstallNode=$true; Node = @{ InstallerUrl = 'http://example.com/node.msi' } } }
         $core = Get-RunnerScriptPath '0201_Install-NodeCore.ps1'
+        
         . $core
+
         Mock Invoke-LabWebRequest -ModuleName LabRunner {}
         Mock Start-Process {}
         Mock Remove-Item {}
@@ -42,7 +44,9 @@ Describe 'Node installation scripts' -Skip:$skipNpm {
     It 'does nothing when InstallNode is $false' {
         $cfg = @{ Node_Dependencies = @{ InstallNode = $false } }
         $core = Get-RunnerScriptPath '0201_Install-NodeCore.ps1'
+
         . $core
+
         Mock Invoke-LabWebRequest -ModuleName LabRunner {}
         Mock Start-Process {}
         Mock Remove-Item {}
@@ -109,6 +113,7 @@ Describe 'Node installation scripts' -Skip:$skipNpm {
         $global = Get-RunnerScriptPath '0202_Install-NodeGlobalPackages.ps1'
 
         function Invoke-LabNpm { param([Parameter(ValueFromRemainingArguments = $true)][string[]]$testArgs) }
+
         . $global
         Mock Invoke-LabNpm -ModuleName LabRunner {}
         Install-NodeGlobalPackages -Config @{ Node_Dependencies = @{ InstallYarn=$false; InstallVite=$false; InstallNodemon=$false } } -WhatIf
@@ -125,6 +130,9 @@ Describe 'Node installation scripts' -Skip:$skipNpm {
             $null = $testArgs
         }
         $npmPath = Get-RunnerScriptPath '0203_Install-npm.ps1'
+
+        Mock Invoke-LabNpm -ModuleName LabRunner {}
+
         . $npmPath -Config $cfg
         Mock Invoke-LabNpm -ModuleName LabRunner {}
 

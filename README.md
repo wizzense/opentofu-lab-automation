@@ -79,7 +79,7 @@ after linting. The command scans the repository and provides additional
 improvement ideas directly in the workflow logs.
 
 `scripts/CustomLint.ps1` performs an additional pass with project specific
-rules defined in `.scriptanalyzersettings.psd1`. Run it locally to check your
+rules defined in `PSScriptAnalyzerSettings.psd1`. Run it locally to check your
 PowerShell files before pushing:
 
 ```powershell
