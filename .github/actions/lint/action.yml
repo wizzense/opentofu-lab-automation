@@ -37,6 +37,10 @@ runs:
           Write-Error 'ScriptAnalyzer errors detected'
           exit 1
         }
+    - name: Run Custom Script Analyzer
+      shell: pwsh
+      run: |
+        ./scripts/CustomLint.ps1
     - name: Run ruff
       shell: bash
       run: ruff check .

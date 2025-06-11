@@ -1,0 +1,25 @@
+. (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
+
+Describe 'CustomLint.ps1' {
+    BeforeAll {
+        $script:ScriptPath = Join-Path $PSScriptRoot '..' 'scripts' 'CustomLint.ps1'
+    }
+
+    It 'parses without errors' {
+        $errs = $null
+        [System.Management.Automation.Language.Parser]::ParseFile($script:ScriptPath, [ref]$null, [ref]$errs) | Out-Null
+        ($errs ? $errs.Count : 0) | Should -Be 0
+    }
+
+    It 'returns exit code 1 when analyzer reports errors' {
+        Mock Invoke-ScriptAnalyzer { [pscustomobject]@{ Severity = 'Error' } }
+        & $script:ScriptPath -Target $PSScriptRoot > $null
+        $LASTEXITCODE | Should -Be 1
+    }
+
+    It 'returns exit code 0 when no errors' {
+        Mock Invoke-ScriptAnalyzer { @() }
+        & $script:ScriptPath -Target $PSScriptRoot > $null
+        $LASTEXITCODE | Should -Be 0
+    }
+}
