@@ -153,9 +153,11 @@ if (-not $tofuCmd) {
             Write-CustomLog "Tofu command found: $($tofuCmd.Path)"
         }
     } else {
-        Write-Warning "Tofu executable not found at $defaultTofuExe. Attempting installation via 0008_Install-OpenTofu.ps1..."
+        Write-Warning "Tofu executable not found at $defaultTofuExe. Attempting installation..."
         . "$PSScriptRoot/0008_Install-OpenTofu.ps1"
-        Install-OpenTofu -Config $Config
+        $cosign   = Join-Path $Config.CosignPath 'cosign-windows-amd64.exe'
+        $version  = if ($Config.OpenTofuVersion) { $Config.OpenTofuVersion } else { 'latest' }
+        Invoke-OpenTofuInstaller -CosignPath $cosign -OpenTofuVersion $version
         $tofuCmd = Get-Command tofu -ErrorAction SilentlyContinue
         if (-not $tofuCmd) {
             Write-Error "Tofu still not found after installation. Please ensure OpenTofu is installed and in PATH."
