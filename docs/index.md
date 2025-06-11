@@ -6,6 +6,7 @@ Welcome! This folder collects notes and guides for working with the project.
 - [labctl Python CLI](python-cli.md)
 - [Runner script usage](runner.md)
 - [Self-hosted GitHub runner](self-hosted-runner.md)
+- [GitHub environment variables](github-env-vars.md)
 
 
 
