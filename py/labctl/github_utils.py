@@ -64,3 +64,11 @@ def cleanup_branches(remote: str = "origin") -> List[str]:
         subprocess.run(["git", "push", remote, "--delete", name], check=True)
 
     return delete
+
+
+def view_issue(issue_number: int) -> str:
+    """Return the issue title and body as a JSON string."""
+    result = subprocess.check_output(
+        ["gh", "issue", "view", str(issue_number), "--json", "title,body"]
+    )
+    return result.decode()

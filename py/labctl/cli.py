@@ -100,6 +100,13 @@ def close_issue(issue_number: int):
     logger.info("Closed issue #%s", issue_number)
 
 
+@repo_app.command("view-issue")
+def view_issue(issue_number: int):
+    """Output issue details as JSON."""
+    data = github_utils.view_issue(issue_number)
+    typer.echo(data)
+
+
 @repo_app.command()
 def cleanup(
     remote: str = typer.Option("origin", help="Remote name"),
