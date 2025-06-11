@@ -4,46 +4,47 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
-  pull-requests: write
-  issues: read
+  contents: write          # push patches
+  pull-requests: write     # open/update PRs
+  issues: write            # add comments
 
 jobs:
   comment-suggestions:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
+
+      # 1 Authenticate the GitHub CLI with your PAT (OAuth token)
       - name: Authenticate gh
-        shell: bash
         run: echo "${{ secrets.GH_PAT_AUTOPILOT }}" | gh auth login --with-token
-      - name: Install Copilot extension
+
+      # 2 Disable analytics + interactive confirmations so the step never hangs
+      - name: Pre-seed Copilot config (headless)
+        run: |
+          mkdir -p $HOME/.config/gh-copilot
+          printf '%s\n' \
+            'optional_analytics: false' \
+            'suggest_execute_confirm_default: false' \
+            > $HOME/.config/gh-copilot/config.yml
+
+      # 3 Install / upgrade the Copilot CLI extension
+      - name: Install (or upgrade) Copilot extension
         run: gh extension install github/gh-copilot --force
+
+      # 4 Post a Copilot suggestion back to every open issue
       - name: Suggest fixes for each open issue
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT_AUTOPILOT }}   # reused inside loop
         run: |
           for num in $(gh issue list --state open --json number -q '.[].number'); do
-            gh copilot suggest "Fix issue #$num in ${{ github.repository }}" > suggestion.md || true
+            title=$(gh issue view "$num" --json title -q .title)
+            body=$(gh issue view "$num" --json body  -q .body)
+
+            prompt="Please propose a concise patch diff to fix issue #$num ($title) in ${{ github.repository }}. Context:\n$body"
+            # -t code → ask for a code patch
+            # -w 0    → no “watch”/re-ask loop (returns once)
+            gh copilot suggest "$prompt" -t code -w 0 > suggestion.md || true
+
             gh issue comment "$num" -F suggestion.md
-
-          done
-
-  auto-fix:
-    runs-on: ubuntu-latest
-    needs: comment-suggestions
-    steps:
-      - uses: actions/checkout@v4
-      - name: Authenticate gh
-        shell: bash
-        run: echo "${{ secrets.GH_PAT_AUTOPILOT }}" | gh auth login --with-token
-      - name: Install Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-      - name: Install Copilot CLI
-        run: npm install -g @githubnext/github-copilot-cli
-      - name: Run Copilot suggestions
-        run: |
-          for num in $(gh issue list --state open --json number -q '.[].number'); do
-            body=$(gh issue view "$num" --json body -q .body)
-            echo "$body" > issue.txt
-            github-copilot-cli suggest --repo ${{ github.repository }} --issue issue.txt || true
           done
