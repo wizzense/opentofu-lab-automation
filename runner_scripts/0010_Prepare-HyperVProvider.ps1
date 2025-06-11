@@ -37,7 +37,14 @@ function Convert-PfxToPem {
         [string]$KeyPath
     )
     if (-not $PSCmdlet.ShouldProcess($PfxPath, 'Convert PFX to PEM')) { return }
-    $cert = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2($PfxPath,$Password,[System.Security.Cryptography.X509Certificates.X509KeyStorageFlags]::Exportable)
+    if (-not (Test-Path $PfxPath) -or ((Get-Item -Path $PfxPath -ErrorAction SilentlyContinue).Length -eq 0)) {
+        throw "Invalid or unreadable PFX at $PfxPath"
+    }
+    try {
+        $cert = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2($PfxPath,$Password,[System.Security.Cryptography.X509Certificates.X509KeyStorageFlags]::Exportable)
+    } catch {
+        throw "Invalid or unreadable PFX at $PfxPath"
+    }
     $certBytes = $cert.Export([System.Security.Cryptography.X509Certificates.X509ContentType]::Cert)
     $certB64   = [System.Convert]::ToBase64String($certBytes,'InsertLineBreaks')
     if ($PSCmdlet.ShouldProcess($CertPath, 'Write certificate PEM')) {
