@@ -1,30 +1,58 @@
 from __future__ import annotations
-
+import os
 from pathlib import Path
 from typing import Optional
-import yaml
 
-_repo_root = Path(__file__).resolve().parents[2]
-_index = None
+try:
+    import yaml
+except ImportError:
+    yaml = None
 
+_INDEX: dict[str, str] = {}
+_repo_root: Optional[Path] = None
+
+def repo_root() -> Path:
+    """Return the repository root directory."""
+    global _repo_root
+    if _repo_root is not None:
+        return _repo_root
+    env_root = os.environ.get("LAB_REPO_ROOT")
+    if env_root:
+        _repo_root = Path(env_root)
+    else:
+        _repo_root = Path(__file__).resolve().parents[2]
+    return _repo_root
 
 def load_index() -> dict:
-    """Load path-index.yaml from repository root."""
-    global _index
-    if _index is None:
-        index_path = _repo_root / 'path-index.yaml'
-        if index_path.exists():
+    """Load path-index.yaml from repository root, if available."""
+    global _INDEX
+    if not _INDEX:
+        index_path = repo_root() / 'path-index.yaml'
+        if index_path.exists() and yaml is not None:
             with index_path.open('r') as f:
-                _index = yaml.safe_load(f) or {}
+                _INDEX = yaml.safe_load(f) or {}
         else:
-            _index = {}
-    return _index
+            _INDEX = {}
+    return _INDEX
 
-
-def resolve_path(key: str) -> Optional[Path]:
-    """Return absolute path for key from index or None."""
+def resolve_path(name: str) -> Optional[Path]:
+    """Return Path for *name* from the index or by searching the repo."""
     index = load_index()
-    rel = index.get(key)
+    rel = index.get(name)
     if rel:
-        return _repo_root / rel
+        abs_path = repo_root() / rel
+        if abs_path.exists():
+            return abs_path
+    # Fallback to search
+    found = search_for_file(name)
+    if found:
+        _INDEX[name] = str(found.relative_to(repo_root()))
+    return found
+
+def search_for_file(name: str) -> Optional[Path]:
+    """Recursively search the repository for *name* and return the path."""
+    root = repo_root()
+    for p in root.rglob(name):
+        if p.is_file() and p.name == name:
+            return p
     return None
