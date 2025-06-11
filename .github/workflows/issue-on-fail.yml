@@ -134,4 +134,5 @@ jobs:
       - name: Install Copilot extension
         run: gh extension install github/gh-copilot --force
       - name: Copilot remediation tips
-        run: gh copilot suggest "Suggest improvements" || true
+        run: |
+          gh copilot suggest "Suggest improvements" || echo "Warning: Copilot suggestion command failed, but continuing workflow."
