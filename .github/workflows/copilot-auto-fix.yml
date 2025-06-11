@@ -6,40 +6,47 @@ on:
 permissions:
   contents: write
   pull-requests: write
-  issues: read
+  issues: write
 
 jobs:
-  comment-suggestions:
+  copilot-suggest:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
+
+      # Authenticate once with your PAT
       - name: Authenticate gh
-        shell: bash
         run: echo "${{ secrets.GH_PAT_AUTOPILOT }}" | gh auth login --with-token
+
+      # Headless defaults so the CLI never pauses
+      - name: Pre-seed Copilot config
+        run: |
+          mkdir -p "$HOME/.config/gh-copilot"
+          printf '%s\n' \
+            'optional_analytics: false' \
+            'suggest_execute_confirm_default: false' \
+            > "$HOME/.config/gh-copilot/config.yml"
+
+      # Install / upgrade the Copilot extension
       - name: Install Copilot extension
         run: gh extension install github/gh-copilot --force
+
+      # Loop through every open issue, ask Copilot, post the answer
       - name: Suggest fixes for each open issue
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT_AUTOPILOT }}
         run: |
           for num in $(gh issue list --state open --json number -q '.[].number'); do
-            gh copilot suggest "Fix issue #$num in ${{ github.repository }}" > suggestion.md || true
-            gh issue comment "$num" -F suggestion.md
+            title=$(gh issue view "$num" --json title -q .title)
+            body=$(gh issue view "$num"  --json body  -q .body)
 
-          done
+            prompt="Propose a concise git diff or detailed steps to fix issue #$num ($title) in ${{ github.repository }}.\n\nContext:\n$body"
+            gh copilot suggest "$prompt" -w 0 > suggestion.md || true
 
-  auto-fix:
-    runs-on: ubuntu-latest
-    needs: comment-suggestions
-    steps:
-      - uses: actions/checkout@v4
-      - name: Authenticate gh
-        shell: bash
-        run: echo "${{ secrets.GH_PAT_AUTOPILOT }}" | gh auth login --with-token
-      - name: Install Copilot extension
-        run: gh extension install github/gh-copilot --force
-      - name: Run Copilot suggestions
-        run: |
-          for num in $(gh issue list --state open --json number -q '.[].number'); do
-            body=$(gh issue view "$num" --json body -q .body)
-            echo "$body" > issue.txt
-            gh copilot suggest --repo "${{ github.repository }}" --issue issue.txt || true
+            if [ -s suggestion.md ]; then
+              gh issue comment "$num" -F suggestion.md
+            else
+              echo "No suggestion generated for issue #$num"
+            fi
           done

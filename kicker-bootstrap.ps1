@@ -111,10 +111,10 @@ if (-not (Get-Command Write-CustomLog -ErrorAction SilentlyContinue)) {
 
         if ($AsSecureString) {
             Write-CustomLog "$Prompt (secure input)"
-            return Microsoft.PowerShell.Utility\Read-Host -Prompt $Prompt -AsSecureString
+            return Read-Host -Prompt $Prompt -AsSecureString
         }
 
-        $answer = Microsoft.PowerShell.Utility\Read-Host -Prompt $Prompt
+        $answer = Read-Host -Prompt $Prompt
         Write-CustomLog "$($Prompt): $answer"
         return $answer
     }
