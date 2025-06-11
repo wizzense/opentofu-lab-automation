@@ -1,5 +1,6 @@
 Param([object]$Config)
 Import-Module "$PSScriptRoot/../lab_utils/LabRunner/LabRunner.psd1"
+Import-Module "$PSScriptRoot/../lab_utils/LabSetup/LabSetup.psd1"
 
 # Param([pscustomobject]$Config)
 # Import-Module (Join-Path $PSScriptRoot '..' 'lab_utils' 'LabRunner' 'LabRunner.psm1')
@@ -43,7 +44,7 @@ if ($Config.InstallGo -eq $true) {
 
     $ProgressPreference = 'SilentlyContinue'
     Write-CustomLog "Downloading Go from $installerUrl"
-    Invoke-WebRequest -Uri $installerUrl -OutFile $installerPath -UseBasicParsing
+    LabSetup\Invoke-WebRequest -Uri $installerUrl -OutFile $installerPath -UseBasicParsing
 
     Write-CustomLog "Installing Go silently..."
     Start-Process msiexec.exe -Wait -ArgumentList "/i `"$installerPath`" /qn /L*v `"$env:TEMP\GoInstall.log`""
