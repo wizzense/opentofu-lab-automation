@@ -62,6 +62,7 @@ $env:LAB_CONSOLE_LEVEL = $script:VerbosityLevels[$Verbosity]
 . (Join-Path (Join-Path $PSScriptRoot 'lab_utils') 'Get-LabConfig.ps1')
 . (Join-Path (Join-Path $PSScriptRoot 'lab_utils') 'Format-Config.ps1')
 . (Join-Path (Join-Path $PSScriptRoot 'lab_utils') 'Get-Platform.ps1')
+. (Join-Path (Join-Path $PSScriptRoot 'lab_utils') 'Resolve-ProjectPath.ps1')
 $menuPath = Join-Path (Join-Path $PSScriptRoot 'lab_utils') 'Menu.ps1'
 if (-not (Test-Path $menuPath)) {
     Write-Error "Menu module not found at $menuPath"
@@ -235,7 +236,7 @@ if (-not $Auto) {
 
 # ─── Discover scripts ────────────────────────────────────────────────────────
 Write-CustomLog "==== Locating scripts ===="
-$ScriptFiles = Get-ChildItem (Join-Path $PSScriptRoot 'runner_scripts') -Filter "????_*.ps1" -File | Sort-Object Name
+$ScriptFiles = Get-ChildItem (Join-Path $PSScriptRoot 'runner_scripts') -Filter "????_*.ps1" -File -Recurse | Sort-Object Name
 if (-not $ScriptFiles) {
     Write-CustomLog "ERROR: No scripts found matching pattern."
     exit 1
@@ -270,9 +271,9 @@ function Invoke-Scripts {
     foreach ($s in $ScriptsToRun) {
         Write-CustomLog "`n--- Running: $($s.Name) ---"
         try {
-            $scriptPath = Join-Path $PSScriptRoot "runner_scripts" $($s.Name)
-            if (-not (Test-Path $scriptPath)) {
-                Write-CustomLog "ERROR: Script not found at $scriptPath"
+            $scriptPath = Resolve-ProjectPath -Name $($s.Name)
+            if (-not $scriptPath) {
+                Write-CustomLog "ERROR: Script not found for $($s.Name)"
                 $failed += $s.Name
                 continue
             }

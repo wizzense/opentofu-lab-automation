@@ -47,3 +47,8 @@ for z in artifacts/*.zip; do
   unzip -q "$z" -d artifacts
 done
 ```
+
+When scripts are moved within the repository they can still be
+referenced by name. `Resolve-ProjectPath` and the Python
+`labctl.path_index.resolve_path` helper both search the repo
+recursively when a cached path no longer exists.
