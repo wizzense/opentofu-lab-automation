@@ -1,15 +1,23 @@
 . (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
-. (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
+. (Join-Path $PSScriptRoot 'hel    It 'returns nonzero exit code when download fails' {
+        Mock Get-Command { $null } -ParameterFilter { $Name -eq 'gh' }
+        Mock Invoke-WebRequest { throw '404' }
+        $messages = @()
+        function global:Write-Host { param($Object,$Color); $script:messages += $Object }
+        try { & $global:scriptPath } catch {}
+
+        $LASTEXITCODE | Should -Be 1
+    }
+}Helpers.ps1')
 Import-Module (Join-Path $PSScriptRoot '..' 'pwsh' 'lab_utils' 'LabRunner' 'LabRunner.psd1') -Force
 
-InModuleScope LabSetup {
 Describe 'Get-WindowsJobArtifacts' {
     BeforeAll {
         $global:scriptPath = Join-Path $PSScriptRoot '..' 'pwsh' 'lab_utils' 'Get-WindowsJobArtifacts.ps1'
     }
 
-    BeforeAll {
-        Mock Invoke-WebRequest -ModuleName LabSetup {} -ParameterFilter { $Uri -match 'nightly\.link' }
+    BeforeEach {
+        Mock Invoke-WebRequest {} -ParameterFilter { $Uri -match 'nightly\.link' }
         Mock Expand-Archive {}
         Mock Get-ChildItem { [pscustomobject]@{ FullName = 'dummy.xml' } }
         Mock Select-Xml { @() }
@@ -83,7 +91,7 @@ Describe 'Get-WindowsJobArtifacts' {
 
     It 'returns nonzero exit code when download fails' {
         Mock Get-Command { $null } -ParameterFilter { $Name -eq 'gh' }
-        Mock Invoke-WebRequest -ModuleName LabSetup { throw '404' }
+        Mock Invoke-WebRequest { throw '404' }
         $messages = @()
         function global:Write-Host { param($Object,$Color); $script:messages += $Object }
         try { & $global:scriptPath } catch {}

@@ -1,8 +1,11 @@
 function Normalize-RelativePath {
     [CmdletBinding()]
     param(
-        [Parameter(Mandatory)][ValidateNotNullOrEmpty()][string]$Path
+        [Parameter(Mandatory)][string]$Path
     )
+    if ([string]::IsNullOrEmpty($Path)) {
+        throw [System.ArgumentException]::new("Path cannot be null or empty", "Path")
+    }
     $segments = $Path -split '[\\/]+'
     $segments | Join-Path -Path $null
 }

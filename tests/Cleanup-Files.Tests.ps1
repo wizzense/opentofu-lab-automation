@@ -159,16 +159,8 @@ Describe 'Cleanup-Files script' {
 
         Mock Remove-Item { throw [System.IO.IOException]::new('in use') } -ParameterFilter { $Path -eq $repoPath }
 
-        # Capture the error output and exit code
-        $errorOutput = $null
-        try {
-            & $script:scriptPath -Config $config 2>&1 | Tee-Object -Variable errorOutput | Out-Null
-        } catch {
-            # Script may exit with code 1
-        }
-        
-        $LASTEXITCODE | Should -Be 1
-        $errorOutput | Should -Match 'Cleanup failed:'
+        # Test that the script throws an error when removal fails
+        { & $script:scriptPath -Config $config } | Should -Throw '*Cleanup failed:*'
     }
 }
 
