@@ -56,7 +56,7 @@ if (-not (Test-Path $loggerPath)) {
     if (-not (Test-Path $loggerDir)) {
         New-Item -ItemType Directory -Path $loggerDir -Force | Out-Null
     }
-    $loggerUrl = 'https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/main/pwsh/lab_utils/LabRunner/Logger.ps1'
+    $loggerUrl = "${baseUrl}main/pwsh/lab_utils/LabRunner/Logger.ps1"
     Invoke-WebRequest -Uri $loggerUrl -OutFile $loggerPath
 }
 try {
