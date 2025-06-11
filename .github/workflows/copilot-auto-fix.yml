@@ -18,7 +18,16 @@ jobs:
 
       # Authenticate gh with the PAT
       - name: Authenticate gh
-        run: echo "${{ secrets.GH_PAT_AUTOPILOT }}" | gh auth login --hostname github.com --git-protocol https --with-token
+        run: |
+          if [ -z "${{ secrets.GH_PAT_AUTOPILOT }}" ]; then
+            echo "Error: GH_PAT_AUTOPILOT secret is not set."
+            exit 1
+          fi
+
+          echo "${{ secrets.GH_PAT_AUTOPILOT }}" | gh auth login --hostname github.com --git-protocol https --with-token || {
+            echo "GitHub CLI authentication failed."
+            exit 1
+          }
 
       - uses: actions/checkout@v4
 
