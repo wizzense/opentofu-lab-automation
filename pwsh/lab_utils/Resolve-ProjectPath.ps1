@@ -15,7 +15,7 @@ function Resolve-ProjectPath {
         if (-not (Get-Command ConvertFrom-Yaml -ErrorAction SilentlyContinue)) {
             try { Import-Module powershell-yaml -ErrorAction Stop } catch {}
         }
-        try { $index = Get-Content -Raw -Path $indexPath | ConvertFrom-Yaml } catch { $index = @{} }
+        try { $index = [hashtable](Get-Content -Raw -Path $indexPath | ConvertFrom-Yaml) } catch { $index = @{} }
         if ($index.ContainsKey($Name)) { return (Join-Path $Root $index[$Name]) }
         foreach ($key in $index.Keys) {
             if ((Split-Path $key -Leaf) -eq $Name) {
