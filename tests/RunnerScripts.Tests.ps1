@@ -80,7 +80,7 @@ Describe 'Runner scripts parameter and command checks'  {
                 $_.CommandElements[1] -is [System.Management.Automation.Language.StringConstantExpressionAst] -or
                 $_.CommandElements[1] -is [System.Management.Automation.Language.ExpandableStringExpressionAst]
             ) -and
-            ([System.IO.Path]::GetFileName($_.CommandElements[1].Value) -eq 'LabRunner.psm1')
+            ([System.IO.Path]::GetFileName($_.CommandElements[1].Value) -in @('LabRunner.psm1', 'LabRunner.psd1'))
         }
 
         if (-not $found) {
