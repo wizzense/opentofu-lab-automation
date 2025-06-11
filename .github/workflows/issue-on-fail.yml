@@ -11,6 +11,7 @@ jobs:
     permissions:
       issues: write
     steps:
+
       - uses: actions/checkout@v4
       - name: Collect job results
         id: jobs
@@ -41,10 +42,10 @@ jobs:
           gh run download "$run_id" -n 'pester-results-*' -D artifacts
           gh run download "$run_id" -n 'pytest-results-*' -D artifacts
           find artifacts -name testResults.xml -print0 | while IFS= read -r -d '' f; do
-            python py/labctl/pester_failures.py "$f"
+            python -m labctl.pester_failures "$f"
           done
           find artifacts -name junit.xml -print0 | while IFS= read -r -d '' f; do
-            python py/labctl/pytest_failures.py "$f"
+            python -m labctl.pytest_failures "$f"
           done
 
       - name: Check existing issue
