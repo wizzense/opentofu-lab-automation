@@ -276,10 +276,9 @@ an answer file, then rebuilds a bootable image using the Windows ADK. See
 
 ## Next Steps
 
-* **Document** `labctl` commands in the main `README` ✔️
-* **Package** default `config_files/` with the CLI ✔️
-* **Begin Phase 2** – VMware provider implementation.
-* **Ensure** local `pytest` passes. Windows Pester tests run on GitHub and should be checked via `Get-WindowsJobArtifacts.ps1`.
+* **Finalize** provider classes across PowerShell and Python.
+* **Kick off Phase 2** – VMware provider implementation.
+* **Ensure** local `pytest` passes; check Windows Pester results with `Get-WindowsJobArtifacts.ps1`.
 
 ---
 
