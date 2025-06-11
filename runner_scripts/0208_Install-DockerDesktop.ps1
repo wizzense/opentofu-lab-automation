@@ -25,3 +25,4 @@ function Install-DockerDesktop {
     Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
 }
 if ($MyInvocation.InvocationName -ne '.') { Install-DockerDesktop @PSBoundParameters }
+Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"

@@ -107,3 +107,4 @@ Write-CustomLog "==== Global npm package installation complete ===="
 }
 }
 if ($MyInvocation.InvocationName -ne '.') { Install-NodeGlobalPackages @PSBoundParameters }
+Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"

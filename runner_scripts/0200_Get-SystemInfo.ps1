@@ -128,3 +128,4 @@ if ($MyInvocation.InvocationName -ne '.') {
     Get-SystemInfo @PSBoundParameters
     Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
 }
+Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"

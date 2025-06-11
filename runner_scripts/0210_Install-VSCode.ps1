@@ -25,3 +25,4 @@ function Install-VSCode {
     Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
 }
 if ($MyInvocation.InvocationName -ne '.') { Install-VSCode @PSBoundParameters }
+Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"

@@ -32,3 +32,4 @@ function Set-LabProfile {
 }
 
 if ($MyInvocation.InvocationName -ne '.') { Set-LabProfile @PSBoundParameters }
+Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"

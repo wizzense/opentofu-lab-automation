@@ -79,3 +79,4 @@ if (-not $Config.InstallCosign -and -not $Config.InstallGpg) {
 }
     Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
 }
+Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"

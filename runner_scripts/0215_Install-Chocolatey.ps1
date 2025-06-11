@@ -22,3 +22,4 @@ function Install-Chocolatey {
     Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
 }
 if ($MyInvocation.InvocationName -ne '.') { Install-Chocolatey @PSBoundParameters }
+Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
