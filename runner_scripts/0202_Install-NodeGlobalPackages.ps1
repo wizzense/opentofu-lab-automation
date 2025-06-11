@@ -24,7 +24,6 @@ function Install-NodeGlobalPackages {
     [CmdletBinding(SupportsShouldProcess = $true)]
     param([pscustomobject]$Config)
 
-    . "$PSScriptRoot/../runner_utility_scripts/ScriptTemplate.ps1"
     Invoke-LabStep -Config $Config -Body {
     param($Config)
     Write-CustomLog 'Running 0202_Install-NodeGlobalPackages.ps1'

@@ -1,3 +1,4 @@
+Param([pscustomobject]$Config)
 . "$PSScriptRoot/../runner_utility_scripts/ScriptTemplate.ps1"
 function Invoke-OpenTofuInstaller {
     param(
@@ -16,7 +17,6 @@ function Install-OpenTofu {
     [CmdletBinding()]
     param([pscustomobject]$Config)
 
-    . "$PSScriptRoot/../runner_utility_scripts/ScriptTemplate.ps1"
     Invoke-LabStep -Config $Config -Body {
         Write-CustomLog 'Running 0008_Install-OpenTofu.ps1'
 
