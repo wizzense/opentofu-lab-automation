@@ -16,21 +16,20 @@
 
 ## Phase 0 – House‑Keeping (1 day)
 
-| Task                              | Details                                                                                                                                                                                   |
-| --------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Task                              | Details |
+| --------------------------------- | ------- |
 | ~~0.1 Stabilise `runner.ps1`~~    | • Added `-Scripts` (string) & `-Auto` (switch) parameters.<br>• Defaults to interactive mode.<br>• Exits non‑zero on child failures.<br>**Prompt:** “Refactor `runner.ps1` so it takes …” |
-| ~~0.2 Unify config‑file loading~~ | • New `lab_utils/Get-LabConfig.ps1` returning a `[pscustomobject]`.<br>• Handles missing file & invalid JSON.<br>**Prompt:** “Create `lab_utils/Get‑LabConfig.ps1` …”                     |
-| ~~0.3 CI hygiene~~                | • Composite action `.github/actions/lint` runs `Invoke‑ScriptAnalyzer` and `ruff`.<br>• `lint` → `pester` gates `main`.<br>**Prompt:** “Add a composite action …”                         |
-
+| ~~0.2 Unify config‑file loading~~ | • New `lab_utils/Get-LabConfig.ps1` returning a `[pscustomobject]`.<br>• Handles missing file & invalid JSON.<br>**Prompt:** “Create `lab_utils/Get‑LabConfig.ps1` …” |
+| ~~0.3 CI hygiene~~                | • Composite action `.github/actions/lint` runs `Invoke‑ScriptAnalyzer` and `ruff`.<br>• `lint` → `pester` gates `main`.<br>**Prompt:** “Add a composite action …” |
 ---
 
 ## Phase 1 – Cross‑Platform Foundations (3 days)
 
-| Task                                    | Details                                                                                                                 |
-| --------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
-| ~~1.1 Platform detector~~               | `lab_utils/Get‑Platform.ps1` and `get_platform.py` return `Windows`, `Linux`, or `macOS` with shared tests.             |
-| ~~1.2 Hypervisor abstraction skeleton~~ | `lab_utils/Hypervisor.psm1` exposes `Get‑HVFacts`, `Enable‑Provider`, and `Deploy‑VM` with stub Hyper‑V implementation. |
-| ~~1.3 Python scaffold~~                 | Poetry project under `py/`; Typer CLI `labctl` (`hv facts`, `hv deploy`) shares JSON config; pytest wired.              |
+| Task                                    | Details |
+| --------------------------------------- | ------- |
+| ~~1.1 Platform detector~~               | `lab_utils/Get-Platform.ps1` and `get_platform.py` return `Windows`, `Linux`, or `macOS` with shared tests. |
+| ~~1.2 Hypervisor abstraction skeleton~~ | `lab_utils/Hypervisor.psm1` exposes `Get-HVFacts`, `Enable-Provider`, and `Deploy-VM` with stub Hyper-V implementation. |
+| ~~1.3 Python scaffold~~                 | Poetry project under `py/`; Typer CLI `labctl` (`hv facts`, `hv deploy`) shares JSON config; pytest wired. |
 
 **Remaining work**
 
@@ -41,37 +40,37 @@
 
 ## Phase 2 – Additional Hypervisors (10 days)
 
-| Task                          | Details                                                                                                   |
-| ----------------------------- | --------------------------------------------------------------------------------------------------------- |
-| 2.1 VMware Workstation / ESXi | Extend `Hypervisor` modules with VMware provider via `govc`; add `Install‑Govc.ps1`; update tests & docs. |
-| 2.2 Proxmox / libvirt / KVM   | Implement Proxmox provider via REST API; Typer sub‑command; pytest with `responses`.                      |
+| Task                          | Details |
+| ----------------------------- | ------- |
+| 2.1 VMware Workstation / ESXi | Extend `Hypervisor` modules with VMware provider via `govc`; add `Install-Govc.ps1`; update tests & docs. |
+| 2.2 Proxmox / libvirt / KVM   | Implement Proxmox provider via REST API; Typer sub-command; pytest with `responses`. |
 
 ---
 
 ## Phase 3 – Cloud Targets (8 days)
 
-| Task      | Details                                                                                 |
-| --------- | --------------------------------------------------------------------------------------- |
+| Task      | Details |
+| --------- | ------- |
 | 3.1 Azure | Create OpenTofu module (`cloud/azure`) for vNet, subnet, VMSS; validate with `azurite`. |
-| 3.2 AWS   | Mirror Azure module for EC2; include Tfsec & Checkov baselines.                         |
+| 3.2 AWS   | Mirror Azure module for EC2; include Tfsec & Checkov baselines. |
 
 ---
 
 ## Phase 4 – Secrets & Security (2 days)
 
-| Task                                  | Details                                                                                                                   |
-| ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
-| 4.1 Secrets back‑ends                 | `lab_utils/Get‑Secret.ps1` (+ Python twin) resolves IDs from KeyVault/SecretsManager, falling back to env vars.           |
-| 4.2 Hyper‑V provider certificate flow | Finalise cert handling in `Prepare‑HyperVProvider.ps1` – convert PFX→PEM, inject into OpenTofu, remove `insecure = true`. |
+| Task                                  | Details |
+| ------------------------------------- | ------- |
+| 4.1 Secrets back-ends                 | `lab_utils/Get-Secret.ps1` (+ Python twin) resolves IDs from KeyVault/SecretsManager, falling back to env vars. |
+| 4.2 Hyper-V provider certificate flow | Finalise cert handling in `Prepare-HyperVProvider.ps1` – convert PFX→PEM, inject into OpenTofu, remove `insecure = true`. |
 
 ---
 
 ## Phase 5 – User‑Facing Improvements (ongoing)
 
-| Task                              | Details                                                                          |
-| --------------------------------- | -------------------------------------------------------------------------------- |
-| 5.1 Interactive TUI (`labctl ui`) | Build Textual‑based selector that consumes JSON config and invokes scripts.      |
-| 5.2 Docs site                     | MkDocs‑Material docs with autogenerated API references; deploy via GitHub Pages. |
+| Task                              | Details |
+| --------------------------------- | ------- |
+| 5.1 Interactive TUI (`labctl ui`) | Build Textual-based selector that consumes JSON config and invokes scripts. |
+| 5.2 Docs site                     | MkDocs-Material docs with autogenerated API references; deploy via GitHub Pages. |
 
 ---
 
@@ -133,13 +132,13 @@ This guide explains how to pull the latest Windows job artifacts, analyse test &
 
 ## Prerequisites
 
-| Requirement                                | Notes                                                                                   |
-| ------------------------------------------ | --------------------------------------------------------------------------------------- |
-| **PowerShell 7+**                          | The workflow is automated with `pwsh`.                                                  |
-| **lab\_utils/Get‑WindowsJobArtifacts.ps1** | Must exist in your local clone (or fetch it).                                           |
-| **GitHub access**                          | The script relies on GitHub REST API; set `GITHUB_TOKEN` or authenticate interactively. |
-| **Unzip utility**                          | Built‑in `Expand‑Archive` is sufficient.                                                |
-| (Optional) **Pester v5+**                  | For local re‑runs of updated tests.                                                     |
+| Requirement                                | Notes |
+| ------------------------------------------ | ----- |
+| **PowerShell 7+**                          | The workflow is automated with `pwsh`. |
+| **lab_utils/Get-WindowsJobArtifacts.ps1** | Must exist in your local clone (or fetch it). |
+| **GitHub access**                          | The script relies on GitHub REST API; set `GITHUB_TOKEN` or authenticate interactively. |
+| **Unzip utility**                          | Built-in `Expand-Archive` is sufficient. |
+| (Optional) **Pester v5+**                  | For local re-runs of updated tests. |
 
 ## Step‑by‑Step
 
@@ -153,10 +152,10 @@ This guide explains how to pull the latest Windows job artifacts, analyse test &
 
 2. ### Locate key report files
 
-   | File                               | Typical path                                     |
-   | ---------------------------------- | ------------------------------------------------ |
-   | **coverage.xml**                   | `artifacts/windows‑latest/coverage/coverage.xml` |
-   | **testResults.xml**<br>(VsTest/Pester) | `artifacts/windows‑latest/coverage/testResults.xml` |
+| File                               | Typical path |
+| ---------------------------------- | ------------ |
+| **coverage.xml**                   | `artifacts/windows-latest/coverage/coverage.xml` |
+| **testResults.xml**<br>(VsTest/Pester) | `artifacts/windows-latest/coverage/testResults.xml` |
 
    *The GitHub artifact is named `pester-results-${{ matrix.os }}` and contains this XML file.*
 
@@ -199,11 +198,11 @@ This guide explains how to pull the latest Windows job artifacts, analyse test &
 
 ## Troubleshooting
 
-| Symptom                          | Likely cause                                    | Remedy                                                                           |
-| -------------------------------- | ----------------------------------------------- | -------------------------------------------------------------------------------- |
-| `Should -Invoke` fails (0 calls) | Mock parameter names don’t match implementation | Align names or remove filter while debugging.                                    |
-| Zero tests discovered on CI      | `$SkipNonWindows` guard triggered               | Ensure `.ps1` runs **only** on Windows runner or set `$ENV:OS` override locally. |
-| Artifacts script fails with 404  | No successful run yet for branch                | Authenticate with `gh` or specify `-RunId <id>`.                            |
+| Symptom                          | Likely cause | Remedy |
+| -------------------------------- | ------------ | ------ |
+| `Should -Invoke` fails (0 calls) | Mock parameter names don’t match implementation | Align names or remove filter while debugging. |
+| Zero tests discovered on CI      | `$SkipNonWindows` guard triggered | Ensure `.ps1` runs **only** on Windows runner or set `$ENV:OS` override locally. |
+| Artifacts script fails with 404  | No successful run yet for branch | Authenticate with `gh` or specify `-RunId <id>`. |
 If the helper still fails, list recent runs and pass the ID with `-RunId`:
 ```bash
 gh run list --limit 20
