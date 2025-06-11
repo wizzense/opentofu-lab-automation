@@ -276,9 +276,17 @@ if (-not $hostCertificate) {
     Convert-CerToPem -CerPath ".\$rootCaName.cer" -PemPath ".\$rootCaName.pem"
     Convert-PfxToPem -PfxPath ".\$hostName.pfx" -Password $hostPassword -CertPath ".\$hostName.pem" -KeyPath ".\$hostName-key.pem"
 
-    Copy-Item ".\$rootCaName.pem" -Destination (Join-Path $infraRepoPath "$rootCaName.pem") -Force
-    Copy-Item ".\$hostName.pem" -Destination (Join-Path $infraRepoPath "$hostName.pem") -Force
-    Copy-Item ".\$hostName-key.pem" -Destination (Join-Path $infraRepoPath "$hostName-key.pem") -Force
+    $dest = Join-Path $infraRepoPath "$rootCaName.pem"
+    if (Test-Path $dest) { Remove-Item $dest -Recurse -Force }
+    Copy-Item ".\$rootCaName.pem" -Destination $dest -Force
+
+    $dest = Join-Path $infraRepoPath "$hostName.pem"
+    if (Test-Path $dest) { Remove-Item $dest -Recurse -Force }
+    Copy-Item ".\$hostName.pem" -Destination $dest -Force
+
+    $dest = Join-Path $infraRepoPath "$hostName-key.pem"
+    if (Test-Path $dest) { Remove-Item $dest -Recurse -Force }
+    Copy-Item ".\$hostName-key.pem" -Destination $dest -Force
 
 Write-CustomLog "Configuring WinRM HTTPS listener..."
 Get-ChildItem wsman:\localhost\Listener\ | Where-Object -Property Keys -eq 'Transport=HTTPS' | Remove-Item -Recurse -ErrorAction SilentlyContinue
@@ -365,8 +373,9 @@ if (!(Test-Path $hypervProviderDir)) {
 }
 
 Write-CustomLog "Copying provider exe -> $hypervProviderDir"
-$destinationBinary = Join-Path $hypervProviderDir "terraform-provider-hyperv.exe"
-Copy-Item -Path $providerExePath -Destination $destinationBinary -Force -Verbose
+    $destinationBinary = Join-Path $hypervProviderDir "terraform-provider-hyperv.exe"
+    if (Test-Path $destinationBinary) { Remove-Item $destinationBinary -Recurse -Force }
+    Copy-Item -Path $providerExePath -Destination $destinationBinary -Force -Verbose
 
 Write-CustomLog "Hyper-V provider installed at: $destinationBinary"
 }
