@@ -6,14 +6,14 @@
 ## Quick start
 
 The easiest way to bootstrap a fresh Windows host is to run the project’s
-`kicker-bootstrap.ps1` script. It installs Git and the GitHub CLI if needed,
+`kicker-bootstrap.ps1` script located under `pwsh/`. It installs Git and the GitHub CLI if needed,
 clones this repository and then launches `runner.ps1`.
 
 
 ```
 
 
-Powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/refs/heads/main/kicker-bootstrap.ps1' -OutFile '.\kicker-bootstrap.ps1'; .\kicker-bootstrap.ps1 -Quiet"
+Powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/refs/heads/main/pwsh/kicker-bootstrap.ps1' -OutFile '.\kicker-bootstrap.ps1'; .\kicker-bootstrap.ps1 -Quiet"
 
 
 ```
@@ -74,7 +74,7 @@ Individual step scripts can also be invoked this way when debugging:
 pwsh -File pwsh/runner_scripts/0001_Reset-Git.ps1 -Config ./configs/config_files/default-config.json
 ```
 
-The lint workflow installs the GitHub Copilot CLI and runs `github-copilot-cli suggest`
+The lint workflow installs the GitHub Copilot extension and runs `gh copilot suggest`
 after linting. The command scans the repository and provides additional
 improvement ideas directly in the workflow logs.
 
@@ -109,7 +109,7 @@ example in `configs/config_files/` (for instance `full-config.json`) to
 VM parameters. `main.tf` reads from this file via the `lab_config_path`
 variable.
 
-See [examples/hyperv/README.md](examples/hyperv/README.md) for a
+See [opentofu/examples/hyperv/README.md](opentofu/examples/hyperv/README.md) for a
 detailed description of each field.
 
 ## Documentation
@@ -118,8 +118,8 @@ Detailed guides and module references are located in the [docs](docs/) directory
 Start with [docs/index.md](docs/index.md) for an overview. Direct links to the
 Terraform modules:
 
-- [Hyper-V VM module](modules/vm/README.md)
-- [Network switch module](modules/network_switch/README.md)
+- [Hyper-V VM module](opentofu/modules/vm/README.md)
+- [Network switch module](opentofu/modules/network_switch/README.md)
 - [Hyper-V provider configuration](docs/hyperv-provider.md)
 
 ## Python CLI

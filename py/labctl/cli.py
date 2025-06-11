@@ -14,7 +14,7 @@ from . import github_utils, issue_parser, update_index
 def default_config_path() -> Path:
     """Return the path to the default configuration file."""
 
-    resolved = resolve_path("config_files/default-config.json")
+    resolved = resolve_path("configs/config_files/default-config.json")
     if resolved:
         return resolved
     return Path(files("labctl").joinpath("config_files", "default-config.json"))

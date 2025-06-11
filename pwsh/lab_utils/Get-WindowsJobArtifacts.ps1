@@ -18,8 +18,8 @@ if (Get-Command gh -ErrorAction SilentlyContinue) {
         Write-Host 'gh authentication failed; using public download URLs.' -ForegroundColor Yellow
     }
 }
-. $PSScriptRoot/Download-Archive.ps1
 
+. $PSScriptRoot/Download-Archive.ps1
 
 if ($useGh) {
     if ($RunId) {
@@ -36,6 +36,7 @@ if ($useGh) {
                 Download-Archive $cov.archive_download_url (Join-Path $tempDir 'coverage.zip') -UseGh:$useGh
             }
             Download-Archive $res.archive_download_url (Join-Path $tempDir 'results.zip') -Required -UseGh:$useGh
+
         } else {
             Write-Host "No artifacts for windows-latest found on run $RunId. Use gh run view $RunId for details." -ForegroundColor Yellow
             exit 1
@@ -55,6 +56,7 @@ if ($useGh) {
                     Download-Archive $cov.archive_download_url (Join-Path $tempDir 'coverage.zip') -UseGh:$useGh
                 }
                 Download-Archive $res.archive_download_url (Join-Path $tempDir 'results.zip') -Required -UseGh:$useGh
+
                 $found = $true
                 break
             }
@@ -73,8 +75,10 @@ if ($useGh) {
         $covUrl = "https://nightly.link/$Repo/workflows/$Workflow/main/pester-coverage-windows-latest.zip"
         $resUrl = "https://nightly.link/$Repo/workflows/$Workflow/main/pester-results-windows-latest.zip"
     }
+
     Download-Archive $covUrl (Join-Path $tempDir 'coverage.zip') -UseGh:$useGh
     Download-Archive $resUrl (Join-Path $tempDir 'results.zip') -Required -UseGh:$useGh
+
 }
 
 $covDir = Join-Path $tempDir 'coverage'
