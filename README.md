@@ -117,7 +117,9 @@ Terraform modules:
 The optional `labctl` command line utility lives in the [py](py/) folder.
 It requires Python 3.10 or newer (see [py/pyproject.toml](py/pyproject.toml)).
 Install its dependencies with [Poetry](https://python-poetry.org/) and run the
-subcommands via `poetry run`:
+subcommands via `poetry run`. Set `InstallPoetry` in your configuration to have
+`runner.ps1` execute `0204_Install-Poetry.ps1` automatically. You can override
+the version with `PoetryVersion`.
 
 
 ```bash
@@ -189,6 +191,8 @@ The runner script can run the following:
 0008_Install-OpenTofu.ps1 - Downloads and installs opentofu standalone (verified with cosign). The version used comes from `OpenTofuVersion` in `default-config.json` and defaults to `latest`.
 
 0009_Initialize-OpenTofu.ps1 - setups up opentofu and the lab-infra repo in C:\temp\base-infra
+
+0205_Install-Sysinternals.ps1 - downloads the Sysinternals Suite to the path specified by `SysinternalsPath` and verifies `PsInfo.exe`
 
 0010_Prepare-HyperVHost.ps1 - configures Hyper-V and downloads the provider from the registry
 

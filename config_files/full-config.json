@@ -23,6 +23,8 @@
   "InstallHyperV": true,
   "InstallWAC": true,
   "InstallGo": true,
+  "InstallPoetry": true,
+  "PoetryVersion": "latest",
   "InstallOpenTofu": true,
   "OpenTofuVersion": "latest",
   "InitializeOpenTofu": true,
@@ -41,10 +43,13 @@
   "InstallAWSCLI": true,
   "InstallPacker": true,
   "InstallChocolatey": true,
+  "InstallSysinternals": true,
+  "SysinternalsPath": "C:\\Sysinternals",
+
   "CertificateAuthority": {
-    "CommonName": "default-lab-RootCA",
-    "ValidityYears": 5
-  },
+      "CommonName": "default-lab-RootCA",
+      "ValidityYears": 5
+    },
   "HyperV": {
     "User": "",
     "Password": "",
