@@ -1,5 +1,9 @@
 Param([object]$Config)
 Import-Module "$PSScriptRoot/../lab_utils/LabRunner/LabRunner.psd1"
+
+# Param([pscustomobject]$Config)
+# Import-Module (Join-Path $PSScriptRoot '..' 'lab_utils' 'LabRunner' 'LabRunner.psm1')
+
 Write-CustomLog "Starting $MyInvocation.MyCommand"
 
 function Install-Cosign {
@@ -71,4 +75,5 @@ elseif ($Config.InstallGpg -eq $true) {
 if (-not $Config.InstallCosign -and -not $Config.InstallGpg) {
     Write-CustomLog "No installation option specified. Use -InstallCosign and/or -InstallGpg when running this script."
 }
+    Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
 }
