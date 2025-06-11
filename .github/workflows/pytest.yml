@@ -41,10 +41,12 @@ jobs:
           POETRY_VIRTUALENVS_IN_PROJECT: 'true'
         run: |
           cd py
-          poetry install
+          poetry install --with dev
       - name: Ensure coverage directory
         run: mkdir -p coverage
       - name: Run pytest
+        env:
+          POETRY_VIRTUALENVS_IN_PROJECT: 'true'
         run: |
           cd py
           poetry run pytest --junitxml=../coverage/junit.xml
