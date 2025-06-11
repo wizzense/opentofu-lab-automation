@@ -6,6 +6,10 @@ Describe '0008_Install-OpenTofu'  {
         $script:ScriptPath = Get-RunnerScriptPath '0008_Install-OpenTofu.ps1'
         . $script:ScriptPath
     }
+    BeforeEach {
+        Mock Invoke-OpenTofuInstaller {}
+        Mock-WriteLog
+    }
 
     It 'calls OpenTofuInstaller when enabled' {
         $cfg = [pscustomobject]@{
@@ -14,8 +18,6 @@ Describe '0008_Install-OpenTofu'  {
             OpenTofuVersion = '1.9.1'
         }
 
-        Mock Invoke-OpenTofuInstaller {}
-        Mock-WriteLog
         
         Install-OpenTofu -Config $cfg
 
@@ -27,8 +29,6 @@ Describe '0008_Install-OpenTofu'  {
 
     It 'skips install when flag is false' {
         $cfg = [pscustomobject]@{ InstallOpenTofu = $false }
-        Mock Invoke-OpenTofuInstaller {}
-        Mock-WriteLog
 
         Install-OpenTofu -Config $cfg
 
