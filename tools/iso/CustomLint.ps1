@@ -1,50 +1,42 @@
-[CmdletBinding()]
-param(
-    [string]$Target = '.',
-    [string]$SettingsPath = (Join-Path $PSScriptRoot '..' 'PSScriptAnalyzerSettings.psd1')
-)
-
-$ErrorActionPreference = 'Stop'
-
-if (-not (Test-Path $SettingsPath)) {
-    throw "Settings file not found: $SettingsPath"
-}
-
-$results = Get-ChildItem -Path $Target -Recurse -Include *.ps1,*.psm1,*.psd1 -File |
-    Select-Object -ExpandProperty FullName |
-    Invoke-ScriptAnalyzer -Severity Error,Warning -Settings $SettingsPath
-$results | Format-Table
-
-
-$results = $files | Invoke-ScriptAnalyzer -Severity Error,Warning -Settings $SettingsPath
-# Use Write-Output so callers can capture or redirect the formatted results
-$results | Format-Table | Out-String | Write-Output
-
-$failed = $false
-if ($results | Where-Object Severity -eq 'Error') {
-    Write-Error 'ScriptAnalyzer errors detected'
-    $failed = $true
-}
-
-# Enforce ParameterFilter on Invoke-WebRequest mocks
-$mockIssues = @()
-foreach ($file in $files) {
-    $ast = [System.Management.Automation.Language.Parser]::ParseFile($file, [ref]$null, [ref]$null)
-    $calls = $ast.FindAll({ param($n) $n -is [System.Management.Automation.Language.CommandAst] -and $n.GetCommandName() -eq 'Mock' }, $true)
-    foreach ($c in $calls) {
-        $first = $c.CommandElements[1]
-        if ($first -and $first.Extent.Text -match 'Invoke-WebRequest') {
-            $hasFilter = $c.CommandElements | Where-Object { $_ -is [System.Management.Automation.Language.CommandParameterAst] -and $_.ParameterName -eq 'ParameterFilter' }
-            if (-not $hasFilter) {
-                $mockIssues += "$file:$($c.Extent.StartLineNumber) Mock Invoke-WebRequest missing -ParameterFilter"
-            }
-        }
-    }
-}
-if ($mockIssues) {
-    $mockIssues | ForEach-Object { Write-Warning $_ }
-    Write-Error 'Mock lint errors detected'
-    $failed = $true
-}
-
-if ($failed) { exit 1 }
+name: Lint
+runs:
+  using: composite
+  steps:
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.x'
+        cache: 'pip'
+        cache-dependency-path: .github/actions/lint/requirements.txt
+    - name: Cache PowerShell modules
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.local/share/powershell/Modules
+          ~/Documents/PowerShell/Modules
+        key: ${{ runner.os }}-lint-psmodules-${{ hashFiles('.github/actions/lint/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-lint-psmodules-
+    - name: Install ruff
+      shell: bash
+      run: pip install "ruff>=0.1"
+    - name: Run Script Analyzer
+      shell: pwsh
+      run: |
+          $settings = Join-Path $PWD 'PSScriptAnalyzerSettings.psd1'
+          $files = Get-ChildItem -Path . -Recurse -Include *.ps1,*.psm1,*.psd1 -File |
+              Where-Object { $_.FullName -ne $settings } |
+              Select-Object -ExpandProperty FullName
+          $results = $files | Invoke-ScriptAnalyzer -Severity Error,Warning -Settings $settings
+          $results | Format-Table
+          if ($results | Where-Object Severity -eq 'Error') {
+              Write-Error 'ScriptAnalyzer errors detected'
+              exit 1
+          }
+    - name: Run Custom Script Analyzer
+      shell: pwsh
+      run: |
+        ./scripts/CustomLint.ps1
+    - name: Run ruff
+      shell: bash
+      run: ruff check .
