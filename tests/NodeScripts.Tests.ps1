@@ -30,7 +30,7 @@ Describe 'Node installation scripts' -Skip:$skipNpm {
     It 'uses Node_Dependencies.Node.InstallerUrl when installing Node' {
         $cfg = @{ Node_Dependencies = @{ InstallNode=$true; Node = @{ InstallerUrl = 'http://example.com/node.msi' } } }
         $core = Get-RunnerScriptPath '0201_Install-NodeCore.ps1'
-        Mock Invoke-WebRequest {}
+        Mock Invoke-WebRequest -ModuleName LabSetup {}
         Mock Start-Process {}
         Mock Remove-Item {}
         Mock Get-Command { @{Name='node'} } -ParameterFilter { $Name -eq 'node' }
@@ -43,7 +43,7 @@ Describe 'Node installation scripts' -Skip:$skipNpm {
     It 'does nothing when InstallNode is $false' {
         $cfg = @{ Node_Dependencies = @{ InstallNode = $false } }
         $core = Get-RunnerScriptPath '0201_Install-NodeCore.ps1'
-        Mock Invoke-WebRequest {}
+        Mock Invoke-WebRequest -ModuleName LabSetup {}
         Mock Start-Process {}
         Mock Remove-Item {}
         Mock Get-Command {}

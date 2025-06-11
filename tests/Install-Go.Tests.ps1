@@ -7,7 +7,7 @@ Describe '0007_Install-Go' -Skip:($SkipNonWindows) {
     It 'installs Go when enabled' {
         $cfg = [pscustomobject]@{ InstallGo = $true; Go = @{ InstallerUrl = 'http://example.com/go1.21.0.windows-amd64.msi' } }
         Mock Get-Command {} -ParameterFilter { $Name -eq 'go' }
-        Mock Invoke-WebRequest {}
+        Mock Invoke-WebRequest -ModuleName LabSetup {}
         Mock Start-Process {}
         Mock-WriteLog
         & $script:ScriptPath -Config $cfg
@@ -17,7 +17,7 @@ Describe '0007_Install-Go' -Skip:($SkipNonWindows) {
 
     It 'skips when InstallGo is false' {
         $cfg = [pscustomobject]@{ InstallGo = $false; Go = @{ InstallerUrl = 'http://example.com/go1.21.0.windows-amd64.msi' } }
-        Mock Invoke-WebRequest {}
+        Mock Invoke-WebRequest -ModuleName LabSetup {}
         Mock Start-Process {}
         Mock-WriteLog
         & $script:ScriptPath -Config $cfg
@@ -28,7 +28,7 @@ Describe '0007_Install-Go' -Skip:($SkipNonWindows) {
     It 'does nothing when Go is already installed' {
         $cfg = [pscustomobject]@{ InstallGo = $true; Go = @{ InstallerUrl = 'http://example.com/go1.21.0.windows-amd64.msi' } }
         Mock Get-Command { @{ Name = 'go' } } -ParameterFilter { $Name -eq 'go' }
-        Mock Invoke-WebRequest {}
+        Mock Invoke-WebRequest -ModuleName LabSetup {}
         Mock Start-Process {}
         Mock-WriteLog
         & $script:ScriptPath -Config $cfg

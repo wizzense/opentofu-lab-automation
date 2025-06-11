@@ -2,6 +2,7 @@
 . (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
 if ($SkipNonWindows) { return }
 
+InModuleScope LabSetup {
 Describe 'Get-WindowsJobArtifacts' {
     BeforeAll {
         $scriptPath = Join-Path $PSScriptRoot '..' 'lab_utils' 'Get-WindowsJobArtifacts.ps1'
@@ -26,7 +27,7 @@ Describe 'Get-WindowsJobArtifacts' {
     It 'falls back to nightly.link when gh auth fails' {
         Mock Get-Command { [pscustomobject]@{ Name = 'gh' } } -ParameterFilter { $Name -eq 'gh' }
         Mock gh { throw 'unauthenticated' } -ParameterFilter { $args[0] -eq 'auth' -and $args[1] -eq 'status' }
-        Mock Invoke-WebRequest {}
+        Mock Invoke-WebRequest -ModuleName LabSetup {}
         Mock Expand-Archive {}
         Mock Get-ChildItem { [pscustomobject]@{ FullName = 'dummy.xml' } }
         Mock Select-Xml { @() }
@@ -55,7 +56,7 @@ Describe 'Get-WindowsJobArtifacts' {
         $id = 456
         Mock Get-Command { [pscustomobject]@{ Name = 'gh' } } -ParameterFilter { $Name -eq 'gh' }
         Mock gh { throw 'unauthenticated' } -ParameterFilter { $args[0] -eq 'auth' -and $args[1] -eq 'status' }
-        Mock Invoke-WebRequest {}
+        Mock Invoke-WebRequest -ModuleName LabSetup {}
         Mock Expand-Archive {}
         Mock Get-ChildItem { [pscustomobject]@{ FullName = 'dummy.xml' } }
         Mock Select-Xml { @() }
@@ -84,11 +85,12 @@ Describe 'Get-WindowsJobArtifacts' {
 
     It 'returns nonzero exit code when download fails' {
         Mock Get-Command { $null } -ParameterFilter { $Name -eq 'gh' }
-        Mock Invoke-WebRequest { throw '404' }
+        Mock Invoke-WebRequest -ModuleName LabSetup { throw '404' }
         $messages = @()
         function global:Write-Host { param($Object,$Color); $script:messages += $Object }
         try { & $scriptPath } catch {}
 
         $LASTEXITCODE | Should -Be 1
     }
+}
 }
