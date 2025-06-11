@@ -21,7 +21,7 @@ if (Test-Path $indexPath) {
     try { $script:PathIndex = Get-Content -Raw -Path $indexPath | ConvertFrom-Yaml } catch { $script:PathIndex = @{} }
 }
 
-. (Join-Path (Join-Path $repoRoot 'lab_utils') 'PathUtils.ps1')
+. (Join-Path $repoRoot 'lab_utils' 'PathUtils.ps1')
 
 function Resolve-IndexPath {
     param([string]$Key)
