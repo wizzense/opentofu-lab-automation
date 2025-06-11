@@ -29,4 +29,4 @@ function Invoke-LabStep {
     }
 }
 
-Export-ModuleMember -Function Invoke-LabStep, Write-CustomLog, Get-Platform, Invoke-LabWebRequest, Invoke-LabNpm
+Export-ModuleMember -Function Invoke-LabStep, Write-CustomLog, Get-Platform, Invoke-LabWebRequest, Invoke-WebRequest, Invoke-LabNpm
