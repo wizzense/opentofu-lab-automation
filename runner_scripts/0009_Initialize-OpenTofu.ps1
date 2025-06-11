@@ -1,6 +1,7 @@
 Param([pscustomobject]$Config)
 $scriptRoot = $PSScriptRoot
 Import-Module "$scriptRoot/../runner_utility_scripts/LabRunner.psd1"
+. "$scriptRoot/0008_Install-OpenTofu.ps1"
 Invoke-LabStep -Config $Config -Body {
     Write-CustomLog 'Running 0009_Initialize-OpenTofu.ps1'
 <#
@@ -155,7 +156,6 @@ if (-not $tofuCmd) {
         }
     } else {
         Write-Warning "Tofu executable not found at $defaultTofuExe. Attempting installation..."
-        . "$scriptRoot/0008_Install-OpenTofu.ps1"
         $cosign   = Join-Path $Config.CosignPath 'cosign-windows-amd64.exe'
         $version  = if ($Config.OpenTofuVersion) { $Config.OpenTofuVersion } else { 'latest' }
         Invoke-OpenTofuInstaller -CosignPath $cosign -OpenTofuVersion $version
