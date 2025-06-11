@@ -50,6 +50,7 @@ Invoke-LabStep -Config $Config -Body {
             Pop-Location
         }
     }
+    Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
 }
 
 Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"

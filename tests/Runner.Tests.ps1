@@ -490,6 +490,8 @@ Write-CustomLog 'hello world'
         Pop-Location
 
         ($script:messages | Where-Object { $_ -match 'hello world' }).Count | Should -Be 1
+        ($script:messages | Where-Object { $_ -like 'Starting *' }).Count | Should -Be 1
+        ($script:messages | Where-Object { $_ -like 'Completed *' }).Count | Should -Be 1
 
         Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue
     }
