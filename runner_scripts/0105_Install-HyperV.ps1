@@ -1,5 +1,5 @@
 Param([pscustomobject]$Config)
-. "$PSScriptRoot/../runner_utility_scripts/ScriptTemplate.ps1"
+Import-Module "$PSScriptRoot/../runner_utility_scripts/LabRunner.psd1"
 Invoke-LabStep -Config $Config -Body {
     Write-CustomLog 'Running 0105_Install-HyperV.ps1'
 

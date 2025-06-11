@@ -1,5 +1,5 @@
 Param([pscustomobject]$Config)
-. "$PSScriptRoot/../runner_utility_scripts/ScriptTemplate.ps1"
+Import-Module "$PSScriptRoot/../runner_utility_scripts/LabRunner.psd1"
 function Install-CA {
     [CmdletBinding(SupportsShouldProcess = $true)]
     param([pscustomobject]$Config)
