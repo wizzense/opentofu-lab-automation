@@ -23,6 +23,8 @@
   "InstallHyperV": true,
   "InstallWAC": true,
   "InstallGo": true,
+  "InstallPoetry": true,
+  "PoetryVersion": "latest",
   "InstallOpenTofu": true,
   "OpenTofuVersion": "latest",
   "InitializeOpenTofu": true,
