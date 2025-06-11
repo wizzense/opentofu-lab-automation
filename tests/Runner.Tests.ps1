@@ -29,7 +29,11 @@ Describe 'runner.ps1 configuration' {
 
 Describe 'runner.ps1 script selection'  {
     AfterEach {
-        Remove-RunnerTestEnv
+        try {
+            Remove-RunnerTestEnv
+        } catch {
+            Write-Warning "Failed to clean up test environment: $_"
+        }
         Remove-Item Function:Write-Host -ErrorAction SilentlyContinue
         Remove-Item Function:Read-LoggedInput -ErrorAction SilentlyContinue
         Remove-Item Function:Write-Warning -ErrorAction SilentlyContinue
