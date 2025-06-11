@@ -28,6 +28,52 @@ Describe 'runner.ps1 configuration' {
 }
 
 Describe 'runner.ps1 script selection'  {
+    BeforeAll {
+        # Use script-scoped variable so PSScriptAnalyzer recognizes cross-block usage
+        $script:runnerPath = Join-Path $PSScriptRoot '..' 'runner.ps1'
+        . (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
+
+        function New-RunnerTestEnv {
+            $root = Join-Path $TestDrive ([guid]::NewGuid())
+            New-Item -ItemType Directory -Path $root | Out-Null
+            Copy-Item $script:runnerPath -Destination $root
+
+            $rsDir = Join-Path $root 'runner_scripts'
+            New-Item -ItemType Directory -Path $rsDir | Out-Null
+
+            $labs = Join-Path $root 'lab_utils'
+            New-Item -ItemType Directory -Path $labs -Force | Out-Null
+
+            $utils = Join-Path $labs 'LabRunner'
+            New-Item -ItemType Directory -Path $utils -Force | Out-Null
+            'function Write-CustomLog { param([string]$Message,[string]$Level) }' |
+                Set-Content -Path (Join-Path $utils 'Logger.ps1')
+
+            $labs = Join-Path $root 'lab_utils'
+            New-Item -ItemType Directory -Path $labs -Force | Out-Null
+            'function Get-LabConfig { param([string]$Path) Get-Content -Raw $Path | ConvertFrom-Json }' |
+                Set-Content -Path (Join-Path $labs 'Get-LabConfig.ps1')
+            'function Format-Config { param($Config) $Config | ConvertTo-Json -Depth 5 }' |
+                Set-Content -Path (Join-Path $labs 'Format-Config.ps1')
+            'function Get-Platform {
+                if ($IsWindows) { return "Windows" }
+                elseif ($IsLinux) { return "Linux" }
+                elseif ($IsMacOS) { return "MacOS" }
+                else { return "Unknown" }
+            }' |
+                Set-Content -Path (Join-Path $labs 'Get-Platform.ps1')
+            'function Get-MenuSelection { }' |
+                Set-Content -Path (Join-Path $labs 'Menu.ps1')
+
+            $cfgDir = Join-Path $root 'config_files'
+            New-Item -ItemType Directory -Path $cfgDir | Out-Null
+            '{}' | Set-Content -Path (Join-Path $cfgDir 'default-config.json')
+            '{}' | Set-Content -Path (Join-Path $cfgDir 'recommended-config.json')
+
+            return $root
+        }
+    }
+    
     AfterEach {
         try {
             Remove-RunnerTestEnv

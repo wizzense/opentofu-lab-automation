@@ -1,11 +1,11 @@
 . (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
 . (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
-$helperPath = Join-Path $PSScriptRoot 'helpers' 'Get-ScriptAst.ps1'
-if (-not (Test-Path $helperPath)) {
-    throw "Required helper script is missing: $helperPath"
-}
 Describe 'Cleanup-Files script' {
     BeforeAll {
+        $helperPath = Join-Path $PSScriptRoot 'helpers' 'Get-ScriptAst.ps1'
+        if (-not (Test-Path $helperPath)) {
+            throw "Required helper script is missing: $helperPath"
+        }
         . $helperPath
         $script:scriptPath = Get-RunnerScriptPath '0000_Cleanup-Files.ps1'
         $script:ast = Get-ScriptAst $script:scriptPath

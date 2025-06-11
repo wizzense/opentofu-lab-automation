@@ -53,6 +53,9 @@ param(
 )
 
 # Ensure target paths exist for extraction and mounting
+if (Test-Path $MountPath) {
+    Remove-Item -Recurse -Force $MountPath
+}
 if (-not (Test-Path $ExtractPath)) {
     New-Item -Path $ExtractPath -ItemType Directory | Out-Null
 }
@@ -62,10 +65,6 @@ if (-not (Test-Path $MountPath)) {
 
 # Derived path to the WIM file inside the extracted ISO
 $WIMFile = Join-Path $ExtractPath "sources\install.wim"
-
-if (Test-Path $MountPath) {
-    Remove-Item -Recurse -Force $MountPath
-}
 
 # Ensure running as Administrator
 if (-not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) {
