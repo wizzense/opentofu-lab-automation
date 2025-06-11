@@ -1,7 +1,7 @@
 [CmdletBinding()]
 param(
     [string]$Target = '.',
-    [string]$SettingsPath = (Join-Path $PSScriptRoot '..' '.scriptanalyzersettings.psd1')
+    [string]$SettingsPath = (Join-Path $PSScriptRoot '..' 'PSScriptAnalyzerSettings.psd1')
 )
 
 $ErrorActionPreference = 'Stop'

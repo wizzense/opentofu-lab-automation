@@ -28,7 +28,7 @@ function Install-Cosign {
             try {
                 if ($PSCmdlet.ShouldProcess($destination, 'Download cosign')) {
                     # Download the cosign executable
-                    LabSetup\Invoke-WebRequest -Uri $Config.CosignURL -OutFile $destination -UseBasicParsing
+                    Invoke-LabWebRequest -Uri $Config.CosignURL -OutFile $destination -UseBasicParsing
                     Write-CustomLog "Cosign downloaded and installed at $destination"
                 }
             }
@@ -40,6 +40,7 @@ function Install-Cosign {
 
         # Add the installation folder to the user's PATH if not already present
         $userPath = [Environment]::GetEnvironmentVariable("PATH", "User")
+        if (-not $userPath) { $userPath = '' }
         if (-not $userPath.Contains($installDir)) {
             if ($PSCmdlet.ShouldProcess('User PATH', 'Update environment variable')) {
                 [Environment]::SetEnvironmentVariable("PATH", "$userPath;$installDir", "User")
