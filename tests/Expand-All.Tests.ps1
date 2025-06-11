@@ -1,15 +1,11 @@
 . (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
 . (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
+Import-Module (Join-Path $PSScriptRoot '..' 'pwsh' 'lab_utils' 'Expand-All.psm1') -Force
+InModuleScope Expand-All {
 Describe 'Expand-All' {
-    BeforeAll {
-        $modulePath = Join-Path $PSScriptRoot '..' 'pwsh' 'lab_utils' 'Expand-All.psm1'
-        if (-not (Test-Path $modulePath)) {
-            throw "Required module is missing: $modulePath"
-        }
-        Import-Module $modulePath -Force
-    }
     BeforeEach {
         Mock-WriteLog
+        Mock Write-CustomLog {} -ModuleName Expand-All
     }
     AfterEach {
         Remove-Item Function:Write-CustomLog -ErrorAction SilentlyContinue
@@ -22,12 +18,13 @@ Describe 'Expand-All' {
         $zipPath = Join-Path $temp 'archive.zip'
         New-Item -ItemType File -Path $zipPath | Out-Null
 
-        Mock Expand-Archive {}
+        Mock Expand-Archive {} -ModuleName Expand-All
+        function global:Read-LoggedInput { 'y' }
         Mock Read-LoggedInput { 'y' } -ModuleName Expand-All
 
         Expand-All -ZipFile $zipPath
 
-        Should -Invoke -CommandName Expand-Archive -Times 1 -ParameterFilter {
+        Should -Invoke -CommandName Expand-Archive -ModuleName Expand-All -Times 1 -ParameterFilter {
             $Path -eq $zipPath -and
             $DestinationPath -eq (Join-Path $temp 'archive')
         }
@@ -40,7 +37,8 @@ Describe 'Expand-All' {
         $subDir = Join-Path $temp 'sub'
         $zip2 = Join-Path $subDir 'b.zip'
 
-        Mock Expand-Archive {}
+        Mock Expand-Archive {} -ModuleName Expand-All
+        function global:Read-LoggedInput { 'y' }
         Mock Read-LoggedInput { 'y' } -ModuleName Expand-All
         Mock Get-ChildItem {
             @(
@@ -58,21 +56,22 @@ Describe 'Expand-All' {
             Pop-Location
         }
 
-        Should -Invoke -CommandName Expand-Archive -Times 1 -ParameterFilter { $Path -eq $zip1 -and $DestinationPath -eq (Join-Path $temp 'a') }
-        Should -Invoke -CommandName Expand-Archive -Times 1 -ParameterFilter { $Path -eq $zip2 -and $DestinationPath -eq (Join-Path $subDir 'b') }
+        Should -Invoke -CommandName Expand-Archive -ModuleName Expand-All -Times 1 -ParameterFilter { $Path -eq $zip1 -and $DestinationPath -eq (Join-Path $temp 'a') }
+        Should -Invoke -CommandName Expand-Archive -ModuleName Expand-All -Times 1 -ParameterFilter { $Path -eq $zip2 -and $DestinationPath -eq (Join-Path $subDir 'b') }
         Should -Invoke -CommandName Get-ChildItem -Times 1
     }
 
     It 'logs message when specified ZIP file does not exist' {
         $zipPath = Join-Path $TestDrive 'missing.zip'
 
-        Mock Expand-Archive {}
+        Mock Expand-Archive {} -ModuleName Expand-All
+        function global:Read-LoggedInput { }
         Mock Read-LoggedInput {} -ModuleName Expand-All
 
         Expand-All -ZipFile $zipPath
 
-        Should -Invoke -CommandName Expand-Archive -Times 0
-        Should -Invoke -CommandName Write-CustomLog -Times 1 -ParameterFilter {
+        Should -Invoke -CommandName Expand-Archive -ModuleName Expand-All -Times 0
+        Should -Invoke -CommandName Write-CustomLog -ModuleName Expand-All -Times 1 -ParameterFilter {
             $Message -Like '*does not exist*'
         }
     }
@@ -83,15 +82,17 @@ Describe 'Expand-All' {
         $zipPath = Join-Path $temp 'archive.zip'
         New-Item -ItemType File -Path $zipPath | Out-Null
 
-        Mock Expand-Archive {}
+        Mock Expand-Archive {} -ModuleName Expand-All
+        function global:Read-LoggedInput { 'n' }
         Mock Read-LoggedInput { 'n' } -ModuleName Expand-All
 
         Expand-All -ZipFile $zipPath
 
-        Should -Invoke -CommandName Expand-Archive -Times 0
-        Should -Invoke -CommandName Write-CustomLog -Times 1 -ParameterFilter {
+        Should -Invoke -CommandName Expand-Archive -ModuleName Expand-All -Times 0
+        Should -Invoke -CommandName Write-CustomLog -ModuleName Expand-All -Times 1 -ParameterFilter {
             $Message -eq 'Operation canceled.'
         }
     }
+}
 }
 
