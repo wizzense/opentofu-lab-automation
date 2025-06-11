@@ -11,7 +11,7 @@ if (-not (Get-Command Get-MenuSelection -ErrorAction SilentlyContinue)) {
 
 Describe 'runner.ps1 syntax' {
     It 'parses without errors' {
-        $path = Join-Path $PSScriptRoot '..' 'runner.ps1'
+        $path = Join-Path $PSScriptRoot '..' 'pwsh' 'runner.ps1'
         $errs = $null
         [System.Management.Automation.Language.Parser]::ParseFile($path, [ref]$null, [ref]$errs) | Out-Null
         ($errs ? $errs.Count : 0) | Should -Be 0
@@ -20,9 +20,9 @@ Describe 'runner.ps1 syntax' {
 
 Describe 'runner.ps1 configuration' {
     It 'loads default configuration without errors' {
-        $modulePath = Join-Path $PSScriptRoot '..' 'lab_utils' 'Get-LabConfig.ps1'
+        $modulePath = Join-Path $PSScriptRoot '..' 'pwsh' 'lab_utils' 'Get-LabConfig.ps1'
         . $modulePath
-        $configPath = Join-Path $PSScriptRoot '..' 'config_files' 'default-config.json'
+        $configPath = Join-Path $PSScriptRoot '..' 'configs' 'config_files' 'default-config.json'
         { Get-LabConfig -Path $configPath } | Should -Not -Throw
     }
 }
@@ -30,18 +30,20 @@ Describe 'runner.ps1 configuration' {
 Describe 'runner.ps1 script selection'  {
     BeforeAll {
         # Use script-scoped variable so PSScriptAnalyzer recognizes cross-block usage
-        $script:runnerPath = Join-Path $PSScriptRoot '..' 'runner.ps1'
+        $script:runnerPath = Join-Path $PSScriptRoot '..' 'pwsh' 'runner.ps1'
         . (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
 
         function New-RunnerTestEnv {
             $root = Join-Path $TestDrive ([guid]::NewGuid())
             New-Item -ItemType Directory -Path $root | Out-Null
-            Copy-Item $script:runnerPath -Destination $root
+            $pwshDir = Join-Path $root 'pwsh'
+            New-Item -ItemType Directory -Path $pwshDir | Out-Null
+            Copy-Item $script:runnerPath -Destination $pwshDir
 
-            $rsDir = Join-Path $root 'runner_scripts'
+            $rsDir = Join-Path $pwshDir 'runner_scripts'
             New-Item -ItemType Directory -Path $rsDir | Out-Null
 
-            $labs = Join-Path $root 'lab_utils'
+            $labs = Join-Path $pwshDir 'lab_utils'
             New-Item -ItemType Directory -Path $labs -Force | Out-Null
 
             $utils = Join-Path $labs 'LabRunner'
@@ -65,7 +67,7 @@ Describe 'runner.ps1 script selection'  {
             'function Get-MenuSelection { }' |
                 Set-Content -Path (Join-Path $labs 'Menu.ps1')
 
-            $cfgDir = Join-Path $root 'config_files'
+            $cfgDir = Join-Path $root 'configs' 'config_files'
             New-Item -ItemType Directory -Path $cfgDir | Out-Null
             '{}' | Set-Content -Path (Join-Path $cfgDir 'default-config.json')
             '{}' | Set-Content -Path (Join-Path $cfgDir 'recommended-config.json')
@@ -88,7 +90,7 @@ Describe 'runner.ps1 script selection'  {
 
     It 'runs non-interactively when -Scripts is supplied' {
         $tempDir   = New-RunnerTestEnv
-        $scriptsDir = Join-Path $tempDir 'runner_scripts'
+        $scriptsDir = Join-Path $tempDir 'pwsh' 'runner_scripts'
         $dummy      = Join-Path $scriptsDir '0001_Test.ps1'
         "Param([PSCustomObject]`$Config)
 exit 0" | Set-Content -Path $dummy
@@ -96,7 +98,7 @@ exit 0" | Set-Content -Path $dummy
         Push-Location $tempDir
         Mock Get-MenuSelection {}
         Mock Read-LoggedInput { throw 'Read-LoggedInput should not be called' }
-        & "$tempDir/runner.ps1" -Scripts '0001' -Auto | Out-Null
+        & "$tempDir/pwsh/runner.ps1" -Scripts '0001' -Auto | Out-Null
         Pop-Location
 
         Should -Invoke -CommandName Get-MenuSelection -Times 0
@@ -105,7 +107,7 @@ exit 0" | Set-Content -Path $dummy
 
     It 'uses pwsh from PSHOME when not in PATH' {
         $tempDir   = New-RunnerTestEnv
-        $scriptsDir = Join-Path $tempDir 'runner_scripts'
+        $scriptsDir = Join-Path $tempDir 'pwsh' 'runner_scripts'
         $dummy      = Join-Path $scriptsDir '0001_Test.ps1'
         "Param([PSCustomObject]`$Config)
 exit 0" | Set-Content -Path $dummy
@@ -115,7 +117,7 @@ exit 0" | Set-Content -Path $dummy
         try {
             Push-Location $tempDir
             Mock Read-LoggedInput { throw 'Read-LoggedInput should not be called' }
-            & "$tempDir/runner.ps1" -Scripts '0001' -Auto | Out-Null
+            & "$tempDir/pwsh/runner.ps1" -Scripts '0001' -Auto | Out-Null
             $code = $LASTEXITCODE
             Pop-Location
         } finally {
@@ -128,7 +130,7 @@ exit 0" | Set-Content -Path $dummy
 
     It 'relaunches under pwsh when invoked from PowerShell 5' {
         $tempDir   = New-RunnerTestEnv
-        $scriptsDir = Join-Path $tempDir 'runner_scripts'
+        $scriptsDir = Join-Path $tempDir 'pwsh' 'runner_scripts'
         $dummy      = Join-Path $scriptsDir '0001_Test.ps1'
         "Param([PSCustomObject]`$Config)
 exit 0" | Set-Content -Path $dummy
@@ -150,7 +152,7 @@ echo stub > \"$outFile\"
         try {
             Push-Location $tempDir
             $PSVersionTable.PSVersion = [version]'5.1'
-            & "$tempDir/runner.ps1" -Scripts '0001' -Auto | Out-Null
+            & "$tempDir/pwsh/runner.ps1" -Scripts '0001' -Auto | Out-Null
             $PSVersionTable.PSVersion = $origVer
             Pop-Location
         } finally {
@@ -164,7 +166,7 @@ echo stub > \"$outFile\"
         $tempDir   = New-RunnerTestEnv
         Push-Location $tempDir
         Mock-WriteLog
-        & "$tempDir/runner.ps1" -Scripts '9999' -Auto | Out-Null
+        & "$tempDir/pwsh/runner.ps1" -Scripts '9999' -Auto | Out-Null
         $code = $LASTEXITCODE
         Pop-Location
 
@@ -173,7 +175,7 @@ echo stub > \"$outFile\"
     }
     It 'continues executing all scripts even if one fails' {
         $tempDir   = New-RunnerTestEnv
-        $scriptsDir = Join-Path $tempDir 'runner_scripts'
+        $scriptsDir = Join-Path $tempDir 'pwsh' 'runner_scripts'
         $out1       = Join-Path $tempDir 'out1.txt'
         $out2       = Join-Path $tempDir 'out2.txt'
         $failContent = @"
@@ -191,7 +193,7 @@ exit 0
 
         Push-Location $tempDir
         Mock Read-LoggedInput { throw 'Read-LoggedInput should not be called' }
-        & "$tempDir/runner.ps1" -Scripts '0001,0002' -Auto | Out-Null
+        & "$tempDir/pwsh/runner.ps1" -Scripts '0001,0002' -Auto | Out-Null
         $code = $LASTEXITCODE
         Pop-Location
 
@@ -202,7 +204,7 @@ exit 0
     }
     It 'continues executing all scripts when one throws' {
         $tempDir   = New-RunnerTestEnv
-        $scriptsDir = Join-Path $tempDir 'runner_scripts'
+        $scriptsDir = Join-Path $tempDir 'pwsh' 'runner_scripts'
         $out1       = Join-Path $tempDir 'out1_throw.txt'
         $out2       = Join-Path $tempDir 'out2_throw.txt'
         $throwContent = @"
@@ -220,7 +222,7 @@ exit 0
 
         Push-Location $tempDir
         Mock Read-LoggedInput { throw 'Read-LoggedInput should not be called' }
-        & "$tempDir/runner.ps1" -Scripts '0001,0002' -Auto | Out-Null
+        & "$tempDir/pwsh/runner.ps1" -Scripts '0001,0002' -Auto | Out-Null
         $code = $LASTEXITCODE
         Pop-Location
 
@@ -231,7 +233,7 @@ exit 0
     }
     It 'runs only cleanup script when 0000 is combined with others in Auto mode' {
         $tempDir   = New-RunnerTestEnv
-        $scriptsDir = Join-Path $tempDir 'runner_scripts'
+        $scriptsDir = Join-Path $tempDir 'pwsh' 'runner_scripts'
         $out1       = Join-Path $tempDir 'out_cleanup.txt'
         $out2       = Join-Path $tempDir 'out_other.txt'
         $cleanupContent = @"
@@ -249,7 +251,7 @@ exit 0
 
         Push-Location $tempDir
         Mock Read-LoggedInput { throw 'Read-LoggedInput should not be called' }
-        & "$tempDir/runner.ps1" -Scripts '0000,0001' -Auto | Out-Null
+        & "$tempDir/pwsh/runner.ps1" -Scripts '0000,0001' -Auto | Out-Null
         $code = $LASTEXITCODE
         Pop-Location
 
@@ -260,10 +262,10 @@ exit 0
     }
     It 'forces script execution when flag disabled using -Force' {
         $tempDir   = New-RunnerTestEnv
-        $configDir = Join-Path $tempDir 'config_files'
+        $configDir = Join-Path $tempDir 'configs' 'config_files'
         $configFile = Join-Path $configDir 'config.json'
         '{ "RunFoo": false }' | Set-Content -Path $configFile
-        $scriptsDir = Join-Path $tempDir 'runner_scripts'
+        $scriptsDir = Join-Path $tempDir 'pwsh' 'runner_scripts'
         $out = Join-Path $tempDir 'out.txt'
         @"
 Param([PSCustomObject]`$Config)
@@ -273,10 +275,10 @@ if (`$Config.RunFoo -eq `$true) { 'foo' | Out-File -FilePath "$out" } else { Wri
 
         Push-Location $tempDir
         Mock Read-LoggedInput { throw 'Read-LoggedInput should not be called' }
-        & "$tempDir/runner.ps1" -Scripts '0001' -Auto -ConfigFile $configFile -Force | Out-Null
+        & "$tempDir/pwsh/runner.ps1" -Scripts '0001' -Auto -ConfigFile $configFile -Force | Out-Null
         $updated1 = Get-Content -Raw $configFile | ConvertFrom-Json
 
-        & "$tempDir/runner.ps1" -Scripts '0001' -Auto -ConfigFile $configFile | Out-Null
+        & "$tempDir/pwsh/runner.ps1" -Scripts '0001' -Auto -ConfigFile $configFile | Out-Null
         $updated2 = Get-Content -Raw $configFile | ConvertFrom-Json
         Pop-Location
 
@@ -287,10 +289,10 @@ if (`$Config.RunFoo -eq `$true) { 'foo' | Out-File -FilePath "$out" } else { Wri
     }
     It 'skips script action when flag disabled and -Force not used' {
         $tempDir   = New-RunnerTestEnv
-        $configDir = Join-Path $tempDir 'config_files'
+        $configDir = Join-Path $tempDir 'configs' 'config_files'
         $configFile = Join-Path $configDir 'config.json'
         '{ "RunFoo": false }' | Set-Content -Path $configFile
-        $scriptsDir = Join-Path $tempDir 'runner_scripts'
+        $scriptsDir = Join-Path $tempDir 'pwsh' 'runner_scripts'
         $out = Join-Path $tempDir 'out.txt'
         @"
 Param([PSCustomObject]`$Config)
@@ -300,10 +302,10 @@ if (`$Config.RunFoo -eq `$true) { 'foo' | Out-File -FilePath "$out" }
 
         Push-Location $tempDir
         Mock Read-LoggedInput { throw 'Read-LoggedInput should not be called' }
-        & "$tempDir/runner.ps1" -Scripts '0001' -Auto -ConfigFile $configFile | Out-Null
+        & "$tempDir/pwsh/runner.ps1" -Scripts '0001' -Auto -ConfigFile $configFile | Out-Null
         $updated1 = Get-Content -Raw $configFile | ConvertFrom-Json
 
-        & "$tempDir/runner.ps1" -Scripts '0001' -Auto -ConfigFile $configFile | Out-Null
+        & "$tempDir/pwsh/runner.ps1" -Scripts '0001' -Auto -ConfigFile $configFile | Out-Null
         $updated2 = Get-Content -Raw $configFile | ConvertFrom-Json
         Pop-Location
 
@@ -314,7 +316,7 @@ if (`$Config.RunFoo -eq `$true) { 'foo' | Out-File -FilePath "$out" }
     }
     It 'reports success when script omits an exit statement' {
         $tempDir   = New-RunnerTestEnv
-        $scriptsDir = Join-Path $tempDir 'runner_scripts'
+        $scriptsDir = Join-Path $tempDir 'pwsh' 'runner_scripts'
         $out        = Join-Path $tempDir 'out.txt'
         @"
 Param([PSCustomObject]`$Config)
@@ -324,7 +326,7 @@ Param([PSCustomObject]`$Config)
 
         Push-Location $tempDir
         Mock Read-LoggedInput { throw 'Read-LoggedInput should not be called' }
-        & "$tempDir/runner.ps1" -Scripts '0001' -Auto | Out-Null
+        & "$tempDir/pwsh/runner.ps1" -Scripts '0001' -Auto | Out-Null
         $code = $LASTEXITCODE
         Pop-Location
 
@@ -334,7 +336,7 @@ Param([PSCustomObject]`$Config)
     }
     It 'suppresses informational logs when -Verbosity silent is used' {
         $tempDir   = New-RunnerTestEnv
-        $scriptsDir = Join-Path $tempDir 'runner_scripts'
+        $scriptsDir = Join-Path $tempDir 'pwsh' 'runner_scripts'
         $logContent = @"
 Param([PSCustomObject]`$Config)
 Write-Warning 'warn message'
@@ -352,7 +354,7 @@ Write-Error 'err message'
         }
         function global:Write-Warning { param([string]$Message) $script:warnings += $Message }
         function global:Write-Error   { param([string]$Message) $script:errors   += $Message }
-        $output = & "$tempDir/runner.ps1" -Scripts '0001' -Auto -Verbosity 'silent' *>&1
+        $output = & "$tempDir/pwsh/runner.ps1" -Scripts '0001' -Auto -Verbosity 'silent' *>&1
         Pop-Location
 
         ($script:logLines | Measure-Object).Count | Should -Be 0
@@ -363,7 +365,7 @@ Write-Error 'err message'
     }
     It 'suppresses informational logs when -Quiet is used' {
         $tempDir   = New-RunnerTestEnv
-        $scriptsDir = Join-Path $tempDir 'runner_scripts'
+        $scriptsDir = Join-Path $tempDir 'pwsh' 'runner_scripts'
         $logContent = @"
 Param([PSCustomObject]`$Config)
 Write-Warning 'warn message'
@@ -378,7 +380,7 @@ Write-Error 'err message'
         function global:Write-Host { param([object]$Object,[string]$ForegroundColor) process { $script:logLines += "$Object" } }
         function global:Write-Warning { param([string]$Message) $script:warnings += $Message }
         function global:Write-Error   { param([string]$Message) $script:errors   += $Message }
-        $output = & "$tempDir/runner.ps1" -Scripts '0001' -Auto -Quiet *>&1
+        $output = & "$tempDir/pwsh/runner.ps1" -Scripts '0001' -Auto -Quiet *>&1
         Pop-Location
 
         ($script:logLines | Measure-Object).Count | Should -Be 0
@@ -389,7 +391,7 @@ Write-Error 'err message'
     }
     It 'suppresses informational logs when -Verbosity silent is used' {
         $tempDir   = New-RunnerTestEnv
-        $scriptsDir = Join-Path $tempDir 'runner_scripts'
+        $scriptsDir = Join-Path $tempDir 'pwsh' 'runner_scripts'
         $logContent = @"
 Param([PSCustomObject]`$Config)
 Write-Warning 'warn message'
@@ -404,7 +406,7 @@ Write-Error 'err message'
         function global:Write-Host { param([object]$Object,[string]$ForegroundColor) process { $script:logLines += "$Object" } }
         function global:Write-Warning { param([string]$Message) $script:warnings += $Message }
         function global:Write-Error   { param([string]$Message) $script:errors   += $Message }
-        $output = & "$tempDir/runner.ps1" -Scripts '0001' -Auto -Quiet *>&1
+        $output = & "$tempDir/pwsh/runner.ps1" -Scripts '0001' -Auto -Quiet *>&1
         Pop-Location
 
         ($script:logLines | Measure-Object).Count | Should -Be 0
@@ -415,7 +417,7 @@ Write-Error 'err message'
     }
     It 'prompts twice when -Auto is used without -Scripts'  {
         $tempDir   = New-RunnerTestEnv
-        $scriptsDir = Join-Path $tempDir 'runner_scripts'
+        $scriptsDir = Join-Path $tempDir 'pwsh' 'runner_scripts'
         "Param([PSCustomObject]`$Config)
 exit 0" | Set-Content -Path (Join-Path $scriptsDir '0001_Test.ps1')
 
@@ -426,7 +428,7 @@ exit 0" | Set-Content -Path (Join-Path $scriptsDir '0001_Test.ps1')
         }
 
         Push-Location $tempDir
-        & "$tempDir/runner.ps1" -Auto | Out-Null
+        & "$tempDir/pwsh/runner.ps1" -Auto | Out-Null
         Pop-Location
 
         Should -Invoke -CommandName Get-MenuSelection -Times 2
@@ -434,7 +436,7 @@ exit 0" | Set-Content -Path (Join-Path $scriptsDir '0001_Test.ps1')
     }
     It 'handles empty or invalid selection by logging and doing nothing'  {
         $tempDir   = New-RunnerTestEnv
-        $scriptsDir = Join-Path $tempDir 'runner_scripts'
+        $scriptsDir = Join-Path $tempDir 'pwsh' 'runner_scripts'
         $out        = Join-Path $tempDir 'out.txt'
         $testContent = @"
 Param([PSCustomObject]`$Config)
@@ -447,7 +449,7 @@ exit 0
         Mock-WriteLog
 
         Push-Location $tempDir
-        & "$tempDir/runner.ps1" -Auto | Out-Null
+        & "$tempDir/pwsh/runner.ps1" -Auto | Out-Null
         Pop-Location
 
         Test-Path $out | Should -BeFalse
@@ -457,7 +459,7 @@ exit 0
     }
     It 'logs script output exactly once' {
         $tempDir   = New-RunnerTestEnv
-        $scriptsDir = Join-Path $tempDir 'runner_scripts'
+        $scriptsDir = Join-Path $tempDir 'pwsh' 'runner_scripts'
         $echoContent = @"
 Param([PSCustomObject]`$Config)
 Write-CustomLog 'hello world'
@@ -468,7 +470,7 @@ Write-CustomLog 'hello world'
         $script:messages = @()
         Mock-WriteLog
         Set-Item -Path Function:Write-CustomLog -Value { param($Message,$Level) $script:messages += $Message }
-        & "$tempDir/runner.ps1" -Scripts '0001' -Auto | Out-Null
+        & "$tempDir/pwsh/runner.ps1" -Scripts '0001' -Auto | Out-Null
         Pop-Location
 
         ($script:messages | Where-Object { $_ -match 'hello world' }).Count | Should -Be 1
@@ -478,11 +480,11 @@ Write-CustomLog 'hello world'
     }
     It 'pipes Get-SystemInfo output to the caller' {
         $tempDir   = New-RunnerTestEnv
-        $scriptsDir = Join-Path $tempDir 'runner_scripts'
-        Copy-Item (Join-Path $PSScriptRoot '..' 'runner_scripts' '0200_Get-SystemInfo.ps1') -Destination $scriptsDir
-        Copy-Item (Join-Path $PSScriptRoot '..' 'lab_utils' 'LabRunner') -Destination (Join-Path $tempDir 'lab_utils' 'LabRunner') -Recurse
-        Copy-Item (Join-Path $PSScriptRoot '..' 'lab_utils') -Destination $tempDir -Recurse
-        Copy-Item (Join-Path $PSScriptRoot '..' 'config_files') -Destination (Join-Path $tempDir 'config_files') -Recurse
+        $scriptsDir = Join-Path $tempDir 'pwsh' 'runner_scripts'
+        Copy-Item (Join-Path $PSScriptRoot '..' 'pwsh' 'runner_scripts' '0200_Get-SystemInfo.ps1') -Destination $scriptsDir
+        Copy-Item (Join-Path $PSScriptRoot '..' 'pwsh' 'lab_utils' 'LabRunner') -Destination (Join-Path $tempDir 'lab_utils' 'LabRunner') -Recurse
+        Copy-Item (Join-Path $PSScriptRoot '..' 'pwsh' 'lab_utils') -Destination $tempDir -Recurse
+        Copy-Item (Join-Path $PSScriptRoot '..' 'configs' 'config_files') -Destination (Join-Path $tempDir 'configs' 'config_files') -Recurse
 
         Push-Location $tempDir
         $pwsh = (Get-Command pwsh).Source
@@ -494,9 +496,11 @@ Write-CustomLog 'hello world'
 
     }
 
+}
+
 Describe 'Set-LabConfig' {
     BeforeAll {
-        . (Join-Path $PSScriptRoot '..' 'lab_utils' 'Menu.ps1')
+        . (Join-Path $PSScriptRoot '..' 'pwsh' 'lab_utils' 'Menu.ps1')
         function Set-LabConfig {
             [CmdletBinding(SupportsShouldProcess)]
             param([hashtable]$ConfigObject)

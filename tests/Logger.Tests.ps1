@@ -2,7 +2,7 @@
 . (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
 Describe 'Write-CustomLog' {
     BeforeAll {
-        . (Join-Path $PSScriptRoot '..' 'lab_utils' 'LabRunner' 'Logger.ps1')
+        . (Join-Path $PSScriptRoot '..' 'pwsh' 'lab_utils' 'LabRunner' 'Logger.ps1')
     }
     It 'works when LogFilePath variable is not defined' {
         Remove-Variable -Name LogFilePath -Scope Script -ErrorAction SilentlyContinue
@@ -47,7 +47,7 @@ Describe 'Write-CustomLog' {
 
 Describe 'Read-LoggedInput' {
     BeforeAll {
-        . (Join-Path $PSScriptRoot '..' 'lab_utils' 'LabRunner' 'Logger.ps1')
+        . (Join-Path $PSScriptRoot '..' 'pwsh' 'lab_utils' 'LabRunner' 'Logger.ps1')
     }
     AfterEach {
         Remove-Item Function:Read-Host -ErrorAction SilentlyContinue

@@ -5,7 +5,7 @@ This folder houses the Python CLI used for cross-platform tasks.
 ## Installing dependencies
 
 Install [Poetry](https://python-poetry.org/) or execute
-`runner_scripts/0204_Install-Poetry.ps1` to bootstrap it automatically, then run:
+`pwsh/runner_scripts/0204_Install-Poetry.ps1` to bootstrap it automatically, then run:
 
 ```bash
 cd py
@@ -17,7 +17,7 @@ Poetry creates a virtual environment with `labctl` and the test tools.
 ## Running the CLI
 
 Invoke the helper commands through Poetry. The CLI loads
-`config_files/default-config.json` automatically:
+`configs/config_files/default-config.json` automatically:
 
 ```bash
 poetry run labctl hv facts

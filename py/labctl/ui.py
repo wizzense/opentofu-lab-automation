@@ -59,10 +59,10 @@ class LabUI(App):
 def run_ui() -> None:
     """Launch the Textual UI."""
     repo_root = Path(__file__).resolve().parents[2]
-    script_dir = repo_root / "runner_scripts"
+    script_dir = repo_root / "pwsh" / "runner_scripts"
     scripts = sorted(p.name for p in script_dir.glob("????_*.ps1"))
     log_dir = Path(os.environ.get("LAB_LOG_DIR", Path.cwd()))
     log_path = log_dir / "lab.log"
-    default_cfg = repo_root / "config_files" / "default-config.json"
-    recommended_cfg = repo_root / "config_files" / "recommended-config.json"
+    default_cfg = repo_root / "configs" / "config_files" / "default-config.json"
+    recommended_cfg = repo_root / "configs" / "config_files" / "recommended-config.json"
     LabUI(scripts, log_path, default_cfg, recommended_cfg).run()

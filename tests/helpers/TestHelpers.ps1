@@ -5,13 +5,13 @@
 #     AfterEach { Remove-Item Function:npm -ErrorAction SilentlyContinue }
 
 $SkipNonWindows = $IsLinux -or $IsMacOS
+. (Join-Path $PSScriptRoot '..' '..' 'pwsh' 'lab_utils' 'Resolve-ProjectPath.ps1')
 
 function global:Get-RunnerScriptPath {
     param(
         [Parameter(Mandatory=$true)][string]$Name
     )
-    $root = if ($PSScriptRoot) { $PSScriptRoot } else { Split-Path -Parent $MyInvocation.MyCommand.Path }
-    (Resolve-Path -ErrorAction Stop (Join-Path $root '..' '..' 'runner_scripts' $Name)).Path
+    Resolve-ProjectPath -Name $Name -Root (Join-Path $PSScriptRoot '..')
 }
 
 function global:Mock-WriteLog {

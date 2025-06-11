@@ -1,6 +1,6 @@
 . (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
 . (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
-Import-Module (Join-Path $PSScriptRoot '..' 'lab_utils' 'LabSetup' 'LabSetup.psd1') -Force
+Import-Module (Join-Path $PSScriptRoot '..' 'pwsh' 'lab_utils' 'LabSetup' 'LabSetup.psd1') -Force
 InModuleScope LabSetup {
 Describe '0007_Install-Go'  {
     BeforeAll { $script:ScriptPath = Get-RunnerScriptPath '0007_Install-Go.ps1' }

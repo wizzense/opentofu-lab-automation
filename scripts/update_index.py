@@ -9,18 +9,20 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 
 # directories to scan recursively for files
 SCAN_DIRS = [
-    'runner_scripts',
-    'lab_utils',
+    'pwsh/runner_scripts',
+    'pwsh/lab_utils',
     'py/labctl',
     'py/tests',
-    'config_files',
+    'configs/config_files',
+    'tools/iso',
 ]
 
 ROOT_FILES = [
-    'runner.ps1',
-    'kicker-bootstrap.ps1',
-    'kickstart-bootstrap.sh',
+    'pwsh/runner.ps1',
+    'pwsh/kicker-bootstrap.ps1',
+    'pwsh/kickstart-bootstrap.sh',
 ]
+
 
 
 def tracked_files():

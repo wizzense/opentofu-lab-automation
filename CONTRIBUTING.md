@@ -36,8 +36,23 @@ cd py && pytest
 The `task test` shortcut (defined in InvokeBuild) wraps these commands and
 executes the same steps as the CI pipeline.
 
+Whenever paths to scripts or config files change, run:
+
+```bash
+poetry run labctl repo index
+```
+
+This regenerates the packaged index used by the CLI.
+
 When adding Windows‑specific tests, guard them with
 `-Skip:($IsLinux -or $IsMacOS)` so the suite succeeds across all platforms.
+
+## Changelog entries
+
+This project uses [towncrier](https://github.com/twisted/towncrier) to manage the
+changelog. For each pull request, create a news fragment under `newsfragments/`
+describing your change. Run `towncrier create` and commit the generated file.
+The changelog is automatically updated on merges to `main`.
 
 ## CI failure issues
 executes the same steps as the lint, Pester and Pytest workflows.

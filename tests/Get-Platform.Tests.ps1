@@ -2,7 +2,7 @@
 . (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
 Describe 'Get-Platform' {
     BeforeAll {
-        . (Join-Path $PSScriptRoot '..' 'lab_utils' 'Get-Platform.ps1')
+        . (Join-Path $PSScriptRoot '..' 'pwsh' 'lab_utils' 'Get-Platform.ps1')
     }
 
     It 'returns the correct platform for the current OS' {

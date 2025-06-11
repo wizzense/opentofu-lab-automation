@@ -54,12 +54,21 @@ jobs:
       - name: Install PSScriptAnalyzer
         shell: pwsh
         run: |
-          Install-Module -Name PSScriptAnalyzer -RequiredVersion 1.24.0 -Force -Scope CurrentUser
+          if (-not (Get-Module -ListAvailable -Name PSScriptAnalyzer -RequiredVersion 1.24.0)) {
+            Install-Module -Name PSScriptAnalyzer -RequiredVersion 1.24.0 -Scope CurrentUser -Force
+          }
       - name: Install powershell-yaml
         shell: pwsh
         run: |
           Install-Module -Name powershell-yaml -Force -Scope CurrentUser
+      - name: Install yamllint
+        shell: bash
+        run: pip install yamllint
       - uses: ./.github/actions/lint
+      - name: Run yamllint
+        shell: bash
+        run: |
+          yamllint .github/workflows $(git ls-files '*.yml' '*.yaml')
       - name: Set up Copilot
         run: npm install -g @githubnext/github-copilot-cli
       - name: Run Copilot suggestions
