@@ -11,11 +11,7 @@ function Get-SystemInfo {
         [pscustomobject]$Config
     )
 
-    . "$PSScriptRoot/../runner_utility_scripts/ScriptTemplate.ps1"
     Invoke-LabStep -Config $Config -Body {
-        if (-not (Get-Command Get-Platform -ErrorAction SilentlyContinue)) {
-            . "$PSScriptRoot/../lab_utils/Get-Platform.ps1"
-        }
         Write-CustomLog 'Running 0200_Get-SystemInfo.ps1'
         $platform = Get-Platform
         Write-CustomLog "Detected platform: $platform"
@@ -117,13 +113,11 @@ function Get-SystemInfo {
                 Write-CustomLog "Unsupported platform: $platform" -Level 'ERROR'
                 exit 1
             }
-        }
 
         if ($AsJson) {
             $info | ConvertTo-Json -Depth 5
         } else {
             $info
-        }
     }
 }
 

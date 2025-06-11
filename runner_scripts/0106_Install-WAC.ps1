@@ -16,7 +16,6 @@ function Get-WacRegistryInstallation {
     return $null
 }
 
-. "$PSScriptRoot/../runner_utility_scripts/ScriptTemplate.ps1"
 Invoke-LabStep -Config $Config -Body {
     Write-CustomLog 'Running 0106_Install-WAC.ps1'
 

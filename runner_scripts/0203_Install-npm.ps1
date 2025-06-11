@@ -8,7 +8,6 @@ function Install-NpmDependencies {
     [CmdletBinding(SupportsShouldProcess = $true)]
     param([pscustomobject]$Config)
 
-    . "$PSScriptRoot/../runner_utility_scripts/ScriptTemplate.ps1"
 
     Invoke-LabStep -Config $Config -Body {
         param($Config)

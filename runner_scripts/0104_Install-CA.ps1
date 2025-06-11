@@ -1,11 +1,9 @@
-[CmdletBinding(SupportsShouldProcess = $true)]
 Param([pscustomobject]$Config)
 . "$PSScriptRoot/../runner_utility_scripts/ScriptTemplate.ps1"
 function Install-CA {
     [CmdletBinding(SupportsShouldProcess = $true)]
     param([pscustomobject]$Config)
 
-    . "$PSScriptRoot/../runner_utility_scripts/ScriptTemplate.ps1"
     Invoke-LabStep -Config $Config -Body {
     Write-CustomLog 'Running 0104_Install-CA.ps1'
 
@@ -55,7 +53,6 @@ if ($PSCmdlet.ShouldProcess($CAName, 'Configure Standalone Root CA')) {
     $installCmd = Get-Command Install-AdcsCertificationAuthority -ErrorAction SilentlyContinue
     if (-not $installCmd) {
         if (Get-Module -ListAvailable -Name ADCSDeployment) {
-            Import-Module ADCSDeployment -ErrorAction SilentlyContinue
             $installCmd = Get-Command Install-AdcsCertificationAuthority -ErrorAction SilentlyContinue
         }
     }
