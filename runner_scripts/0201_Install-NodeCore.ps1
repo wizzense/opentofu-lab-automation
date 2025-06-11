@@ -39,6 +39,10 @@ if (-not $nodeDeps) {
 }
 
 if ($nodeDeps.InstallNode) {
+    if (Get-Command node -ErrorAction SilentlyContinue) {
+        Write-CustomLog "Node.js already installed. Skipping installation."
+        return
+    }
     try {
         $url = $null
         if ($nodeDeps.Node) {
