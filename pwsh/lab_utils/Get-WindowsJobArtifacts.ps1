@@ -31,12 +31,12 @@ if ($useGh) {
         $res = $artifacts | Where-Object { $_.name -match 'results.*windows-latest' }
         if ($res) {
             if ($cov) {
-                gh $cov.archive_download_url --output (Join-Path $tempDir 'coverage.zip')
+                gh api $cov.archive_download_url --output (Join-Path $tempDir 'coverage.zip')
                 if ($LASTEXITCODE -ne 0) {
                     Write-Host 'Failed to download coverage artifact.' -ForegroundColor Yellow
                 }
             }
-            gh $res.archive_download_url --output (Join-Path $tempDir 'results.zip')
+            gh api $res.archive_download_url --output (Join-Path $tempDir 'results.zip')
             if ($LASTEXITCODE -ne 0) {
                 Write-Host 'Failed to download results artifact.' -ForegroundColor Yellow
                 exit 1
@@ -57,9 +57,9 @@ if ($useGh) {
             $res = $artifacts | Where-Object { $_.name -match 'results.*windows-latest' }
             if ($res) {
                 if ($cov) {
-                    gh $cov.archive_download_url --output (Join-Path $tempDir 'coverage.zip')
+                    gh api $cov.archive_download_url --output (Join-Path $tempDir 'coverage.zip')
                 }
-                gh $res.archive_download_url --output (Join-Path $tempDir 'results.zip')
+                gh api $res.archive_download_url --output (Join-Path $tempDir 'results.zip')
                 $found = $true
                 break
             }
