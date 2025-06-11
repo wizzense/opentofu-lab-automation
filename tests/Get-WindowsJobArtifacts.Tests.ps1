@@ -8,16 +8,19 @@ Describe 'Get-WindowsJobArtifacts' {
         $scriptPath = Join-Path $PSScriptRoot '..' 'lab_utils' 'Get-WindowsJobArtifacts.ps1'
     }
 
+    BeforeAll {
+        Mock Invoke-WebRequest -ModuleName LabSetup {} -ParameterFilter { $Uri -match 'nightly\.link' }
+        Mock Expand-Archive {}
+        Mock Get-ChildItem { [pscustomobject]@{ FullName = 'dummy.xml' } }
+        Mock Select-Xml { @() }
+    }
+
     It 'uses gh CLI when authenticated' {
         Mock Get-Command { [pscustomobject]@{ Name = 'gh' } } -ParameterFilter { $Name -eq 'gh' }
         Mock gh {} -ParameterFilter { $args[0] -eq 'auth' -and $args[1] -eq 'status' }
         Mock gh { '{"workflow_runs":[{"id":1}]}' } -ParameterFilter { $args[1] -like '*runs?*' }
         Mock gh { '{"artifacts":[{"name":"pester-coverage-windows-latest","archive_download_url":"cov"},{"name":"pester-results-windows-latest","archive_download_url":"res"}]}' } -ParameterFilter { $args[1] -like '*artifacts*' }
         Mock gh {} -ParameterFilter { $args[0] -eq 'cov' -or $args[0] -eq 'res' }
-        Mock Invoke-WebRequest -ModuleName LabSetup { [pscustomobject]@{ Content = 'Dummy content' } }
-        Mock Expand-Archive {}
-        Mock Get-ChildItem { [pscustomobject]@{ FullName = 'dummy.xml' } }
-        Mock Select-Xml { @() }
 
         & $scriptPath
 
@@ -28,10 +31,7 @@ Describe 'Get-WindowsJobArtifacts' {
     It 'falls back to nightly.link when gh auth fails' {
         Mock Get-Command { [pscustomobject]@{ Name = 'gh' } } -ParameterFilter { $Name -eq 'gh' }
         Mock gh { throw 'unauthenticated' } -ParameterFilter { $args[0] -eq 'auth' -and $args[1] -eq 'status' }
-        Mock Invoke-WebRequest -ModuleName LabSetup {}
-        Mock Expand-Archive {}
-        Mock Get-ChildItem { [pscustomobject]@{ FullName = 'dummy.xml' } }
-        Mock Select-Xml { @() }
+
 
         & $scriptPath
 
@@ -42,11 +42,8 @@ Describe 'Get-WindowsJobArtifacts' {
         $id = 123
         Mock Get-Command { [pscustomobject]@{ Name = 'gh' } } -ParameterFilter { $Name -eq 'gh' }
         Mock gh {} -ParameterFilter { $args[0] -eq 'auth' -and $args[1] -eq 'status' }
-        Mock gh { '{"artifacts":[]}' } -ParameterFilter { $args[0] -like "*runs/$id/artifacts" }
-        Mock Invoke-WebRequest -ModuleName LabSetup {}
-        Mock Expand-Archive {}
-        Mock Get-ChildItem { [pscustomobject]@{ FullName = 'dummy.xml' } }
-        Mock Select-Xml { @() }
+        Mock gh { '{"artifacts":[]}' } -ParameterFilter { $args[1] -like "*runs/$id/artifacts" }
+
 
         & $scriptPath -RunId $id
 
@@ -59,9 +56,6 @@ Describe 'Get-WindowsJobArtifacts' {
         Mock Get-Command { [pscustomobject]@{ Name = 'gh' } } -ParameterFilter { $Name -eq 'gh' }
         Mock gh { throw 'unauthenticated' } -ParameterFilter { $args[0] -eq 'auth' -and $args[1] -eq 'status' }
         Mock Invoke-WebRequest -ModuleName LabSetup {}
-        Mock Expand-Archive {}
-        Mock Get-ChildItem { [pscustomobject]@{ FullName = 'dummy.xml' } }
-        Mock Select-Xml { @() }
 
         & $scriptPath -RunId $id
 
@@ -73,9 +67,6 @@ Describe 'Get-WindowsJobArtifacts' {
         Mock Get-Command { [pscustomobject]@{ Name = 'gh' } } -ParameterFilter { $Name -eq 'gh' }
         Mock gh {} -ParameterFilter { $args[0] -eq 'auth' -and $args[1] -eq 'status' }
         Mock gh { '{"artifacts":[]}' } -ParameterFilter { $args[1] -like "*runs/$id/artifacts" }
-        Mock Expand-Archive {}
-        Mock Get-ChildItem { [pscustomobject]@{ FullName = 'dummy.xml' } }
-        Mock Select-Xml { @() }
         $messages = @()
         function global:Write-Host { param($Object, $Color); $script:messages += $Object }
 
