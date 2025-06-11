@@ -79,6 +79,7 @@ jobs:
         shell: pwsh
         run: |
           $cfg = New-PesterConfiguration -Hashtable (Import-PowerShellDataFile 'tests/PesterConfiguration.psd1')
+          $cfg.CodeCoverage.Path += 'iso_tools'
 
           $repoRoot = $env:GITHUB_WORKSPACE
           $cfg.TestResult.OutputPath   = Join-Path $repoRoot 'coverage/testResults.xml'
