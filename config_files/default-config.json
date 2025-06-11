@@ -36,6 +36,7 @@
   "InstallAWSCLI": false,
   "InstallPacker": false,
   "InstallChocolatey": false,
+  "SetupLabProfile": false,
   "CertificateAuthority": {
     "CommonName": "default-lab-RootCA",
     "ValidityYears": 5

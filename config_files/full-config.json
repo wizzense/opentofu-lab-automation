@@ -43,6 +43,7 @@
   "InstallAWSCLI": true,
   "InstallPacker": true,
   "InstallChocolatey": true,
+  "SetupLabProfile": true,
   "InstallSysinternals": true,
   "SysinternalsPath": "C:\\Sysinternals",
 
