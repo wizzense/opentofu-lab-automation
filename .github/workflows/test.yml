@@ -5,7 +5,32 @@ on:
   pull_request:
 
 jobs:
-  validate:
+  linux-validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: opentofu/setup-opentofu@v1
+      - name: Init and validate
+        working-directory: example-infrastructure
+        run: |
+          tofu init -input=false 2>&1 | tee init.log
+          tofu validate 2>&1 | tee validate.log
+      - name: Upload logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-validate-logs
+          path: |
+            example-infrastructure/init.log
+            example-infrastructure/validate.log
+      - name: Upload artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-validate-artifacts
+          path: example-infrastructure/.terraform
+
+  windows-validate:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
@@ -14,6 +39,20 @@ jobs:
         shell: pwsh
         working-directory: example-infrastructure
         run: |
-          tofu init -input=false
-          tofu validate
+          tofu init -input=false | Tee-Object -FilePath init.log
+          tofu validate | Tee-Object -FilePath validate.log
+      - name: Upload logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-validate-logs
+          path: |
+            example-infrastructure/init.log
+            example-infrastructure/validate.log
+      - name: Upload artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-validate-artifacts
+          path: example-infrastructure/.terraform
 
