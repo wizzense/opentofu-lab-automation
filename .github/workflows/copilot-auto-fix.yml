@@ -11,38 +11,34 @@ permissions:
 jobs:
   copilot-suggest:
     runs-on: ubuntu-latest
+    # ① Expose the PAT so every gh command is already authenticated
+    env:
+      GH_TOKEN: ${{ secrets.GH_PAT_AUTOPILOT }}
 
     steps:
       - uses: actions/checkout@v4
 
-      # Authenticate the GitHub CLI once with your PAT
-      - name: Authenticate gh
-        run: echo "${{ secrets.GH_PAT_AUTOPILOT }}" | gh auth login --with-token
-
-      # Disable analytics / prompts so the CLI never pauses
+      # ② Disable analytics / confirmation prompts
       - name: Pre-seed Copilot config (headless)
         run: |
           mkdir -p "$HOME/.config/gh-copilot"
-          cat <<EOF > "$HOME/.config/gh-copilot/config.yml"
+          cat >"$HOME/.config/gh-copilot/config.yml" <<'EOF'
           optional_analytics: false
           suggest_execute_confirm_default: false
           EOF
 
-      # Install or upgrade the Copilot CLI extension
+      # ③ Install or upgrade the Copilot CLI extension
       - name: Install Copilot extension
         run: gh extension install github/gh-copilot --force
 
-      # Loop through open issues → ask Copilot → add comment
+      # ④ Loop through open issues → ask Copilot → comment the answer
       - name: Suggest fixes for each open issue
-        env:
-          GH_TOKEN: ${{ secrets.GH_PAT_AUTOPILOT }}
         run: |
           for num in $(gh issue list --state open --json number -q '.[].number'); do
             title=$(gh issue view "$num" --json title -q .title)
             body=$(gh issue view "$num"  --json body  -q .body)
 
             prompt="Propose a concise git diff or detailed steps to fix issue #$num ($title) in ${{ github.repository }}.\n\nContext:\n$body"
-            # ask once; output goes to suggestion.md
             gh copilot suggest "$prompt" > suggestion.md || true
 
             if [ -s suggestion.md ]; then
