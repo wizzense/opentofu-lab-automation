@@ -21,10 +21,13 @@ if (Test-Path $indexPath) {
     try { $script:PathIndex = Get-Content -Raw -Path $indexPath | ConvertFrom-Yaml } catch { $script:PathIndex = @{} }
 }
 
+. (Join-Path (Join-Path $repoRoot 'lab_utils') 'PathUtils.ps1')
+
 function Resolve-IndexPath {
     param([string]$Key)
     if ($script:PathIndex.ContainsKey($Key)) {
-        return Join-Path $repoRoot $script:PathIndex[$Key]
+        $relative = Normalize-RelativePath $script:PathIndex[$Key]
+        return Join-Path $repoRoot $relative
     }
     return $null
 }

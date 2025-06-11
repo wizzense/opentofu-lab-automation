@@ -1,3 +1,5 @@
+. (Join-Path $PSScriptRoot 'PathUtils.ps1')
+
 function Resolve-ProjectPath {
     [CmdletBinding()]
     param(
@@ -16,11 +18,13 @@ function Resolve-ProjectPath {
             try { Import-Module powershell-yaml -ErrorAction Stop } catch {}
         }
         try { $index = [hashtable](Get-Content -Raw -Path $indexPath | ConvertFrom-Yaml) } catch { $index = @{} }
-        if ($index.ContainsKey($Name)) { return (Join-Path $Root $index[$Name]) }
+        if ($index.ContainsKey($Name)) {
+            $normalizedPath = Normalize-RelativePath $index[$Name]
+            return (Join-Path $Root $normalizedPath)
+        }
         foreach ($key in $index.Keys) {
             if ((Split-Path $key -Leaf) -eq $Name) {
-                $normalizedPath = $index[$key] -split '[\\/]' | ForEach-Object { $_ }
-                $normalizedPath = $normalizedPath | Join-Path -Path $null
+                $normalizedPath = Normalize-RelativePath $index[$key]
                 return (Join-Path $Root $normalizedPath)
             }
         }
