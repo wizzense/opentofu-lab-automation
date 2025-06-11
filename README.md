@@ -78,6 +78,10 @@ The lint workflow installs the GitHub Copilot CLI and runs `github-copilot-cli s
 after linting. The command scans the repository and provides additional
 improvement ideas directly in the workflow logs.
 
+The optional [Copilot Auto Fix workflow](docs/copilot-auto-fix.md) can comment
+on issues with suggested patches. It requires a GitHub CLI token with the
+`copilot` scope stored as the repository secret `COPILOT_OAUTH_TOKEN`.
+
 
 Clone this repository and apply the lab template:
 
