@@ -27,26 +27,33 @@ def test_resolve_after_move(tmp_path, monkeypatch):
     assert path2 == new_dir / "file.txt"
 
 
-def test_load_index_contains_runner():
+def test_load_index_contains_runner(monkeypatch):
+    monkeypatch.setattr(path_index, "_INDEX", {})
+    monkeypatch.setattr(path_index, "_repo_root", None)
     idx = path_index.load_index()
     assert "runner.ps1" in idx
 
 
 def test_resolve_path_missing(monkeypatch):
-    monkeypatch.setattr(path_index, "_index", {})
+    monkeypatch.setattr(path_index, "_INDEX", {})
+    monkeypatch.setattr(path_index, "_repo_root", None)
     p = path_index.resolve_path("does-not-exist")
     assert p is None
 
 
 def test_default_config_fallback(monkeypatch):
-    monkeypatch.setattr(path_index, "_index", {})
+    monkeypatch.setattr(path_index, "_INDEX", {})
+    monkeypatch.setattr(path_index, "_repo_root", None)
     from labctl.cli import default_config_path
     path = default_config_path()
     assert path.exists()
 
 
-def test_no_pycache_paths():
+def test_no_pycache_paths(monkeypatch):
+    monkeypatch.setattr(path_index, "_INDEX", {})
+    monkeypatch.setattr(path_index, "_repo_root", None)
     idx = path_index.load_index()
     assert not any("__pycache__" in key for key in idx)
-    assert path.exists()
+    for rel in idx.values():
+        assert (path_index.repo_root() / rel).exists()
 
