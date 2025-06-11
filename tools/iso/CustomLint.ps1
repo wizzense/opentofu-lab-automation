@@ -35,6 +35,7 @@ foreach ($file in $files) {
         if ($first -and $first.Extent.Text -match 'Invoke-WebRequest') {
             $hasFilter = $c.CommandElements | Where-Object { $_ -is [System.Management.Automation.Language.CommandParameterAst] -and $_.ParameterName -eq 'ParameterFilter' }
             if (-not $hasFilter) {
+                # Use string interpolation (${file}) for clarity and maintainability
                 $mockIssues += "${file}:$($c.Extent.StartLineNumber) Mock Invoke-WebRequest missing -ParameterFilter"
             }
         }
