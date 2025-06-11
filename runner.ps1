@@ -1,6 +1,6 @@
 [CmdletBinding(SupportsShouldProcess)]
 param(
-    [string]$ConfigFile = "./config_files/default-config.json",
+    [string]$ConfigFile = (Join-Path $PSScriptRoot 'config_files' 'default-config.json'),
     [switch]$Auto,
     [string]$Scripts,
     [switch]$Force,
@@ -214,7 +214,7 @@ if (-not $Auto) {
 
 # ─── Discover scripts ────────────────────────────────────────────────────────
 Write-CustomLog "==== Locating scripts ===="
-$ScriptFiles = Get-ChildItem .\runner_scripts -Filter "????_*.ps1" -File | Sort-Object Name
+$ScriptFiles = Get-ChildItem (Join-Path $PSScriptRoot 'runner_scripts') -Filter "????_*.ps1" -File | Sort-Object Name
 if (-not $ScriptFiles) {
     Write-CustomLog "ERROR: No scripts found matching pattern."
     exit 1
