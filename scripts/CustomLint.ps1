@@ -16,6 +16,10 @@ $results = Get-ChildItem -Path $Target -Recurse -Include *.ps1,*.psm1,*.psd1 -Fi
 $results | Format-Table
 
 
+$results = $files | Invoke-ScriptAnalyzer -Severity Error,Warning -Settings $SettingsPath
+# Use Write-Output so callers can capture or redirect the formatted results
+$results | Format-Table | Out-String | Write-Output
+
 $failed = $false
 if ($results | Where-Object Severity -eq 'Error') {
     Write-Error 'ScriptAnalyzer errors detected'
