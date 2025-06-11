@@ -30,7 +30,8 @@ runs:
           'PSReviewUnusedParameter',
           'PSUseDeclaredVarsMoreThanAssignments'
         )
-        $results = Invoke-ScriptAnalyzer -Path . -Recurse -Severity Error,Warning -ExcludeRule $rulesToExclude
+        $files = Get-ChildItem -Path . -Recurse -Include *.ps1,*.psm1,*.psd1 -File | ForEach-Object { $_.FullName }
+        $results = Invoke-ScriptAnalyzer -Path $files -Severity Error,Warning -ExcludeRule $rulesToExclude
         $results | Format-Table
         if ($results | Where-Object Severity -eq 'Error') {
           Write-Error 'ScriptAnalyzer errors detected'
