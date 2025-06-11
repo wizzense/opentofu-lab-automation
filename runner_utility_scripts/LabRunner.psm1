@@ -1,8 +1,9 @@
 #. dot-source utilities
+
+. (Join-Path $PSScriptRoot 'ScriptTemplate.ps1')   # pulls in Invoke-LabStep, etc.
 . $PSScriptRoot/Logger.ps1
 . $PSScriptRoot/../lab_utils/Get-Platform.ps1
 
-# LabRunner should be imported by runner scripts before dot-sourcing
-# ScriptTemplate.ps1. Avoid dot-sourcing here to prevent circular imports.
+# Only this side (LabRunner) brings ScriptTemplate in.
 
-Export-ModuleMember -Function Invoke-LabStep, Write-CustomLog, Get-Platform
+Export-ModuleMember -Function Invoke-LabStep, Write-CustomLog, Get-Platform, Get-LabConfig
