@@ -10,11 +10,11 @@ if (-not (Test-Path $SettingsPath)) {
     throw "Settings file not found: $SettingsPath"
 }
 
-$files = Get-ChildItem -Path $Target -Recurse -Include *.ps1,*.psm1,*.psd1 -File |
-    Select-Object -ExpandProperty FullName
+$results = Get-ChildItem -Path $Target -Recurse -Include *.ps1,*.psm1,*.psd1 -File |
+    Select-Object -ExpandProperty FullName |
+    Invoke-ScriptAnalyzer -Severity Error,Warning -Settings $SettingsPath
+$results | Format-Table
 
-$results = $files | Invoke-ScriptAnalyzer -Severity Error,Warning -Settings $SettingsPath
-$results | Format-Table | Out-String | Write-Output
 
 $failed = $false
 if ($results | Where-Object Severity -eq 'Error') {
