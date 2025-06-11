@@ -4,7 +4,14 @@ if (-not $PSScriptRoot) {
 
 #Param([object]$Config)
 
-if (-not (Get-Module -Name LabRunner)) {
+# When this template is dot-sourced from within the LabRunner module itself the
+# module is still in the process of loading and `Get-Module` will not return it
+# yet.  Importing the manifest again would recursively nest the module and soon
+# hit PowerShell's 10 level limit.  Detect this situation by inspecting the
+# currently executing module before importing.
+if (-not (Get-Module -Name LabRunner) -and
+    ($null -eq $ExecutionContext.SessionState.Module -or
+     $ExecutionContext.SessionState.Module.Name -ne 'LabRunner')) {
     Import-Module (Join-Path $PSScriptRoot '..\runner_utility_scripts\LabRunner.psd1')
 }
 
