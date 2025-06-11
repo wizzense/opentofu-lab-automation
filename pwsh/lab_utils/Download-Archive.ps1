@@ -1,3 +1,19 @@
+function Get-GhDownloadArgs {
+    [CmdletBinding()]
+    param()
+
+    if (Get-Command gh -ErrorAction SilentlyContinue) {
+        try {
+            gh auth status --hostname github.com *> $null
+            return @{ UseGh = $true }
+        }
+        catch {
+            Write-Host 'gh authentication failed; using public download URLs.' -ForegroundColor Yellow
+        }
+    }
+    return @{}
+}
+
 function Download-Archive {
     [CmdletBinding()]
     param(
