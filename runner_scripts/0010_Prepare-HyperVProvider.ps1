@@ -83,28 +83,16 @@ if (-not (Get-Command Get-HyperVProviderVersion -ErrorAction SilentlyContinue)) 
 function Get-HyperVProviderVersion {
     [CmdletBinding()]
     param(
-        [string]$MainTfPath
+        [pscustomobject]$Config
     )
 
     $defaultVersion = '1.2.1'
-    $searchPaths = @()
 
-    if ($MainTfPath) { $searchPaths += $MainTfPath }
-    $searchPaths += Join-Path $PSScriptRoot '..\example-infrastructure\main.tf'
-    $searchPaths += Join-Path $PSScriptRoot '..\main.tf'
-
-    foreach ($path in $searchPaths) {
-        if (Test-Path $path) {
-            $content = Get-Content -Path $path -Raw
-            if ($content -match 'hyperv\s*=\s*\{[^\}]*?version\s*=\s*"([^"]+)"') {
-                return $matches[1]
-            }
-            Write-Warning "Failed to parse hyperv provider version from $path"
-            return $defaultVersion
-        }
+    if ($Config -and $Config.HyperV -and $Config.HyperV.ProviderVersion) {
+        return $Config.HyperV.ProviderVersion
     }
 
-    Write-Warning "main.tf not found. Using default Hyper-V provider version $defaultVersion"
+    Write-Warning "Hyper-V provider version not specified. Using default $defaultVersion"
     return $defaultVersion
 }
 }
@@ -427,4 +415,5 @@ You can now run 'tofu plan'/'tofu apply' in $infraRepoPath.
     Write-CustomLog "PrepareHyperVHost flag is disabled. Skipping Hyper-V host preparation."
 }
     Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
+}
 }
