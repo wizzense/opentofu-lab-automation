@@ -80,7 +80,7 @@ jobs:
         shell: pwsh
         run: |
           $log = $env:LOG_FILE
-          $settings = Join-Path $PWD 'PSScriptAnalyzerSettings.psd1'
+          $settings = Join-Path $PWD 'pwsh/PSScriptAnalyzerSettings.psd1'
           $files = Get-ChildItem -Path . -Recurse -Include *.ps1,*.psm1,*.psd1 -File |
               Where-Object { $_.FullName -ne $settings } |
               Select-Object -ExpandProperty FullName
