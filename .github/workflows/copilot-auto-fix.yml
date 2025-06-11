@@ -34,16 +34,12 @@ jobs:
       - name: Authenticate gh
         shell: bash
         run: echo "${{ secrets.GH_PAT_AUTOPILOT }}" | gh auth login --with-token
-      - name: Install Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-      - name: Install Copilot CLI
-        run: npm install -g @githubnext/github-copilot-cli
+      - name: Install Copilot extension
+        run: gh extension install github/gh-copilot --force
       - name: Run Copilot suggestions
         run: |
           for num in $(gh issue list --state open --json number -q '.[].number'); do
             body=$(gh issue view "$num" --json body -q .body)
             echo "$body" > issue.txt
-            github-copilot-cli suggest --repo ${{ github.repository }} --issue issue.txt || true
+            gh copilot suggest --repo "${{ github.repository }}" --issue issue.txt || true
           done
