@@ -39,16 +39,13 @@ if ($Config.InstallGo -eq $true) {
     }
 
     Write-CustomLog "Installing Go version $goVersion for architecture $goArch..."
-    $installerPath = "$env:TEMP\GoInstaller.msi"
-
     $ProgressPreference = 'SilentlyContinue'
-    Write-CustomLog "Downloading Go from $installerUrl"
-    LabSetup\Invoke-WebRequest -Uri $installerUrl -OutFile $installerPath -UseBasicParsing
-
-    Write-CustomLog "Installing Go silently..."
-    Start-Process msiexec.exe -Wait -ArgumentList "/i `"$installerPath`" /qn /L*v `"$env:TEMP\GoInstall.log`""
-
-    Write-CustomLog "Go installation complete."
+    Invoke-LabDownload -Uri $installerUrl -Prefix 'GoInstaller' -Extension '.msi' -Action {
+        param($installerPath)
+        Write-CustomLog "Installing Go silently..."
+        Start-Process msiexec.exe -Wait -ArgumentList "/i `"$installerPath`" /qn /L*v `"$env:TEMP\GoInstall.log`""
+        Write-CustomLog "Go installation complete."
+    }
 } else {
     Write-CustomLog "InstallGo flag is disabled. Skipping Go installation."
 }

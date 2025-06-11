@@ -11,10 +11,10 @@ function Install-DockerDesktop {
         if ($Config.InstallDockerDesktop -eq $true) {
             if (-not (Get-Command docker -ErrorAction SilentlyContinue)) {
                 $url = 'https://desktop.docker.com/win/main/amd64/Docker%20Desktop%20Installer.exe'
-                $installer = Join-Path $env:TEMP 'docker-desktop-installer.exe'
-                Invoke-LabWebRequest -Uri $url -OutFile $installer -UseBasicParsing
-                Start-Process -FilePath $installer -ArgumentList 'install --quiet' -Wait
-                Remove-Item $installer -Force
+                Invoke-LabDownload -Uri $url -Prefix 'docker-desktop-installer' -Extension '.exe' -Action {
+                    param($installer)
+                    Start-Process -FilePath $installer -ArgumentList 'install --quiet' -Wait
+                }
             } else {
                 Write-CustomLog 'Docker Desktop already installed.'
             }

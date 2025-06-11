@@ -56,12 +56,10 @@ if ($nodeDeps.InstallNode) {
             $url = "https://nodejs.org/dist/v20.11.1/node-v20.11.1-x64.msi"
         }
 
-        $installerPath = Join-Path $env:TEMP "node-installer.msi"
-        Write-CustomLog "Downloading Node.js from: $url"
-        Invoke-LabWebRequest -Uri $url -OutFile $installerPath -UseBasicParsing
-
-        Start-Process msiexec.exe -ArgumentList "/i `"$installerPath`" /quiet /norestart" -Wait -NoNewWindow
-        Remove-Item $installerPath -Force
+        Invoke-LabDownload -Uri $url -Prefix 'node-installer' -Extension '.msi' -Action {
+            param($installerPath)
+            Start-Process msiexec.exe -ArgumentList "/i `"$installerPath`" /quiet /norestart" -Wait -NoNewWindow
+        }
 
         if (Get-Command node -ErrorAction SilentlyContinue) {
             Write-CustomLog "Node.js installed successfully."

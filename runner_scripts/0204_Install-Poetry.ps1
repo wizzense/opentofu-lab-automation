@@ -13,11 +13,8 @@ function Install-Poetry {
 
         if ($Config.InstallPoetry -eq $true) {
             $installerUrl = 'https://install.python-poetry.org'
-            $installerPath = Join-Path $env:TEMP 'install-poetry.py'
-
-            try {
-                Invoke-LabWebRequest -Uri $installerUrl -OutFile $installerPath -UseBasicParsing
-
+            Invoke-LabDownload -Uri $installerUrl -Prefix 'install-poetry' -Extension '.py' -Action {
+                param($installerPath)
                 $args = @()
                 if ($Config.PoetryVersion) {
                     $args += '--version'
@@ -25,9 +22,6 @@ function Install-Poetry {
                 }
                 Write-CustomLog 'Executing Poetry installer...'
                 python $installerPath @args
-            }
-            finally {
-                Remove-Item $installerPath -Force
             }
         }
         else {

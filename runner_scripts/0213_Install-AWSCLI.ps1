@@ -11,10 +11,10 @@ function Install-AWSCLI {
         if ($Config.InstallAWSCLI -eq $true) {
             if (-not (Get-Command aws -ErrorAction SilentlyContinue)) {
                 $url = 'https://awscli.amazonaws.com/AWSCLIV2.msi'
-                $msi = Join-Path $env:TEMP 'awscli.msi'
-                Invoke-LabWebRequest -Uri $url -OutFile $msi -UseBasicParsing
-                Start-Process msiexec.exe -ArgumentList "/i `"$msi`" /quiet /norestart" -Wait -NoNewWindow
-                Remove-Item $msi -Force
+                Invoke-LabDownload -Uri $url -Prefix 'awscli' -Extension '.msi' -Action {
+                    param($msi)
+                    Start-Process msiexec.exe -ArgumentList "/i `"$msi`" /quiet /norestart" -Wait -NoNewWindow
+                }
             } else {
                 Write-CustomLog 'AWS CLI already installed.'
             }
