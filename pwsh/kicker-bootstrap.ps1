@@ -44,7 +44,7 @@ $script:ConsoleLevel    = $script:VerbosityLevels[$Verbosity]
 
 $targetBranch = 'main'
 $baseUrl = 'https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/refs/heads/'
-$defaultConfig = "${baseUrl}main/configs/config_files/default-config.json"
+$defaultConfig = "${baseUrl}${targetBranch}/configs/config_files/default-config.json"
 
 
 # example: https://raw.githubusercontent.com/wizzense/tofu-base-lab/refs/heads/main/configs/bootstrap-config.json
