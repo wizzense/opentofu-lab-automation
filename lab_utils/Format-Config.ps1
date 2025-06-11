@@ -3,8 +3,7 @@ function Format-Config {
     param(
         [Parameter(
             ValueFromPipeline = $true,
-            ValueFromPipelineByPropertyName = $true,
-            Mandatory
+            ValueFromPipelineByPropertyName = $true
         )]
         [psobject]$Config
     )
@@ -12,14 +11,14 @@ function Format-Config {
     begin {
         $hasInput = $false
         if ($PSBoundParameters.ContainsKey('Config') -and $null -eq $Config) {
-            throw [System.ArgumentNullException]::new('Config')
+            throw [System.ArgumentNullException]::new('Config','Config cannot be null.')
         }
     }
 
     process {
         $hasInput = $true
         if ($null -eq $Config) {
-            throw [System.ArgumentNullException]::new('Config')
+            throw [System.ArgumentNullException]::new('Config','Config cannot be null.')
         }
 
         # Serialize the configuration object to indented JSON so nested
@@ -30,7 +29,10 @@ function Format-Config {
 
     end {
         if (-not $hasInput) {
-            throw [System.ArgumentNullException]::new('Config')
+            throw [System.ArgumentException]::new(
+                'A configuration object must be provided via -Config or the pipeline.',
+                'Config'
+            )
         }
     }
 }
