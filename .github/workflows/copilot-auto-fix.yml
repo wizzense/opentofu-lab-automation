@@ -42,7 +42,8 @@ jobs:
             body=$(gh issue view "$num"  --json body  -q .body)
 
             prompt="Propose a concise git diff or detailed steps to fix issue #$num ($title) in ${{ github.repository }}.\n\nContext:\n$body"
-            gh copilot suggest "$prompt" -w 0 > suggestion.md || true
+            # ask once; output goes to suggestion.md
+            gh copilot suggest "$prompt" > suggestion.md || true
 
             if [ -s suggestion.md ]; then
               gh issue comment "$num" -F suggestion.md
