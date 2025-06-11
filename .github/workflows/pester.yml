@@ -110,3 +110,46 @@ jobs:
         if: steps.pester.outputs.pester_exit_code != '0'
         shell: pwsh
         run: exit 1
+
+  node-install:
+    name: Node integration
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configure Node flags
+        shell: pwsh
+        run: |
+          $cfgPath = 'config_files/default-config.json'
+          $cfg = Get-Content $cfgPath | ConvertFrom-Json
+          $cfg.Node_Dependencies.InstallNode = $true
+          $cfg.Node_Dependencies.InstallNpm  = $true
+          $cfg | ConvertTo-Json -Depth 10 | Set-Content $cfgPath
+      - name: Install Node core
+        shell: pwsh
+        run: |
+          $cfg = Get-Content 'config_files/default-config.json' | ConvertFrom-Json
+          . ./runner_scripts/0201_Install-NodeCore.ps1
+          Install-NodeCore -Config $cfg
+      - name: Install global packages
+        shell: pwsh
+        run: |
+          $cfg = Get-Content 'config_files/default-config.json' | ConvertFrom-Json
+          . ./runner_scripts/0202_Install-NodeGlobalPackages.ps1
+          Install-NodeGlobalPackages -Config $cfg
+      - name: Verify Node and packages
+        shell: pwsh
+        run: |
+          $cfg = Get-Content 'config_files/default-config.json' | ConvertFrom-Json
+          node --version
+          $packages = $cfg.Node_Dependencies.GlobalPackages
+          foreach ($pkg in $packages) {
+            if (-not (Get-Command $pkg -ErrorAction SilentlyContinue)) {
+              Write-Error "$pkg not installed"
+              exit 1
+            }
+          }
+
