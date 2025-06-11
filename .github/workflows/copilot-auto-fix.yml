@@ -10,10 +10,14 @@ permissions:
 jobs:
   copilot-suggest:
     runs-on: ubuntu-latest
-    env:
-      GH_TOKEN: ${{ secrets.GH_PAT_AUTOPILOT }}  # gh commands pick this up
 
     steps:
+      - uses: actions/checkout@v4
+
+      # Authenticate gh with the PAT
+      - name: Authenticate gh
+        run: echo "${{ secrets.GH_PAT_AUTOPILOT }}" | gh auth login --with-token
+        
       - uses: actions/checkout@v4
 
       # Write the token into the gh credential store (Copilot respects this)
