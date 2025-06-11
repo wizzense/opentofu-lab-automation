@@ -13,6 +13,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Authenticate gh
+        shell: bash
+        run: gh auth login --with-token <<< "${{ secrets.GITHUB_TOKEN }}"
       - name: Install Copilot extension
         run: gh extension install github/gh-copilot --force
       - name: Suggest fixes for each open issue
@@ -28,6 +31,9 @@ jobs:
     needs: comment-suggestions
     steps:
       - uses: actions/checkout@v4
+      - name: Authenticate gh
+        shell: bash
+        run: gh auth login --with-token <<< "${{ secrets.GITHUB_TOKEN }}"
       - name: Install Node
         uses: actions/setup-node@v4
         with:
