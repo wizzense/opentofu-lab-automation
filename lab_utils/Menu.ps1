@@ -15,7 +15,9 @@ function Get-MenuSelection {
         }
         $map["$num"] = $item
         if ($prefix) { $map[$prefix] = $item }
-        Write-CustomLog ("{0}) {1}" -f $num, $item) | Write-Host
+        $line = "{0}) {1}" -f $num, $item
+        Write-CustomLog $line
+        if ($env:LAB_CONSOLE_LEVEL -lt 1) { Write-Host $line }
     }
     while ($true) {
         $prompt = if ($AllowAll) { "Enter numbers/prefixes (comma separated), 'all', or 'exit'" } else { "Enter numbers/prefixes or 'exit'" }
@@ -25,6 +27,8 @@ function Get-MenuSelection {
         $tokens = $input -split ',' | ForEach-Object { $_.Trim() } | Where-Object { $_ }
         $selected = foreach ($t in $tokens) { if ($map.ContainsKey($t)) { $map[$t] } }
         if ($selected) { return $selected }
-        Write-CustomLog 'Invalid selection. Try again.' | Write-Host
+        $msg = 'Invalid selection. Try again.'
+        Write-CustomLog $msg
+        if ($env:LAB_CONSOLE_LEVEL -lt 1) { Write-Host $msg }
     }
 }
