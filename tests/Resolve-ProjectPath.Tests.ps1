@@ -19,4 +19,16 @@ Describe 'Resolve-ProjectPath' {
         $expected = Join-Path $dir2 'test.ps1'
         Resolve-ProjectPath -Name 'test.ps1' -Root $root | Should -Be $expected
     }
+
+    It 'resolves path from path-index.yaml' {
+        $root = Join-Path $TestDrive 'repo2'
+        $scripts = Join-Path $root 'scripts'
+        New-Item -ItemType Directory -Path $scripts -Force | Out-Null
+        $file = Join-Path $scripts 'script.ps1'
+        'hi' | Set-Content -Path $file
+        "scripts/script.ps1: scripts/script.ps1" | Set-Content -Path (Join-Path $root 'path-index.yaml')
+
+        $expected = Join-Path $root 'scripts' 'script.ps1'
+        Resolve-ProjectPath -Name 'script.ps1' -Root $root | Should -Be $expected
+    }
 }
