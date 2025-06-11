@@ -1,5 +1,6 @@
 Param([pscustomobject]$Config)
 Import-Module "$PSScriptRoot/../lab_utils/LabRunner/LabRunner.psd1"
+Write-CustomLog "Starting $MyInvocation.MyCommand"
 
 function Install-NodeCore {
     [CmdletBinding(SupportsShouldProcess = $true)]
