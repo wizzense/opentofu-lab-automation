@@ -18,6 +18,8 @@ if (Get-Command gh -ErrorAction SilentlyContinue) {
         Write-Host 'gh authentication failed; using public download URLs.' -ForegroundColor Yellow
     }
 }
+. $PSScriptRoot/Download-Archive.ps1
+
 
 if ($useGh) {
     if ($RunId) {
@@ -31,16 +33,9 @@ if ($useGh) {
         $res = $artifacts | Where-Object { $_.name -match 'results.*windows-latest' }
         if ($res) {
             if ($cov) {
-                gh api $cov.archive_download_url --output (Join-Path $tempDir 'coverage.zip')
-                if ($LASTEXITCODE -ne 0) {
-                    Write-Host 'Failed to download coverage artifact.' -ForegroundColor Yellow
-                }
+                Download-Archive $cov.archive_download_url (Join-Path $tempDir 'coverage.zip') -UseGh:$useGh
             }
-            gh api $res.archive_download_url --output (Join-Path $tempDir 'results.zip')
-            if ($LASTEXITCODE -ne 0) {
-                Write-Host 'Failed to download results artifact.' -ForegroundColor Yellow
-                exit 1
-            }
+            Download-Archive $res.archive_download_url (Join-Path $tempDir 'results.zip') -Required -UseGh:$useGh
         } else {
             Write-Host "No artifacts for windows-latest found on run $RunId. Use gh run view $RunId for details." -ForegroundColor Yellow
             exit 1
@@ -57,9 +52,9 @@ if ($useGh) {
             $res = $artifacts | Where-Object { $_.name -match 'results.*windows-latest' }
             if ($res) {
                 if ($cov) {
-                    gh api $cov.archive_download_url --output (Join-Path $tempDir 'coverage.zip')
+                    Download-Archive $cov.archive_download_url (Join-Path $tempDir 'coverage.zip') -UseGh:$useGh
                 }
-                gh api $res.archive_download_url --output (Join-Path $tempDir 'results.zip')
+                Download-Archive $res.archive_download_url (Join-Path $tempDir 'results.zip') -Required -UseGh:$useGh
                 $found = $true
                 break
             }
@@ -78,24 +73,8 @@ if ($useGh) {
         $covUrl = "https://nightly.link/$Repo/workflows/$Workflow/main/pester-coverage-windows-latest.zip"
         $resUrl = "https://nightly.link/$Repo/workflows/$Workflow/main/pester-results-windows-latest.zip"
     }
-    try {
-        Invoke-WebRequest -Uri $covUrl -OutFile (Join-Path $tempDir 'coverage.zip') -UseBasicParsing
-        if (-not $?) {
-            Write-Host 'Failed to download coverage artifact anonymously.' -ForegroundColor Yellow
-        }
-    } catch {
-        Write-Host 'Failed to download coverage artifact anonymously.' -ForegroundColor Yellow
-    }
-    try {
-        Invoke-WebRequest -Uri $resUrl -OutFile (Join-Path $tempDir 'results.zip') -UseBasicParsing
-        if (-not $?) {
-            Write-Host 'Failed to download results artifact anonymously.' -ForegroundColor Yellow
-            exit 1
-        }
-    } catch {
-        Write-Host 'Failed to download results artifact anonymously.' -ForegroundColor Yellow
-        exit 1
-    }
+    Download-Archive $covUrl (Join-Path $tempDir 'coverage.zip') -UseGh:$useGh
+    Download-Archive $resUrl (Join-Path $tempDir 'results.zip') -Required -UseGh:$useGh
 }
 
 $covDir = Join-Path $tempDir 'coverage'
