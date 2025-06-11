@@ -15,7 +15,6 @@ BeforeAll {
 }
 Describe 'Prepare-HyperVProvider path restoration' -Skip:($SkipNonWindows) {
     It 'restores location after execution' {
-        . (Join-Path $script:testRoot '..' 'runner_utility_scripts' 'Logger.ps1')
         $script:scriptPath = Get-RunnerScriptPath '0010_Prepare-HyperVProvider.ps1'
         $config = [pscustomobject]@{
             PrepareHyperVHost = $true
@@ -71,7 +70,6 @@ Describe 'Prepare-HyperVProvider path restoration' -Skip:($SkipNonWindows) {
 Describe 'Prepare-HyperVProvider certificate handling' -Skip:($SkipNonWindows) {
     It 'creates PEM files and updates providers.tf' {
 
-        . (Join-Path $script:testRoot '..' 'runner_utility_scripts' 'Logger.ps1')
         $script:scriptPath = Get-RunnerScriptPath '0010_Prepare-HyperVProvider.ps1'
         $tempDir = Join-Path ([System.IO.Path]::GetTempPath()) ([System.Guid]::NewGuid())
 
