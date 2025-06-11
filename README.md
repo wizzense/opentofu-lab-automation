@@ -351,6 +351,22 @@ The scripts `0201_Install-NodeCore.ps1`, `0202_Install-NodeGlobalPackages.ps1`
 and `0203_Install-npm.ps1` read these keys when installing Node, global npm
   packages, or project dependencies.
 
+## Additional installer scripts
+
+Several optional scripts install common development tools when their matching
+flag is enabled in `default-config.json`:
+
+- `0206_Install-Python.ps1` – install Python 3.x
+- `0207_Install-Git.ps1` – install Git for Windows
+- `0208_Install-DockerDesktop.ps1` – install Docker Desktop
+- `0209_Install-7Zip.ps1` – install the 7-Zip archiver
+- `0210_Install-VSCode.ps1` – install Visual Studio Code
+- `0211_Install-VSBuildTools.ps1` – install Visual Studio Build Tools
+- `0212_Install-AzureCLI.ps1` – install Azure CLI
+- `0213_Install-AWSCLI.ps1` – install AWS CLI
+- `0214_Install-Packer.ps1` – install HashiCorp Packer
+- `0215_Install-Chocolatey.ps1` – bootstrap the Chocolatey package manager
+
 ## Directory configuration
 
 Directories used by several scripts are defined under the `Directories` section

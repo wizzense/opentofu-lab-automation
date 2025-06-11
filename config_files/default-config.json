@@ -25,6 +25,15 @@
   "CosignURL": "https://github.com/sigstore/cosign/releases/download/v2.4.3/cosign-windows-amd64.exe",
   "CosignPath": "C:\\temp\\cosign",
   "InstallGPG": false,
+  "InstallPython": false,
+  "InstallDockerDesktop": false,
+  "Install7Zip": false,
+  "InstallVSCode": false,
+  "InstallVSBuildTools": false,
+  "InstallAzureCLI": false,
+  "InstallAWSCLI": false,
+  "InstallPacker": false,
+  "InstallChocolatey": false,
   "CertificateAuthority": {
     "CommonName": "default-lab-RootCA",
     "ValidityYears": 5
