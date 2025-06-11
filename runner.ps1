@@ -1,6 +1,10 @@
 [CmdletBinding(SupportsShouldProcess)]
 param(
-    [string]$ConfigFile = (Join-Path $PSScriptRoot 'config_files' 'default-config.json'),
+    [Parameter(ParameterSetName='Normal')]
+    [Parameter(ParameterSetName='Quiet')]
+    [string]$ConfigFile = (Join-Path $PSScriptRoot 'config_files/default-config.json'),
+    #[string]$ConfigFile = (Join-Path $PSScriptRoot 'config_files' 'default-config.json'),
+
 
     [switch]$Auto,
 
@@ -27,9 +31,20 @@ if (-not (Test-Path $pwshPath)) {
 }
 
 
+
+# Re-launch under PowerShell 7 when invoked from Windows PowerShell
 if ($PSVersionTable.PSVersion.Major -lt 7) {
-    Write-Error "PowerShell 7 or later is required. Current version: $($PSVersionTable.PSVersion)"
-    exit 1
+    $argList = @()
+    foreach ($kvp in $PSBoundParameters.GetEnumerator()) {
+        if ($kvp.Value -is [System.Management.Automation.SwitchParameter]) {
+            if ($kvp.Value.IsPresent) { $argList += "-$($kvp.Key)" }
+        } else {
+            $argList += "-$($kvp.Key)"
+            $argList += $kvp.Value
+        }
+    }
+    & $pwshPath -File $PSCommandPath @argList
+    exit $LASTEXITCODE
 }
 
 # expose quiet flag to logger and apply before console level calculation

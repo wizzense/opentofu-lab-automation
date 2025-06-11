@@ -118,6 +118,42 @@ exit 0" | Set-Content -Path $dummy
         Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue
     }
 
+    It 'relaunches under pwsh when invoked from PowerShell 5' {
+        $tempDir   = New-RunnerTestEnv
+        $scriptsDir = Join-Path $tempDir 'runner_scripts'
+        $dummy      = Join-Path $scriptsDir '0001_Test.ps1'
+        "Param([PSCustomObject]`$Config)
+exit 0" | Set-Content -Path $dummy
+
+        $binDir = Join-Path $tempDir 'bin'
+        New-Item -ItemType Directory -Path $binDir | Out-Null
+        $outFile = Join-Path $binDir 'invoked.txt'
+        $stub    = Join-Path $binDir 'pwsh'
+        $stubContent = @"
+#!/bin/bash
+echo stub > \"$outFile\"
+"@
+        Set-Content -Path $stub -Value $stubContent -NoNewline
+        chmod +x $stub
+
+        $oldPath = $env:PATH
+        $env:PATH  = "${binDir}:${oldPath}"
+        $origVer = $PSVersionTable.PSVersion
+        try {
+            Push-Location $tempDir
+            $PSVersionTable.PSVersion = [version]'5.1'
+            & "$tempDir/runner.ps1" -Scripts '0001' -Auto | Out-Null
+            $PSVersionTable.PSVersion = $origVer
+            Pop-Location
+        } finally {
+            $env:PATH = $oldPath
+            $PSVersionTable.PSVersion = $origVer
+        }
+
+        Test-Path $outFile | Should -BeTrue
+        Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue
+    }
+
     It 'exits with code 1 when -Scripts has no matching prefixes' {
         $tempDir   = New-RunnerTestEnv
         Push-Location $tempDir
@@ -136,16 +172,18 @@ exit 0" | Set-Content -Path $dummy
         $scriptsDir = Join-Path $tempDir 'runner_scripts'
         $out1       = Join-Path $tempDir 'out1.txt'
         $out2       = Join-Path $tempDir 'out2.txt'
-        @"
+        $failContent = @"
 Param([PSCustomObject]`$Config)
 '1' | Out-File -FilePath "$out1"
 exit 1
-"@ | Set-Content -Path (Join-Path $scriptsDir '0001_Fail.ps1')
-        @"
+"@
+        Set-Content -Path (Join-Path $scriptsDir '0001_Fail.ps1') -Value $failContent
+        $successContent = @"
 Param([PSCustomObject]`$Config)
 '2' | Out-File -FilePath "$out2"
 exit 0
-"@ | Set-Content -Path (Join-Path $scriptsDir '0002_Success.ps1')
+"@
+        Set-Content -Path (Join-Path $scriptsDir '0002_Success.ps1') -Value $successContent
 
         Push-Location $tempDir
         Mock Read-LoggedInput { throw 'Read-LoggedInput should not be called' }
@@ -165,16 +203,18 @@ exit 0
         $scriptsDir = Join-Path $tempDir 'runner_scripts'
         $out1       = Join-Path $tempDir 'out1_throw.txt'
         $out2       = Join-Path $tempDir 'out2_throw.txt'
-        @"
+        $throwContent = @"
 Param([PSCustomObject]`$Config)
 '1' | Out-File -FilePath "$out1"
 throw 'bad'
-"@ | Set-Content -Path (Join-Path $scriptsDir '0001_Throw.ps1')
-        @"
+"@
+        Set-Content -Path (Join-Path $scriptsDir '0001_Throw.ps1') -Value $throwContent
+        $successContent = @"
 Param([PSCustomObject]`$Config)
 '2' | Out-File -FilePath "$out2"
 exit 0
-"@ | Set-Content -Path (Join-Path $scriptsDir '0002_Success.ps1')
+"@
+        Set-Content -Path (Join-Path $scriptsDir '0002_Success.ps1') -Value $successContent
 
         Push-Location $tempDir
         Mock Read-LoggedInput { throw 'Read-LoggedInput should not be called' }
@@ -194,16 +234,18 @@ exit 0
         $scriptsDir = Join-Path $tempDir 'runner_scripts'
         $out1       = Join-Path $tempDir 'out_cleanup.txt'
         $out2       = Join-Path $tempDir 'out_other.txt'
-        @"
+        $cleanupContent = @"
 Param([PSCustomObject]`$Config)
 'c' | Out-File -FilePath "$out1"
 exit 0
-"@ | Set-Content -Path (Join-Path $scriptsDir '0000_Cleanup.ps1')
-        @"
+"@
+        Set-Content -Path (Join-Path $scriptsDir '0000_Cleanup.ps1') -Value $cleanupContent
+        $otherContent = @"
 Param([PSCustomObject]`$Config)
 'o' | Out-File -FilePath "$out2"
 exit 0
-"@ | Set-Content -Path (Join-Path $scriptsDir '0001_Other.ps1')
+"@
+        Set-Content -Path (Join-Path $scriptsDir '0001_Other.ps1') -Value $otherContent
 
         Push-Location $tempDir
         Mock Read-LoggedInput { throw 'Read-LoggedInput should not be called' }
@@ -301,11 +343,12 @@ Param([PSCustomObject]`$Config)
     It 'suppresses informational logs when -Verbosity silent is used' {
         $tempDir   = New-RunnerTestEnv
         $scriptsDir = Join-Path $tempDir 'runner_scripts'
-        @"
+        $logContent = @"
 Param([PSCustomObject]`$Config)
 Write-Warning 'warn message'
 Write-Error 'err message'
-"@ | Set-Content -Path (Join-Path $scriptsDir '0001_Log.ps1')
+"@
+        Set-Content -Path (Join-Path $scriptsDir '0001_Log.ps1') -Value $logContent
 
         Push-Location $tempDir
         $script:logLines = @()
@@ -331,11 +374,12 @@ Write-Error 'err message'
     It 'suppresses informational logs when -Quiet is used' {
         $tempDir   = New-RunnerTestEnv
         $scriptsDir = Join-Path $tempDir 'runner_scripts'
-        @"
+        $logContent = @"
 Param([PSCustomObject]`$Config)
 Write-Warning 'warn message'
 Write-Error 'err message'
-"@ | Set-Content -Path (Join-Path $scriptsDir '0001_Log.ps1')
+"@
+        Set-Content -Path (Join-Path $scriptsDir '0001_Log.ps1') -Value $logContent
 
         Push-Location $tempDir
         $script:logLines = @()
@@ -358,11 +402,12 @@ Write-Error 'err message'
     It 'suppresses informational logs when -Verbosity silent is used' {
         $tempDir   = New-RunnerTestEnv
         $scriptsDir = Join-Path $tempDir 'runner_scripts'
-        @"
+        $logContent = @"
 Param([PSCustomObject]`$Config)
 Write-Warning 'warn message'
 Write-Error 'err message'
-"@ | Set-Content -Path (Join-Path $scriptsDir '0001_Log.ps1')
+"@
+        Set-Content -Path (Join-Path $scriptsDir '0001_Log.ps1') -Value $logContent
 
         Push-Location $tempDir
         $script:logLines = @()
@@ -407,11 +452,12 @@ exit 0" | Set-Content -Path (Join-Path $scriptsDir '0001_Test.ps1')
         $tempDir   = New-RunnerTestEnv
         $scriptsDir = Join-Path $tempDir 'runner_scripts'
         $out        = Join-Path $tempDir 'out.txt'
-        @"
+        $testContent = @"
 Param([PSCustomObject]`$Config)
 'ran' | Out-File -FilePath "$out"
 exit 0
-"@ | Set-Content -Path (Join-Path $scriptsDir '0001_Test.ps1')
+"@
+        Set-Content -Path (Join-Path $scriptsDir '0001_Test.ps1') -Value $testContent
 
         Mock Get-MenuSelection { @() }
         Mock-WriteLog
@@ -430,10 +476,11 @@ exit 0
     It 'logs script output exactly once' {
         $tempDir   = New-RunnerTestEnv
         $scriptsDir = Join-Path $tempDir 'runner_scripts'
-        @"
+        $echoContent = @"
 Param([PSCustomObject]`$Config)
 Write-CustomLog 'hello world'
-"@ | Set-Content -Path (Join-Path $scriptsDir '0001_Echo.ps1')
+"@
+        Set-Content -Path (Join-Path $scriptsDir '0001_Echo.ps1') -Value $echoContent
 
         Push-Location $tempDir
         $script:messages = @()
