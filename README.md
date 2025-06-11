@@ -95,14 +95,32 @@ Detailed guides and module references are located in the [docs](docs/) directory
 
 ## Python CLI
 
-The optional `labctl` command line utility lives in the [py](py/) folder.
-Install its dependencies with [Poetry](https://python-poetry.org/) and run the
-subcommands via `poetry run`:
+The optional `labctl` utility lives in the [py](py/) folder. Install its
+dependencies with [Poetry](https://python-poetry.org/) and invoke commands with
+`poetry run`:
 
 ```bash
 cd py
 poetry install
-poetry run labctl hv facts
+```
+
+### Hyper-V helpers
+
+```bash
+poetry run labctl hv facts       # print Hyper-V configuration
+poetry run labctl hv deploy      # simulate a Hyper-V deployment
+```
+
+### Repository helpers
+
+These require the [GitHub CLI](https://cli.github.com/) to be available and
+authenticated:
+
+```bash
+poetry run labctl repo close-pr 123
+poetry run labctl repo close-issue 42
+poetry run labctl repo view-issue 99
+poetry run labctl repo cleanup
 ```
 
 Launch the experimental Textual interface:
