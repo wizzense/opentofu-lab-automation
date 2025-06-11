@@ -109,7 +109,7 @@ example in `configs/config_files/` (for instance `full-config.json`) to
 VM parameters. `main.tf` reads from this file via the `lab_config_path`
 variable.
 
-See [examples/hyperv/README.md](examples/hyperv/README.md) for a
+See [opentofu/examples/hyperv/README.md](opentofu/examples/hyperv/README.md) for a
 detailed description of each field.
 
 ## Documentation
@@ -118,8 +118,8 @@ Detailed guides and module references are located in the [docs](docs/) directory
 Start with [docs/index.md](docs/index.md) for an overview. Direct links to the
 Terraform modules:
 
-- [Hyper-V VM module](modules/vm/README.md)
-- [Network switch module](modules/network_switch/README.md)
+- [Hyper-V VM module](opentofu/modules/vm/README.md)
+- [Network switch module](opentofu/modules/network_switch/README.md)
 - [Hyper-V provider configuration](docs/hyperv-provider.md)
 
 ## Python CLI
