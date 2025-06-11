@@ -12,6 +12,7 @@ def summarize_failures(xml_path: Path) -> str:
     root = tree.getroot()
     lines = []
     cases = list(root.findall(".//test-case[@result='Failed']"))
+    cases += list(root.findall(".//test-case[@result='Failure']"))
     cases += list(root.findall(".//UnitTestResult[@outcome='Failed']"))
 
     for case in cases:
@@ -37,6 +38,7 @@ def report_failures(xml_path: Path) -> None:
     details.append(f"OS: {os_name}")
     extra = "\n".join(details)
     cases = list(root.findall(".//test-case[@result='Failed']"))
+    cases += list(root.findall(".//test-case[@result='Failure']"))
     cases += list(root.findall(".//UnitTestResult[@outcome='Failed']"))
 
     for case in cases:
