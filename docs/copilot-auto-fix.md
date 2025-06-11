@@ -17,4 +17,5 @@ The workflow `.github/workflows/copilot-auto-fix.yml` uses the GitHub Copilot CL
 
 3. Add the token as the repository secret **`COPILOT_OAUTH_TOKEN`**.
 
-The workflow reads the secret and sets the `GH_TOKEN` environment variable so that Copilot can suggest fixes for open issues.
+The workflow reads the secret and sets the `GH_TOKEN` environment variable so that Copilot can suggest fixes for open issues. If the secret is missing, the job stops immediately with an error message.
+

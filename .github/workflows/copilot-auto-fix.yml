@@ -16,6 +16,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Fail if GH_TOKEN missing
+        run: |
+          if [ -z "$GH_TOKEN" ]; then
+            echo "::error::COPILOT_OAUTH_TOKEN secret not set"
+            exit 1
+          fi
+
       # 'gh' will authenticate automatically via GH_TOKEN
 
       # Headless defaults – never prompt
