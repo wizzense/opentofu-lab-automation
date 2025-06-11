@@ -32,10 +32,12 @@
   "CosignURL": "https://github.com/sigstore/cosign/releases/download/v2.4.3/cosign-windows-amd64.exe",
   "CosignPath": "C:\\temp\\cosign",
   "InstallGPG": true,
+  "InstallSysinternals": true,
+  "SysinternalsPath": "C:\\Sysinternals",
   "CertificateAuthority": {
-    "CommonName": "default-lab-RootCA",
-    "ValidityYears": 5
-  },
+      "CommonName": "default-lab-RootCA",
+      "ValidityYears": 5
+    },
   "HyperV": {
     "User": "",
     "Password": "",

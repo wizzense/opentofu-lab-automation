@@ -190,6 +190,8 @@ The runner script can run the following:
 
 0009_Initialize-OpenTofu.ps1 - setups up opentofu and the lab-infra repo in C:\temp\base-infra
 
+0205_Install-Sysinternals.ps1 - downloads the Sysinternals Suite to the path specified by `SysinternalsPath` and verifies `PsInfo.exe`
+
 0010_Prepare-HyperVHost.ps1 - configures Hyper-V and downloads the provider from the registry
 
 - Enables hyper-v if not enabled
