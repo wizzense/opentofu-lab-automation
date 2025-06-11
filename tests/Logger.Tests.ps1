@@ -45,3 +45,25 @@ Describe 'Write-CustomLog' {
         }
     }
 }
+
+Describe 'Read-LoggedInput' {
+    BeforeAll {
+        . (Join-Path $PSScriptRoot '..' 'runner_utility_scripts' 'Logger.ps1')
+    }
+    AfterEach {
+        Remove-Item Function:Read-Host -ErrorAction SilentlyContinue
+    }
+    It 'logs prompt and input' {
+        Mock Write-CustomLog {}
+        function global:Read-Host { param($Prompt) 'val' }
+        Read-LoggedInput -Prompt 'Ask?'
+        Should -Invoke -CommandName Write-CustomLog -Times 1 -ParameterFilter { $Message -eq 'Ask?: val' }
+    }
+    It 'handles secure strings without logging value' {
+        Mock Write-CustomLog {}
+        $sec = New-Object System.Security.SecureString
+        function global:Read-Host { param($Prompt,$AsSecureString) $sec }
+        Read-LoggedInput -Prompt 'Secret' -AsSecureString | Should -Be $sec
+        Should -Invoke -CommandName Write-CustomLog -Times 1 -ParameterFilter { $Message -eq 'Secret (secure input)' }
+    }
+}

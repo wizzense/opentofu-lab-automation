@@ -53,7 +53,7 @@ Describe 'Prepare-HyperVProvider path restoration' -Skip:($SkipNonWindows) {
         Mock go {}
         Mock Copy-Item {}
         Mock Convert-CerToPem {}
-        Mock Read-Host {
+        Mock Read-LoggedInput {
             $pwd = New-Object System.Security.SecureString
             foreach ($c in ''.ToCharArray()) { $pwd.AppendChar($c) }
             $pwd.MakeReadOnly()
@@ -112,7 +112,7 @@ Describe 'Prepare-HyperVProvider certificate handling' -Skip:($SkipNonWindows) {
         Mock Export-PfxCertificate {}
         Mock Import-PfxCertificate {}
         Mock Remove-Item {}
-        Mock Read-Host {
+        Mock Read-LoggedInput {
             $pwd = New-Object System.Security.SecureString
             foreach ($c in 'pw'.ToCharArray()) { $pwd.AppendChar($c) }
             $pwd.MakeReadOnly()

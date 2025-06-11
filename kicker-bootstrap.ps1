@@ -38,7 +38,8 @@ $prompt = "`n<press any key to continue>`n"
 
 function Write-Continue($prompt) {
   [Console]::Write($prompt + '  ')
-  Microsoft.PowerShell.Utility\Read-Host }
+  Read-LoggedInput -Prompt $prompt | Out-Null
+}
 
 $ErrorActionPreference = 'Stop'  # So any error throws an exception
 $ProgressPreference = 'SilentlyContinue'
@@ -159,7 +160,7 @@ The script will do the following if you proceed:
 
 # Prompt for input to provide remote/local or accept default
 
-$configOption = Read-Host -prompt "`nEnter a remote URL or local path, or leave blank for default."
+$configOption = Read-LoggedInput -Prompt "`nEnter a remote URL or local path, or leave blank for default."
 
 if ($configOption -match "https://") {
     Invoke-WebRequest -Uri $configOption -OutFile '.\custom-config.json'
@@ -178,7 +179,7 @@ if ($configOption -match "https://") {
             $num = $i + 1
             Write-CustomLog ("{0}) {1}" -f $num, $configFiles[$i].Name) "INFO" | Write-Host
         }
-        $ans = Read-Host 'Select configuration number'
+        $ans = Read-LoggedInput -Prompt 'Select configuration number'
         if ($ans -match '^[0-9]+$' -and [int]$ans -ge 1 -and [int]$ans -le $configFiles.Count) {
             $ConfigFile = $configFiles[[int]$ans - 1].FullName
         } else {
@@ -320,7 +321,7 @@ catch {
     Write-CustomLog "GitHub CLI is not authenticated."
 
     # Optional: Prompt user for a personal access token
-    $pat = Read-Host "Enter your GitHub Personal Access Token (or press Enter to skip):"
+    $pat = Read-LoggedInput -Prompt "Enter your GitHub Personal Access Token (or press Enter to skip):"
 
     if (-not [string]::IsNullOrWhiteSpace($pat)) {
         Write-CustomLog "Attempting PAT-based GitHub CLI login..."
