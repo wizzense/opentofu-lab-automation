@@ -21,6 +21,9 @@ poetry install --with dev
 
 ## Running tests
 
+Run `pwsh/setup-test-env.ps1` to install Pester, Python and the Python dev dependencies automatically.
+
+
 Run the Pester suite using PowerShell:
 
 ```bash

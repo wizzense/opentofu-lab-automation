@@ -444,6 +444,9 @@ git config --global --add safe.directory <path>
 
 ## Running tests
 
+Run `pwsh/setup-test-env.ps1` to install Python, Pester and the required dev packages automatically. Add `-UsePoetry` to prefer Poetry for managing the Python dependencies.
+
+
 PowerShell 7 or later is required to run the Pester suite. Install `pwsh` with
 your platform's package manager and then execute the tests:
 
@@ -489,7 +492,7 @@ gh run list --limit 20
 lab_utils/Get-WindowsJobArtifacts.ps1 -RunId "<id>"
 ```
 
-Python unit tests live under `py/`. Install the dependencies first using
+Python unit tests live under `py/`. `pwsh/setup-test-env.ps1` installs the required packages automatically, but you can also install them manually using
 either Poetry or a direct `pip` install to get packages like `typer`:
 
 ```bash
