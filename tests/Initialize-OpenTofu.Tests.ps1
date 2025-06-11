@@ -63,8 +63,8 @@ InModuleScope LabSetup {
 
         & $script:ScriptPath -Config $config
 
-        Should -Invoke -CommandName git -Times 1 -ParameterFilter { $args[0] -eq 'pull' }
-        Should -Invoke -CommandName git -Times 0 -ParameterFilter { $args[0] -eq 'clone' }
+        Should -Invoke -CommandName git -Times 1 -ParameterFilter { $args[0] -eq '-C' -and $args[2] -eq 'pull' }
+        Should -Invoke -CommandName git -Times 0 -ParameterFilter { $args[2] -eq 'clone' }
         Should -Invoke -CommandName tofu -Times 1 -ParameterFilter { $args[0] -eq 'init' }
 
         Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue
