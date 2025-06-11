@@ -16,8 +16,6 @@ jobs:
       - name: Install Copilot extension
         run: gh extension install github/gh-copilot --force
       - name: Suggest fixes for each open issue
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           for num in $(gh issue list --state open --json number -q '.[].number'); do
             gh copilot suggest "Fix issue #$num in ${{ github.repository }}" > suggestion.md || true
