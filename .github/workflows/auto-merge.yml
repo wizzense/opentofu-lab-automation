@@ -11,10 +11,6 @@ jobs:
   auto-merge:
     runs-on: ubuntu-latest
     steps:
-      - name: Authenticate gh
-        run: gh auth login --with-token <<< "$GITHUB_TOKEN"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Merge eligible PRs
         run: |
           for pr in $(gh pr list --state open --json number,mergeable -q '.[] | select(.mergeable=="MERGEABLE") | .number'); do
