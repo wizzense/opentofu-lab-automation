@@ -70,7 +70,7 @@ push changes or open a pull request, ensuring the examples remain valid.
 
 - `WAN-vSwitch.tf` – creates the external network switch using
   `hyperv_network_switch`.
-- `vm_modules.tf` – repeatedly calls the [`modules/vm`](../modules/vm/README.md)
+- `vm_modules.tf` – repeatedly calls the [`modules/vm`](../../modules/vm/README.md)
   module to build VMs with different ISOs.
 - `providers.tf` – holds the provider configuration shown above.
 
