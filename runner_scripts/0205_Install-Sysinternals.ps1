@@ -17,8 +17,8 @@ Invoke-LabStep -Config $Config -Body {
     }
 
     $zipUrl  = 'https://download.sysinternals.com/files/SysinternalsSuite.zip'
-    $zipPath = Join-Path $env:TEMP 'SysinternalsSuite.zip'
-    Write-CustomLog "Downloading Sysinternals Suite from $zipUrl"
+    $zipPath = Join-Path $env:TEMP ("SysinternalsSuite_{0}.zip" -f (New-Guid))
+    Write-CustomLog "Downloading Sysinternals Suite from $zipUrl to $zipPath"
     Invoke-LabWebRequest -Uri $zipUrl -OutFile $zipPath -UseBasicParsing
 
     Write-CustomLog "Extracting to $destDir"
