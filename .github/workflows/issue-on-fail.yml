@@ -11,6 +11,9 @@ jobs:
     permissions:
       issues: write
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
       - name: Collect job results
         id: jobs
         uses: actions/github-script@v7
