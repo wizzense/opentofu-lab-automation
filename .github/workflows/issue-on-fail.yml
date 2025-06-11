@@ -131,7 +131,7 @@ jobs:
                 body
               });
             }
-      - name: Set up Copilot
-        run: npm install -g @githubnext/github-copilot-cli
+      - name: Install Copilot extension
+        run: gh extension install github/gh-copilot --force
       - name: Copilot remediation tips
-        run: github-copilot-cli suggest --repo ${{ github.repository }}
+        run: gh copilot suggest "Suggest improvements" || true
