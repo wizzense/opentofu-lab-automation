@@ -31,16 +31,16 @@ jobs:
       - name: Create installer
         run: |
           $iss = @"
-[Setup]
-AppName=labctl
-AppVersion=0.1.0
-DefaultDirName={pf}\labctl
-OutputDir=dist
-OutputBaseFilename=labctl-installer
-DisableProgramGroupPage=yes
-[Files]
-Source: "py\dist\labctl.exe"; DestDir: "{app}"; Flags: ignoreversion
-"@
+            [Setup]
+            AppName=labctl
+            AppVersion=0.1.0
+            DefaultDirName={pf}\labctl
+            OutputDir=dist
+            OutputBaseFilename=labctl-installer
+            DisableProgramGroupPage=yes
+            [Files]
+            Source: "py\dist\labctl.exe"; DestDir: "{app}"; Flags: ignoreversion
+          "@
           $iss | Out-File installer.iss -Encoding ASCII
           & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" installer.iss
       - name: Upload installer
