@@ -56,7 +56,7 @@ if (-not (Test-Path $loggerPath)) {
     if (-not (Test-Path $loggerDir)) {
         New-Item -ItemType Directory -Path $loggerDir -Force | Out-Null
     }
-    $loggerUrl = 'https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/main/lab_utils/LabRunner/Logger.ps1'
+    $loggerUrl = 'https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/main/pwsh/lab_utils/LabRunner/Logger.ps1'
     Invoke-WebRequest -Uri $loggerUrl -OutFile $loggerPath
 }
 try {
@@ -128,14 +128,14 @@ if (-not (Test-Path $labConfigScript)) {
     if (-not (Test-Path $labUtilsDir)) {
         New-Item -ItemType Directory -Path $labUtilsDir -Force | Out-Null
     }
-    $labConfigUrl = 'https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/main/lab_utils/Get-LabConfig.ps1'
+    $labConfigUrl = 'https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/main/pwsh/lab_utils/Get-LabConfig.ps1'
     Invoke-WebRequest -Uri $labConfigUrl -OutFile $labConfigScript
 }
 if (-not (Test-Path $formatScript)) {
     if (-not (Test-Path $labUtilsDir)) {
         New-Item -ItemType Directory -Path $labUtilsDir -Force | Out-Null
     }
-    $formatUrl = 'https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/main/lab_utils/Format-Config.ps1'
+    $formatUrl = 'https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/main/pwsh/lab_utils/Format-Config.ps1'
     Invoke-WebRequest -Uri $formatUrl -OutFile $formatScript
 }
 . $labConfigScript
