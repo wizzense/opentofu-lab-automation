@@ -29,14 +29,18 @@ jobs:
             core.setOutput('summary', summary);
             core.setOutput('failed', failed);
 
-      - name: Download Pester results and open issues
+      - name: Download test results and open issues
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           run_id=${{ github.event.workflow_run.id }}
           gh run download "$run_id" -n 'pester-results-*' -D artifacts
+          gh run download "$run_id" -n 'pytest-results-*' -D artifacts
           find artifacts -name testResults.xml -print0 | while IFS= read -r -d '' f; do
             python py/labctl/pester_failures.py "$f"
+          done
+          find artifacts -name junit.xml -print0 | while IFS= read -r -d '' f; do
+            python py/labctl/pytest_failures.py "$f"
           done
 
       - name: Check existing issue

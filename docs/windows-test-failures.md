@@ -1,6 +1,6 @@
 # Windows Test Failures
 
-The following table lists failing tests collected from `coverage/testResults.xml` along with their error messages. When the `Pester` workflow fails, the `issue-on-fail` workflow downloads the `pester-results-<os>` artifact and runs `py/labctl/pester_failures.py` to open GitHub issues for each failing test. The matching log (`coverage/pester.log`) only contained `gh: Not Found (HTTP 404)`.
+The following table lists failing tests collected from `coverage/testResults.xml` along with their error messages. When a test workflow fails, `.github/workflows/issue-on-fail.yml` downloads the `pester-results-*` or `pytest-results-*` artifacts and runs `py/labctl/pester_failures.py` or `py/labctl/pytest_failures.py` to open GitHub issues for each failing test. The matching log (`coverage/pester.log`) only contained `gh: Not Found (HTTP 404)`.
 
 | Test Name | Error Message |
 |-----------|--------------|
