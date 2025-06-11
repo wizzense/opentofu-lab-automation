@@ -113,11 +113,13 @@ function Get-SystemInfo {
                 Write-CustomLog "Unsupported platform: $platform" -Level 'ERROR'
                 exit 1
             }
+        }
 
         if ($AsJson) {
             $info | ConvertTo-Json -Depth 5
         } else {
             $info
+        }
     }
 }
 
