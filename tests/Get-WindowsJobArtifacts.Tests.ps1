@@ -8,7 +8,7 @@ Describe 'Get-WindowsJobArtifacts' {
         $scriptPath = Join-Path $PSScriptRoot '..' 'lab_utils' 'Get-WindowsJobArtifacts.ps1'
     }
 
-    BeforeEach {
+    BeforeAll {
         Mock Invoke-WebRequest -ModuleName LabSetup {}
         Mock Expand-Archive {}
         Mock Get-ChildItem { [pscustomobject]@{ FullName = 'dummy.xml' } }
