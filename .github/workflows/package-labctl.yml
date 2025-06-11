@@ -1,0 +1,50 @@
+name: Package labctl
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  package-win:
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: pwsh
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+      - name: Install dependencies
+        run: |
+          cd py
+          poetry install
+      - name: Build executable
+        run: |
+          cd py
+          poetry run pyinstaller labctl/cli.py --onefile --name labctl
+      - name: Create installer
+        run: |
+          $iss = @"
+[Setup]
+AppName=labctl
+AppVersion=0.1.0
+DefaultDirName={pf}\labctl
+OutputDir=dist
+OutputBaseFilename=labctl-installer
+DisableProgramGroupPage=yes
+[Files]
+Source: "py\dist\labctl.exe"; DestDir: "{app}"; Flags: ignoreversion
+"@
+          $iss | Out-File installer.iss -Encoding ASCII
+          & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" installer.iss
+      - name: Upload installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: labctl-installer
+          path: dist/labctl-installer.exe
