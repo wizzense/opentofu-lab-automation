@@ -56,7 +56,7 @@ function Find-Gpg {
     }
 }
 
-Invoke-LabScript -Config $Config -ScriptBlock {
+Invoke-LabStep -Config $Config -Body {
     Write-CustomLog "Running $($MyInvocation.MyCommand.Name)"
 
 # Execute based on provided switches

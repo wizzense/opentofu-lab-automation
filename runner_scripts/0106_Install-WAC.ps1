@@ -16,7 +16,7 @@ function Get-WacRegistryInstallation {
     return $null
 }
 
-Invoke-LabScript -Config $Config -ScriptBlock {
+Invoke-LabStep -Config $Config -Body {
     Write-CustomLog "Running $($MyInvocation.MyCommand.Name)"
 
 if ($Config.InstallWAC -eq $true) {

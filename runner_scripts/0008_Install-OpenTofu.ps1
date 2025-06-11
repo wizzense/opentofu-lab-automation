@@ -17,7 +17,7 @@ function Install-OpenTofu {
     [CmdletBinding()]
     param([pscustomobject]$Config)
 
-    Invoke-LabScript -Config $Config -ScriptBlock {
+    Invoke-LabStep -Config $Config -Body {
         Write-CustomLog "Running $($MyInvocation.MyCommand.Name)"
 
         if ($Config.InstallOpenTofu -eq $true) {
@@ -28,6 +28,6 @@ function Install-OpenTofu {
             Write-CustomLog "InstallOpenTofu flag is disabled. Skipping OpenTofu installation."
         }
     }
-
 }
+
 if ($MyInvocation.InvocationName -ne '.') { Install-OpenTofu @PSBoundParameters }

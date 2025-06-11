@@ -10,7 +10,7 @@ if ($installerAvailable) {
 } else {
     Write-Warning "Install script '$installScript' not found. OpenTofu installation commands will be unavailable."
 }
-Invoke-LabScript -Config $Config -ScriptBlock {
+Invoke-LabStep -Config $Config -Body {
     Write-CustomLog "Running $($MyInvocation.MyCommand.Name)"
 <#
 .SYNOPSIS

@@ -9,7 +9,7 @@ function Install-NpmDependencies {
     param([pscustomobject]$Config)
 
 
-    Invoke-LabScript -Config $Config -ScriptBlock {
+    Invoke-LabStep -Config $Config -Body {
         param($Config)
 
         Write-CustomLog "Running $($MyInvocation.MyCommand.Name)"
@@ -111,6 +111,6 @@ function Install-NpmDependencies {
         }
         Write-CustomLog '==== Frontend dependency installation complete ===='
     }
-
 }
+
 if ($MyInvocation.InvocationName -ne '.') { Install-NpmDependencies @PSBoundParameters }

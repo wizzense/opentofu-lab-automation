@@ -5,7 +5,7 @@ function Install-NodeCore {
     [CmdletBinding(SupportsShouldProcess = $true)]
     param([pscustomobject]$Config)
 
-    Invoke-LabScript -Config $Config -ScriptBlock {
+    Invoke-LabStep -Config $Config -Body {
     Write-CustomLog "Running $($MyInvocation.MyCommand.Name)"
 <#
 .SYNOPSIS

@@ -1,29 +1,31 @@
-# Dot-source Logger and Get-Platform utilities
-. $PSScriptRoot/../../runner_utility_scripts/Logger.ps1
+#. dot-source utilities
+. $PSScriptRoot/Logger.ps1
 . $PSScriptRoot/../Get-Platform.ps1
 
-function Invoke-LabScript {
-    [CmdletBinding()]
+function Invoke-LabStep {
     param(
-        [Parameter(Mandatory)][pscustomobject]$Config,
-        [Parameter(Mandatory)][scriptblock]$ScriptBlock
+        [scriptblock]$Body,
+        [pscustomobject]$Config
     )
 
-    if (-not (Get-Command Write-CustomLog -ErrorAction SilentlyContinue)) {
-        . $PSScriptRoot/../../runner_utility_scripts/Logger.ps1
+    if ($Config -is [string]) {
+        if (Test-Path $Config) {
+            $Config = Get-Content -Raw -Path $Config | ConvertFrom-Json
+        } else {
+            try { $Config = $Config | ConvertFrom-Json } catch {}
+        }
     }
 
     $prevEAP = $ErrorActionPreference
     $ErrorActionPreference = 'Stop'
     try {
-        Write-CustomLog "Running $($MyInvocation.MyCommand.Name)"
-        & $ScriptBlock $Config
+        & $Body $Config
     } catch {
-        Write-CustomLog "ERROR: $($_)" 'ERROR'
+        Write-CustomLog "ERROR: $_" 'ERROR'
         throw
     } finally {
         $ErrorActionPreference = $prevEAP
     }
 }
 
-Export-ModuleMember -Function Invoke-LabScript, Write-CustomLog, Get-Platform
+Export-ModuleMember -Function Invoke-LabStep, Write-CustomLog, Get-Platform

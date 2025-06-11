@@ -1,6 +1,6 @@
 Param([pscustomobject]$Config)
 Import-Module "$PSScriptRoot/../lab_utils/LabRunner/LabRunner.psd1"
-Invoke-LabScript -Config $Config -ScriptBlock {
+Invoke-LabStep -Config $Config -Body {
     Write-CustomLog "Running $($MyInvocation.MyCommand.Name)"
     $platform = Get-Platform
     Write-CustomLog "Detected platform: $platform"

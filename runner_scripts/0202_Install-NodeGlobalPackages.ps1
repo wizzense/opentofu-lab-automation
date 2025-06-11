@@ -8,7 +8,7 @@ function Install-GlobalPackage {
         [string]$package
     )
 
-    . "$PSScriptRoot/../runner_utility_scripts/Logger.ps1"
+    . "$PSScriptRoot/../lab_utils/LabRunner/Logger.ps1"
 
     if (Get-Command npm -ErrorAction SilentlyContinue) {
         Write-CustomLog "Installing npm package: $package..."
@@ -24,7 +24,7 @@ function Install-NodeGlobalPackages {
     [CmdletBinding(SupportsShouldProcess = $true)]
     param([pscustomobject]$Config)
 
-    Invoke-LabScript -Config $Config -ScriptBlock {
+    Invoke-LabStep -Config $Config -Body {
     param($Config)
     Write-CustomLog "Running $($MyInvocation.MyCommand.Name)"
 <#

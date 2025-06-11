@@ -80,10 +80,10 @@ function Get-HyperVProviderVersion {
     Write-Warning "main.tf not found. Using default Hyper-V provider version $defaultVersion"
     return $defaultVersion
 }
-
 }
+
 if ($MyInvocation.InvocationName -ne '.') {
-Invoke-LabScript -Config $Config -ScriptBlock {
+Invoke-LabStep -Config $Config -Body {
     Write-CustomLog "Running $($MyInvocation.MyCommand.Name)"
 
 if ($Config.PrepareHyperVHost -eq $true) {
