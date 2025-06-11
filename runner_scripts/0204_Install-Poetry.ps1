@@ -15,16 +15,20 @@ function Install-Poetry {
             $installerUrl = 'https://install.python-poetry.org'
             $installerPath = Join-Path $env:TEMP 'install-poetry.py'
 
-            Invoke-LabWebRequest -Uri $installerUrl -OutFile $installerPath -UseBasicParsing
+            try {
+                Invoke-LabWebRequest -Uri $installerUrl -OutFile $installerPath -UseBasicParsing
 
-            $args = @()
-            if ($Config.PoetryVersion) {
-                $args += '--version'
-                $args += $Config.PoetryVersion
+                $args = @()
+                if ($Config.PoetryVersion) {
+                    $args += '--version'
+                    $args += $Config.PoetryVersion
+                }
+                Write-CustomLog 'Executing Poetry installer...'
+                python $installerPath @args
             }
-            Write-CustomLog 'Executing Poetry installer...'
-            python $installerPath @args
-            Remove-Item $installerPath -Force
+            finally {
+                Remove-Item $installerPath -Force
+            }
         }
         else {
             Write-CustomLog 'InstallPoetry flag is disabled. Skipping Poetry installation.'
