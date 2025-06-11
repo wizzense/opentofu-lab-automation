@@ -24,16 +24,18 @@ function Install-Cosign {
             }
         }
 
-        try {
-            if ($PSCmdlet.ShouldProcess($destination, 'Download cosign')) {
-                # Download the cosign executable
-                Invoke-WebRequest -Uri $Config.CosignURL -OutFile $destination -UseBasicParsing
-                Write-CustomLog "Cosign downloaded and installed at $destination"
+        if (-not (Test-Path $destination)) {
+            try {
+                if ($PSCmdlet.ShouldProcess($destination, 'Download cosign')) {
+                    # Download the cosign executable
+                    LabSetup\Invoke-WebRequest -Uri $Config.CosignURL -OutFile $destination -UseBasicParsing
+                    Write-CustomLog "Cosign downloaded and installed at $destination"
+                }
             }
-        }
-        catch {
-            Write-Error "Failed to download cosign from $Config.CosignURL. Please check your internet connection and try again."
-            return
+            catch {
+                Write-Error "Failed to download cosign from $Config.CosignURL. Please check your internet connection and try again."
+                return
+            }
         }
 
         # Add the installation folder to the user's PATH if not already present
