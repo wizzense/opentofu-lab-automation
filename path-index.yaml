@@ -3,10 +3,10 @@ configs/config_files/full-config.json: configs/config_files/full-config.json
 configs/config_files/recommended-config.json: configs/config_files/recommended-config.json
 pwsh/kicker-bootstrap.ps1: pwsh/kicker-bootstrap.ps1
 pwsh/kickstart-bootstrap.sh: pwsh/kickstart-bootstrap.sh
-pwsh/lab_utils/Expand-All.ps1: pwsh/lab_utils/Expand-All.ps1
-pwsh/lab_utils/Expand-All.psm1: pwsh/lab_utils/Expand-All.psm1
 pwsh/lab_utils/Download-Archive.ps1: pwsh/lab_utils/Download-Archive.ps1
 pwsh/lab_utils/Download-Archive.psm1: pwsh/lab_utils/Download-Archive.psm1
+pwsh/lab_utils/Expand-All.ps1: pwsh/lab_utils/Expand-All.ps1
+pwsh/lab_utils/Expand-All.psm1: pwsh/lab_utils/Expand-All.psm1
 pwsh/lab_utils/Format-Config.ps1: pwsh/lab_utils/Format-Config.ps1
 pwsh/lab_utils/Get-LabConfig.ps1: pwsh/lab_utils/Get-LabConfig.ps1
 pwsh/lab_utils/Get-Platform.ps1: pwsh/lab_utils/Get-Platform.ps1
