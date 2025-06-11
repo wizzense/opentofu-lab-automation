@@ -53,4 +53,11 @@ Describe 'kicker-bootstrap utilities'  {
         $content = Get-Content $scriptPath -Raw
         $content | Should -Match 'stash push'
     }
+
+    It 'defines baseUrl for raw GitHub downloads' {
+        $scriptPath = Join-Path $PSScriptRoot '..' 'pwsh' 'kicker-bootstrap.ps1'
+        $content = Get-Content $scriptPath -Raw
+        $content | Should -Match '\$baseUrl\s*='
+        $content | Should -Match 'raw\.githubusercontent\.com'
+    }
 }
