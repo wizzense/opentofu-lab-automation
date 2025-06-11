@@ -1,6 +1,7 @@
 Param([pscustomobject]$Config)
 Import-Module "$PSScriptRoot/../runner_utility_scripts/LabRunner.psd1"
 
+if (-not (Get-Command Convert-CerToPem -ErrorAction SilentlyContinue)) {
 function Convert-CerToPem {
     [CmdletBinding(SupportsShouldProcess)]
     param(
@@ -20,7 +21,9 @@ function Convert-CerToPem {
     $b64   = [System.Convert]::ToBase64String($bytes, 'InsertLineBreaks')
     "-----BEGIN CERTIFICATE-----`n$b64`n-----END CERTIFICATE-----" | Set-Content -Path $PemPath
 }
+}
 
+if (-not (Get-Command Convert-PfxToPem -ErrorAction SilentlyContinue)) {
 function Convert-PfxToPem {
     [CmdletBinding(SupportsShouldProcess)]
     param(
@@ -52,7 +55,9 @@ function Convert-PfxToPem {
         "-----BEGIN PRIVATE KEY-----`n$keyB64`n-----END PRIVATE KEY-----" | Set-Content -Path $KeyPath
     }
 }
+}
 
+if (-not (Get-Command Get-HyperVProviderVersion -ErrorAction SilentlyContinue)) {
 function Get-HyperVProviderVersion {
     [CmdletBinding()]
     param(
@@ -79,6 +84,7 @@ function Get-HyperVProviderVersion {
 
     Write-Warning "main.tf not found. Using default Hyper-V provider version $defaultVersion"
     return $defaultVersion
+}
 }
 
 if ($MyInvocation.InvocationName -ne '.') {
