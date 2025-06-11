@@ -61,6 +61,6 @@ jobs:
             Install-Module -Name powershell-yaml -Force -Scope CurrentUser
         - uses: ./.github/actions/lint
         - name: Set up Copilot
-          run: npm install -g @githubnext/copilot-cli
+          run: npm install -g @githubnext/github-copilot-cli
         - name: Run Copilot suggestions
-          run: copilot suggest --repo ${{ github.repository }}
+          run: github-copilot-cli suggest --repo ${{ github.repository }}
