@@ -2,7 +2,7 @@ if (-not $PSScriptRoot) {
     $PSScriptRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
 }
 
-#Param([pscustomobject]$Config)
+#Param([object]$Config)
 
 if (-not (Get-Module -Name LabRunner)) {
     Import-Module (Join-Path $PSScriptRoot '..\runner_utility_scripts\LabRunner.psd1')
@@ -10,7 +10,7 @@ if (-not (Get-Module -Name LabRunner)) {
 
 
 function Invoke-LabStep {
-    param([scriptblock]$Body, [pscustomobject]$Config)
+    param([scriptblock]$Body, [object]$Config)
     if ($Config -is [string]) {
         if (Test-Path $Config) {
             $Config = Get-Content -Raw -Path $Config | ConvertFrom-Json

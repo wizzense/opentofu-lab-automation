@@ -1,4 +1,4 @@
-Param([pscustomobject]$Config)
+Param([object]$Config)
 Import-Module "$PSScriptRoot/../lab_utils/LabRunner/LabRunner.psd1"
 Write-CustomLog "Starting $MyInvocation.MyCommand"
     Write-CustomLog "Running $($MyInvocation.MyCommand.Name)"
