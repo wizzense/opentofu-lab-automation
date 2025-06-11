@@ -1,3 +1,4 @@
+import os
 import subprocess
 from datetime import datetime
 from typing import List
@@ -15,7 +16,11 @@ def close_issue(issue_number: int) -> None:
 
 def create_issue(title: str, body: str) -> None:
     """Create a GitHub issue using the CLI."""
-    subprocess.run(["gh", "issue", "create", "-t", title, "-b", body], check=True)
+    repo = os.environ.get("GITHUB_REPOSITORY")
+    cmd = ["gh", "issue", "create", "-t", title, "-b", body]
+    if repo:
+        cmd.extend(["-R", repo])
+    subprocess.run(cmd, check=True)
 
 
 def cleanup_branches(remote: str = "origin") -> List[str]:

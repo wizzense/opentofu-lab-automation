@@ -1,6 +1,6 @@
 from pathlib import Path
 import sys
-import subprocess
+from types import SimpleNamespace
 
 sys.path.append(str(Path(__file__).resolve().parents[1]))
 
@@ -21,10 +21,16 @@ def test_report_failures(tmp_path, monkeypatch):
     )
     calls = []
 
-    def fake_run(cmd, check=True):
-        calls.append(cmd)
+    def fake_issue(title, body):
+        calls.append(SimpleNamespace(title=title, body=body))
 
-    monkeypatch.setattr(subprocess, "run", fake_run)
+    monkeypatch.setattr(pytest_failures, "create_issue", fake_issue)
+    monkeypatch.setenv("RUN_URL", "http://run")
+    monkeypatch.setenv("COMMIT_SHA", "deadbeef")
+    monkeypatch.setenv("BRANCH_NAME", "feat")
     pytest_failures.report_failures(xml)
 
-    assert calls == [["gh", "issue", "create", "-t", "pkg.TestCase.test_fail", "-b", "oops"]]
+    assert len(calls) == 1
+    assert calls[0].title == "pkg.TestCase.test_fail"
+    assert "oops" in calls[0].body
+    assert "http://run" in calls[0].body
