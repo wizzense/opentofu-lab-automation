@@ -21,7 +21,7 @@ if (Test-Path $indexPath) {
     try { $script:PathIndex = Get-Content -Raw -Path $indexPath | ConvertFrom-Yaml } catch { $script:PathIndex = @{} }
 }
 
-. (Join-Path $repoRoot 'lab_utils' 'PathUtils.ps1')
+. (Join-Path $repoRoot (Join-Path 'lab_utils' 'PathUtils.ps1'))
 
 function Resolve-IndexPath {
     param([string]$Key)
@@ -83,14 +83,14 @@ $configFilesDir = Resolve-IndexPath 'config_files'
 if (-not $configFilesDir) { $configFilesDir = Join-Path $repoRoot 'config_files' }
 
 if (-not (Get-Command Write-CustomLog -ErrorAction SilentlyContinue)) {
-    . (Join-Path $labUtilsDir 'LabRunner' 'Logger.ps1')
+    . (Join-Path $labUtilsDir (Join-Path 'LabRunner' 'Logger.ps1'))
 }
 $env:LAB_CONSOLE_LEVEL = $script:VerbosityLevels[$Verbosity]
-. (Join-Path $PSScriptRoot 'lab_utils' 'Get-LabConfig.ps1')
-. (Join-Path $PSScriptRoot 'lab_utils' 'Format-Config.ps1')
-. (Join-Path $PSScriptRoot 'lab_utils' 'Get-Platform.ps1')
-. (Join-Path $PSScriptRoot 'lab_utils' 'Resolve-ProjectPath.ps1')
-$menuPath = Join-Path $PSScriptRoot 'lab_utils' 'Menu.ps1'
+. (Join-Path $PSScriptRoot (Join-Path 'lab_utils' 'Get-LabConfig.ps1'))
+. (Join-Path $PSScriptRoot (Join-Path 'lab_utils' 'Format-Config.ps1'))
+. (Join-Path $PSScriptRoot (Join-Path 'lab_utils' 'Get-Platform.ps1'))
+. (Join-Path $PSScriptRoot (Join-Path 'lab_utils' 'Resolve-ProjectPath.ps1'))
+$menuPath = Join-Path $PSScriptRoot (Join-Path 'lab_utils' 'Menu.ps1')
 
 if (-not (Test-Path $menuPath)) {
     Write-Error "Menu module not found at $menuPath"
