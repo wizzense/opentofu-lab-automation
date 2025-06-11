@@ -8,6 +8,7 @@ if (-not (Get-Module -ListAvailable -Name 'Hyper-V')) { return }
 
 Describe 'Prepare-HyperVProvider' -Skip:$SkipNonWindows {
     BeforeAll {
+        Enable-WindowsMocks
         $script:scriptPath = Get-RunnerScriptPath '0010_Prepare-HyperVProvider.ps1'
         . $script:scriptPath
         $global:origConvertCerToPem = (Get-Command Convert-CerToPem).ScriptBlock

@@ -2,6 +2,7 @@
 . (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
 Describe '0101_Enable-RemoteDesktop' -Skip:$SkipNonWindows  {
     BeforeAll {
+        Enable-WindowsMocks
         $script:ScriptPath = Get-RunnerScriptPath '0101_Enable-RemoteDesktop.ps1'
     }
 

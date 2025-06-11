@@ -2,6 +2,7 @@
 . (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
 Describe '0100_Enable-WinRM' -Skip:$SkipNonWindows {
     BeforeAll {
+        Enable-WindowsMocks
         $script:ScriptPath = Get-RunnerScriptPath '0100_Enable-WinRM.ps1'
     }
 

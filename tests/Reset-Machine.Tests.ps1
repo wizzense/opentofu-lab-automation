@@ -2,6 +2,7 @@
 . (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
 Describe 'Reset-Machine script' -Skip:$SkipNonWindows {
     BeforeAll {
+        Enable-WindowsMocks
         $script:ScriptPath = Get-RunnerScriptPath '9999_Reset-Machine.ps1'
         . (Join-Path $PSScriptRoot '..' 'pwsh' 'lab_utils' 'Get-Platform.ps1')
     }
