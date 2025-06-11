@@ -1,5 +1,5 @@
-#. dot-source utilities
-. $PSScriptRoot/Logger.ps1
+. # dot-source utilities
+. . (Join-Path $PSScriptRoot '..' '..' 'runner_utility_scripts' 'Logger.ps1')
 . $PSScriptRoot/../Get-Platform.ps1
 
 function Invoke-LabStep {

@@ -14,7 +14,7 @@ function Invoke-LabStep {
         }
     }
     if (-not (Get-Command Write-CustomLog -ErrorAction SilentlyContinue)) {
-        . $PSScriptRoot/Logger.ps1
+        . (Join-Path $PSScriptRoot '..' '..' 'runner_utility_scripts' 'Logger.ps1')
     }
 
     $prevEAP = $ErrorActionPreference
