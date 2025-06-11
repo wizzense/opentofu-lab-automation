@@ -72,4 +72,4 @@ jobs:
       - name: Install Copilot extension
         run: gh extension install github/gh-copilot --force
       - name: Run Copilot suggestions
-        run: gh copilot suggest "Suggest improvements" || true
+        run: gh copilot suggest "Suggest improvements"
