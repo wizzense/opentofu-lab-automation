@@ -41,5 +41,24 @@ Describe 'Additional installer scripts' {
         & $path -Config $cfg
         Should -Invoke -CommandName $Command -Times 0
     }
+
+    It 'refreshes PATH when Python is installed' {
+        $cfg = [pscustomobject]@{ InstallPython = $true }
+        $path = Get-RunnerScriptPath '0206_Install-Python.ps1'
+        $call = 0
+        Mock Get-Command {
+            $script:call++
+            if ($script:call -eq 1) { return $null }
+            @{ Name='python'; Path='python.exe' }
+        } -ParameterFilter { $Name -eq 'python' }
+        Mock Invoke-LabWebRequest {
+            param($Uri,$Prefix,$Extension,$Action)
+            & $Action 'fake.exe'
+        }
+        Mock Start-Process {}
+        Mock-WriteLog
+        & $path -Config $cfg
+        Should -Invoke -CommandName Write-CustomLog -Times 1 -ParameterFilter { $Message -like '*PATH refreshed*' }
+    }
 }
 }

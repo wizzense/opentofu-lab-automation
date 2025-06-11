@@ -23,7 +23,8 @@ function Install-Poetry {
                 Write-CustomLog 'Executing Poetry installer...'
                 $pythonCmd = Get-Command python -ErrorAction SilentlyContinue
                 if (-not $pythonCmd) {
-                    throw 'Python executable not found. Ensure Python is installed and in PATH.'
+                    Write-CustomLog 'Python not found. Skipping Poetry installation.' 'WARN'
+                    return
                 }
                 & $pythonCmd.Path $installerPath @args
             }
