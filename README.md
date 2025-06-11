@@ -6,14 +6,14 @@
 ## Quick start
 
 The easiest way to bootstrap a fresh Windows host is to run the project’s
-`kicker-bootstrap.ps1` script. It installs Git and the GitHub CLI if needed,
+`kicker-bootstrap.ps1` script located under `pwsh/`. It installs Git and the GitHub CLI if needed,
 clones this repository and then launches `runner.ps1`.
 
 
 ```
 
 
-Powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/refs/heads/main/kicker-bootstrap.ps1' -OutFile '.\kicker-bootstrap.ps1'; .\kicker-bootstrap.ps1 -Quiet"
+Powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/refs/heads/main/pwsh/kicker-bootstrap.ps1' -OutFile '.\kicker-bootstrap.ps1'; .\kicker-bootstrap.ps1 -Quiet"
 
 
 ```
