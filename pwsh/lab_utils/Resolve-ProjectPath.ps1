@@ -19,7 +19,9 @@ function Resolve-ProjectPath {
         if ($index.ContainsKey($Name)) { return (Join-Path $Root $index[$Name]) }
         foreach ($key in $index.Keys) {
             if ((Split-Path $key -Leaf) -eq $Name) {
-                return (Join-Path $Root $index[$key])
+                $normalizedPath = $index[$key] -split '[\\/]' | ForEach-Object { $_ }
+                $normalizedPath = $normalizedPath | Join-Path -Path $null
+                return (Join-Path $Root $normalizedPath)
             }
         }
     }
