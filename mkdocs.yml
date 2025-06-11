@@ -4,5 +4,6 @@ nav:
   - Runner: docs/runner.md
   - Lab Utils: docs/lab_utils.md
   - ISO Tools: docs/iso_tools.md
+  - Copilot Auto Fix: docs/copilot-auto-fix.md
   - Python CLI: docs/python-cli.md
   - Troubleshooting: docs/troubleshooting.md

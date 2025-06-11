@@ -11,7 +11,7 @@ jobs:
   copilot-suggest:
     runs-on: ubuntu-latest
     env:
-      GH_TOKEN: ${{ secrets.GH_PAT_AUTOPILOT }}
+      GH_TOKEN: ${{ secrets.COPILOT_OAUTH_TOKEN }}
 
     steps:
       - uses: actions/checkout@v4
