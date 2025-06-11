@@ -9,7 +9,7 @@ function Install-GlobalPackage {
         [string]$package
     )
 
-    . "$PSScriptRoot/../lab_utils/LabRunner/Logger.ps1"
+    . "$PSScriptRoot/../runner_utility_scripts/Logger.ps1"
 
     if (Get-Command npm -ErrorAction SilentlyContinue) {
         Write-CustomLog "Installing npm package: $package..."
