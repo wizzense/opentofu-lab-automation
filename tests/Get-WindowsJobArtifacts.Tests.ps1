@@ -44,6 +44,7 @@ Describe 'Get-WindowsJobArtifacts' {
         Mock gh {} -ParameterFilter { $args[0] -eq 'auth' -and $args[1] -eq 'status' }
         Mock gh { '{"artifacts":[]}' } -ParameterFilter { $args[1] -like "*runs/$id/artifacts" }
 
+
         & $scriptPath -RunId $id
 
         Should -Invoke -CommandName gh -ParameterFilter { $args[1] -like "*runs/$id/artifacts" } -Times 1
