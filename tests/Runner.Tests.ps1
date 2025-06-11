@@ -328,7 +328,7 @@ Write-Error 'err message'
         Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue
     }
 
-    It 'suppresses informational logs when -Verbosity silent is used' {
+    It 'suppresses informational logs when -Quiet is used' {
         $tempDir   = New-RunnerTestEnv
         $scriptsDir = Join-Path $tempDir 'runner_scripts'
         @"
@@ -344,7 +344,7 @@ Write-Error 'err message'
         function global:Write-Host { param([object]$Object,[string]$ForegroundColor) process { $script:logLines += "$Object" } }
         function global:Write-Warning { param([string]$Message) $script:warnings += $Message }
         function global:Write-Error   { param([string]$Message) $script:errors   += $Message }
-        $output = & "$tempDir/runner.ps1" -Scripts '0001' -Auto -Verbosity silent *>&1
+        $output = & "$tempDir/runner.ps1" -Scripts '0001' -Auto -Quiet *>&1
         Pop-Location
 
         ($script:logLines | Measure-Object).Count | Should -Be 0
