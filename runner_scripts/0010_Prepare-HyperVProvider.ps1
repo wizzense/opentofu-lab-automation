@@ -391,7 +391,6 @@ if (Test-Path $destinationBinary) { Remove-Item $destinationBinary -Force }
 Copy-Item -Path $providerExePath -Destination $destinationBinary -Force -Verbose
 
 Write-CustomLog "Hyper-V provider installed at: $destinationBinary"
-}
 
 # ------------------------------
 # 5) Update Provider Config File (providers.tf)
