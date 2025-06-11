@@ -1,4 +1,3 @@
-
 . (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
 . (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
 
@@ -7,6 +6,9 @@ Describe '0200_Get-SystemInfo' {
     BeforeAll {
         Import-Module (Join-Path $PSScriptRoot '..' 'pwsh' 'lab_utils' 'LabRunner' 'LabRunner.psd1')
         $script:ScriptPath = Get-RunnerScriptPath '0200_Get-SystemInfo.ps1'
+        if (-not $script:ScriptPath -or -not (Test-Path $script:ScriptPath)) {
+            throw "Script under test not found: 0200_Get-SystemInfo.ps1 (resolved path: $script:ScriptPath)"
+        }
     }
 
     It 'runs without throwing and returns expected keys' {
@@ -40,17 +42,18 @@ Describe 'runner.ps1 executing 0200_Get-SystemInfo' {
         $tempDir = Join-Path ([System.IO.Path]::GetTempPath()) ([System.Guid]::NewGuid())
         $null = New-Item -ItemType Directory -Path $tempDir
         try {
-            Copy-Item (Join-Path $PSScriptRoot '..' 'runner.ps1') -Destination $tempDir
+            $runnerPath = Join-Path $PSScriptRoot '..' 'pwsh' 'runner.ps1'
+            Copy-Item $runnerPath -Destination $tempDir
             Copy-Item (Join-Path $PSScriptRoot '..' 'pwsh' 'lab_utils') -Destination $tempDir -Recurse
             Copy-Item (Join-Path $PSScriptRoot '..' 'pwsh' 'lab_utils' 'LabRunner') -Destination (Join-Path $tempDir 'lab_utils' 'LabRunner') -Recurse
-            Copy-Item (Join-Path $PSScriptRoot '..' 'configs' 'config_files') -Destination (Join-Path $tempDir 'configs' 'config_files') -Recurse
-            $scriptsDir = Join-Path $tempDir 'pwsh' 'runner_scripts'
+            Copy-Item (Join-Path $PSScriptRoot '..' 'configs' 'config_files') -Destination (Join-Path $tempDir 'config_files') -Recurse
+            $scriptsDir = Join-Path $tempDir 'runner_scripts'
             $null = New-Item -ItemType Directory -Path $scriptsDir
             Copy-Item $script:ScriptPath -Destination $scriptsDir
 
         Push-Location $tempDir
         $pwsh = (Get-Command pwsh).Source
-        $output = & $pwsh -NoLogo -NoProfile -File './runner.ps1' -Scripts '0200' -Auto
+        $output = & $pwsh -NoLogo -NoProfile -File (Join-Path $tempDir 'runner.ps1') -Scripts '0200' -Auto
         $code   = $LASTEXITCODE
         Pop-Location
 

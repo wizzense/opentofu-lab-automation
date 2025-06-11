@@ -2,23 +2,27 @@
 . (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
 $skipNpm = -not (Get-Command npm -ErrorAction SilentlyContinue)
 Describe 'Node installation scripts' -Skip:$skipNpm {
-    BeforeAll {
+    InModuleScope LabRunner {
+        BeforeAll {
+            # Set up standard mocks for cross-platform testing
+            Disable-InteractivePrompts
+            New-StandardMocks -IncludeMocks @('LabDownload', 'WebRequest', 'System')
 
-        $script:nodeScripts = @(
-            '0201_Install-NodeCore.ps1'
-            '0202_Install-NodeGlobalPackages.ps1'
-            '0203_Install-npm.ps1'
-        )
-        $script:core   = Get-RunnerScriptPath $script:nodeScripts[0]
-        $script:global = Get-RunnerScriptPath $script:nodeScripts[1]
-        $script:npm    = Get-RunnerScriptPath $script:nodeScripts[2]
-        $script:origTemp = $env:TEMP
-        $env:TEMP = Join-Path ([System.IO.Path]::GetTempPath()) 'pester-temp'
-        New-Item -ItemType Directory -Path $env:TEMP -Force | Out-Null
-        $script:config = [pscustomobject]@{}
-        Mock Get-Command { @{ Name = $Name } } -ParameterFilter { $Name -in 'npm','node' }
-        function node { param([Parameter(ValueFromRemainingArguments = $true)][string[]]$Args) }
-    }
+            $script:nodeScripts = @(
+                '0201_Install-NodeCore.ps1'
+                '0202_Install-NodeGlobalPackages.ps1'
+                '0203_Install-npm.ps1'
+            )
+            $script:core   = Get-RunnerScriptPath $script:nodeScripts[0]
+            $script:global = Get-RunnerScriptPath $script:nodeScripts[1]
+            $script:npm    = Get-RunnerScriptPath $script:nodeScripts[2]
+            $script:origTemp = $env:TEMP
+            $env:TEMP = Join-Path ([System.IO.Path]::GetTempPath()) 'pester-temp'
+            New-Item -ItemType Directory -Path $env:TEMP -Force | Out-Null
+            $script:config = [pscustomobject]@{}
+            Mock Get-Command { @{ Name = $Name } } -ParameterFilter { $Name -in 'npm','node' }
+            function node { param([Parameter(ValueFromRemainingArguments = $true)][string[]]$Args) }
+        }
 
     It 'resolves script paths from the tests directory' -TestCases $script:nodeScripts {
         param($scriptName)
@@ -32,7 +36,7 @@ Describe 'Node installation scripts' -Skip:$skipNpm {
         
         . $core
 
-        Mock Invoke-LabWebRequest -ModuleName LabRunner {}
+        # Additional mocks specific to this test
         Mock Start-Process {}
         Mock Remove-Item {}
         Mock Get-Command { @{Name='node'} } -ParameterFilter { $Name -eq 'node' }
@@ -47,7 +51,7 @@ Describe 'Node installation scripts' -Skip:$skipNpm {
 
         . $core
 
-        Mock Invoke-LabWebRequest -ModuleName LabRunner {}
+        # Additional mocks specific to this test
         Mock Start-Process {}
         Mock Remove-Item {}
         Mock Get-Command {}
@@ -152,7 +156,10 @@ Describe 'Node installation scripts' -Skip:$skipNpm {
 
     AfterAll {
         Remove-Item Function:node -ErrorAction SilentlyContinue
-        Remove-Item -Recurse -Force $env:TEMP -ErrorAction SilentlyContinue
+        if ($env:TEMP -and (Test-Path $env:TEMP)) {
+            Remove-Item -Recurse -Force $env:TEMP -ErrorAction SilentlyContinue
+        }
         $env:TEMP = $script:origTemp
+    }
     }
 }

@@ -1,7 +1,7 @@
 #. dot-source utilities
 . $PSScriptRoot/Logger.ps1
-. $PSScriptRoot/../Get-Platform.ps1
-. $PSScriptRoot/../Network.ps1
+. $PSScriptRoot/Get-Platform.ps1
+. $PSScriptRoot/Network.ps1
 . $PSScriptRoot/InvokeOpenTofuInstaller.ps1
 
 function Get-CrossPlatformTempPath {
@@ -19,6 +19,56 @@ function Get-CrossPlatformTempPath {
         return [System.IO.Path]::GetTempPath() 
     }
 }
+
+function Invoke-CrossPlatformCommand {
+    <#
+    .SYNOPSIS
+    Safely invokes platform-specific cmdlets with fallback behavior
+    
+    .DESCRIPTION
+    Checks if a cmdlet is available before invoking it, allowing scripts to be more
+    cross-platform compatible. Provides mock-friendly execution for testing.
+    
+    .PARAMETER CommandName
+    The name of the cmdlet to invoke
+    
+    .PARAMETER Parameters
+    Hashtable of parameters to pass to the cmdlet
+    
+    .PARAMETER MockResult
+    Result to return when the cmdlet is not available (for testing/cross-platform compatibility)
+    
+    .PARAMETER SkipOnUnavailable
+    If true, silently skip execution when cmdlet is unavailable instead of throwing
+    #>
+    param(
+        [Parameter(Mandatory)]
+        [string]$CommandName,
+        
+        [hashtable]$Parameters = @{},
+        
+        [object]$MockResult = $null,
+        
+        [switch]$SkipOnUnavailable
+    )
+    
+    if (Get-Command $CommandName -ErrorAction SilentlyContinue) {
+        return & $CommandName @Parameters
+    } elseif ($MockResult -ne $null) {
+        Write-CustomLog "Command '$CommandName' not available, returning mock result" 'WARN'
+        return $MockResult
+    } elseif ($SkipOnUnavailable) {
+        Write-CustomLog "Command '$CommandName' not available, skipping" 'WARN'
+        return $null
+    } else {
+        throw "Command '$CommandName' is not available on this platform"
+    }
+}
+
+. $PSScriptRoot/Format-Config.ps1
+. $PSScriptRoot/Expand-All.ps1
+. $PSScriptRoot/Menu.ps1
+. $PSScriptRoot/Download-Archive.ps1
 
 function Invoke-LabStep {
     param(
@@ -86,51 +136,6 @@ function Invoke-LabDownload {
     }
 }
 
-function Invoke-CrossPlatformCommand {
-    <#
-    .SYNOPSIS
-    Safely invokes platform-specific cmdlets with fallback behavior
-    
-    .DESCRIPTION
-    Checks if a cmdlet is available before invoking it, allowing scripts to be more
-    cross-platform compatible. Provides mock-friendly execution for testing.
-    
-    .PARAMETER CommandName
-    The name of the cmdlet to invoke
-    
-    .PARAMETER Parameters
-    Hashtable of parameters to pass to the cmdlet
-    
-    .PARAMETER MockResult
-    Result to return when the cmdlet is not available (for testing/cross-platform compatibility)
-    
-    .PARAMETER SkipOnUnavailable
-    If true, silently skip execution when cmdlet is unavailable instead of throwing
-    #>
-    param(
-        [Parameter(Mandatory)]
-        [string]$CommandName,
-        
-        [hashtable]$Parameters = @{},
-        
-        [object]$MockResult = $null,
-        
-        [switch]$SkipOnUnavailable
-    )
-    
-    if (Get-Command $CommandName -ErrorAction SilentlyContinue) {
-        return & $CommandName @Parameters
-    } elseif ($MockResult -ne $null) {
-        Write-CustomLog "Command '$CommandName' not available, returning mock result" 'WARN'
-        return $MockResult
-    } elseif ($SkipOnUnavailable) {
-        Write-CustomLog "Command '$CommandName' not available, skipping" 'WARN'
-        return $null
-    } else {
-        throw "Command '$CommandName' is not available on this platform"
-    }
-}
-
 # Import nested module for Resolve-ProjectPath
 try {
     Import-Module (Join-Path $PSScriptRoot '../Resolve-ProjectPath.psm1') -Force -ErrorAction Stop
@@ -138,4 +143,4 @@ try {
     Write-Verbose "Failed to import Resolve-ProjectPath.psm1: $_"
 }
 
-Export-ModuleMember -Function Invoke-LabStep, Invoke-LabDownload, Write-CustomLog, Read-LoggedInput, Get-Platform, Invoke-LabWebRequest, Invoke-LabNpm, Resolve-ProjectPath, Get-CrossPlatformTempPath, Invoke-CrossPlatformCommand
+Export-ModuleMember -Function Invoke-LabStep, Invoke-LabDownload, Write-CustomLog, Read-LoggedInput, Get-Platform, Invoke-LabWebRequest, Invoke-LabNpm, Resolve-ProjectPath, Format-Config, Expand-All, Get-MenuSelection, Get-GhDownloadArgs, Invoke-ArchiveDownload, Get-CrossPlatformTempPath, Invoke-CrossPlatformCommand, Invoke-CrossPlatformCommand

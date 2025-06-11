@@ -1,4 +1,3 @@
-
 $helperPath = Join-Path $PSScriptRoot 'helpers' 'Get-ScriptAst.ps1'
 if (-not (Test-Path $helperPath)) {
     throw "Required helper script is missing: $helperPath"
@@ -98,7 +97,7 @@ Describe 'Runner scripts parameter and command checks'  {
             @"
 Param([pscustomobject]`$Config)
 $env:LAB_CONSOLE_LEVEL = '0'
-Import-Module "$PSScriptRoot/../lab_utils/LabRunner/LabRunner.psm1"
+Import-Module LabRunner
 Invoke-LabStep -Config `$Config -Body { Write-Output `$PSScriptRoot }
 "@ | Set-Content -Path $dummy
 

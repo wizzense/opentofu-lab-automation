@@ -60,7 +60,7 @@ if ($Config.InstallWAC -eq $true) {
     Invoke-LabDownload -Uri $downloadUrl -Prefix 'WindowsAdminCenter' -Extension '.msi' -Action {
         param($installerPath)
         Write-CustomLog "Installing WAC silently on port $installPort"
-        Start-Process msiexec.exe -Wait -ArgumentList "/i `"$installerPath`" /qn /L*v `"$env:TEMP\WacInstall.log`" SME_PORT=$installPort ACCEPT_EULA=1"
+        Start-Process msiexec.exe -Wait -ArgumentList "/i `"$installerPath`" /qn /L*v `"$(Get-CrossPlatformTempPath)\WacInstall.log`" SME_PORT=$installPort ACCEPT_EULA=1"
         Write-CustomLog "WAC installation complete."
     }
 } else {

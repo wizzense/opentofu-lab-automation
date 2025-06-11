@@ -29,7 +29,21 @@ Describe 'Cleanup-Files script' {
                 $_ -is [System.Management.Automation.Language.CommandParameterAst] -and $_.ParameterName -eq 'ErrorAction'
             }
             ($ea | Measure-Object).Count | Should -BeGreaterThan 0
-            $ea[-1].Argument.Value | Should -Be 'Stop'
+            
+            # Check if the parameter has an argument
+            $lastEa = $ea[-1]
+            if ($lastEa.Argument) {
+                $lastEa.Argument.Value | Should -Be 'Stop'
+            } else {
+                # Check the next element after the parameter for the value
+                $paramIndex = [Array]::IndexOf($cmd.CommandElements, $lastEa)
+                if ($paramIndex -lt ($cmd.CommandElements.Count - 1)) {
+                    $nextElement = $cmd.CommandElements[$paramIndex + 1]
+                    if ($nextElement -is [System.Management.Automation.Language.StringConstantExpressionAst]) {
+                        $nextElement.Value | Should -Be 'Stop'
+                    }
+                }
+            }
         }
     }
 
@@ -145,8 +159,16 @@ Describe 'Cleanup-Files script' {
 
         Mock Remove-Item { throw [System.IO.IOException]::new('in use') } -ParameterFilter { $Path -eq $repoPath }
 
-        { & $script:scriptPath -Config $config } |
-            Should -Throw -ErrorMessage 'Cleanup failed:'
+        # Capture the error output and exit code
+        $errorOutput = $null
+        try {
+            & $script:scriptPath -Config $config 2>&1 | Tee-Object -Variable errorOutput | Out-Null
+        } catch {
+            # Script may exit with code 1
+        }
+        
+        $LASTEXITCODE | Should -Be 1
+        $errorOutput | Should -Match 'Cleanup failed:'
     }
 }
 

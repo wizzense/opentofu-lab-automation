@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<test-results xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="nunit_schema_2.5.xsd" name="Pester" total="2" errors="0" failures="0" not-run="0" inconclusive="0" ignored="0" skipped="0" invalid="0" date="2025-06-11" time="22:17:05">
+  <environment cwd="/workspaces/opentofu-lab-automation" user-domain="" platform="Linux" nunit-version="2.5.8.0" machine-name="codespaces-712f1a" user="codespace" clr-version="9.0.4" os-version="6.8.0-1027-azure" />
+  <culture-info current-culture="" current-uiculture="" />
+  <test-suite type="TestFixture" name="Pester" executed="True" result="Success" success="True" time="0.8305" asserts="0" description="Pester">
+    <results>
+      <test-suite type="TestFixture" name="/workspaces/opentofu-lab-automation/tests/Menu.Tests.ps1" executed="True" result="Success" success="True" time="0.8305" asserts="0" description="/workspaces/opentofu-lab-automation/tests/Menu.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="Get-MenuSelection" executed="True" result="Success" success="True" time="0.4562" asserts="0" description="Get-MenuSelection">
+            <results>
+              <test-suite type="TestFixture" name="Get-MenuSelection.returns all items when user types all" executed="True" result="Success" success="True" time="0.3782" asserts="0" description="Get-MenuSelection.returns all items when user types all">
+                <results>
+                  <test-case description="returns all items" name="Get-MenuSelection.returns all items when user types all.returns all items" time="0.3467" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Get-MenuSelection.returns item by prefix" executed="True" result="Success" success="True" time="0.4363" asserts="0" description="Get-MenuSelection.returns item by prefix">
+                <results>
+                  <test-case description="returns item by prefix" name="Get-MenuSelection.returns item by prefix.returns item by prefix" time="0.0504" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+    </results>
+  </test-suite>
+</test-results>

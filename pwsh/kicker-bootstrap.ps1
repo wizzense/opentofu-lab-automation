@@ -21,6 +21,22 @@ param(
     [string]$Verbosity = 'normal'
 )
 
+function Get-CrossPlatformTempPath {
+    <#
+    .SYNOPSIS
+    Returns the appropriate temporary directory path for the current platform.
+    
+    .DESCRIPTION
+    Provides a cross-platform way to get the temporary directory, handling cases where
+    $env:TEMP might not be set (e.g., on Linux/macOS).
+    #>
+    if ($env:TEMP) { 
+        return $env:TEMP 
+    } else { 
+        return [System.IO.Path]::GetTempPath() 
+    }
+}
+
 if ($Quiet.IsPresent) { $Verbosity = 'silent' }
 
 $script:VerbosityLevels = @{ silent = 0; normal = 1; detailed = 2 }
@@ -242,7 +258,7 @@ if (Test-Path $gitPath) {
         Write-CustomLog "Git is not installed. Downloading and installing Git for Windows..."
 
         $gitInstallerUrl = "https://github.com/git-for-windows/git/releases/download/v2.48.1.windows.1/Git-2.48.1-64-bit.exe"
-        $gitInstallerPath = Join-Path -Path $env:TEMP -ChildPath "GitInstaller.exe"
+        $gitInstallerPath = Join-Path -Path (Get-CrossPlatformTempPath) -ChildPath "GitInstaller.exe"
 
         Invoke-WebRequest -Uri $gitInstallerUrl -OutFile $gitInstallerPath -UseBasicParsing
         Write-CustomLog "Installing Git silently..."
@@ -280,7 +296,7 @@ $pwshPath = "C:\\Program Files\\PowerShell\\7\\pwsh.exe"
 if (!(Test-Path $pwshPath)) {
     if ($Config.InstallPwsh -eq $true) {
         $pwshInstallerUrl = "https://github.com/PowerShell/PowerShell/releases/latest/download/PowerShell-7.5.1-win-x64.msi"
-        $pwshInstallerPath = Join-Path -Path $env:TEMP -ChildPath "PowerShellInstaller.msi"
+        $pwshInstallerPath = Join-Path -Path (Get-CrossPlatformTempPath) -ChildPath "PowerShellInstaller.msi"
         Invoke-WebRequest -Uri $pwshInstallerUrl -OutFile $pwshInstallerPath -UseBasicParsing
         Write-CustomLog "Installing PowerShell 7 silently..."
         Start-Process msiexec.exe -ArgumentList "/i `"$pwshInstallerPath`" /quiet /norestart" -Wait -Verb RunAs
@@ -306,11 +322,11 @@ $ghExePath = "C:\Program Files\GitHub CLI\gh.exe"
 if (!(Test-Path $ghExePath)) {
     if ($Config.InstallGitHubCLI -eq $true) {
         Write-CustomLog "GitHub CLI not found. Downloading from $($config.GitHubCLIInstallerUrl)..."
-        $ghCliInstaller = Join-Path -Path $env:TEMP -ChildPath "GitHubCLIInstaller.msi"
+        $ghCliInstaller = Join-Path -Path (Get-CrossPlatformTempPath) -ChildPath "GitHubCLIInstaller.msi"
         Invoke-WebRequest -Uri $config.GitHubCLIInstallerUrl -OutFile $ghCliInstaller -UseBasicParsing
 
         Write-CustomLog "Installing GitHub CLI silently..."
-        Start-Process msiexec.exe -ArgumentList "/i `"$ghCliInstaller`" /quiet /norestart /log `"$env:TEMP\ghCliInstall.log`"" -Wait -Verb RunAs
+        Start-Process msiexec.exe -ArgumentList "/i `"$ghCliInstaller`" /quiet /norestart /log `"$(Get-CrossPlatformTempPath)\ghCliInstall.log`"" -Wait -Verb RunAs
         Remove-Item -Path $ghCliInstaller -ErrorAction SilentlyContinue
 
         Write-CustomLog "GitHub CLI installation completed."
@@ -391,7 +407,7 @@ function Update-RepoPreserveConfig {
         Copy-Item -Path 'configs/config_files' -Destination $backupDir -Recurse -Force
         & $GitPath stash push -u -- 'configs/config_files' | Out-Null
     }
-    & $GitPath pull origin $Branch --quiet 2>&1 >> "$env:TEMP\git.log"
+    & $GitPath pull origin $Branch --quiet 2>&1 >> "$(Get-CrossPlatformTempPath)\git.log"
     if ($configChanges) {
         Write-CustomLog 'Restoring backed up config files' 'INFO'
         Copy-Item -Path (Join-Path $backupDir '*') -Destination 'configs/config_files' -Recurse -Force
@@ -423,7 +439,7 @@ $localPath = $config.LocalPath
 
 $localPath = if (-not $localPath -or [string]::IsNullOrWhiteSpace($localPath)) {
     if ($isWindowsOS) {
-        if ($env:TEMP) { $env:TEMP } else { 'C:\\temp' }
+        Get-CrossPlatformTempPath
     } else {
         [System.IO.Path]::GetTempPath()
     }
@@ -460,17 +476,17 @@ if (!(Test-Path $repoPath)) {
     $prevEAP = $ErrorActionPreference
     $ErrorActionPreference = 'Continue'
 
-    & "$ghExePath" repo clone $config.RepoUrl $repoPath -- -q 2>&1 >> "$env:TEMP\gh_clone_log.txt"
+    & "$ghExePath" repo clone $config.RepoUrl $repoPath -- -q 2>&1 >> "$(Get-CrossPlatformTempPath)\gh_clone_log.txt"
 
     $ErrorActionPreference = $prevEAP
 
     # Fallback to git if the GitHub CLI clone appears to have failed
     if (!(Test-Path $repoPath)) {
         Write-CustomLog "GitHub CLI clone failed. Trying git clone..."
-        & "$gitPath" clone $config.RepoUrl $repoPath --quiet 2>&1 >> "$env:TEMP\git_clone_log.txt"
+        & "$gitPath" clone $config.RepoUrl $repoPath --quiet 2>&1 >> "$(Get-CrossPlatformTempPath)\git_clone_log.txt"
 
         if (!(Test-Path $repoPath)) {
-            Write-Error "ERROR: Repository cloning failed. Check logs: $env:TEMP\gh_clone_log.txt and $env:TEMP\git_clone_log.txt"
+            Write-Error "ERROR: Repository cloning failed. Check logs: $(Get-CrossPlatformTempPath)\gh_clone_log.txt and $(Get-CrossPlatformTempPath)\git_clone_log.txt"
             exit 1
         }
     }

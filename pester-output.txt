@@ -1,0 +1,799 @@
+[95mPester v5.7.1[0m
+[95m
+[95mStarting discovery in 43 files.[0m
+[95mDiscovery found 326 tests in 1.69s.[0m
+[95mRunning tests.[0m
+[95m
+[95mRunning tests from '/workspaces/opentofu-lab-automation/tests/Cleanup-Files.Tests.ps1'[0m
+[92mDescribing Cleanup-Files script[0m
+[32m  [+] uses ErrorAction Stop for Remove-Item calls[0m[90m 134ms (104ms|30ms)[0m
+[32m  [+] removes repo and infra directories when they exist[0m[90m 58ms (56ms|2ms)[0m
+[32m  [+] handles missing directories gracefully[0m[90m 39ms (37ms|2ms)[0m
+[32m  [+] runs without a global log file[0m[90m 22ms (20ms|2ms)[0m
+[32m  [+] completes when LogFilePath is undefined[0m[90m 74ms (64ms|10ms)[0m
+  [-] completes when the repo directory is removed 85ms (82ms|3ms)
+   at { . $script:scriptPath -Config $config } | Should -Not -Throw, /workspaces/opentofu-lab-automation/tests/Cleanup-Files.Tests.ps1:138
+   at <ScriptBlock>, /workspaces/opentofu-lab-automation/tests/Cleanup-Files.Tests.ps1:138
+   Expected no exception to be thrown, but an exception "The term 'Get-CrossPlatformTempPath' is not recognized as a name of a cmdlet, function, script file, or executable program.
+   Check the spelling of the name, or if a path was included, verify that the path is correct and try again." was thrown from /workspaces/opentofu-lab-automation/pwsh/runner_scripts/0000_Cleanup-Files.ps1:63 char:23
+       +         Set-Location (Get-CrossPlatformTempPath)
+       +                       ~~~~~~~~~~~~~~~~~~~~~~~~~.
+[32m  [+] throws when repo removal fails[0m[90m 310ms (307ms|2ms)[0m
+[95m
+[95mRunning tests from '/workspaces/opentofu-lab-automation/tests/Config-DNS.Tests.ps1'[0m
+[92mDescribing 0113_Config-DNS[0m
+  [-] calls Set-DnsClientServerAddress with value from config 148ms (144ms|3ms)
+   
+   CommandNotFoundException: Could not find Command Get-NetIPAddress
+[95m
+[95mRunning tests from '/workspaces/opentofu-lab-automation/tests/Config-TrustedHosts.Tests.ps1'[0m
+[92mDescribing 0114_Config-TrustedHosts[0m
+[32m  [+] calls Start-Process with winrm arguments using config value[0m[90m 343ms (337ms|7ms)[0m
+[95m
+[95mRunning tests from '/workspaces/opentofu-lab-automation/tests/Configure-Firewall.Tests.ps1'[0m
+[92mDescribing 0102_Configure-Firewall[0m
+[91m[-] Describe 0102_Configure-Firewall failed[0m
+[91m  CommandNotFoundException: Could not find Command New-NetFirewallRule[0m
+[95m
+[95mRunning tests from '/workspaces/opentofu-lab-automation/tests/Customize-ISO.Tests.ps1'[0m
+[92mDescribing Customize-ISO.ps1[0m
+[32m  [+] parses without errors[0m[90m 14ms (11ms|3ms)[0m
+  [-] honours parameters and logs each step 66ms (64ms|2ms)
+   at <ScriptBlock>, /workspaces/opentofu-lab-automation/tests/Customize-ISO.Tests.ps1:33
+   CommandNotFoundException: The term 'New-CimInstance' is not recognized as a name of a cmdlet, function, script file, or executable program.
+   Check the spelling of the name, or if a path was included, verify that the path is correct and try again.
+[95m
+[95mRunning tests from '/workspaces/opentofu-lab-automation/tests/CustomLint.Tests.ps1'[0m
+[92mDescribing CustomLint.ps1[0m
+  [-] parses without errors 24ms (22ms|3ms)
+   at ($errs ? $errs.Count : 0) | Should -Be 0, /workspaces/opentofu-lab-automation/tests/CustomLint.Tests.ps1:11
+   at <ScriptBlock>, /workspaces/opentofu-lab-automation/tests/CustomLint.Tests.ps1:11
+   Expected 0, but got 1.
+  [-] returns exit code 1 when analyzer reports errors 39ms (37ms|2ms)
+   
+   CommandNotFoundException: Could not find Command Invoke-ScriptAnalyzer
+  [-] fails when Invoke-WebRequest mock lacks ParameterFilter 31ms (30ms|1ms)
+   
+   CommandNotFoundException: Could not find Command Invoke-ScriptAnalyzer
+  [-] returns exit code 0 when no errors 31ms (29ms|1ms)
+   
+   CommandNotFoundException: Could not find Command Invoke-ScriptAnalyzer
+[95m
+[95mRunning tests from '/workspaces/opentofu-lab-automation/tests/Download-Archive.Tests.ps1'[0m
+[92mDescribing Invoke-ArchiveDownload[0m
+[32m  [+] uses gh CLI when -UseGh[0m[90m 75ms (72ms|2ms)[0m
+[32m  [+] uses Invoke-WebRequest when -UseGh not specified[0m[90m 49ms (48ms|2ms)[0m
+[32m  [+] throws if gh fails and -Required is set[0m[90m 75ms (71ms|4ms)[0m
+[32m  [+] throws if Invoke-WebRequest fails and -Required is set[0m[90m 59ms (54ms|5ms)[0m
+[95m
+[95mRunning tests from '/workspaces/opentofu-lab-automation/tests/Enable-PXE.Tests.ps1'[0m
+[92mDescribing 0112_Enable-PXE[0m
+  [-] logs firewall rules when ConfigPXE is true 9ms (5ms|3ms)
+   at <ScriptBlock>, /workspaces/opentofu-lab-automation/tests/Enable-PXE.Tests.ps1:12
+   ParameterBindingValidationException: Cannot bind argument to parameter 'Path' because it is null.
+[95m
+[95mRunning tests from '/workspaces/opentofu-lab-automation/tests/Enable-RemoteDesktop.Tests.ps1'[0m
+[92mDescribing 0101_Enable-RemoteDesktop[0m
+[32m  [+] enables RDP when allowed and currently disabled[0m[90m 81ms (78ms|3ms)[0m
+[32m  [+] skips registry change when already enabled[0m[90m 31ms (30ms|2ms)[0m
+[32m  [+] does nothing when AllowRemoteDesktop is false[0m[90m 99ms (95ms|4ms)[0m
+[95m
+[95mRunning tests from '/workspaces/opentofu-lab-automation/tests/Enable-WinRM.Tests.ps1'[0m
+[92mDescribing 0100_Enable-WinRM[0m
+  [-] enables WinRM when service is not running 46ms (42ms|3ms)
+   
+   CommandNotFoundException: Could not find Command Get-Service
+  [-] skips enabling when WinRM already running 37ms (35ms|2ms)
+   
+   CommandNotFoundException: Could not find Command Get-Service
+[95m
+[95mRunning tests from '/workspaces/opentofu-lab-automation/tests/EscapePathArgument.Tests.ps1'[0m
+[92mDescribing escapePathArgument[0m
+[32m  [+] wraps path in quotes[0m[90m 6ms (4ms|2ms)[0m
+[32m  [+] accepts pipeline input[0m[90m 5ms (3ms|2ms)[0m
+[32m  [+] throws when path contains quotes[0m[90m 5ms (4ms|1ms)[0m
+[95m
+[95mRunning tests from '/workspaces/opentofu-lab-automation/tests/Expand-All.Tests.ps1'[0m
+[92mDescribing Expand-All[0m
+[32m  [+] expands a specific ZIP file when provided[0m[90m 150ms (147ms|3ms)[0m
+[32m  [+] expands all ZIP files recursively when no path is given[0m[90m 152ms (151ms|1ms)[0m
+[32m  [+] logs message when specified ZIP file does not exist[0m[90m 137ms (134ms|2ms)[0m
+[32m  [+] cancels when user declines expansion[0m[90m 151ms (145ms|6ms)[0m
+[95m
+[95mRunning tests from '/workspaces/opentofu-lab-automation/tests/Format-Config.Tests.ps1'[0m
+[92mDescribing Format-Config[0m
+[32m  [+] formats config as indented JSON[0m[90m 72ms (67ms|4ms)[0m
+[32m  [+] accepts pipeline input[0m[90m 11ms (8ms|4ms)[0m
+[32m  [+] accepts pipeline input by property name[0m[90m 13ms (9ms|4ms)[0m
+[32m  [+] throws when no Config is provided[0m[90m 71ms (69ms|2ms)[0m
+[32m  [+] throws when pipeline is empty[0m[90m 23ms (19ms|4ms)[0m
+[32m  [+] throws when Config is null[0m[90m 22ms (19ms|3ms)[0m
+[32m  [+] is a terminating error when Config is null[0m[90m 20ms (18ms|2ms)[0m
+[32m  [+] is a terminating error when piped null[0m[90m 39ms (11ms|28ms)[0m
+[95m
+[95mRunning tests from '/workspaces/opentofu-lab-automation/tests/Get-HyperVProviderVersion.Tests.ps1'[0m
+[92mDescribing Get-HyperVProviderVersion[0m
+  [-] uses version from config 118ms (115ms|3ms)
+   at <ScriptBlock>, /workspaces/opentofu-lab-automation/tests/Get-HyperVProviderVersion.Tests.ps1:7
+   ParseException: At /workspaces/opentofu-lab-automation/pwsh/runner_scripts/0010_Prepare-HyperVProvider.ps1:420 char:1
+   + }
+   + ~
+   Unexpected token '}' in expression or statement.
+  [-] falls back to default when not specified 94ms (93ms|1ms)
+   at <ScriptBlock>, /workspaces/opentofu-lab-automation/tests/Get-HyperVProviderVersion.Tests.ps1:14
+   ParseException: At /workspaces/opentofu-lab-automation/pwsh/runner_scripts/0010_Prepare-HyperVProvider.ps1:420 char:1
+   + }
+   + ~
+   Unexpected token '}' in expression or statement.
+[95m
+[95mRunning tests from '/workspaces/opentofu-lab-automation/tests/Get-LabConfig.Tests.ps1'[0m
+[92mDescribing Get-LabConfig[0m
+[32m  [+] returns PSCustomObject for valid JSON and populates Directories[0m[90m 51ms (50ms|2ms)[0m
+[32m  [+] uses custom Directories from JSON file[0m[90m 16ms (15ms|1ms)[0m
+[32m  [+] throws when file does not exist[0m[90m 8ms (6ms|2ms)[0m
+[32m  [+] throws on invalid JSON[0m[90m 10ms (9ms|1ms)[0m
+[32m  [+] parses valid YAML[0m[90m 12ms (11ms|1ms)[0m
+[95m
+[95mRunning tests from '/workspaces/opentofu-lab-automation/tests/Get-Platform.Tests.ps1'[0m
+[92mDescribing Get-Platform[0m
+[32m  [+] returns the correct platform for the current OS[0m[90m 11ms (9ms|3ms)[0m
+[95m
+[95mRunning tests from '/workspaces/opentofu-lab-automation/tests/Get-SystemInfo.Tests.ps1'[0m
+[92mDescribing 0200_Get-SystemInfo[0m
+[32m  [+] runs without throwing and returns expected keys[0m[90m 100ms (97ms|4ms)[0m
+[32m  [+] returns exit code 1 for unsupported platform[0m[90m 25ms (24ms|1ms)[0m
+[0m
+[92mDescribing runner.ps1 executing 0200_Get-SystemInfo[0m
+[32m  [+] outputs system info when run via runner[0m[90m 2.29s (2.29s|5ms)[0m
+[95m
+[95mRunning tests from '/workspaces/opentofu-lab-automation/tests/Get-WindowsJobArtifacts.Tests.ps1'[0m
+[92mDescribing Get-WindowsJobArtifacts[0m
+  [-] uses gh CLI when authenticated 18ms (17ms|2ms)
+   at <ScriptBlock>, /workspaces/opentofu-lab-automation/tests/Get-WindowsJobArtifacts.Tests.ps1:26
+   RuntimeException: The expression after '&' in a pipeline element produced an object that was not valid. It must result in a command name, a script block, or a CommandInfo object.
+  [-] falls back to nightly.link when gh auth fails 12ms (11ms|1ms)
+   at <ScriptBlock>, /workspaces/opentofu-lab-automation/tests/Get-WindowsJobArtifacts.Tests.ps1:38
+   RuntimeException: The expression after '&' in a pipeline element produced an object that was not valid. It must result in a command name, a script block, or a CommandInfo object.
+  [-] uses provided run ID with gh 16ms (14ms|2ms)
+   at <ScriptBlock>, /workspaces/opentofu-lab-automation/tests/Get-WindowsJobArtifacts.Tests.ps1:51
+   RuntimeException: The expression after '&' in a pipeline element produced an object that was not valid. It must result in a command name, a script block, or a CommandInfo object.
+  [-] uses provided run ID with nightly.link when gh auth fails 14ms (13ms|1ms)
+   at <ScriptBlock>, /workspaces/opentofu-lab-automation/tests/Get-WindowsJobArtifacts.Tests.ps1:64
+   RuntimeException: The expression after '&' in a pipeline element produced an object that was not valid. It must result in a command name, a script block, or a CommandInfo object.
+  [-] emits a clear message when artifacts are missing 14ms (13ms|1ms)
+   at <ScriptBlock>, /workspaces/opentofu-lab-automation/tests/Get-WindowsJobArtifacts.Tests.ps1:78
+   RuntimeException: The expression after '&' in a pipeline element produced an object that was not valid. It must result in a command name, a script block, or a CommandInfo object.
+  [-] returns nonzero exit code when download fails 15ms (13ms|2ms)
+   at $LASTEXITCODE | Should -Be 1, /workspaces/opentofu-lab-automation/tests/Get-WindowsJobArtifacts.Tests.ps1:91
+   at <ScriptBlock>, /workspaces/opentofu-lab-automation/tests/Get-WindowsJobArtifacts.Tests.ps1:91
+   Expected 1, but got 0.
+[95m
+[95mRunning tests from '/workspaces/opentofu-lab-automation/tests/Hypervisor.Tests.ps1'[0m
+[92mDescribing Hypervisor module[0m
+[32m  [+] Get-HVFacts returns provider information[0m[90m 20ms (18ms|2ms)[0m
+[32m  [+] Enable-Provider returns confirmation string[0m[90m 5ms (4ms|1ms)[0m
+[32m  [+] Deploy-VM returns deployment message[0m[90m 5ms (4ms|2ms)[0m
+[95m
+[95mRunning tests from '/workspaces/opentofu-lab-automation/tests/Initialize-OpenTofu.Tests.ps1'[0m
+[92mDescribing Initialize-OpenTofu script[0m
+[32m  [+] clones repo when InfraRepoUrl is provided[0m[90m 180ms (177ms|3ms)[0m
+[32m  [+] pulls updates when repo already exists[0m[90m 70ms (69ms|1ms)[0m
+[32m  [+] runs tofu init in InfraRepoPath[0m[90m 126ms (125ms|2ms)[0m
+[33;1mWARNING: Tofu executable not found at /tmp/76f667cb-86a4-4956-a572-428aabdb856b/Programs//OpenTofu//tofu.exe. Attempting installation...[0m
+[32m  [+] installs OpenTofu when tofu command is missing[0m[90m 116ms (115ms|1ms)[0m
+[33;1mWARNING: Tofu executable not found at /tmp/7f35f975-bf3c-4c7f-b664-e1721167bd9f/Programs//OpenTofu//tofu.exe. Attempting installation...[0m
+[32m  [+] throws when installation does not make tofu available[0m[90m 108ms (107ms|2ms)[0m
+[33;1mWARNING: Tofu executable not found at /tmp/686ad503-5e51-4e30-aa78-72eef8de443c/Programs//OpenTofu//tofu.exe. Attempting installation...[0m
+[32m  [+] errors when Install-OpenTofu script is missing[0m[90m 100ms (96ms|4ms)[0m
+[95m
+[95mRunning tests from '/workspaces/opentofu-lab-automation/tests/Install-Go.Tests.ps1'[0m
+[92mDescribing 0007_Install-Go[0m
+[32m  [+] installs Go when enabled[0m[90m 91ms (89ms|2ms)[0m
+[32m  [+] skips when InstallGo is false[0m[90m 20ms (19ms|2ms)[0m
+[32m  [+] does nothing when Go is already installed[0m[90m 38ms (37ms|1ms)[0m
+[95m
+[95mRunning tests from '/workspaces/opentofu-lab-automation/tests/Install-npm.Tests.ps1'[0m
+[92mDescribing 0203_Install-npm[0m
+[32m  [+] runs npm install in configured NpmPath[0m[90m 117ms (115ms|2ms)[0m
+[32m  [+] succeeds when NpmPath exists[0m[90m 91ms (90ms|1ms)[0m
+[32m  [+] errors when NpmPath is missing and CreateNpmPath is false[0m[90m 79ms (78ms|1ms)[0m
+[32m  [+] errors when NpmPath is empty string[0m[90m 79ms (78ms|2ms)[0m
+[32m  [+] creates NpmPath when CreateNpmPath is true[0m[90m 116ms (115ms|1ms)[0m
+[95m
+[95mRunning tests from '/workspaces/opentofu-lab-automation/tests/Install-Poetry.Tests.ps1'[0m
+[92mDescribing 0204_Install-Poetry[0m
+[32m  [+] invokes installer when enabled[0m[90m 67ms (66ms|2ms)[0m
+[32m  [+] skips when InstallPoetry is false[0m[90m 93ms (92ms|2ms)[0m
+[32m  [+] throws when python is missing[0m[90m 250ms (245ms|6ms)[0m
+[95m
+[95mRunning tests from '/workspaces/opentofu-lab-automation/tests/Install-Sysinternals.Tests.ps1'[0m
+[92mDescribing 0205_Install-Sysinternals[0m
+[32m  [+] downloads and extracts when enabled[0m[90m 115ms (112ms|3ms)[0m
+[32m  [+] skips when InstallSysinternals is false[0m[90m 24ms (22ms|2ms)[0m
+[95m
+[95mRunning tests from '/workspaces/opentofu-lab-automation/tests/Install-ValidationTools.Tests.ps1'[0m
+[92mDescribing 0006_Install-ValidationTools[0m
+[32m  [+] downloads cosign when InstallCosign is true[0m[90m 134ms (127ms|7ms)[0m
+[32m  [+] checks for gpg when InstallGpg is true[0m[90m 89ms (88ms|1ms)[0m
+[32m  [+] logs a message when no option specified[0m[90m 28ms (26ms|2ms)[0m
+[95m
+[95mRunning tests from '/workspaces/opentofu-lab-automation/tests/Invoke-LabDownload.Tests.ps1'[0m
+[92mDescribing Invoke-LabDownload[0m
+[32m  [+] downloads and executes action with cleanup[0m[90m 57ms (55ms|2ms)[0m
+[95m
+[95mRunning tests from '/workspaces/opentofu-lab-automation/tests/Kicker-Bootstrap.Tests.ps1'[0m
+[92mDescribing kicker-bootstrap utilities[0m
+[32m  [+] defines Write-CustomLog fallback[0m[90m 5ms (3ms|2ms)[0m
+[32m  [+] defines Read-LoggedInput fallback[0m[90m 5ms (4ms|1ms)[0m
+[32m  [+] invokes runner and propagates exit code using PassThru[0m[90m 9ms (8ms|2ms)[0m
+[32m  [+] detects remote config URLs using -match[0m[90m 5ms (4ms|1ms)[0m
+[32m  [+] adds repo path to git safe.directory[0m[90m 5ms (3ms|2ms)[0m
+[32m  [+] defines Update-RepoPreserveConfig function[0m[90m 5ms (4ms|1ms)[0m
+[32m  [+] prompts when multiple config files exist[0m[90m 6ms (5ms|2ms)[0m
+[32m  [+] stashes config changes before pulling[0m[90m 4ms (3ms|1ms)[0m
+[95m
+[95mRunning tests from '/workspaces/opentofu-lab-automation/tests/Kickstart-Bootstrap.Tests.ps1'[0m
+[92mDescribing kickstart-bootstrap script[0m
+[32m  [+] exists under pwsh[0m[90m 5ms (3ms|2ms)[0m
+[32m  [+] references kickstart.cfg[0m[90m 5ms (4ms|2ms)[0m
+[95m
+[95mRunning tests from '/workspaces/opentofu-lab-automation/tests/Logger.Tests.ps1'[0m
+[92mDescribing Write-CustomLog[0m
+[32m  [+] works when LogFilePath variable is not defined[0m[90m 5ms (4ms|2ms)[0m
+[32m  [+] works under strict mode without global variable[0m[90m 7ms (5ms|2ms)[0m
+[32m  [+] appends to log file when LogFilePath is set[0m[90m 8ms (6ms|2ms)[0m
+[32m  [+] defaults to LogFilePath variable when not provided[0m[90m 11ms (10ms|1ms)[0m
+[0m
+[92mDescribing Read-LoggedInput[0m
+[32m  [+] logs prompt and input[0m[90m 19ms (14ms|5ms)[0m
+[32m  [+] handles secure strings without logging value[0m[90m 19ms (18ms|2ms)[0m
+[95m
+[95mRunning tests from '/workspaces/opentofu-lab-automation/tests/Menu.Tests.ps1'[0m
+[92mDescribing Get-MenuSelection[0m
+[96m Context returns all items when user types all[0m
+[32m   [+] returns all items[0m[90m 48ms (43ms|5ms)[0m
+[96m Context returns item by prefix[0m
+[32m   [+] returns item by prefix[0m[90m 39ms (34ms|5ms)[0m
+[96m Context returns empty array when user types exit[0m
+[32m   [+] returns empty array[0m[90m 23ms (20ms|3ms)[0m
+[96m Context handles invalid input gracefully[0m
+[32m   [+] returns empty array after max retries[0m[90m 23ms (21ms|2ms)[0m
+[95m
+[95mRunning tests from '/workspaces/opentofu-lab-automation/tests/NodeScripts.Tests.ps1'[0m
+[92mDescribing Node installation scripts[0m
+  [-] uses Node_Dependencies.Node.InstallerUrl when installing Node 76ms (74ms|2ms)
+   
+   RuntimeException: Multiple script or manifest modules named 'LabRunner' are currently loaded. Make sure to remove any extra copies of the module from your session before testing.
+  [-] does nothing when InstallNode is $false 71ms (70ms|1ms)
+   
+   RuntimeException: Multiple script or manifest modules named 'LabRunner' are currently loaded. Make sure to remove any extra copies of the module from your session before testing.
+  [-] installs packages listed under GlobalPackages 159ms (158ms|2ms)
+   
+   RuntimeException: Multiple script or manifest modules named 'LabRunner' are currently loaded. Make sure to remove any extra copies of the module from your session before testing.
+  [-] falls back to boolean flags when GlobalPackages is missing 112ms (110ms|2ms)
+   
+   RuntimeException: Multiple script or manifest modules named 'LabRunner' are currently loaded. Make sure to remove any extra copies of the module from your session before testing.
+  [-] honours -WhatIf for Install-GlobalPackage 106ms (105ms|2ms)
+   
+   RuntimeException: Multiple script or manifest modules named 'LabRunner' are currently loaded. Make sure to remove any extra copies of the module from your session before testing.
+  [-] uses NpmPath from Node_Dependencies when installing project deps 67ms (66ms|1ms)
+   
+   RuntimeException: Multiple script or manifest modules named 'LabRunner' are currently loaded. Make sure to remove any extra copies of the module from your session before testing.
+[95m
+[95mRunning tests from '/workspaces/opentofu-lab-automation/tests/Reset-Machine.Tests.ps1'[0m
+[92mDescribing Reset-Machine script[0m
+[32m  [+] invokes sysprep and configures Remote Desktop on Windows[0m[90m 110ms (108ms|3ms)[0m
+[32m  [+] calls Restart-Computer on Linux[0m[90m 31ms (30ms|1ms)[0m
+[32m  [+] returns exit code 1 for unknown platform[0m[90m 21ms (20ms|1ms)[0m
+[95m
+[95mRunning tests from '/workspaces/opentofu-lab-automation/tests/Resolve-ProjectPath.Tests.ps1'[0m
+[92mDescribing Resolve-ProjectPath[0m
+[32m  [+] finds file recursively and after move[0m[90m 30ms (28ms|2ms)[0m
+  [-] resolves path from path-index.yaml 13ms (12ms|1ms)
+   at Resolve-ProjectPath, /workspaces/opentofu-lab-automation/pwsh/lab_utils/Resolve-ProjectPath.ps1:23
+   at <ScriptBlock>, /workspaces/opentofu-lab-automation/tests/Resolve-ProjectPath.Tests.ps1:32
+   ParameterBindingValidationException: Cannot bind argument to parameter 'Path' because it is null.
+[95m
+[95mRunning tests from '/workspaces/opentofu-lab-automation/tests/Runner.Tests.ps1'[0m
+[92mDescribing runner.ps1 syntax[0m
+[32m  [+] parses without errors[0m[90m 23ms (20ms|3ms)[0m
+[0m
+[92mDescribing runner.ps1 configuration[0m
+[32m  [+] loads default configuration without errors[0m[90m 20ms (17ms|3ms)[0m
+[0m
+[92mDescribing runner.ps1 script selection[0m
+  [-] runs non-interactively when -Scripts is supplied 65ms (63ms|2ms)
+   at <ScriptBlock>, /tmp/79e037c5-be00-4948-8d9c-2414a808346e/b2f5591c-66d8-45ed-86f7-2ff5a42bd592/pwsh/runner.ps1:86
+   at <ScriptBlock>, /workspaces/opentofu-lab-automation/tests/Runner.Tests.ps1:101
+   CommandNotFoundException: The term '/tmp/79e037c5-be00-4948-8d9c-2414a808346e/b2f5591c-66d8-45ed-86f7-2ff5a42bd592/pwsh/lab_utils/Get-LabConfig.ps1' is not recognized as a name of a cmdlet, function, script file, or executable program.
+   Check the spelling of the name, or if a path was included, verify that the path is correct and try again.
+  [-] uses pwsh from PSHOME when not in PATH 52ms (51ms|1ms)
+   at <ScriptBlock>, /tmp/79e037c5-be00-4948-8d9c-2414a808346e/6392eb8a-6790-48d4-a286-fe79f484338b/pwsh/runner.ps1:86
+   at <ScriptBlock>, /workspaces/opentofu-lab-automation/tests/Runner.Tests.ps1:120
+   CommandNotFoundException: The term '/tmp/79e037c5-be00-4948-8d9c-2414a808346e/6392eb8a-6790-48d4-a286-fe79f484338b/pwsh/lab_utils/Get-LabConfig.ps1' is not recognized as a name of a cmdlet, function, script file, or executable program.
+   Check the spelling of the name, or if a path was included, verify that the path is correct and try again.
+  [-] relaunches under pwsh when invoked from PowerShell 5 53ms (51ms|2ms)
+   at <ScriptBlock>, /workspaces/opentofu-lab-automation/tests/Runner.Tests.ps1:147
+   CommandNotFoundException: The term 'chmod' is not recognized as a name of a cmdlet, function, script file, or executable program.
+   Check the spelling of the name, or if a path was included, verify that the path is correct and try again.
+  [-] exits with code 1 when -Scripts has no matching prefixes 85ms (83ms|2ms)
+   at <ScriptBlock>, /tmp/79e037c5-be00-4948-8d9c-2414a808346e/d51fb598-80e5-477b-892f-53660ae86baa/pwsh/runner.ps1:86
+   at <ScriptBlock>, /workspaces/opentofu-lab-automation/tests/Runner.Tests.ps1:169
+   CommandNotFoundException: The term '/tmp/79e037c5-be00-4948-8d9c-2414a808346e/d51fb598-80e5-477b-892f-53660ae86baa/pwsh/lab_utils/Get-LabConfig.ps1' is not recognized as a name of a cmdlet, function, script file, or executable program.
+   Check the spelling of the name, or if a path was included, verify that the path is correct and try again.
+  [-] continues executing all scripts even if one fails 82ms (80ms|2ms)
+   at <ScriptBlock>, /tmp/79e037c5-be00-4948-8d9c-2414a808346e/6568476f-04c1-4d9e-a886-e5796f8466fd/pwsh/runner.ps1:86
+   at <ScriptBlock>, /workspaces/opentofu-lab-automation/tests/Runner.Tests.ps1:196
+   CommandNotFoundException: The term '/tmp/79e037c5-be00-4948-8d9c-2414a808346e/6568476f-04c1-4d9e-a886-e5796f8466fd/pwsh/lab_utils/Get-LabConfig.ps1' is not recognized as a name of a cmdlet, function, script file, or executable program.
+   Check the spelling of the name, or if a path was included, verify that the path is correct and try again.
+  [-] continues executing all scripts when one throws 111ms (107ms|4ms)
+   at <ScriptBlock>, /tmp/79e037c5-be00-4948-8d9c-2414a808346e/a17dbb97-080e-4f11-a368-cf2d0363f27e/pwsh/runner.ps1:86
+   at <ScriptBlock>, /workspaces/opentofu-lab-automation/tests/Runner.Tests.ps1:225
+   CommandNotFoundException: The term '/tmp/79e037c5-be00-4948-8d9c-2414a808346e/a17dbb97-080e-4f11-a368-cf2d0363f27e/pwsh/lab_utils/Get-LabConfig.ps1' is not recognized as a name of a cmdlet, function, script file, or executable program.
+   Check the spelling of the name, or if a path was included, verify that the path is correct and try again.
+  [-] runs only cleanup script when 0000 is combined with others in Auto mode 88ms (84ms|4ms)
+   at <ScriptBlock>, /tmp/79e037c5-be00-4948-8d9c-2414a808346e/3cf69b59-331a-4482-b2cf-c6539c30fe2e/pwsh/runner.ps1:86
+   at <ScriptBlock>, /workspaces/opentofu-lab-automation/tests/Runner.Tests.ps1:254
+   CommandNotFoundException: The term '/tmp/79e037c5-be00-4948-8d9c-2414a808346e/3cf69b59-331a-4482-b2cf-c6539c30fe2e/pwsh/lab_utils/Get-LabConfig.ps1' is not recognized as a name of a cmdlet, function, script file, or executable program.
+   Check the spelling of the name, or if a path was included, verify that the path is correct and try again.
+  [-] forces script execution when flag disabled using -Force 106ms (105ms|1ms)
+   at <ScriptBlock>, /tmp/79e037c5-be00-4948-8d9c-2414a808346e/5c05bcb6-f7c3-4f0a-90a8-d105710ec513/pwsh/runner.ps1:86
+   at <ScriptBlock>, /workspaces/opentofu-lab-automation/tests/Runner.Tests.ps1:278
+   CommandNotFoundException: The term '/tmp/79e037c5-be00-4948-8d9c-2414a808346e/5c05bcb6-f7c3-4f0a-90a8-d105710ec513/pwsh/lab_utils/Get-LabConfig.ps1' is not recognized as a name of a cmdlet, function, script file, or executable program.
+   Check the spelling of the name, or if a path was included, verify that the path is correct and try again.
+  [-] skips script action when flag disabled and -Force not used 91ms (90ms|1ms)
+   at <ScriptBlock>, /tmp/79e037c5-be00-4948-8d9c-2414a808346e/9856e599-a0c2-4ebc-a2ca-74c27a4f66e3/pwsh/runner.ps1:86
+   at <ScriptBlock>, /workspaces/opentofu-lab-automation/tests/Runner.Tests.ps1:305
+   CommandNotFoundException: The term '/tmp/79e037c5-be00-4948-8d9c-2414a808346e/9856e599-a0c2-4ebc-a2ca-74c27a4f66e3/pwsh/lab_utils/Get-LabConfig.ps1' is not recognized as a name of a cmdlet, function, script file, or executable program.
+   Check the spelling of the name, or if a path was included, verify that the path is correct and try again.
+  [-] reports success when script omits an exit statement 61ms (60ms|1ms)
+   at <ScriptBlock>, /tmp/79e037c5-be00-4948-8d9c-2414a808346e/38c2f2a7-ffb9-4b31-8cb5-515ec344e476/pwsh/runner.ps1:86
+   at <ScriptBlock>, /workspaces/opentofu-lab-automation/tests/Runner.Tests.ps1:329
+   CommandNotFoundException: The term '/tmp/79e037c5-be00-4948-8d9c-2414a808346e/38c2f2a7-ffb9-4b31-8cb5-515ec344e476/pwsh/lab_utils/Get-LabConfig.ps1' is not recognized as a name of a cmdlet, function, script file, or executable program.
+   Check the spelling of the name, or if a path was included, verify that the path is correct and try again.
+  [-] suppresses informational logs when -Verbosity silent is used 45ms (44ms|1ms)
+   at <ScriptBlock>, /tmp/79e037c5-be00-4948-8d9c-2414a808346e/1d2065d0-dffd-4614-affc-69c9bdde53f1/pwsh/runner.ps1:86
+   at <ScriptBlock>, /workspaces/opentofu-lab-automation/tests/Runner.Tests.ps1:357
+   CommandNotFoundException: The term '/tmp/79e037c5-be00-4948-8d9c-2414a808346e/1d2065d0-dffd-4614-affc-69c9bdde53f1/pwsh/lab_utils/Get-LabConfig.ps1' is not recognized as a name of a cmdlet, function, script file, or executable program.
+   Check the spelling of the name, or if a path was included, verify that the path is correct and try again.
+  [-] suppresses informational logs when -Quiet is used 60ms (59ms|1ms)
+   at <ScriptBlock>, /tmp/79e037c5-be00-4948-8d9c-2414a808346e/17503cbc-d412-423a-a6cc-304f3720aa1a/pwsh/runner.ps1:86
+   at <ScriptBlock>, /workspaces/opentofu-lab-automation/tests/Runner.Tests.ps1:383
+   CommandNotFoundException: The term '/tmp/79e037c5-be00-4948-8d9c-2414a808346e/17503cbc-d412-423a-a6cc-304f3720aa1a/pwsh/lab_utils/Get-LabConfig.ps1' is not recognized as a name of a cmdlet, function, script file, or executable program.
+   Check the spelling of the name, or if a path was included, verify that the path is correct and try again.
+  [-] suppresses informational logs when -Verbosity silent is used 51ms (50ms|1ms)
+   at <ScriptBlock>, /tmp/79e037c5-be00-4948-8d9c-2414a808346e/27253ff9-86a4-4e9e-af8d-3c31043da8e4/pwsh/runner.ps1:86
+   at <ScriptBlock>, /workspaces/opentofu-lab-automation/tests/Runner.Tests.ps1:409
+   CommandNotFoundException: The term '/tmp/79e037c5-be00-4948-8d9c-2414a808346e/27253ff9-86a4-4e9e-af8d-3c31043da8e4/pwsh/lab_utils/Get-LabConfig.ps1' is not recognized as a name of a cmdlet, function, script file, or executable program.
+   Check the spelling of the name, or if a path was included, verify that the path is correct and try again.
+  [-] prompts twice when -Auto is used without -Scripts 48ms (47ms|1ms)
+   at <ScriptBlock>, /tmp/79e037c5-be00-4948-8d9c-2414a808346e/026f8a5a-e030-4c0b-a7de-c6e392136fa1/pwsh/runner.ps1:86
+   at <ScriptBlock>, /workspaces/opentofu-lab-automation/tests/Runner.Tests.ps1:431
+   CommandNotFoundException: The term '/tmp/79e037c5-be00-4948-8d9c-2414a808346e/026f8a5a-e030-4c0b-a7de-c6e392136fa1/pwsh/lab_utils/Get-LabConfig.ps1' is not recognized as a name of a cmdlet, function, script file, or executable program.
+   Check the spelling of the name, or if a path was included, verify that the path is correct and try again.
+  [-] handles empty or invalid selection by logging and doing nothing 86ms (85ms|1ms)
+   at <ScriptBlock>, /tmp/79e037c5-be00-4948-8d9c-2414a808346e/07533c76-a6d6-4c5e-be26-27049d1af294/pwsh/runner.ps1:86
+   at <ScriptBlock>, /workspaces/opentofu-lab-automation/tests/Runner.Tests.ps1:452
+   CommandNotFoundException: The term '/tmp/79e037c5-be00-4948-8d9c-2414a808346e/07533c76-a6d6-4c5e-be26-27049d1af294/pwsh/lab_utils/Get-LabConfig.ps1' is not recognized as a name of a cmdlet, function, script file, or executable program.
+   Check the spelling of the name, or if a path was included, verify that the path is correct and try again.
+  [-] logs script output exactly once 58ms (57ms|1ms)
+   at <ScriptBlock>, /tmp/79e037c5-be00-4948-8d9c-2414a808346e/25c8b763-d059-413e-9fce-754bfdf1a439/pwsh/runner.ps1:86
+   at <ScriptBlock>, /workspaces/opentofu-lab-automation/tests/Runner.Tests.ps1:473
+   CommandNotFoundException: The term '/tmp/79e037c5-be00-4948-8d9c-2414a808346e/25c8b763-d059-413e-9fce-754bfdf1a439/pwsh/lab_utils/Get-LabConfig.ps1' is not recognized as a name of a cmdlet, function, script file, or executable program.
+   Check the spelling of the name, or if a path was included, verify that the path is correct and try again.
+[31;1mCopy-Item: [0m/workspaces/opentofu-lab-automation/tests/Runner.Tests.ps1:486:9[0m
+[31;1m[0m[36;1mLine |[0m
+[31;1m[0m[36;1m[36;1m 486 | [0m         [36;1mCopy-Item (Join-Path $PSScriptRoot '..' 'pwsh' 'lab_utils') -[0m …[0m
+[31;1m[0m[36;1m[36;1m[0m[36;1m[0m[36;1m     | [31;1m         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+[31;1m[0m[36;1m[36;1m[0m[36;1m[0m[36;1m[31;1m[31;1m[36;1m     | [31;1mAn item with the specified name[0m
+[31;1m[0m[36;1m[36;1m[0m[36;1m[0m[36;1m[31;1m[31;1m[36;1m[31;1m[36;1m     | [31;1m/tmp/79e037c5-be00-4948-8d9c-2414a808346e/035261e9-c7b8-48de-b66e-29b8de89b637/lab_utils already exists.[0m
+[31;1mCopy-Item: [0m/workspaces/opentofu-lab-automation/tests/Runner.Tests.ps1:486:9[0m
+[31;1m[0m[36;1mLine |[0m
+[31;1m[0m[36;1m[36;1m 486 | [0m         [36;1mCopy-Item (Join-Path $PSScriptRoot '..' 'pwsh' 'lab_utils') -[0m …[0m
+[31;1m[0m[36;1m[36;1m[0m[36;1m[0m[36;1m     | [31;1m         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+[31;1m[0m[36;1m[36;1m[0m[36;1m[0m[36;1m[31;1m[31;1m[36;1m     | [31;1mAn item with the specified name[0m
+[31;1m[0m[36;1m[36;1m[0m[36;1m[0m[36;1m[31;1m[31;1m[36;1m[31;1m[36;1m     | [31;1m/tmp/79e037c5-be00-4948-8d9c-2414a808346e/035261e9-c7b8-48de-b66e-29b8de89b637/lab_utils/LabRunner already exists.[0m
+[31;1mGet-Command: [0m/workspaces/opentofu-lab-automation/tests/Runner.Tests.ps1:490:18[0m
+[31;1m[0m[36;1mLine |[0m
+[31;1m[0m[36;1m[36;1m 490 | [0m         $pwsh = ([36;1mGet-Command pwsh[0m).Source[0m
+[31;1m[0m[36;1m[36;1m[0m[36;1m[0m[36;1m     | [31;1m                  ~~~~~~~~~~~~~~~~[0m
+[31;1m[0m[36;1m[36;1m[0m[36;1m[0m[36;1m[31;1m[31;1m[36;1m     | [31;1mThe term 'pwsh' is not recognized as a name of a cmdlet, function, script file, or[0m
+[31;1m[0m[36;1m[36;1m[0m[36;1m[0m[36;1m[31;1m[31;1m[36;1m[31;1m[36;1m     | [31;1mexecutable program. Check the spelling of the name, or if a path was included,[0m
+[31;1m[0m[36;1m[36;1m[0m[36;1m[0m[36;1m[31;1m[31;1m[36;1m[31;1m[36;1m[31;1m[36;1m     | [31;1mverify that the path is correct and try again.[0m
+  [-] pipes Get-SystemInfo output to the caller 153ms (152ms|1ms)
+   at <ScriptBlock>, /workspaces/opentofu-lab-automation/tests/Runner.Tests.ps1:491
+   RuntimeException: The expression after '&' in a pipeline element produced an object that was not valid. It must result in a command name, a script block, or a CommandInfo object.
+[0m
+[92mDescribing Set-LabConfig[0m
+[32m  [+] updates selections and saves to JSON[0m[90m 42ms (40ms|2ms)[0m
+[95m
+[95mRunning tests from '/workspaces/opentofu-lab-automation/tests/RunnerScripts.Tests.ps1'[0m
+[92mDescribing Runner scripts parameter and command checks[0m
+[32m  [+] parses without errors[0m[90m 27ms (22ms|5ms)[0m
+[32m  [+] parses without errors[0m[90m 12ms (8ms|4ms)[0m
+[32m  [+] parses without errors[0m[90m 6ms (5ms|1ms)[0m
+[32m  [+] parses without errors[0m[90m 4ms (2ms|1ms)[0m
+[32m  [+] parses without errors[0m[90m 4ms (3ms|1ms)[0m
+[32m  [+] parses without errors[0m[90m 3ms (2ms|1ms)[0m
+[32m  [+] parses without errors[0m[90m 5ms (4ms|1ms)[0m
+  [-] parses without errors 13ms (11ms|1ms)
+   at ($errors ? $errors.Count : 0) | Should -Be 0, /workspaces/opentofu-lab-automation/tests/RunnerScripts.Tests.ps1:29
+   at <ScriptBlock>, /workspaces/opentofu-lab-automation/tests/RunnerScripts.Tests.ps1:29
+   Expected 0, but got 1.
+[32m  [+] parses without errors[0m[90m 4ms (2ms|1ms)[0m
+[32m  [+] parses without errors[0m[90m 5ms (3ms|1ms)[0m
+[32m  [+] parses without errors[0m[90m 5ms (3ms|1ms)[0m
+[32m  [+] parses without errors[0m[90m 4ms (3ms|1ms)[0m
+[32m  [+] parses without errors[0m[90m 6ms (2ms|4ms)[0m
+[32m  [+] parses without errors[0m[90m 3ms (2ms|1ms)[0m
+[32m  [+] parses without errors[0m[90m 5ms (3ms|1ms)[0m
+[32m  [+] parses without errors[0m[90m 5ms (3ms|2ms)[0m
+[32m  [+] parses without errors[0m[90m 4ms (3ms|1ms)[0m
+[32m  [+] parses without errors[0m[90m 4ms (3ms|1ms)[0m
+[32m  [+] parses without errors[0m[90m 4ms (3ms|1ms)[0m
+[32m  [+] parses without errors[0m[90m 5ms (4ms|1ms)[0m
+[32m  [+] parses without errors[0m[90m 5ms (3ms|2ms)[0m
+[32m  [+] parses without errors[0m[90m 5ms (3ms|2ms)[0m
+[32m  [+] parses without errors[0m[90m 5ms (4ms|1ms)[0m
+[32m  [+] parses without errors[0m[90m 4ms (3ms|1ms)[0m
+[32m  [+] parses without errors[0m[90m 4ms (3ms|1ms)[0m
+[32m  [+] parses without errors[0m[90m 8ms (3ms|5ms)[0m
+[32m  [+] parses without errors[0m[90m 4ms (3ms|1ms)[0m
+[32m  [+] parses without errors[0m[90m 4ms (3ms|1ms)[0m
+[32m  [+] parses without errors[0m[90m 4ms (2ms|1ms)[0m
+[32m  [+] parses without errors[0m[90m 5ms (3ms|1ms)[0m
+[32m  [+] parses without errors[0m[90m 4ms (3ms|1ms)[0m
+[32m  [+] parses without errors[0m[90m 4ms (3ms|1ms)[0m
+[32m  [+] parses without errors[0m[90m 5ms (3ms|2ms)[0m
+[32m  [+] parses without errors[0m[90m 5ms (4ms|1ms)[0m
+[32m  [+] parses without errors[0m[90m 5ms (3ms|2ms)[0m
+[32m  [+] parses without errors[0m[90m 5ms (4ms|1ms)[0m
+[32m  [+] parses without errors[0m[90m 5ms (3ms|1ms)[0m
+[32m  [+] declares a Config parameter when required[0m[90m 25ms (23ms|1ms)[0m
+[32m  [+] declares a Config parameter when required[0m[90m 9ms (7ms|1ms)[0m
+[32m  [+] declares a Config parameter when required[0m[90m 11ms (10ms|1ms)[0m
+[32m  [+] declares a Config parameter when required[0m[90m 12ms (11ms|1ms)[0m
+[32m  [+] declares a Config parameter when required[0m[90m 14ms (12ms|2ms)[0m
+[32m  [+] declares a Config parameter when required[0m[90m 9ms (8ms|2ms)[0m
+[32m  [+] declares a Config parameter when required[0m[90m 19ms (17ms|2ms)[0m
+[32m  [+] declares a Config parameter when required[0m[90m 50ms (48ms|2ms)[0m
+[32m  [+] declares a Config parameter when required[0m[90m 7ms (6ms|2ms)[0m
+[32m  [+] declares a Config parameter when required[0m[90m 7ms (6ms|2ms)[0m
+[32m  [+] declares a Config parameter when required[0m[90m 7ms (5ms|1ms)[0m
+[32m  [+] declares a Config parameter when required[0m[90m 8ms (7ms|1ms)[0m
+[32m  [+] declares a Config parameter when required[0m[90m 13ms (12ms|2ms)[0m
+[32m  [+] declares a Config parameter when required[0m[90m 8ms (7ms|2ms)[0m
+[32m  [+] declares a Config parameter when required[0m[90m 16ms (14ms|2ms)[0m
+[32m  [+] declares a Config parameter when required[0m[90m 7ms (5ms|2ms)[0m
+[32m  [+] declares a Config parameter when required[0m[90m 13ms (11ms|2ms)[0m
+[32m  [+] declares a Config parameter when required[0m[90m 8ms (7ms|1ms)[0m
+[32m  [+] declares a Config parameter when required[0m[90m 12ms (11ms|1ms)[0m
+[32m  [+] declares a Config parameter when required[0m[90m 22ms (17ms|5ms)[0m
+[32m  [+] declares a Config parameter when required[0m[90m 9ms (8ms|1ms)[0m
+[32m  [+] declares a Config parameter when required[0m[90m 17ms (15ms|2ms)[0m
+[32m  [+] declares a Config parameter when required[0m[90m 11ms (10ms|1ms)[0m
+[32m  [+] declares a Config parameter when required[0m[90m 7ms (6ms|2ms)[0m
+[32m  [+] declares a Config parameter when required[0m[90m 9ms (7ms|1ms)[0m
+[32m  [+] declares a Config parameter when required[0m[90m 8ms (6ms|2ms)[0m
+[32m  [+] declares a Config parameter when required[0m[90m 7ms (5ms|1ms)[0m
+[32m  [+] declares a Config parameter when required[0m[90m 7ms (6ms|1ms)[0m
+[32m  [+] declares a Config parameter when required[0m[90m 6ms (5ms|1ms)[0m
+[32m  [+] declares a Config parameter when required[0m[90m 12ms (11ms|1ms)[0m
+[32m  [+] declares a Config parameter when required[0m[90m 13ms (9ms|3ms)[0m
+[32m  [+] declares a Config parameter when required[0m[90m 14ms (12ms|1ms)[0m
+[32m  [+] declares a Config parameter when required[0m[90m 11ms (10ms|1ms)[0m
+[32m  [+] declares a Config parameter when required[0m[90m 8ms (7ms|1ms)[0m
+[32m  [+] declares a Config parameter when required[0m[90m 8ms (7ms|1ms)[0m
+[32m  [+] declares a Config parameter when required[0m[90m 8ms (7ms|1ms)[0m
+[32m  [+] declares a Config parameter when required[0m[90m 10ms (9ms|2ms)[0m
+Command 'Import-Module "$PSScriptRoot/../lab_utils/LabRunner/LabRunner.psd1"' not found in /workspaces/opentofu-lab-automation/pwsh/runner_scripts/0000_Cleanup-Files.ps1
+  [-] contains mandatory command invocations 26ms (21ms|5ms)
+   at ($found | Measure-Object).Count | Should -BeGreaterThan 0, /workspaces/opentofu-lab-automation/tests/RunnerScripts.Tests.ps1:53
+   at <ScriptBlock>, /workspaces/opentofu-lab-automation/tests/RunnerScripts.Tests.ps1:53
+   Expected the actual value to be greater than 0, but got 0.
+Command 'Import-Module "$PSScriptRoot/../lab_utils/LabRunner/LabRunner.psd1"' not found in /workspaces/opentofu-lab-automation/pwsh/runner_scripts/0001_Reset-Git.ps1
+  [-] contains mandatory command invocations 12ms (11ms|2ms)
+   at ($found | Measure-Object).Count | Should -BeGreaterThan 0, /workspaces/opentofu-lab-automation/tests/RunnerScripts.Tests.ps1:53
+   at <ScriptBlock>, /workspaces/opentofu-lab-automation/tests/RunnerScripts.Tests.ps1:53
+   Expected the actual value to be greater than 0, but got 0.
+Command 'Import-Module "$PSScriptRoot/../lab_utils/LabRunner/LabRunner.psd1"' not found in /workspaces/opentofu-lab-automation/pwsh/runner_scripts/0002_Setup-Directories.ps1
+  [-] contains mandatory command invocations 9ms (9ms|1ms)
+   at ($found | Measure-Object).Count | Should -BeGreaterThan 0, /workspaces/opentofu-lab-automation/tests/RunnerScripts.Tests.ps1:53
+   at <ScriptBlock>, /workspaces/opentofu-lab-automation/tests/RunnerScripts.Tests.ps1:53
+   Expected the actual value to be greater than 0, but got 0.
+Command 'Import-Module "$PSScriptRoot/../lab_utils/LabRunner/LabRunner.psd1"' not found in /workspaces/opentofu-lab-automation/pwsh/runner_scripts/0006_Install-ValidationTools.ps1
+  [-] contains mandatory command invocations 10ms (9ms|1ms)
+   at ($found | Measure-Object).Count | Should -BeGreaterThan 0, /workspaces/opentofu-lab-automation/tests/RunnerScripts.Tests.ps1:53
+   at <ScriptBlock>, /workspaces/opentofu-lab-automation/tests/RunnerScripts.Tests.ps1:53
+   Expected the actual value to be greater than 0, but got 0.
+Command 'Import-Module "$PSScriptRoot/../lab_utils/LabRunner/LabRunner.psd1"' not found in /workspaces/opentofu-lab-automation/pwsh/runner_scripts/0007_Install-Go.ps1
+  [-] contains mandatory command invocations 9ms (7ms|1ms)
+   at ($found | Measure-Object).Count | Should -BeGreaterThan 0, /workspaces/opentofu-lab-automation/tests/RunnerScripts.Tests.ps1:53
+   at <ScriptBlock>, /workspaces/opentofu-lab-automation/tests/RunnerScripts.Tests.ps1:53
+   Expected the actual value to be greater than 0, but got 0.
+Command 'Import-Module "$PSScriptRoot/../lab_utils/LabRunner/LabRunner.psd1"' not found in /workspaces/opentofu-lab-automation/pwsh/runner_scripts/0008_Install-OpenTofu.ps1
+  [-] contains mandatory command invocations 11ms (10ms|1ms)
+   at ($found | Measure-Object).Count | Should -BeGreaterThan 0, /workspaces/opentofu-lab-automation/tests/RunnerScripts.Tests.ps1:53
+   at <ScriptBlock>, /workspaces/opentofu-lab-automation/tests/RunnerScripts.Tests.ps1:53
+   Expected the actual value to be greater than 0, but got 0.
+Command 'Import-Module "$PSScriptRoot/../lab_utils/LabRunner/LabRunner.psd1"' not found in /workspaces/opentofu-lab-automation/pwsh/runner_scripts/0009_Initialize-OpenTofu.ps1
+  [-] contains mandatory command invocations 12ms (11ms|1ms)
+   at ($found | Measure-Object).Count | Should -BeGreaterThan 0, /workspaces/opentofu-lab-automation/tests/RunnerScripts.Tests.ps1:53
+   at <ScriptBlock>, /workspaces/opentofu-lab-automation/tests/RunnerScripts.Tests.ps1:53
+   Expected the actual value to be greater than 0, but got 0.
+Command 'Import-Module "$PSScriptRoot/../lab_utils/LabRunner/LabRunner.psd1"' not found in /workspaces/opentofu-lab-automation/pwsh/runner_scripts/0010_Prepare-HyperVProvider.ps1
+  [-] contains mandatory command invocations 23ms (21ms|1ms)
+   at ($found | Measure-Object).Count | Should -BeGreaterThan 0, /workspaces/opentofu-lab-automation/tests/RunnerScripts.Tests.ps1:53
+   at <ScriptBlock>, /workspaces/opentofu-lab-automation/tests/RunnerScripts.Tests.ps1:53
+   Expected the actual value to be greater than 0, but got 0.
+Command 'Import-Module "$PSScriptRoot/../lab_utils/LabRunner/LabRunner.psd1"' not found in /workspaces/opentofu-lab-automation/pwsh/runner_scripts/0100_Enable-WinRM.ps1
+  [-] contains mandatory command invocations 8ms (7ms|1ms)
+   at ($found | Measure-Object).Count | Should -BeGreaterThan 0, /workspaces/opentofu-lab-automation/tests/RunnerScripts.Tests.ps1:53
+   at <ScriptBlock>, /workspaces/opentofu-lab-automation/tests/RunnerScripts.Tests.ps1:53
+   Expected the actual value to be greater than 0, but got 0.
+Command 'Import-Module "$PSScriptRoot/../lab_utils/LabRunner/LabRunner.psd1"' not found in /workspaces/opentofu-lab-automation/pwsh/runner_scripts/0101_Enable-RemoteDesktop.ps1
+  [-] contains mandatory command invocations 10ms (9ms|1ms)
+   at ($found | Measure-Object).Count | Should -BeGreaterThan 0, /workspaces/opentofu-lab-automation/tests/RunnerScripts.Tests.ps1:53
+   at <ScriptBlock>, /workspaces/opentofu-lab-automation/tests/RunnerScripts.Tests.ps1:53
+   Expected the actual value to be greater than 0, but got 0.
+Command 'Import-Module "$PSScriptRoot/../lab_utils/LabRunner/LabRunner.psd1"' not found in /workspaces/opentofu-lab-automation/pwsh/runner_scripts/0102_Configure-Firewall.ps1
+  [-] contains mandatory command invocations 11ms (9ms|2ms)
+   at ($found | Measure-Object).Count | Should -BeGreaterThan 0, /workspaces/opentofu-lab-automation/tests/RunnerScripts.Tests.ps1:53
+   at <ScriptBlock>, /workspaces/opentofu-lab-automation/tests/RunnerScripts.Tests.ps1:53
+   Expected the actual value to be greater than 0, but got 0.
+Command 'Import-Module "$PSScriptRoot/../lab_utils/LabRunner/LabRunner.psd1"' not found in /workspaces/opentofu-lab-automation/pwsh/runner_scripts/0103_Change-ComputerName.ps1
+  [-] contains mandatory command invocations 9ms (8ms|1ms)
+   at ($found | Measure-Object).Count | Should -BeGreaterThan 0, /workspaces/opentofu-lab-automation/tests/RunnerScripts.Tests.ps1:53
+   at <ScriptBlock>, /workspaces/opentofu-lab-automation/tests/RunnerScripts.Tests.ps1:53
+   Expected the actual value to be greater than 0, but got 0.
+Command 'Import-Module "$PSScriptRoot/../lab_utils/LabRunner/LabRunner.psd1"' not found in /workspaces/opentofu-lab-automation/pwsh/runner_scripts/0104_Install-CA.ps1
+  [-] contains mandatory command invocations 11ms (9ms|1ms)
+   at ($found | Measure-Object).Count | Should -BeGreaterThan 0, /workspaces/opentofu-lab-automation/tests/RunnerScripts.Tests.ps1:53
+   at <ScriptBlock>, /workspaces/opentofu-lab-automation/tests/RunnerScripts.Tests.ps1:53
+   Expected the actual value to be greater than 0, but got 0.
+Command 'Import-Module "$PSScriptRoot/../lab_utils/LabRunner/LabRunner.psd1"' not found in /workspaces/opentofu-lab-automation/pwsh/runner_scripts/0105_Install-HyperV.ps1
+  [-] contains mandatory command invocations 14ms (13ms|1ms)
+   at ($found | Measure-Object).Count | Should -BeGreaterThan 0, /workspaces/opentofu-lab-automation/tests/RunnerScripts.Tests.ps1:53
+   at <ScriptBlock>, /workspaces/opentofu-lab-automation/tests/RunnerScripts.Tests.ps1:53
+   Expected the actual value to be greater than 0, but got 0.
+Command 'Import-Module "$PSScriptRoot/../lab_utils/LabRunner/LabRunner.psd1"' not found in /workspaces/opentofu-lab-automation/pwsh/runner_scripts/0106_Install-WAC.ps1
+  [-] contains mandatory command invocations 12ms (11ms|1ms)
+   at ($found | Measure-Object).Count | Should -BeGreaterThan 0, /workspaces/opentofu-lab-automation/tests/RunnerScripts.Tests.ps1:53
+   at <ScriptBlock>, /workspaces/opentofu-lab-automation/tests/RunnerScripts.Tests.ps1:53
+   Expected the actual value to be greater than 0, but got 0.
+Command 'Import-Module "$PSScriptRoot/../lab_utils/LabRunner/LabRunner.psd1"' not found in /workspaces/opentofu-lab-automation/pwsh/runner_scripts/0111_Disable-TCPIP6.ps1
+  [-] contains mandatory command invocations 10ms (9ms|1ms)
+   at ($found | Measure-Object).Count | Should -BeGreaterThan 0, /workspaces/opentofu-lab-automation/tests/RunnerScripts.Tests.ps1:53
+   at <ScriptBlock>, /workspaces/opentofu-lab-automation/tests/RunnerScripts.Tests.ps1:53
+   Expected the actual value to be greater than 0, but got 0.
+Command 'Import-Module "$PSScriptRoot/../lab_utils/LabRunner/LabRunner.psd1"' not found in /workspaces/opentofu-lab-automation/pwsh/runner_scripts/0112_Enable-PXE.ps1
+  [-] contains mandatory command invocations 11ms (9ms|1ms)
+   at ($found | Measure-Object).Count | Should -BeGreaterThan 0, /workspaces/opentofu-lab-automation/tests/RunnerScripts.Tests.ps1:53
+   at <ScriptBlock>, /workspaces/opentofu-lab-automation/tests/RunnerScripts.Tests.ps1:53
+   Expected the actual value to be greater than 0, but got 0.
+Command 'Import-Module "$PSScriptRoot/../lab_utils/LabRunner/LabRunner.psd1"' not found in /workspaces/opentofu-lab-automation/pwsh/runner_scripts/0113_Config-DNS.ps1
+  [-] contains mandatory command invocations 28ms (20ms|8ms)
+   at ($found | Measure-Object).Count | Should -BeGreaterThan 0, /workspaces/opentofu-lab-automation/tests/RunnerScripts.Tests.ps1:53
+   at <ScriptBlock>, /workspaces/opentofu-lab-automation/tests/RunnerScripts.Tests.ps1:53
+   Expected the actual value to be greater than 0, but got 0.
+Command 'Import-Module "$PSScriptRoot/../lab_utils/LabRunner/LabRunner.psd1"' not found in /workspaces/opentofu-lab-automation/pwsh/runner_scripts/0114_Config-TrustedHosts.ps1
+  [-] contains mandatory command invocations 12ms (11ms|1ms)
+   at ($found | Measure-Object).Count | Should -BeGreaterThan 0, /workspaces/opentofu-lab-automation/tests/RunnerScripts.Tests.ps1:53
+   at <ScriptBlock>, /workspaces/opentofu-lab-automation/tests/RunnerScripts.Tests.ps1:53
+   Expected the actual value to be greater than 0, but got 0.
+Command 'Import-Module "$PSScriptRoot/../lab_utils/LabRunner/LabRunner.psd1"' not found in /workspaces/opentofu-lab-automation/pwsh/runner_scripts/0200_Get-SystemInfo.ps1
+  [-] contains mandatory command invocations 14ms (13ms|1ms)
+   at ($found | Measure-Object).Count | Should -BeGreaterThan 0, /workspaces/opentofu-lab-automation/tests/RunnerScripts.Tests.ps1:53
+   at <ScriptBlock>, /workspaces/opentofu-lab-automation/tests/RunnerScripts.Tests.ps1:53
+   Expected the actual value to be greater than 0, but got 0.
+Command 'Import-Module "$PSScriptRoot/../lab_utils/LabRunner/LabRunner.psd1"' not found in /workspaces/opentofu-lab-automation/pwsh/runner_scripts/0201_Install-NodeCore.ps1
+  [-] contains mandatory command invocations 11ms (10ms|1ms)
+   at ($found | Measure-Object).Count | Should -BeGreaterThan 0, /workspaces/opentofu-lab-automation/tests/RunnerScripts.Tests.ps1:53
+   at <ScriptBlock>, /workspaces/opentofu-lab-automation/tests/RunnerScripts.Tests.ps1:53
+   Expected the actual value to be greater than 0, but got 0.
+Command 'Import-Module "$PSScriptRoot/../lab_utils/LabRunner/LabRunner.psd1"' not found in /workspaces/opentofu-lab-automation/pwsh/runner_scripts/0202_Install-NodeGlobalPackages.ps1
+  [-] contains mandatory command invocations 11ms (10ms|1ms)
+   at ($found | Measure-Object).Count | Should -BeGreaterThan 0, /workspaces/opentofu-lab-automation/tests/RunnerScripts.Tests.ps1:53
+   at <ScriptBlock>, /workspaces/opentofu-lab-automation/tests/RunnerScripts.Tests.ps1:53
+   Expected the actual value to be greater than 0, but got 0.
+Command 'Import-Module "$PSScriptRoot/../lab_utils/LabRunner/LabRunner.psd1"' not found in /workspaces/opentofu-lab-automation/pwsh/runner_scripts/0203_Install-npm.ps1
+  [-] contains mandatory command invocations 16ms (15ms|1ms)
+   at ($found | Measure-Object).Count | Should -BeGreaterThan 0, /workspaces/opentofu-lab-automation/tests/RunnerScripts.Tests.ps1:53
+   at <ScriptBlock>, /workspaces/opentofu-lab-automation/tests/RunnerScripts.Tests.ps1:53
+   Expected the actual value to be greater than 0, but got 0.
+Command 'Import-Module "$PSScriptRoot/../lab_utils/LabRunner/LabRunner.psd1"' not found in /workspaces/opentofu-lab-automation/pwsh/runner_scripts/0204_Install-Poetry.ps1
+  [-] contains mandatory command invocations 19ms (17ms|1ms)
+   at ($found | Measure-Object).Count | Should -BeGreaterThan 0, /workspaces/opentofu-lab-automation/tests/RunnerScripts.Tests.ps1:53
+   at <ScriptBlock>, /workspaces/opentofu-lab-automation/tests/RunnerScripts.Tests.ps1:53
+   Expected the actual value to be greater than 0, but got 0.
+Command 'Import-Module "$PSScriptRoot/../lab_utils/LabRunner/LabRunner.psd1"' not found in /workspaces/opentofu-lab-automation/pwsh/runner_scripts/0205_Install-Sysinternals.ps1
+  [-] contains mandatory command invocations 26ms (22ms|3ms)
+   at ($found | Measure-Object).Count | Should -BeGreaterThan 0, /workspaces/opentofu-lab-automation/tests/RunnerScripts.Tests.ps1:53
+   at <ScriptBlock>, /workspaces/opentofu-lab-automation/tests/RunnerScripts.Tests.ps1:53
+   Expected the actual value to be greater than 0, but got 0.
+Command 'Import-Module "$PSScriptRoot/../lab_utils/LabRunner/LabRunner.psd1"' not found in /workspaces/opentofu-lab-automation/pwsh/runner_scripts/0206_Install-Python.ps1
+  [-] contains mandatory command invocations 19ms (18ms|2ms)
+   at ($found | Measure-Object).Count | Should -BeGreaterThan 0, /workspaces/opentofu-lab-automation/tests/RunnerScripts.Tests.ps1:53
+   at <ScriptBlock>, /workspaces/opentofu-lab-automation/tests/RunnerScripts.Tests.ps1:53
+   Expected the actual value to be greater than 0, but got 0.
+Command 'Import-Module "$PSScriptRoot/../lab_utils/LabRunner/LabRunner.psd1"' not found in /workspaces/opentofu-lab-automation/pwsh/runner_scripts/0207_Install-Git.ps1
+  [-] contains mandatory command invocations 11ms (9ms|1ms)
+   at ($found | Measure-Object).Count | Should -BeGreaterThan 0, /workspaces/opentofu-lab-automation/tests/RunnerScripts.Tests.ps1:53
+   at <ScriptBlock>, /workspaces/opentofu-lab-automation/tests/RunnerScripts.Tests.ps1:53
+   Expected the actual value to be greater than 0, but got 0.
+Command 'Import-Module "$PSScriptRoot/../lab_utils/LabRunner/LabRunner.psd1"' not found in /workspaces/opentofu-lab-automation/pwsh/runner_scripts/0208_Install-DockerDesktop.ps1
+  [-] contains mandatory command invocations 14ms (13ms|1ms)
+   at ($found | Measure-Object).Count | Should -BeGreaterThan 0, /workspaces/opentofu-lab-automation/tests/RunnerScripts.Tests.ps1:53
+   at <ScriptBlock>, /workspaces/opentofu-lab-automation/tests/RunnerScripts.Tests.ps1:53
+   Expected the actual value to be greater than 0, but got 0.
+Command 'Import-Module "$PSScriptRoot/../lab_utils/LabRunner/LabRunner.psd1"' not found in /workspaces/opentofu-lab-automation/pwsh/runner_scripts/0209_Install-7Zip.ps1
+  [-] contains mandatory command invocations 11ms (10ms|1ms)
+   at ($found | Measure-Object).Count | Should -BeGreaterThan 0, /workspaces/opentofu-lab-automation/tests/RunnerScripts.Tests.ps1:53
+   at <ScriptBlock>, /workspaces/opentofu-lab-automation/tests/RunnerScripts.Tests.ps1:53
+   Expected the actual value to be greater than 0, but got 0.
+Command 'Import-Module "$PSScriptRoot/../lab_utils/LabRunner/LabRunner.psd1"' not found in /workspaces/opentofu-lab-automation/pwsh/runner_scripts/0210_Install-VSCode.ps1
+  [-] contains mandatory command invocations 18ms (16ms|2ms)
+   at ($found | Measure-Object).Count | Should -BeGreaterThan 0, /workspaces/opentofu-lab-automation/tests/RunnerScripts.Tests.ps1:53
+   at <ScriptBlock>, /workspaces/opentofu-lab-automation/tests/RunnerScripts.Tests.ps1:53
+   Expected the actual value to be greater than 0, but got 0.
+Command 'Import-Module "$PSScriptRoot/../lab_utils/LabRunner/LabRunner.psd1"' not found in /workspaces/opentofu-lab-automation/pwsh/runner_scripts/0211_Install-VSBuildTools.ps1
+  [-] contains mandatory command invocations 18ms (13ms|5ms)
+   at ($found | Measure-Object).Count | Should -BeGreaterThan 0, /workspaces/opentofu-lab-automation/tests/RunnerScripts.Tests.ps1:53
+   at <ScriptBlock>, /workspaces/opentofu-lab-automation/tests/RunnerScripts.Tests.ps1:53
+   Expected the actual value to be greater than 0, but got 0.
+Command 'Import-Module "$PSScriptRoot/../lab_utils/LabRunner/LabRunner.psd1"' not found in /workspaces/opentofu-lab-automation/pwsh/runner_scripts/0212_Install-AzureCLI.ps1
+  [-] contains mandatory command invocations 14ms (11ms|3ms)
+   at ($found | Measure-Object).Count | Should -BeGreaterThan 0, /workspaces/opentofu-lab-automation/tests/RunnerScripts.Tests.ps1:53
+   at <ScriptBlock>, /workspaces/opentofu-lab-automation/tests/RunnerScripts.Tests.ps1:53
+   Expected the actual value to be greater than 0, but got 0.
+Command 'Import-Module "$PSScriptRoot/../lab_utils/LabRunner/LabRunner.psd1"' not found in /workspaces/opentofu-lab-automation/pwsh/runner_scripts/0213_Install-AWSCLI.ps1
+  [-] contains mandatory command invocations 26ms (24ms|2ms)
+   at ($found | Measure-Object).Count | Should -BeGreaterThan 0, /workspaces/opentofu-lab-automation/tests/RunnerScripts.Tests.ps1:53
+   at <ScriptBlock>, /workspaces/opentofu-lab-automation/tests/RunnerScripts.Tests.ps1:53
+   Expected the actual value to be greater than 0, but got 0.
+Command 'Import-Module "$PSScriptRoot/../lab_utils/LabRunner/LabRunner.psd1"' not found in /workspaces/opentofu-lab-automation/pwsh/runner_scripts/0214_Install-Packer.ps1
+  [-] contains mandatory command invocations 12ms (10ms|2ms)
+   at ($found | Measure-Object).Count | Should -BeGreaterThan 0, /workspaces/opentofu-lab-automation/tests/RunnerScripts.Tests.ps1:53
+   at <ScriptBlock>, /workspaces/opentofu-lab-automation/tests/RunnerScripts.Tests.ps1:53
+   Expected the actual value to be greater than 0, but got 0.
+Command 'Import-Module "$PSScriptRoot/../lab_utils/LabRunner/LabRunner.psd1"' not found in /workspaces/opentofu-lab-automation/pwsh/runner_scripts/0215_Install-Chocolatey.ps1
+  [-] contains mandatory command invocations 11ms (10ms|2ms)
+   at ($found | Measure-Object).Count | Should -BeGreaterThan 0, /workspaces/opentofu-lab-automation/tests/RunnerScripts.Tests.ps1:53
+   at <ScriptBlock>, /workspaces/opentofu-lab-automation/tests/RunnerScripts.Tests.ps1:53
+   Expected the actual value to be greater than 0, but got 0.
+Command 'Import-Module "$PSScriptRoot/../lab_utils/LabRunner/LabRunner.psd1"' not found in /workspaces/opentofu-lab-automation/pwsh/runner_scripts/0216_Set-LabProfile.ps1
+  [-] contains mandatory command invocations 12ms (11ms|1ms)
+   at ($found | Measure-Object).Count | Should -BeGreaterThan 0, /workspaces/opentofu-lab-automation/tests/RunnerScripts.Tests.ps1:53
+   at <ScriptBlock>, /workspaces/opentofu-lab-automation/tests/RunnerScripts.Tests.ps1:53
+   Expected the actual value to be greater than 0, but got 0.
+Command 'Import-Module "$PSScriptRoot/../lab_utils/LabRunner/LabRunner.psd1"' not found in /workspaces/opentofu-lab-automation/pwsh/runner_scripts/9999_Reset-Machine.ps1
+  [-] contains mandatory command invocations 12ms (10ms|2ms)
+   at ($found | Measure-Object).Count | Should -BeGreaterThan 0, /workspaces/opentofu-lab-automation/tests/RunnerScripts.Tests.ps1:53
+   at <ScriptBlock>, /workspaces/opentofu-lab-automation/tests/RunnerScripts.Tests.ps1:53
+   Expected the actual value to be greater than 0, but got 0.
+[32m  [+] contains Invoke-LabStep call[0m[90m 13ms (11ms|1ms)[0m
+[32m  [+] contains Invoke-LabStep call[0m[90m 13ms (12ms|1ms)[0m
+[32m  [+] contains Invoke-LabStep call[0m[90m 7ms (5ms|1ms)[0m
+[32m  [+] contains Invoke-LabStep call[0m[90m 8ms (7ms|1ms)[0m
+[32m  [+] contains Invoke-LabStep call[0m[90m 5ms (4ms|1ms)[0m
+[32m  [+] contains Invoke-LabStep call[0m[90m 5ms (4ms|1ms)[0m
+[32m  [+] contains Invoke-LabStep call[0m[90m 13ms (12ms|1ms)[0m
+[32m  [+] contains Invoke-LabStep call[0m[90m 28ms (26ms|1ms)[0m
+[32m  [+] contains Invoke-LabStep call[0m[90m 5ms (4ms|1ms)[0m
+[32m  [+] contains Invoke-LabStep call[0m[90m 5ms (3ms|1ms)[0m
+[32m  [+] contains Invoke-LabStep call[0m[90m 6ms (5ms|1ms)[0m
+[32m  [+] contains Invoke-LabStep call[0m[90m 5ms (4ms|1ms)[0m
+[32m  [+] contains Invoke-LabStep call[0m[90m 7ms (5ms|1ms)[0m
+[32m  [+] contains Invoke-LabStep call[0m[90m 6ms (4ms|2ms)[0m
+[32m  [+] contains Invoke-LabStep call[0m[90m 8ms (7ms|1ms)[0m
+[32m  [+] contains Invoke-LabStep call[0m[90m 6ms (5ms|1ms)[0m
+[32m  [+] contains Invoke-LabStep call[0m[90m 7ms (6ms|1ms)[0m
+[32m  [+] contains Invoke-LabStep call[0m[90m 7ms (6ms|1ms)[0m
+[32m  [+] contains Invoke-LabStep call[0m[90m 11ms (8ms|3ms)[0m
+[32m  [+] contains Invoke-LabStep call[0m[90m 20ms (18ms|2ms)[0m
+[32m  [+] contains Invoke-LabStep call[0m[90m 12ms (11ms|1ms)[0m
+[32m  [+] contains Invoke-LabStep call[0m[90m 16ms (14ms|2ms)[0m
+[32m  [+] contains Invoke-LabStep call[0m[90m 26ms (22ms|4ms)[0m
+[32m  [+] contains Invoke-LabStep call[0m[90m 12ms (10ms|2ms)[0m
+[32m  [+] contains Invoke-LabStep call[0m[90m 15ms (14ms|1ms)[0m
+[32m  [+] contains Invoke-LabStep call[0m[90m 15ms (9ms|5ms)[0m
+[32m  [+] contains Invoke-LabStep call[0m[90m 15ms (14ms|1ms)[0m
+[32m  [+] contains Invoke-LabStep call[0m[90m 20ms (18ms|1ms)[0m
+[32m  [+] contains Invoke-LabStep call[0m[90m 12ms (10ms|1ms)[0m
+[32m  [+] contains Invoke-LabStep call[0m[90m 9ms (7ms|1ms)[0m
+[32m  [+] contains Invoke-LabStep call[0m[90m 11ms (7ms|4ms)[0m
+[32m  [+] contains Invoke-LabStep call[0m[90m 8ms (6ms|1ms)[0m
+[32m  [+] contains Invoke-LabStep call[0m[90m 17ms (15ms|1ms)[0m
+[32m  [+] contains Invoke-LabStep call[0m[90m 8ms (7ms|1ms)[0m
+[32m  [+] contains Invoke-LabStep call[0m[90m 8ms (6ms|1ms)[0m
+[32m  [+] contains Invoke-LabStep call[0m[90m 7ms (6ms|1ms)[0m
+[32m  [+] contains Invoke-LabStep call[0m[90m 11ms (10ms|1ms)[0m
+[32m  [+] imports LabRunner module[0m[90m 16ms (14ms|1ms)[0m
+[32m  [+] imports LabRunner module[0m[90m 9ms (8ms|2ms)[0m
+[32m  [+] imports LabRunner module[0m[90m 7ms (6ms|1ms)[0m
+[32m  [+] imports LabRunner module[0m[90m 9ms (8ms|1ms)[0m
+[32m  [+] imports LabRunner module[0m[90m 8ms (7ms|1ms)[0m
+[32m  [+] imports LabRunner module[0m[90m 7ms (6ms|1ms)[0m
+[32m  [+] imports LabRunner module[0m[90m 18ms (17ms|1ms)[0m
+[32m  [+] imports LabRunner module[0m[90m 26ms (24ms|1ms)[0m
+[32m  [+] imports LabRunner module[0m[90m 4ms (3ms|1ms)[0m
+[32m  [+] imports LabRunner module[0m[90m 5ms (4ms|1ms)[0m
+[32m  [+] imports LabRunner module[0m[90m 9ms (8ms|1ms)[0m
+[32m  [+] imports LabRunner module[0m[90m 5ms (4ms|1ms)[0m
+[32m  [+] imports LabRunner module[0m[90m 6ms (5ms|1ms)[0m
+[32m  [+] imports LabRunner module[0m[90m 7ms (6ms|1ms)[0m
+[32m  [+] imports LabRunner module[0m[90m 6ms (5ms|1ms)[0m
+[32m  [+] imports LabRunner module[0m[90m 6ms (5ms|1ms)[0m
+[32m  [+] imports LabRunner module[0m[90m 5ms (4ms|1ms)[0m
+[32m  [+] imports LabRunner module[0m[90m 6ms (5ms|1ms)[0m
+[32m  [+] imports LabRunner module[0m[90m 6ms (4ms|1ms)[0m
+[32m  [+] imports LabRunner module[0m[90m 24ms (23ms|1ms)[0m
+[32m  [+] imports LabRunner module[0m[90m 18ms (15ms|2ms)[0m
+[32m  [+] imports LabRunner module[0m[90m 12ms (10ms|1ms)[0m
+[32m  [+] imports LabRunner module[0m[90m 14ms (12ms|2ms)[0m
+[32m  [+] imports LabRunner module[0m[90m 10ms (8ms|2ms)[0m
+[32m  [+] imports LabRunner module[0m[90m 13ms (11ms|2ms)[0m
+[32m  [+] imports LabRunner module[0m[90m 22ms (18ms|4ms)[0m
+[32m  [+] imports LabRunner module[0m[90m 7ms (6ms|1ms)[0m
+[32m  [+] imports LabRunner module[0m[90m 13ms (9ms|3ms)[0m
+[32m  [+] imports LabRunner module[0m[90m 14ms (13ms|1ms)[0m
+[32m  [+] imports LabRunner module[0m[90m 21ms (14ms|7ms)[0m
+[32m  [+] imports LabRunner module[0m[90m 12ms (9ms|3ms)[0m
+[32m  [+] imports LabRunner module[0m[90m 11ms (9ms|2ms)[0m
+[32m  [+] imports LabRunner module[0m[90m 13ms (11ms|2ms)[0m
+[32m  [+] imports LabRunner module[0m[90m 12ms (11ms|1ms)[0m
+[32m  [+] imports LabRunner module[0m[90m 18ms (15ms|3ms)[0m
+[32m  [+] imports LabRunner module[0m[90m 15ms (14ms|1ms)[0m
+[32m  [+] imports LabRunner module[0m[90m 12ms (11ms|1ms)[0m
+[31;1mGet-Command: [0m/workspaces/opentofu-lab-automation/tests/RunnerScripts.Tests.ps1:104:22[0m
+[31;1m[0m[36;1mLine |[0m
+[31;1m[0m[36;1m[36;1m 104 | [0m             $pwsh = ([36;1mGet-Command pwsh[0m).Source[0m
+[31;1m[0m[36;1m[36;1m[0m[36;1m[0m[36;1m     | [31;1m                      ~~~~~~~~~~~~~~~~[0m
+[31;1m[0m[36;1m[36;1m[0m[36;1m[0m[36;1m[31;1m[31;1m[36;1m     | [31;1mThe term 'pwsh' is not recognized as a name of a cmdlet, function, script file, or[0m
+[31;1m[0m[36;1m[36;1m[0m[36;1m[0m[36;1m[31;1m[31;1m[36;1m[31;1m[36;1m     | [31;1mexecutable program. Check the spelling of the name, or if a path was included,[0m
+[31;1m[0m[36;1m[36;1m[0m[36;1m[0m[36;1m[31;1m[31;1m[36;1m[31;1m[36;1m[31;1m[36;1m     | [31;1mverify that the path is correct and try again.[0m
+  [-] resolves PSScriptRoot when run with pwsh -File 41ms (39ms|2ms)
+   at <ScriptBlock>, /workspaces/opentofu-lab-automation/tests/RunnerScripts.Tests.ps1:105
+   RuntimeException: The expression after '&' in a pipeline element produced an object that was not valid. It must result in a command name, a script block, or a CommandInfo object.
+[95m
+[95mRunning tests from '/workspaces/opentofu-lab-automation/tests/Set-LabProfile.Tests.ps1'[0m
+[92mDescribing 0216_Set-LabProfile[0m
+[2025-06-11 22:20:55] [INFO] Starting System.Management.Automation.InvocationInfo.MyCommand
+[2025-06-11 22:20:55] [INFO] Running 
+[2025-06-11 22:20:55] [INFO] Profile written to /home/codespace/.config/powershell/profile.ps1
+[2025-06-11 22:20:55] [INFO] Completed Set-LabProfile
+[2025-06-11 22:20:55] [INFO] Completed 0216_Set-LabProfile.ps1
+[32m  [+] writes profile when flag enabled[0m[90m 38ms (37ms|1ms)[0m
+[2025-06-11 22:20:55] [INFO] Starting System.Management.Automation.InvocationInfo.MyCommand
+[2025-06-11 22:20:55] [INFO] Running 
+[2025-06-11 22:20:55] [INFO] SetupLabProfile flag is disabled. Skipping profile creation.
+[2025-06-11 22:20:55] [INFO] Completed Set-LabProfile
+[2025-06-11 22:20:55] [INFO] Completed 0216_Set-LabProfile.ps1
+[32m  [+] skips when flag disabled[0m[90m 17ms (13ms|5ms)[0m
+[95m
+[95mRunning tests from '/workspaces/opentofu-lab-automation/tests/Setup-Directories.Tests.ps1'[0m
+[92mDescribing 0002_Setup-Directories[0m
+[2025-06-11 22:20:56] [INFO] Starting System.Management.Automation.InvocationInfo.MyCommand
+[2025-06-11 22:20:56] [INFO] Running 
+[2025-06-11 22:20:56] [INFO] Preparing directories: /tmp/6ca2ae52-9021-40db-aecc-e5b15f268864/e5a40ddf-10ee-4980-9034-d6f363024251/hyperv, /tmp/6ca2ae52-9021-40db-aecc-e5b15f268864/e5a40ddf-10ee-4980-9034-d6f363024251/iso
+[2025-06-11 22:20:56] [INFO] Ensuring directory '/tmp/6ca2ae52-9021-40db-aecc-e5b15f268864/e5a40ddf-10ee-4980-9034-d6f363024251/hyperv' exists...
+[2025-06-11 22:20:56] [INFO] Created directory '/tmp/6ca2ae52-9021-40db-aecc-e5b15f268864/e5a40ddf-10ee-4980-9034-d6f363024251/hyperv'
+[2025-06-11 22:20:56] [INFO] Ensuring directory '/tmp/6ca2ae52-9021-40db-aecc-e5b15f268864/e5a40ddf-10ee-4980-9034-d6f363024251/iso' exists...
+[2025-06-11 22:20:56] [INFO] Created directory '/tmp/6ca2ae52-9021-40db-aecc-e5b15f268864/e5a40ddf-10ee-4980-9034-d6f363024251/iso'
+[2025-06-11 22:20:56] [INFO] Completed 
+[2025-06-11 22:20:56] [INFO] Completed 0002_Setup-Directories.ps1
+[32m  [+] creates directories when the script runs[0m[90m 27ms (26ms|1ms)[0m
+[2025-06-11 22:20:56] [INFO] Starting System.Management.Automation.InvocationInfo.MyCommand
+[2025-06-11 22:20:56] [INFO] Running 
+[2025-06-11 22:20:56] [INFO] Preparing directories: /tmp/6ca2ae52-9021-40db-aecc-e5b15f268864/9cd0606c-afc7-4500-a2f0-5fc9751bb3e0/hyperv, /tmp/6ca2ae52-9021-40db-aecc-e5b15f268864/9cd0606c-afc7-4500-a2f0-5fc9751bb3e0/iso
+[2025-06-11 22:20:56] [INFO] Ensuring directory '/tmp/6ca2ae52-9021-40db-aecc-e5b15f268864/9cd0606c-afc7-4500-a2f0-5fc9751bb3e0/hyperv' exists...
+[2025-06-11 22:20:56] [INFO] Directory '/tmp/6ca2ae52-9021-40db-aecc-e5b15f268864/9cd0606c-afc7-4500-a2f0-5fc9751bb3e0/hyperv' already exists; skipping.
+[2025-06-11 22:20:56] [INFO] Ensuring directory '/tmp/6ca2ae52-9021-40db-aecc-e5b15f268864/9cd0606c-afc7-4500-a2f0-5fc9751bb3e0/iso' exists...
+[2025-06-11 22:20:56] [INFO] Directory '/tmp/6ca2ae52-9021-40db-aecc-e5b15f268864/9cd0606c-afc7-4500-a2f0-5fc9751bb3e0/iso' already exists; skipping.
+[2025-06-11 22:20:56] [INFO] Completed 
+[2025-06-11 22:20:56] [INFO] Completed 0002_Setup-Directories.ps1
+[32m  [+] handles existing directories gracefully[0m[90m 22ms (21ms|1ms)[0m
+[97mTests completed in 19.13s[0m
+[97mTests Passed: 243, [0m[91mFailed: 83, [0m[90mSkipped: 0, [0m[90mInconclusive: 0, [0m[37m[0m[90mNotRun: 0[0m
+[91mBeforeAll \ AfterAll failed: 1[0m
+[91m  - 0102_Configure-Firewall[0m

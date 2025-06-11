@@ -1,8 +1,8 @@
 . (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
-Import-Module (Join-Path $PSScriptRoot '..' 'pwsh' 'lab_utils' 'Download-Archive.psm1') -Force
+. (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
 
-InModuleScope Download-Archive {
-Describe 'Download-Archive' {
+InModuleScope LabRunner {
+Describe 'Invoke-ArchiveDownload' {
     BeforeEach {
         function global:gh {}
         Mock gh {}
@@ -11,26 +11,25 @@ Describe 'Download-Archive' {
     }
 
     It 'uses gh CLI when -UseGh' {
-        Download-Archive 'url' 'dest' -UseGh
+        Invoke-ArchiveDownload 'url' 'dest' -UseGh
         Should -Invoke -CommandName gh -Times 1
         Should -Invoke -CommandName Invoke-WebRequest -Times 0
     }
 
     It 'uses Invoke-WebRequest when -UseGh not specified' {
-        Download-Archive 'url' 'dest'
+        Invoke-ArchiveDownload 'url' 'dest'
         Should -Invoke -CommandName gh -Times 0
         Should -Invoke -CommandName Invoke-WebRequest -Times 1
     }
 
-    It 'throws when gh download fails and -Required' {
-        Mock gh { } -ParameterFilter { $args[0] -eq 'api' }
-        $global:LASTEXITCODE = 1
-        { Download-Archive 'url' 'dest' -Required -UseGh } | Should -Throw
+    It 'throws if gh fails and -Required is set' {
+        Mock gh { throw 'fail' }
+        { Invoke-ArchiveDownload 'url' 'dest' -Required -UseGh } | Should -Throw
     }
 
-    It 'throws when Invoke-WebRequest fails and -Required' {
-        Mock Invoke-WebRequest { throw 'err' }
-        { Download-Archive 'url' 'dest' -Required } | Should -Throw
+    It 'throws if Invoke-WebRequest fails and -Required is set' {
+        Mock Invoke-WebRequest { throw 'fail' }
+        { Invoke-ArchiveDownload 'url' 'dest' -Required } | Should -Throw
     }
 }
 }

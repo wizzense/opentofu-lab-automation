@@ -17,52 +17,46 @@ Invoke-LabStep -Config $Config -Body {
     and the InfraRepoPath directory if they exist.
 #>
 
+    $tempPath = Get-CrossPlatformTempPath
+    Push-Location -Path $tempPath
 
-Push-Location -Path ([System.IO.Path]::GetTempPath())
-
-try {
-    $localBase = if ($Config.LocalPath) {
-        $Config.LocalPath
-    } else {
-        if ($IsWindows) {
-            if ($env:TEMP) { $env:TEMP } else { 'C:\\temp' }
+    try {
+        $localBase = if ($Config.LocalPath) {
+            $Config.LocalPath
         } else {
-            [System.IO.Path]::GetTempPath()
+            Get-CrossPlatformTempPath
+        }
+        $localBase = [System.Environment]::ExpandEnvironmentVariables($localBase)
+        $repoName  = ($Config.RepoUrl -split '/')[-1] -replace '\.git$',''
+        $repoPath  = Join-Path $localBase $repoName
+
+        if (Test-Path $repoPath) {
+            Write-CustomLog "Removing repo path '$repoPath'..."
+            Remove-Item -Recurse -Force -Path $repoPath -ErrorAction Stop
+        } else {
+            Write-CustomLog "Repo path '$repoPath' not found; skipping."
         }
 
-    }
-    $localBase = [System.Environment]::ExpandEnvironmentVariables($localBase)
-    $repoName  = ($Config.RepoUrl -split '/')[-1] -replace '\.git$',''
-    $repoPath  = Join-Path $localBase $repoName
+        $infraPath = if ($Config.InfraRepoPath) { $Config.InfraRepoPath } else { 'C:\\Temp\\base-infra' }
+        if (Test-Path $infraPath) {
+            Write-CustomLog "Removing infra path '$infraPath'..."
+            Remove-Item -Recurse -Force -Path $infraPath -ErrorAction Stop
+        } else {
+            Write-CustomLog "Infra path '$infraPath' not found; skipping."
+        }
 
-    if (Test-Path $repoPath) {
-        Write-CustomLog "Removing repo path '$repoPath'..."
-        Remove-Item -Recurse -Force -Path $repoPath -ErrorAction Stop
-    } else {
-        Write-CustomLog "Repo path '$repoPath' not found; skipping."
+        Write-CustomLog 'Cleanup completed successfully.'
     }
-
-    $infraPath = if ($Config.InfraRepoPath) { $Config.InfraRepoPath } else { 'C:\\Temp\\base-infra' }
-    if (Test-Path $infraPath) {
-        Write-CustomLog "Removing infra path '$infraPath'..."
-        Remove-Item -Recurse -Force -Path $infraPath -ErrorAction Stop
-    } else {
-        Write-CustomLog "Infra path '$infraPath' not found; skipping."
+    catch {
+        Write-Error -Message "Cleanup failed: $($PSItem.Exception.Message)`n$($PSItem.ScriptStackTrace)"
+        exit 1
     }
-
-    Write-CustomLog 'Cleanup completed successfully.'
-}
-catch {
-    Write-Error -Message "Cleanup failed: $($PSItem.Exception.Message)`n$($PSItem.ScriptStackTrace)"
-    exit 1
-}
-finally {
-    try {
-        Pop-Location -ErrorAction Stop
-    } catch {
-        Set-Location $env:TEMP
+    finally {
+        try {
+            Pop-Location -ErrorAction Stop
+        } catch {
+            Set-Location $tempPath
+        }
     }
-}
     Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
 }
-Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"

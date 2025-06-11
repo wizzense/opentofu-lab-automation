@@ -43,7 +43,7 @@ if ($Config.InstallGo -eq $true) {
     Invoke-LabDownload -Uri $installerUrl -Prefix 'GoInstaller' -Extension '.msi' -Action {
         param($installerPath)
         Write-CustomLog "Installing Go silently..."
-        Start-Process msiexec.exe -Wait -ArgumentList "/i `"$installerPath`" /qn /L*v `"$env:TEMP\GoInstall.log`""
+        Start-Process msiexec.exe -Wait -ArgumentList "/i `"$installerPath`" /qn /L*v `"$(Get-CrossPlatformTempPath)\GoInstall.log`""
         Write-CustomLog "Go installation complete."
     }
 } else {

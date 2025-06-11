@@ -3,11 +3,6 @@ Import-Module "$PSScriptRoot/../lab_utils/LabRunner/LabRunner.psd1"
 $scriptRoot = $PSScriptRoot
 
 Write-CustomLog "Starting $MyInvocation.MyCommand"
-$installerPath      = Join-Path $scriptRoot '..' 'lab_utils' 'LabRunner' 'OpenTofuInstaller.ps1'
-$installerAvailable = Test-Path $installerPath
-if (-not $installerAvailable) {
-    Write-Warning "Install script '$installerPath' not found. OpenTofu installation commands will be unavailable."
-}
 
 Invoke-LabStep -Config $Config -Body {
     Write-CustomLog "Running $($MyInvocation.MyCommand.Name)"
@@ -142,17 +137,13 @@ if (-not $tofuCmd) {
             Write-Warning "Even after updating PATH, tofu command is not recognized."
         } else {
             Write-CustomLog "Tofu command found: $($tofuCmd.Path)"
-        }
-    } else {
+        }    } else {
         Write-Warning "Tofu executable not found at $defaultTofuExe. Attempting installation..."
         $cosign   = Join-Path $Config.CosignPath 'cosign-windows-amd64.exe'
-        $version  = if ($Config.OpenTofuVersion) { $Config.OpenTofuVersion } else { 'latest' }
-
-        if ($installerAvailable -and (Get-Command Invoke-OpenTofuInstaller -ErrorAction SilentlyContinue)) {
+        $version  = if ($Config.OpenTofuVersion) { $Config.OpenTofuVersion } else { 'latest' }        if (Get-Command Invoke-OpenTofuInstaller -ErrorAction SilentlyContinue) {
             Invoke-OpenTofuInstaller -CosignPath $cosign -OpenTofuVersion $version
         } else {
-            Write-Error "Cannot install OpenTofu because the installer script '$installerPath' is missing."
-            exit 1
+            throw "Cannot install OpenTofu because the installer function 'Invoke-OpenTofuInstaller' is not available."
         }
 
         $tofuCmd = Get-Command tofu -ErrorAction SilentlyContinue

@@ -8,6 +8,7 @@ Describe '0113_Config-DNS' {
             DNSServers    = '1.2.3.4'
         }
 
+        # Mock Windows-specific cmdlets for cross-platform compatibility
         Mock Get-NetIPAddress { [pscustomobject]@{ InterfaceIndex = 99 } }
         Mock Set-DnsClientServerAddress {}
 

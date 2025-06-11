@@ -362,7 +362,7 @@ $arch = if ($info.OsArchitecture -match '64') { 'amd64' } else { '386' }
 $registryEndpoint = "https://registry.terraform.io/v1/providers/taliesins/hyperv/$providerVersion/download/$os/$arch"
 Write-CustomLog "Querying provider registry: $registryEndpoint"
 $downloadInfo = Invoke-RestMethod -Uri $registryEndpoint
-$tempDir = Join-Path $env:TEMP "hyperv_provider_$($providerVersion)"
+$tempDir = Join-Path (Get-CrossPlatformTempPath) "hyperv_provider_$($providerVersion)"
 Invoke-LabDownload -Uri $downloadInfo.download_url -Prefix 'hyperv_provider' -Extension '.zip' -Action {
     param($zipPath)
     Expand-Archive -Path $zipPath -DestinationPath $tempDir -Force
@@ -415,7 +415,6 @@ You can now run 'tofu plan'/'tofu apply' in $infraRepoPath.
     Write-CustomLog "PrepareHyperVHost flag is disabled. Skipping Hyper-V host preparation."
 }
 Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
-}
 }
 }
 
