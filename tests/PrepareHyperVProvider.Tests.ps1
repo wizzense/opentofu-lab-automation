@@ -246,4 +246,16 @@ Describe 'Convert certificate helpers validate paths' -Skip:($SkipNonWindows) {
         { Convert-PfxToPem -PfxPath 'p' -Password $pwd -CertPath 'c' -KeyPath '' } | Should -Throw -ErrorType [System.Management.Automation.ParameterBindingException]
         { Convert-PfxToPem -PfxPath 'p' -Password $pwd -CertPath 'c' -KeyPath $null } | Should -Throw -ErrorType [System.Management.Automation.ParameterBindingException]
     }
+
+    It 'throws when the PFX file is unreadable' {
+        $scriptPath = Get-RunnerScriptPath '0010_Prepare-HyperVProvider.ps1'
+        . $scriptPath
+        $pwd = New-Object System.Security.SecureString
+        foreach ($c in 'pw'.ToCharArray()) { $pwd.AppendChar($c) }
+        $pwd.MakeReadOnly()
+        $pfx = Join-Path $TestDrive 'bad.pfx'
+        New-Item -ItemType File -Path $pfx | Out-Null
+        { Convert-PfxToPem -PfxPath $pfx -Password $pwd -CertPath 'c' -KeyPath 'k' } |
+            Should -Throw -ErrorMessage "Invalid or unreadable PFX at $pfx"
+    }
 }
