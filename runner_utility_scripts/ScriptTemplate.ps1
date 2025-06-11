@@ -3,7 +3,6 @@ if (-not $PSScriptRoot) {
 }
 
 #Param([pscustomobject]$Config)
-Import-Module "$PSScriptRoot/../runner_utility_scripts/LabRunner.psd1"
 
 function Invoke-LabStep {
     param([scriptblock]$Body, [pscustomobject]$Config)

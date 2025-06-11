@@ -1,10 +1,9 @@
 #. dot-source utilities
+
+. (Join-Path $PSScriptRoot 'ScriptTemplate.ps1')   # pulls in Invoke-LabStep, etc.
 . $PSScriptRoot/Logger.ps1
 . $PSScriptRoot/../lab_utils/Get-Platform.ps1
 
-if (-not $script:LabRunner__Loaded) {
-    $script:LabRunner__Loaded = $true
-    . "$PSScriptRoot/ScriptTemplate.ps1"
-}
+# Only this side (LabRunner) brings ScriptTemplate in.
 
-Export-ModuleMember -Function Invoke-LabStep, Write-CustomLog, Get-Platform
+Export-ModuleMember -Function Invoke-LabStep, Write-CustomLog, Get-Platform, Get-LabConfig
