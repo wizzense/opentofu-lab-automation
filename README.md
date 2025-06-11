@@ -42,7 +42,7 @@ pwsh -File runner.ps1 -Scripts '0006,0007,0008,0009,0010' -Auto -Quiet
 Use a custom configuration file:
 
 ```powershell
-pwsh -File runner.ps1 -ConfigFile path\to\config.json -Scripts '0006,0007,0008,0009,0010' -Auto
+pwsh -File runner.ps1 -ConfigFile ./config_files/full-config.json -Scripts all -Auto
 ```
 
 Force optional script flags and show detailed logs:
