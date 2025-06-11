@@ -26,7 +26,7 @@ Describe 'runner.ps1 configuration' {
     }
 }
 
-Describe 'runner.ps1 script selection' -Skip:($SkipNonWindows) {
+Describe 'runner.ps1 script selection'  {
     BeforeAll {
         # Use script-scoped variable so PSScriptAnalyzer recognizes cross-block usage
         $script:runnerPath = Join-Path $PSScriptRoot '..' 'runner.ps1'
@@ -427,7 +427,7 @@ Write-Error 'err message'
         Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue
     }
 
-    It 'prompts twice when -Auto is used without -Scripts' -Skip:($SkipNonWindows) {
+    It 'prompts twice when -Auto is used without -Scripts'  {
         $tempDir   = New-RunnerTestEnv
         $scriptsDir = Join-Path $tempDir 'runner_scripts'
         "Param([PSCustomObject]`$Config)
@@ -448,7 +448,7 @@ exit 0" | Set-Content -Path (Join-Path $scriptsDir '0001_Test.ps1')
         Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue
     }
 
-    It 'handles empty or invalid selection by logging and doing nothing' -Skip:($SkipNonWindows) {
+    It 'handles empty or invalid selection by logging and doing nothing'  {
         $tempDir   = New-RunnerTestEnv
         $scriptsDir = Join-Path $tempDir 'runner_scripts'
         $out        = Join-Path $tempDir 'out.txt'
@@ -558,7 +558,7 @@ Describe 'Set-LabConfig' {
         }
     }
 
-    It 'updates selections and saves to JSON' -Skip:($SkipNonWindows) {
+    It 'updates selections and saves to JSON'  {
         $config = @{
             InstallGit = $false
             InstallGo  = $false

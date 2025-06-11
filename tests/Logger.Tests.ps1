@@ -1,6 +1,5 @@
 . (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
 . (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
-if ($SkipNonWindows) { return }
 Describe 'Write-CustomLog' {
     BeforeAll {
         . (Join-Path $PSScriptRoot '..' 'runner_utility_scripts' 'Logger.ps1')

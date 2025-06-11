@@ -1,6 +1,5 @@
 . (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
 . (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
-if ($SkipNonWindows) { return }
 $skipNpm = -not (Get-Command npm -ErrorAction SilentlyContinue)
 Describe 'Node installation scripts' -Skip:$skipNpm {
     BeforeAll {

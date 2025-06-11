@@ -1,7 +1,6 @@
 . (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
 . (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
-if ($SkipNonWindows) { return }
-Describe '0008_Install-OpenTofu' -Skip:($SkipNonWindows) {
+Describe '0008_Install-OpenTofu'  {
     BeforeAll {
         $script:ScriptPath = Get-RunnerScriptPath '0008_Install-OpenTofu.ps1'
         . $script:ScriptPath

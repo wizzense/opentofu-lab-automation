@@ -1,6 +1,5 @@
 . (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
 . (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
-if ($SkipNonWindows) { return }
 Describe 'Cleanup-Files script' {
     BeforeAll {
         $script:scriptPath = Get-RunnerScriptPath '0000_Cleanup-Files.ps1'

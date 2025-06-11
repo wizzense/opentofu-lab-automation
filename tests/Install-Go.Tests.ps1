@@ -1,7 +1,6 @@
 . (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
 . (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
-if ($SkipNonWindows) { return }
-Describe '0007_Install-Go' -Skip:($SkipNonWindows) {
+Describe '0007_Install-Go'  {
     BeforeAll { $script:ScriptPath = Get-RunnerScriptPath '0007_Install-Go.ps1' }
 
     It 'installs Go when enabled' {

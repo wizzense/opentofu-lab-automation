@@ -1,6 +1,5 @@
 . (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
 . (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
-if ($SkipNonWindows) { return }
 Describe 'Get-Platform' {
     BeforeAll {
         . (Join-Path $PSScriptRoot '..' 'lab_utils' 'Get-Platform.ps1')

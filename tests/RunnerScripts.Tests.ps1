@@ -7,12 +7,11 @@ if (-not (Test-Path $helperPath)) {
 . (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
 . (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
 
-if ($SkipNonWindows) { return }
 
 $scriptDir = Split-Path (Get-RunnerScriptPath '0001_Reset-Git.ps1')
 $scripts = Get-ChildItem $scriptDir -Filter '*.ps1'
 
-Describe 'Runner scripts parameter and command checks' -Skip:($SkipNonWindows) {
+Describe 'Runner scripts parameter and command checks'  {
 
     BeforeAll {
         . (Join-Path $PSScriptRoot 'helpers' 'Get-ScriptAst.ps1')

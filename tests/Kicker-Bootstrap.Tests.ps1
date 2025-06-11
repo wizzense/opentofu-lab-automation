@@ -1,7 +1,6 @@
 . (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
 . (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
-if ($SkipNonWindows) { return }
-Describe 'kicker-bootstrap utilities' -Skip:($SkipNonWindows) {
+Describe 'kicker-bootstrap utilities'  {
     It 'defines Write-CustomLog fallback' {
         $scriptPath = Join-Path $PSScriptRoot '..' 'kicker-bootstrap.ps1'
         $content = Get-Content $scriptPath -Raw

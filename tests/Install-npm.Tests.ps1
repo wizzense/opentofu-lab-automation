@@ -1,6 +1,5 @@
 . (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
 . (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
-if ($SkipNonWindows) { return }
 Describe '0203_Install-npm' {
     AfterEach {
         Remove-Item Function:npm -ErrorAction SilentlyContinue
