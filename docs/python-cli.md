@@ -1,6 +1,7 @@
 # labctl Python CLI
 
 The `labctl` command line tool exposes cross-platform helpers written in Python. It reads its settings from a JSON or YAML configuration file, loading `config_files/default-config.json` when no explicit path is given.
+All important scripts and modules are listed in `path-index.yaml` at the repository root. `python scripts/update_index.py` regenerates this map. The `labctl.path_index` module loads the file and provides `load_index()` and `resolve_path(key)` helpers.
 
 ## Subcommands
 

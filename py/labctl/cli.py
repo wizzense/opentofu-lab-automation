@@ -3,6 +3,8 @@ import logging
 import os
 from pathlib import Path
 from importlib.resources import files
+
+from .path_index import resolve_path
 import typer
 import yaml
 
@@ -10,8 +12,11 @@ from . import github_utils, issue_parser
 
 
 def default_config_path() -> Path:
-    """Return the path to the packaged default configuration file."""
+    """Return the path to the default configuration file."""
 
+    resolved = resolve_path("config_files/default-config.json")
+    if resolved:
+        return resolved
     return Path(files("labctl").joinpath("config_files", "default-config.json"))
 
 logger = logging.getLogger("labctl")

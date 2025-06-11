@@ -7,7 +7,7 @@ param(
     [ValidateSet('silent','normal','detailed')]
     [string]$Verbosity = 'normal',
 
-    [string]$ConfigFile = (Join-Path $PSScriptRoot 'config_files/default-config.json'),
+    [string]$ConfigFile,
     #[string]$ConfigFile = (Join-Path (Join-Path $PSScriptRoot 'config_files') 'default-config.json'),
 
 
@@ -17,6 +17,28 @@ param(
 
     [switch]$Force
 )
+
+# repo root is this script's directory
+$repoRoot   = $PSScriptRoot
+$indexPath  = Join-Path $repoRoot 'path-index.yaml'
+$script:PathIndex = @{}
+if (Test-Path $indexPath) {
+    try { $script:PathIndex = Get-Content -Raw -Path $indexPath | ConvertFrom-Yaml } catch { $script:PathIndex = @{} }
+}
+
+function Resolve-IndexPath {
+    param([string]$Key)
+    if ($script:PathIndex.ContainsKey($Key)) {
+        return Join-Path $repoRoot $script:PathIndex[$Key]
+    }
+    return $null
+}
+
+# apply default ConfigFile if not provided
+if (-not $PSBoundParameters.ContainsKey('ConfigFile')) {
+    $ConfigFile = Resolve-IndexPath 'config_files/default-config.json'
+    if (-not $ConfigFile) { $ConfigFile = Join-Path $repoRoot 'config_files/default-config.json' }
+}
 
 
 # Determine pwsh executable path early for nested script execution
@@ -55,14 +77,21 @@ $script:ConsoleLevel    = $script:VerbosityLevels[$Verbosity]
 
 
 # ─── Load helpers ──────────────────────────────────────────────────────────────
+$labUtilsDir = Resolve-IndexPath 'lab_utils'
+if (-not $labUtilsDir) { $labUtilsDir = Join-Path $repoRoot 'lab_utils' }
+$runnerScriptsDir = Resolve-IndexPath 'runner_scripts'
+if (-not $runnerScriptsDir) { $runnerScriptsDir = Join-Path $repoRoot 'runner_scripts' }
+$configFilesDir = Resolve-IndexPath 'config_files'
+if (-not $configFilesDir) { $configFilesDir = Join-Path $repoRoot 'config_files' }
+
 if (-not (Get-Command Write-CustomLog -ErrorAction SilentlyContinue)) {
-    . (Join-Path (Join-Path (Join-Path $PSScriptRoot 'lab_utils') 'LabRunner') 'Logger.ps1')
+    . (Join-Path (Join-Path $labUtilsDir 'LabRunner') 'Logger.ps1')
 }
 $env:LAB_CONSOLE_LEVEL = $script:VerbosityLevels[$Verbosity]
-. (Join-Path (Join-Path $PSScriptRoot 'lab_utils') 'Get-LabConfig.ps1')
-. (Join-Path (Join-Path $PSScriptRoot 'lab_utils') 'Format-Config.ps1')
-. (Join-Path (Join-Path $PSScriptRoot 'lab_utils') 'Get-Platform.ps1')
-$menuPath = Join-Path (Join-Path $PSScriptRoot 'lab_utils') 'Menu.ps1'
+. (Join-Path $labUtilsDir 'Get-LabConfig.ps1')
+. (Join-Path $labUtilsDir 'Format-Config.ps1')
+. (Join-Path $labUtilsDir 'Get-Platform.ps1')
+$menuPath = Join-Path $labUtilsDir 'Menu.ps1'
 if (-not (Test-Path $menuPath)) {
     Write-Error "Menu module not found at $menuPath"
     exit 1
@@ -138,7 +167,7 @@ function Set-NestedConfigValue {
 function Apply-RecommendedDefaults {
     param([hashtable]$ConfigObject)
 
-    $recommendedPath = Join-Path (Join-Path $PSScriptRoot 'config_files') 'recommended-config.json'
+    $recommendedPath = Join-Path $configFilesDir 'recommended-config.json'
     if (-not (Test-Path $recommendedPath)) { return $ConfigObject }
     try {
         $recommended = Get-Content -Raw -Path $recommendedPath | ConvertFrom-Json
@@ -235,7 +264,7 @@ if (-not $Auto) {
 
 # ─── Discover scripts ────────────────────────────────────────────────────────
 Write-CustomLog "==== Locating scripts ===="
-$ScriptFiles = Get-ChildItem (Join-Path $PSScriptRoot 'runner_scripts') -Filter "????_*.ps1" -File | Sort-Object Name
+$ScriptFiles = Get-ChildItem $runnerScriptsDir -Filter "????_*.ps1" -File | Sort-Object Name
 if (-not $ScriptFiles) {
     Write-CustomLog "ERROR: No scripts found matching pattern."
     exit 1
@@ -270,7 +299,7 @@ function Invoke-Scripts {
     foreach ($s in $ScriptsToRun) {
         Write-CustomLog "`n--- Running: $($s.Name) ---"
         try {
-            $scriptPath = Join-Path $PSScriptRoot "runner_scripts" $($s.Name)
+            $scriptPath = Join-Path $runnerScriptsDir $($s.Name)
             if (-not (Test-Path $scriptPath)) {
                 Write-CustomLog "ERROR: Script not found at $scriptPath"
                 $failed += $s.Name
