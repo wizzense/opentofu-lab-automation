@@ -81,7 +81,7 @@ jobs:
           $cfg = New-PesterConfiguration -Hashtable (Import-PowerShellDataFile 'tests/PesterConfiguration.psd1')
 
           $coveragePaths = @($cfg.CodeCoverage.Path.Value)
-          $coveragePaths += 'iso_tools'
+          $coveragePaths += 'tools/iso'
           $cfg.CodeCoverage.Path = [Pester.StringArrayOption]::new($coveragePaths)
 
           $repoRoot = $env:GITHUB_WORKSPACE
@@ -127,7 +127,7 @@ jobs:
       - name: Configure Node flags
         shell: pwsh
         run: |
-          $cfgPath = 'config_files/default-config.json'
+          $cfgPath = 'configs/config_files/default-config.json'
           $cfg = Get-Content $cfgPath | ConvertFrom-Json
           $cfg.Node_Dependencies.InstallNode = $true
           $cfg.Node_Dependencies.InstallNpm  = $true
@@ -135,14 +135,14 @@ jobs:
       - name: Install Node core
         shell: pwsh
         run: |
-          $cfg = Get-Content 'config_files/default-config.json' | ConvertFrom-Json
-          . ./runner_scripts/0201_Install-NodeCore.ps1
+          $cfg = Get-Content 'configs/config_files/default-config.json' | ConvertFrom-Json
+          . ./pwsh/runner_scripts/0201_Install-NodeCore.ps1
           Install-NodeCore -Config $cfg
       - name: Install global packages
         shell: pwsh
         run: |
-          $cfg = Get-Content 'config_files/default-config.json' | ConvertFrom-Json
-          . ./runner_scripts/0202_Install-NodeGlobalPackages.ps1
+          $cfg = Get-Content 'configs/config_files/default-config.json' | ConvertFrom-Json
+          . ./pwsh/runner_scripts/0202_Install-NodeGlobalPackages.ps1
           Install-NodeGlobalPackages -Config $cfg
       - name: Verify Node and packages
         shell: pwsh

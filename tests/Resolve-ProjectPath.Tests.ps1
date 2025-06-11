@@ -2,7 +2,7 @@
 
 Describe 'Resolve-ProjectPath' {
     BeforeAll {
-        $modulePath = Join-Path $PSScriptRoot '..' 'lab_utils' 'Resolve-ProjectPath.ps1'
+        $modulePath = Join-Path $PSScriptRoot '..' 'pwsh' 'lab_utils' 'Resolve-ProjectPath.ps1'
         . $modulePath
     }
 

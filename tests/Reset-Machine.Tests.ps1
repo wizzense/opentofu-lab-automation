@@ -3,7 +3,7 @@
 Describe 'Reset-Machine script' {
     BeforeAll {
         $script:ScriptPath = Get-RunnerScriptPath '9999_Reset-Machine.ps1'
-        . (Join-Path $PSScriptRoot '..' 'lab_utils' 'Get-Platform.ps1')
+        . (Join-Path $PSScriptRoot '..' 'pwsh' 'lab_utils' 'Get-Platform.ps1')
     }
 
     BeforeEach {

@@ -11,17 +11,19 @@ function global:New-RunnerTestEnv {
     New-Item -ItemType Directory -Path $root | Out-Null
 
     $repoRoot   = Join-Path $PSScriptRoot '..' '..'
-    Copy-Item (Join-Path $repoRoot 'runner.ps1') -Destination $root
+    $pwshDir = Join-Path $root 'pwsh'
+    New-Item -ItemType Directory -Path $pwshDir | Out-Null
+    Copy-Item (Join-Path $repoRoot 'pwsh' 'runner.ps1') -Destination $pwshDir
 
-    $rsDir = Join-Path $root 'runner_scripts'
+    $rsDir = Join-Path $pwshDir 'runner_scripts'
     New-Item -ItemType Directory -Path $rsDir | Out-Null
 
-    $utils = Join-Path $root 'lab_utils' 'LabRunner'
+    $utils = Join-Path $pwshDir 'lab_utils' 'LabRunner'
     New-Item -ItemType Directory -Path $utils -Force | Out-Null
     'function Write-CustomLog { param([string]$Message,[string]$Level) }' |
         Set-Content -Path (Join-Path $utils 'Logger.ps1')
 
-    $labs = Join-Path $root 'lab_utils'
+    $labs = Join-Path $pwshDir 'lab_utils'
     New-Item -ItemType Directory -Path $labs | Out-Null
     'function Get-LabConfig { param([string]$Path) Get-Content -Raw $Path | ConvertFrom-Json }' |
         Set-Content -Path (Join-Path $labs 'Get-LabConfig.ps1')
@@ -37,7 +39,7 @@ function global:New-RunnerTestEnv {
     'function Get-MenuSelection { }' |
         Set-Content -Path (Join-Path $labs 'Menu.ps1')
 
-    $cfgDir = Join-Path $root 'config_files'
+    $cfgDir = Join-Path $root 'configs' 'config_files'
     New-Item -ItemType Directory -Path $cfgDir | Out-Null
     '{}' | Set-Content -Path (Join-Path $cfgDir 'default-config.json')
     '{}' | Set-Content -Path (Join-Path $cfgDir 'recommended-config.json')

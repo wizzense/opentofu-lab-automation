@@ -1,11 +1,11 @@
 . (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
 . (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
-Import-Module (Join-Path $PSScriptRoot '..' 'lab_utils' 'LabRunner' 'LabRunner.psd1') -Force
+Import-Module (Join-Path $PSScriptRoot '..' 'pwsh' 'lab_utils' 'LabRunner' 'LabRunner.psd1') -Force
 
 InModuleScope LabSetup {
 Describe 'Get-WindowsJobArtifacts' {
     BeforeAll {
-        $scriptPath = Join-Path $PSScriptRoot '..' 'lab_utils' 'Get-WindowsJobArtifacts.ps1'
+        $scriptPath = Join-Path $PSScriptRoot '..' 'pwsh' 'lab_utils' 'Get-WindowsJobArtifacts.ps1'
     }
 
     BeforeAll {

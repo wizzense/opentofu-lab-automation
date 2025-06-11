@@ -26,7 +26,7 @@ if ($IsLinux -or $IsMacOS) { return }
 
     Describe 'logging' -Skip:($SkipNonWindows) {
         It 'creates log files and removes them for elevated unpack' {
-        $script:scriptPath = Join-Path $PSScriptRoot '..' 'lab_utils' 'LabRunner' 'OpenTofuInstaller.ps1'
+        $script:scriptPath = Join-Path $PSScriptRoot '..' 'pwsh' 'lab_utils' 'LabRunner' 'OpenTofuInstaller.ps1'
         $temp = $script:temp
         $zipPath = Join-Path $temp 'tofu_0.0.0_windows_amd64.zip'
         'dummy' | Set-Content $zipPath
@@ -71,7 +71,7 @@ if ($IsLinux -or $IsMacOS) { return }
         }
 
         It 'gracefully handles missing log directory' {
-        $script:scriptPath = Join-Path $PSScriptRoot '..' 'lab_utils' 'LabRunner' 'OpenTofuInstaller.ps1'
+        $script:scriptPath = Join-Path $PSScriptRoot '..' 'pwsh' 'lab_utils' 'LabRunner' 'OpenTofuInstaller.ps1'
         $temp = $script:temp
         $zipPath = Join-Path $temp 'tofu_0.0.0_windows_amd64.zip'
         'dummy' | Set-Content $zipPath
@@ -111,7 +111,7 @@ if ($IsLinux -or $IsMacOS) { return }
 
     Describe 'error handling' {
         It 'returns requirement not met exit code when cosign is missing' {
-            $script:scriptPath = Join-Path $PSScriptRoot '..' 'lab_utils' 'LabRunner' 'OpenTofuInstaller.ps1'
+            $script:scriptPath = Join-Path $PSScriptRoot '..' 'pwsh' 'lab_utils' 'LabRunner' 'OpenTofuInstaller.ps1'
             $arguments = @(
                 '-NoLogo',
                 '-NoProfile',
@@ -128,7 +128,7 @@ if ($IsLinux -or $IsMacOS) { return }
 
     Describe 'macOS defaults' {
         It 'allows -allUsers when Programfiles is missing' -Skip:(-not $IsMacOS) {
-            $scriptPath = Join-Path $PSScriptRoot '..' 'lab_utils' 'LabRunner' 'OpenTofuInstaller.ps1'
+            $scriptPath = Join-Path $PSScriptRoot '..' 'pwsh' 'lab_utils' 'LabRunner' 'OpenTofuInstaller.ps1'
             $zip = Join-Path $script:temp 'dummy.zip'
             'dummy' | Set-Content $zip
             Mock Expand-Archive {}
