@@ -1,6 +1,7 @@
 . (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
 . (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
 if ($SkipNonWindows) { return }
+Import-Module (Join-Path $PSScriptRoot '..' 'runner_utility_scripts' 'LabRunner.psd1') -Force
 
 InModuleScope LabSetup {
 Describe 'Get-WindowsJobArtifacts' {
