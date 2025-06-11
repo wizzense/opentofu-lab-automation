@@ -62,7 +62,7 @@ git pull
 
 ## Automated testing
 
-The [test.yml](../.github/workflows/test.yml) workflow installs OpenTofu and
+The [test.yml](../../.github/workflows/test.yml) workflow installs OpenTofu and
 executes `tofu init` and `tofu validate` in this directory. It runs whenever you
 push changes or open a pull request, ensuring the examples remain valid.
 
@@ -73,4 +73,3 @@ push changes or open a pull request, ensuring the examples remain valid.
 - `vm_modules.tf` – repeatedly calls the [`modules/vm`](../../modules/vm/README.md)
   module to build VMs with different ISOs.
 - `providers.tf` – holds the provider configuration shown above.
-
