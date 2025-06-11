@@ -77,7 +77,10 @@ Describe 'Runner scripts parameter and command checks' -Skip:($SkipNonWindows) {
         $found = $commands | Where-Object {
             $_.GetCommandName() -eq 'Import-Module' -and
             $_.CommandElements.Count -ge 2 -and
-            ($_.CommandElements[1] -is [System.Management.Automation.Language.StringConstantExpressionAst]) -and
+            (
+                $_.CommandElements[1] -is [System.Management.Automation.Language.StringConstantExpressionAst] -or
+                $_.CommandElements[1] -is [System.Management.Automation.Language.ExpandableStringExpressionAst]
+            ) -and
             ([System.IO.Path]::GetFileName($_.CommandElements[1].Value) -eq 'LabRunner.psd1')
         }
 
