@@ -2,9 +2,7 @@
 . $PSScriptRoot/Logger.ps1
 . $PSScriptRoot/../lab_utils/Get-Platform.ps1
 
-if (-not $script:LabRunner__Loaded) {
-    $script:LabRunner__Loaded = $true
-    . "$PSScriptRoot/ScriptTemplate.ps1"
-}
+# LabRunner should be imported by runner scripts before dot-sourcing
+# ScriptTemplate.ps1. Avoid dot-sourcing here to prevent circular imports.
 
 Export-ModuleMember -Function Invoke-LabStep, Write-CustomLog, Get-Platform
