@@ -54,8 +54,12 @@ if (-not [string]::IsNullOrWhiteSpace($infraRepoUrl)) {
     if (Test-Path (Join-Path $infraRepoPath ".git")) {
         Write-CustomLog "This directory is already a Git repository. Pulling latest changes..."
         Push-Location $infraRepoPath
-        git pull
-        Pop-Location
+        try {
+            git pull
+        }
+        finally {
+            Pop-Location
+        }
     }
     else {
         # If you want a clean slate each time, uncomment the lines below to remove existing files
@@ -161,15 +165,18 @@ if (-not $tofuCmd) {
 # --------------------------------------------------
 Write-CustomLog "Initializing OpenTofu in $infraRepoPath..."
 Push-Location $infraRepoPath
+$exitCode = 0
 try {
     tofu init
 }
 catch {
     Write-Error "Failed to run 'tofu init'. Ensure OpenTofu is installed and available in the PATH."
-    Pop-Location
-    exit 1
+    $exitCode = 1
 }
-Pop-Location
+finally {
+    Pop-Location
+}
+if ($exitCode -ne 0) { exit $exitCode }
 
 Write-CustomLog "OpenTofu initialized successfully."
 
