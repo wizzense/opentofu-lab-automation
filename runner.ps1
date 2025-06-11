@@ -291,6 +291,9 @@ function Invoke-Scripts {
 
             Remove-Item $tempCfg -ErrorAction SilentlyContinue
 
+            $Config | ConvertTo-Json -Depth 5 |
+                Out-File -FilePath $ConfigFile -Encoding utf8
+
             $results[$s.Name] = $exitCode
             if ($exitCode) {
                 Write-CustomLog "ERROR: $($s.Name) exited with code $exitCode."

@@ -227,11 +227,15 @@ if (`$Config.RunFoo -eq `$true) { 'foo' | Out-File -FilePath "$out" } else { Wri
         Push-Location $tempDir
         Mock Read-Host { throw 'Read-Host should not be called' }
         & "$tempDir/runner.ps1" -Scripts '0001' -Auto -ConfigFile $configFile -Force | Out-Null
-        $updated = Get-Content -Raw $configFile | ConvertFrom-Json
+        $updated1 = Get-Content -Raw $configFile | ConvertFrom-Json
+
+        & "$tempDir/runner.ps1" -Scripts '0001' -Auto -ConfigFile $configFile | Out-Null
+        $updated2 = Get-Content -Raw $configFile | ConvertFrom-Json
         Pop-Location
 
         Test-Path $out | Should -BeTrue
-        $updated.RunFoo | Should -BeTrue
+        $updated1.RunFoo | Should -BeTrue
+        $updated2.RunFoo | Should -BeTrue
 
         Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue
     }
@@ -252,11 +256,15 @@ if (`$Config.RunFoo -eq `$true) { 'foo' | Out-File -FilePath "$out" }
         Push-Location $tempDir
         Mock Read-Host { throw 'Read-Host should not be called' }
         & "$tempDir/runner.ps1" -Scripts '0001' -Auto -ConfigFile $configFile | Out-Null
-        $updated = Get-Content -Raw $configFile | ConvertFrom-Json
+        $updated1 = Get-Content -Raw $configFile | ConvertFrom-Json
+
+        & "$tempDir/runner.ps1" -Scripts '0001' -Auto -ConfigFile $configFile | Out-Null
+        $updated2 = Get-Content -Raw $configFile | ConvertFrom-Json
         Pop-Location
 
         Test-Path $out | Should -BeFalse
-        $updated.RunFoo | Should -BeFalse
+        $updated1.RunFoo | Should -BeFalse
+        $updated2.RunFoo | Should -BeFalse
 
         Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue
     }
