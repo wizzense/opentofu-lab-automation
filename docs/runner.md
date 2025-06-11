@@ -58,6 +58,12 @@ When running in CI or other automated environments, invoke the runner with `pwsh
 pwsh -File runner.ps1 -Scripts all -Auto
 ```
 
+Use the provided full configuration file to enable every feature:
+
+```powershell
+pwsh -File runner.ps1 -ConfigFile ./config_files/full-config.json -Scripts all -Auto
+```
+
 Individual scripts can also be executed directly:
 
 ```powershell
