@@ -13,10 +13,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Authenticate gh
-        run: echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Install Copilot extension
         run: gh extension install github/gh-copilot --force
       - name: Suggest fixes for each open issue
@@ -41,8 +37,6 @@ jobs:
       - name: Install Copilot CLI
         run: npm install -g @githubnext/github-copilot-cli
       - name: Run Copilot suggestions
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           for num in $(gh issue list --state open --json number -q '.[].number'); do
             body=$(gh issue view "$num" --json body -q .body)
