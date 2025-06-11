@@ -42,6 +42,6 @@ function Read-LoggedInput {
     }
 
     $answer = Microsoft.PowerShell.Utility\Read-Host -Prompt $Prompt
-    Write-CustomLog "$Prompt: $answer"
+    Write-CustomLog "$($Prompt): $answer"
     return $answer
 }

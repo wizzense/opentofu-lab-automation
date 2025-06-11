@@ -1,5 +1,9 @@
-Param([pscustomobject]$Config)
+Param([object]$Config)
 Import-Module "$PSScriptRoot/../lab_utils/LabRunner/LabRunner.psd1"
+
+# Param([pscustomobject]$Config)
+# Import-Module (Join-Path $PSScriptRoot '..' 'lab_utils' 'LabRunner' 'LabRunner.psm1')
+
 Write-CustomLog "Starting $MyInvocation.MyCommand"
 
 if (-not (Get-Command Convert-CerToPem -ErrorAction SilentlyContinue)) {
@@ -37,25 +41,40 @@ function Convert-PfxToPem {
         [ValidateNotNullOrEmpty()]
         [string]$KeyPath
     )
+    if ([string]::IsNullOrWhiteSpace($PfxPath)) { throw 'PfxPath cannot be null or empty' }
+    if ([string]::IsNullOrWhiteSpace($CertPath)) { throw 'CertPath cannot be null or empty' }
+    if ([string]::IsNullOrWhiteSpace($KeyPath))  { throw 'KeyPath cannot be null or empty' }
+
     if (-not $PSCmdlet.ShouldProcess($PfxPath, 'Convert PFX to PEM')) { return }
     if (-not (Test-Path $PfxPath) -or ((Get-Item -Path $PfxPath -ErrorAction SilentlyContinue).Length -eq 0)) {
         throw "Invalid or unreadable PFX at $PfxPath"
     }
+
     try {
-        $cert = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2($PfxPath,$Password,[System.Security.Cryptography.X509Certificates.X509KeyStorageFlags]::Exportable)
-    } catch {
+        $cert = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2(
+            $PfxPath,
+            $Password,
+            [System.Security.Cryptography.X509Certificates.X509KeyStorageFlags]::Exportable
+        )
+
+        $certBytes = $cert.Export([System.Security.Cryptography.X509Certificates.X509ContentType]::Cert)
+        $certB64   = [System.Convert]::ToBase64String($certBytes,'InsertLineBreaks')
+        if ($PSCmdlet.ShouldProcess($CertPath, 'Write certificate PEM')) {
+            "-----BEGIN CERTIFICATE-----`n$certB64`n-----END CERTIFICATE-----" | Set-Content -Path $CertPath
+        }
+
+        $rsa = $cert.GetRSAPrivateKey()
+        $keyBytes = $rsa.ExportPkcs8PrivateKey()
+        $keyB64   = [System.Convert]::ToBase64String($keyBytes,'InsertLineBreaks')
+        if ($PSCmdlet.ShouldProcess($KeyPath, 'Write key PEM')) {
+            "-----BEGIN PRIVATE KEY-----`n$keyB64`n-----END PRIVATE KEY-----" | Set-Content -Path $KeyPath
+        }
+    }
+    catch [System.Security.Cryptography.CryptographicException] {
+        throw "Failed to convert certificate: $($_.Exception.Message)"
+    }
+    catch {
         throw "Invalid or unreadable PFX at $PfxPath"
-    }
-    $certBytes = $cert.Export([System.Security.Cryptography.X509Certificates.X509ContentType]::Cert)
-    $certB64   = [System.Convert]::ToBase64String($certBytes,'InsertLineBreaks')
-    if ($PSCmdlet.ShouldProcess($CertPath, 'Write certificate PEM')) {
-        "-----BEGIN CERTIFICATE-----`n$certB64`n-----END CERTIFICATE-----" | Set-Content -Path $CertPath
-    }
-    $rsa = $cert.GetRSAPrivateKey()
-    $keyBytes = $rsa.ExportPkcs8PrivateKey()
-    $keyB64   = [System.Convert]::ToBase64String($keyBytes,'InsertLineBreaks')
-    if ($PSCmdlet.ShouldProcess($KeyPath, 'Write key PEM')) {
-        "-----BEGIN PRIVATE KEY-----`n$keyB64`n-----END PRIVATE KEY-----" | Set-Content -Path $KeyPath
     }
 }
 }
@@ -426,4 +445,5 @@ You can now run 'tofu plan'/'tofu apply' in $infraRepoPath.
     Write-CustomLog "PrepareHyperVHost flag is disabled. Skipping Hyper-V host preparation."
 }
 }
+    Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
 }

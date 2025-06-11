@@ -6,11 +6,15 @@ function Format-Config {
             ValueFromPipelineByPropertyName = $true,
             Mandatory
         )]
-        [AllowNull()]
         [psobject]$Config
     )
 
-    begin { $hasInput = $false }
+    begin {
+        $hasInput = $false
+        if ($PSBoundParameters.ContainsKey('Config') -and $null -eq $Config) {
+            throw [System.ArgumentNullException]::new('Config')
+        }
+    }
 
     process {
         $hasInput = $true

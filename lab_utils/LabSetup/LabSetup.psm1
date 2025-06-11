@@ -5,7 +5,7 @@
 function Invoke-LabStep {
     param(
         [scriptblock]$Body,
-        [pscustomobject]$Config
+        [object]$Config
     )
 
     if ($Config -is [string]) {
