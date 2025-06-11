@@ -40,13 +40,16 @@ jobs:
         # Use the triggering run ID unless RUN_ID is explicitly provided
         run: |
           run_id="${RUN_ID:-${{ github.event.workflow_run.id }}}"
-          gh run download "$run_id" -n 'pester-results-*' -D artifacts
-          gh run download "$run_id" -n 'pytest-results-*' -D artifacts
+          # Download all artifacts from the triggering run. Wildcards are not
+          # supported by `gh run download`, so grab everything and filter locally.
+          gh run download "$run_id" -D artifacts || true
+
           find artifacts -name testResults.xml -print0 | while IFS= read -r -d '' f; do
-            python -m labctl.pester_failures "$f"
+            python -m labctl.pester_failures "$f" || true
           done
+
           find artifacts -name junit.xml -print0 | while IFS= read -r -d '' f; do
-            python -m labctl.pytest_failures "$f"
+            python -m labctl.pytest_failures "$f" || true
           done
 
       - name: Check existing issue
