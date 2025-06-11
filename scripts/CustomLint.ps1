@@ -11,10 +11,10 @@ if (-not (Test-Path $SettingsPath)) {
 }
 
 $files = Get-ChildItem -Path $Target -Recurse -Include *.ps1,*.psm1,*.psd1 -File |
-    ForEach-Object { $_.FullName }
+    Select-Object -ExpandProperty FullName
 
-$results = Invoke-ScriptAnalyzer -Path $files -Severity Error,Warning -Settings $SettingsPath
-$results | Format-Table
+$results = $files | Invoke-ScriptAnalyzer -Severity Error,Warning -Settings $SettingsPath
+$results | Format-Table | Out-String | Write-Host
 
 if ($results | Where-Object Severity -eq 'Error') {
     Write-Error 'ScriptAnalyzer errors detected'
