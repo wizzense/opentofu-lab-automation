@@ -96,6 +96,7 @@ Detailed guides and module references are located in the [docs](docs/) directory
 ## Python CLI
 
 The optional `labctl` command line utility lives in the [py](py/) folder.
+It requires Python 3.10 or newer (see [py/pyproject.toml](py/pyproject.toml)).
 Install its dependencies with [Poetry](https://python-poetry.org/) and run the
 subcommands via `poetry run`:
 
