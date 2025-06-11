@@ -9,7 +9,7 @@ Describe '0006_Install-ValidationTools'  {
     }
 
     AfterEach {
-        [Environment]::SetEnvironmentVariable('PATH',$null,'User')
+        [Environment]::SetEnvironmentVariable('PATH',$null,'Process')
     }
 
     It 'downloads cosign when InstallCosign is true' {
