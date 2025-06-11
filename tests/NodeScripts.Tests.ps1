@@ -114,6 +114,8 @@ Describe 'Node installation scripts' -Skip:$skipNpm {
 
         function Invoke-LabNpm { param([Parameter(ValueFromRemainingArguments = $true)][string[]]$testArgs) }
 
+        Mock Invoke-LabNpm -ModuleName LabRunner {}
+
         . $global
         Mock Invoke-LabNpm -ModuleName LabRunner {}
         Install-NodeGlobalPackages -Config @{ Node_Dependencies = @{ InstallYarn=$false; InstallVite=$false; InstallNodemon=$false } } -WhatIf
@@ -130,6 +132,8 @@ Describe 'Node installation scripts' -Skip:$skipNpm {
             $null = $testArgs
         }
         $npmPath = Get-RunnerScriptPath '0203_Install-npm.ps1'
+
+        Mock Invoke-LabNpm -ModuleName LabRunner {}
 
         Mock Invoke-LabNpm -ModuleName LabRunner {}
 
