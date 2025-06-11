@@ -51,6 +51,8 @@ Describe 'runner.ps1 script selection' -Skip:($SkipNonWindows) {
                 Set-Content -Path (Join-Path $labs 'Get-LabConfig.ps1')
             'function Format-Config { param($Config) $Config | ConvertTo-Json -Depth 5 }' |
                 Set-Content -Path (Join-Path $labs 'Format-Config.ps1')
+            'function Get-Platform { if ($IsWindows) { "Windows" } elseif ($IsLinux) { "Linux" } elseif ($IsMacOS) { "MacOS" } else { "Unknown" } }' |
+                Set-Content -Path (Join-Path $labs 'Get-Platform.ps1')
             'function Get-MenuSelection { }' |
                 Set-Content -Path (Join-Path $labs 'Menu.ps1')
 
