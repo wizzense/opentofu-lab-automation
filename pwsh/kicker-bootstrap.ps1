@@ -43,7 +43,8 @@ $script:VerbosityLevels = @{ silent = 0; normal = 1; detailed = 2 }
 $script:ConsoleLevel    = $script:VerbosityLevels[$Verbosity]
 
 $targetBranch = 'main'
-$defaultConfig = "https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/refs/heads/main/configs/config_files/default-config.json"
+$baseUrl = 'https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/refs/heads/'
+$defaultConfig = "${baseUrl}${targetBranch}/configs/config_files/default-config.json"
 
 
 # example: https://raw.githubusercontent.com/wizzense/tofu-base-lab/refs/heads/main/configs/bootstrap-config.json
@@ -72,7 +73,7 @@ if (-not (Test-Path $loggerPath)) {
     if (-not (Test-Path $loggerDir)) {
         New-Item -ItemType Directory -Path $loggerDir -Force | Out-Null
     }
-    $loggerUrl = "${baseUrl}main/pwsh/lab_utils/LabRunner/Logger.ps1"
+    $loggerUrl = "${baseUrl}${targetBranch}/pwsh/lab_utils/LabRunner/Logger.ps1"
     Invoke-WebRequest -Uri $loggerUrl -OutFile $loggerPath
 }
 try {
