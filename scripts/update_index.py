@@ -25,11 +25,14 @@ def build_index():
         p = REPO_ROOT / name
         if p.exists():
             index[name] = name
+    excluded_dirs = {'__pycache__', '.git', '.svn'}
     for d in SCAN_DIRS:
         dir_path = REPO_ROOT / d
         if not dir_path.exists():
             continue
         for path in dir_path.rglob('*'):
+            if any(part in excluded_dirs for part in path.parts):
+                continue
             if path.is_file():
                 rel = path.relative_to(REPO_ROOT)
                 index[str(rel)] = str(rel)

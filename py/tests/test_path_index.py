@@ -43,3 +43,10 @@ def test_default_config_fallback(monkeypatch):
     from labctl.cli import default_config_path
     path = default_config_path()
     assert path.exists()
+
+
+def test_no_pycache_paths():
+    idx = path_index.load_index()
+    assert not any("__pycache__" in key for key in idx)
+    assert path.exists()
+
