@@ -356,34 +356,6 @@ $null = New-Item -ItemType Directory -Force -Path $infraRepoPath -ErrorAction Si
 
 Write-CustomLog "InfraRepoPath for hyperv provider: $infraRepoPath"
 
-Write-CustomLog "Setting up Go environment..."
-$goWorkspace = "C:\\GoWorkspace"
-$env:GOPATH = $goWorkspace
-[System.Environment]::SetEnvironmentVariable('GOPATH', $goWorkspace, 'User')
-
-Write-CustomLog "Ensuring taliesins provider dir structure..."
-$taliesinsDir = Join-Path -Path $env:GOPATH -ChildPath "src\\github.com\\taliesins"
-if (!(Test-Path $taliesinsDir)) {
-    New-Item -ItemType Directory -Force -Path $taliesinsDir | Out-Null
-}
-Push-Location
-try {
-    Set-Location $taliesinsDir
-
-# Define the provider directory/exe
-$providerDir     = Join-Path $taliesinsDir "terraform-provider-hyperv"
-$providerExePath = Join-Path $providerDir  "terraform-provider-hyperv.exe"
-
-Write-CustomLog "Checking if we need to clone or rebuild the hyperv provider..."
-if (!(Test-Path $providerExePath)) {
-    Write-CustomLog "Provider exe not found; cloning from GitHub..."
-    git clone https://github.com/taliesins/terraform-provider-hyperv.git
-}
-Set-Location $providerDir
-
-Write-CustomLog "Building hyperv provider with go..."
-go build -o terraform-provider-hyperv.exe
-
 # Determine provider version from example-infrastructure/main.tf
 try {
     $providerVersion = Get-HyperVProviderVersion
@@ -394,21 +366,31 @@ try {
     Write-CustomLog "Falling back to Hyper-V provider version $providerVersion"
 }
 
-$hypervProviderDir = Join-Path $infraRepoPath ".terraform\\providers\\registry.opentofu.org\\taliesins\\hyperv\\$providerVersion"
+# Determine OS/arch for registry request
+$info = Get-ComputerInfo -Property OsName, OsArchitecture
+$os   = if ($info.OsName -like '*Windows*') { 'windows' } elseif ($info.OsName -like '*Linux*') { 'linux' } else { 'darwin' }
+$arch = if ($info.OsArchitecture -match '64') { 'amd64' } else { '386' }
+
+$registryEndpoint = "https://registry.terraform.io/v1/providers/taliesins/hyperv/$providerVersion/download/$os/$arch"
+Write-CustomLog "Querying provider registry: $registryEndpoint"
+$downloadInfo = Invoke-RestMethod -Uri $registryEndpoint
+$zipPath  = Join-Path $env:TEMP "hyperv_provider_$($providerVersion).zip"
+Invoke-WebRequest -Uri $downloadInfo.download_url -OutFile $zipPath
+$tempDir = Join-Path $env:TEMP "hyperv_provider_$($providerVersion)"
+Expand-Archive -Path $zipPath -DestinationPath $tempDir -Force
+
+$providerExePath = Join-Path $tempDir "terraform-provider-hyperv_${providerVersion}.exe"
+$hypervProviderDir = Join-Path $infraRepoPath ".terraform\providers\registry.opentofu.org\taliesins\hyperv\$providerVersion\${os}_${arch}"
 if (!(Test-Path $hypervProviderDir)) {
     New-Item -ItemType Directory -Force -Path $hypervProviderDir | Out-Null
 }
 
 Write-CustomLog "Copying provider exe -> $hypervProviderDir"
-    $destinationBinary = Join-Path $hypervProviderDir "terraform-provider-hyperv.exe"
-    if (Test-Path $destinationBinary) { Remove-Item $destinationBinary -Recurse -Force }
-    Copy-Item -Path $providerExePath -Destination $destinationBinary -Force -Verbose
+$destinationBinary = Join-Path $hypervProviderDir "terraform-provider-hyperv.exe"
+if (Test-Path $destinationBinary) { Remove-Item $destinationBinary -Force }
+Copy-Item -Path $providerExePath -Destination $destinationBinary -Force -Verbose
 
 Write-CustomLog "Hyper-V provider installed at: $destinationBinary"
-}
-finally {
-    # Restore the original directory even if build fails
-    Pop-Location
 }
 
 # ------------------------------

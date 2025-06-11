@@ -184,7 +184,7 @@ The runner script can run the following:
 
 0009_Initialize-OpenTofu.ps1 - setups up opentofu and the lab-infra repo in C:\temp\base-infra
 
-0010_Prepare-HyperVHost.ps1 - runs a lot of configuration to prep a hyper-v host to be used as a provider 
+0010_Prepare-HyperVHost.ps1 - configures Hyper-V and downloads the provider from the registry
 
 - Enables hyper-v if not enabled
   
@@ -206,9 +206,7 @@ The runner script can run the following:
   
 - Allows HTTP 5986 through firewall
   
-- Creates a Go workspace in C:\GoWorkspace
-  
-  - Builds the hyperv-provider for opentofu from tailiesins git
+- Downloads the Hyper-V provider from the Terraform registry
     
   - Copies the provider to the lab-infra
   - Converts the generated certificates to PEM files and updates `providers.tf`
