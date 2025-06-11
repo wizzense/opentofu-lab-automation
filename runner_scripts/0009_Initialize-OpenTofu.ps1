@@ -4,7 +4,9 @@ Import-Module "$scriptRoot/../runner_utility_scripts/LabRunner.psd1"
 $installScript      = Join-Path $scriptRoot '0008_Install-OpenTofu.ps1'
 $installerAvailable = Test-Path $installScript
 if ($installerAvailable) {
-    . $installScript
+    if (-not (Get-Command Invoke-OpenTofuInstaller -ErrorAction SilentlyContinue)) {
+        . $installScript
+    }
 } else {
     Write-Warning "Install script '$installScript' not found. OpenTofu installation commands will be unavailable."
 }
