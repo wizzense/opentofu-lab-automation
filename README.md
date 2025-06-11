@@ -394,7 +394,8 @@ Download the latest Windows test results with `lab_utils/Get-WindowsJobArtifacts
 If the GitHub CLI isn't authenticated, the script falls back to public
 downloads via the nightly.link service. You can also pass a specific
 workflow run ID obtained from `gh run list`. Because run IDs are 64-bit
-integers, wrap the value in quotes on PowerShell:
+integers, wrap the value in quotes on PowerShell. Coverage archives are
+only uploaded when the tests pass, so the helper will skip them if absent:
 
 ```powershell
 gh run list --limit 20

@@ -14,7 +14,7 @@ Use `lab_utils/Get-WindowsJobArtifacts.ps1` to download the latest artifacts fro
 pwsh -File lab_utils/Get-WindowsJobArtifacts.ps1
 ```
 
-Pass `-RunId <id>` to target a specific run if automatic discovery fails. Run IDs may exceed 32-bit range, so wrap them in quotes on PowerShell 7. The helper extracts two ZIP archives into a temporary folder: one containing `testResults.xml` and another with `coverage.xml`.
+Pass `-RunId <id>` to target a specific run if automatic discovery fails. Run IDs may exceed 32-bit range, so wrap them in quotes on PowerShell 7. The helper extracts `testResults.xml` and, when available, `coverage.xml` into a temporary folder. Coverage is only uploaded on successful runs, so it may be missing when tests fail.
 
 ### Reading `testResults.xml`
 
