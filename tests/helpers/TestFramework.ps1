@@ -405,23 +405,35 @@ function Test-RunnerScript {
         if ($IncludeStandardTests) {
             Context 'Standard Validation Tests' {
                 It 'parses without syntax errors' {
+                    if (-not $script:ScriptPath -or -not (Test-Path $script:ScriptPath)) {
+                        throw "Script path is invalid: $script:ScriptPath"
+                    }
                     $errors = $null
                     [System.Management.Automation.Language.Parser]::ParseFile($script:ScriptPath, [ref]$null, [ref]$errors) | Out-Null
                     ($errors ? $errors.Count : 0) | Should -Be 0
                 }
                 
                 It 'has required Config parameter' {
+                    if (-not $script:ScriptPath -or -not (Test-Path $script:ScriptPath)) {
+                        throw "Script path is invalid: $script:ScriptPath"
+                    }
                     $content = Get-Content $script:ScriptPath -Raw
                     # Look for Param declaration with Config parameter
                     $content | Should -Match 'Param\s*\([^)]*Config[^)]*\)'
                 }
                 
                 It 'imports LabRunner module' {
+                    if (-not $script:ScriptPath -or -not (Test-Path $script:ScriptPath)) {
+                        throw "Script path is invalid: $script:ScriptPath"
+                    }
                     $content = Get-Content $script:ScriptPath -Raw
                     $content | Should -Match 'Import-Module.*LabRunner'
                 }
                 
                 It 'contains Invoke-LabStep call' {
+                    if (-not $script:ScriptPath -or -not (Test-Path $script:ScriptPath)) {
+                        throw "Script path is invalid: $script:ScriptPath"
+                    }
                     $content = Get-Content $script:ScriptPath -Raw
                     $content | Should -Match 'Invoke-LabStep'
                 }
