@@ -38,3 +38,7 @@ Specify the Hyper-V provider version in your lab configuration under the `HyperV
 
 If omitted, the scripts fall back to `1.2.1`.
 
+---
+
+See [pester-test-failures.md](pester-test-failures.md) for a tracked list of current test failures.
+

@@ -1,4 +1,4 @@
-# Troubleshooting CI failures
+# Troubleshooting CI Failures
 
 When a Pester job fails in GitHub Actions, the console output is saved as an artifact.
 Look for `pester-log-<os>` on the run summary page. These text files mirror the
@@ -6,7 +6,7 @@ Look for `pester-log-<os>` on the run summary page. These text files mirror the
 
 Inspect the log to see which tests failed and view any stack traces.
 
-## Inspecting Windows job artifacts
+## Inspecting Windows Job Artifacts
 
 Use `lab_utils/Get-WindowsJobArtifacts.ps1` to download the latest artifacts from a completed Windows run. The script tries to locate the most recent workflow run on the `main` branch and falls back to nightly.link URLs when not authenticated with the GitHub CLI.
 
@@ -36,7 +36,7 @@ Select-String -Path path\to\coverage.xml -Pattern 'your-module.ps1'
 
 Missing or zero-hit sections often reveal code paths that were not exercised on Windows, hinting at platform-specific issues. Compare the uncovered lines with the failing tests to narrow down the root cause.
 
-## Automatic failure issues
+## Automatic Failure Issues
 
 The workflow `.github/workflows/issue-on-fail.yml` opens a single GitHub issue whenever any CI job fails. It gathers Pester and pytest results from the run artifacts and posts a summary of failing tests in the issue body. Subsequent failed runs append a comment rather than creating new issues.
 
@@ -48,7 +48,6 @@ for z in artifacts/*.zip; do
 done
 ```
 
-When scripts are moved within the repository they can still be
-referenced by name. `Resolve-ProjectPath` and the Python
-`labctl.path_index.resolve_path` helper both search the repo
-recursively when a cached path no longer exists.
+---
+
+See [pester-test-failures.md](pester-test-failures.md) for a tracked list of current test failures.

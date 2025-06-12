@@ -1,6 +1,6 @@
 # OpenTofu Lab Automation Documentation
 
-Welcome! This folder collects notes and guides for working with the project.
+Welcome! This folder collects all official documentation for the project.
 
 ## Documentation Index
 
@@ -12,6 +12,7 @@ Welcome! This folder collects notes and guides for working with the project.
 - [Self-hosted GitHub runner](self-hosted-runner.md)
 - [Testing guidelines](testing.md)
 - [Testing framework details](testing-framework.md)
+- [Pester test failures (tracked)](pester-test-failures.md)
 - [Debugging with Copilot Codespaces](copilot-codespaces.md)
 - [Copilot Auto Fix workflow](copilot-auto-fix.md)
 - [Troubleshooting CI](troubleshooting.md)

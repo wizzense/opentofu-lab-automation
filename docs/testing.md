@@ -1,4 +1,4 @@
-# Local testing guidelines
+# Local Testing Guidelines
 
 Use the helper scripts in `tools/` to set up everything needed for Pester and pytest.
 
@@ -16,3 +16,5 @@ and Python packages. After running them you can execute the suites directly:
 pwsh -NoLogo -NoProfile -Command "Invoke-Pester"
 pytest py
 ```
+
+See [pester-test-failures.md](pester-test-failures.md) for a tracked list of current test failures.

@@ -1,0 +1,37 @@
+# Auto-update Pester Test Failures Documentation
+
+name: Update Pester Test Failures Doc
+
+on:
+  workflow_run:
+    workflows: ["Pester"]
+    types: [completed]
+
+jobs:
+  update-pester-failures-doc:
+    if: ${{ github.event.workflow_run.conclusion == 'failure' || github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download Pester Artifacts
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh run download ${{ github.event.workflow_run.id }} -D artifacts || true
+          if ls artifacts/*.zip >/dev/null 2>&1; then
+            for z in artifacts/*.zip; do
+              unzip -q "$z" -d artifacts
+            done
+          fi
+      - name: Parse Pester Results and Update Doc
+        run: |
+          python scripts/update_pester_failures_doc.py
+      - name: Commit and Push Changes
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add docs/pester-test-failures.md
+          if ! git diff --cached --quiet; then
+            git commit -m 'docs: auto-update Pester test failures [bot]'
+            git push
+          fi

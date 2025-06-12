@@ -5,8 +5,6 @@ All important scripts and modules are listed in `path-index.yaml` at the reposit
 
 Set the `LAB_REPO_ROOT` environment variable to your repository root if a packaged install cannot locate `path-index.yaml`.
 
-
-
 ## Subcommands
 
 ### `hv facts`
@@ -39,8 +37,7 @@ Both commands simply parse the configuration and print details to the console at
 
 ### Repository helpers
 
-The `repo` group wraps a few common GitHub tasks. These commands require the
-`gh` CLI to be installed and authenticated:
+The `repo` group wraps a few common GitHub tasks. These commands require the `gh` CLI to be installed and authenticated:
 
 ```bash
 poetry run labctl repo close-pr 123
@@ -50,15 +47,7 @@ poetry run labctl repo parse-issue 99
 poetry run labctl repo cleanup
 ```
 
-`view-issue` prints the issue title and body as JSON, `parse-issue` parses the
-workflow failure issue into a structured JSON object, and `cleanup` removes
-merged remote branches while keeping the most recent branch per hour.
+---
 
-### `ui`
-Launch a simple Textual interface showing runner scripts, log output and
-configuration files:
-
-```bash
-poetry run labctl ui
-```
+See [pester-test-failures.md](pester-test-failures.md) for a tracked list of current test failures.
 

@@ -1,4 +1,3 @@
-# filepath: /workspaces/opentofu-lab-automation/docs/testing-framework.md
 # Extensible Testing Framework
 
 ## Overview
@@ -50,257 +49,25 @@ This project uses an extensible, cross-platform testing framework that automatic
 
 The framework automatically categorizes tests:
 
-### Installer Tests
-- Scripts containing: `Install-`, `Download-`, `Invoke-WebRequest`
-- Tests: Prerequisites, download handling, installation verification
-- Platform: Often Windows-specific for `.msi`/`.exe` installers
-
-### Configuration Tests  
-- Scripts containing: `Configure-`, `Set-.*Config`, `Config-`
-- Tests: Backup, validation, rollback functionality
-- Platform: Cross-platform with OS-specific variations
-
-### Service Tests
-- Scripts containing: `Start-Service`, `Stop-Service`, service management
-- Tests: Service status, operations, configuration
-- Platform: Windows (services) or Linux (systemd)
-
-### Feature Tests
-- Scripts containing: `Enable-`, `Disable-`, Windows Features
-- Tests: Feature state, dependencies, prerequisites
-- Platform: Usually Windows-specific
-
-### Maintenance Tests
-- Scripts containing: `Reset-`, `Cleanup-`, `Remove-`
-- Tests: Safety checks, backup verification, cleanup validation
-- Platform: Cross-platform
+- **Installer**: Installs software or dependencies
+- **Configuration**: Modifies system or app settings
+- **Feature**: Enables/disables features
+- **Service**: Manages services or daemons
+- **Integration**: Multi-script or end-to-end tests
 
 ## Running Tests
 
-### Extensible Test Runner
-```powershell
-# Run all tests for current platform
-./tests/helpers/Invoke-ExtensibleTests.ps1
+- Use `pwsh -NoLogo -NoProfile -Command "Invoke-Pester"` for PowerShell
+- Use `pytest py` for Python
+- See [testing.md](testing.md) for local setup
+- See [pester-test-failures.md](pester-test-failures.md) for tracked failures
 
-# Run specific category
-./tests/helpers/Invoke-ExtensibleTests.ps1 -Category "Installer" -Platform "Windows"
+## Extending the Framework
 
-# Run with parallel execution and reporting
-./tests/helpers/Invoke-ExtensibleTests.ps1 -Parallel -EnableCodeCoverage -GenerateReport
+- Add new templates to `tests/helpers/TestTemplates.ps1`
+- Add new categories by updating the test generator
+- Use mocks in `tests/helpers/` for platform-specific logic
 
-# Run tests matching pattern
-./tests/helpers/Invoke-ExtensibleTests.ps1 -ScriptPattern "*Install*" -TestPattern "*prerequisite*"
-```
+---
 
-### Traditional Pester
-```powershell
-# Run all tests
-Invoke-Pester
-
-# Run specific test file
-Invoke-Pester -Path "tests/Install-Node.Tests.ps1"
-
-# Run with coverage
-Invoke-Pester -CodeCoverage "pwsh/runner_scripts/*.ps1"
-```
-
-## Generated Test Structure
-
-Each auto-generated test includes:
-
-### 1. Script Structure Validation
-- PowerShell syntax validation
-- Naming convention compliance
-- Function definition verification
-
-### 2. Parameter Validation
-- Parameter acceptance testing
-- Common parameter support (Verbose, WhatIf)
-- Error handling for invalid inputs
-
-### 3. Category-Specific Tests
-- **Installers**: Prerequisites, downloads, verification
-- **Configuration**: Backup, validation, rollback
-- **Services**: Status checks, operations, configuration
-- **Features**: State management, dependencies
-
-### 4. Function-Specific Tests
-- Individual function testing
-- Parameter validation
-- Return value verification
-
-### 5. Platform Compatibility
-- Automatic platform detection
-- Skip conditions for incompatible platforms
-- Admin privilege requirements
-
-## Example Generated Test
-
-```powershell
-# Auto-generated test for Install-Node.ps1
-Describe 'Install-Node Tests' -Tag 'Installer' {
-    
-    Context 'Script Structure Validation' {
-        It 'should have valid PowerShell syntax' -Skip:($SkipNonWindows) {
-            $scriptPath | Should -Exist
-            { . $scriptPath } | Should -Not -Throw
-        }
-        
-        It 'should follow naming conventions' {
-            $scriptName | Should -Match '^[A-Z][a-zA-Z0-9-]+\.ps1$'
-        }
-    }
-    
-    Context 'Installation Tests' {
-        It 'should validate prerequisites' -Skip:($SkipNonWindows) {
-            # Test prerequisite checking logic
-        }
-        
-        It 'should handle download failures gracefully' {
-            # Test error handling for failed downloads
-        }
-        
-        It 'should verify installation success' {
-            # Test installation verification
-        }
-    }
-}
-```
-
-## CI/CD Integration
-
-### GitHub Actions Workflows
-
-#### Auto Test Generation (`auto-test-generation.yml`)
-- **Triggers**: New/modified PowerShell scripts
-- **Actions**: 
-  - Validates and fixes naming conventions
-  - Generates tests for new scripts
-  - Validates generated test syntax
-  - Commits changes back to repository
-
-#### Pester Testing (`pester.yml`)
-- **Triggers**: All pushes and PRs
-- **Actions**:
-  - Runs extensible test framework
-  - Supports multiple platforms (Windows, Linux, macOS)
-  - Generates coverage reports
-  - Uploads test artifacts
-
-### Workflow Features
-- **Multi-platform testing**
-- **Parallel test execution**
-- **Automatic artifact collection**
-- **Coverage reporting**
-- **Test result summaries**
-
-## Adding New Scripts
-
-### Quick Start
-1. **Create your script** in the appropriate directory:
-   ```powershell
-   # Example: New installer script
-   # File: pwsh/runner_scripts/install-mytool.ps1 (will be renamed automatically)
-   
-   param(
-       [string]$Version = "latest",
-       [switch]$Force
-   )
-   
-   function Install-MyTool {
-       # Implementation here
-   }
-   ```
-
-2. **Commit and push** - GitHub Actions will automatically:
-   - Rename to `nnnn_Install-MyTool.ps1`
-   - Generate `Install-MyTool.Tests.ps1`
-   - Run tests across platforms
-
-3. **Review generated tests** and customize as needed
-
-### Manual Process
-```powershell
-# 1. Generate test manually
-./tests/helpers/New-AutoTestGenerator.ps1 -ScriptPath "pwsh/runner_scripts/install-mytool.ps1"
-
-# 2. Review and customize generated test
-code "tests/Install-MyTool.Tests.ps1"
-
-# 3. Run tests locally
-./tests/helpers/Invoke-ExtensibleTests.ps1 -ScriptPattern "*MyTool*"
-```
-
-## Best Practices
-
-### Script Development
-1. **Follow naming conventions** from the start
-2. **Include CmdletBinding** for advanced functions
-3. **Add parameter validation** and help text
-4. **Handle errors gracefully** with try/catch
-5. **Support WhatIf** for non-destructive testing
-
-### Test Customization
-1. **Review generated tests** - they're starting points
-2. **Add specific test cases** for your script's logic
-3. **Mock external dependencies** (web requests, file operations)
-4. **Use platform skip conditions** appropriately
-5. **Test both success and failure scenarios**
-
-### Platform Considerations
-1. **Windows**: `.msi` installers, registry, services, PowerShell modules
-2. **Linux**: Package managers (`apt`, `yum`), systemd, file permissions
-3. **macOS**: Homebrew, launchctl, application bundles
-4. **Cross-platform**: PowerShell Core features, file paths, environment variables
-
-## Troubleshooting
-
-### Common Issues
-
-#### Test Generation Fails
-```powershell
-# Check script syntax
-$ast = [System.Management.Automation.Language.Parser]::ParseInput($content, [ref]$null, [ref]$errors)
-$errors
-```
-
-#### Platform Skip Not Working
-```powershell
-# Verify platform detection
-Get-Platform | Format-List
-Test-IsAdministrator
-```
-
-#### Tests Not Found
-```powershell
-# Check test discovery
-./tests/helpers/Invoke-ExtensibleTests.ps1 -Verbose
-```
-
-### Debug Mode
-```powershell
-# Enable verbose output
-./tests/helpers/Invoke-ExtensibleTests.ps1 -Verbose
-
-# Generate tests with debugging
-./tests/helpers/New-AutoTestGenerator.ps1 -ScriptPath $path -Verbose
-```
-
-## Contributing
-
-### Adding New Test Categories
-1. **Modify** `Get-TestCategories` function in `New-AutoTestGenerator.ps1`
-2. **Add detection logic** for your category
-3. **Create test template** in `New-TestTemplate` function
-4. **Update documentation**
-
-### Extending Platform Support
-1. **Add platform detection** in `Get-ScriptAnalysis`
-2. **Update skip conditions** in test templates
-3. **Add CI/CD workflow** support if needed
-
-### Improving Test Generation
-1. **Enhance script analysis** logic
-2. **Add new test patterns** for common scenarios
-3. **Improve naming convention** detection
-4. **Add validation rules** for generated tests
+For more, see the [Documentation Index](index.md).

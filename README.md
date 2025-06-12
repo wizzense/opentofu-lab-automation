@@ -8,10 +8,10 @@
 
 ## Overview
 
-OpenTofu Lab Automation automates the setup of a local lab environment using OpenTofu, PowerShell, and Python. It provides:
-- PowerShell runner scripts for Windows and cross-platform automation
-- Example Terraform modules for Hyper-V
-- A Python CLI (`labctl`) for cross-platform helpers
+OpenTofu Lab Automation is a cross-platform automation toolkit for building, testing, and managing local lab environments. It features:
+- PowerShell runner scripts for Windows and Linux
+- Example OpenTofu (Terraform) modules for Hyper-V
+- Python CLI (`labctl`) for cross-platform helpers
 - Comprehensive Pester and pytest test suites
 
 ---
@@ -66,6 +66,7 @@ Custom config file:
 - [Python CLI](docs/python-cli.md)
 - [Testing guidelines](docs/testing.md)
 - [Troubleshooting CI](docs/troubleshooting.md)
+- [Pester test failures (tracked)](docs/pester-test-failures.md)
 - [Contributing](CONTRIBUTING.md)
 - [Changelog](CHANGELOG.md)
 
