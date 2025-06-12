@@ -37,6 +37,12 @@ if (-not (Get-Command Get-MenuSelection -ErrorAction SilentlyContinue)) {
     }
 }
 
+# Import required utilities
+$LabUtilsPath = Join-Path $PSScriptRoot '../../pwsh/lab_utils'
+if (Test-Path (Join-Path $LabUtilsPath 'Resolve-ProjectPath.ps1')) {
+    . (Join-Path $LabUtilsPath 'Resolve-ProjectPath.ps1')
+}
+
 function global:Get-RunnerScriptPath {
     param(
         [Parameter(Mandatory=$true)][string]$Name

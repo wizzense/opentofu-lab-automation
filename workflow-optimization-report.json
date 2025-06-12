@@ -1,6 +1,6 @@
 {
   "timestamp": "/workspaces/opentofu-lab-automation",
-  "workflow_validation": true,
+  "workflow_validation": false,
   "dependencies_check": true,
   "optimizations": []
 }

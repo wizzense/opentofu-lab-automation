@@ -29,7 +29,8 @@ def analyze_workflow(workflow_path):
             workflow = yaml.safe_load(f)
         
         # Check for common issues
-        if 'on' not in workflow and True not in workflow:  # 'on' might be interpreted as boolean True
+        triggers = workflow.get('on', workflow.get(True, None))  # Handle 'on' being parsed as True
+        if not triggers:
             issues.append("Missing 'on' trigger configuration")
         
         if 'jobs' not in workflow:

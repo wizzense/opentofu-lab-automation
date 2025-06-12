@@ -1,0 +1,139 @@
+\
+# filepath: /workspaces/opentofu-lab-automation/.github/workflows/pester-macos.yml
+name: Pester (macOS)
+
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+    branches: [ main ]
+
+jobs:
+  pester-macos:
+    name: Run PowerShell tests (macOS)
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Authenticate gh
+        shell: bash
+        run: gh auth login --with-token <<< "${{ secrets.GITHUB_TOKEN }}"
+      - name: Install PowerShell
+        shell: bash
+        run: |
+          if ! command -v pwsh >/dev/null 2>&1; then
+            brew install --cask powershell
+          fi
+      - name: Cache PowerShell modules
+        uses: actions/cache@v4
+        with:
+          path: ~/.local/share/powershell/Modules
+          key: macos-pwsh-modules-${{ hashFiles(\'.github/actions/lint/requirements.txt\') }}
+          restore-keys: macos-pwsh-modules-
+      - name: Install Pester
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = \'Stop\'
+          try {
+            Install-Module -Name Pester -RequiredVersion 5.7.1 -Force -Scope CurrentUser
+            Write-Host "Pester 5.7.1 installed successfully" -ForegroundColor Green
+          } catch {
+            Write-Error "Failed to install Pester: $_"
+            exit 1
+          }
+      - name: Install powershell-yaml
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = \'Stop\'
+          try {
+            Install-Module -Name powershell-yaml -Force -Scope CurrentUser
+            Write-Host "powershell-yaml installed successfully" -ForegroundColor Green
+          } catch {
+            Write-Error "Failed to install powershell-yaml: $_"
+            exit 1
+          }
+      - name: Verify test helpers
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = \'Stop\'
+          try {
+            . ./tests/helpers/Get-ScriptAst.ps1
+            if (-not (Get-Command Get-ScriptAst -ErrorAction SilentlyContinue)) {
+                Write-Error \'Get-ScriptAst helper not loaded\'
+                exit 1
+            }
+            Write-Host "Test helpers verified successfully" -ForegroundColor Green
+          } catch {
+            Write-Error "Failed to verify test helpers: $_"
+            exit 1
+          }
+      - name: Ensure coverage directory
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = \'Stop\'
+          try {
+            if (-not (Test-Path coverage)) {
+                New-Item -ItemType Directory -Path coverage | Out-Null
+            }
+            Write-Host "Coverage directory ready" -ForegroundColor Green
+          } catch {
+            Write-Error "Failed to create coverage directory: $_"
+            exit 1
+          }
+      - name: Run Pester Tests
+        id: pester
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = \'Stop\'
+          Write-Host "Running Pester tests for macOS" -ForegroundColor Yellow
+          try {
+            $cfg = New-PesterConfiguration -Hashtable (Import-PowerShellDataFile \'tests/PesterConfiguration.psd1\')
+            $cfg.Run.PassThru = $true
+            $cfg.Output.Verbosity = \'Normal\'
+            $coveragePaths = @($cfg.CodeCoverage.Path.Value)
+            if (Test-Path \'tools/iso\') {
+              $coveragePaths += \'tools/iso\'
+            }
+            $cfg.CodeCoverage.Path = [Pester.StringArrayOption]::new($coveragePaths)
+            $repoRoot = $env:GITHUB_WORKSPACE
+            $cfg.TestResult.OutputPath   = Join-Path $repoRoot \'coverage/testResults.xml\'
+            $cfg.CodeCoverage.OutputPath = Join-Path $repoRoot \'coverage/coverage.xml\'
+            $logPath = Join-Path $repoRoot \'coverage/pester.log\'
+            Write-Host "Starting test execution..." -ForegroundColor Green
+            $result = Invoke-Pester -Configuration $cfg 2>&1 | Tee-Object -FilePath $logPath
+            if ($result.FailedCount -gt 0) {
+              Write-Error "Tests failed: $($result.FailedCount) failed out of $($result.TotalCount) total tests"
+              exit 1
+            }
+            Write-Host "All tests passed: $($result.PassedCount)/$($result.TotalCount)" -ForegroundColor Green
+            $exitCode = 0
+          } catch {
+            Write-Error "Pester execution failed: $_"
+            Write-Host "Error details: $($_.Exception.Message)" -ForegroundColor Red
+            if ($_.Exception.InnerException) {
+              Write-Host "Inner exception: $($_.Exception.InnerException.Message)" -ForegroundColor Red
+            }
+            $exitCode = 1
+          }
+          "pester_exit_code=$exitCode" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+      - name: Upload Pester log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pester-log-macos
+          path: coverage/pester.log
+      - name: Upload coverage
+        if: steps.pester.outcome == \'success\'
+        uses: actions/upload-artifact@v4
+        with:
+          name: pester-coverage-macos
+          path: coverage/coverage.xml
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pester-results-macos
+          path: coverage/testResults.xml
+      - name: Fail if Pester tests failed
+        if: steps.pester.outputs.pester_exit_code != \'0\'
+        shell: pwsh
+        run: exit 1

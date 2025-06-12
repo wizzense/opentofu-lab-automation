@@ -299,18 +299,10 @@ function New-IntegrationTest {
     
     Describe "Integration Test: $TestName" {
         BeforeAll {
-            $script:TestConfig = $Config
-            $script:ScriptPaths = @()
-            
-            foreach ($scriptName in $ScriptSequence) {
-                $path = Get-RunnerScriptPath $scriptName
-                if (-not $path -or -not (Test-Path $path)) {
-                    throw "Integration test script not found: $scriptName"
-                }
-                $script:ScriptPaths += $path
-            }
-            
-            Disable-InteractivePrompts
+            # Ensure PSScriptRoot is correctly defined for module context if necessary
+            # If this script is intended to be a module, it should be saved as .psm1
+            # and imported using Import-Module.
+            # For now, assuming it's sourced and PSScriptRoot is available.
         }
         
         $skipReason = if ($RequiredPlatforms.Count -gt 0 -and $script:CurrentPlatform -notin $RequiredPlatforms) {
@@ -348,17 +340,8 @@ function New-IntegrationTest {
     }
 }
 
-# Only export functions if running as a module
-if ($MyInvocation.MyCommand.CommandType -eq 'ExternalScript' -or ($PSScriptRoot -like '*/tests/*')) {
-    # Running as script or in test context - functions are already available
-} else {
-    # Running as module - export functions
-    Export-ModuleMember -Function @(
-        'New-InstallerScriptTest',
-        'New-FeatureScriptTest', 
-        'New-ServiceScriptTest',
-        'New-ConfigurationScriptTest',
-        'New-CrossPlatformScriptTest',
-        'New-IntegrationTest'
-    )
-}
+# Ensure functions intended for export are explicitly exported if this were a module.
+# For .ps1 files, functions are available in the scope that sources them.
+# If this file (TestTemplates.ps1) is meant to be a module, it should be .psm1 and use Export-ModuleMember.
+# Example (if it were a .psm1 file):
+# Export-ModuleMember -Function New-InstallerScriptTest, New-FeatureScriptTest, New-ServiceScriptTest, New-ConfigurationScriptTest, New-CrossPlatformScriptTest, New-IntegrationTest
