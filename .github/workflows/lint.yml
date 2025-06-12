@@ -93,7 +93,7 @@ jobs:
       - name: Run Custom Script Analyzer
         shell: pwsh
         run: |
-          ./scripts/CustomLint.ps1 2>&1 | Tee-Object -FilePath $env:LOG_FILE -Append
+          ./CustomLint.ps1 2>&1 | Tee-Object -FilePath $env:LOG_FILE -Append
       - name: Run ruff
         shell: bash
         run: |
