@@ -46,7 +46,7 @@ Describe 'runner.ps1 executing 0200_Get-SystemInfo' {
             Copy-Item $runnerPath -Destination $tempDir
             Copy-Item (Join-Path $PSScriptRoot '..' 'pwsh' 'lab_utils') -Destination $tempDir -Recurse
             Copy-Item (Join-Path $PSScriptRoot '..' 'pwsh' 'lab_utils' 'LabRunner') -Destination (Join-Path $tempDir 'lab_utils' 'LabRunner') -Recurse
-            Copy-Item (Join-Path $PSScriptRoot '..' 'configs' 'config_files') -Destination (Join-Path $tempDir 'config_files') -Recurse
+            Copy-Item (Join-Path $PSScriptRoot '..' 'configs' 'config_files') -Destination (Join-Path $tempDir 'configs' 'config_files') -Recurse
             $scriptsDir = Join-Path $tempDir 'runner_scripts'
             $null = New-Item -ItemType Directory -Path $scriptsDir
             Copy-Item $script:ScriptPath -Destination $scriptsDir
