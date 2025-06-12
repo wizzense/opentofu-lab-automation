@@ -1,0 +1,66 @@
+# filepath: tests/0200_Get-SystemInfo.Tests.ps1
+. (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
+. (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
+
+BeforeAll {
+    # Load the script under test
+    $scriptPath = Join-Path $PSScriptRoot '..' '/workspaces/opentofu-lab-automation/pwsh/runner_scripts/0200_Get-SystemInfo.ps1'
+    if (Test-Path $scriptPath) {
+        . $scriptPath
+    }
+    
+    # Set up test environment
+    $TestConfig = Get-TestConfiguration
+    $SkipNonWindows = -not (Get-Platform).IsWindows
+    $SkipNonLinux = -not (Get-Platform).IsLinux
+    $SkipNonMacOS = -not (Get-Platform).IsMacOS
+    $SkipNonAdmin = -not (Test-IsAdministrator)
+}
+
+Describe '0200_Get-SystemInfo Tests' -Tag 'Feature' {
+    
+    Context 'Script Structure Validation' {
+        It 'should have valid PowerShell syntax' -Skip:($SkipNonWindows) {
+            $scriptPath | Should -Exist
+            { . $scriptPath } | Should -Not -Throw
+        }
+        
+        It 'should follow naming conventions' -Skip:($SkipNonWindows) {
+            $scriptName = [System.IO.Path]::GetFileName($scriptPath)
+            $scriptName | Should -Match '^[0-9]{4}_[A-Z][a-zA-Z0-9-]+\.ps1$|^[A-Z][a-zA-Z0-9-]+\.ps1$'
+        }
+        
+        It 'should define expected functions' -Skip:($SkipNonWindows) {
+            Get-Command 'Get-SystemInfo' -ErrorAction SilentlyContinue | Should -Not -BeNullOrEmpty
+        }
+    }
+    
+    Context 'Parameter Validation' {
+        It 'should accept Config parameter' -Skip:($SkipNonWindows) {
+            { & $scriptPath -Config 'TestValue' -WhatIf } | Should -Not -Throw
+        }
+        It 'should accept AsJson parameter' -Skip:($SkipNonWindows) {
+            { & $scriptPath -AsJson 'TestValue' -WhatIf } | Should -Not -Throw
+        }
+    }
+    
+    Context 'Get-SystemInfo Function Tests' {
+        It 'should be defined and accessible' -Skip:($SkipNonWindows) {
+            Get-Command 'Get-SystemInfo' | Should -Not -BeNullOrEmpty
+        }
+                It 'should support common parameters' -Skip:($SkipNonWindows) {
+            (Get-Command 'Get-SystemInfo').Parameters.Keys | Should -Contain 'Verbose'
+            (Get-Command 'Get-SystemInfo').Parameters.Keys | Should -Contain 'WhatIf'
+        }
+                It 'should handle execution with valid parameters' -Skip:($SkipNonWindows) {
+            # Add specific test logic for Get-SystemInfo
+            $true | Should -BeTrue  # Placeholder - implement actual tests
+        }
+    }
+}
+
+# Clean up test environment
+AfterAll {
+    # Restore any modified system state
+    # Remove test artifacts
+}

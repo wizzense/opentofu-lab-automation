@@ -1,6 +1,6 @@
-Param([object]$Config)
-
 Import-Module "$PSScriptRoot/../lab_utils/LabRunner/LabRunner.psd1"
+
+Param([object]$Config)
 
 # Param([pscustomobject]$Config)
 # Import-Module (Join-Path $PSScriptRoot '..' 'lab_utils' 'LabRunner' 'LabRunner.psd1')

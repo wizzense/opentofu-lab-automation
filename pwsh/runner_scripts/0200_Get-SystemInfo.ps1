@@ -1,9 +1,9 @@
+Import-Module "$PSScriptRoot/../lab_utils/LabRunner/LabRunner.psd1"
 Param(
     [object]$Config,
     [switch]$AsJson
 )
 
-Import-Module "$PSScriptRoot/../lab_utils/LabRunner/LabRunner.psd1"
 Write-CustomLog "Starting $MyInvocation.MyCommand"
 function Get-SystemInfo {
     [CmdletBinding()]
