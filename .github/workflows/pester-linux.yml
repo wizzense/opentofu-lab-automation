@@ -1,5 +1,3 @@
-\
-# filepath: /workspaces/opentofu-lab-automation/.github/workflows/pester-linux.yml
 name: Pester (Linux)
 
 on:

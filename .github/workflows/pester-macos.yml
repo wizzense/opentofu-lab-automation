@@ -1,5 +1,3 @@
-\
-# filepath: /workspaces/opentofu-lab-automation/.github/workflows/pester-macos.yml
 name: Pester (macOS)
 
 on:
@@ -43,7 +41,7 @@ jobs:
       - name: Install powershell-yaml
         shell: pwsh
         run: |
-          $ErrorActionPreference = \'Stop\'
+          $ErrorActionPreference = 'Stop'
           try {
             Install-Module -Name powershell-yaml -Force -Scope CurrentUser
             Write-Host "powershell-yaml installed successfully" -ForegroundColor Green
