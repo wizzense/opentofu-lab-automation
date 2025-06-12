@@ -477,23 +477,40 @@ if (!(Test-Path $repoPath)) {
     $prevEAP = $ErrorActionPreference
     $ErrorActionPreference = 'Continue'
 
-    & "$ghExePath" repo clone $config.RepoUrl $repoPath -- -q 2>&1 >> "$(Get-CrossPlatformTempPath)\gh_clone_log.txt"
-
+    & "$ghExePath" repo clone $config.RepoUrl $repoPath -- -q 2>&1 | Tee-Object -FilePath "$(Get-CrossPlatformTempPath)\gh_clone_log.txt"
+    $ghExit = $LASTEXITCODE
     $ErrorActionPreference = $prevEAP
 
-    # Fallback to git if the GitHub CLI clone appears to have failed
-    if (!(Test-Path $repoPath)) {
-        Write-CustomLog "GitHub CLI clone failed. Trying git clone..."
-        & "$gitPath" clone $config.RepoUrl $repoPath --quiet 2>&1 >> "$(Get-CrossPlatformTempPath)\git_clone_log.txt"
-
-        if (!(Test-Path $repoPath)) {
+    if ($ghExit -ne 0 -or !(Test-Path $repoPath)) {
+        Write-CustomLog "GitHub CLI clone failed or directory not created. Trying git clone..."
+        & "$gitPath" clone $config.RepoUrl $repoPath --quiet 2>&1 | Tee-Object -FilePath "$(Get-CrossPlatformTempPath)\git_clone_log.txt"
+        $gitExit = $LASTEXITCODE
+        if ($gitExit -ne 0 -or !(Test-Path $repoPath)) {
             Write-Error "ERROR: Repository cloning failed. Check logs: $(Get-CrossPlatformTempPath)\gh_clone_log.txt and $(Get-CrossPlatformTempPath)\git_clone_log.txt"
+            if (Test-Path "$(Get-CrossPlatformTempPath)\gh_clone_log.txt") {
+                Write-Host '--- gh_clone_log.txt ---' -ForegroundColor Yellow
+                Get-Content "$(Get-CrossPlatformTempPath)\gh_clone_log.txt" | Out-Host
+            }
+            if (Test-Path "$(Get-CrossPlatformTempPath)\git_clone_log.txt") {
+                Write-Host '--- git_clone_log.txt ---' -ForegroundColor Yellow
+                Get-Content "$(Get-CrossPlatformTempPath)\git_clone_log.txt" | Out-Host
+            }
             exit 1
         }
     }
-} else {
-    Write-CustomLog "Repository already exists. Pulling latest changes..."
-    Update-RepoPreserveConfig -RepoPath $repoPath -Branch $targetBranch -GitPath $gitPath
+}
+# Immediately check directory contents after clone
+if ((Get-ChildItem -Path $repoPath -Recurse -ErrorAction SilentlyContinue | Measure-Object).Count -eq 0) {
+    Write-Error "ERROR: Repo directory $repoPath is empty after clone. Check clone logs above."
+    if (Test-Path "$(Get-CrossPlatformTempPath)\gh_clone_log.txt") {
+        Write-Host '--- gh_clone_log.txt ---' -ForegroundColor Yellow
+        Get-Content "$(Get-CrossPlatformTempPath)\gh_clone_log.txt" | Out-Host
+    }
+    if (Test-Path "$(Get-CrossPlatformTempPath)\git_clone_log.txt") {
+        Write-Host '--- git_clone_log.txt ---' -ForegroundColor Yellow
+        Get-Content "$(Get-CrossPlatformTempPath)\git_clone_log.txt" | Out-Host
+    }
+    exit 1
 }
 
 # Ensure the desired branch is checked out and up to date
