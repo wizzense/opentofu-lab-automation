@@ -29,25 +29,34 @@ jobs:
       - name: Install PowerShell
         shell: bash
         run: |
-          sudo apt-get update
-          sudo apt-get install -y wget apt-transport-https \
-            software-properties-common
-          wget -q https://packages.microsoft.com/config/ubuntu/22.04/packages-microsoft-prod.deb
-          sudo dpkg -i packages-microsoft-prod.deb
-          sudo apt-get update
-          sudo apt-get install -y powershell
+          if ! sudo apt-get update || ! sudo apt-get install -y powershell; then
+            echo "Failed to install PowerShell" >&2
+            exit 1
+          fi
 
       - name: Install Pester
         shell: pwsh
         run: |
-          Install-Module -Name Pester -RequiredVersion 5.7.1 -Force -Scope CurrentUser
+          try {
+            Install-Module -Name Pester -RequiredVersion 5.7.1 -Force -Scope CurrentUser
+            Write-Host "Pester installed successfully"
+          } catch {
+            Write-Error "Failed to install Pester: $_"
+            exit 1
+          }
 
       - name: Run Comprehensive Health Check
         id: health
         shell: pwsh
         run: |
-          $result = & ./comprehensive-health-check.ps1 -CI -Detailed -OutputFormat JSON
-          $healthData = $result | ConvertFrom-Json
+          try {
+            $result = & ./comprehensive-health-check.ps1 -CI -Detailed -OutputFormat JSON
+            $healthData = $result | ConvertFrom-Json
+            Write-Host "Health check completed successfully"
+          } catch {
+            Write-Error "Health check failed: $_"
+            exit 1
+          }
           
           # Set outputs for other jobs
           echo "status=$($healthData.OverallStatus)" >> $env:GITHUB_OUTPUT

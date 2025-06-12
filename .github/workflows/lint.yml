@@ -18,23 +18,30 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
+
       - name: Authenticate gh
         shell: bash
-        run: gh auth login --with-token <<< "${{ secrets.GITHUB_TOKEN }}"
+        run: |
+          if ! gh auth login --with-token <<< "${{ secrets.GITHUB_TOKEN }}"; then
+            echo "Failed to authenticate with GitHub CLI" >&2
+            exit 1
+          fi
+
       - name: Install PowerShell
         if: runner.os != 'Windows'
         shell: bash
         run: |
           if ! command -v pwsh >/dev/null 2>&1; then
             if [[ "$RUNNER_OS" == "Linux" ]]; then
-              sudo apt-get update
-              sudo apt-get install -y wget apt-transport-https software-properties-common
-              wget -q https://packages.microsoft.com/config/ubuntu/22.04/packages-microsoft-prod.deb
-              sudo dpkg -i packages-microsoft-prod.deb
-              sudo apt-get update
-              sudo apt-get install -y powershell
+              if ! sudo apt-get update || ! sudo apt-get install -y powershell; then
+                echo "Failed to install PowerShell on Linux" >&2
+                exit 1
+              fi
             elif [[ "$RUNNER_OS" == "macOS" ]]; then
-              brew install --cask powershell
+              if ! brew install --cask powershell; then
+                echo "Failed to install PowerShell on macOS" >&2
+                exit 1
+              fi
             fi
           fi
       - name: Set up Python
@@ -98,8 +105,7 @@ jobs:
           try {
             $log = $env:LOG_FILE
             $settings = Join-Path $PWD 'pwsh/PSScriptAnalyzerSettings.psd1'
-            $files = Get-ChildItem -Path . -Recurse `
-                -Include *.ps1,*.psm1,*.psd1 -File |
+            $files = Get-ChildItem -Path . -Recurse -Include *.ps1,*.psm1,*.psd1 -File |
                 Where-Object { $_.FullName -ne $settings } |
                 Select-Object -ExpandProperty FullName
             $results = $files | Invoke-ScriptAnalyzer -Severity Error,Warning -Settings $settings

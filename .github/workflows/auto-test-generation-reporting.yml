@@ -35,7 +35,7 @@ jobs:
     name: Run Generated Tests (Linux)
     runs-on: ubuntu-latest
     # Only run if Linux generation was successful
-    if: inputs.generate-tests-linux-result == \'success\'
+    if: inputs.generate-tests-linux-result == 'success'
     steps:
       - uses: actions/checkout@v4
 
@@ -75,9 +75,9 @@ jobs:
               $config = New-PesterConfiguration
               $config.Run.Path = $generationInfo.GeneratedTests
               $config.Run.PassThru = $true
-              $config.Output.Verbosity = \'Detailed\'
+              $config.Output.Verbosity = 'Detailed'
               $config.TestResult.Enabled = $true
-              $config.TestResult.OutputPath = \'new-test-results-linux.xml\'
+              $config.TestResult.OutputPath = 'new-test-results-linux.xml'
 
               $result = Invoke-Pester -Configuration $config
 
@@ -141,7 +141,7 @@ jobs:
           $commitNeeded = $false
 
           # Apply renames if info exists
-          $renamedFilesInput = \'${{ inputs.renamed-files-json }}\'
+          $renamedFilesInput = '${{ inputs.renamed-files-json }}'
           if ($renamedFilesInput) {
             $renamedFiles = $renamedFilesInput | ConvertFrom-Json
             if ($null -ne $renamedFiles) {
@@ -178,7 +178,7 @@ jobs:
             $osArtifactDir = $_.FullName
             # Path within the artifact structure
             $srcTestPattern = Join-Path $osArtifactDir "tests/*.Tests.ps1"
-            # Check if it\'s a relevant artifact
+            # Check if it's a relevant artifact
             $generationJson = Join-Path $osArtifactDir "test-generation-*.json"
             if (Test-Path $generationJson) {
                 Get-ChildItem -Path $srcTestPattern -File -ErrorAction SilentlyContinue | \\
@@ -194,7 +194,7 @@ jobs:
           }
 
           # Final regeneration for any scripts that were renamed or newly detected
-          $changedScriptsForFinalGen = \'${{ inputs.changed-scripts }}\' | ConvertFrom-Json
+          $changedScriptsForFinalGen = '${{ inputs.changed-scripts }}' | ConvertFrom-Json
           if ($renamedFilesInput) {
             $renamedFiles = $renamedFilesInput | ConvertFrom-Json
             if ($null -ne $renamedFiles) {
@@ -227,7 +227,7 @@ jobs:
           "COMMIT_NEEDED=$commitNeeded" | Out-File -FilePath $env:GITHUB_ENV -Append
 
       - name: Commit and push changes
-        if: env.COMMIT_NEEDED == \'true\'
+        if: env.COMMIT_NEEDED == 'true'
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action (Auto-Test Gen)"

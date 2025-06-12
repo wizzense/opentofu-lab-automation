@@ -1,0 +1,42 @@
+---
+name: Setup Environment (Reusable)
+
+on:
+  workflow_call:
+    inputs:
+      python-version:
+        required: false
+        type: string
+        default: '3.x'
+      install-pwsh:
+        required: false
+        type: boolean
+        default: true
+      install-node:
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  setup:
+    runs-on: ${{ inputs.os || 'ubuntu-latest' }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        if: ${{ inputs.python-version != '' }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ inputs.python-version }}
+      - name: Install PowerShell
+        if: ${{ inputs.install-pwsh == true && runner.os != 'Windows' }}
+        shell: bash
+        run: |
+          if ! command -v pwsh >/dev/null 2>&1; then
+            sudo apt-get update
+            sudo apt-get install -y powershell
+          fi
+      - name: Install Node.js
+        if: ${{ inputs.install-node == true }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'

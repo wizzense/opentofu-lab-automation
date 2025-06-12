@@ -50,12 +50,11 @@ $report = [pscustomobject]@{
         Warning  = $warning
         Critical = $critical
     }
-    Details = if ($Detailed) { $results } else { @() }
+    Details = $results
 }
 
 if ($OutputFormat -eq 'JSON') {
-    $report | ConvertTo-Json -Depth 3
+    $report | ConvertTo-Json -Depth 10
 } else {
-    $report | Format-List
+    $report | Format-Table -AutoSize
 }
-

@@ -1,0 +1,42 @@
+---
+name: Lint and Validate Workflows
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/*.yml'
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/*.yml'
+  workflow_dispatch:
+
+jobs:
+  lint-workflows:
+    name: Lint and Validate Workflow YAML
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+      - name: Install yamllint
+        run: pip install yamllint
+      - name: Lint all workflow YAML files
+        run: |
+          yamllint .github/workflows/
+      - name: Validate workflow structure (if script exists)
+        run: |
+          if [ -f scripts/validate-workflows.py ]; then
+            python3 scripts/validate-workflows.py .github/workflows/*.yml
+          else
+            echo "No workflow validation script found."
+          fi
+      - name: Run comprehensive workflow health check
+        run: |
+          if [ -f scripts/validate-workflow-health.sh ]; then
+            bash scripts/validate-workflow-health.sh
+          else
+            echo "No workflow health check script found."
+          fi

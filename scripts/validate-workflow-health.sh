@@ -24,6 +24,12 @@ for file in .github/workflows/*.yml; do
     fi
 done
 
+echo -e "${BLUE}Debugging invalid YAML issue...${NC}"
+for file in .github/workflows/*.yml; do
+    echo "Validating: $file"
+    python3 -c "import yaml; yaml.safe_load(open('$file'))" 2>&1 || echo "Error in $file"
+done
+
 echo -e "${BLUE}Checking required files and directories...${NC}"
 required_files=(
     "tests/PesterConfiguration.psd1"
@@ -61,13 +67,19 @@ done
 
 echo -e "${BLUE}Checking for common workflow issues...${NC}"
 
-# Check for escaped quotes in workflows  
-if grep -r "\\\\\'" .github/workflows/ >/dev/null 2>&1; then
+# Check for escaped quotes in workflows
+if grep -r -E "\\'" .github/workflows/ >/dev/null 2>&1; then
     echo -e "  ${RED}ERROR Found escaped quotes in workflows${NC}"
+    echo -e "  ${YELLOW}Matched lines:${NC}"
+    grep -rn -E "\\'" .github/workflows/
     ((errors++))
 else
     echo -e "  ${GREEN}OK No escaped quote issues${NC}"
 fi
+
+# Debugging escaped quotes issue
+echo -e "${BLUE}Debugging escaped quotes issue...${NC}"
+grep -rn -E "\\'" .github/workflows/ || echo "No escaped quotes found"
 
 # Check for invalid cache keys
 if grep -r "\.github/actions/lint/requirements\.txt" .github/workflows/ >/dev/null 2>&1; then
