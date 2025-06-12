@@ -100,7 +100,7 @@ jobs:
           Write-Host "Generated $($generatedTests.Count) test files" -ForegroundColor Green
           $generatedTests | ForEach-Object { Write-Host "  - $_" }
           
-          @{\
+          @{
             Platform = "${{ runner.os }}"
             GeneratedTests = $generatedTests
             ProcessedScripts = $changedScripts

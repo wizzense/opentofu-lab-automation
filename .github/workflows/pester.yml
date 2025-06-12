@@ -42,14 +42,14 @@ jobs:
           path: |
             C:\\Users\\runneradmin\\Documents\\WindowsPowerShell\\Modules
             C:\\Users\\runneradmin\\Documents\\PowerShell\\Modules
-          key: windows-pwsh-modules-${{ hashFiles('.github/actions/lint/requirements.txt') }}
+          key: windows-pwsh-modules-${{ hashFiles('tests/PesterConfiguration.psd1') }}
           restore-keys: windows-pwsh-modules-
       - name: Cache PowerShell modules (Posix)
         if: runner.os != 'Windows'
         uses: actions/cache@v4
         with:
           path: ~/.local/share/powershell/Modules
-          key: ${{ runner.os }}-pwsh-modules-${{ hashFiles('.github/actions/lint/requirements.txt') }}
+          key: ${{ runner.os }}-pwsh-modules-${{ hashFiles('tests/PesterConfiguration.psd1') }}
           restore-keys: ${{ runner.os }}-pwsh-modules-
       - name: Remove old Pester (Windows)
         if: runner.os == 'Windows'

@@ -21,7 +21,7 @@ jobs:
           path: |
             C:\\\\Users\\\\runneradmin\\\\Documents\\\\WindowsPowerShell\\\\Modules
             C:\\\\Users\\\\runneradmin\\\\Documents\\\\PowerShell\\\\Modules
-          key: windows-pwsh-modules-${{ hashFiles(\'.github/actions/lint/requirements.txt\') }}
+          key: windows-pwsh-modules-${{ hashFiles('tests/PesterConfiguration.psd1') }}
           restore-keys: windows-pwsh-modules-
       - name: Remove old Pester
         shell: pwsh
