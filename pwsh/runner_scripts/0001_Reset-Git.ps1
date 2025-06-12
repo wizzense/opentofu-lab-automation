@@ -1,5 +1,5 @@
-Import-Module "$PSScriptRoot/../lab_utils/LabRunner/LabRunner.psd1" -Force
 Param([object]$Config)
+Import-Module "$PSScriptRoot/../lab_utils/LabRunner/LabRunner.psd1" -Force
 
 Write-CustomLog "Starting $MyInvocation.MyCommand"
 
@@ -54,4 +54,3 @@ Invoke-LabStep -Config $Config -Body {
 }
 
 Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
-

@@ -1,8 +1,8 @@
-Import-Module "$PSScriptRoot/../lab_utils/LabRunner/LabRunner.psd1" -Force
 Param(
     [object]$Config,
     [switch]$AsJson
 )
+Import-Module "$PSScriptRoot/../lab_utils/LabRunner/LabRunner.psd1" -Force
 
 Write-CustomLog "Starting $MyInvocation.MyCommand"
 function Get-SystemInfo {

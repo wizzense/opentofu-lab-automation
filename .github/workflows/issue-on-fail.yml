@@ -42,41 +42,75 @@ jobs:
           COMMIT_SHA: ${{ github.event.workflow_run.head_sha }}
           BRANCH_NAME: ${{ github.event.workflow_run.head_branch }}
         run: |
+          set -e
           export GH_TOKEN="${GH_TOKEN}"
           run_id="${RUN_ID:-${{ github.event.workflow_run.id }}}"
-          gh run download "$run_id" -D artifacts || true
+          
+          echo "Downloading artifacts for run ID: $run_id"
+          gh run download "$run_id" -D artifacts || {
+            echo "Warning: Failed to download artifacts, continuing anyway"
+            mkdir -p artifacts
+          }
 
           if ls artifacts/*.zip >/dev/null 2>&1; then
+            echo "Extracting zip files..."
             for z in artifacts/*.zip; do
+              echo "Extracting: $z"
               unzip -q "$z" -d artifacts
             done
           fi
 
           summary=""
+          echo "Checking for Pester test results..."
           while IFS= read -r -d '' f; do
+            echo "Processing Pester file: $f"
             out=$(python -m labctl.pester_failures "$f" --summary || true)
             if [ -n "$out" ]; then
               summary="$summary$out\n"
             fi
           done < <(find artifacts -name testResults.xml -print0)
 
+          echo "Checking for Pytest results..."
           while IFS= read -r -d '' f; do
+            echo "Processing Pytest file: $f"
             out=$(python -m labctl.pytest_failures "$f" --summary || true)
             if [ -n "$out" ]; then
               summary="$summary$out\n"
             fi
           done < <(find artifacts -name junit.xml -print0)
 
+          echo "Checking for lint results..."
           while IFS= read -r -d '' f; do
+            echo "Processing lint file: $f"
             out=$(python -m labctl.lint_failures "$f" --summary || true)
             if [ -n "$out" ]; then
               summary="$summary$out\n"
             fi
           done < <(find artifacts -path '*lint*' -name '*.txt' -print0)
 
-          echo "failures<<EOF" >> "$GITHUB_OUTPUT"
-          echo -e "$summary" >> "$GITHUB_OUTPUT"
-          echo "EOF" >> "$GITHUB_OUTPUT"
+          # Write summary to a temporary file and encode it to avoid delimiter issues
+          summary_file=$(mktemp)
+          echo -e "$summary" > "$summary_file"
+          
+          # Use base64 encoding to safely pass the content
+          summary_encoded=$(base64 -w 0 "$summary_file")
+          echo "failures_encoded=${summary_encoded}" >> "$GITHUB_OUTPUT"
+          
+          # Also set a simple flag for whether there are failures
+          if [ -n "$summary" ]; then
+            echo "has_failures=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_failures=false" >> "$GITHUB_OUTPUT"
+          fi
+          
+          rm -f "$summary_file"
+          
+          echo "Summary length: ${#summary}"
+          if [ -z "$summary" ]; then
+            echo "No failure summary generated"
+          else
+            echo "Generated failure summary successfully"
+          fi
 
       - name: Check existing issue
         id: find
@@ -103,10 +137,11 @@ jobs:
               core.setOutput('number', issue.number);
             }
       - name: Create or update issue
+        if: ${{ steps.summary.outputs.has_failures == 'true' }}
         uses: actions/github-script@v7
         env:
           JOB_SUMMARY: ${{ steps.jobs.outputs.summary }}
-          TEST_SUMMARY: ${{ steps.summary.outputs.failures }}
+          TEST_SUMMARY_ENCODED: ${{ steps.summary.outputs.failures_encoded }}
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -115,8 +150,50 @@ jobs:
             const sha = context.payload.workflow_run.head_sha;
             const runUrl = context.payload.workflow_run.html_url;
             const jobSummary = process.env.JOB_SUMMARY;
-            const failSummary = process.env.TEST_SUMMARY;
+            
+            // Decode the base64 encoded test summary
+            const testSummaryEncoded = process.env.TEST_SUMMARY_ENCODED;
+            let failSummary = '';
+            if (testSummaryEncoded) {
+              try {
+                failSummary = Buffer.from(testSummaryEncoded, 'base64').toString('utf8');
+              } catch (error) {
+                console.error('Failed to decode test summary:', error);
+                failSummary = 'Error: Could not decode test failure summary';
+              }
+            }
+            
             const body = `Run [${runUrl}](${runUrl}) for commit \`${sha}\` on branch \`${branch}\` failed.\n\n### Failed jobs\n${jobSummary}\n\n### Failing tests\n${failSummary}`;
+            if (issueNumber) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issueNumber,
+                body
+              });
+            } else {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: `${context.payload.workflow_run.name} failed on ${branch}`,
+                body
+              });
+            }
+      - name: Create issue for general workflow failure
+        if: ${{ steps.summary.outputs.has_failures != 'true' }}
+        uses: actions/github-script@v7
+        env:
+          JOB_SUMMARY: ${{ steps.jobs.outputs.summary }}
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const issueNumber = '${{ steps.find.outputs.number }}';
+            const branch = context.payload.workflow_run.head_branch;
+            const sha = context.payload.workflow_run.head_sha;
+            const runUrl = context.payload.workflow_run.html_url;
+            const jobSummary = process.env.JOB_SUMMARY;
+            
+            const body = `Run [${runUrl}](${runUrl}) for commit \`${sha}\` on branch \`${branch}\` failed.\n\n### Failed jobs\n${jobSummary}\n\nNo specific test failures were detected, but the workflow failed. Check the job logs for details.`;
             if (issueNumber) {
               await github.rest.issues.createComment({
                 owner: context.repo.owner,

@@ -125,7 +125,7 @@ jobs:
           name: pester-log-linux
           path: coverage/pester.log
       - name: Upload coverage
-        if: steps.pester.outcome == \'success\'
+        if: steps.pester.outcome == 'success'
         uses: actions/upload-artifact@v4
         with:
           name: pester-coverage-linux
@@ -137,6 +137,6 @@ jobs:
           name: pester-results-linux
           path: coverage/testResults.xml
       - name: Fail if Pester tests failed
-        if: steps.pester.outputs.pester_exit_code != \'0\'
+        if: steps.pester.outputs.pester_exit_code != '0'
         shell: pwsh
         run: exit 1
