@@ -70,20 +70,20 @@ Describe 'Get-WindowsJobArtifacts' {
         $id = 789
         Mock Get-Command { [pscustomobject]@{ Name = 'gh' } } -ParameterFilter { $Name -eq 'gh' }
         Mock gh {} -ParameterFilter { $args[0] -eq 'auth' -and $args[1] -eq 'status' }
-        Mock gh { '{"artifacts":[]}' } -ParameterFilter { $args[1] -like "*runs/$id/artifacts" }
-        $messages = @()
+        Mock gh { '{''"workflow_runs"'':[{''"id"'':1}], ''"artifacts"'':[]}' } -ParameterFilter { $args[1] -like "*runs/$id/artifacts" }
+        $script:messages = @()
         function global:Write-Host { param($Object, $Color); $script:messages += $Object }
 
         & $global:scriptPath -RunId $id 2>$null
 
         $LASTEXITCODE | Should -Be 1
-        ($messages | Select-Object -Last 1) | Should -Match 'No artifacts'
+        ($script:messages | Select-Object -Last 1) | Should -Match 'No artifacts'
     }
 
     It 'returns nonzero exit code when download fails' {
         Mock Get-Command { $null } -ParameterFilter { $Name -eq 'gh' }
         Mock Invoke-WebRequest { throw '404' }
-        $messages = @()
+        $script:messages = @()
         function global:Write-Host { param($Object,$Color); $script:messages += $Object }
         try { & $global:scriptPath } catch {}
 
