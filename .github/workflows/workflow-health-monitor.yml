@@ -1,0 +1,242 @@
+name: Workflow Health Monitor
+
+on:
+  workflow_run:
+    workflows: ["Pester Tests - Windows", "Pester Tests - Linux", "Lint"]
+    types: [completed]
+  schedule:
+    # Run daily at 6 AM UTC
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+  actions: read
+
+jobs:
+  monitor:
+    name: Monitor Workflow Health
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Check workflow health
+        id: health
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            
+            // Get recent workflow runs (last 50)
+            const runs = await github.rest.actions.listWorkflowRunsForRepo({
+              owner,
+              repo,
+              per_page: 50,
+              status: 'completed'
+            });
+            
+            // Analyze workflow success rates
+            const workflowStats = {};
+            const recentRuns = runs.data.workflow_runs.filter(run => {
+              const runDate = new Date(run.created_at);
+              const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+              return runDate > sevenDaysAgo;
+            });
+            
+            for (const run of recentRuns) {
+              const workflowName = run.name;
+              if (!workflowStats[workflowName]) {
+                workflowStats[workflowName] = {
+                  total: 0,
+                  success: 0,
+                  failure: 0,
+                  cancelled: 0
+                };
+              }
+              
+              workflowStats[workflowName].total++;
+              if (run.conclusion === 'success') {
+                workflowStats[workflowName].success++;
+              } else if (run.conclusion === 'failure') {
+                workflowStats[workflowName].failure++;
+              } else if (run.conclusion === 'cancelled') {
+                workflowStats[workflowName].cancelled++;
+              }
+            }
+            
+            // Calculate success rates and identify problems
+            const healthReport = {
+              timestamp: new Date().toISOString(),
+              overallHealth: 'good',
+              workflows: {},
+              issues: []
+            };
+            
+            for (const [workflowName, stats] of Object.entries(workflowStats)) {
+              const successRate = stats.total > 0 ? (stats.success / stats.total) * 100 : 0;
+              const failureRate = stats.total > 0 ? (stats.failure / stats.total) * 100 : 0;
+              
+              healthReport.workflows[workflowName] = {
+                total: stats.total,
+                success: stats.success,
+                failure: stats.failure,
+                cancelled: stats.cancelled,
+                successRate: Math.round(successRate * 100) / 100,
+                failureRate: Math.round(failureRate * 100) / 100
+              };
+              
+              // Flag issues
+              if (successRate < 80 && stats.total >= 5) {
+                healthReport.issues.push({
+                  type: 'low_success_rate',
+                  workflow: workflowName,
+                  successRate: successRate,
+                  severity: successRate < 50 ? 'critical' : 'warning'
+                });
+                healthReport.overallHealth = successRate < 50 ? 'critical' : 'degraded';
+              }
+              
+              if (failureRate > 20 && stats.total >= 5) {
+                healthReport.issues.push({
+                  type: 'high_failure_rate',
+                  workflow: workflowName,
+                  failureRate: failureRate,
+                  severity: failureRate > 50 ? 'critical' : 'warning'
+                });
+              }
+            }
+            
+            // Check for PowerShell syntax issues specifically
+            const lintRuns = recentRuns.filter(run => run.name === 'Lint');
+            if (lintRuns.length > 0) {
+              const recentLintFailures = lintRuns.filter(run => run.conclusion === 'failure').slice(0, 3);
+              
+              for (const failedRun of recentLintFailures) {
+                try {
+                  const jobs = await github.rest.actions.listJobsForWorkflowRun({
+                    owner,
+                    repo,
+                    run_id: failedRun.id
+                  });
+                  
+                  for (const job of jobs.data.jobs) {
+                    if (job.conclusion === 'failure') {
+                      // Check for PowerShell syntax errors in job names/conclusions
+                      if (job.name && job.name.includes('PowerShell')) {
+                        healthReport.issues.push({
+                          type: 'powershell_syntax_error',
+                          workflow: 'Lint',
+                          runId: failedRun.id,
+                          severity: 'critical',
+                          details: 'PowerShell validation failures detected in recent runs'
+                        });
+                      }
+                    }
+                  }
+                } catch (error) {
+                  console.log(`Could not analyze run ${failedRun.id}: ${error.message}`);
+                }
+              }
+            }
+            
+            // Store results
+            core.setOutput('health_report', JSON.stringify(healthReport, null, 2));
+            core.setOutput('overall_health', healthReport.overallHealth);
+            core.setOutput('critical_issues', healthReport.issues.filter(i => i.severity === 'critical').length);
+            
+      
+      - name: Create health report artifact
+        run: |
+          mkdir -p reports/workflow-health
+          echo '${{ steps.health.outputs.health_report }}' > reports/workflow-health/health-report-$(date +%Y%m%d-%H%M%S).json
+          echo '${{ steps.health.outputs.health_report }}' > reports/workflow-health/latest-health-report.json
+      
+      - name: Create issue for critical problems
+        if: steps.health.outputs.critical_issues > 0
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const healthReport = JSON.parse('${{ steps.health.outputs.health_report }}');
+            const criticalIssues = healthReport.issues.filter(i => i.severity === 'critical');
+            
+            if (criticalIssues.length === 0) return;
+            
+            // Check if we already have an open issue for workflow health
+            const existingIssues = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: 'workflow-health,critical'
+            });
+            
+            let body = `# 🚨 Critical Workflow Health Issues Detected\n\n`;
+            body += `**Last Updated:** ${healthReport.timestamp}\n\n`;
+            body += `## Critical Issues (${criticalIssues.length})\n\n`;
+            
+            for (const issue of criticalIssues) {
+              body += `### ${issue.type.replace(/_/g, ' ').toUpperCase()}\n`;
+              body += `- **Workflow:** ${issue.workflow}\n`;
+              if (issue.successRate !== undefined) {
+                body += `- **Success Rate:** ${issue.successRate}%\n`;
+              }
+              if (issue.failureRate !== undefined) {
+                body += `- **Failure Rate:** ${issue.failureRate}%\n`;
+              }
+              if (issue.details) {
+                body += `- **Details:** ${issue.details}\n`;
+              }
+              if (issue.runId) {
+                body += `- **Failed Run:** [#${issue.runId}](https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${issue.runId})\n`;
+              }
+              body += `\n`;
+            }
+            
+            body += `## All Workflows Status\n\n`;
+            body += `| Workflow | Total Runs | Success Rate | Failure Rate |\n`;
+            body += `|----------|------------|--------------|---------------|\n`;
+            
+            for (const [name, stats] of Object.entries(healthReport.workflows)) {
+              body += `| ${name} | ${stats.total} | ${stats.successRate}% | ${stats.failureRate}% |\n`;
+            }
+            
+            body += `\n## Recommended Actions\n\n`;
+            if (criticalIssues.some(i => i.type === 'powershell_syntax_error')) {
+              body += `### PowerShell Issues\n`;
+              body += `- Run: \`pwsh tools/Validate-PowerShellScripts.ps1 -Path . -AutoFix\`\n`;
+              body += `- Check parameter/import-module ordering in PowerShell scripts\n`;
+              body += `- Install pre-commit hook: \`pwsh tools/Pre-Commit-Hook.ps1 -Install\`\n\n`;
+            }
+            if (criticalIssues.some(i => i.type === 'low_success_rate')) {
+              body += `### Workflow Reliability\n`;
+              body += `- Review recent workflow failures and identify common patterns\n`;
+              body += `- Check for infrastructure or dependency issues\n`;
+              body += `- Consider flaky test detection and quarantine\n\n`;
+            }
+            
+            if (existingIssues.data.length > 0) {
+              console.log('Updating existing critical workflow health issue...');
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: existingIssues.data[0].number,
+                body: body
+              });
+            } else {
+              console.log('Creating new critical workflow health issue...');
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: `🚨 Critical Workflow Health Issues - ${new Date().toISOString().split('T')[0]}`,
+                body: body,
+                labels: ['workflow-health', 'critical', 'automation']
+              });
+            }
+      
+      - name: Upload health report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: workflow-health-report
+          path: reports/workflow-health/
+

@@ -1,11 +1,14 @@
 @{
     IncludeRules = @(
         'PSUseConsistentIndentation',
-        'PSUseConsistentWhitespace',
+        'PSUseConsistentWhitespace', 
         'PSPlaceOpenBrace',
         'PSPlaceCloseBrace',
         'PSAvoidTrailingWhitespace',
-        'PSUseCompatibleSyntax'
+        'PSUseCompatibleSyntax',
+        'PSAvoidUsingPositionalParameters',
+        'PSReviewUnusedParameter',
+        'PSUseDeclaredVarsMoreThanAssignments'
     )
     ExcludeRules = @(
         'PSUseShouldProcessForStateChangingFunctions',
@@ -13,4 +16,11 @@
         'PSAvoidGlobalVars',
         'PSAvoidUsingPlainTextForPassword'
     )
+    # Custom rule settings
+    Rules = @{
+        PSUseCompatibleSyntax = @{
+            Enable = $true
+            TargetVersions = @('5.1', '7.0')
+        }
+    }
 }

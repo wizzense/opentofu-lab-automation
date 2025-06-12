@@ -111,6 +111,55 @@ jobs:
             Write-Error "Script analysis failed: $_"
             exit 1
           }
+      - name: Run Comprehensive PowerShell Validation
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          try {
+            Write-Host "Running comprehensive PowerShell validation..." -ForegroundColor Cyan
+            
+            # Run our comprehensive validation tool
+            $validationResult = & "$PWD/tools/Validate-PowerShellScripts.ps1" -Path "." -CI
+            $exitCode = $LASTEXITCODE
+            
+            # Log results
+            "PowerShell Validation Results:" | Out-File -FilePath $env:LOG_FILE -Append
+            $validationResult | Out-File -FilePath $env:LOG_FILE -Append
+            
+            if ($exitCode -ne 0) {
+              Write-Host "❌ PowerShell validation failed" -ForegroundColor Red
+              Write-Host "Run 'pwsh tools/Validate-PowerShellScripts.ps1 -Path . -AutoFix' to fix issues" -ForegroundColor Yellow
+              exit 1
+            }
+            
+            Write-Host "✅ All PowerShell files passed comprehensive validation" -ForegroundColor Green
+            
+          } catch {
+            Write-Error "PowerShell validation failed: $_"
+            Write-Host "Falling back to basic syntax validation..." -ForegroundColor Yellow
+            
+            # Fallback to basic validation if our tool fails
+            $files = Get-ChildItem -Path . -Recurse -Include *.ps1,*.psm1 -File
+            $syntaxErrors = @()
+            
+            foreach ($file in $files) {
+              try {
+                $content = Get-Content $file.FullName -Raw
+                [System.Management.Automation.PSParser]::Tokenize($content, [ref]$null) | Out-Null
+              } catch {
+                $syntaxErrors += "❌ $($file.Name): $($_.Exception.Message)"
+              }
+            }
+            
+            if ($syntaxErrors.Count -gt 0) {
+              Write-Host "Basic Syntax Errors Found:" -ForegroundColor Red
+              $syntaxErrors | ForEach-Object { Write-Host $_ -ForegroundColor Red }
+              $syntaxErrors | Out-File -FilePath $env:LOG_FILE -Append
+              exit 1
+            }
+            
+            Write-Host "Basic syntax validation passed" -ForegroundColor Green
+          }
       - name: Run Custom Script Analyzer
         shell: pwsh
         run: |
