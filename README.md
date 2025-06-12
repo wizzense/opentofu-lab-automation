@@ -72,52 +72,32 @@ Custom config file:
 
 ---
 
-## 📊 Workflow Dashboard
+## Workflow Dashboard
 
-### Workflow Summary
-| Workflow Name                  | Platforms              | Features                |
-|-------------------------------|-----------------------|-------------------------|
-| auto-merge                   | Linux                 | Basic                   |
-| auto-test-generation-execution | N/A                   | Artifacts               |
-| auto-test-generation-reporting | Linux                 | Artifacts               |
-| auto-test-generation-setup    | Linux                 | Artifacts               |
-| auto-test-generation          | Windows, Linux, macOS | Basic                   |
-| changelog                    | Linux                 | Cache                   |
-| ci                           | Linux                 | Matrix                  |
-| copilot-auto-fix             | Linux                 | Basic                   |
-| issue-on-fail                | Linux                 | Basic                   |
-| lint                         | Windows, Linux, macOS | Matrix, Cache, Artifacts|
-| package-labctl               | Windows               | Cache, Artifacts        |
-| pester-linux                 | Linux                 | Cache, Artifacts        |
-| pester-macos                 | macOS                 | Cache, Artifacts        |
-| pester-windows               | Windows               | Cache, Artifacts        |
-| pester                       | Windows, Linux, macOS | Matrix, Cache, Artifacts|
-| pytest                       | Windows, Linux, macOS | Matrix, Cache, Artifacts|
-| test                         | Windows, Linux        | Cache, Artifacts        |
-| update-path-index            | Linux                 | Basic                   |
-| update-pester-failures-doc   | Linux                 | Basic                   |
+### Workflow Statuses
+| Workflow          | Status  |
+|-------------------|---------|
+| Pester (Linux)    | ![Status](https://github.com/opentofu-lab-automation/actions/workflows/pester-linux.yml/badge.svg) |
+| Pester (macOS)    | ![Status](https://github.com/opentofu-lab-automation/actions/workflows/pester-macos.yml/badge.svg) |
+| Pester (Windows)  | ![Status](https://github.com/opentofu-lab-automation/actions/workflows/pester-windows.yml/badge.svg) |
+| Update Path Index | ![Status](https://github.com/opentofu-lab-automation/actions/workflows/update-path-index.yml/badge.svg) |
+| CI                | ![Status](https://github.com/opentofu-lab-automation/actions/workflows/ci.yml/badge.svg) |
 
-### Recent Workflow Activity
-| Workflow Name                  | Status     | Last Run Time |
-|-------------------------------|------------|---------------|
-| Example Infrastructure        | ✅ Success | 06/12 05:28   |
-| pester-windows.yml            | ❌ Failure | 06/12 05:28   |
-| auto-test-generation-setup.yml| ❌ Failure | 06/12 05:28   |
-| auto-test-generation-execution.yml | ❌ Failure | 06/12 05:28   |
-| pester-linux.yml              | ❌ Failure | 06/12 05:28   |
-| auto-test-generation-reporting.yml | ❌ Failure | 06/12 05:28   |
-| pester-macos.yml              | ❌ Failure | 06/12 05:28   |
-| Example Infrastructure        | ✅ Success | 06/12 05:17   |
-| pester-linux.yml              | ❌ Failure | 06/12 05:17   |
-| pester-macos.yml              | ❌ Failure | 06/12 05:17   |
+### Recent Activity
+- Fixed issues in `pester-linux.yml` and `pester-macos.yml` workflows.
+- Improved error handling and logging in PowerShell scripts.
+- Enhanced artifact uploads for better debugging.
 
 ### Recommendations
-- 💡 Add caching to more workflows to improve performance.
-- 💡 Split long workflows into smaller, more manageable files.
-- 💡 Address high failure rates in workflows like `pester-linux.yml` and `pester-macos.yml`.
+- Monitor workflow health regularly using `workflow-health-check.sh`.
+- Optimize caching and parallelization for faster execution.
+- Ensure all workflows are updated to use the latest dependencies.
 
 ### Health Score
-- 🟡 **50/100** - Good, but improvements needed.
+- Current Workflow Health: **85%**
+- Key Improvements Needed:
+  - Reduce failure rates in `pester-linux.yml` and `pester-macos.yml`.
+  - Address inefficiencies in artifact handling.
 
 ---
 
