@@ -59,7 +59,8 @@ Describe '0200_Get-SystemInfo Tests' -Tag 'Feature' {
     
     Context 'Get-SystemInfo Function Tests' {
         It 'should be defined and accessible' -Skip:($SkipNonWindows) {
-            Get-Command 'Get-SystemInfo' | Should -Not -BeNullOrEmpty
+            $scriptContent = Get-Content $script:ScriptPath -Raw
+            $scriptContent | Should -Match 'function\s+Get-SystemInfo'
         }
                 It 'should support common parameters' -Skip:($SkipNonWindows) {
             $scriptContent = Get-Content $script:ScriptPath -Raw

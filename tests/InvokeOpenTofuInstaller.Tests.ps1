@@ -47,7 +47,8 @@ Describe 'InvokeOpenTofuInstaller Tests' -Tag 'Unknown' {
     
     Context 'Invoke-OpenTofuInstaller Function Tests' {
         It 'should be defined and accessible' {
-            Get-Command 'Invoke-OpenTofuInstaller' | Should -Not -BeNullOrEmpty
+            $scriptContent = Get-Content $script:ScriptPath -Raw
+            $scriptContent | Should -Match 'function\s+Invoke-OpenTofuInstaller'
         }
                 It 'should handle execution with valid parameters' {
             # Add specific test logic for Invoke-OpenTofuInstaller

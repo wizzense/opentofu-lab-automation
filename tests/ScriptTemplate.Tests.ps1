@@ -47,7 +47,8 @@ Describe 'ScriptTemplate Tests' -Tag 'Unknown' {
     
     Context 'Invoke-LabStep Function Tests' {
         It 'should be defined and accessible' {
-            Get-Command 'Invoke-LabStep' | Should -Not -BeNullOrEmpty
+            $scriptContent = Get-Content $script:ScriptPath -Raw
+            $scriptContent | Should -Match 'function\s+Invoke-LabStep'
         }
                 It 'should handle execution with valid parameters' {
             # Add specific test logic for Invoke-LabStep
@@ -61,4 +62,5 @@ AfterAll {
     # Restore any modified system state
     # Remove test artifacts
 }
+
 

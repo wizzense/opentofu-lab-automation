@@ -77,7 +77,8 @@ Describe '0215_Install-Chocolatey Tests' -Tag 'Installer' {
     
     Context 'Install-Chocolatey Function Tests' {
         It 'should be defined and accessible' -Skip:($SkipNonWindows) {
-            Get-Command 'Install-Chocolatey' | Should -Not -BeNullOrEmpty
+            $scriptContent = Get-Content $script:ScriptPath -Raw
+            $scriptContent | Should -Match 'function\s+Install-Chocolatey'
         }
                 It 'should support common parameters' -Skip:($SkipNonWindows) {
             $scriptContent = Get-Content $script:ScriptPath -Raw

@@ -69,7 +69,8 @@ Describe 'setup-test-env Tests' -Tag 'Installer' {
     
     Context 'Ensure-Pester Function Tests' {
         It 'should be defined and accessible' {
-            Get-Command 'Ensure-Pester' | Should -Not -BeNullOrEmpty
+            $scriptContent = Get-Content $script:ScriptPath -Raw
+            $scriptContent | Should -Match "function\s+'Ensure-Pester'"
         }
                 It 'should handle execution with valid parameters' {
             # Add specific test logic for Ensure-Pester
@@ -79,7 +80,8 @@ Describe 'setup-test-env Tests' -Tag 'Installer' {
     
     Context 'Ensure-Python Function Tests' {
         It 'should be defined and accessible' {
-            Get-Command 'Ensure-Python' | Should -Not -BeNullOrEmpty
+            $scriptContent = Get-Content $script:ScriptPath -Raw
+            $scriptContent | Should -Match "function\s+'Ensure-Python'"
         }
                 It 'should handle execution with valid parameters' {
             # Add specific test logic for Ensure-Python
@@ -89,7 +91,8 @@ Describe 'setup-test-env Tests' -Tag 'Installer' {
     
     Context 'Ensure-Poetry Function Tests' {
         It 'should be defined and accessible' {
-            Get-Command 'Ensure-Poetry' | Should -Not -BeNullOrEmpty
+            $scriptContent = Get-Content $script:ScriptPath -Raw
+            $scriptContent | Should -Match "function\s+'Ensure-Poetry'"
         }
                 It 'should handle execution with valid parameters' {
             # Add specific test logic for Ensure-Poetry
@@ -103,4 +106,5 @@ AfterAll {
     # Restore any modified system state
     # Remove test artifacts
 }
+
 

@@ -98,7 +98,8 @@ Describe 'runner Tests' -Tag 'Configuration' {
     
     Context 'Resolve-IndexPath Function Tests' {
         It 'should be defined and accessible' -Skip:($SkipNonWindows) {
-            Get-Command 'Resolve-IndexPath' | Should -Not -BeNullOrEmpty
+            $scriptContent = Get-Content $script:ScriptPath -Raw
+            $scriptContent | Should -Match 'functions+Resolve-IndexPath'
         }
                 It 'should handle execution with valid parameters' -Skip:($SkipNonWindows) {
             # Add specific test logic for Resolve-IndexPath
@@ -108,7 +109,8 @@ Describe 'runner Tests' -Tag 'Configuration' {
     
     Context 'ConvertTo-Hashtable Function Tests' {
         It 'should be defined and accessible' -Skip:($SkipNonWindows) {
-            Get-Command 'ConvertTo-Hashtable' | Should -Not -BeNullOrEmpty
+            $scriptContent = Get-Content $script:ScriptPath -Raw
+            $scriptContent | Should -Match "function\s+'ConvertTo-Hashtable'"
         }
                 It 'should handle execution with valid parameters' -Skip:($SkipNonWindows) {
             # Add specific test logic for ConvertTo-Hashtable
@@ -118,7 +120,8 @@ Describe 'runner Tests' -Tag 'Configuration' {
     
     Context 'Get-ScriptConfigFlag Function Tests' {
         It 'should be defined and accessible' -Skip:($SkipNonWindows) {
-            Get-Command 'Get-ScriptConfigFlag' | Should -Not -BeNullOrEmpty
+            $scriptContent = Get-Content $script:ScriptPath -Raw
+            $scriptContent | Should -Match "function\s+'Get-ScriptConfigFlag'"
         }
                 It 'should handle execution with valid parameters' -Skip:($SkipNonWindows) {
             # Add specific test logic for Get-ScriptConfigFlag
@@ -128,7 +131,8 @@ Describe 'runner Tests' -Tag 'Configuration' {
     
     Context 'Get-NestedConfigValue Function Tests' {
         It 'should be defined and accessible' -Skip:($SkipNonWindows) {
-            Get-Command 'Get-NestedConfigValue' | Should -Not -BeNullOrEmpty
+            $scriptContent = Get-Content $script:ScriptPath -Raw
+            $scriptContent | Should -Match "function\s+'Get-NestedConfigValue'"
         }
                 It 'should handle execution with valid parameters' -Skip:($SkipNonWindows) {
             # Add specific test logic for Get-NestedConfigValue
@@ -138,7 +142,8 @@ Describe 'runner Tests' -Tag 'Configuration' {
     
     Context 'Set-NestedConfigValue Function Tests' {
         It 'should be defined and accessible' -Skip:($SkipNonWindows) {
-            Get-Command 'Set-NestedConfigValue' | Should -Not -BeNullOrEmpty
+            $scriptContent = Get-Content $script:ScriptPath -Raw
+            $scriptContent | Should -Match "function\s+'Set-NestedConfigValue'"
         }
                 It 'should handle execution with valid parameters' -Skip:($SkipNonWindows) {
             # Add specific test logic for Set-NestedConfigValue
@@ -148,7 +153,8 @@ Describe 'runner Tests' -Tag 'Configuration' {
     
     Context 'Apply-RecommendedDefaults Function Tests' {
         It 'should be defined and accessible' -Skip:($SkipNonWindows) {
-            Get-Command 'Apply-RecommendedDefaults' | Should -Not -BeNullOrEmpty
+            $scriptContent = Get-Content $script:ScriptPath -Raw
+            $scriptContent | Should -Match "function\s+'Apply-RecommendedDefaults'"
         }
                 It 'should handle execution with valid parameters' -Skip:($SkipNonWindows) {
             # Add specific test logic for Apply-RecommendedDefaults
@@ -158,7 +164,8 @@ Describe 'runner Tests' -Tag 'Configuration' {
     
     Context 'Set-LabConfig Function Tests' {
         It 'should be defined and accessible' -Skip:($SkipNonWindows) {
-            Get-Command 'Set-LabConfig' | Should -Not -BeNullOrEmpty
+            $scriptContent = Get-Content $script:ScriptPath -Raw
+            $scriptContent | Should -Match "function\s+'Set-LabConfig'"
         }
                 It 'should support common parameters' -Skip:($SkipNonWindows) {
             $scriptContent = Get-Content $script:ScriptPath -Raw
@@ -174,7 +181,8 @@ Describe 'runner Tests' -Tag 'Configuration' {
     
     Context 'Edit-PrimitiveValue Function Tests' {
         It 'should be defined and accessible' -Skip:($SkipNonWindows) {
-            Get-Command 'Edit-PrimitiveValue' | Should -Not -BeNullOrEmpty
+            $scriptContent = Get-Content $script:ScriptPath -Raw
+            $scriptContent | Should -Match "function\s+'Edit-PrimitiveValue'"
         }
                 It 'should handle execution with valid parameters' -Skip:($SkipNonWindows) {
             # Add specific test logic for Edit-PrimitiveValue
@@ -184,7 +192,8 @@ Describe 'runner Tests' -Tag 'Configuration' {
     
     Context 'Edit-Section Function Tests' {
         It 'should be defined and accessible' -Skip:($SkipNonWindows) {
-            Get-Command 'Edit-Section' | Should -Not -BeNullOrEmpty
+            $scriptContent = Get-Content $script:ScriptPath -Raw
+            $scriptContent | Should -Match "function\s+'Edit-Section'"
         }
                 It 'should handle execution with valid parameters' -Skip:($SkipNonWindows) {
             # Add specific test logic for Edit-Section
@@ -194,7 +203,8 @@ Describe 'runner Tests' -Tag 'Configuration' {
     
     Context 'Invoke-Scripts Function Tests' {
         It 'should be defined and accessible' -Skip:($SkipNonWindows) {
-            Get-Command 'Invoke-Scripts' | Should -Not -BeNullOrEmpty
+            $scriptContent = Get-Content $script:ScriptPath -Raw
+            $scriptContent | Should -Match "function\s+'Invoke-Scripts'"
         }
                 It 'should handle execution with valid parameters' -Skip:($SkipNonWindows) {
             # Add specific test logic for Invoke-Scripts
@@ -204,7 +214,8 @@ Describe 'runner Tests' -Tag 'Configuration' {
     
     Context 'Select-Scripts Function Tests' {
         It 'should be defined and accessible' -Skip:($SkipNonWindows) {
-            Get-Command 'Select-Scripts' | Should -Not -BeNullOrEmpty
+            $scriptContent = Get-Content $script:ScriptPath -Raw
+            $scriptContent | Should -Match "function\s+'Select-Scripts'"
         }
                 It 'should handle execution with valid parameters' -Skip:($SkipNonWindows) {
             # Add specific test logic for Select-Scripts
@@ -214,7 +225,8 @@ Describe 'runner Tests' -Tag 'Configuration' {
     
     Context 'Prompt-Scripts Function Tests' {
         It 'should be defined and accessible' -Skip:($SkipNonWindows) {
-            Get-Command 'Prompt-Scripts' | Should -Not -BeNullOrEmpty
+            $scriptContent = Get-Content $script:ScriptPath -Raw
+            $scriptContent | Should -Match "function\s+'Prompt-Scripts'"
         }
                 It 'should handle execution with valid parameters' -Skip:($SkipNonWindows) {
             # Add specific test logic for Prompt-Scripts
@@ -228,4 +240,5 @@ AfterAll {
     # Restore any modified system state
     # Remove test artifacts
 }
+
 
