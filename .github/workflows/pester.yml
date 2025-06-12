@@ -55,31 +55,65 @@ jobs:
         if: runner.os == 'Windows'
         shell: pwsh
         run: |
-          $old = Get-Module -ListAvailable -Name Pester | Where-Object { $_.Version -lt [version]'5.0.0' }
-          foreach ($mod in $old) {
-            Remove-Item -Recurse -Force $mod.ModuleBase -ErrorAction SilentlyContinue
+          $ErrorActionPreference = 'Stop'
+          try {
+            $old = Get-Module -ListAvailable -Name Pester | Where-Object { $_.Version -lt [version]'5.0.0' }
+            foreach ($mod in $old) {
+              Remove-Item -Recurse -Force $mod.ModuleBase -ErrorAction SilentlyContinue
+            }
+            Write-Host "Old Pester modules removed successfully" -ForegroundColor Green
+          } catch {
+            Write-Warning "Could not remove old Pester modules: $_"
           }
       - name: Install Pester
         shell: pwsh
         run: |
-          Install-Module -Name Pester -RequiredVersion 5.7.1 -Force -Scope CurrentUser
+          $ErrorActionPreference = 'Stop'
+          try {
+            Install-Module -Name Pester -RequiredVersion 5.7.1 -Force -Scope CurrentUser
+            Write-Host "Pester 5.7.1 installed successfully" -ForegroundColor Green
+          } catch {
+            Write-Error "Failed to install Pester: $_"
+            exit 1
+          }
       - name: Install powershell-yaml
         shell: pwsh
         run: |
-          Install-Module -Name powershell-yaml -Force -Scope CurrentUser
+          $ErrorActionPreference = 'Stop'
+          try {
+            Install-Module -Name powershell-yaml -Force -Scope CurrentUser
+            Write-Host "powershell-yaml installed successfully" -ForegroundColor Green
+          } catch {
+            Write-Error "Failed to install powershell-yaml: $_"
+            exit 1
+          }
       - name: Verify test helpers
         shell: pwsh
         run: |
-          . ./tests/helpers/Get-ScriptAst.ps1
-          if (-not (Get-Command Get-ScriptAst -ErrorAction SilentlyContinue)) {
-              Write-Error 'Get-ScriptAst helper not loaded'
-              exit 1
+          $ErrorActionPreference = 'Stop'
+          try {
+            . ./tests/helpers/Get-ScriptAst.ps1
+            if (-not (Get-Command Get-ScriptAst -ErrorAction SilentlyContinue)) {
+                Write-Error 'Get-ScriptAst helper not loaded'
+                exit 1
+            }
+            Write-Host "Test helpers verified successfully" -ForegroundColor Green
+          } catch {
+            Write-Error "Failed to verify test helpers: $_"
+            exit 1
           }
       - name: Ensure coverage directory
         shell: pwsh
         run: |
-          if (-not (Test-Path coverage)) {
-              New-Item -ItemType Directory -Path coverage | Out-Null
+          $ErrorActionPreference = 'Stop'
+          try {
+            if (-not (Test-Path coverage)) {
+                New-Item -ItemType Directory -Path coverage | Out-Null
+            }
+            Write-Host "Coverage directory ready" -ForegroundColor Green
+          } catch {
+            Write-Error "Failed to create coverage directory: $_"
+            exit 1
           }
       - name: Run Pester Tests
         id: pester
@@ -169,33 +203,61 @@ jobs:
       - name: Configure Node flags
         shell: pwsh
         run: |
-          $cfgPath = 'configs/config_files/default-config.json'
-          $cfg = Get-Content $cfgPath | ConvertFrom-Json
-          $cfg.Node_Dependencies.InstallNode = $true
-          $cfg.Node_Dependencies.InstallNpm  = $true
-          $cfg | ConvertTo-Json -Depth 10 | Set-Content $cfgPath
+          $ErrorActionPreference = 'Stop'
+          try {
+            $cfgPath = 'configs/config_files/default-config.json'
+            $cfg = Get-Content $cfgPath | ConvertFrom-Json
+            $cfg.Node_Dependencies.InstallNode = $true
+            $cfg.Node_Dependencies.InstallNpm  = $true
+            $cfg | ConvertTo-Json -Depth 10 | Set-Content $cfgPath
+            Write-Host "Node configuration updated successfully" -ForegroundColor Green
+          } catch {
+            Write-Error "Failed to configure Node flags: $_"
+            exit 1
+          }
       - name: Install Node core
         shell: pwsh
         run: |
-          $cfg = Get-Content 'configs/config_files/default-config.json' | ConvertFrom-Json
-          . ./pwsh/runner_scripts/0201_Install-NodeCore.ps1
-          Install-NodeCore -Config $cfg
+          $ErrorActionPreference = 'Stop'
+          try {
+            $cfg = Get-Content 'configs/config_files/default-config.json' | ConvertFrom-Json
+            . ./pwsh/runner_scripts/0201_Install-NodeCore.ps1
+            Install-NodeCore -Config $cfg
+            Write-Host "Node core installed successfully" -ForegroundColor Green
+          } catch {
+            Write-Error "Failed to install Node core: $_"
+            exit 1
+          }
       - name: Install global packages
         shell: pwsh
         run: |
-          $cfg = Get-Content 'configs/config_files/default-config.json' | ConvertFrom-Json
-          . ./pwsh/runner_scripts/0202_Install-NodeGlobalPackages.ps1
-          Install-NodeGlobalPackages -Config $cfg
+          $ErrorActionPreference = 'Stop'
+          try {
+            $cfg = Get-Content 'configs/config_files/default-config.json' | ConvertFrom-Json
+            . ./pwsh/runner_scripts/0202_Install-NodeGlobalPackages.ps1
+            Install-NodeGlobalPackages -Config $cfg
+            Write-Host "Node global packages installed successfully" -ForegroundColor Green
+          } catch {
+            Write-Error "Failed to install Node global packages: $_"
+            exit 1
+          }
       - name: Verify Node and packages
         shell: pwsh
         run: |
-          $cfg = Get-Content 'configs/config_files/default-config.json' | ConvertFrom-Json
-          node --version
-          $packages = $cfg.Node_Dependencies.GlobalPackages
-          foreach ($pkg in $packages) {
-            if (-not (Get-Command $pkg -ErrorAction SilentlyContinue)) {
-              Write-Error "$pkg not installed"
-              exit 1
+          $ErrorActionPreference = 'Stop'
+          try {
+            $cfg = Get-Content 'configs/config_files/default-config.json' | ConvertFrom-Json
+            node --version
+            $packages = $cfg.Node_Dependencies.GlobalPackages
+            foreach ($pkg in $packages) {
+              if (-not (Get-Command $pkg -ErrorAction SilentlyContinue)) {
+                Write-Error "$pkg not installed"
+                exit 1
+              }
             }
+            Write-Host "Node and packages verified successfully" -ForegroundColor Green
+          } catch {
+            Write-Error "Failed to verify Node and packages: $_"
+            exit 1
           }
 

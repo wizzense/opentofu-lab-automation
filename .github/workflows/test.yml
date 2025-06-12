@@ -41,8 +41,15 @@ jobs:
         shell: pwsh
         working-directory: opentofu/examples/hyperv
         run: |
-          tofu init -input=false | Tee-Object -FilePath init.log
-          tofu validate | Tee-Object -FilePath validate.log
+          $ErrorActionPreference = 'Stop'
+          try {
+            tofu init -input=false | Tee-Object -FilePath init.log
+            tofu validate | Tee-Object -FilePath validate.log
+            Write-Host "OpenTofu validation completed successfully" -ForegroundColor Green
+          } catch {
+            Write-Error "OpenTofu validation failed: $_"
+            exit 1
+          }
       - name: Upload logs
         if: always()
         uses: actions/upload-artifact@v4
