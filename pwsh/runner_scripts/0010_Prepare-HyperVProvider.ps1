@@ -1,4 +1,4 @@
-Import-Module "$PSScriptRoot/../lab_utils/LabRunner/LabRunner.psd1"
+Import-Module "$PSScriptRoot/../lab_utils/LabRunner/LabRunner.psd1" -Force
 Param([object]$Config)
 
 Write-CustomLog "Starting $MyInvocation.MyCommand"
@@ -365,7 +365,7 @@ Invoke-LabDownload -Uri $downloadInfo.download_url -Prefix 'hyperv_provider' -Ex
     Expand-Archive -Path $zipPath -DestinationPath $tempDir -Force
 }
 
-$providerExePath = Join-Path $tempDir "terraform-provider-hyperv_${providerVersion}.exe"
+$provider
 $hypervProviderDir = Join-Path $infraRepoPath ".terraform\providers\registry.opentofu.org\taliesins\hyperv\$providerVersion\${os}_${arch}"
 if (!(Test-Path $hypervProviderDir)) {
     New-Item -ItemType Directory -Force -Path $hypervProviderDir | Out-Null

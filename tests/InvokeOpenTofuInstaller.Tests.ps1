@@ -4,7 +4,7 @@
 
 BeforeAll {
     # Load the script under test
-    $scriptPath = Join-Path $PSScriptRoot '..' '/workspaces/opentofu-lab-automation/pwsh/Modules/LabRunner/InvokeOpenTofuInstaller.ps1'
+    $scriptPath = Join-Path $PSScriptRoot '..' 'pwsh/Modules/LabRunner/InvokeOpenTofuInstaller.ps1'
     if (Test-Path $scriptPath) {
         . $scriptPath
     }

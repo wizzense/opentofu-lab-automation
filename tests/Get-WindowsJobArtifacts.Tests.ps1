@@ -1,14 +1,5 @@
 . (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
-. (Join-Path $PSScriptRoot 'hel    It 'returns nonzero exit code when download fails' {
-        Mock Get-Command { $null } -ParameterFilter { $Name -eq 'gh' }
-        Mock Invoke-WebRequest { throw '404' }
-        $messages = @()
-        function global:Write-Host { param($Object,$Color); $script:messages += $Object }
-        try { & $global:scriptPath } catch {}
-
-        $LASTEXITCODE | Should -Be 1
-    }
-}Helpers.ps1')
+. (Join-Path $PSScriptRoot 'helpers/TestHelpers.ps1')
 Import-Module (Join-Path $PSScriptRoot '..' 'pwsh' 'lab_utils' 'LabRunner' 'LabRunner.psd1') -Force
 
 Describe 'Get-WindowsJobArtifacts' {
@@ -98,5 +89,4 @@ Describe 'Get-WindowsJobArtifacts' {
 
         $LASTEXITCODE | Should -Be 1
     }
-}
 }

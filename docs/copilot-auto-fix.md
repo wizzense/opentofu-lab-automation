@@ -19,3 +19,7 @@ The workflow `.github/workflows/copilot-auto-fix.yml` uses the GitHub Copilot CL
 
 The workflow reads the secret and sets the `GH_TOKEN` environment variable so that Copilot can suggest fixes for open issues. If the secret is missing, the job stops immediately with an error message.
 
+---
+
+See [pester-test-failures.md](pester-test-failures.md) for a tracked list of current test failures.
+

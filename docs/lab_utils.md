@@ -12,3 +12,7 @@ This folder contains helper tools used across the project. Each script focuses o
 - **Get-WindowsJobArtifacts.ps1** – Downloads the latest Windows job artifacts from GitHub and shows failing tests. Use `gh run list` to grab a run ID and call the script with `-RunId <id>` if automatic discovery fails. Run IDs are 64‑bit integers, so quote them if needed. The script falls back to nightly.link URLs when unauthenticated and gracefully skips the coverage archive when tests fail.
 
 The `__init__.py` file is currently empty and simply marks the folder as a Python package.
+
+---
+
+See [pester-test-failures.md](pester-test-failures.md) for a tracked list of current test failures.

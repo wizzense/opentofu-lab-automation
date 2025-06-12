@@ -55,79 +55,116 @@ jobs:
         if: runner.os == 'Windows'
         shell: pwsh
         run: |
-          $old = Get-Module -ListAvailable -Name Pester | Where-Object { $_.Version -lt [version]'5.0.0' }
-          foreach ($mod in $old) {
-            Remove-Item -Recurse -Force $mod.ModuleBase -ErrorAction SilentlyContinue
+          $ErrorActionPreference = 'Stop'
+          try {
+            $old = Get-Module -ListAvailable -Name Pester | Where-Object { $_.Version -lt [version]'5.0.0' }
+            foreach ($mod in $old) {
+              Remove-Item -Recurse -Force $mod.ModuleBase -ErrorAction SilentlyContinue
+            }
+            Write-Host "Old Pester modules removed successfully" -ForegroundColor Green
+          } catch {
+            Write-Warning "Could not remove old Pester modules: $_"
           }
       - name: Install Pester
         shell: pwsh
         run: |
-          Install-Module -Name Pester -RequiredVersion 5.7.1 -Force -Scope CurrentUser
+          $ErrorActionPreference = 'Stop'
+          try {
+            Install-Module -Name Pester -RequiredVersion 5.7.1 -Force -Scope CurrentUser
+            Write-Host "Pester 5.7.1 installed successfully" -ForegroundColor Green
+          } catch {
+            Write-Error "Failed to install Pester: $_"
+            exit 1
+          }
       - name: Install powershell-yaml
         shell: pwsh
         run: |
-          Install-Module -Name powershell-yaml -Force -Scope CurrentUser
+          $ErrorActionPreference = 'Stop'
+          try {
+            Install-Module -Name powershell-yaml -Force -Scope CurrentUser
+            Write-Host "powershell-yaml installed successfully" -ForegroundColor Green
+          } catch {
+            Write-Error "Failed to install powershell-yaml: $_"
+            exit 1
+          }
       - name: Verify test helpers
         shell: pwsh
         run: |
-          . ./tests/helpers/Get-ScriptAst.ps1
-          if (-not (Get-Command Get-ScriptAst -ErrorAction SilentlyContinue)) {
-              Write-Error 'Get-ScriptAst helper not loaded'
-              exit 1
+          $ErrorActionPreference = 'Stop'
+          try {
+            . ./tests/helpers/Get-ScriptAst.ps1
+            if (-not (Get-Command Get-ScriptAst -ErrorAction SilentlyContinue)) {
+                Write-Error 'Get-ScriptAst helper not loaded'
+                exit 1
+            }
+            Write-Host "Test helpers verified successfully" -ForegroundColor Green
+          } catch {
+            Write-Error "Failed to verify test helpers: $_"
+            exit 1
           }
       - name: Ensure coverage directory
         shell: pwsh
         run: |
-          if (-not (Test-Path coverage)) {
-              New-Item -ItemType Directory -Path coverage | Out-Null
+          $ErrorActionPreference = 'Stop'
+          try {
+            if (-not (Test-Path coverage)) {
+                New-Item -ItemType Directory -Path coverage | Out-Null
+            }
+            Write-Host "Coverage directory ready" -ForegroundColor Green
+          } catch {
+            Write-Error "Failed to create coverage directory: $_"
+            exit 1
           }
-      - name: Run Extensible Tests
+      - name: Run Pester Tests
         id: pester
-        continue-on-error: true
         shell: pwsh
         run: |
-          # Use our extensible test runner
-          $platform = switch ("${{ runner.os }}") {
-            'Windows' { 'Windows' }
-            'Linux' { 'Linux' }
-            'macOS' { 'macOS' }
-            default { 'All' }
-          }
+          # Set error handling
+          $ErrorActionPreference = 'Stop'
           
-          Write-Host "Running extensible tests for platform: $platform" -ForegroundColor Yellow
+          Write-Host "Running Pester tests for ${{ runner.os }}" -ForegroundColor Yellow
           
           try {
-            & ./tests/helpers/Invoke-ExtensibleTests.ps1 `
-              -Platform $platform `
-              -EnableCodeCoverage `
-              -GenerateReport `
-              -OutputPath 'coverage' `
-              -Parallel `
-              -Verbose
-            
-            $exitCode = $LASTEXITCODE
-          } catch {
-            Write-Error "Extensible test execution failed: $_"
-            $exitCode = 1
-          }
-          
-          # Fallback to traditional Pester if extensible runner fails
-          if ($exitCode -ne 0) {
-            Write-Warning "Extensible test runner failed, falling back to traditional Pester"
-            
+            # Load the Pester configuration from the project file
             $cfg = New-PesterConfiguration -Hashtable (Import-PowerShellDataFile 'tests/PesterConfiguration.psd1')
 
+            # Configure test discovery and execution
+            $cfg.Run.PassThru = $true
+            $cfg.Output.Verbosity = 'Normal'
+
+            # Extend code coverage paths to include tools/iso if it exists
             $coveragePaths = @($cfg.CodeCoverage.Path.Value)
-            $coveragePaths += 'tools/iso'
+            if (Test-Path 'tools/iso') {
+              $coveragePaths += 'tools/iso'
+            }
             $cfg.CodeCoverage.Path = [Pester.StringArrayOption]::new($coveragePaths)
 
+            # Set output paths relative to workspace root
             $repoRoot = $env:GITHUB_WORKSPACE
             $cfg.TestResult.OutputPath   = Join-Path $repoRoot 'coverage/testResults.xml'
             $cfg.CodeCoverage.OutputPath = Join-Path $repoRoot 'coverage/coverage.xml'
             $logPath = Join-Path $repoRoot 'coverage/pester.log'
 
-            Invoke-Pester -Configuration $cfg -ErrorAction Stop 2>&1 | Tee-Object -FilePath $logPath
-            $exitCode = $LASTEXITCODE
+            # Run Pester tests
+            Write-Host "Starting test execution..." -ForegroundColor Green
+            $result = Invoke-Pester -Configuration $cfg 2>&1 | Tee-Object -FilePath $logPath
+            
+            # Check results
+            if ($result.FailedCount -gt 0) {
+              Write-Error "Tests failed: $($result.FailedCount) failed out of $($result.TotalCount) total tests"
+              exit 1
+            }
+            
+            Write-Host "All tests passed: $($result.PassedCount)/$($result.TotalCount)" -ForegroundColor Green
+            $exitCode = 0
+            
+          } catch {
+            Write-Error "Pester execution failed: $_"
+            Write-Host "Error details: $($_.Exception.Message)" -ForegroundColor Red
+            if ($_.Exception.InnerException) {
+              Write-Host "Inner exception: $($_.Exception.InnerException.Message)" -ForegroundColor Red
+            }
+            $exitCode = 1
           }
 
           "pester_exit_code=$exitCode" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
@@ -153,14 +190,6 @@ jobs:
         if: steps.pester.outputs.pester_exit_code != '0'
         shell: pwsh
         run: exit 1
-      - name: Fix invalid file paths
-        run: |
-          git ls-tree -r HEAD | grep ':' | while read -r line; do
-            invalid_file=$(echo "$line" | awk '{print $4}')
-            fixed_file=$(echo "$invalid_file" | sed 's/:/-/g')
-            git mv "$invalid_file" "$fixed_file"
-          done
-          git commit -m "Fix invalid file paths for Windows compatibility"
 
   node-install:
     name: Node integration
@@ -174,33 +203,61 @@ jobs:
       - name: Configure Node flags
         shell: pwsh
         run: |
-          $cfgPath = 'configs/config_files/default-config.json'
-          $cfg = Get-Content $cfgPath | ConvertFrom-Json
-          $cfg.Node_Dependencies.InstallNode = $true
-          $cfg.Node_Dependencies.InstallNpm  = $true
-          $cfg | ConvertTo-Json -Depth 10 | Set-Content $cfgPath
+          $ErrorActionPreference = 'Stop'
+          try {
+            $cfgPath = 'configs/config_files/default-config.json'
+            $cfg = Get-Content $cfgPath | ConvertFrom-Json
+            $cfg.Node_Dependencies.InstallNode = $true
+            $cfg.Node_Dependencies.InstallNpm  = $true
+            $cfg | ConvertTo-Json -Depth 10 | Set-Content $cfgPath
+            Write-Host "Node configuration updated successfully" -ForegroundColor Green
+          } catch {
+            Write-Error "Failed to configure Node flags: $_"
+            exit 1
+          }
       - name: Install Node core
         shell: pwsh
         run: |
-          $cfg = Get-Content 'configs/config_files/default-config.json' | ConvertFrom-Json
-          . ./pwsh/runner_scripts/0201_Install-NodeCore.ps1
-          Install-NodeCore -Config $cfg
+          $ErrorActionPreference = 'Stop'
+          try {
+            $cfg = Get-Content 'configs/config_files/default-config.json' | ConvertFrom-Json
+            . ./pwsh/runner_scripts/0201_Install-NodeCore.ps1
+            Install-NodeCore -Config $cfg
+            Write-Host "Node core installed successfully" -ForegroundColor Green
+          } catch {
+            Write-Error "Failed to install Node core: $_"
+            exit 1
+          }
       - name: Install global packages
         shell: pwsh
         run: |
-          $cfg = Get-Content 'configs/config_files/default-config.json' | ConvertFrom-Json
-          . ./pwsh/runner_scripts/0202_Install-NodeGlobalPackages.ps1
-          Install-NodeGlobalPackages -Config $cfg
+          $ErrorActionPreference = 'Stop'
+          try {
+            $cfg = Get-Content 'configs/config_files/default-config.json' | ConvertFrom-Json
+            . ./pwsh/runner_scripts/0202_Install-NodeGlobalPackages.ps1
+            Install-NodeGlobalPackages -Config $cfg
+            Write-Host "Node global packages installed successfully" -ForegroundColor Green
+          } catch {
+            Write-Error "Failed to install Node global packages: $_"
+            exit 1
+          }
       - name: Verify Node and packages
         shell: pwsh
         run: |
-          $cfg = Get-Content 'config_files/default-config.json' | ConvertFrom-Json
-          node --version
-          $packages = $cfg.Node_Dependencies.GlobalPackages
-          foreach ($pkg in $packages) {
-            if (-not (Get-Command $pkg -ErrorAction SilentlyContinue)) {
-              Write-Error "$pkg not installed"
-              exit 1
+          $ErrorActionPreference = 'Stop'
+          try {
+            $cfg = Get-Content 'configs/config_files/default-config.json' | ConvertFrom-Json
+            node --version
+            $packages = $cfg.Node_Dependencies.GlobalPackages
+            foreach ($pkg in $packages) {
+              if (-not (Get-Command $pkg -ErrorAction SilentlyContinue)) {
+                Write-Error "$pkg not installed"
+                exit 1
+              }
             }
+            Write-Host "Node and packages verified successfully" -ForegroundColor Green
+          } catch {
+            Write-Error "Failed to verify Node and packages: $_"
+            exit 1
           }
 

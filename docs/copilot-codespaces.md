@@ -1,4 +1,4 @@
-# Debugging tests in Codespaces with Copilot agent
+# Debugging Tests in Codespaces with Copilot Agent
 
 This guide explains how to use GitHub Codespaces together with Copilot in agent mode to troubleshoot failing tests.
 
@@ -7,7 +7,7 @@ This guide explains how to use GitHub Codespaces together with Copilot in agent 
 1. Open the **Code** drop-down on the repository page and choose **Create codespace**.
 2. Wait for the container to build and connect.
 
-## Install dependencies
+## Install Dependencies
 
 Inside the codespace terminal run:
 
@@ -17,7 +17,7 @@ Inside the codespace terminal run:
 
 This installs PowerShell modules and the Python packages required for the Pester and pytest suites.
 
-## Run the tests
+## Run the Tests
 
 ```bash
 pwsh -NoLogo -NoProfile -Command "Invoke-Pester"
@@ -26,7 +26,7 @@ pytest py
 
 Review any failures in the terminal output or in the generated `artifacts` folder.
 
-## Use Copilot agent mode
+## Use Copilot Agent Mode
 
 1. Open the **Copilot Chat** view in VS Code.
 2. Enable **Agent** mode and ask Copilot for help, for example:
@@ -36,3 +36,7 @@ Review any failures in the terminal output or in the generated `artifacts` folde
 3. Follow the suggestions to inspect logs, locate error messages and propose fixes.
 
 For manual steps on interpreting `testResults.xml` and `coverage.xml`, see [Troubleshooting CI](troubleshooting.md).
+
+---
+
+See [pester-test-failures.md](pester-test-failures.md) for a tracked list of current test failures.

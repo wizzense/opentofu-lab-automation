@@ -10,3 +10,7 @@ The `tools/iso` directory contains scripts for building automated installation m
 - **kickstart-bootstrap.sh** – Shell helper that downloads `kickstart.cfg` and launches a sample `virt-install` command.
 
 These resources can be adapted to streamline automated lab setups.
+
+---
+
+See [pester-test-failures.md](pester-test-failures.md) for a tracked list of current test failures.

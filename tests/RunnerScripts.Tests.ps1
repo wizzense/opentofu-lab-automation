@@ -32,23 +32,27 @@ Describe 'Runner scripts parameter and command checks'  {
     It 'declares a Config parameter when required' -TestCases $testCases {
         param($File, $Commands)
         $ast = Get-ScriptAst $File.FullName
-        $configParam = if ($ast) {
-            $ast.FindAll({ param($n) $n -is [System.Management.Automation.Language.ParameterAst] -and $n.Name.VariablePath.UserPath -eq 'Config' }, $true)
-        } else { @() }
-        if ($configParam.Count -eq 0) {
+        $paramBlock = $ast.ParamBlock
+        $configParam = $null
+        if ($paramBlock) {
+            $configParam = $paramBlock.Parameters | Where-Object { $_.Name.VariablePath.UserPath -eq 'Config' }
+        }
+        
+        if (-not $configParam) {
             Write-Host "No Config parameter found in $($File.FullName)"
         }
-        $configParam.Count | Should -BeGreaterThan 0
+        $configParam | Should -Not -BeNullOrEmpty
     }
 
     It 'contains mandatory command invocations' -TestCases $testCases {
         param($File, $Commands)
         $ast = Get-ScriptAst $File.FullName
-        $commands = if ($ast) { $ast.FindAll({ param($n) $n -is [System.Management.Automation.Language.CommandAst] }, $true) } else { @() }
-        foreach ($cmd in $Commands) {
-            $found = $commands | Where-Object { $_.GetCommandName() -eq $cmd }
+        $scriptCommands = if ($ast) { $ast.FindAll({ param($n) $n -is [System.Management.Automation.Language.CommandAst] }, $true) } else { @() }
+        
+        foreach ($cmdName in $Commands) {
+            $found = $scriptCommands | Where-Object { $_.GetCommandName() -eq $cmdName }
             if (-not $found) {
-                Write-Host "Command '$cmd' not found in $($File.FullName)"
+                Write-Host "Command '$cmdName' not found in $($File.FullName)"
             }
             ($found | Measure-Object).Count | Should -BeGreaterThan 0
         }
@@ -72,21 +76,43 @@ Describe 'Runner scripts parameter and command checks'  {
             $ast.FindAll({ param($n) $n -is [System.Management.Automation.Language.CommandAst] }, $true)
         } else { @() }
 
-        $found = $commands | Where-Object {
+        $foundImport = $commands | Where-Object {
             $_.GetCommandName() -eq 'Import-Module' -and
-            $_.CommandElements.Count -ge 2 -and
-            (
-                $_.CommandElements[1] -is [System.Management.Automation.Language.StringConstantExpressionAst] -or
-                $_.CommandElements[1] -is [System.Management.Automation.Language.ExpandableStringExpressionAst]
-            ) -and
-            ([System.IO.Path]::GetFileName($_.CommandElements[1].Value) -in @('LabRunner.psm1', 'LabRunner.psd1'))
+            $_.CommandElements.Count -ge 2
+        } | ForEach-Object {
+            $modulePathElement = $_.CommandElements[1]
+            $forceSwitch = $_.CommandElements | Where-Object { $_ -is [System.Management.Automation.Language.CommandParameterAst] -and $_.ParameterName -eq 'Force'}
+
+            $modulePathValue = $null
+            if ($modulePathElement -is [System.Management.Automation.Language.StringConstantExpressionAst]) {
+                $modulePathValue = $modulePathElement.Value
+            } elseif ($modulePathElement -is [System.Management.Automation.Language.ExpandableStringExpressionAst]) {
+                if ($modulePathElement.Value -match '\\$PSScriptRoot') {
+                    $scriptDirectory = Split-Path $File.FullName
+                    try {
+                        $resolvedPath = $ExecutionContext.InvokeCommand.ExpandString($modulePathElement.Value.Replace('$PSScriptRoot', "'$scriptDirectory'"))
+                        $modulePathValue = $resolvedPath
+                    } catch {
+                        $modulePathValue = $modulePathElement.Value 
+                    }
+                } else {
+                    $modulePathValue = $modulePathElement.Value
+                }
+            }
+            
+            if ($null -ne $modulePathValue -and 
+                ([System.IO.Path]::GetFileName($modulePathValue) -in @('LabRunner.psm1', 'LabRunner.psd1')) -and
+                $forceSwitch) {
+                return $_ 
+            }
+            return $null 
+        } | Where-Object { $null -ne $_ }
+
+        if (-not $foundImport) {
+            Write-Host "LabRunner module not imported correctly (expected specific path and -Force) in $($File.FullName)"
         }
 
-        if (-not $found) {
-            Write-Host "LabRunner module not imported in $($File.FullName)"
-        }
-
-        ($found | Measure-Object).Count | Should -BeGreaterThan 0
+        ($foundImport | Measure-Object).Count | Should -BeGreaterThan 0
     }
 
     It 'resolves PSScriptRoot when run with pwsh -File' {
@@ -94,17 +120,24 @@ Describe 'Runner scripts parameter and command checks'  {
         New-Item -ItemType Directory -Path $tempDir | Out-Null
         try {
             $dummy = Join-Path $tempDir 'dummy.ps1'
-            @"
+            # Ensure the here-string content is valid PowerShell
+            $scriptContent = @"
 Param([pscustomobject]`$Config)
-$env:LAB_CONSOLE_LEVEL = '0'
-Import-Module LabRunner
+`$env:LAB_CONSOLE_LEVEL = '0';
+Import-Module LabRunner;
 Invoke-LabStep -Config `$Config -Body { Write-Output `$PSScriptRoot }
-"@ | Set-Content -Path $dummy
+"@
+            $scriptContent | Set-Content -Path $dummy -Encoding UTF8NoBOM # Specify encoding
 
             $pwsh = (Get-Command pwsh).Source
             $result = & $pwsh -NoLogo -NoProfile -File $dummy -Config @{}
-            $expected = Split-Path $dummy -Parent
-            $result.Trim() | Should -Be $expected
+            $expected = Split-Path $dummy -Parent # PSScriptRoot should be the directory of the script
+            
+            # Normalize line endings and trim whitespace for comparison
+            $normalizedResult = ($result | Out-String).Trim() -replace "\\r\\n", "\\n"
+            $normalizedExpected = $expected.Trim() -replace "\\r\\n", "\\n"
+
+            $normalizedResult | Should -Be $normalizedExpected
         }
         finally {
             Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue

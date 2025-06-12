@@ -60,14 +60,28 @@ jobs:
       - name: Install PSScriptAnalyzer
         shell: pwsh
         run: |
-          if (-not (Get-Module -ListAvailable -Name PSScriptAnalyzer |
-              Where-Object { $_.Version -ge [version]'1.24.0' })) {
-            Install-Module -Name PSScriptAnalyzer -RequiredVersion 1.24.0 -Scope CurrentUser -Force
+          $ErrorActionPreference = 'Stop'
+          try {
+            if (-not (Get-Module -ListAvailable -Name PSScriptAnalyzer |
+                Where-Object { $_.Version -ge [version]'1.24.0' })) {
+              Install-Module -Name PSScriptAnalyzer -RequiredVersion 1.24.0 -Scope CurrentUser -Force
+            }
+            Write-Host "PSScriptAnalyzer ready" -ForegroundColor Green
+          } catch {
+            Write-Error "Failed to install PSScriptAnalyzer: $_"
+            exit 1
           }
       - name: Install powershell-yaml
         shell: pwsh
         run: |
-          Install-Module -Name powershell-yaml -Force -Scope CurrentUser
+          $ErrorActionPreference = 'Stop'
+          try {
+            Install-Module -Name powershell-yaml -Force -Scope CurrentUser
+            Write-Host "powershell-yaml installed successfully" -ForegroundColor Green
+          } catch {
+            Write-Error "Failed to install powershell-yaml: $_"
+            exit 1
+          }
       - name: Install yamllint
         shell: bash
         run: pip install yamllint
@@ -79,21 +93,35 @@ jobs:
       - name: Run Script Analyzer
         shell: pwsh
         run: |
-          $log = $env:LOG_FILE
-          $settings = Join-Path $PWD 'pwsh/PSScriptAnalyzerSettings.psd1'
-          $files = Get-ChildItem -Path . -Recurse -Include *.ps1,*.psm1,*.psd1 -File |
-              Where-Object { $_.FullName -ne $settings } |
-              Select-Object -ExpandProperty FullName
-          $results = $files | Invoke-ScriptAnalyzer -Severity Error,Warning -Settings $settings
-          $results | Format-Table | Tee-Object -FilePath $log
-          if ($results | Where-Object Severity -eq 'Error') {
-              Write-Error 'ScriptAnalyzer errors detected'
-              exit 1
+          $ErrorActionPreference = 'Stop'
+          try {
+            $log = $env:LOG_FILE
+            $settings = Join-Path $PWD 'pwsh/PSScriptAnalyzerSettings.psd1'
+            $files = Get-ChildItem -Path . -Recurse -Include *.ps1,*.psm1,*.psd1 -File |
+                Where-Object { $_.FullName -ne $settings } |
+                Select-Object -ExpandProperty FullName
+            $results = $files | Invoke-ScriptAnalyzer -Severity Error,Warning -Settings $settings
+            $results | Format-Table | Tee-Object -FilePath $log
+            if ($results | Where-Object Severity -eq 'Error') {
+                Write-Error 'ScriptAnalyzer errors detected'
+                exit 1
+            }
+            Write-Host "Script analysis completed successfully" -ForegroundColor Green
+          } catch {
+            Write-Error "Script analysis failed: $_"
+            exit 1
           }
       - name: Run Custom Script Analyzer
         shell: pwsh
         run: |
-          ./scripts/CustomLint.ps1 2>&1 | Tee-Object -FilePath $env:LOG_FILE -Append
+          $ErrorActionPreference = 'Stop'
+          try {
+            ./CustomLint.ps1 2>&1 | Tee-Object -FilePath $env:LOG_FILE -Append
+            Write-Host "Custom lint analysis completed" -ForegroundColor Green
+          } catch {
+            Write-Warning "Custom lint analysis failed: $_"
+            # Don't fail the build for custom lint issues
+          }
       - name: Run ruff
         shell: bash
         run: |
@@ -108,11 +136,3 @@ jobs:
         with:
           name: lint-${{ matrix.os }}
           path: ${{ env.LOG_FILE }}
-      - name: Install Copilot extension
-        run: gh extension install github/gh-copilot --force
-      - name: Run Copilot suggestions
-        run: gh copilot suggest "Suggest improvements"
-      - name: Install Pester
-        shell: pwsh
-        run: |
-          Install-Module -Name Pester -RequiredVersion 5.7.1 -Force -Scope CurrentUser

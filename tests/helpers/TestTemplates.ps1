@@ -50,7 +50,9 @@ function New-InstallerScriptTest {
         'Get-Command' = { $null }
         'Invoke-LabDownload' = { if ($Action) { & $Action 'test-installer.exe' } }
         $InstallerCommand = {}
-    } + $AdditionalMocks
+    }
+    # Give precedence to AdditionalMocks
+    $AdditionalMocks.GetEnumerator() | ForEach-Object { $enabledMocks[$_.Name] = $_.Value }
     
     $scenarios += New-TestScenario -Name 'Installs when enabled' -Description "installs when $EnabledProperty is true" -Config $finalEnabledConfig -Mocks $enabledMocks -ExpectedInvocations @{ 'Invoke-LabDownload' = 1; $InstallerCommand = 1 } -RequiredPlatforms $RequiredPlatforms -ExcludedPlatforms $ExcludedPlatforms
     
@@ -58,7 +60,9 @@ function New-InstallerScriptTest {
     $disabledMocks = @{
         'Invoke-LabDownload' = {}
         $InstallerCommand = {}
-    } + $AdditionalMocks
+    }
+    # Give precedence to AdditionalMocks
+    $AdditionalMocks.GetEnumerator() | ForEach-Object { $disabledMocks[$_.Name] = $_.Value }
     
     $scenarios += New-TestScenario -Name 'Skips when disabled' -Description "skips when $EnabledProperty is false" -Config $finalDisabledConfig -Mocks $disabledMocks -ExpectedInvocations @{ 'Invoke-LabDownload' = 0; $InstallerCommand = 0 } -RequiredPlatforms $RequiredPlatforms -ExcludedPlatforms $ExcludedPlatforms
     
@@ -67,7 +71,9 @@ function New-InstallerScriptTest {
         'Get-Command' = { [PSCustomObject]@{ Name = 'test'; Source = '/usr/bin/test' } }
         'Invoke-LabDownload' = {}
         $InstallerCommand = {}
-    } + $AdditionalMocks
+    }
+    # Give precedence to AdditionalMocks
+    $AdditionalMocks.GetEnumerator() | ForEach-Object { $installedMocks[$_.Name] = $_.Value }
     
     $scenarios += New-TestScenario -Name 'Skips when already installed' -Description "does nothing when already installed" -Config $finalEnabledConfig -Mocks $installedMocks -ExpectedInvocations @{ 'Invoke-LabDownload' = 0; $InstallerCommand = 0 } -RequiredPlatforms $RequiredPlatforms -ExcludedPlatforms $ExcludedPlatforms
     
@@ -342,12 +348,17 @@ function New-IntegrationTest {
     }
 }
 
-# Export template functions
-Export-ModuleMember -Function @(
-    'New-InstallerScriptTest',
-    'New-FeatureScriptTest', 
-    'New-ServiceScriptTest',
-    'New-ConfigurationScriptTest',
-    'New-CrossPlatformScriptTest',
-    'New-IntegrationTest'
-)
+# Only export functions if running as a module
+if ($MyInvocation.MyCommand.CommandType -eq 'ExternalScript' -or ($PSScriptRoot -like '*/tests/*')) {
+    # Running as script or in test context - functions are already available
+} else {
+    # Running as module - export functions
+    Export-ModuleMember -Function @(
+        'New-InstallerScriptTest',
+        'New-FeatureScriptTest', 
+        'New-ServiceScriptTest',
+        'New-ConfigurationScriptTest',
+        'New-CrossPlatformScriptTest',
+        'New-IntegrationTest'
+    )
+}

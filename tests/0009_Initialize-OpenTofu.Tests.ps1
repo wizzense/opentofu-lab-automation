@@ -4,10 +4,12 @@
 
 BeforeAll {
     # Load the script under test
-    $scriptPath = Join-Path $PSScriptRoot '..' '/workspaces/opentofu-lab-automation/pwsh/runner_scripts/0009_Initialize-OpenTofu.ps1'
-    if (Test-Path $scriptPath) {
-        . $scriptPath
-    }
+    # Get the script path using the LabRunner function  
+        $script:ScriptPath = Get-RunnerScriptPath '0009_Initialize-OpenTofu.ps1'
+        if (-not $script:ScriptPath -or -not (Test-Path $script:ScriptPath)) {
+            throw "Script under test not found: 0009_Initialize-OpenTofu.ps1 (resolved path: $script:ScriptPath)"
+        }
+    # Script will be tested via pwsh -File execution
     
     # Set up test environment
     $TestConfig = Get-TestConfiguration
@@ -21,19 +23,28 @@ Describe '0009_Initialize-OpenTofu Tests' -Tag 'Unknown' {
     
     Context 'Script Structure Validation' {
         It 'should have valid PowerShell syntax' -Skip:($SkipNonWindows) {
-            $scriptPath | Should -Exist
-            { . $scriptPath } | Should -Not -Throw
+            $script:ScriptPath | Should -Exist
+            { . $script:ScriptPath } | Should -Not -Throw
         }
         
         It 'should follow naming conventions' -Skip:($SkipNonWindows) {
-            $scriptName = [System.IO.Path]::GetFileName($scriptPath)
+            $scriptName = [System.IO.Path]::GetFileName($script:ScriptPath)
             $scriptName | Should -Match '^[0-9]{4}_[A-Z][a-zA-Z0-9-]+\.ps1$|^[A-Z][a-zA-Z0-9-]+\.ps1$'
         }
     }
     
     Context 'Parameter Validation' {
         It 'should accept Config parameter' -Skip:($SkipNonWindows) {
-            { & $scriptPath -Config 'TestValue' -WhatIf } | Should -Not -Throw
+            $config = [pscustomobject]@{ TestProperty = 'TestValue' }
+            $configJson = $config | ConvertTo-Json -Depth 5
+            $tempConfig = Join-Path ([System.IO.Path]::GetTempPath()) "$([System.Guid]::NewGuid()).json"
+            $configJson | Set-Content -Path $tempConfig
+            try {
+                $pwsh = (Get-Command pwsh).Source
+                { & $pwsh -NoLogo -NoProfile -File $script:ScriptPath -Config $tempConfig -WhatIf } | Should -Not -Throw
+            } finally {
+                Remove-Item $tempConfig -Force -ErrorAction SilentlyContinue
+            }
         }
     }
 }
@@ -43,3 +54,5 @@ AfterAll {
     # Restore any modified system state
     # Remove test artifacts
 }
+
+

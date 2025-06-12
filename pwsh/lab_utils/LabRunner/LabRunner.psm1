@@ -3,6 +3,7 @@
 . $PSScriptRoot/../Get-Platform.ps1
 . $PSScriptRoot/../Network.ps1
 . $PSScriptRoot/InvokeOpenTofuInstaller.ps1
+. $PSScriptRoot/../Format-Config.ps1
 
 function Get-CrossPlatformTempPath {
     <#
