@@ -541,12 +541,12 @@ Write-Host "[DEBUG] ConfigFile: $ConfigFile" -ForegroundColor Cyan
 Write-Host "[DEBUG] repoPath: $repoPath" -ForegroundColor Cyan
 Write-Host "[DEBUG] runnerScriptName: $runnerScriptName" -ForegroundColor Cyan
 Write-Host "[DEBUG] runnerScriptPath: $runnerScriptPath" -ForegroundColor Cyan
-Write-Host "[DEBUG] Directory contents of repoPath ($repoPath):" -ForegroundColor Cyan
+Write-Host "[DEBUG] Directory contents of repoPath (${repoPath}):" -ForegroundColor Cyan
 Get-ChildItem -Path $repoPath -Recurse | Select-Object FullName
 
 if (!(Test-Path $runnerScriptPath)) {
     Write-Error "ERROR: Could not find runner script at $runnerScriptPath. Exiting."
-    Write-Host "Directory listing for $repoPath:" -ForegroundColor Yellow
+    Write-Host "Directory listing for ${repoPath}:" -ForegroundColor Yellow
     Get-ChildItem -Path $repoPath -Recurse | Select-Object FullName
     Write-Host @"
 Possible causes:
@@ -558,7 +558,7 @@ Possible causes:
 Next steps:
 - Check the output above for missing files.
 - Verify your config.RepoUrl is correct and points to a valid repository.
-- Try deleting $repoPath and rerunning this script.
+- Try deleting ${repoPath} and rerunning this script.
 "@ -ForegroundColor Yellow
     exit 1
 }

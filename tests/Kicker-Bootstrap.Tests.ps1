@@ -103,3 +103,34 @@ Describe 'kicker-bootstrap runner script path resolution' {
         $runnerScriptPath | Should -Exist -Because "Runner script should exist at resolved path"
     }
 }
+
+Describe 'kicker-bootstrap syntax validation' {
+    It 'does not have problematic variable interpolation patterns' {
+        $scriptPath = Join-Path $PSScriptRoot '..' 'pwsh' 'kicker-bootstrap.ps1'
+        $content = Get-Content $scriptPath -Raw
+        
+        # Check that we don't have unescaped variable patterns like "$repoPath:" in strings
+        $content | Should -Not -Match '"\s*[^"]*\$\w+:[^"]*"' -Because "Variables followed by colon in strings should be escaped"
+        
+        # Verify we have proper escaping where needed
+        $content | Should -Match '\$\{repoPath\}' -Because "Should use proper variable escaping syntax"
+    }
+}
+
+Describe 'kicker-bootstrap variable interpolation regression' {
+    It 'does not use $variable: in double-quoted strings except for valid scopes' {
+        $scriptPath = Join-Path $PSScriptRoot '..' 'pwsh' 'kicker-bootstrap.ps1'
+        $content = Get-Content $scriptPath -Raw
+        # Find $word: in double-quoted strings, but ignore $env:, $script:, $global:, $private:, $using:, $local:, $workflow:
+        $pattern = '"[^"]*\$([a-zA-Z_][a-zA-Z0-9_]*):[^"]*"'
+        $validScopes = @('env', 'script', 'global', 'private', 'using', 'local', 'workflow')
+        $matches = [regex]::Matches($content, $pattern)
+        foreach ($match in $matches) {
+            $var = $match.Groups[1].Value
+            if ($validScopes -notcontains $var) {
+                throw "Found invalid variable interpolation: `$${var}: in string: $($match.Value)"
+            }
+        }
+        $true | Should -BeTrue
+    }
+}
