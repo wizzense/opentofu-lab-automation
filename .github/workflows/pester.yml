@@ -85,30 +85,51 @@ jobs:
         id: pester
         shell: pwsh
         run: |
+          # Set error handling
+          $ErrorActionPreference = 'Stop'
+          
           Write-Host "Running Pester tests for ${{ runner.os }}" -ForegroundColor Yellow
           
-          # Load the Pester configuration from the project file
-          $cfg = New-PesterConfiguration -Hashtable (Import-PowerShellDataFile 'tests/PesterConfiguration.psd1')
-
-          # Extend code coverage paths to include tools/iso if it exists
-          $coveragePaths = @($cfg.CodeCoverage.Path.Value)
-          if (Test-Path 'tools/iso') {
-            $coveragePaths += 'tools/iso'
-          }
-          $cfg.CodeCoverage.Path = [Pester.StringArrayOption]::new($coveragePaths)
-
-          # Set output paths relative to workspace root
-          $repoRoot = $env:GITHUB_WORKSPACE
-          $cfg.TestResult.OutputPath   = Join-Path $repoRoot 'coverage/testResults.xml'
-          $cfg.CodeCoverage.OutputPath = Join-Path $repoRoot 'coverage/coverage.xml'
-          $logPath = Join-Path $repoRoot 'coverage/pester.log'
-
-          # Run Pester tests
           try {
-            Invoke-Pester -Configuration $cfg -ErrorAction Stop 2>&1 | Tee-Object -FilePath $logPath
-            $exitCode = $LASTEXITCODE
+            # Load the Pester configuration from the project file
+            $cfg = New-PesterConfiguration -Hashtable (Import-PowerShellDataFile 'tests/PesterConfiguration.psd1')
+
+            # Configure test discovery and execution
+            $cfg.Run.PassThru = $true
+            $cfg.Output.Verbosity = 'Normal'
+
+            # Extend code coverage paths to include tools/iso if it exists
+            $coveragePaths = @($cfg.CodeCoverage.Path.Value)
+            if (Test-Path 'tools/iso') {
+              $coveragePaths += 'tools/iso'
+            }
+            $cfg.CodeCoverage.Path = [Pester.StringArrayOption]::new($coveragePaths)
+
+            # Set output paths relative to workspace root
+            $repoRoot = $env:GITHUB_WORKSPACE
+            $cfg.TestResult.OutputPath   = Join-Path $repoRoot 'coverage/testResults.xml'
+            $cfg.CodeCoverage.OutputPath = Join-Path $repoRoot 'coverage/coverage.xml'
+            $logPath = Join-Path $repoRoot 'coverage/pester.log'
+
+            # Run Pester tests
+            Write-Host "Starting test execution..." -ForegroundColor Green
+            $result = Invoke-Pester -Configuration $cfg 2>&1 | Tee-Object -FilePath $logPath
+            
+            # Check results
+            if ($result.FailedCount -gt 0) {
+              Write-Error "Tests failed: $($result.FailedCount) failed out of $($result.TotalCount) total tests"
+              exit 1
+            }
+            
+            Write-Host "All tests passed: $($result.PassedCount)/$($result.TotalCount)" -ForegroundColor Green
+            $exitCode = 0
+            
           } catch {
             Write-Error "Pester execution failed: $_"
+            Write-Host "Error details: $($_.Exception.Message)" -ForegroundColor Red
+            if ($_.Exception.InnerException) {
+              Write-Host "Inner exception: $($_.Exception.InnerException.Message)" -ForegroundColor Red
+            }
             $exitCode = 1
           }
 

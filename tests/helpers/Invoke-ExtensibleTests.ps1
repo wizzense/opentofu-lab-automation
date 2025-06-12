@@ -116,20 +116,40 @@ function Test-PlatformCompatibility {
 function Invoke-TestBatch {
     param(
         [object[]]$Tests,
-        [hashtable]$Configuration,
+        [object]$Configuration,
         [switch]$Parallel
     )
     
     if ($Parallel -and $Tests.Count -gt 1) {
         Write-Host "Running $($Tests.Count) tests in parallel..." -ForegroundColor Yellow
         
+        # Convert PesterConfiguration to hashtable for serialization
+        $configHash = @{
+            Run = @{ PassThru = $Configuration.Run.PassThru.Value }
+            Output = @{ Verbosity = $Configuration.Output.Verbosity.Value }
+            TestResult = @{ 
+                Enabled = $Configuration.TestResult.Enabled.Value
+                OutputPath = $Configuration.TestResult.OutputPath.Value
+            }
+        }
+        
+        if ($Configuration.CodeCoverage.Enabled.Value) {
+            $configHash.CodeCoverage = @{
+                Enabled = $true
+                Path = $Configuration.CodeCoverage.Path.Value
+                OutputPath = $Configuration.CodeCoverage.OutputPath.Value
+            }
+        }
+        
         $jobs = @()
         foreach ($test in $Tests) {
             $job = Start-Job -ScriptBlock {
-                param($TestPath, $Config)
+                param($TestPath, $ConfigHash)
                 
                 try {
-                    $result = Invoke-Pester -Path $TestPath -Configuration $Config -PassThru
+                    # Recreate PesterConfiguration from hashtable
+                    $config = New-PesterConfiguration -Hashtable $ConfigHash
+                    $result = Invoke-Pester -Path $TestPath -Configuration $config -PassThru
                     return @{
                         Success = $true
                         Result = $result
@@ -142,7 +162,7 @@ function Invoke-TestBatch {
                         Path = $TestPath
                     }
                 }
-            } -ArgumentList $test.Path, $Configuration
+            } -ArgumentList $test.Path, $configHash
             
             $jobs += @{
                 Job = $job
