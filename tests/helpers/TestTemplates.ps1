@@ -340,8 +340,6 @@ function New-IntegrationTest {
     }
 }
 
-# Ensure functions intended for export are explicitly exported if this were a module.
-# For .ps1 files, functions are available in the scope that sources them.
-# If this file (TestTemplates.ps1) is meant to be a module, it should be .psm1 and use Export-ModuleMember.
-# Example (if it were a .psm1 file):
+# Do NOT include Export-ModuleMember in this .ps1 file.
+# If you convert this to a .psm1 module, then add:
 # Export-ModuleMember -Function New-InstallerScriptTest, New-FeatureScriptTest, New-ServiceScriptTest, New-ConfigurationScriptTest, New-CrossPlatformScriptTest, New-IntegrationTest

@@ -92,7 +92,7 @@ jobs:
                 }
                 
               } catch {
-                Write-Error "Failed to generate test for $scriptPath`: $_"
+                Write-Error "Failed to generate test for $scriptPath: $_"
               }
             } else {
               Write-Warning "Script not found: $scriptPath"

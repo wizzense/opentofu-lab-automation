@@ -17,13 +17,13 @@ jobs:
       - name: Validate workflow files
         run: |
           echo "Validating GitHub Actions workflow syntax..."
-          python3 scripts/validate-workflows.py
           # Check if workflow directory exists
           if [ ! -d ".github/workflows" ]; then
             echo "✗ .github/workflows directory not found"
             exit 1
           fi
           
+          python3 scripts/validate-workflows.py
           # Count workflow files
           workflow_count=$(find .github/workflows -name "*.yml" -type f | wc -l)
           echo "Found $workflow_count workflow files to validate"

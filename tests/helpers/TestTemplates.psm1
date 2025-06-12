@@ -1,0 +1,3 @@
+# ...existing code from TestTemplates.ps1...
+# Export only the main template functions
+Export-ModuleMember -Function New-InstallerScriptTest, New-FeatureScriptTest, New-ServiceScriptTest, New-ConfigurationScriptTest, New-CrossPlatformScriptTest, New-IntegrationTest

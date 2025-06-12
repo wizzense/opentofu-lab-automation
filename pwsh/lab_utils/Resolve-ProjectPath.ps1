@@ -22,16 +22,20 @@ function Resolve-ProjectPath {
             $pathFromIndex = $index[$Name]
             # Defensive trim for potential CR from YAML value
             $trimmedPath = if ($pathFromIndex -is [string]) { $pathFromIndex.TrimEnd("`r") } else { $pathFromIndex }
-            $normalizedPath = Normalize-RelativePath $trimmedPath
-            return (Join-Path $Root $normalizedPath)
+            if (-not [string]::IsNullOrEmpty($trimmedPath)) {
+                $normalizedPath = Normalize-RelativePath $trimmedPath
+                return (Join-Path $Root $normalizedPath)
+            }
         }
         foreach ($key in $index.Keys) {
             if ((Split-Path $key -Leaf) -eq $Name -and $index[$key]) {
                 $pathFromIndex = $index[$key]
                 # Defensive trim for potential CR from YAML value
                 $trimmedPath = if ($pathFromIndex -is [string]) { $pathFromIndex.TrimEnd("`r") } else { $pathFromIndex }
-                $normalizedPath = Normalize-RelativePath $trimmedPath
-                return (Join-Path $Root $normalizedPath)
+                if (-not [string]::IsNullOrEmpty($trimmedPath)) {
+                    $normalizedPath = Normalize-RelativePath $trimmedPath
+                    return (Join-Path $Root $normalizedPath)
+                }
             }
         }
     }

@@ -9,6 +9,7 @@ Compare this with the original Install-Go.Tests.ps1 to see the improvements.
 
 . (Join-Path $PSScriptRoot '..' 'TestDriveCleanup.ps1')
 . (Join-Path $PSScriptRoot '..' 'helpers' 'TestHelpers.ps1')
+
 . (Join-Path $PSScriptRoot '..' 'helpers' 'TestTemplates.ps1')
 
 # Simple, declarative test using the framework
