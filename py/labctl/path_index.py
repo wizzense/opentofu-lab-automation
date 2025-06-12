@@ -27,11 +27,13 @@ def load_index() -> dict:
     """Load path-index.yaml from repository root, if available."""
     global _INDEX
     if not _INDEX:
+
         index_path = repo_root() / 'path-index.yaml'
         if not index_path.exists():
             alt = repo_root() / 'configs' / 'project' / 'path-index.yaml'
             if alt.exists():
                 index_path = alt
+
         if index_path.exists() and yaml is not None:
             with index_path.open('r') as f:
                 data = yaml.safe_load(f) or {}
