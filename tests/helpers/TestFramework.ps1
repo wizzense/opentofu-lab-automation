@@ -412,7 +412,8 @@ function Test-RunnerScript {
                 
                 It 'has required Config parameter' {
                     $content = Get-Content $script:ScriptPath -Raw
-                    $content | Should -Match 'Param\s*\(\s*.*\$Config'
+                    # Look for Param declaration with Config parameter
+                    $content | Should -Match 'Param\s*\([^)]*Config[^)]*\)'
                 }
                 
                 It 'imports LabRunner module' {
