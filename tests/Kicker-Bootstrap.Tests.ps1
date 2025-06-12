@@ -85,3 +85,21 @@ Describe 'kicker-bootstrap utilities'  {
         $content | Should -Match 'raw\.githubusercontent\.com'
     }
 }
+
+Describe 'kicker-bootstrap runner script path resolution' {
+    It 'resolves and finds the runner script as the bootstrap script would' {
+        $configPath = Join-Path $PSScriptRoot '..' 'configs' 'config_files' 'default-config.json'
+        $repoRoot = Join-Path $PSScriptRoot '..'
+        $config = Get-Content $configPath -Raw | ConvertFrom-Json
+        $runnerScriptName = $config.RunnerScriptName
+        if ([System.IO.Path]::IsPathRooted($runnerScriptName)) {
+            $runnerScriptPath = $runnerScriptName
+        } else {
+            $runnerScriptPath = Join-Path $repoRoot $runnerScriptName
+        }
+        Write-Host "[TEST DEBUG] repoRoot: $repoRoot"
+        Write-Host "[TEST DEBUG] runnerScriptName: $runnerScriptName"
+        Write-Host "[TEST DEBUG] runnerScriptPath: $runnerScriptPath"
+        $runnerScriptPath | Should -Exist -Because "Runner script should exist at resolved path"
+    }
+}

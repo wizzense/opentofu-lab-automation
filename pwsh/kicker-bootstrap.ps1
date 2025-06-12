@@ -529,16 +529,28 @@ if (-not $runnerScriptName) {
 }
 
 Set-Location $repoPath
-if (!(Test-Path $runnerScriptName)) {
-    Write-Error "ERROR: Could not find $runnerScriptName in $repoPath. Exiting."
-    # Use ${repoPath} to avoid parsing error when followed by a colon
-    Write-Host "Directory listing for ${repoPath}:" -ForegroundColor Yellow
+
+# Robust path resolution for runner script
+if ([System.IO.Path]::IsPathRooted($runnerScriptName)) {
+    $runnerScriptPath = $runnerScriptName
+} else {
+    $runnerScriptPath = Join-Path $repoPath $runnerScriptName
+}
+
+Write-Host "[DEBUG] repoPath: $repoPath" -ForegroundColor Cyan
+Write-Host "[DEBUG] runnerScriptName: $runnerScriptName" -ForegroundColor Cyan
+Write-Host "[DEBUG] runnerScriptPath: $runnerScriptPath" -ForegroundColor Cyan
+
+if (!(Test-Path $runnerScriptPath)) {
+    Write-Error "ERROR: Could not find runner script at $runnerScriptPath. Exiting."
+    Write-Host "Directory listing for $repoPath:" -ForegroundColor Yellow
     Get-ChildItem -Path $repoPath -Recurse | Select-Object FullName
     Write-Host @"
 Possible causes:
 - The repository clone failed or is incomplete.
-- The repository does not contain $runnerScriptName at its root.
+- The repository does not contain $runnerScriptName at its root or subdirectory.
 - The wrong branch or an empty repo was cloned.
+- Config file RunnerScriptName is incorrect: $runnerScriptName
 
 Next steps:
 - Check the output above for missing files.
@@ -548,9 +560,9 @@ Next steps:
     exit 1
 }
 
-Write-CustomLog "Running $runnerScriptName from $repoPath ..."
+Write-CustomLog "Running $runnerScriptPath ..."
 
-$args = @('-NoLogo','-NoProfile','-File',".\$runnerScriptName",'-ConfigFile',$ConfigFile,'-Verbosity',$Verbosity)
+$args = @('-NoLogo','-NoProfile','-File', $runnerScriptPath, '-ConfigFile', $ConfigFile, '-Verbosity', $Verbosity)
 $proc = Start-Process -FilePath $pwshPath -ArgumentList $args -Wait -NoNewWindow -PassThru
 $exitCode = $proc.ExitCode
 
