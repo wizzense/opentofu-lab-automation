@@ -34,8 +34,10 @@ function Resolve-IndexPath {
 
 # apply default ConfigFile if not provided
 if (-not $PSBoundParameters.ContainsKey('ConfigFile')) {
-    $ConfigFile = Resolve-IndexPath 'config_files/default-config.json'
-    if (-not $ConfigFile) { $ConfigFile = Join-Path $repoRoot 'config_files/default-config.json' }
+    $ConfigFile = Resolve-IndexPath 'configs/config_files/default-config.json'
+    if (-not $ConfigFile) {
+        $ConfigFile = Join-Path $repoRoot '..' 'configs' 'config_files' 'default-config.json'
+    }
 }
 
 
@@ -79,8 +81,10 @@ $labUtilsDir = Resolve-IndexPath 'lab_utils'
 if (-not $labUtilsDir) { $labUtilsDir = Join-Path $repoRoot 'lab_utils' }
 $runnerScriptsDir = Resolve-IndexPath 'runner_scripts'
 if (-not $runnerScriptsDir) { $runnerScriptsDir = Join-Path $repoRoot 'runner_scripts' }
-$configFilesDir = Resolve-IndexPath 'config_files'
-if (-not $configFilesDir) { $configFilesDir = Join-Path $repoRoot 'config_files' }
+$configFilesDir = Resolve-IndexPath 'configs/config_files'
+if (-not $configFilesDir) {
+    $configFilesDir = Join-Path $repoRoot '..' 'configs' 'config_files'
+}
 
 if (-not (Get-Command Write-CustomLog -ErrorAction SilentlyContinue)) {
     . (Join-Path $labUtilsDir (Join-Path 'LabRunner' 'Logger.ps1'))
