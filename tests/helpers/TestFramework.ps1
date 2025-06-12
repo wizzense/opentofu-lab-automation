@@ -388,7 +388,7 @@ function Test-RunnerScript {
         
         [TestScenario[]]$Scenarios = @(),
         
-        [switch]$IncludeStandardTests,
+        [switch]$IncludeStandardTests = $true,
         
         [switch]$EnableVerboseLogging
     )
@@ -397,12 +397,17 @@ function Test-RunnerScript {
     if (-not $scriptPath -or -not (Test-Path $scriptPath)) {
         throw "Script under test not found: $ScriptName (resolved path: $scriptPath)"
     }
-    
+
     Describe "Runner Script: $ScriptName" {
         BeforeAll {
             $script:ScriptPath = $scriptPath # Set the script-scoped variable from the local resolved one
             $script:ScriptName = $ScriptName
-            
+
+            # Validate the script path and log an error if invalid
+            if (-not $script:ScriptPath -or -not (Test-Path $script:ScriptPath)) {
+                throw "Script path is invalid: $script:ScriptPath"
+            }
+
             # Disable interactive prompts for all tests
             Disable-InteractivePrompts
         }
@@ -410,39 +415,39 @@ function Test-RunnerScript {
         if ($IncludeStandardTests) {
             Context 'Standard Validation Tests' {
                 It 'parses without syntax errors' {
-                    # Use the local $scriptPath, captured by the closure
-                    if (-not $scriptPath -or -not (Test-Path $scriptPath)) {
-                        throw "Script path is invalid: $scriptPath"
+                    # Use the script-scoped $script:ScriptPath
+                    if (-not $script:ScriptPath -or -not (Test-Path $script:ScriptPath)) {
+                        throw "Script path is invalid: $script:ScriptPath"
                     }
                     $errors = $null
-                    [System.Management.Automation.Language.Parser]::ParseFile($scriptPath, [ref]$null, [ref]$errors) | Out-Null
+                    [System.Management.Automation.Language.Parser]::ParseFile($script:ScriptPath, [ref]$null, [ref]$errors) | Out-Null
                     ($errors ? $errors.Count : 0) | Should -Be 0
                 }
                 
                 It 'has required Config parameter' {
-                    # Use the local $scriptPath
-                    if (-not $scriptPath -or -not (Test-Path $scriptPath)) {
-                        throw "Script path is invalid: $scriptPath"
+                    # Use the script-scoped $script:ScriptPath
+                    if (-not $script:ScriptPath -or -not (Test-Path $script:ScriptPath)) {
+                        throw "Script path is invalid: $script:ScriptPath"
                     }
-                    $content = Get-Content $scriptPath -Raw
-                    $content | Should -Match 'Param\\s*\\([^)]*Config[^)]*\\)'
+                    $content = Get-Content $script:ScriptPath -Raw
+                    $content | Should -Match 'Param\s*\([^)]*Config[^)]*\)'
                 }
                 
                 It 'imports LabRunner module' {
-                    # Use the local $scriptPath
-                    if (-not $scriptPath -or -not (Test-Path $scriptPath)) {
-                        throw "Script path is invalid: $scriptPath"
+                    # Use the script-scoped $script:ScriptPath
+                    if (-not $script:ScriptPath -or -not (Test-Path $script:ScriptPath)) {
+                        throw "Script path is invalid: $script:ScriptPath"
                     }
-                    $content = Get-Content $scriptPath -Raw
+                    $content = Get-Content $script:ScriptPath -Raw
                     $content | Should -Match 'Import-Module.*LabRunner'
                 }
                 
                 It 'contains Invoke-LabStep call' {
-                    # Use the local $scriptPath
-                    if (-not $scriptPath -or -not (Test-Path $scriptPath)) {
-                        throw "Script path is invalid: $scriptPath"
+                    # Use the script-scoped $script:ScriptPath
+                    if (-not $script:ScriptPath -or -not (Test-Path $script:ScriptPath)) {
+                        throw "Script path is invalid: $script:ScriptPath"
                     }
-                    $content = Get-Content $scriptPath -Raw
+                    $content = Get-Content $script:ScriptPath -Raw
                     $content | Should -Match 'Invoke-LabStep'
                 }
             }

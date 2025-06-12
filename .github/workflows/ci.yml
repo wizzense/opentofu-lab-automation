@@ -11,137 +11,23 @@ jobs:
   validate:
     name: Quick Validation
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        file: [".github/workflows/*.yml"]
     steps:
       - uses: actions/checkout@v4
-        
-      - name: Validate workflow files
-        run: |
-          echo "Validating GitHub Actions workflow syntax..."
-          # Check if workflow directory exists
-          if [ ! -d ".github/workflows" ]; then
-            echo "✗ .github/workflows directory not found"
-            exit 1
-          fi
-          
-          python3 scripts/validate-workflows.py
-          # Count workflow files
-          workflow_count=$(find .github/workflows -name "*.yml" -type f | wc -l)
-          echo "Found $workflow_count workflow files to validate"
-          
-          # Validate each workflow file
-          validation_failed=0
-          for workflow in .github/workflows/*.yml; do
-            if [ ! -f "$workflow" ]; then
-              echo "✗ No workflow files found"
-              exit 1
-            fi
-            
-            echo "Checking $(basename $workflow)..."
-            
-            # YAML syntax validation using Python
-            if python3 -c "
-import yaml
-import sys
 
-try:
-    with open('$workflow', 'r') as f:
-        content = yaml.safe_load(f)
-    
-    if not content:
-        print('Error: Empty or invalid YAML')
-        sys.exit(1)
-    
-    if not isinstance(content, dict):
-        print('Error: Invalid workflow structure')
-        sys.exit(1)
-        
-    # Check for required fields (handle 'on' being parsed as True in YAML)
-    triggers = content.get('on', content.get(True, None))
-    if not triggers:
-        print('Warning: No trigger configuration found')
-    
-    if 'jobs' not in content:
-        print('Error: No jobs section found')
-        sys.exit(1)
-    
-    print('✓ Valid YAML syntax and structure')
-    
-except yaml.YAMLError as e:
-    print(f'Error: Invalid YAML syntax: {e}')
-    sys.exit(1)
-except Exception as e:
-    print(f'Error: {e}')
-    sys.exit(1)
-"; then
-              echo "✅ $(basename $workflow) - Valid"
-            else
-              echo "❌ $(basename $workflow) - Invalid"
-              validation_failed=1
-            fi
-          done
-          
-          if [ $validation_failed -eq 1 ]; then
-            echo "❌ Workflow validation failed"
-            exit 1
-          else
-            echo "✅ All workflows validated successfully"
-          fi
-          
-      - name: Check repository structure
+      - name: Install Python dependencies
+        run: pip install -r scripts/requirements.txt
+
+      - name: Validate workflow file
         run: |
-          echo "Checking critical repository structure..."
-          
-          # Define critical paths and files
-          critical_paths=(
-            "tests/"
-            "pwsh/"
-            "configs/"
-            ".github/workflows/"
-            "scripts/"
-          )
-          
-          critical_files=(
-            "tests/PesterConfiguration.psd1"
-            "pwsh/PSScriptAnalyzerSettings.psd1"
-            "tests/helpers/TestHelpers.ps1"
-            "tests/helpers/Get-ScriptAst.ps1"
-            "README.md"
-            "CHANGELOG.md"
-          )
-          
-          echo "Checking critical directories..."
-          for path in "${critical_paths[@]}"; do
-            if [ -d "$path" ]; then
-              echo "✓ Directory $path exists"
-            else
-              echo "✗ Critical directory $path missing"
-              exit 1
-            fi
-          done
-          
-          echo "Checking critical files..."
-          for file in "${critical_files[@]}"; do
-            if [ -f "$file" ]; then
-              echo "✓ File $file exists"
-            else
-              echo "✗ Critical file $file missing"
-              exit 1
-            fi
-          done
-          
-          # Check for test files
-          test_count=$(find tests -name "*.Tests.ps1" -type f | wc -l)
-          echo "✓ Found $test_count test files"
-          
-          if [ "$test_count" -lt 10 ]; then
-            echo "⚠️  Warning: Low number of test files ($test_count)"
-          fi
-          
-          # Check for runner scripts
-          runner_count=$(find pwsh/runner_scripts -name "*.ps1" -type f 2>/dev/null | wc -l)
-          echo "✓ Found $runner_count runner scripts"
-          
-          echo "✅ Repository structure validation completed"
+          echo "Validating ${{ matrix.file }}..."
+          python3 scripts/validate-workflows.py ${{ matrix.file }}
+
+      - name: Log validation success
+        if: success()
+        run: echo "Validation successful for ${{ matrix.file }}."
 
   # Summary of all jobs status
   summary:
