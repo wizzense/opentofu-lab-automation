@@ -17,42 +17,152 @@ jobs:
       - name: Validate workflow files
         run: |
           echo "Validating GitHub Actions workflow syntax..."
+          
+          # Check if workflow directory exists
+          if [ ! -d ".github/workflows" ]; then
+            echo "✗ .github/workflows directory not found"
+            exit 1
+          fi
+          
+          # Count workflow files
+          workflow_count=$(find .github/workflows -name "*.yml" -type f | wc -l)
+          echo "Found $workflow_count workflow files to validate"
+          
+          # Validate each workflow file
+          validation_failed=0
           for workflow in .github/workflows/*.yml; do
-            echo "Checking $workflow"
-            # Basic YAML syntax validation
-            python3 -c "
-            import yaml
-            import sys
-            try:
-                with open('$workflow', 'r') as f:
-                    yaml.safe_load(f)
-                print('✓ $workflow syntax is valid')
-            except Exception as e:
-                print(f'✗ $workflow has syntax error: {e}')
-                sys.exit(1)
-            "
+            if [ ! -f "$workflow" ]; then
+              echo "✗ No workflow files found"
+              exit 1
+            fi
+            
+            echo "Checking $(basename $workflow)..."
+            
+            # YAML syntax validation using Python
+            if python3 -c "
+import yaml
+import sys
+
+try:
+    with open('$workflow', 'r') as f:
+        content = yaml.safe_load(f)
+    
+    # Basic structure validation
+    if not content:
+        print('Error: Empty or invalid YAML')
+        sys.exit(1)
+    
+    # Check for required fields
+    if 'jobs' not in content and content.get('jobs') is None:
+        print('Warning: No jobs section found')
+    
+    triggers = content.get('on', content.get(True, None))
+    if not triggers:
+        print('Warning: No trigger configuration found')
+    
+    print('✓ Valid YAML syntax and structure')
+    
+except yaml.YAMLError as e:
+    print(f'Error: Invalid YAML syntax: {e}')
+    sys.exit(1)
+except Exception as e:
+    print(f'Error: {e}')
+    sys.exit(1)
+"; then
+              echo "✅ $(basename $workflow) - Valid"
+            else
+              echo "❌ $(basename $workflow) - Invalid"
+              validation_failed=1
+            fi
           done
+          
+          if [ $validation_failed -eq 1 ]; then
+            echo "❌ Workflow validation failed"
+            exit 1
+          else
+            echo "✅ All workflows validated successfully"
+          fi
+    if content is None:
+        print(f'✗ {os.path.basename(workflow_path)}: Empty workflow file')
+        sys.exit(1)
+    
+    if not isinstance(content, dict):
+        print(f'✗ {os.path.basename(workflow_path)}: Invalid workflow structure')
+        sys.exit(1)
+        
+    # Check for required fields
+    if 'jobs' not in content and True not in content:  # 'on' might be parsed as True
+        print(f'✗ {os.path.basename(workflow_path)}: Missing required fields')
+        sys.exit(1)
+    
+    print(f'✓ {os.path.basename(workflow_path)}: Valid syntax and structure')
+    
+except yaml.YAMLError as e:
+    print(f'✗ {os.path.basename(workflow_path)}: YAML syntax error - {e}')
+    sys.exit(1)
+except Exception as e:
+    print(f'✗ {os.path.basename(workflow_path)}: Validation error - {e}')
+    sys.exit(1)
+"
+          done
+          
+          echo "✅ All workflow files validated successfully"
           
       - name: Check repository structure
         run: |
-          echo "Checking critical paths..."
+          echo "Checking critical repository structure..."
+          
+          # Define critical paths and files
           critical_paths=(
             "tests/"
             "pwsh/"
             "configs/"
             ".github/workflows/"
-            "tests/PesterConfiguration.psd1"
-            "pwsh/PSScriptAnalyzerSettings.psd1"
+            "scripts/"
           )
           
+          critical_files=(
+            "tests/PesterConfiguration.psd1"
+            "pwsh/PSScriptAnalyzerSettings.psd1"
+            "tests/helpers/TestHelpers.ps1"
+            "tests/helpers/Get-ScriptAst.ps1"
+            "README.md"
+            "CHANGELOG.md"
+          )
+          
+          echo "Checking critical directories..."
           for path in "${critical_paths[@]}"; do
-            if [ -e "$path" ]; then
-              echo "✓ $path exists"
+            if [ -d "$path" ]; then
+              echo "✓ Directory $path exists"
             else
-              echo "✗ $path missing"
+              echo "✗ Critical directory $path missing"
               exit 1
             fi
           done
+          
+          echo "Checking critical files..."
+          for file in "${critical_files[@]}"; do
+            if [ -f "$file" ]; then
+              echo "✓ File $file exists"
+            else
+              echo "✗ Critical file $file missing"
+              exit 1
+            fi
+          done
+          
+          # Check for test files
+          test_count=$(find tests -name "*.Tests.ps1" -type f | wc -l)
+          echo "✓ Found $test_count test files"
+          
+          if [ "$test_count" -lt 10 ]; then
+            echo "⚠️  Warning: Low number of test files ($test_count)"
+          fi
+          
+          # Check for runner scripts
+          runner_count=$(find pwsh/runner_scripts -name "*.ps1" -type f 2>/dev/null | wc -l)
+          echo "✓ Found $runner_count runner scripts"
+          
+          echo "✅ Repository structure validation completed"
 
   # Summary of all jobs status
   summary:
