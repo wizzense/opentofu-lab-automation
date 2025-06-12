@@ -21,7 +21,7 @@ jobs:
         shell: bash
         run: |
           if ! command -v pwsh >/dev/null 2>&1; then
-            brew install --cask powershell
+            brew install --cask powershell || { echo "Failed to install PowerShell via Homebrew"; exit 1; }
           fi
       - name: Cache PowerShell modules
         uses: actions/cache@v4
@@ -32,9 +32,9 @@ jobs:
       - name: Install Pester
         shell: pwsh
         run: |
-          $ErrorActionPreference = \'Stop\'
+          $ErrorActionPreference = 'Stop'
           try {
-            Install-Module -Name Pester -RequiredVersion 5.7.1 -Force -Scope CurrentUser
+            Install-Module -Name Pester -RequiredVersion 5.7.1 -Force -Scope CurrentUser -ErrorAction Stop
             Write-Host "Pester 5.7.1 installed successfully" -ForegroundColor Green
           } catch {
             Write-Error "Failed to install Pester: $_"
@@ -83,7 +83,7 @@ jobs:
         id: pester
         shell: pwsh
         run: |
-          $ErrorActionPreference = \'Stop\'
+          $ErrorActionPreference = 'Stop'
           Write-Host "Running Pester tests for macOS" -ForegroundColor Yellow
           try {
             $cfg = New-PesterConfiguration -Hashtable (Import-PowerShellDataFile \'tests/PesterConfiguration.psd1\')
