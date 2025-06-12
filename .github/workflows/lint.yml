@@ -26,7 +26,7 @@ jobs:
         shell: bash
         run: |
           if ! command -v pwsh >/dev/null 2>&1; then
-            if [["$RUNNER_OS" == "Linux"]]; then
+            if [[ "$RUNNER_OS" == "Linux" ]]; then
               sudo apt-get update
               sudo apt-get install -y wget apt-transport-https \
                 software-properties-common
@@ -35,7 +35,7 @@ jobs:
               sudo dpkg -i packages-microsoft-prod.deb
               sudo apt-get update
               sudo apt-get install -y powershell
-            elif [["$RUNNER_OS" == "macOS"]]; then
+            elif [[ "$RUNNER_OS" == "macOS" ]]; then
               brew install --cask powershell
             fi
           fi
@@ -68,6 +68,7 @@ jobs:
           try {
             if (-not (Get-Module -ListAvailable -Name PSScriptAnalyzer |\
                 Where-Object { $_.Version -ge [version]'1.22.0' })) {
+
               Install-Module -Name PSScriptAnalyzer -RequiredVersion 1.22.0 -Scope CurrentUser -Force
             }
             Write-Host "PSScriptAnalyzer ready" -ForegroundColor Green
