@@ -84,7 +84,7 @@ if (-not (Test-Path $loggerPath)) {
     Invoke-WebRequest -Uri $loggerUrl -OutFile $loggerPath
 }
 try {
-    . $loggerPath
+    . "$loggerPath"
 } catch {
     Write-Error "Failed to load logger script: $_"
     exit 1
@@ -162,8 +162,8 @@ if (-not (Test-Path $formatScript)) {
     $formatUrl = 'https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/main/pwsh/lab_utils/Format-Config.ps1'
     Invoke-WebRequest -Uri $formatUrl -OutFile $formatScript
 }
-. $labConfigScript
-. $formatScript
+. "$labConfigScript"
+. "$formatScript"
 
 
 # ------------------------------------------------
