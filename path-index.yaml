@@ -28,6 +28,7 @@ cleanup-backup-20250612-065942/test-format-function.ps1: cleanup-backup-20250612
 cleanup-backup-20250612-065942/test-script-sample.ps1: cleanup-backup-20250612-065942/test-script-sample.ps1
 cleanup-backup-20250612-065942/test-workflow-setup.ps1: cleanup-backup-20250612-065942/test-workflow-setup.ps1
 cleanup-backup-20250612-065942/validate-syntax.py: cleanup-backup-20250612-065942/validate-syntax.py
+comprehensive-health-check.ps1: comprehensive-health-check.ps1
 comprehensive-lint.ps1: comprehensive-lint.ps1
 configs/lab_config.yaml: configs/lab_config.yaml
 configs/project/path-index.yaml: configs/project/path-index.yaml
