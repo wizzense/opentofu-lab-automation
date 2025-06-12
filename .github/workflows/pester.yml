@@ -122,6 +122,14 @@ jobs:
         if: steps.pester.outputs.pester_exit_code != '0'
         shell: pwsh
         run: exit 1
+      - name: Fix invalid file paths
+        run: |
+          git ls-tree -r HEAD | grep ':' | while read -r line; do
+            invalid_file=$(echo "$line" | awk '{print $4}')
+            fixed_file=$(echo "$invalid_file" | sed 's/:/-/g')
+            git mv "$invalid_file" "$fixed_file"
+          done
+          git commit -m "Fix invalid file paths for Windows compatibility"
 
   node-install:
     name: Node integration
