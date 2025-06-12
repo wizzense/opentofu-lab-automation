@@ -78,6 +78,8 @@ Describe '0010_Prepare-HyperVProvider Tests' -Tag 'Feature' {
     Context 'Convert-PfxToPem Function Tests' {
         It 'should be defined and accessible' -Skip:($SkipNonWindows) {
             $scriptContent = Get-Content $script:ScriptPath -Raw
+            # The triple single quote (''') is used to escape single quotes in PowerShell strings.
+            # This regex matches function definitions while excluding certain patterns.
             $scriptContent | Should -Match 'function\s+[^''']*'
         }
                 It 'should support common parameters' -Skip:($SkipNonWindows) {
