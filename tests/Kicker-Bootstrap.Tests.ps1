@@ -134,3 +134,18 @@ Describe 'kicker-bootstrap variable interpolation regression' {
         $true | Should -BeTrue
     }
 }
+
+Describe 'kicker-bootstrap repo structure simulation' {
+    It 'finds runner script in simulated repo structure' {
+        $tempDir = Join-Path $env:TEMP ([System.Guid]::NewGuid().ToString())
+        $repoPath = Join-Path $tempDir 'opentofu-lab-automation'
+        $pwshDir = Join-Path $repoPath 'pwsh'
+        New-Item -ItemType Directory -Path $pwshDir -Force | Out-Null
+        $runnerScript = Join-Path $pwshDir 'runner.ps1'
+        Set-Content -Path $runnerScript -Value '# dummy runner script'
+        $runnerScriptName = 'pwsh/runner.ps1'
+        $runnerScriptPath = Join-Path $repoPath $runnerScriptName
+        Test-Path $runnerScriptPath | Should -BeTrue -Because "Runner script should be found at $runnerScriptPath"
+        Remove-Item -Recurse -Force $tempDir
+    }
+}

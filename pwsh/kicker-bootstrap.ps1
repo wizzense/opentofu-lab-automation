@@ -546,8 +546,8 @@ Get-ChildItem -Path $repoPath -Recurse | Select-Object FullName
 
 if (!(Test-Path $runnerScriptPath)) {
     Write-Error "ERROR: Could not find runner script at $runnerScriptPath. Exiting."
-    Write-Host "Directory listing for ${repoPath}:" -ForegroundColor Yellow
-    Get-ChildItem -Path $repoPath -Recurse | Select-Object FullName
+    Write-Host "[DEBUG] Directory contents of repoPath (${repoPath}):" -ForegroundColor Yellow
+    Get-ChildItem -Path $repoPath -Recurse | Format-List FullName | Out-Host
     Write-Host @"
 Possible causes:
 - The repository clone failed or is incomplete.
