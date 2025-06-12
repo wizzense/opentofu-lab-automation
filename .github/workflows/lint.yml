@@ -1,10 +1,12 @@
+---
+# filepath: /workspaces/opentofu-lab-automation/.github/workflows/lint.yml
 name: Lint
 
 on:
   workflow_dispatch:
   pull_request:
   push:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   lint:
@@ -24,14 +26,16 @@ jobs:
         shell: bash
         run: |
           if ! command -v pwsh >/dev/null 2>&1; then
-            if [[ "$RUNNER_OS" == "Linux" ]]; then
+            if [["$RUNNER_OS" == "Linux"]]; then
               sudo apt-get update
-              sudo apt-get install -y wget apt-transport-https software-properties-common
-              wget -q https://packages.microsoft.com/config/ubuntu/22.04/packages-microsoft-prod.deb
+              sudo apt-get install -y wget apt-transport-https \
+                software-properties-common
+              wget -q https://packages.microsoft.com/config/ubuntu/22.04/\
+packages-microsoft-prod.deb
               sudo dpkg -i packages-microsoft-prod.deb
               sudo apt-get update
               sudo apt-get install -y powershell
-            elif [[ "$RUNNER_OS" == "macOS" ]]; then
+            elif [["$RUNNER_OS" == "macOS"]]; then
               brew install --cask powershell
             fi
           fi
@@ -46,25 +50,28 @@ jobs:
         uses: actions/cache@v4
         with:
           path: |
-            C:\\Users\\runneradmin\\Documents\\WindowsPowerShell\\Modules
-            C:\\Users\\runneradmin\\Documents\\PowerShell\\Modules
-          key: windows-pwsh-modules-${{ hashFiles('tests/PesterConfiguration.psd1') }}
+            C:\Users\runneradmin\Documents\WindowsPowerShell\Modules
+            C:\Users\runneradmin\Documents\PowerShell\Modules
+          key: windows-pwsh-modules-${{ hashFiles(\
+'tests/PesterConfiguration.psd1') }}
           restore-keys: windows-pwsh-modules-
       - name: Cache PowerShell modules (Posix)
         if: runner.os != 'Windows'
         uses: actions/cache@v4
         with:
           path: ~/.local/share/powershell/Modules
-          key: ${{ runner.os }}-pwsh-modules-${{ hashFiles('tests/PesterConfiguration.psd1') }}
+          key: ${{ runner.os }}-pwsh-modules-${{ hashFiles(\
+'tests/PesterConfiguration.psd1') }}
           restore-keys: ${{ runner.os }}-pwsh-modules-
       - name: Install PSScriptAnalyzer
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
           try {
-            if (-not (Get-Module -ListAvailable -Name PSScriptAnalyzer |
+            if (-not (Get-Module -ListAvailable -Name PSScriptAnalyzer |\
                 Where-Object { $_.Version -ge [version]'1.22.0' })) {
-              Install-Module -Name PSScriptAnalyzer -RequiredVersion 1.22.0 -Scope CurrentUser -Force
+              Install-Module -Name PSScriptAnalyzer -RequiredVersion 1.22.0 \
+-Scope CurrentUser -Force
             }
             Write-Host "PSScriptAnalyzer ready" -ForegroundColor Green
           } catch {
@@ -76,8 +83,10 @@ jobs:
         run: |
           $ErrorActionPreference = 'Stop'
           try {
-            Install-Module -Name powershell-yaml -Force -Scope CurrentUser
-            Write-Host "powershell-yaml installed successfully" -ForegroundColor Green
+            Install-Module -Name powershell-yaml -Force \
+-Scope CurrentUser
+            Write-Host "powershell-yaml installed successfully" \
+-ForegroundColor Green
           } catch {
             Write-Error "Failed to install powershell-yaml: $_"
             exit 1
@@ -97,7 +106,8 @@ jobs:
           try {
             $log = $env:LOG_FILE
             $settings = Join-Path $PWD 'pwsh/PSScriptAnalyzerSettings.psd1'
-            $files = Get-ChildItem -Path . -Recurse -Include *.ps1,*.psm1,*.psd1 -File |
+            $files = Get-ChildItem -Path . -Recurse `
+                -Include *.ps1,*.psm1,*.psd1 -File |
                 Where-Object { $_.FullName -ne $settings } |
                 Select-Object -ExpandProperty FullName
             $results = $files | Invoke-ScriptAnalyzer -Severity Error,Warning -Settings $settings
@@ -117,31 +127,31 @@ jobs:
           $ErrorActionPreference = 'Stop'
           try {
             Write-Host "Running comprehensive PowerShell validation..." -ForegroundColor Cyan
-            
+
             # Run our comprehensive validation tool
             $validationResult = & "$PWD/tools/Validate-PowerShellScripts.ps1" -Path "." -CI
             $exitCode = $LASTEXITCODE
-            
+
             # Log results
             "PowerShell Validation Results:" | Out-File -FilePath $env:LOG_FILE -Append
             $validationResult | Out-File -FilePath $env:LOG_FILE -Append
-            
+
             if ($exitCode -ne 0) {
               Write-Host "❌ PowerShell validation failed" -ForegroundColor Red
               Write-Host "Run 'pwsh tools/Validate-PowerShellScripts.ps1 -Path . -AutoFix' to fix issues" -ForegroundColor Yellow
               exit 1
             }
-            
+
             Write-Host "✅ All PowerShell files passed comprehensive validation" -ForegroundColor Green
-            
+
           } catch {
             Write-Error "PowerShell validation failed: $_"
             Write-Host "Falling back to basic syntax validation..." -ForegroundColor Yellow
-            
+
             # Fallback to basic validation if our tool fails
             $files = Get-ChildItem -Path . -Recurse -Include *.ps1,*.psm1 -File
             $syntaxErrors = @()
-            
+
             foreach ($file in $files) {
               try {
                 $content = Get-Content $file.FullName -Raw
@@ -150,14 +160,14 @@ jobs:
                 $syntaxErrors += "❌ $($file.Name): $($_.Exception.Message)"
               }
             }
-            
+
             if ($syntaxErrors.Count -gt 0) {
               Write-Host "Basic Syntax Errors Found:" -ForegroundColor Red
               $syntaxErrors | ForEach-Object { Write-Host $_ -ForegroundColor Red }
               $syntaxErrors | Out-File -FilePath $env:LOG_FILE -Append
               exit 1
             }
-            
+
             Write-Host "Basic syntax validation passed" -ForegroundColor Green
           }
       - name: Run Custom Script Analyzer

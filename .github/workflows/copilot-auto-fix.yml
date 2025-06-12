@@ -1,3 +1,4 @@
+---
 name: Copilot Auto Fix
 
 on: workflow_dispatch
@@ -18,7 +19,7 @@ jobs:
 
       - name: Fail if GH_TOKEN missing
         run: |
-          if [ -z "$GH_TOKEN" ]; then
+          if [-z "$GH_TOKEN"]; then
             echo "::error::COPILOT_OAUTH_TOKEN secret not set"
             exit 1
           fi
@@ -45,12 +46,12 @@ jobs:
             title=$(gh issue view "$num" --json title -q .title)
             body=$(gh issue view "$num"  --json body  -q .body)
 
-            prompt="Propose a concise git diff or detailed steps to fix issue #$num ($title) in ${{ github.repository }}.\n\nContext:\n$body"
+            prompt="Propose a concise git diff or detailed steps to fix issue  # $num ($title) in ${{ github.repository }}.\n\nContext:\n$body"
             gh copilot suggest "$prompt" > suggestion.md || true
 
-            if [ -s suggestion.md ]; then
+            if [-s suggestion.md]; then
               gh issue comment "$num" -F suggestion.md
             else
-              echo "No suggestion generated for issue #$num"
+              echo "No suggestion generated for issue  # $num"
             fi
           done

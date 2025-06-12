@@ -26,7 +26,7 @@ Param(
     [string]$ExampleParam = "DefaultValue"
 )
 
-# Import modules AFTER Param block
+# Import-Module statements go AFTER Param block
 Import-Module "$PSScriptRoot/../lab_utils/LabRunner/LabRunner.psd1" -Force
 
 # Set error handling

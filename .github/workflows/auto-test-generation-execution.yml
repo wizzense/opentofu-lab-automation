@@ -1,3 +1,4 @@
+---
 name: Auto Test Generation (Execution)
 
 on:
@@ -28,36 +29,36 @@ jobs:
       test-generation-artifact-name: test-generation-${{ inputs.os }}
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Install PowerShell
         if: runner.os != 'Windows'
         shell: bash
         run: |
-          if [[ "${{ runner.os }}" == "Linux" ]]; then
+          if [["${{ runner.os }}" == "Linux"]]; then
             sudo apt-get update
             sudo apt-get install -y wget apt-transport-https software-properties-common
             wget -q https://packages.microsoft.com/config/ubuntu/22.04/packages-microsoft-prod.deb
             sudo dpkg -i packages-microsoft-prod.deb
             sudo apt-get update
             sudo apt-get install -y powershell
-          elif [[ "${{ runner.os }}" == "macOS" ]]; then
+          elif [[""${{ runner.os }}" == "macOS"]]; then
             brew install --cask powershell
           fi
-      
+
       - name: Install Pester
         shell: pwsh
         run: |
           Install-Module -Name Pester -RequiredVersion 5.7.1 -Force -Scope CurrentUser
-      
+
       - name: Generate tests for changed scripts
         shell: pwsh
         run: |
           $changedScriptsInput = '${{ inputs.changed-scripts }}'
           $renamedFilesInput = '${{ inputs.renamed-files-json }}'
-          
+
           $changedScripts = $changedScriptsInput | ConvertFrom-Json
           $generatedTests = @()
-          
+
           # Handle renamed files
           if ($renamedFilesInput) {
             $renamedFiles = $renamedFilesInput | ConvertFrom-Json
@@ -70,25 +71,28 @@ jobs:
               }
             }
           }
-          
+
           foreach ($scriptPath in $changedScripts) {
             if (Test-Path $scriptPath) {
               Write-Host "Processing script: $scriptPath" -ForegroundColor Cyan
-              
+
               try {
                 . ./tests/helpers/New-AutoTestGenerator.ps1
                 $result = New-AutoTestGenerator -ScriptPath $scriptPath -Force
-                
-                $testName = [System.IO.Path]::GetFileNameWithoutExtension($scriptPath) + '.Tests.ps1'
-                $testPath = Join-Path 'tests' $testName # Assuming tests are in a top-level 'tests' folder
-                
+
+                $testName = [System.IO.Path]::GetFileNameWithoutExtension($scriptPath) + \
+                  '.Tests.ps1'
+                # Assuming tests are in a top-level 'tests' folder
+                $testPath = Join-Path 'tests' $testName
+
                 if (Test-Path $testPath) {
                   $generatedTests += $testPath
                   Write-Host "✓ Generated test: $testPath" -ForegroundColor Green
                 } else {
-                  Write-Warning "Test generation may have failed for: $scriptPath (Test file not found at $testPath)"
+                  Write-Warning ("Test generation may have failed for: $scriptPath " + \
+                                 "(Test file not found at $testPath)")
                 }
-                
+
               } catch {
                 Write-Error "Failed to generate test for $scriptPath: $_"
               }
@@ -96,49 +100,49 @@ jobs:
               Write-Warning "Script not found: $scriptPath"
             }
           }
-          
+
           Write-Host "Generated $($generatedTests.Count) test files" -ForegroundColor Green
           $generatedTests | ForEach-Object { Write-Host "  - $_" }
-          
+
           @{
             Platform = "${{ runner.os }}"
             GeneratedTests = $generatedTests
             ProcessedScripts = $changedScripts
           } | ConvertTo-Json -Depth 3 | Out-File "test-generation-${{ runner.os }}.json" -Encoding UTF8
-      
+
       - name: Validate generated tests
         shell: pwsh
         run: |
           $generationInfo = Get-Content "test-generation-${{ runner.os }}.json" | ConvertFrom-Json
           $allTestsValid = $true
-          
+
           foreach ($testPath in $generationInfo.GeneratedTests) {
             if (Test-Path $testPath) {
               Write-Host "Validating test syntax: $testPath" -ForegroundColor Cyan
-              
+
               try {
                 $content = Get-Content $testPath -Raw
                 $ast = [System.Management.Automation.Language.Parser]::ParseInput($content, [ref]$null, [ref]$errors)
-                
+
                 if ($errors.Count -gt 0) {
-                  Write-Error "Syntax errors in $testPath`: "
+                  Write-Error "Syntax errors in $testPath: "
                   $errors | ForEach-Object { Write-Error "  $($_.Message)" }
                   $allTestsValid = $false
                 } else {
                   Write-Host "✓ Syntax valid: $testPath" -ForegroundColor Green
                 }
-                
+
                 if ($content -notmatch 'Describe.*Tests') {
                   Write-Error "Missing Describe block in: $testPath"
                   $allTestsValid = $false
                 }
-                
+
                 if ($content -notmatch 'It.*should') {
                   Write-Warning "No test cases (It blocks) found in: $testPath"
                 }
-                
+
               } catch {
-                Write-Error "Failed to validate $testPath`: $_"
+                Write-Error "Failed to validate $testPath: $_"
                 $allTestsValid = $false
               }
             } else {
@@ -146,19 +150,19 @@ jobs:
               $allTestsValid = $false
             }
           }
-          
+
           if (-not $allTestsValid) {
             Write-Error "Some generated tests have validation errors"
             exit 1
           }
-          
+
           Write-Host "All generated tests passed validation!" -ForegroundColor Green
-      
+
       - name: Upload test generation artifacts
         uses: actions/upload-artifact@v4
         with:
           name: test-generation-${{ inputs.os }}
           path: |
             test-generation-*.json
-            tests/*.Tests.ps1 # Assuming tests are in a top-level 'tests' folder
+            tests/*.Tests.ps1  # Assuming tests are in a top-level 'tests' folder
           retention-days: 7
