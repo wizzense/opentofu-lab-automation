@@ -22,6 +22,28 @@ No significant changes.
 
 # Labctl 0.0.0 (2025-06-12)
 
+### Bugfixes
+
+- Fixed systemic Pester test failures caused by "Param is not recognized" errors affecting 36+ numbered test files. Changed execution pattern from direct script invocation to subprocess execution using `pwsh -File` pattern. This resolves PowerShell parameter block parsing issues in test contexts and enables 681 tests to be discovered successfully across 86 test files. (#pester-param-fix)
+
+
+# Labctl 0.0.0 (2025-06-12)
+
+No significant changes.
+
+
+# Labctl 0.0.0 (2025-06-12)
+
+No significant changes.
+
+
+# Labctl 0.0.0 (2025-06-12)
+
+No significant changes.
+
+
+# Labctl 0.0.0 (2025-06-12)
+
 No significant changes.
 
 
