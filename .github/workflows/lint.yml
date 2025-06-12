@@ -108,11 +108,3 @@ jobs:
         with:
           name: lint-${{ matrix.os }}
           path: ${{ env.LOG_FILE }}
-      - name: Install Copilot extension
-        run: gh extension install github/gh-copilot --force
-      - name: Run Copilot suggestions
-        run: gh copilot suggest "Suggest improvements"
-      - name: Install Pester
-        shell: pwsh
-        run: |
-          Install-Module -Name Pester -RequiredVersion 5.7.1 -Force -Scope CurrentUser
