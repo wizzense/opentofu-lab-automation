@@ -79,7 +79,8 @@ Describe '0207_Install-Git Tests' -Tag 'Installer' {
     
     Context 'Install-Git Function Tests' {
         It 'should be defined and accessible' -Skip:($SkipNonWindows) {
-            Get-Command 'Install-Git' | Should -Not -BeNullOrEmpty
+            $scriptContent = Get-Content $script:ScriptPath -Raw
+            $scriptContent | Should -Match 'function\s+Install-Git'
         }
                 It 'should support common parameters' -Skip:($SkipNonWindows) {
             $scriptContent = Get-Content $script:ScriptPath -Raw

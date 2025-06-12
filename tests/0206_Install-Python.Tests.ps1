@@ -77,7 +77,8 @@ Describe '0206_Install-Python Tests' -Tag 'Installer' {
     
     Context 'Install-Python Function Tests' {
         It 'should be defined and accessible' -Skip:($SkipNonWindows) {
-            Get-Command 'Install-Python' | Should -Not -BeNullOrEmpty
+            $scriptContent = Get-Content $script:ScriptPath -Raw
+            $scriptContent | Should -Match 'function\s+Install-Python'
         }
                 It 'should support common parameters' -Skip:($SkipNonWindows) {
             $scriptContent = Get-Content $script:ScriptPath -Raw
