@@ -21,8 +21,14 @@ $critical = 0
 
 foreach ($check in $checks) {
     if (Test-Path $check.Path) {
-        $healthy++
-        $results += [pscustomobject]@{ Check = $check.Name; Status = 'Healthy' }
+        $fileInfo = Get-Item $check.Path
+        if ($fileInfo.LastWriteTime -lt (Get-Date).AddDays(-180)) {
+            $warning++
+            $results += [pscustomobject]@{ Check = $check.Name; Status = 'Warning'; Reason = 'Stale file' }
+        } else {
+            $healthy++
+            $results += [pscustomobject]@{ Check = $check.Name; Status = 'Healthy' }
+        }
     } else {
         $critical++
         $results += [pscustomobject]@{ Check = $check.Name; Status = 'Critical' }
