@@ -4,7 +4,7 @@
 
 BeforeAll {
     # Load the script under test
-    $scriptPath = Join-Path $PSScriptRoot '..' '/workspaces/opentofu-lab-automation/pwsh/setup-test-env.ps1'
+    $scriptPath = Join-Path $PSScriptRoot '..' 'pwsh/setup-test-env.ps1'
     if (Test-Path $scriptPath) {
         . $scriptPath
     }
