@@ -1,3 +1,12 @@
+configs/config_files/default-config.json: configs/config_files/default-config.json
+configs/config_files/full-config.json: configs/config_files/full-config.json
+configs/config_files/recommended-config.json: configs/config_files/recommended-config.json
+pwsh/kicker-bootstrap.ps1: pwsh/kicker-bootstrap.ps1
+pwsh/kickstart-bootstrap.sh: pwsh/kickstart-bootstrap.sh
+pwsh/lab_utils/Download-Archive.ps1: pwsh/lab_utils/Download-Archive.ps1
+pwsh/lab_utils/Download-Archive.psm1: pwsh/lab_utils/Download-Archive.psm1
+pwsh/lab_utils/Expand-All.ps1: pwsh/lab_utils/Expand-All.ps1
+pwsh/lab_utils/Expand-All.psm1: pwsh/lab_utils/Expand-All.psm1
 archive/legacy/fix_dot_sourcing.ps1: archive/legacy/fix_dot_sourcing.ps1
 archive/legacy/fix_numbered_paths.ps1: archive/legacy/fix_numbered_paths.ps1
 archive/legacy/fix_numbered_tests_corrected.ps1: archive/legacy/fix_numbered_tests_corrected.ps1
@@ -67,6 +76,16 @@ pwsh/lab_utils/Format-Config.ps1: pwsh/lab_utils/Format-Config.ps1
 pwsh/lab_utils/Get-LabConfig.ps1: pwsh/lab_utils/Get-LabConfig.ps1
 pwsh/lab_utils/Get-Platform.ps1: pwsh/lab_utils/Get-Platform.ps1
 pwsh/lab_utils/Get-WindowsJobArtifacts.ps1: pwsh/lab_utils/Get-WindowsJobArtifacts.ps1
+pwsh/lab_utils/Hypervisor.psm1: pwsh/lab_utils/Hypervisor.psm1
+pwsh/lab_utils/LabRunner/InvokeOpenTofuInstaller.ps1: pwsh/lab_utils/LabRunner/InvokeOpenTofuInstaller.ps1
+pwsh/lab_utils/LabRunner/LabRunner.psd1: pwsh/lab_utils/LabRunner/LabRunner.psd1
+pwsh/lab_utils/LabRunner/LabRunner.psm1: pwsh/lab_utils/LabRunner/LabRunner.psm1
+pwsh/lab_utils/LabRunner/Logger.ps1: pwsh/lab_utils/LabRunner/Logger.ps1
+pwsh/lab_utils/LabRunner/OpenTofuInstaller.ps1: pwsh/lab_utils/LabRunner/OpenTofuInstaller.ps1
+pwsh/lab_utils/LabRunner/Resolve-ProjectPath.psm1: pwsh/lab_utils/LabRunner/Resolve-ProjectPath.psm1
+pwsh/lab_utils/LabRunner/ScriptTemplate.ps1: pwsh/lab_utils/LabRunner/ScriptTemplate.ps1
+pwsh/lab_utils/LabSetup/LabSetup.psd1: pwsh/lab_utils/LabSetup/LabSetup.psd1
+pwsh/lab_utils/LabSetup/LabSetup.psm1: pwsh/lab_utils/LabSetup/LabSetup.psm1
 pwsh/lab_utils/LabRunner/InvokeOpenTofuInstaller.ps1: pwsh/lab_utils/LabRunner/InvokeOpenTofuInstaller.ps1
 pwsh/lab_utils/LabRunner/Logger.ps1: pwsh/lab_utils/LabRunner/Logger.ps1
 pwsh/lab_utils/LabRunner/OpenTofuInstaller.ps1: pwsh/lab_utils/LabRunner/OpenTofuInstaller.ps1
@@ -77,6 +96,7 @@ pwsh/lab_utils/Menu.ps1: pwsh/lab_utils/Menu.ps1
 pwsh/lab_utils/Network.ps1: pwsh/lab_utils/Network.ps1
 pwsh/lab_utils/PathUtils.ps1: pwsh/lab_utils/PathUtils.ps1
 pwsh/lab_utils/Resolve-ProjectPath.ps1: pwsh/lab_utils/Resolve-ProjectPath.ps1
+pwsh/lab_utils/Resolve-ProjectPath.psm1: pwsh/lab_utils/Resolve-ProjectPath.psm
 pwsh/lab_utils/__init__.py: pwsh/lab_utils/__init__.py
 pwsh/lab_utils/get_platform.py: pwsh/lab_utils/get_platform.py
 pwsh/runner.ps1: pwsh/runner.ps1
@@ -117,6 +137,11 @@ pwsh/runner_scripts/0214_Install-Packer.ps1: pwsh/runner_scripts/0214_Install-Pa
 pwsh/runner_scripts/0215_Install-Chocolatey.ps1: pwsh/runner_scripts/0215_Install-Chocolatey.ps1
 pwsh/runner_scripts/0216_Set-LabProfile.ps1: pwsh/runner_scripts/0216_Set-LabProfile.ps1
 pwsh/runner_scripts/9999_Reset-Machine.ps1: pwsh/runner_scripts/9999_Reset-Machine.ps1
+py/labctl/__init__.py: py/labctl/__init__.py
+py/labctl/cli.py: py/labctl/cli.py
+py/labctl/config_files/default-config.json: py/labctl/config_files/default-config.json
+py/labctl/config_files/full-config.json: py/labctl/config_files/full-config.json
+py/labctl/config_files/index.json: py/labctl/config_files/index.json
 pwsh/setup-test-env.ps1: pwsh/setup-test-env.ps1
 py/labctl/__init__.py: py/labctl/__init__.py
 py/labctl/cli.py: py/labctl/cli.py
@@ -138,6 +163,11 @@ py/tests/test_path_index.py: py/tests/test_path_index.py
 py/tests/test_pester_failures.py: py/tests/test_pester_failures.py
 py/tests/test_pytest_failures.py: py/tests/test_pytest_failures.py
 py/tests/test_ui.py: py/tests/test_ui.py
+tools/iso/Customize-ISO.ps1: tools/iso/Customize-ISO.ps1
+tools/iso/autounattend - generic.xml: tools/iso/autounattend - generic.xml
+tools/iso/bootstrap.ps1: tools/iso/bootstrap.ps1
+tools/iso/headlessunattend.xml: tools/iso/headlessunattend.xml
+tools/iso/kickstart.cfg: tools/iso/kickstart.cfg
 py/validate-syntax.py: py/validate-syntax.py
 scripts/batch-fix-remaining-tests.ps1: scripts/batch-fix-remaining-tests.ps1
 scripts/complete-pester-fixes.ps1: scripts/complete-pester-fixes.ps1
