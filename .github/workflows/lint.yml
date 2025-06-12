@@ -31,7 +31,7 @@ jobs:
               sudo apt-get install -y wget apt-transport-https \
                 software-properties-common
               wget -q https://packages.microsoft.com/config/ubuntu/22.04/\
-packages-microsoft-prod.deb
+              packages-microsoft-prod.deb
               sudo dpkg -i packages-microsoft-prod.deb
               sudo apt-get update
               sudo apt-get install -y powershell
@@ -52,16 +52,14 @@ packages-microsoft-prod.deb
           path: |
             C:\Users\runneradmin\Documents\WindowsPowerShell\Modules
             C:\Users\runneradmin\Documents\PowerShell\Modules
-          key: windows-pwsh-modules-${{ hashFiles(\
-'tests/PesterConfiguration.psd1') }}
+          key: windows-pwsh-modules-${{ hashFiles('tests/PesterConfiguration.psd1') }}
           restore-keys: windows-pwsh-modules-
       - name: Cache PowerShell modules (Posix)
         if: runner.os != 'Windows'
         uses: actions/cache@v4
         with:
           path: ~/.local/share/powershell/Modules
-          key: ${{ runner.os }}-pwsh-modules-${{ hashFiles(\
-'tests/PesterConfiguration.psd1') }}
+          key: ${{ runner.os }}-pwsh-modules-${{ hashFiles('tests/PesterConfiguration.psd1') }}
           restore-keys: ${{ runner.os }}-pwsh-modules-
       - name: Install PSScriptAnalyzer
         shell: pwsh
@@ -70,8 +68,7 @@ packages-microsoft-prod.deb
           try {
             if (-not (Get-Module -ListAvailable -Name PSScriptAnalyzer |\
                 Where-Object { $_.Version -ge [version]'1.22.0' })) {
-              Install-Module -Name PSScriptAnalyzer -RequiredVersion 1.22.0 \
--Scope CurrentUser -Force
+              Install-Module -Name PSScriptAnalyzer -RequiredVersion 1.22.0 -Scope CurrentUser -Force
             }
             Write-Host "PSScriptAnalyzer ready" -ForegroundColor Green
           } catch {
@@ -83,10 +80,8 @@ packages-microsoft-prod.deb
         run: |
           $ErrorActionPreference = 'Stop'
           try {
-            Install-Module -Name powershell-yaml -Force \
--Scope CurrentUser
-            Write-Host "powershell-yaml installed successfully" \
--ForegroundColor Green
+            Install-Module -Name powershell-yaml -Force -Scope CurrentUser
+            Write-Host "powershell-yaml installed successfully" -ForegroundColor Green
           } catch {
             Write-Error "Failed to install powershell-yaml: $_"
             exit 1
