@@ -40,6 +40,11 @@ No significant changes.
 No significant changes.
 
 
+# Labctl 0.0.0 (2025-06-12)
+
+No significant changes.
+
+
 ### Fixed
 - Bootstrap script PowerShell syntax error with variable interpolation in strings - fixed `$repoPath:` to `${repoPath}:`
 - Bootstrap script path resolution - updated config files to specify correct `pwsh/runner.ps1` path
