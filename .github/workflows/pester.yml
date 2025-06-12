@@ -81,53 +81,35 @@ jobs:
           if (-not (Test-Path coverage)) {
               New-Item -ItemType Directory -Path coverage | Out-Null
           }
-      - name: Run Extensible Tests
+      - name: Run Pester Tests
         id: pester
-        continue-on-error: true
         shell: pwsh
         run: |
-          # Use our extensible test runner
-          $platform = switch ("${{ runner.os }}") {
-            'Windows' { 'Windows' }
-            'Linux' { 'Linux' }
-            'macOS' { 'macOS' }
-            default { 'All' }
-          }
+          Write-Host "Running Pester tests for ${{ runner.os }}" -ForegroundColor Yellow
           
-          Write-Host "Running extensible tests for platform: $platform" -ForegroundColor Yellow
-          
-          try {
-            & ./tests/helpers/Invoke-ExtensibleTests.ps1 `
-              -Platform $platform `
-              -EnableCodeCoverage `
-              -GenerateReport `
-              -OutputPath 'coverage' `
-              -Parallel `
-              -Verbose
-            
-            $exitCode = $LASTEXITCODE
-          } catch {
-            Write-Error "Extensible test execution failed: $_"
-            $exitCode = 1
-          }
-          
-          # Fallback to traditional Pester if extensible runner fails
-          if ($exitCode -ne 0) {
-            Write-Warning "Extensible test runner failed, falling back to traditional Pester"
-            
-            $cfg = New-PesterConfiguration -Hashtable (Import-PowerShellDataFile 'tests/PesterConfiguration.psd1')
+          # Load the Pester configuration from the project file
+          $cfg = New-PesterConfiguration -Hashtable (Import-PowerShellDataFile 'tests/PesterConfiguration.psd1')
 
-            $coveragePaths = @($cfg.CodeCoverage.Path.Value)
+          # Extend code coverage paths to include tools/iso if it exists
+          $coveragePaths = @($cfg.CodeCoverage.Path.Value)
+          if (Test-Path 'tools/iso') {
             $coveragePaths += 'tools/iso'
-            $cfg.CodeCoverage.Path = [Pester.StringArrayOption]::new($coveragePaths)
+          }
+          $cfg.CodeCoverage.Path = [Pester.StringArrayOption]::new($coveragePaths)
 
-            $repoRoot = $env:GITHUB_WORKSPACE
-            $cfg.TestResult.OutputPath   = Join-Path $repoRoot 'coverage/testResults.xml'
-            $cfg.CodeCoverage.OutputPath = Join-Path $repoRoot 'coverage/coverage.xml'
-            $logPath = Join-Path $repoRoot 'coverage/pester.log'
+          # Set output paths relative to workspace root
+          $repoRoot = $env:GITHUB_WORKSPACE
+          $cfg.TestResult.OutputPath   = Join-Path $repoRoot 'coverage/testResults.xml'
+          $cfg.CodeCoverage.OutputPath = Join-Path $repoRoot 'coverage/coverage.xml'
+          $logPath = Join-Path $repoRoot 'coverage/pester.log'
 
+          # Run Pester tests
+          try {
             Invoke-Pester -Configuration $cfg -ErrorAction Stop 2>&1 | Tee-Object -FilePath $logPath
             $exitCode = $LASTEXITCODE
+          } catch {
+            Write-Error "Pester execution failed: $_"
+            $exitCode = 1
           }
 
           "pester_exit_code=$exitCode" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
