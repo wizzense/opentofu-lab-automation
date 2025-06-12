@@ -1,9 +1,14 @@
 function Get-LabConfig {
     [CmdletBinding()]
     param(
-
-        [string]$Path = (Join-Path $PSScriptRoot '..\..\configs\config_files\default-config.json')
+        [string]$Path
     )
+
+    $scriptDir = if ($PSScriptRoot) { $PSScriptRoot } else { Split-Path -Parent $MyInvocation.MyCommand.Path }
+
+    if (-not $Path) {
+        $Path = Join-Path $scriptDir '..' '..' 'configs' 'config_files' 'default-config.json'
+    }
 
     if (-not (Test-Path $Path)) {
         throw "Config file not found at $Path"
@@ -27,7 +32,7 @@ function Get-LabConfig {
             $config = $content | ConvertFrom-Json
         }
 
-        $repoRoot = Resolve-Path (Join-Path $PSScriptRoot '..')
+        $repoRoot = Resolve-Path (Join-Path $scriptDir '..')
         $dirs     = @{}
         if ($config.PSObject.Properties['Directories']) {
             # Preserve any user-defined directory settings
