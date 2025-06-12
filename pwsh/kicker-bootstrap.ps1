@@ -234,12 +234,22 @@ if ($configOption -match "https://") {
 # (1) Load Configuration
 # ------------------------------------------------
 Write-CustomLog "==== Loading configuration file ===="
+
+# Validate the config path first so users get a clear error when the file is
+# missing or the path contains characters PowerShell interprets as parameters.
+if (-not (Test-Path -LiteralPath $ConfigFile)) {
+    Write-Error "ERROR: Configuration file not found at '$ConfigFile'. Use -ConfigFile to specify a valid path."
+    exit 1
+}
+
 try {
-    $config = Get-LabConfig -Path $ConfigFile
-    Write-CustomLog "Config file loaded from $ConfigFile."
+    $resolvedConfigPath = (Resolve-Path -LiteralPath $ConfigFile).Path
+    $config = Get-LabConfig -Path $resolvedConfigPath
+    Write-CustomLog "Config file loaded from $resolvedConfigPath."
     Write-CustomLog (Format-Config -Config $config)
 } catch {
-    Write-Error "ERROR: Failed to load configuration file - $($_.Exception.Message)"
+    $errorPath = if ($resolvedConfigPath) { $resolvedConfigPath } else { $ConfigFile }
+    Write-Error "ERROR: Failed to load configuration file '$errorPath' - $($_.Exception.Message)"
     exit 1
 }
 
