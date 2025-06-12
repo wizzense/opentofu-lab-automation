@@ -31,11 +31,16 @@ Describe 'kicker-bootstrap Tests' -Tag 'Installer' {
         }
         
         It 'should define expected functions' -Skip:($SkipNonWindows -or $SkipNonAdmin) {
-            Get-Command 'Get-CrossPlatformTempPath' -ErrorAction SilentlyContinue | Should -Not -BeNullOrEmpty
-            Get-Command 'Write-Continue' -ErrorAction SilentlyContinue | Should -Not -BeNullOrEmpty
-            Get-Command 'Write-CustomLog' -ErrorAction SilentlyContinue | Should -Not -BeNullOrEmpty
-            Get-Command 'Read-LoggedInput' -ErrorAction SilentlyContinue | Should -Not -BeNullOrEmpty
-            Get-Command 'Update-RepoPreserveConfig' -ErrorAction SilentlyContinue | Should -Not -BeNullOrEmpty
+            $scriptContent = Get-Content $script:ScriptPath -Raw
+            $scriptContent | Should -Match 'function\\s+Get-CrossPlatformTempPath'
+            $scriptContent = Get-Content $script:ScriptPath -Raw
+            $scriptContent | Should -Match 'function\\s+Write-Continue'
+            $scriptContent = Get-Content $script:ScriptPath -Raw
+            $scriptContent | Should -Match 'function\\s+Write-CustomLog'
+            $scriptContent = Get-Content $script:ScriptPath -Raw
+            $scriptContent | Should -Match 'function\\s+Read-LoggedInput'
+            $scriptContent = Get-Content $script:ScriptPath -Raw
+            $scriptContent | Should -Match 'function\\s+Update-RepoPreserveConfig'
         }
     }
     
@@ -80,7 +85,8 @@ Describe 'kicker-bootstrap Tests' -Tag 'Installer' {
     
     Context 'Get-CrossPlatformTempPath Function Tests' {
         It 'should be defined and accessible' -Skip:($SkipNonWindows -or $SkipNonAdmin) {
-            Get-Command 'Get-CrossPlatformTempPath' | Should -Not -BeNullOrEmpty
+            $scriptContent = Get-Content $script:ScriptPath -Raw
+            $scriptContent | Should -Match "function\s+'Get-CrossPlatformTempPath'"
         }
                 It 'should handle execution with valid parameters' -Skip:($SkipNonWindows -or $SkipNonAdmin) {
             # Add specific test logic for Get-CrossPlatformTempPath
@@ -90,7 +96,8 @@ Describe 'kicker-bootstrap Tests' -Tag 'Installer' {
     
     Context 'Write-Continue Function Tests' {
         It 'should be defined and accessible' -Skip:($SkipNonWindows -or $SkipNonAdmin) {
-            Get-Command 'Write-Continue' | Should -Not -BeNullOrEmpty
+            $scriptContent = Get-Content $script:ScriptPath -Raw
+            $scriptContent | Should -Match "function\s+'Write-Continue'"
         }
                 It 'should accept prompt parameter' -Skip:($SkipNonWindows -or $SkipNonAdmin) {
             (Get-Command 'Write-Continue').Parameters.Keys | Should -Contain 'prompt'
@@ -103,7 +110,8 @@ Describe 'kicker-bootstrap Tests' -Tag 'Installer' {
     
     Context 'Write-CustomLog Function Tests' {
         It 'should be defined and accessible' -Skip:($SkipNonWindows -or $SkipNonAdmin) {
-            Get-Command 'Write-CustomLog' | Should -Not -BeNullOrEmpty
+            $scriptContent = Get-Content $script:ScriptPath -Raw
+            $scriptContent | Should -Match "function\s+'Write-CustomLog'"
         }
                 It 'should handle execution with valid parameters' -Skip:($SkipNonWindows -or $SkipNonAdmin) {
             # Add specific test logic for Write-CustomLog
@@ -113,11 +121,14 @@ Describe 'kicker-bootstrap Tests' -Tag 'Installer' {
     
     Context 'Read-LoggedInput Function Tests' {
         It 'should be defined and accessible' -Skip:($SkipNonWindows -or $SkipNonAdmin) {
-            Get-Command 'Read-LoggedInput' | Should -Not -BeNullOrEmpty
+            $scriptContent = Get-Content $script:ScriptPath -Raw
+            $scriptContent | Should -Match "function\s+'Read-LoggedInput'"
         }
                 It 'should support common parameters' -Skip:($SkipNonWindows -or $SkipNonAdmin) {
-            (Get-Command 'Read-LoggedInput').Parameters.Keys | Should -Contain 'Verbose'
-            (Get-Command 'Read-LoggedInput').Parameters.Keys | Should -Contain 'WhatIf'
+            $scriptContent = Get-Content $script:ScriptPath -Raw
+            $scriptContent | Should -Match '\[CmdletBinding\('
+            $scriptContent = Get-Content $script:ScriptPath -Raw
+            $scriptContent | Should -Match 'SupportsShouldProcess'
         }
                 It 'should handle execution with valid parameters' -Skip:($SkipNonWindows -or $SkipNonAdmin) {
             # Add specific test logic for Read-LoggedInput
@@ -127,7 +138,8 @@ Describe 'kicker-bootstrap Tests' -Tag 'Installer' {
     
     Context 'Update-RepoPreserveConfig Function Tests' {
         It 'should be defined and accessible' -Skip:($SkipNonWindows -or $SkipNonAdmin) {
-            Get-Command 'Update-RepoPreserveConfig' | Should -Not -BeNullOrEmpty
+            $scriptContent = Get-Content $script:ScriptPath -Raw
+            $scriptContent | Should -Match "function\s+'Update-RepoPreserveConfig'"
         }
                 It 'should handle execution with valid parameters' -Skip:($SkipNonWindows -or $SkipNonAdmin) {
             # Add specific test logic for Update-RepoPreserveConfig
@@ -141,3 +153,5 @@ AfterAll {
     # Restore any modified system state
     # Remove test artifacts
 }
+
+

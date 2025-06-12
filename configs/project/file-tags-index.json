@@ -1,0 +1,52 @@
+{
+  "files": {},
+  "metadata": {
+    "version": "1.0",
+    "description": "File tagging index for project organization",
+    "created": "2025-06-12 06:59:43"
+  },
+  "tags": {},
+  "rules": {
+    "organization_rules": {
+      "test-results": "reports",
+      "legacy": "archive/legacy",
+      "report": "reports",
+      "terraform": "infrastructure",
+      "documentation": "docs"
+    },
+    "auto_tags": {
+      "*Test*.ps1": [
+        "test",
+        "powershell"
+      ],
+      "*.ps1": [
+        "powershell",
+        "script"
+      ],
+      "*report*.json": [
+        "report",
+        "generated"
+      ],
+      "*.json": [
+        "json",
+        "config"
+      ],
+      "*.md": [
+        "documentation",
+        "markdown"
+      ],
+      "*fix_*.ps1": [
+        "legacy",
+        "fix-script"
+      ],
+      "*.yml": [
+        "yaml",
+        "config"
+      ],
+      "*.py": [
+        "python",
+        "script"
+      ]
+    }
+  }
+}

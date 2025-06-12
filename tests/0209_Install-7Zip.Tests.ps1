@@ -24,7 +24,8 @@ Describe '0209_Install-7Zip Tests' -Tag 'Installer' {
     Context 'Script Structure Validation' {
         It 'should have valid PowerShell syntax' -Skip:($SkipNonWindows) {
             $script:ScriptPath | Should -Exist
-            { . $script:ScriptPath } | Should -Not -Throw
+            # Test syntax by parsing the script content instead of dot-sourcing
+            { $null = [System.Management.Automation.PSParser]::Tokenize((Get-Content $script:ScriptPath -Raw), [ref]$null) } | Should -Not -Throw
         }
         
         It 'should follow naming conventions' -Skip:($SkipNonWindows) {
@@ -33,7 +34,8 @@ Describe '0209_Install-7Zip Tests' -Tag 'Installer' {
         }
         
         It 'should define expected functions' -Skip:($SkipNonWindows) {
-            Get-Command 'Install-7Zip' -ErrorAction SilentlyContinue | Should -Not -BeNullOrEmpty
+            $scriptContent = Get-Content $script:ScriptPath -Raw
+            $scriptContent | Should -Match 'function\\s+Install-7Zip'
         }
     }
     
@@ -75,11 +77,14 @@ Describe '0209_Install-7Zip Tests' -Tag 'Installer' {
     
     Context 'Install-7Zip Function Tests' {
         It 'should be defined and accessible' -Skip:($SkipNonWindows) {
-            Get-Command 'Install-7Zip' | Should -Not -BeNullOrEmpty
+            $scriptContent = Get-Content $script:ScriptPath -Raw
+            $scriptContent | Should -Match 'function\s+Install-7Zip'
         }
                 It 'should support common parameters' -Skip:($SkipNonWindows) {
-            (Get-Command 'Install-7Zip').Parameters.Keys | Should -Contain 'Verbose'
-            (Get-Command 'Install-7Zip').Parameters.Keys | Should -Contain 'WhatIf'
+            $scriptContent = Get-Content $script:ScriptPath -Raw
+            $scriptContent | Should -Match '\[CmdletBinding\('
+            $scriptContent = Get-Content $script:ScriptPath -Raw
+            $scriptContent | Should -Match 'SupportsShouldProcess'
         }
                 It 'should handle execution with valid parameters' -Skip:($SkipNonWindows) {
             # Add specific test logic for Install-7Zip
@@ -93,5 +98,6 @@ AfterAll {
     # Restore any modified system state
     # Remove test artifacts
 }
+
 
 

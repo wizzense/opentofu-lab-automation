@@ -1,5 +1,3 @@
-\
-# filepath: /workspaces/opentofu-lab-automation/.github/workflows/auto-test-generation-setup.yml
 name: Auto Test Generation (Setup)
 
 on:

@@ -1,9 +1,9 @@
-Import-Module "$PSScriptRoot/../lab_utils/LabRunner/LabRunner.psd1" -Force
-
 Param(
     [Parameter(Mandatory)]
     [object]$Config
 )
+
+Import-Module "$PSScriptRoot/../lab_utils/LabRunner/LabRunner.psd1" -Force
 
 Write-CustomLog "Starting $MyInvocation.MyCommand"
 function Install-NpmDependencies {
@@ -112,9 +112,9 @@ function Install-NpmDependencies {
             Pop-Location
         }
         Write-CustomLog '==== Frontend dependency installation complete ===='
-    }
-}
+    } # End of Invoke-LabStep -Body
+} # End of function Install-NpmDependencies
 
-    Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
-if ($MyInvocation.InvocationName -ne '.') { Install-NpmDependencies @PSBoundParameters }
+Install-NpmDependencies -Config $Config
+
 Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"

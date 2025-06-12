@@ -1,5 +1,3 @@
-\
-# filepath: /workspaces/opentofu-lab-automation/.github/workflows/pester-windows.yml
 name: Pester (Windows)
 
 on:
@@ -23,14 +21,14 @@ jobs:
           path: |
             C:\\\\Users\\\\runneradmin\\\\Documents\\\\WindowsPowerShell\\\\Modules
             C:\\\\Users\\\\runneradmin\\\\Documents\\\\PowerShell\\\\Modules
-          key: windows-pwsh-modules-${{ hashFiles(\'.github/actions/lint/requirements.txt\') }}
+          key: windows-pwsh-modules-${{ hashFiles('tests/PesterConfiguration.psd1') }}
           restore-keys: windows-pwsh-modules-
       - name: Remove old Pester
         shell: pwsh
         run: |
           $ErrorActionPreference = \'Stop\'
           try {
-            $old = Get-Module -ListAvailable -Name Pester | Where-Object { $_.Version -lt [version]\'5.0.0\' }
+            $old = Get-Module -ListAvailable -Name Pester | Where-Object { $_.Version -lt [version]'5.0.0' }
             foreach ($mod in $old) {
               Remove-Item -Recurse -Force $mod.ModuleBase -ErrorAction SilentlyContinue
             }
@@ -41,7 +39,7 @@ jobs:
       - name: Install Pester
         shell: pwsh
         run: |
-          $ErrorActionPreference = \'Stop\'
+          $ErrorActionPreference = 'Stop'
           try {
             Install-Module -Name Pester -RequiredVersion 5.7.1 -Force -Scope CurrentUser
             Write-Host "Pester 5.7.1 installed successfully" -ForegroundColor Green

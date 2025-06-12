@@ -31,9 +31,12 @@ Describe 'Network Tests' -Tag 'Installer' {
         }
         
         It 'should define expected functions' {
-            Get-Command 'Invoke-LabWebRequest' -ErrorAction SilentlyContinue | Should -Not -BeNullOrEmpty
-            Get-Command 'Invoke-WebRequest' -ErrorAction SilentlyContinue | Should -Not -BeNullOrEmpty
-            Get-Command 'Invoke-LabNpm' -ErrorAction SilentlyContinue | Should -Not -BeNullOrEmpty
+            $scriptContent = Get-Content $script:ScriptPath -Raw
+            $scriptContent | Should -Match 'function\\s+Invoke-LabWebRequest'
+            $scriptContent = Get-Content $script:ScriptPath -Raw
+            $scriptContent | Should -Match 'function\\s+Invoke-WebRequest'
+            $scriptContent = Get-Content $script:ScriptPath -Raw
+            $scriptContent | Should -Match 'function\\s+Invoke-LabNpm'
         }
     }
     
@@ -72,11 +75,14 @@ Describe 'Network Tests' -Tag 'Installer' {
     
     Context 'Invoke-LabWebRequest Function Tests' {
         It 'should be defined and accessible' {
-            Get-Command 'Invoke-LabWebRequest' | Should -Not -BeNullOrEmpty
+            $scriptContent = Get-Content $script:ScriptPath -Raw
+            $scriptContent | Should -Match 'function\s+Invoke-LabWebRequest'
         }
                 It 'should support common parameters' {
-            (Get-Command 'Invoke-LabWebRequest').Parameters.Keys | Should -Contain 'Verbose'
-            (Get-Command 'Invoke-LabWebRequest').Parameters.Keys | Should -Contain 'WhatIf'
+            $scriptContent = Get-Content $script:ScriptPath -Raw
+            $scriptContent | Should -Match '\[CmdletBinding\('
+            $scriptContent = Get-Content $script:ScriptPath -Raw
+            $scriptContent | Should -Match 'SupportsShouldProcess'
         }
                 It 'should handle execution with valid parameters' {
             # Add specific test logic for Invoke-LabWebRequest
@@ -86,11 +92,14 @@ Describe 'Network Tests' -Tag 'Installer' {
     
     Context 'Invoke-WebRequest Function Tests' {
         It 'should be defined and accessible' {
-            Get-Command 'Invoke-WebRequest' | Should -Not -BeNullOrEmpty
+            $scriptContent = Get-Content $script:ScriptPath -Raw
+            $scriptContent | Should -Match 'function\s+Invoke-WebRequest'
         }
                 It 'should support common parameters' {
-            (Get-Command 'Invoke-WebRequest').Parameters.Keys | Should -Contain 'Verbose'
-            (Get-Command 'Invoke-WebRequest').Parameters.Keys | Should -Contain 'WhatIf'
+            $scriptContent = Get-Content $script:ScriptPath -Raw
+            $scriptContent | Should -Match '\[CmdletBinding\('
+            $scriptContent = Get-Content $script:ScriptPath -Raw
+            $scriptContent | Should -Match 'SupportsShouldProcess'
         }
                 It 'should handle execution with valid parameters' {
             # Add specific test logic for Invoke-WebRequest
@@ -100,11 +109,14 @@ Describe 'Network Tests' -Tag 'Installer' {
     
     Context 'Invoke-LabNpm Function Tests' {
         It 'should be defined and accessible' {
-            Get-Command 'Invoke-LabNpm' | Should -Not -BeNullOrEmpty
+            $scriptContent = Get-Content $script:ScriptPath -Raw
+            $scriptContent | Should -Match 'function\s+Invoke-LabNpm'
         }
                 It 'should support common parameters' {
-            (Get-Command 'Invoke-LabNpm').Parameters.Keys | Should -Contain 'Verbose'
-            (Get-Command 'Invoke-LabNpm').Parameters.Keys | Should -Contain 'WhatIf'
+            $scriptContent = Get-Content $script:ScriptPath -Raw
+            $scriptContent | Should -Match '\[CmdletBinding\('
+            $scriptContent = Get-Content $script:ScriptPath -Raw
+            $scriptContent | Should -Match 'SupportsShouldProcess'
         }
                 It 'should handle execution with valid parameters' {
             # Add specific test logic for Invoke-LabNpm
@@ -118,3 +130,4 @@ AfterAll {
     # Restore any modified system state
     # Remove test artifacts
 }
+

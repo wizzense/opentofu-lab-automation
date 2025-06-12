@@ -1,5 +1,3 @@
-\
-# filepath: /workspaces/opentofu-lab-automation/.github/workflows/auto-test-generation-execution.yml
 name: Auto Test Generation (Execution)
 
 on:
@@ -102,7 +100,7 @@ jobs:
           Write-Host "Generated $($generatedTests.Count) test files" -ForegroundColor Green
           $generatedTests | ForEach-Object { Write-Host "  - $_" }
           
-          @{\
+          @{
             Platform = "${{ runner.os }}"
             GeneratedTests = $generatedTests
             ProcessedScripts = $changedScripts
