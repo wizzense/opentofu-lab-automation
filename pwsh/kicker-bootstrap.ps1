@@ -32,10 +32,53 @@ function Get-CrossPlatformTempPath {
     Provides a cross-platform way to get the temporary directory, handling cases where
     $env:TEMP might not be set (e.g., on Linux/macOS).
     #>
-    if ($env:TEMP) { 
-        return $env:TEMP 
-    } else { 
-        return [System.IO.Path]::GetTempPath() 
+    if ($env:TEMP) {
+        return $env:TEMP
+    } else {
+        return [System.IO.Path]::GetTempPath()
+    }
+}
+
+function Join-PathRobust {
+    param(
+        [string]$Path,
+        [string[]]$ChildPaths
+    )
+    try {
+        return Join-Path -Path $Path -ChildPath $ChildPaths -ErrorAction Stop
+    } catch {
+        foreach ($child in $ChildPaths) {
+            $Path = Join-Path -Path $Path -ChildPath $child
+        }
+        return $Path
+    }
+}
+
+function Load-LabConfigSafe {
+    param([string]$Path)
+    try {
+        return Get-LabConfig -Path $Path
+    } catch {
+        if ($_.Exception.Message -match 'positional parameter') {
+            Write-CustomLog 'Falling back to PowerShell 5.1 config loader.' 'WARN'
+            $content = Get-Content -Raw -LiteralPath $Path
+            $cfg = $content | ConvertFrom-Json
+            $labDir = Split-Path -Parent $labConfigScript
+            $repoRoot = Resolve-Path (Join-PathRobust $labDir '..')
+            $dirs = @{}
+            if ($cfg.PSObject.Properties['Directories']) {
+                $cfg.Directories.PSObject.Properties | ForEach-Object { $dirs[$_.Name] = $_.Value }
+            }
+            $dirs['RepoRoot']       = $repoRoot.Path
+            $dirs['RunnerScripts']  = Join-PathRobust $repoRoot.Path @('runner_scripts')
+            $dirs['UtilityScripts'] = Join-PathRobust $repoRoot.Path @('lab_utils','LabRunner')
+            $dirs['ConfigFiles']    = Join-PathRobust $repoRoot.Path @('..','configs','config_files')
+            $dirs['InfraRepo']      = if ($cfg.InfraRepoPath) { $cfg.InfraRepoPath } else { 'C:\\Temp\\base-infra' }
+            Add-Member -InputObject $cfg -MemberType NoteProperty -Name Directories -Value ([pscustomobject]$dirs) -Force
+            return $cfg
+        } else {
+            throw
+        }
     }
 }
 
@@ -269,7 +312,7 @@ if (-not (Test-Path -LiteralPath $ConfigFile)) {
 
 try {
     $resolvedConfigPath = (Resolve-Path -LiteralPath $ConfigFile).Path
-    $config = Get-LabConfig -Path $resolvedConfigPath
+    $config = Load-LabConfigSafe "$resolvedConfigPath"
     Write-CustomLog "Config file loaded from $resolvedConfigPath."
     Write-CustomLog (Format-Config -Config $config)
 } catch {
