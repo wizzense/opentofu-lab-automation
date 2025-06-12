@@ -10,6 +10,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 No significant changes.
 
 
+# Labctl 0.0.0 (2025-06-12)
+
+No significant changes.
+
+
 # Labctl 0.0.0 (2025-06-11)
 
 No significant changes.
