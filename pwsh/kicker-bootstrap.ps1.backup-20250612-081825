@@ -17,8 +17,6 @@
 param(
     [string]$ConfigFile,
     [switch]$Quiet,
-    [switch]$WhatIf,
-    [switch]$NonInteractive,
     [ValidateSet('silent','normal','detailed')]
     [string]$Verbosity = 'normal'
 )
@@ -54,13 +52,6 @@ $defaultConfig = "${baseUrl}${targetBranch}/configs/config_files/default-config.
 
 function Write-Continue {
     param([string]$Message = "Press any key to continue...")
-    
-    # Skip interactive prompts in WhatIf or NonInteractive modes
-    if ($WhatIf -or $NonInteractive -or $Quiet) {
-        Write-CustomLog "Skipping interactive prompt: $Message" 'INFO'
-        return
-    }
-    
     Write-Host $Message -ForegroundColor Yellow -NoNewline
     $null = Read-Host
 }
@@ -200,12 +191,8 @@ The script will do the following if you proceed:
 """
 
 # Prompt for input to provide remote/local or accept default
-if ($WhatIf -or $NonInteractive) {
-    Write-CustomLog "Non-interactive mode: Using default configuration" 'INFO'
-    $configOption = ""
-} else {
-    $configOption = Read-Host -Prompt "`nEnter a remote URL or local path, or leave blank for default."
-}
+
+$configOption = Read-Host -Prompt "`nEnter a remote URL or local path, or leave blank for default."
 
 if ($configOption -match "https://") {
     Invoke-WebRequest -Uri $configOption -OutFile '.\custom-config.json'
@@ -224,17 +211,11 @@ if ($configOption -match "https://") {
             $num = $i + 1
             Write-Host "$num) $($configFiles[$i].Name)" -ForegroundColor White
         }
-        
-        if ($WhatIf -or $NonInteractive) {
-            Write-CustomLog "Non-interactive mode: Using first configuration file" 'INFO'
-            $ConfigFile = $configFiles[0].FullName
+        $ans = Read-Host -Prompt "Select configuration number"
+        if ($ans -match '^[0-9]+$' -and [int]$ans -ge 1 -and [int]$ans -le $configFiles.Count) {
+            $ConfigFile = $configFiles[[int]$ans - 1].FullName
         } else {
-            $ans = Read-Host -Prompt "Select configuration number"
-            if ($ans -match '^[0-9]+$' -and [int]$ans -ge 1 -and [int]$ans -le $configFiles.Count) {
-                $ConfigFile = $configFiles[[int]$ans - 1].FullName
-            } else {
-                $ConfigFile = $configFiles[0].FullName
-            }
+            $ConfigFile = $configFiles[0].FullName
         }
     } elseif ($configFiles.Count -eq 1) {
         $ConfigFile = $configFiles[0].FullName
@@ -251,14 +232,6 @@ if ($configOption -match "https://") {
 # (1) Load Configuration
 # ------------------------------------------------
 Write-CustomLog "==== Loading configuration file ===="
-
-# Exit early if this is just a WhatIf run
-if ($WhatIf) {
-    Write-CustomLog "WhatIf mode: Configuration validation complete" 'INFO'
-    Write-CustomLog "WhatIf mode: Would proceed with Git, GitHub CLI, and repository operations" 'INFO'
-    Write-CustomLog "WhatIf mode: Exiting without making changes" 'INFO'
-    exit 0
-}
 
 # Validate the config path first so users get a clear error when the file is
 # missing or the path contains characters PowerShell interprets as parameters.
@@ -389,44 +362,39 @@ try {
 catch {
     Write-CustomLog "GitHub CLI is not authenticated."
 
-    if ($WhatIf -or $NonInteractive) {
-        Write-CustomLog "Non-interactive mode: Skipping GitHub authentication" 'WARN'
-        Write-CustomLog "Note: Repository operations may fail without authentication" 'WARN'
-    } else {
-        # Optional: Prompt user for a personal access token
-        $pat = Read-Host -Prompt "Enter your GitHub Personal Access Token (or press Enter to skip):"
+    # Optional: Prompt user for a personal access token
+    $pat = Read-Host -Prompt "Enter your GitHub Personal Access Token (or press Enter to skip):"
 
-        if (-not [string]::IsNullOrWhiteSpace($pat)) {
-            Write-CustomLog "Attempting PAT-based GitHub CLI login..."
-            try {
-                $pat | & "$ghExePath" auth login --hostname github.com --git-protocol https --with-token
-            }
-            catch {
-                Write-Error "ERROR: PAT-based login failed. Please verify your token or try interactive login."
-                exit 1
-            }
-        }
-        else {
-            # No PAT, attempt normal interactive login in the console
-            Write-CustomLog "No PAT provided. Attempting interactive login..."
-            try {
-                & "$ghExePath" auth login --hostname github.com --git-protocol https
-            }
-            catch {
-                Write-Error "ERROR: Interactive login failed: $($_.Exception.Message)"
-                exit 1
-            }
-        }
-
-        # After the login attempt, re-check auth
+    if (-not [string]::IsNullOrWhiteSpace($pat)) {
+        Write-CustomLog "Attempting PAT-based GitHub CLI login..."
         try {
-            & "$ghExePath" auth status 2>&1
-            Write-CustomLog "GitHub CLI is now authenticated."
+            $pat | & "$ghExePath" auth login --hostname github.com --git-protocol https --with-token
         }
         catch {
-            Write-Error "ERROR: GitHub authentication failed. Please run '$ghExePath auth login' manually and re-run."
+            Write-Error "ERROR: PAT-based login failed. Please verify your token or try interactive login."
             exit 1
         }
+    }
+    else {
+        # No PAT, attempt normal interactive login in the console
+        Write-CustomLog "No PAT provided. Attempting interactive login..."
+        try {
+            & "$ghExePath" auth login --hostname github.com --git-protocol https
+        }
+        catch {
+            Write-Error "ERROR: Interactive login failed: $($_.Exception.Message)"
+            exit 1
+        }
+    }
+
+    # After the login attempt, re-check auth
+    try {
+        & "$ghExePath" auth status 2>&1
+        Write-CustomLog "GitHub CLI is now authenticated."
+    }
+    catch {
+        Write-Error "ERROR: GitHub authentication failed. Please run '$ghExePath auth login' manually and re-run."
+        exit 1
     }
 }
 
@@ -663,7 +631,6 @@ if ($exitCode -ne 0) {
 
 Write-CustomLog "`n=== Kicker script finished successfully! ==="
 exit 0
-
 
 
 
