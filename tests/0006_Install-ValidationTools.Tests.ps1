@@ -80,7 +80,7 @@ Describe '0006_Install-ValidationTools Tests' -Tag 'Installer' {
     Context 'Install-Cosign Function Tests' {
         It 'should be defined and accessible' -Skip:($SkipNonWindows) {
             $scriptContent = Get-Content $script:ScriptPath -Raw
-            $scriptContent | Should -Match 'function\s+[^']*'
+            $scriptContent | Should -Match 'function\s+[^'']*'
         }
                 It 'should support common parameters' -Skip:($SkipNonWindows) {
             $scriptContent = Get-Content $script:ScriptPath -Raw
@@ -97,7 +97,7 @@ Describe '0006_Install-ValidationTools Tests' -Tag 'Installer' {
     Context 'Find-Gpg Function Tests' {
         It 'should be defined and accessible' -Skip:($SkipNonWindows) {
             $scriptContent = Get-Content $script:ScriptPath -Raw
-            $scriptContent | Should -Match 'function\s+[^']*'
+            $scriptContent | Should -Match 'function\s+[^'']*'
         }
                 It 'should handle execution with valid parameters' -Skip:($SkipNonWindows) {
             # Add specific test logic for Find-Gpg
