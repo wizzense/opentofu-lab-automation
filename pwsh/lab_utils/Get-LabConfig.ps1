@@ -2,7 +2,7 @@ function Get-LabConfig {
     [CmdletBinding()]
     param(
 
-        [string]$Path = (Join-Path $PSScriptRoot '..\config_files\default-config.json')
+        [string]$Path = (Join-Path $PSScriptRoot '..\..\configs\config_files\default-config.json')
     )
 
     if (-not (Test-Path $Path)) {
@@ -39,7 +39,7 @@ function Get-LabConfig {
         $dirs['RepoRoot']       = $repoRoot.Path
         $dirs['RunnerScripts']  = Join-Path $repoRoot 'runner_scripts'
         $dirs['UtilityScripts'] = Join-Path (Join-Path $repoRoot 'lab_utils') 'LabRunner'
-        $dirs['ConfigFiles']    = Join-Path $repoRoot 'config_files'
+        $dirs['ConfigFiles']    = Join-Path $repoRoot '..' 'configs' 'config_files'
         $dirs['InfraRepo']      = if ($config.InfraRepoPath) { $config.InfraRepoPath } else { 'C:\\Temp\\base-infra' }
 
         Add-Member -InputObject $config -MemberType NoteProperty -Name Directories -Value ([pscustomobject]$dirs) -Force

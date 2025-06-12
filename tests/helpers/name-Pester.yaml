@@ -179,7 +179,7 @@ jobs:
       - name: Verify Node and packages
         shell: pwsh
         run: |
-          $cfg = Get-Content 'config_files/default-config.json' | ConvertFrom-Json
+          $cfg = Get-Content 'configs/config_files/default-config.json' | ConvertFrom-Json
           node --version
           $packages = $cfg.Node_Dependencies.GlobalPackages
           foreach ($pkg in $packages) {
