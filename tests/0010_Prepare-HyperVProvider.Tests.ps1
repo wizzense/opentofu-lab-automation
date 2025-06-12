@@ -61,7 +61,8 @@ Describe '0010_Prepare-HyperVProvider Tests' -Tag 'Feature' {
     Context 'Convert-CerToPem Function Tests' {
         It 'should be defined and accessible' -Skip:($SkipNonWindows) {
             $scriptContent = Get-Content $script:ScriptPath -Raw
-            $scriptContent | Should -Match 'function\s+[^']*'
+            $scriptContent | Should -Match 'function\s+[^'']*'
+
         }
                 It 'should support common parameters' -Skip:($SkipNonWindows) {
             $scriptContent = Get-Content $script:ScriptPath -Raw
@@ -78,7 +79,8 @@ Describe '0010_Prepare-HyperVProvider Tests' -Tag 'Feature' {
     Context 'Convert-PfxToPem Function Tests' {
         It 'should be defined and accessible' -Skip:($SkipNonWindows) {
             $scriptContent = Get-Content $script:ScriptPath -Raw
-            $scriptContent | Should -Match 'function\s+[^']*'
+            $scriptContent | Should -Match 'function\s+[^'']*'
+
         }
                 It 'should support common parameters' -Skip:($SkipNonWindows) {
             $scriptContent = Get-Content $script:ScriptPath -Raw
@@ -95,7 +97,8 @@ Describe '0010_Prepare-HyperVProvider Tests' -Tag 'Feature' {
     Context 'Get-HyperVProviderVersion Function Tests' {
         It 'should be defined and accessible' -Skip:($SkipNonWindows) {
             $scriptContent = Get-Content $script:ScriptPath -Raw
-            $scriptContent | Should -Match 'function\s+[^']*'
+            $scriptContent | Should -Match 'function\s+[^'']*'
+
         }
                 It 'should support common parameters' -Skip:($SkipNonWindows) {
             $scriptContent = Get-Content $script:ScriptPath -Raw

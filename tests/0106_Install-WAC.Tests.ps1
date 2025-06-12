@@ -57,7 +57,8 @@ Describe '0106_Install-WAC Tests' -Tag 'Unknown' {
     Context 'Get-WacRegistryInstallation Function Tests' {
         It 'should be defined and accessible' -Skip:($SkipNonWindows) {
             $scriptContent = Get-Content $script:ScriptPath -Raw
-            $scriptContent | Should -Match 'function\s+[^']*'
+            $scriptContent | Should -Match 'function\s+[^'']*'
+
         }
                 It 'should handle execution with valid parameters' -Skip:($SkipNonWindows) {
             # Add specific test logic for Get-WacRegistryInstallation
