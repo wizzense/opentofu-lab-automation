@@ -401,7 +401,7 @@ function Update-RepoPreserveConfig {
     Push-Location $RepoPath
     $configChanges = & $GitPath status --porcelain "configs/config_files" 2>$null
     $backupDir = $null
-    if ($configChanges) {
+    if ($configChanges -and (Test-Path 'configs/config_files')) {
         $backupDir = Join-Path $RepoPath 'config_backup'
         Write-CustomLog "Backing up local config changes to $backupDir" 'INFO'
         if (Test-Path $backupDir) { Remove-Item -Recurse -Force $backupDir }
@@ -409,7 +409,7 @@ function Update-RepoPreserveConfig {
         & $GitPath stash push -u -- 'configs/config_files' | Out-Null
     }
     & $GitPath pull origin $Branch --quiet 2>&1 >> "$(Get-CrossPlatformTempPath)\git.log"
-    if ($configChanges) {
+    if ($configChanges -and (Test-Path $backupDir)) {
         Write-CustomLog 'Restoring backed up config files' 'INFO'
         Copy-Item -Path (Join-Path $backupDir '*') -Destination 'configs/config_files' -Recurse -Force
         Remove-Item -Recurse -Force $backupDir -ErrorAction SilentlyContinue
