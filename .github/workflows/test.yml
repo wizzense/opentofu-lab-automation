@@ -1,3 +1,4 @@
+---
 name: Example Infrastructure
 
 on:
@@ -78,4 +79,3 @@ jobs:
         with:
           name: windows-validate-artifacts
           path: opentofu/examples/hyperv/.terraform
-
