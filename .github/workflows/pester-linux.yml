@@ -58,11 +58,11 @@ jobs:
       - name: Verify test helpers
         shell: pwsh
         run: |
-          $ErrorActionPreference = \'Stop\'
+          $ErrorActionPreference = 'Stop'
           try {
             . ./tests/helpers/Get-ScriptAst.ps1
             if (-not (Get-Command Get-ScriptAst -ErrorAction SilentlyContinue)) {
-                Write-Error \'Get-ScriptAst helper not loaded\'
+                Write-Error 'Get-ScriptAst helper not loaded'
                 exit 1
             }
             Write-Host "Test helpers verified successfully" -ForegroundColor Green
@@ -73,7 +73,7 @@ jobs:
       - name: Ensure coverage directory
         shell: pwsh
         run: |
-          $ErrorActionPreference = \'Stop\'
+          $ErrorActionPreference = 'Stop'
           try {
             if (-not (Test-Path coverage)) {
                 New-Item -ItemType Directory -Path coverage | Out-Null
@@ -87,21 +87,21 @@ jobs:
         id: pester
         shell: pwsh
         run: |
-          $ErrorActionPreference = \'Stop\'
+          $ErrorActionPreference = 'Stop'
           Write-Host "Running Pester tests for Linux" -ForegroundColor Yellow
           try {
-            $cfg = New-PesterConfiguration -Hashtable (Import-PowerShellDataFile \'tests/PesterConfiguration.psd1\')
+            $cfg = New-PesterConfiguration -Hashtable (Import-PowerShellDataFile 'tests/PesterConfiguration.psd1')
             $cfg.Run.PassThru = $true
-            $cfg.Output.Verbosity = \'Normal\'
+            $cfg.Output.Verbosity = 'Normal'
             $coveragePaths = @($cfg.CodeCoverage.Path.Value)
-            if (Test-Path \'tools/iso\') {
-              $coveragePaths += \'tools/iso\'
+            if (Test-Path 'tools/iso') {
+              $coveragePaths += 'tools/iso'
             }
             $cfg.CodeCoverage.Path = [Pester.StringArrayOption]::new($coveragePaths)
             $repoRoot = $env:GITHUB_WORKSPACE
-            $cfg.TestResult.OutputPath   = Join-Path $repoRoot \'coverage/testResults.xml\'
-            $cfg.CodeCoverage.OutputPath = Join-Path $repoRoot \'coverage/coverage.xml\'
-            $logPath = Join-Path $repoRoot \'coverage/pester.log\'
+            $cfg.TestResult.OutputPath   = Join-Path $repoRoot 'coverage/testResults.xml'
+            $cfg.CodeCoverage.OutputPath = Join-Path $repoRoot 'coverage/coverage.xml'
+            $logPath = Join-Path $repoRoot 'coverage/pester.log'
             Write-Host "Starting test execution..." -ForegroundColor Green
             $result = Invoke-Pester -Configuration $cfg 2>&1 | Tee-Object -FilePath $logPath
             if ($result.FailedCount -gt 0) {
