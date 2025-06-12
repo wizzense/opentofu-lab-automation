@@ -97,6 +97,7 @@ Describe '0006_Install-ValidationTools Tests' -Tag 'Installer' {
     Context 'Find-Gpg Function Tests' {
         It 'should be defined and accessible' -Skip:($SkipNonWindows) {
             $scriptContent = Get-Content $script:ScriptPath -Raw
+            # Triple single quotes are used here to properly escape single quotes within the regex pattern.
             $scriptContent | Should -Match 'function\s+[^''']*'
         }
                 It 'should handle execution with valid parameters' -Skip:($SkipNonWindows) {
