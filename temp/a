@@ -1,0 +1,135 @@
+[1mdiff --git a/.github/workflows/pester-linux.yml b/.github/workflows/pester-linux.yml[m
+[1mindex c50c55a..c2bbb5c 100644[m
+[1m--- a/.github/workflows/pester-linux.yml[m
+[1m+++ b/.github/workflows/pester-linux.yml[m
+[36m@@ -30,19 +30,23 @@[m [mjobs:[m
+         uses: actions/cache@v4[m
+         with:[m
+           path: ~/.local/share/powershell/Modules[m
+[31m-          key: linux-pwsh-modules-${{ hashFiles(\'.github/actions/lint/requirements.txt\') }}[m
+[32m+[m[32m          key: linux-pwsh-modules-${{ hashFiles('tests/PesterConfiguration.psd1') }}[m
+           restore-keys: linux-pwsh-modules-[m
+       - name: Install Pester[m
+         shell: pwsh[m
+         run: |[m
+           $ErrorActionPreference = 'Stop'[m
+[31m-          Install-Module -Name Pester -Force -Scope CurrentUser -ErrorAction Stop || {[m
+[31m-            Write-Error "Failed to install Pester"; exit 1;[m
+[32m+[m[32m          try {[m
+[32m+[m[32m            Install-Module -Name Pester -RequiredVersion 5.7.1 -Force -Scope CurrentUser -ErrorAction Stop[m
+[32m+[m[32m            Write-Host "Pester 5.7.1 installed successfully" -ForegroundColor Green[m
+[32m+[m[32m          } catch {[m
+[32m+[m[32m            Write-Error "Failed to install Pester: $_"[m
+[32m+[m[32m            exit 1[m
+           }[m
+       - name: Install powershell-yaml[m
+         shell: pwsh[m
+         run: |[m
+[31m-          $ErrorActionPreference = \'Stop\'[m
+[32m+[m[32m          $ErrorActionPreference = 'Stop'[m
+           try {[m
+             Install-Module -Name powershell-yaml -Force -Scope CurrentUser[m
+             Write-Host "powershell-yaml installed successfully" -ForegroundColor Green[m
+[1mdiff --git a/.github/workflows/pester-macos.yml b/.github/workflows/pester-macos.yml[m
+[1mindex ddef0ce..3e09feb 100644[m
+[1m--- a/.github/workflows/pester-macos.yml[m
+[1m+++ b/.github/workflows/pester-macos.yml[m
+[36m@@ -24,8 +24,8 @@[m [mjobs:[m
+       - name: Cache PowerShell modules[m
+         uses: actions/cache@v4[m
+         with:[m
+[31m-          path: ~/.local/share/powershell/Modules[m
+[31m-          key: macos-pwsh-modules-${{ hashFiles(\'.github/actions/lint/requirements.txt\') }}[m
+[32m+[m[32m          path: $HOME/.local/share/powershell/Modules[m
+[32m+[m[32m          key: macos-pwsh-modules-${{ hashFiles('tests/PesterConfiguration.psd1') }}[m
+           restore-keys: macos-pwsh-modules-[m
+       - name: Install Pester[m
+         shell: pwsh[m
+[36m@@ -52,11 +52,11 @@[m [mjobs:[m
+       - name: Verify test helpers[m
+         shell: pwsh[m
+         run: |[m
+[31m-          $ErrorActionPreference = \'Stop\'[m
+[32m+[m[32m          $ErrorActionPreference = 'Stop'[m
+           try {[m
+             . ./tests/helpers/Get-ScriptAst.ps1[m
+             if (-not (Get-Command Get-ScriptAst -ErrorAction SilentlyContinue)) {[m
+[31m-                Write-Error \'Get-ScriptAst helper not loaded\'[m
+[32m+[m[32m                Write-Error 'Get-ScriptAst helper not loaded'[m
+                 exit 1[m
+             }[m
+             Write-Host "Test helpers verified successfully" -ForegroundColor Green[m
+[36m@@ -67,7 +67,7 @@[m [mjobs:[m
+       - name: Ensure coverage directory[m
+         shell: pwsh[m
+         run: |[m
+[31m-          $ErrorActionPreference = \'Stop\'[m
+[32m+[m[32m          $ErrorActionPreference = 'Stop'[m
+           try {[m
+             if (-not (Test-Path coverage)) {[m
+                 New-Item -ItemType Directory -Path coverage | Out-Null[m
+[36m@@ -84,18 +84,18 @@[m [mjobs:[m
+           $ErrorActionPreference = 'Stop'[m
+           Write-Host "Running Pester tests for macOS" -ForegroundColor Yellow[m
+           try {[m
+[31m-            $cfg = New-PesterConfiguration -Hashtable (Import-PowerShellDataFile \'tests/PesterConfiguration.psd1\')[m
+[32m+[m[32m            $cfg = New-PesterConfiguration -Hashtable (Import-PowerShellDataFile 'tests/PesterConfiguration.psd1')[m
+             $cfg.Run.PassThru = $true[m
+[31m-            $cfg.Output.Verbosity = \'Normal\'[m
+[32m+[m[32m            $cfg.Output.Verbosity = 'Normal'[m
+             $coveragePaths = @($cfg.CodeCoverage.Path.Value)[m
+[31m-            if (Test-Path \'tools/iso\') {[m
+[31m-              $coveragePaths += \'tools/iso\'[m
+[32m+[m[32m            if (Test-Path 'tools/iso') {[m
+[32m+[m[32m              $coveragePaths += 'tools/iso'[m
+             }[m
+             $cfg.CodeCoverage.Path = [Pester.StringArrayOption]::new($coveragePaths)[m
+             $repoRoot = $env:GITHUB_WORKSPACE[m
+[31m-            $cfg.TestResult.OutputPath   = Join-Path $repoRoot \'coverage/testResults.xml\'[m
+[31m-            $cfg.CodeCoverage.OutputPath = Join-Path $repoRoot \'coverage/coverage.xml\'[m
+[31m-            $logPath = Join-Path $repoRoot \'coverage/pester.log\'[m
+[32m+[m[32m            $cfg.TestResult.OutputPath   = Join-Path $repoRoot 'coverage/testResults.xml'[m
+[32m+[m[32m            $cfg.CodeCoverage.OutputPath = Join-Path $repoRoot 'coverage/coverage.xml'[m
+[32m+[m[32m            $logPath = Join-Path $repoRoot 'coverage/pester.log'[m
+             Write-Host "Starting test execution..." -ForegroundColor Green[m
+             $result = Invoke-Pester -Configuration $cfg 2>&1 | Tee-Object -FilePath $logPath[m
+             if ($result.FailedCount -gt 0) {[m
+[36m@@ -120,7 +120,7 @@[m [mjobs:[m
+           name: pester-log-macos[m
+           path: coverage/pester.log[m
+       - name: Upload coverage[m
+[31m-        if: steps.pester.outcome == \'success\'[m
+[32m+[m[32m        if: steps.pester.outcome == 'success'[m
+         uses: actions/upload-artifact@v4[m
+         with:[m
+           name: pester-coverage-macos[m
+[36m@@ -132,6 +132,6 @@[m [mjobs:[m
+           name: pester-results-macos[m
+           path: coverage/testResults.xml[m
+       - name: Fail if Pester tests failed[m
+[31m-        if: steps.pester.outputs.pester_exit_code != \'0\'[m
+[32m+[m[32m        if: steps.pester.outputs.pester_exit_code != '0'[m
+         shell: pwsh[m
+         run: exit 1[m
+[1mdiff --git a/.github/workflows/pester-windows.yml b/.github/workflows/pester-windows.yml[m
+[1mindex f4cbc3a..58218ea 100644[m
+[1m--- a/.github/workflows/pester-windows.yml[m
+[1m+++ b/.github/workflows/pester-windows.yml[m
+[36m@@ -28,7 +28,7 @@[m [mjobs:[m
+         run: |[m
+           $ErrorActionPreference = \'Stop\'[m
+           try {[m
+[31m-            $old = Get-Module -ListAvailable -Name Pester | Where-Object { $_.Version -lt [version]\'5.0.0\' }[m
+[32m+[m[32m            $old = Get-Module -ListAvailable -Name Pester | Where-Object { $_.Version -lt [version]'5.0.0' }[m
+             foreach ($mod in $old) {[m
+               Remove-Item -Recurse -Force $mod.ModuleBase -ErrorAction SilentlyContinue[m
+             }[m
+[36m@@ -39,7 +39,7 @@[m [mjobs:[m
+       - name: Install Pester[m
+         shell: pwsh[m
+         run: |[m
+[31m-          $ErrorActionPreference = \'Stop\'[m
+[32m+[m[32m          $ErrorActionPreference = 'Stop'[m
+           try {[m
+             Install-Module -Name Pester -RequiredVersion 5.7.1 -Force -Scope CurrentUser[m
+             Write-Host "Pester 5.7.1 installed successfully" -ForegroundColor Green[m

@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<test-results xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="nunit_schema_2.5.xsd" name="Pester" total="3" errors="0" failures="0" not-run="0" inconclusive="0" ignored="0" skipped="3" invalid="0" date="2025-06-12" time="03:29:33">
+  <environment machine-name="codespaces-465dd5" user="codespace" platform="Linux" clr-version="8.0.1" os-version="6.8.0-1027-azure" cwd="/workspaces/opentofu-lab-automation" user-domain="" nunit-version="2.5.8.0" />
+  <culture-info current-culture="" current-uiculture="" />
+  <test-suite type="TestFixture" name="Pester" executed="True" result="Ignored" success="True" time="0.5102" asserts="0" description="Pester">
+    <results>
+      <test-suite type="TestFixture" name="/workspaces/opentofu-lab-automation/tests/0007_Install-Go.Tests.ps1" executed="True" result="Ignored" success="True" time="0.5102" asserts="0" description="/workspaces/opentofu-lab-automation/tests/0007_Install-Go.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="0007_Install-Go Tests" executed="True" result="Ignored" success="True" time="0.0854" asserts="0" description="0007_Install-Go Tests">
+            <results>
+              <test-suite type="TestFixture" name="0007_Install-Go Tests.Script Structure Validation" executed="True" result="Ignored" success="True" time="0.0626" asserts="0" description="0007_Install-Go Tests.Script Structure Validation">
+                <results>
+                  <test-case description="should have valid PowerShell syntax" name="0007_Install-Go Tests.Script Structure Validation.should have valid PowerShell syntax" time="0.0317" asserts="0" success="False" result="Ignored" executed="False" />
+                  <test-case description="should follow naming conventions" name="0007_Install-Go Tests.Script Structure Validation.should follow naming conventions" time="0.0029" asserts="0" success="False" result="Ignored" executed="False" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="0007_Install-Go Tests.Parameter Validation" executed="True" result="Ignored" success="True" time="0.0721" asserts="0" description="0007_Install-Go Tests.Parameter Validation">
+                <results>
+                  <test-case description="should accept Config parameter" name="0007_Install-Go Tests.Parameter Validation.should accept Config parameter" time="0.0031" asserts="0" success="False" result="Ignored" executed="False" />
+                </results>
+              </test-suite>
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+    </results>
+  </test-suite>
+</test-results>

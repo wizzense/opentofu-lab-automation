@@ -1,0 +1,12 @@
+site_name: OpenTofu Lab Automation
+nav:
+  - Home: docs/index.md
+  - Runner: docs/runner.md
+  - Self-hosted Runner: docs/self-hosted-runner.md
+  - Lab Utils: docs/lab_utils.md
+  - ISO Tools: docs/iso_tools.md
+  - Copilot Auto Fix: docs/copilot-auto-fix.md
+  - Copilot Codespaces: docs/copilot-codespaces.md
+  - Python CLI: docs/python-cli.md
+  - Troubleshooting: docs/troubleshooting.md
+  - Changelog: docs/changelog.md

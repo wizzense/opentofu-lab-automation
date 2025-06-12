@@ -1,0 +1,78 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<test-results xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="nunit_schema_2.5.xsd" name="Pester" total="9" errors="0" failures="2" not-run="0" inconclusive="0" ignored="0" skipped="3" invalid="0" date="2025-06-12" time="03:28:25">
+  <environment clr-version="8.0.1" machine-name="codespaces-465dd5" cwd="/workspaces/opentofu-lab-automation" user-domain="" nunit-version="2.5.8.0" user="codespace" os-version="6.8.0-1027-azure" platform="Linux" />
+  <culture-info current-culture="" current-uiculture="" />
+  <test-suite type="TestFixture" name="Pester" executed="True" result="Failure" success="False" time="1.5143" asserts="0" description="Pester">
+    <results>
+      <test-suite type="TestFixture" name="/workspaces/opentofu-lab-automation/tests/0001_Reset-Git.Tests.ps1" executed="True" result="Failure" success="False" time="1.0563" asserts="0" description="/workspaces/opentofu-lab-automation/tests/0001_Reset-Git.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="0001_Reset-Git Tests" executed="True" result="Failure" success="False" time="0.4637" asserts="0" description="0001_Reset-Git Tests">
+            <results>
+              <test-suite type="TestFixture" name="0001_Reset-Git Tests.Script Structure Validation" executed="True" result="Failure" success="False" time="0.2334" asserts="0" description="0001_Reset-Git Tests.Script Structure Validation">
+                <results>
+                  <test-case description="should have valid PowerShell syntax" name="0001_Reset-Git Tests.Script Structure Validation.should have valid PowerShell syntax" time="0.1904" asserts="0" success="False" result="Failure" executed="True">
+                    <failure>
+                      <message>Expected path '/workspaces/opentofu-lab-automation/tests/../workspaces/opentofu-lab-automation/pwsh/runner_scripts/0001_Reset-Git.ps1' to exist, but it did not exist.</message>
+                      <stack-trace>at $scriptPath | Should -Exist, /workspaces/opentofu-lab-automation/tests/0001_Reset-Git.Tests.ps1:22
+at &lt;ScriptBlock&gt;, /workspaces/opentofu-lab-automation/tests/0001_Reset-Git.Tests.ps1:22</stack-trace>
+                    </failure>
+                  </test-case>
+                  <test-case description="should follow naming conventions" name="0001_Reset-Git Tests.Script Structure Validation.should follow naming conventions" time="0.0136" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="0001_Reset-Git Tests.Parameter Validation" executed="True" result="Success" success="True" time="0.4444" asserts="0" description="0001_Reset-Git Tests.Parameter Validation">
+                <results>
+                  <test-case description="should accept Config parameter" name="0001_Reset-Git Tests.Parameter Validation.should accept Config parameter" time="0.2039" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+      <test-suite type="TestFixture" name="/workspaces/opentofu-lab-automation/tests/0002_Setup-Directories.Tests.ps1" executed="True" result="Failure" success="False" time="0.3341" asserts="0" description="/workspaces/opentofu-lab-automation/tests/0002_Setup-Directories.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="0002_Setup-Directories Tests" executed="True" result="Failure" success="False" time="0.2933" asserts="0" description="0002_Setup-Directories Tests">
+            <results>
+              <test-suite type="TestFixture" name="0002_Setup-Directories Tests.Script Structure Validation" executed="True" result="Failure" success="False" time="0.0328" asserts="0" description="0002_Setup-Directories Tests.Script Structure Validation">
+                <results>
+                  <test-case description="should have valid PowerShell syntax" name="0002_Setup-Directories Tests.Script Structure Validation.should have valid PowerShell syntax" time="0.0171" asserts="0" success="False" result="Failure" executed="True">
+                    <failure>
+                      <message>Expected path '/workspaces/opentofu-lab-automation/tests/../workspaces/opentofu-lab-automation/pwsh/runner_scripts/0002_Setup-Directories.ps1' to exist, but it did not exist.</message>
+                      <stack-trace>at $scriptPath | Should -Exist, /workspaces/opentofu-lab-automation/tests/0002_Setup-Directories.Tests.ps1:22
+at &lt;ScriptBlock&gt;, /workspaces/opentofu-lab-automation/tests/0002_Setup-Directories.Tests.ps1:22</stack-trace>
+                    </failure>
+                  </test-case>
+                  <test-case description="should follow naming conventions" name="0002_Setup-Directories Tests.Script Structure Validation.should follow naming conventions" time="0.0086" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="0002_Setup-Directories Tests.Parameter Validation" executed="True" result="Success" success="True" time="0.2863" asserts="0" description="0002_Setup-Directories Tests.Parameter Validation">
+                <results>
+                  <test-case description="should accept Config parameter" name="0002_Setup-Directories Tests.Parameter Validation.should accept Config parameter" time="0.2454" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+      <test-suite type="TestFixture" name="/workspaces/opentofu-lab-automation/tests/0007_Install-Go.Tests.ps1" executed="True" result="Ignored" success="True" time="0.124" asserts="0" description="/workspaces/opentofu-lab-automation/tests/0007_Install-Go.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="0007_Install-Go Tests" executed="True" result="Ignored" success="True" time="0.0595" asserts="0" description="0007_Install-Go Tests">
+            <results>
+              <test-suite type="TestFixture" name="0007_Install-Go Tests.Script Structure Validation" executed="True" result="Ignored" success="True" time="0.0287" asserts="0" description="0007_Install-Go Tests.Script Structure Validation">
+                <results>
+                  <test-case description="should have valid PowerShell syntax" name="0007_Install-Go Tests.Script Structure Validation.should have valid PowerShell syntax" time="0.0123" asserts="0" success="False" result="Ignored" executed="False" />
+                  <test-case description="should follow naming conventions" name="0007_Install-Go Tests.Script Structure Validation.should follow naming conventions" time="0.0049" asserts="0" success="False" result="Ignored" executed="False" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="0007_Install-Go Tests.Parameter Validation" executed="True" result="Ignored" success="True" time="0.0479" asserts="0" description="0007_Install-Go Tests.Parameter Validation">
+                <results>
+                  <test-case description="should accept Config parameter" name="0007_Install-Go Tests.Parameter Validation.should accept Config parameter" time="0.0067" asserts="0" success="False" result="Ignored" executed="False" />
+                </results>
+              </test-suite>
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+    </results>
+  </test-suite>
+</test-results>
