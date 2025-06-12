@@ -390,7 +390,40 @@ function global:Invoke-RunnerScriptTest {
     }
 }
 
+# Load the new extensible framework
+if (Test-Path (Join-Path $PSScriptRoot 'TestFramework.ps1')) {
+    . (Join-Path $PSScriptRoot 'TestFramework.ps1')
+}
+
 # Note: Call Disable-InteractivePrompts manually in test BeforeAll blocks when needed
 # Note: Windows mocks should be enabled manually in test BeforeAll blocks using Enable-WindowsMocks
 # when needed for cross-platform compatibility
+
+# Legacy compatibility - these functions are kept for backward compatibility
+# New tests should use the TestFramework.ps1 and TestTemplates.ps1 instead
+
+# Ensure Get-TestConfiguration is globally available for all tests
+function global:Get-TestConfiguration {
+    return @{
+        Environment = 'Test'
+        Platform = (Get-Platform).Name
+        IsAdmin = (Test-IsAdministrator)
+    }
+}
+
+# Platform detection for test config
+function global:Get-Platform {
+    return @{ Name = if ($IsWindows) { 'Windows' } elseif ($IsLinux) { 'Linux' } elseif ($IsMacOS) { 'MacOS' } else { 'Unknown' } }
+}
+
+# Simple admin check for test config
+function global:Test-IsAdministrator {
+    if ($IsWindows) {
+        $currentIdentity = [System.Security.Principal.WindowsIdentity]::GetCurrent()
+        $principal = New-Object System.Security.Principal.WindowsPrincipal($currentIdentity)
+        return $principal.IsInRole([System.Security.Principal.WindowsBuiltInRole]::Administrator)
+    } else {
+        return $true  # Assume admin for non-Windows test runs
+    }
+}
 

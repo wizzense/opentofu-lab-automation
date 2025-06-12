@@ -1,5 +1,3 @@
-# Changelog
+# (Removed) Changelog
 
-This project maintains a changelog following the [Keep a Changelog](https://keepachangelog.com/) format.
-
-See the repository root [CHANGELOG.md](../CHANGELOG.md) for the latest entries.
+This file has been removed. Please see the repository root [CHANGELOG.md](../CHANGELOG.md) for the latest entries.

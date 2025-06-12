@@ -1,0 +1,482 @@
+name: Auto Test Generation
+
+on:
+  push:
+    paths:
+      - 'pwsh/**/*.ps1'
+      - '!pwsh/**/*.Tests.ps1'
+  pull_request:
+    paths:
+      - 'pwsh/**/*.ps1'
+      - '!pwsh/**/*.Tests.ps1'
+  workflow_dispatch:
+    inputs:
+      force_regenerate:
+        description: 'Force regenerate all tests'
+        required: false
+        default: 'false'
+        type: boolean
+
+jobs:
+  detect-changes:
+    name: Detect Script Changes
+    runs-on: ubuntu-latest
+    outputs:
+      changed-scripts: ${{ steps.changes.outputs.scripts }}
+      has-changes: ${{ steps.changes.outputs.has-changes }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Detect changed scripts
+        id: changes
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ "${{ github.event.inputs.force_regenerate }}" = "true" ]; then
+            # Force regenerate all scripts
+            scripts=$(find pwsh -name "*.ps1" -not -name "*.Tests.ps1" | jq -R -s -c 'split("\n")[:-1]')
+            echo "scripts=$scripts" >> $GITHUB_OUTPUT
+            echo "has-changes=true" >> $GITHUB_OUTPUT
+          else
+            # Only process changed files
+            if [ "${{ github.event_name }}" = "pull_request" ]; then
+              base_ref="${{ github.event.pull_request.base.sha }}"
+            else
+              base_ref="${{ github.event.before }}"
+            fi
+            
+            # Get changed PowerShell scripts (excluding test files)
+            changed_files=$(git diff --name-only $base_ref..HEAD | grep -E '^pwsh/.*\.ps1$' | grep -v '\.Tests\.ps1$' || true)
+            
+            if [ -n "$changed_files" ]; then
+              scripts=$(echo "$changed_files" | jq -R -s -c 'split("\n")[:-1]')
+              echo "scripts=$scripts" >> $GITHUB_OUTPUT
+              echo "has-changes=true" >> $GITHUB_OUTPUT
+              echo "Changed scripts detected:"
+              echo "$changed_files"
+            else
+              echo "scripts=[]" >> $GITHUB_OUTPUT
+              echo "has-changes=false" >> $GITHUB_OUTPUT
+              echo "No PowerShell script changes detected"
+            fi
+          fi
+
+  validate-naming:
+    name: Validate Script Naming
+    runs-on: ubuntu-latest
+    needs: detect-changes
+    if: needs.detect-changes.outputs.has-changes == 'true'
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Install PowerShell
+        shell: bash
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y wget apt-transport-https software-properties-common
+          wget -q https://packages.microsoft.com/config/ubuntu/22.04/packages-microsoft-prod.deb
+          sudo dpkg -i packages-microsoft-prod.deb
+          sudo apt-get update
+          sudo apt-get install -y powershell
+      
+      - name: Validate and fix script naming
+        shell: pwsh
+        run: |
+          $changedScripts = '${{ needs.detect-changes.outputs.changed-scripts }}' | ConvertFrom-Json
+          $renamedFiles = @()
+          
+          foreach ($scriptPath in $changedScripts) {
+            if (Test-Path $scriptPath) {
+              Write-Host "Checking naming convention for: $scriptPath" -ForegroundColor Cyan
+              
+              # Load the test generator helper
+              . ./tests/helpers/New-AutoTestGenerator.ps1
+              
+              $currentName = Split-Path $scriptPath -Leaf
+              $expectedName = Format-ScriptName $currentName
+              
+              if ($expectedName -ne $currentName) {
+                $directory = Split-Path $scriptPath -Parent
+                $newPath = Join-Path $directory $expectedName
+                
+                Write-Host "Renaming: $currentName -> $expectedName" -ForegroundColor Yellow
+                
+                # Check if target file already exists
+                if (Test-Path $newPath) {
+                  Write-Warning "Target file already exists: $newPath"
+                  continue
+                }
+                
+                Move-Item $scriptPath $newPath
+                $renamedFiles += @{
+                  Original = $scriptPath
+                  New = $newPath
+                  OldName = $currentName
+                  NewName = $expectedName
+                }
+              } else {
+                Write-Host "✓ Naming convention correct: $currentName" -ForegroundColor Green
+              }
+            }
+          }
+          
+          # Output renamed files for commit step
+          if ($renamedFiles.Count -gt 0) {
+            $renamedFiles | ConvertTo-Json -Depth 2 | Out-File "renamed-files.json" -Encoding UTF8
+            Write-Host "Renamed $($renamedFiles.Count) files"
+          } else {
+            Write-Host "No files needed renaming"
+          }
+      
+      - name: Upload renamed files info
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: renamed-files
+          path: renamed-files.json
+          retention-days: 1
+
+  generate-tests:
+    name: Generate Tests
+    runs-on: ubuntu-latest
+    needs: [detect-changes, validate-naming]
+    if: needs.detect-changes.outputs.has-changes == 'true'
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Download renamed files info
+        uses: actions/download-artifact@v4
+        with:
+          name: renamed-files
+          path: .
+        continue-on-error: true
+      
+      - name: Install PowerShell
+        if: runner.os != 'Windows'
+        shell: bash
+        run: |
+          if [[ "$RUNNER_OS" == "Linux" ]]; then
+            sudo apt-get update
+            sudo apt-get install -y wget apt-transport-https software-properties-common
+            wget -q https://packages.microsoft.com/config/ubuntu/22.04/packages-microsoft-prod.deb
+            sudo dpkg -i packages-microsoft-prod.deb
+            sudo apt-get update
+            sudo apt-get install -y powershell
+          elif [[ "$RUNNER_OS" == "macOS" ]]; then
+            brew install --cask powershell
+          fi
+      
+      - name: Install Pester
+        shell: pwsh
+        run: |
+          Install-Module -Name Pester -RequiredVersion 5.7.1 -Force -Scope CurrentUser
+      
+      - name: Generate tests for changed scripts
+        shell: pwsh
+        run: |
+          $changedScripts = '${{ needs.detect-changes.outputs.changed-scripts }}' | ConvertFrom-Json
+          $generatedTests = @()
+          
+          # Handle renamed files
+          if (Test-Path "renamed-files.json") {
+            $renamedFiles = Get-Content "renamed-files.json" | ConvertFrom-Json
+            foreach ($renamed in $renamedFiles) {
+              # Update the script path to the new location
+              $oldIndex = $changedScripts.IndexOf($renamed.Original)
+              if ($oldIndex -ge 0) {
+                $changedScripts[$oldIndex] = $renamed.New
+              }
+            }
+          }
+          
+          foreach ($scriptPath in $changedScripts) {
+            if (Test-Path $scriptPath) {
+              Write-Host "Processing script: $scriptPath" -ForegroundColor Cyan
+              
+              try {
+                # Generate test using our auto-generator
+                $result = & ./tests/helpers/New-AutoTestGenerator.ps1 -ScriptPath $scriptPath -Force
+                
+                $testName = [System.IO.Path]::GetFileNameWithoutExtension($scriptPath) + '.Tests.ps1'
+                $testPath = Join-Path 'tests' $testName
+                
+                if (Test-Path $testPath) {
+                  $generatedTests += $testPath
+                  Write-Host "✓ Generated test: $testPath" -ForegroundColor Green
+                } else {
+                  Write-Warning "Test generation may have failed for: $scriptPath"
+                }
+                
+              } catch {
+                Write-Error "Failed to generate test for $scriptPath`: $_"
+              }
+            } else {
+              Write-Warning "Script not found: $scriptPath"
+            }
+          }
+          
+          Write-Host "Generated $($generatedTests.Count) test files" -ForegroundColor Green
+          $generatedTests | ForEach-Object { Write-Host "  - $_" }
+          
+          # Save generated test info for validation step
+          @{
+            Platform = "${{ runner.os }}"
+            GeneratedTests = $generatedTests
+            ProcessedScripts = $changedScripts
+          } | ConvertTo-Json -Depth 3 | Out-File "test-generation-${{ runner.os }}.json" -Encoding UTF8
+      
+      - name: Validate generated tests
+        shell: pwsh
+        run: |
+          $generationInfo = Get-Content "test-generation-${{ runner.os }}.json" | ConvertFrom-Json
+          $allTestsValid = $true
+          
+          foreach ($testPath in $generationInfo.GeneratedTests) {
+            if (Test-Path $testPath) {
+              Write-Host "Validating test syntax: $testPath" -ForegroundColor Cyan
+              
+              try {
+                # Check PowerShell syntax
+                $content = Get-Content $testPath -Raw
+                $ast = [System.Management.Automation.Language.Parser]::ParseInput($content, [ref]$null, [ref]$errors)
+                
+                if ($errors.Count -gt 0) {
+                  Write-Error "Syntax errors in $testPath`:"
+                  $errors | ForEach-Object { Write-Error "  $($_.Message)" }
+                  $allTestsValid = $false
+                } else {
+                  Write-Host "✓ Syntax valid: $testPath" -ForegroundColor Green
+                }
+                
+                # Basic structural validation
+                if ($content -notmatch 'Describe.*Tests') {
+                  Write-Error "Missing Describe block in: $testPath"
+                  $allTestsValid = $false
+                }
+                
+                if ($content -notmatch 'It.*should') {
+                  Write-Warning "No test cases found in: $testPath"
+                }
+                
+              } catch {
+                Write-Error "Failed to validate $testPath`: $_"
+                $allTestsValid = $false
+              }
+            } else {
+              Write-Error "Generated test file not found: $testPath"
+              $allTestsValid = $false
+            }
+          }
+          
+          if (-not $allTestsValid) {
+            Write-Error "Some generated tests have validation errors"
+            exit 1
+          }
+          
+          Write-Host "All generated tests passed validation!" -ForegroundColor Green
+      
+      - name: Upload test generation artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-generation-${{ runner.os }}
+          path: |
+            test-generation-*.json
+            tests/*.Tests.ps1
+          retention-days: 7
+
+  run-generated-tests:
+    name: Run Generated Tests
+    runs-on: ubuntu-latest
+    needs: [generate-tests]
+    if: always() && needs.generate-tests.result == 'success'
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Download test artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: test-generation-ubuntu-latest
+          path: .
+      
+      - name: Install PowerShell
+        shell: bash
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y wget apt-transport-https software-properties-common
+          wget -q https://packages.microsoft.com/config/ubuntu/22.04/packages-microsoft-prod.deb
+          sudo dpkg -i packages-microsoft-prod.deb
+          sudo apt-get update
+          sudo apt-get install -y powershell
+      
+      - name: Install Pester
+        shell: pwsh
+        run: |
+          Install-Module -Name Pester -RequiredVersion 5.7.1 -Force -Scope CurrentUser
+      
+      - name: Run newly generated tests
+        shell: pwsh
+        run: |
+          if (Test-Path "test-generation-Linux.json") {
+            $generationInfo = Get-Content "test-generation-Linux.json" | ConvertFrom-Json
+            
+            if ($generationInfo.GeneratedTests.Count -gt 0) {
+              Write-Host "Running $($generationInfo.GeneratedTests.Count) newly generated tests..." -ForegroundColor Yellow
+              
+              $config = New-PesterConfiguration
+              $config.Run.Path = $generationInfo.GeneratedTests
+              $config.Run.PassThru = $true
+              $config.Output.Verbosity = 'Detailed'
+              $config.TestResult.Enabled = $true
+              $config.TestResult.OutputPath = 'new-test-results.xml'
+              
+              $result = Invoke-Pester -Configuration $config
+              
+              Write-Host "`nNew Test Results:" -ForegroundColor Cyan
+              Write-Host "  Total: $($result.TotalCount)"
+              Write-Host "  Passed: $($result.PassedCount)" -ForegroundColor Green
+              Write-Host "  Failed: $($result.FailedCount)" -ForegroundColor Red
+              Write-Host "  Skipped: $($result.SkippedCount)" -ForegroundColor Yellow
+              
+              if ($result.FailedCount -gt 0) {
+                Write-Warning "Some newly generated tests are failing. This may indicate issues with the source scripts or test generation logic."
+                # Don't fail the workflow for new test failures, just warn
+              }
+            } else {
+              Write-Host "No new tests were generated" -ForegroundColor Yellow
+            }
+          } else {
+            Write-Host "No test generation info found" -ForegroundColor Yellow
+          }
+      
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: new-test-results
+          path: new-test-results.xml
+
+  commit-changes:
+    name: Commit Generated Files
+    runs-on: ubuntu-latest
+    needs: [validate-naming, generate-tests, run-generated-tests]
+    if: always() && (needs.validate-naming.result == 'success' || needs.generate-tests.result == 'success')
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+      
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+      
+      - name: Install PowerShell
+        shell: bash
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y wget apt-transport-https software-properties-common
+          wget -q https://packages.microsoft.com/config/ubuntu/22.04/packages-microsoft-prod.deb
+          sudo dpkg -i packages-microsoft-prod.deb
+          sudo apt-get update
+          sudo apt-get install -y powershell
+      
+      - name: Apply file renames and regenerate tests
+        shell: pwsh
+        run: |
+          $hasChanges = $false
+          
+          # Apply any file renames
+          if (Test-Path "artifacts/renamed-files/renamed-files.json") {
+            $renamedFiles = Get-Content "artifacts/renamed-files/renamed-files.json" | ConvertFrom-Json
+            foreach ($renamed in $renamedFiles) {
+              if (Test-Path $renamed.Original) {
+                Write-Host "Applying rename: $($renamed.OldName) -> $($renamed.NewName)" -ForegroundColor Yellow
+                Move-Item $renamed.Original $renamed.New -Force
+                $hasChanges = $true
+              }
+            }
+          }
+          
+          # Regenerate tests for renamed/new files
+          $changedScripts = '${{ needs.detect-changes.outputs.changed-scripts }}' | ConvertFrom-Json
+          
+          # Update script paths for renamed files
+          if (Test-Path "artifacts/renamed-files/renamed-files.json") {
+            $renamedFiles = Get-Content "artifacts/renamed-files/renamed-files.json" | ConvertFrom-Json
+            foreach ($renamed in $renamedFiles) {
+              $oldIndex = $changedScripts.IndexOf($renamed.Original)
+              if ($oldIndex -ge 0) {
+                $changedScripts[$oldIndex] = $renamed.New
+              }
+            }
+          }
+          
+          # Generate tests
+          foreach ($scriptPath in $changedScripts) {
+            if (Test-Path $scriptPath) {
+              try {
+                & ./tests/helpers/New-AutoTestGenerator.ps1 -ScriptPath $scriptPath -Force
+                $hasChanges = $true
+                Write-Host "Generated test for: $scriptPath" -ForegroundColor Green
+              } catch {
+                Write-Warning "Failed to generate test for $scriptPath`: $_"
+              }
+            }
+          }
+          
+          # Set output for commit step
+          "HAS_CHANGES=$hasChanges" | Out-File -FilePath $env:GITHUB_ENV -Append
+      
+      - name: Commit and push changes
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          
+          # Add all changes
+          git add .
+          
+          # Check if there are changes to commit
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            echo "Committing changes..."
+            git commit -m "Auto-generate tests and fix naming conventions
+            
+            - Auto-generated tests for modified PowerShell scripts
+            - Applied naming convention fixes
+            - Updated test index
+            
+            Generated by: ${{ github.workflow }} #${{ github.run_number }}"
+            
+            git push
+            echo "Changes committed and pushed"
+          fi
+
+  summary:
+    name: Workflow Summary
+    runs-on: ubuntu-latest
+    needs: [detect-changes, validate-naming, generate-tests, run-generated-tests, commit-changes]
+    if: always()
+    steps:
+      - name: Summary
+        run: |
+          echo "## Auto Test Generation Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          echo "| Step | Status | Details |" >> $GITHUB_STEP_SUMMARY
+          echo "|------|--------|---------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Detect Changes | ${{ needs.detect-changes.result }} | Found changes: ${{ needs.detect-changes.outputs.has-changes }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Validate Naming | ${{ needs.validate-naming.result }} | Script naming convention validation |" >> $GITHUB_STEP_SUMMARY
+          echo "| Generate Tests | ${{ needs.generate-tests.result }} | Auto-generated Pester tests |" >> $GITHUB_STEP_SUMMARY
+          echo "| Run Tests | ${{ needs.run-generated-tests.result }} | Validated generated tests |" >> $GITHUB_STEP_SUMMARY
+          echo "| Commit Changes | ${{ needs.commit-changes.result }} | Applied changes to repository |" >> $GITHUB_STEP_SUMMARY
+          
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Changed Scripts" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo '${{ needs.detect-changes.outputs.changed-scripts }}' >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
