@@ -57,6 +57,7 @@ Describe '0106_Install-WAC Tests' -Tag 'Unknown' {
     Context 'Get-WacRegistryInstallation Function Tests' {
         It 'should be defined and accessible' -Skip:($SkipNonWindows) {
             $scriptContent = Get-Content $script:ScriptPath -Raw
+            # Triple single quotes (''') are used to escape single quotes in the regex pattern.
             $scriptContent | Should -Match 'function\s+[^''']*'
         }
                 It 'should handle execution with valid parameters' -Skip:($SkipNonWindows) {
