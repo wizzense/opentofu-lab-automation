@@ -15,9 +15,6 @@ It automatically handles platform detection, mock setup, and common test scenari
 - Performance and integration testing support
 #>
 
-# Import required test helpers
-. (Join-Path $PSScriptRoot 'TestHelpers.ps1')
-
 # List of known PowerShell built-in or external commands that should be mocked globally
 $script:GlobalCommands = @(
     'Get-Command', 'Start-Process', 'Invoke-WebRequest', 'Invoke-RestMethod', 

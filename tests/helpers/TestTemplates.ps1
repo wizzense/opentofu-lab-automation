@@ -53,72 +53,72 @@ function New-InstallerScriptTest {
         # Mock Get-Command: Software is NOT installed initially
         # Any other Get-Command calls will fall through to the default mock (returns $null)
         # or to a user-provided Get-Command in AdditionalMocks
-        \'Get-Command\' = { 
+        'Get-Command' = { 
             param($Name)
             if ($Name -eq $SoftwareCommandName) { return $null } 
             # If AdditionalMocks has a Get-Command, use it for other names
-            if ($AdditionalMocks.ContainsKey(\'Get-Command\')) {
-                return (& $AdditionalMocks[\'Get-Command\'] $Name)
+            if ($AdditionalMocks.ContainsKey('Get-Command')) {
+                return (& $AdditionalMocks['Get-Command'] $Name)
             }
             return $null # Default behavior for other commands
         }
-        \'Invoke-LabDownload\' = { if ($Action) { & $Action \'test-installer.exe\' } }
+        'Invoke-LabDownload' = { if ($Action) { & $Action 'test-installer.exe' } }
         $InstallerCommand = {} # Mock the specific installer command used by the script
     }
     # Merge other additional mocks, giving precedence to AdditionalMocks
     $AdditionalMocks.GetEnumerator() | ForEach-Object {
-        if ($_.Name -ne \'Get-Command\') { # Get-Command is handled specially above
+        if ($_.Name -ne 'Get-Command') { # Get-Command is handled specially above
             $enabledScenarioMocks[$_.Name] = $_.Value
         }
     }
     
-    $scenarios += New-TestScenario -Name \"Installs $SoftwareCommandName when enabled\" -Description \"installs $SoftwareCommandName when $EnabledProperty is true\" -Config $finalEnabledConfig -Mocks $enabledScenarioMocks -ExpectedInvocations @{ \'Invoke-LabDownload\' = 1; $InstallerCommand = 1 } -RequiredPlatforms $RequiredPlatforms -ExcludedPlatforms $ExcludedPlatforms
+    $scenarios += New-TestScenario -Name "Installs $SoftwareCommandName when enabled" -Description "installs $SoftwareCommandName when $EnabledProperty is true" -Config $finalEnabledConfig -Mocks $enabledScenarioMocks -ExpectedInvocations @{ 'Invoke-LabDownload' = 1; $InstallerCommand = 1 } -RequiredPlatforms $RequiredPlatforms -ExcludedPlatforms $ExcludedPlatforms
     
     # --- Disabled scenario ---
     $disabledScenarioMocks = @{
         # Get-Command behavior doesn't strictly matter as script shouldn't try to install
         # but we can keep it consistent or simple.
-        \'Get-Command\' = { 
+        'Get-Command' = { 
             param($Name)
             # If AdditionalMocks has a Get-Command, use it
-            if ($AdditionalMocks.ContainsKey(\'Get-Command\')) {
-                return (& $AdditionalMocks[\'Get-Command\'] $Name)
+            if ($AdditionalMocks.ContainsKey('Get-Command')) {
+                return (& $AdditionalMocks['Get-Command'] $Name)
             }
             return $null
         }
-        \'Invoke-LabDownload\' = {}
+        'Invoke-LabDownload' = {}
         $InstallerCommand = {}
     }
     $AdditionalMocks.GetEnumerator() | ForEach-Object {
-        if ($_.Name -ne \'Get-Command\') {
+        if ($_.Name -ne 'Get-Command') {
             $disabledScenarioMocks[$_.Name] = $_.Value
         }
     }
     
-    $scenarios += New-TestScenario -Name \"Skips $SoftwareCommandName when disabled\" -Description \"skips $SoftwareCommandName when $EnabledProperty is false\" -Config $finalDisabledConfig -Mocks $disabledScenarioMocks -ExpectedInvocations @{ \'Invoke-LabDownload\' = 0; $InstallerCommand = 0 } -RequiredPlatforms $RequiredPlatforms -ExcludedPlatforms $ExcludedPlatforms
+    $scenarios += New-TestScenario -Name "Skips $SoftwareCommandName when disabled" -Description "skips $SoftwareCommandName when $EnabledProperty is false" -Config $finalDisabledConfig -Mocks $disabledScenarioMocks -ExpectedInvocations @{ 'Invoke-LabDownload' = 0; $InstallerCommand = 0 } -RequiredPlatforms $RequiredPlatforms -ExcludedPlatforms $ExcludedPlatforms
     
     # --- Already installed scenario ---
     $alreadyInstalledMocks = @{
         # Mock Get-Command: Software IS already installed
-        \'Get-Command\' = { 
+        'Get-Command' = { 
             param($Name)
-            if ($Name -eq $SoftwareCommandName) { return [PSCustomObject]@{ Name = $SoftwareCommandName; Source = \"/fake/path/to/$SoftwareCommandName\" } } 
+            if ($Name -eq $SoftwareCommandName) { return [PSCustomObject]@{ Name = $SoftwareCommandName; Source = "/fake/path/to/$SoftwareCommandName" } } 
             # If AdditionalMocks has a Get-Command, use it for other names
-            if ($AdditionalMocks.ContainsKey(\'Get-Command\')) {
-                return (& $AdditionalMocks[\'Get-Command\'] $Name)
+            if ($AdditionalMocks.ContainsKey('Get-Command')) {
+                return (& $AdditionalMocks['Get-Command'] $Name)
             }
             return $null # Default behavior for other commands
         }
-        \'Invoke-LabDownload\' = {}
+        'Invoke-LabDownload' = {}
         $InstallerCommand = {}
     }
     $AdditionalMocks.GetEnumerator() | ForEach-Object {
-        if ($_.Name -ne \'Get-Command\') {
+        if ($_.Name -ne 'Get-Command') {
             $alreadyInstalledMocks[$_.Name] = $_.Value
         }
     }
     
-    $scenarios += New-TestScenario -Name \"Skips $SoftwareCommandName when already installed\" -Description \"does nothing when $SoftwareCommandName is already installed\" -Config $finalEnabledConfig -Mocks $alreadyInstalledMocks -ExpectedInvocations @{ \'Invoke-LabDownload\' = 0; $InstallerCommand = 0 } -RequiredPlatforms $RequiredPlatforms -ExcludedPlatforms $ExcludedPlatforms
+    $scenarios += New-TestScenario -Name "Skips $SoftwareCommandName when already installed" -Description "does nothing when $SoftwareCommandName is already installed" -Config $finalEnabledConfig -Mocks $alreadyInstalledMocks -ExpectedInvocations @{ 'Invoke-LabDownload' = 0; $InstallerCommand = 0 } -RequiredPlatforms $RequiredPlatforms -ExcludedPlatforms $ExcludedPlatforms
     
     Test-RunnerScript -ScriptName $ScriptName -Scenarios $scenarios -IncludeStandardTests
 }
