@@ -10,6 +10,7 @@ function Get-LabConfig {
         $Path = Join-Path $scriptDir '..' '..' 'configs' 'config_files' 'default-config.json'
     }
 
+
     if (-not (Test-Path -LiteralPath $Path)) {
         throw "Config file not found at $Path"
     }
@@ -33,6 +34,7 @@ function Get-LabConfig {
         }
 
         $repoRoot = Resolve-Path -LiteralPath (Join-Path $scriptDir '..')
+
         $dirs     = @{}
         if ($config.PSObject.Properties['Directories']) {
             # Preserve any user-defined directory settings
