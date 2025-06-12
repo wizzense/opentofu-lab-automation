@@ -15,6 +15,9 @@ It automatically handles platform detection, mock setup, and common test scenari
 - Performance and integration testing support
 #>
 
+# Import required test helpers
+. (Join-Path $PSScriptRoot 'TestHelpers.ps1')
+
 # Framework Configuration
 $script:TestFrameworkConfig = @{
     DefaultTimeout = 30
