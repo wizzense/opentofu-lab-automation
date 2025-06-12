@@ -62,6 +62,7 @@ Describe '0010_Prepare-HyperVProvider Tests' -Tag 'Feature' {
         It 'should be defined and accessible' -Skip:($SkipNonWindows) {
             $scriptContent = Get-Content $script:ScriptPath -Raw
             $scriptContent | Should -Match 'function\s+[^'']*'
+
         }
                 It 'should support common parameters' -Skip:($SkipNonWindows) {
             $scriptContent = Get-Content $script:ScriptPath -Raw
@@ -79,6 +80,7 @@ Describe '0010_Prepare-HyperVProvider Tests' -Tag 'Feature' {
         It 'should be defined and accessible' -Skip:($SkipNonWindows) {
             $scriptContent = Get-Content $script:ScriptPath -Raw
             $scriptContent | Should -Match 'function\s+[^'']*'
+
         }
                 It 'should support common parameters' -Skip:($SkipNonWindows) {
             $scriptContent = Get-Content $script:ScriptPath -Raw
@@ -96,6 +98,7 @@ Describe '0010_Prepare-HyperVProvider Tests' -Tag 'Feature' {
         It 'should be defined and accessible' -Skip:($SkipNonWindows) {
             $scriptContent = Get-Content $script:ScriptPath -Raw
             $scriptContent | Should -Match 'function\s+[^'']*'
+
         }
                 It 'should support common parameters' -Skip:($SkipNonWindows) {
             $scriptContent = Get-Content $script:ScriptPath -Raw

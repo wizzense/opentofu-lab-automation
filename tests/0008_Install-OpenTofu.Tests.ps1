@@ -81,6 +81,7 @@ Describe '0008_Install-OpenTofu Tests' -Tag 'Installer' {
         It 'should be defined and accessible' -Skip:($SkipNonWindows) {
             $scriptContent = Get-Content $script:ScriptPath -Raw
             $scriptContent | Should -Match 'function\s+[^'']*'
+
         }
                 It 'should support common parameters' -Skip:($SkipNonWindows) {
             $scriptContent = Get-Content $script:ScriptPath -Raw

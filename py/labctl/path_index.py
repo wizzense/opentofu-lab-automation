@@ -33,7 +33,7 @@ def load_index() -> dict:
             alt = repo_root() / 'configs' / 'project' / 'path-index.yaml'
             if alt.exists():
                 index_path = alt
-
+                
         if index_path.exists() and yaml is not None:
             with index_path.open('r') as f:
                 data = yaml.safe_load(f) or {}
