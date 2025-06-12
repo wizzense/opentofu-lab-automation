@@ -1,4 +1,3 @@
-```powershell
 [CmdletBinding(SupportsShouldProcess, DefaultParameterSetName='Verbose')]
 param(
     [Parameter(ParameterSetName='Quiet')]
@@ -195,4 +194,3 @@ Write-CustomLog "`nAll done!"
 if (-not $overallSuccess) { $global:LASTEXITCODE = 1 } else { $global:LASTEXITCODE = 0 }
 Remove-Item Env:LAB_CONSOLE_LEVEL -ErrorAction SilentlyContinue
 exit $LASTEXITCODE
-```
