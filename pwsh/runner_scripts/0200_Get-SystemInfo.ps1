@@ -1,4 +1,4 @@
-Import-Module "$PSScriptRoot/../lab_utils/LabRunner/LabRunner.psd1"
+Import-Module "$PSScriptRoot/../lab_utils/LabRunner/LabRunner.psd1" -Force
 Param(
     [object]$Config,
     [switch]$AsJson
