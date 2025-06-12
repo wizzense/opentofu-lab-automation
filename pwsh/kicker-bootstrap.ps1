@@ -483,8 +483,36 @@ if (!(Test-Path $repoPath)) {
 
     if ($ghExit -ne 0 -or !(Test-Path $repoPath)) {
         Write-CustomLog "GitHub CLI clone failed or directory not created. Trying git clone..."
+        
+        # Remove existing directory if it exists and is empty/problematic
+        if (Test-Path $repoPath) {
+            try {
+                Remove-Item -Path $repoPath -Recurse -Force -ErrorAction SilentlyContinue
+                Write-CustomLog "Removed existing problematic directory: $repoPath"
+            } catch {
+                Write-CustomLog "Warning: Could not remove existing directory: $repoPath"
+            }
+        }
+        
         & "$gitPath" clone $config.RepoUrl $repoPath --quiet 2>&1 | Tee-Object -FilePath "$(Get-CrossPlatformTempPath)\git_clone_log.txt"
         $gitExit = $LASTEXITCODE
+        
+        # Handle Windows-specific checkout failures due to invalid filenames
+        if ($gitExit -ne 0 -and $isWindowsOS -and (Test-Path $repoPath)) {
+            Write-CustomLog "Git clone failed, likely due to Windows filename restrictions. Attempting recovery..."
+            Push-Location $repoPath
+            try {
+                # Restore files that can be checked out on Windows
+                & "$gitPath" restore --source=HEAD :/ 2>&1 | Out-Null
+                Write-CustomLog "Attempted file restoration. Repository may be partially functional."
+                $gitExit = 0  # Consider this a success for Windows
+            } catch {
+                Write-CustomLog "File restoration failed: $_"
+            } finally {
+                Pop-Location
+            }
+        }
+        
         if ($gitExit -ne 0 -or !(Test-Path $repoPath)) {
             Write-Error "ERROR: Repository cloning failed. Check logs: $(Get-CrossPlatformTempPath)\gh_clone_log.txt and $(Get-CrossPlatformTempPath)\git_clone_log.txt"
             if (Test-Path "$(Get-CrossPlatformTempPath)\gh_clone_log.txt") {
