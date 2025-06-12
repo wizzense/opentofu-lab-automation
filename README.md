@@ -74,30 +74,22 @@ Custom config file:
 
 ## Workflow Dashboard
 
-### Workflow Statuses
-| Workflow          | Status  |
-|-------------------|---------|
-| Pester (Linux)    | ![Status](https://github.com/opentofu-lab-automation/actions/workflows/pester-linux.yml/badge.svg) |
-| Pester (macOS)    | ![Status](https://github.com/opentofu-lab-automation/actions/workflows/pester-macos.yml/badge.svg) |
-| Pester (Windows)  | ![Status](https://github.com/opentofu-lab-automation/actions/workflows/pester-windows.yml/badge.svg) |
-| Update Path Index | ![Status](https://github.com/opentofu-lab-automation/actions/workflows/update-path-index.yml/badge.svg) |
-| CI                | ![Status](https://github.com/opentofu-lab-automation/actions/workflows/ci.yml/badge.svg) |
+This project uses GitHub Actions for continuous integration and testing. Below is the current status of the workflows:
 
-### Recent Activity
-- Fixed issues in `pester-linux.yml` and `pester-macos.yml` workflows.
-- Improved error handling and logging in PowerShell scripts.
-- Enhanced artifact uploads for better debugging.
+| Workflow Name       | Status                                                                 |
+|---------------------|------------------------------------------------------------------------|
+| Pester (Linux)      | ![Pester Linux](https://github.com/opentofu-lab-automation/actions/workflows/pester-linux.yml/badge.svg) |
+| Pester (macOS)      | ![Pester macOS](https://github.com/opentofu-lab-automation/actions/workflows/pester-macos.yml/badge.svg) |
+| Pester (Windows)    | ![Pester Windows](https://github.com/opentofu-lab-automation/actions/workflows/pester-windows.yml/badge.svg) |
+| Update Path Index   | ![Update Path Index](https://github.com/opentofu-lab-automation/actions/workflows/update-path-index.yml/badge.svg) |
+| CI                  | ![CI](https://github.com/opentofu-lab-automation/actions/workflows/ci.yml/badge.svg) |
 
 ### Recommendations
-- Monitor workflow health regularly using `workflow-health-check.sh`.
-- Optimize caching and parallelization for faster execution.
-- Ensure all workflows are updated to use the latest dependencies.
+- Monitor the workflow statuses regularly to ensure all tests pass.
+- Address any failures promptly to maintain the health of the CI/CD pipeline.
 
 ### Health Score
-- Current Workflow Health: **85%**
-- Key Improvements Needed:
-  - Reduce failure rates in `pester-linux.yml` and `pester-macos.yml`.
-  - Address inefficiencies in artifact handling.
+The overall health score of the workflows is calculated based on the success rate of recent runs. Use the `workflow-health-check.sh` script to generate a detailed report.
 
 ---
 
