@@ -24,7 +24,6 @@ ROOT_FILES = [
 ]
 
 
-
 def tracked_files():
     """Return a list of git-tracked files relative to the repository root."""
 
@@ -33,13 +32,14 @@ def tracked_files():
 
 
 def build_index() -> dict[str, str]:
+    """Build a dynamic index of relevant files in the repository."""
     index: dict[str, str] = {}
 
-    for path in tracked_files():
-        if path.name == "path-index.yaml":
-            continue
-        if str(path) in ROOT_FILES or any(str(path).startswith(f"{d}/") for d in SCAN_DIRS):
-            index[str(path)] = str(path)
+    # Recursively scan the repository for relevant files
+    for path in REPO_ROOT.rglob("*"):
+        if path.is_file() and path.suffix in {".ps1", ".py", ".yaml"}:  # Filter by file types
+            relative_path = path.relative_to(REPO_ROOT)
+            index[str(relative_path)] = str(relative_path)
 
     return index
 
@@ -47,9 +47,12 @@ def build_index() -> dict[str, str]:
 def main():
     index = build_index()
     index_path = REPO_ROOT / 'path-index.yaml'
+
+    # Write the index to the YAML file
     with index_path.open('w') as f:
         yaml.safe_dump(dict(sorted(index.items())), f)
-    print(f'Wrote {index_path}')
+
+    print(f'Updated {index_path} with {len(index)} entries.')
 
 
 if __name__ == '__main__':

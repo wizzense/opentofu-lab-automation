@@ -172,8 +172,10 @@ jobs:
         run: |
           $ErrorActionPreference = \'Stop\'
           try {
-            $cfg = Get-Content \'configs/config_files/default-config.json\' | ConvertFrom-Json
+            Write-Host "Loading NodeCore script..." -ForegroundColor Yellow
             . ./pwsh/runner_scripts/0201_Install-NodeCore.ps1
+            Write-Host "Script loaded successfully. Executing Install-NodeCore..." -ForegroundColor Green
+            $cfg = Get-Content 'configs/config_files/default-config.json' | ConvertFrom-Json
             Install-NodeCore -Config $cfg
             Write-Host "Node core installed successfully" -ForegroundColor Green
           } catch {

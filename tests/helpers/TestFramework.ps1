@@ -15,6 +15,25 @@ It automatically handles platform detection, mock setup, and common test scenari
 - Performance and integration testing support
 #>
 
+# List of known PowerShell built-in or external commands that should be mocked globally
+$script:GlobalCommands = @(
+    'Get-Command', 'Start-Process', 'Invoke-WebRequest', 'Invoke-RestMethod', 
+    'New-Item', 'Remove-Item', 'Copy-Item', 'Test-Path', 
+    'Get-Service', 'Start-Service', 'Stop-Service', 'Restart-Service', 
+    'Get-WindowsOptionalFeature', 'Enable-WindowsOptionalFeature', 
+    'Get-WindowsFeature', 'Install-WindowsFeature', 
+    'Get-ItemProperty', 'Set-ItemProperty', 
+    'New-NetFirewallRule', 'Get-NetFirewallRule', 'Remove-NetFirewallRule', 
+    'Set-DnsClientServerAddress', 'New-SelfSignedCertificate', 
+    'Enable-PSRemoting', 'Test-WSMan',
+    'Write-Host', 'Write-Verbose', 'Write-Warning', 'Write-Error', 'Read-Host',
+    # OS-specific external commands often checked with Get-Command or invoked directly
+    'apt-get', 'yum', 'dnf', 'zypper', 'pacman', # Linux package managers
+    'systemctl', 'service', # Linux service management
+    'brew', 'launchctl', # macOS
+    'choco', 'winget', 'msiexec' # Windows package managers / installers
+)
+
 # Framework Configuration
 $script:TestFrameworkConfig = @{
     DefaultTimeout = 30
@@ -135,15 +154,20 @@ function Invoke-ScriptTest {
     }
     
     try {
-        # Setup standard mocks
-        New-StandardTestMocks -ModuleName 'LabRunner'
+        # Setup standard mocks. 'LabRunner' is the typical module for lab scripts.
+        New-StandardTestMocks -LabRunnerModuleName 'LabRunner'
         
         # Apply scenario-specific mocks
         foreach ($mockName in $Scenario.Mocks.Keys) {
             if ($EnableVerboseLogging) {
                 Write-Verbose "Setting up mock for: $mockName"
             }
-            Mock $mockName $Scenario.Mocks[$mockName] -ModuleName 'LabRunner'
+            if ($script:GlobalCommands -contains $mockName) {
+                Mock $mockName $Scenario.Mocks[$mockName]
+            } else {
+                # Assume it's a LabRunner function if not in global list
+                Mock $mockName $Scenario.Mocks[$mockName] -ModuleName 'LabRunner'
+            }
         }
         
         # Execute the script
@@ -174,11 +198,13 @@ function Invoke-ScriptTest {
                 Write-Verbose "Verifying invocation count for ${funcName}: expected $expectedCount"
             }
             
-            if ($expectedCount -eq 0) {
-                Should -Invoke -CommandName $funcName -Times 0 -ModuleName 'LabRunner'
-            } else {
-                Should -Invoke -CommandName $funcName -Times $expectedCount -ModuleName 'LabRunner'
+            $invokeArgs = @{ CommandName = $funcName; Times = $expectedCount }
+            if (-not ($script:GlobalCommands -contains $funcName)) {
+                # If not a known global command, assume it's part of LabRunner module
+                $invokeArgs.Add('ModuleName', 'LabRunner')
             }
+            
+            Should -Invoke @invokeArgs
         }
         
         # Run custom validation if provided
@@ -198,178 +224,157 @@ function New-StandardTestMocks {
     Creates comprehensive standard mocks for cross-platform testing
     #>
     param(
-        [string]$ModuleName
+        [string]$LabRunnerModuleName # Module name for LabRunner specific functions
     )
     
-    $mockParams = if ($ModuleName) { @{ ModuleName = $ModuleName } } else { @{} }
+    # LabRunner specific mocks
+    Mock Write-CustomLog -ModuleName $LabRunnerModuleName {}
+    Mock Read-LoggedInput -ModuleName $LabRunnerModuleName { 'n' }
+    Mock Get-MenuSelection -ModuleName $LabRunnerModuleName { @() }
     
-    # Core system mocks
-    Mock Write-CustomLog @mockParams {}
-    Mock Write-Host @mockParams {}
-    Mock Read-LoggedInput @mockParams { 'n' }
-    Mock Get-MenuSelection @mockParams { @() }
+    # Global mocks (PowerShell built-ins or external commands)
+    # Default Get-Command returns null. Specific scenarios or platform mocks can override for specific commands.
+    Mock Get-Command { param($Name) $null } 
+    Mock Start-Process {}
+    Mock Invoke-WebRequest {}
+    Mock Invoke-RestMethod { @{ download_url = 'https://example.com/file.zip' } } # Example, can be overridden
+    Mock New-Item {}
+    Mock Remove-Item {}
+    Mock Copy-Item {}
+    Mock Test-Path { $true } # Default to true, often overridden by scenarios
     
-    # Platform-specific mocks
+    Mock Write-Host {}
+    Mock Write-Verbose {}
+    Mock Write-Warning {}
+    Mock Write-Error {}
+    Mock Read-Host { 'n' } # Default for any Read-Host prompts
+
+    # Platform-specific mocks. These functions will also use LabRunnerModuleName for LabRunner specifics
+    # and mock global commands globally.
     switch ($script:CurrentPlatform) {
         'Windows' {
-            New-WindowsSpecificMocks -ModuleName $ModuleName
+            New-WindowsSpecificMocks -LabRunnerModuleName $LabRunnerModuleName
         }
         'Linux' {
-            New-LinuxSpecificMocks -ModuleName $ModuleName
+            New-LinuxSpecificMocks -LabRunnerModuleName $LabRunnerModuleName
         }
         'macOS' {
-            New-MacOSSpecificMocks -ModuleName $ModuleName
+            New-MacOSSpecificMocks -LabRunnerModuleName $LabRunnerModuleName
         }
     }
     
-    # Common cross-platform mocks
-    Mock Get-Command @mockParams { $null } -ParameterFilter { $Name -eq 'nonexistent' }
-    Mock Start-Process @mockParams {}
-    Mock Invoke-WebRequest @mockParams {}
-    Mock Invoke-RestMethod @mockParams { @{ download_url = 'https://example.com/file.zip' } }
-    Mock New-Item @mockParams {}
-    Mock Remove-Item @mockParams {}
-    Mock Copy-Item @mockParams {}
-    Mock Test-Path @mockParams { $true }
+    # Example of a more specific standard Get-Command mock, if needed globally for 'nonexistent'
+    # Mock Get-Command { $null } -ParameterFilter { $Name -eq 'nonexistent' }
 }
 
 function New-WindowsSpecificMocks {
-    param([string]$ModuleName)
+    param(
+        [string]$LabRunnerModuleName # For LabRunner module specific mocks, if any
+    )
     
-    $mockParams = if ($ModuleName) { @{ ModuleName = $ModuleName } } else { @{} }
+    # Windows Services (Global cmdlets)
+    Mock Get-Service {
+        [PSCustomObject]@{ Name = 'MockService'; Status = 'Running' }
+    }
+    Mock Start-Service {}
+    Mock Stop-Service {}
+    Mock Restart-Service {}
     
-    # Windows Services
-    Mock Get-Service @mockParams {
-        [PSCustomObject]@{
-            Name = 'MockService'
-            Status = 'Running'
-        }
+    # Windows Features (Global cmdlets)
+    Mock Get-WindowsOptionalFeature {
+        [PSCustomObject]@{ FeatureName = 'Microsoft-Hyper-V'; State = 'Enabled' }
+    }
+    Mock Enable-WindowsOptionalFeature {}
+    Mock Get-WindowsFeature {
+        [PSCustomObject]@{ Name = 'MockFeature'; InstallState = 'Installed' }
+    }
+    Mock Install-WindowsFeature {}
+    
+    # Registry operations (Global cmdlets)
+    Mock Get-ItemProperty {
+        [PSCustomObject]@{ fDenyTSConnections = 0 } # Example data
+    }
+    Mock Set-ItemProperty {}
+    
+    # Networking (Global cmdlets)
+    Mock New-NetFirewallRule {
+        [PSCustomObject]@{ DisplayName = 'Mock Rule'; Enabled = $true }
+    }
+    Mock Get-NetFirewallRule {
+        [PSCustomObject]@{ DisplayName = 'Mock Rule'; Enabled = $true }
+    }
+    Mock Remove-NetFirewallRule {}
+    Mock Set-DnsClientServerAddress {}
+    
+    # Certificate operations (Global cmdlets)
+    Mock New-SelfSignedCertificate {
+        [PSCustomObject]@{ Thumbprint = 'ABCD1234567890'; Subject = 'CN=MockCert' }
     }
     
-    Mock Start-Service @mockParams {}
-    Mock Stop-Service @mockParams {}
-    Mock Restart-Service @mockParams {}
+    # WSMan/PowerShell Remoting (Global cmdlets)
+    Mock Enable-PSRemoting {}
+    Mock Test-WSMan { $true }
     
-    # Windows Features
-    Mock Get-WindowsOptionalFeature @mockParams {
-        [PSCustomObject]@{
-            FeatureName = 'Microsoft-Hyper-V'
-            State = 'Enabled'
-        }
-    }
-    
-    Mock Enable-WindowsOptionalFeature @mockParams {}
-    Mock Get-WindowsFeature @mockParams {
-        [PSCustomObject]@{
-            Name = 'MockFeature'
-            InstallState = 'Installed'
-        }
-    }
-    
-    Mock Install-WindowsFeature @mockParams {}
-    
-    # Registry operations
-    Mock Get-ItemProperty @mockParams {
-        [PSCustomObject]@{
-            fDenyTSConnections = 0
-        }
-    }
-    
-    Mock Set-ItemProperty @mockParams {}
-    
-    # Networking
-    Mock New-NetFirewallRule @mockParams {
-        [PSCustomObject]@{
-            DisplayName = 'Mock Rule'
-            Enabled = $true
-        }
-    }
-    
-    Mock Get-NetFirewallRule @mockParams {
-        [PSCustomObject]@{
-            DisplayName = 'Mock Rule'
-            Enabled = $true
-        }
-    }
-    
-    Mock Remove-NetFirewallRule @mockParams {}
-    Mock Set-DnsClientServerAddress @mockParams {}
-    
-    # Certificate operations
-    Mock New-SelfSignedCertificate @mockParams {
-        [PSCustomObject]@{
-            Thumbprint = 'ABCD1234567890'
-            Subject = 'CN=MockCert'
-        }
-    }
-    
-    # WSMan/PowerShell Remoting
-    Mock Enable-PSRemoting @mockParams {}
-    Mock Test-WSMan @mockParams { $true }
-    
-    # Hyper-V specific mocks
+    # Hyper-V specific mocks (Global cmdlets, if module is available)
     if (Get-Module -ListAvailable -Name 'Hyper-V') {
-        Mock Get-VM @mockParams { @() }
-        Mock New-VM @mockParams {}
-        Mock Start-VM @mockParams {}
-        Mock Stop-VM @mockParams {}
+        Mock Get-VM { @() }
+        Mock New-VM {}
+        Mock Start-VM {}
+        Mock Stop-VM {}
     }
+
+    # Common Windows package managers/installers (Global commands)
+    Mock Get-Command { [PSCustomObject]@{ Name = 'choco'; Source = 'C:\\ProgramData\\chocolatey\\bin\\choco.exe'} } -ParameterFilter { $Name -eq 'choco' }
+    Mock choco {}
+    Mock Get-Command { [PSCustomObject]@{ Name = 'winget'; Source = 'C:\\ProgramFiles\\WindowsApps\\Microsoft.DesktopAppInstaller_...\\winget.exe'} } -ParameterFilter { $Name -eq 'winget' }
+    Mock winget {}
+    Mock msiexec {}
 }
 
 function New-LinuxSpecificMocks {
-    param([string]$ModuleName)
+    param(
+        [string]$LabRunnerModuleName # For LabRunner module specific mocks, if any
+    )
     
-    $mockParams = if ($ModuleName) { @{ ModuleName = $ModuleName } } else { @{} }
-    
-    # Linux package managers
-    Mock Get-Command @mockParams {
-        [PSCustomObject]@{
-            Name = 'apt-get'
-            Source = '/usr/bin/apt-get'
-            CommandType = 'Application'
-        }
+    # Linux package managers (Global Get-Command mocks for discoverability, and global mocks for the commands themselves)
+    Mock Get-Command {
+        [PSCustomObject]@{ Name = 'apt-get'; Source = '/usr/bin/apt-get'; CommandType = 'Application' }
     } -ParameterFilter { $Name -eq 'apt-get' }
-    
-    Mock Get-Command @mockParams {
-        [PSCustomObject]@{
-            Name = 'yum'
-            Source = '/usr/bin/yum'
-            CommandType = 'Application'
-        }
+    Mock apt-get {}
+
+    Mock Get-Command {
+        [PSCustomObject]@{ Name = 'yum'; Source = '/usr/bin/yum'; CommandType = 'Application' }
     } -ParameterFilter { $Name -eq 'yum' }
+    Mock yum {}
+
+    Mock Get-Command {
+        [PSCustomObject]@{ Name = 'dnf'; Source = '/usr/bin/dnf'; CommandType = 'Application' }
+    } -ParameterFilter { $Name -eq 'dnf' }
+    Mock dnf {}
     
-    # systemd services
-    Mock Get-Command @mockParams {
-        [PSCustomObject]@{
-            Name = 'systemctl'
-            Source = '/usr/bin/systemctl'
-            CommandType = 'Application'
-        }
+    # systemd services (Global Get-Command and command mock)
+    Mock Get-Command {
+        [PSCustomObject]@{ Name = 'systemctl'; Source = '/usr/bin/systemctl'; CommandType = 'Application' }
     } -ParameterFilter { $Name -eq 'systemctl' }
+    Mock systemctl {}
 }
 
 function New-MacOSSpecificMocks {
-    param([string]$ModuleName)
+    param(
+        [string]$LabRunnerModuleName # For LabRunner module specific mocks, if any
+    )
     
-    $mockParams = if ($ModuleName) { @{ ModuleName = $ModuleName } } else { @{} }
-    
-    # Homebrew
-    Mock Get-Command @mockParams {
-        [PSCustomObject]@{
-            Name = 'brew'
-            Source = '/usr/local/bin/brew'
-            CommandType = 'Application'
-        }
+    # Homebrew (Global Get-Command and command mock)
+    Mock Get-Command {
+        [PSCustomObject]@{ Name = 'brew'; Source = '/usr/local/bin/brew'; CommandType = 'Application' }
     } -ParameterFilter { $Name -eq 'brew' }
+    Mock brew {}
     
-    # macOS system commands
-    Mock Get-Command @mockParams {
-        [PSCustomObject]@{
-            Name = 'launchctl'
-            Source = '/bin/launchctl'
-            CommandType = 'Application'
-        }
+    # macOS system commands (Global Get-Command and command mock)
+    Mock Get-Command {
+        [PSCustomObject]@{ Name = 'launchctl'; Source = '/bin/launchctl'; CommandType = 'Application' }
     } -ParameterFilter { $Name -eq 'launchctl' }
+    Mock launchctl {}
 }
 
 function Test-RunnerScript {
@@ -383,21 +388,26 @@ function Test-RunnerScript {
         
         [TestScenario[]]$Scenarios = @(),
         
-        [switch]$IncludeStandardTests,
+        [switch]$IncludeStandardTests = $true,
         
         [switch]$EnableVerboseLogging
     )
     
-    $scriptPath = Get-RunnerScriptPath $ScriptName
+    $scriptPath = Get-RunnerScriptPath $ScriptName # This is the local, resolved script path
     if (-not $scriptPath -or -not (Test-Path $scriptPath)) {
         throw "Script under test not found: $ScriptName (resolved path: $scriptPath)"
     }
-    
+
     Describe "Runner Script: $ScriptName" {
         BeforeAll {
-            $script:ScriptPath = $scriptPath
+            $script:ScriptPath = $scriptPath # Set the script-scoped variable from the local resolved one
             $script:ScriptName = $ScriptName
-            
+
+            # Validate the script path and log an error if invalid
+            if (-not $script:ScriptPath -or -not (Test-Path $script:ScriptPath)) {
+                throw "Script path is invalid: $script:ScriptPath"
+            }
+
             # Disable interactive prompts for all tests
             Disable-InteractivePrompts
         }
@@ -405,22 +415,38 @@ function Test-RunnerScript {
         if ($IncludeStandardTests) {
             Context 'Standard Validation Tests' {
                 It 'parses without syntax errors' {
+                    # Use the script-scoped $script:ScriptPath
+                    if (-not $script:ScriptPath -or -not (Test-Path $script:ScriptPath)) {
+                        throw "Script path is invalid: $script:ScriptPath"
+                    }
                     $errors = $null
                     [System.Management.Automation.Language.Parser]::ParseFile($script:ScriptPath, [ref]$null, [ref]$errors) | Out-Null
                     ($errors ? $errors.Count : 0) | Should -Be 0
                 }
                 
                 It 'has required Config parameter' {
+                    # Use the script-scoped $script:ScriptPath
+                    if (-not $script:ScriptPath -or -not (Test-Path $script:ScriptPath)) {
+                        throw "Script path is invalid: $script:ScriptPath"
+                    }
                     $content = Get-Content $script:ScriptPath -Raw
-                    $content | Should -Match 'Param\s*\(\s*.*\$Config'
+                    $content | Should -Match 'Param\s*\([^)]*Config[^)]*\)'
                 }
                 
                 It 'imports LabRunner module' {
+                    # Use the script-scoped $script:ScriptPath
+                    if (-not $script:ScriptPath -or -not (Test-Path $script:ScriptPath)) {
+                        throw "Script path is invalid: $script:ScriptPath"
+                    }
                     $content = Get-Content $script:ScriptPath -Raw
                     $content | Should -Match 'Import-Module.*LabRunner'
                 }
                 
                 It 'contains Invoke-LabStep call' {
+                    # Use the script-scoped $script:ScriptPath
+                    if (-not $script:ScriptPath -or -not (Test-Path $script:ScriptPath)) {
+                        throw "Script path is invalid: $script:ScriptPath"
+                    }
                     $content = Get-Content $script:ScriptPath -Raw
                     $content | Should -Match 'Invoke-LabStep'
                 }
@@ -438,6 +464,7 @@ function Test-RunnerScript {
             Context "Scenario: $($scenario.Name)" {
                 It $scenario.Description -Skip:($null -ne $skipReason) {
                     InModuleScope LabRunner {
+                        # Use $script:ScriptPath, which is set in BeforeAll
                         Invoke-ScriptTest -ScriptPath $script:ScriptPath -Scenario $scenario -EnableVerboseLogging:$EnableVerboseLogging
                     }
                 }

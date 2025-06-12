@@ -7,5 +7,5 @@ function Normalize-RelativePath {
         throw [System.ArgumentException]::new("Path cannot be null or empty", "Path")
     }
     $segments = $Path -split '[\\/]+'
-    $segments | Join-Path -Path $null
+    $segments -join [System.IO.Path]::DirectorySeparatorChar
 }

@@ -72,6 +72,27 @@ Custom config file:
 
 ---
 
+## Workflow Dashboard
+
+This project uses GitHub Actions for continuous integration and testing. Below is the current status of the workflows:
+
+| Workflow Name       | Status                                                                 |
+|---------------------|------------------------------------------------------------------------|
+| Pester (Linux)      | ![Pester Linux](https://github.com/opentofu-lab-automation/actions/workflows/pester-linux.yml/badge.svg) |
+| Pester (macOS)      | ![Pester macOS](https://github.com/opentofu-lab-automation/actions/workflows/pester-macos.yml/badge.svg) |
+| Pester (Windows)    | ![Pester Windows](https://github.com/opentofu-lab-automation/actions/workflows/pester-windows.yml/badge.svg) |
+| Update Path Index   | ![Update Path Index](https://github.com/opentofu-lab-automation/actions/workflows/update-path-index.yml/badge.svg) |
+| CI                  | ![CI](https://github.com/opentofu-lab-automation/actions/workflows/ci.yml/badge.svg) |
+
+### Recommendations
+- Monitor the workflow statuses regularly to ensure all tests pass.
+- Address any failures promptly to maintain the health of the CI/CD pipeline.
+
+### Health Score
+The overall health score of the workflows is calculated based on the success rate of recent runs. Use the `workflow-health-check.sh` script to generate a detailed report.
+
+---
+
 ## Contributing & Testing
 
 - See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.

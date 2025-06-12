@@ -22,7 +22,10 @@ function New-InstallerScriptTest {
         [string]$EnabledProperty,
         
         [Parameter(Mandatory)]
-        [string]$InstallerCommand,
+        [string]$InstallerCommand, # e.g., Start-Process, Invoke-MSI, etc.
+
+        [Parameter(Mandatory)]
+        [string]$SoftwareCommandName, # e.g., 'go', 'terraform', 'code'
         
         [hashtable]$EnabledConfig = @{},
         
@@ -45,37 +48,77 @@ function New-InstallerScriptTest {
     # Create scenarios
     $scenarios = @()
     
-    # Enabled scenario
-    $enabledMocks = @{
-        'Get-Command' = { $null }
+    # --- Enabled scenario (Software NOT installed) ---
+    $enabledScenarioMocks = @{
+        # Mock Get-Command: Software is NOT installed initially
+        # Any other Get-Command calls will fall through to the default mock (returns $null)
+        # or to a user-provided Get-Command in AdditionalMocks
+        'Get-Command' = { 
+            param($Name)
+            if ($Name -eq $SoftwareCommandName) { return $null } 
+            # If AdditionalMocks has a Get-Command, use it for other names
+            if ($AdditionalMocks.ContainsKey('Get-Command')) {
+                return (& $AdditionalMocks['Get-Command'] $Name)
+            }
+            return $null # Default behavior for other commands
+        }
         'Invoke-LabDownload' = { if ($Action) { & $Action 'test-installer.exe' } }
-        $InstallerCommand = {}
+        $InstallerCommand = {} # Mock the specific installer command used by the script
     }
-    # Give precedence to AdditionalMocks
-    $AdditionalMocks.GetEnumerator() | ForEach-Object { $enabledMocks[$_.Name] = $_.Value }
+    # Merge other additional mocks, giving precedence to AdditionalMocks
+    $AdditionalMocks.GetEnumerator() | ForEach-Object {
+        if ($_.Name -ne 'Get-Command') { # Get-Command is handled specially above
+            $enabledScenarioMocks[$_.Name] = $_.Value
+        }
+    }
     
-    $scenarios += New-TestScenario -Name 'Installs when enabled' -Description "installs when $EnabledProperty is true" -Config $finalEnabledConfig -Mocks $enabledMocks -ExpectedInvocations @{ 'Invoke-LabDownload' = 1; $InstallerCommand = 1 } -RequiredPlatforms $RequiredPlatforms -ExcludedPlatforms $ExcludedPlatforms
+    $scenarios += New-TestScenario -Name "Installs $SoftwareCommandName when enabled" -Description "installs $SoftwareCommandName when $EnabledProperty is true" -Config $finalEnabledConfig -Mocks $enabledScenarioMocks -ExpectedInvocations @{ 'Invoke-LabDownload' = 1; $InstallerCommand = 1 } -RequiredPlatforms $RequiredPlatforms -ExcludedPlatforms $ExcludedPlatforms
     
-    # Disabled scenario
-    $disabledMocks = @{
+    # --- Disabled scenario ---
+    $disabledScenarioMocks = @{
+        # Get-Command behavior doesn't strictly matter as script shouldn't try to install
+        # but we can keep it consistent or simple.
+        'Get-Command' = { 
+            param($Name)
+            # If AdditionalMocks has a Get-Command, use it
+            if ($AdditionalMocks.ContainsKey('Get-Command')) {
+                return (& $AdditionalMocks['Get-Command'] $Name)
+            }
+            return $null
+        }
         'Invoke-LabDownload' = {}
         $InstallerCommand = {}
     }
-    # Give precedence to AdditionalMocks
-    $AdditionalMocks.GetEnumerator() | ForEach-Object { $disabledMocks[$_.Name] = $_.Value }
+    $AdditionalMocks.GetEnumerator() | ForEach-Object {
+        if ($_.Name -ne 'Get-Command') {
+            $disabledScenarioMocks[$_.Name] = $_.Value
+        }
+    }
     
-    $scenarios += New-TestScenario -Name 'Skips when disabled' -Description "skips when $EnabledProperty is false" -Config $finalDisabledConfig -Mocks $disabledMocks -ExpectedInvocations @{ 'Invoke-LabDownload' = 0; $InstallerCommand = 0 } -RequiredPlatforms $RequiredPlatforms -ExcludedPlatforms $ExcludedPlatforms
+    $scenarios += New-TestScenario -Name "Skips $SoftwareCommandName when disabled" -Description "skips $SoftwareCommandName when $EnabledProperty is false" -Config $finalDisabledConfig -Mocks $disabledScenarioMocks -ExpectedInvocations @{ 'Invoke-LabDownload' = 0; $InstallerCommand = 0 } -RequiredPlatforms $RequiredPlatforms -ExcludedPlatforms $ExcludedPlatforms
     
-    # Already installed scenario
-    $installedMocks = @{
-        'Get-Command' = { [PSCustomObject]@{ Name = 'test'; Source = '/usr/bin/test' } }
+    # --- Already installed scenario ---
+    $alreadyInstalledMocks = @{
+        # Mock Get-Command: Software IS already installed
+        'Get-Command' = { 
+            param($Name)
+            if ($Name -eq $SoftwareCommandName) { return [PSCustomObject]@{ Name = $SoftwareCommandName; Source = "/fake/path/to/$SoftwareCommandName" } } 
+            # If AdditionalMocks has a Get-Command, use it for other names
+            if ($AdditionalMocks.ContainsKey('Get-Command')) {
+                return (& $AdditionalMocks['Get-Command'] $Name)
+            }
+            return $null # Default behavior for other commands
+        }
         'Invoke-LabDownload' = {}
         $InstallerCommand = {}
     }
-    # Give precedence to AdditionalMocks
-    $AdditionalMocks.GetEnumerator() | ForEach-Object { $installedMocks[$_.Name] = $_.Value }
+    $AdditionalMocks.GetEnumerator() | ForEach-Object {
+        if ($_.Name -ne 'Get-Command') {
+            $alreadyInstalledMocks[$_.Name] = $_.Value
+        }
+    }
     
-    $scenarios += New-TestScenario -Name 'Skips when already installed' -Description "does nothing when already installed" -Config $finalEnabledConfig -Mocks $installedMocks -ExpectedInvocations @{ 'Invoke-LabDownload' = 0; $InstallerCommand = 0 } -RequiredPlatforms $RequiredPlatforms -ExcludedPlatforms $ExcludedPlatforms
+    $scenarios += New-TestScenario -Name "Skips $SoftwareCommandName when already installed" -Description "does nothing when $SoftwareCommandName is already installed" -Config $finalEnabledConfig -Mocks $alreadyInstalledMocks -ExpectedInvocations @{ 'Invoke-LabDownload' = 0; $InstallerCommand = 0 } -RequiredPlatforms $RequiredPlatforms -ExcludedPlatforms $ExcludedPlatforms
     
     Test-RunnerScript -ScriptName $ScriptName -Scenarios $scenarios -IncludeStandardTests
 }
@@ -340,8 +383,6 @@ function New-IntegrationTest {
     }
 }
 
-# Ensure functions intended for export are explicitly exported if this were a module.
-# For .ps1 files, functions are available in the scope that sources them.
-# If this file (TestTemplates.ps1) is meant to be a module, it should be .psm1 and use Export-ModuleMember.
-# Example (if it were a .psm1 file):
+# Do NOT include Export-ModuleMember in this .ps1 file.
+# If you convert this to a .psm1 module, then add:
 # Export-ModuleMember -Function New-InstallerScriptTest, New-FeatureScriptTest, New-ServiceScriptTest, New-ConfigurationScriptTest, New-CrossPlatformScriptTest, New-IntegrationTest

@@ -1,5 +1,5 @@
 {
-  "timestamp": "2025-06-12T03:52:33.607813",
+  "timestamp": "2025-06-12T05:30:36.264686",
   "workflows": [
     {
       "name": "lint.yml",
@@ -32,14 +32,38 @@
     {
       "name": "test.yml",
       "path": ".github/workflows/test.yml",
-      "size": 1989,
-      "lines": 67,
+      "size": 2647,
+      "lines": 81,
       "has_matrix": false,
-      "has_cache": false,
+      "has_cache": true,
       "has_artifacts": true,
       "platforms": [
         "Windows",
         "Linux"
+      ]
+    },
+    {
+      "name": "auto-test-generation-setup.yml",
+      "path": ".github/workflows/auto-test-generation-setup.yml",
+      "size": 5434,
+      "lines": 145,
+      "has_matrix": false,
+      "has_cache": false,
+      "has_artifacts": true,
+      "platforms": [
+        "Linux"
+      ]
+    },
+    {
+      "name": "pester-macos.yml",
+      "path": ".github/workflows/pester-macos.yml",
+      "size": 5337,
+      "lines": 139,
+      "has_matrix": false,
+      "has_cache": true,
+      "has_artifacts": true,
+      "platforms": [
+        "macOS"
       ]
     },
     {
@@ -57,9 +81,9 @@
     {
       "name": "ci.yml",
       "path": ".github/workflows/ci.yml",
-      "size": 2136,
-      "lines": 73,
-      "has_matrix": false,
+      "size": 1565,
+      "lines": 53,
+      "has_matrix": true,
       "has_cache": false,
       "has_artifacts": false,
       "platforms": [
@@ -69,10 +93,10 @@
     {
       "name": "changelog.yml",
       "path": ".github/workflows/changelog.yml",
-      "size": 698,
-      "lines": 27,
+      "size": 963,
+      "lines": 34,
       "has_matrix": false,
-      "has_cache": false,
+      "has_cache": true,
       "has_artifacts": false,
       "platforms": [
         "Linux"
@@ -93,6 +117,16 @@
       ]
     },
     {
+      "name": "auto-test-generation-execution.yml",
+      "path": ".github/workflows/auto-test-generation-execution.yml",
+      "size": 6360,
+      "lines": 166,
+      "has_matrix": false,
+      "has_cache": false,
+      "has_artifacts": true,
+      "platforms": []
+    },
+    {
       "name": "update-pester-failures-doc.yml",
       "path": ".github/workflows/update-pester-failures-doc.yml",
       "size": 1256,
@@ -100,6 +134,18 @@
       "has_matrix": false,
       "has_cache": false,
       "has_artifacts": false,
+      "platforms": [
+        "Linux"
+      ]
+    },
+    {
+      "name": "auto-test-generation-reporting.yml",
+      "path": ".github/workflows/auto-test-generation-reporting.yml",
+      "size": 10429,
+      "lines": 232,
+      "has_matrix": false,
+      "has_cache": false,
+      "has_artifacts": true,
       "platforms": [
         "Linux"
       ]
@@ -119,13 +165,25 @@
     {
       "name": "update-path-index.yml",
       "path": ".github/workflows/update-path-index.yml",
-      "size": 754,
-      "lines": 28,
+      "size": 1025,
+      "lines": 36,
       "has_matrix": false,
       "has_cache": false,
       "has_artifacts": false,
       "platforms": [
         "Linux"
+      ]
+    },
+    {
+      "name": "pester-windows.yml",
+      "path": ".github/workflows/pester-windows.yml",
+      "size": 8466,
+      "lines": 214,
+      "has_matrix": false,
+      "has_cache": true,
+      "has_artifacts": true,
+      "platforms": [
+        "Windows"
       ]
     },
     {
@@ -136,6 +194,18 @@
       "has_matrix": false,
       "has_cache": false,
       "has_artifacts": false,
+      "platforms": [
+        "Linux"
+      ]
+    },
+    {
+      "name": "pester-linux.yml",
+      "path": ".github/workflows/pester-linux.yml",
+      "size": 5646,
+      "lines": 144,
+      "has_matrix": false,
+      "has_cache": true,
+      "has_artifacts": true,
       "platforms": [
         "Linux"
       ]
@@ -155,11 +225,11 @@
     {
       "name": "auto-test-generation.yml",
       "path": ".github/workflows/auto-test-generation.yml",
-      "size": 18958,
-      "lines": 482,
-      "has_matrix": true,
+      "size": 4894,
+      "lines": 111,
+      "has_matrix": false,
       "has_cache": false,
-      "has_artifacts": true,
+      "has_artifacts": false,
       "platforms": [
         "Windows",
         "Linux",
@@ -170,88 +240,89 @@
   "recent_runs": [
     {
       "conclusion": "success",
-      "createdAt": "2025-06-12T03:48:25Z",
+      "createdAt": "2025-06-12T05:28:48Z",
       "status": "completed",
-      "url": "https://github.com/wizzense/opentofu-lab-automation/actions/runs/15601141830",
-      "workflowName": "Example Infrastructure"
-    },
-    {
-      "conclusion": "success",
-      "createdAt": "2025-06-12T03:47:18Z",
-      "status": "completed",
-      "url": "https://github.com/wizzense/opentofu-lab-automation/actions/runs/15601127559",
-      "workflowName": "Example Infrastructure"
-    },
-    {
-      "conclusion": "success",
-      "createdAt": "2025-06-12T03:45:05Z",
-      "status": "completed",
-      "url": "https://github.com/wizzense/opentofu-lab-automation/actions/runs/15601100148",
-      "workflowName": "Example Infrastructure"
-    },
-    {
-      "conclusion": "success",
-      "createdAt": "2025-06-12T03:39:08Z",
-      "status": "completed",
-      "url": "https://github.com/wizzense/opentofu-lab-automation/actions/runs/15601027413",
+      "url": "https://github.com/wizzense/opentofu-lab-automation/actions/runs/15602402233",
       "workflowName": "Example Infrastructure"
     },
     {
       "conclusion": "failure",
-      "createdAt": "2025-06-12T03:37:02Z",
+      "createdAt": "2025-06-12T05:28:48Z",
       "status": "completed",
-      "url": "https://github.com/wizzense/opentofu-lab-automation/actions/runs/15601002117",
-      "workflowName": "Create Issue on Failure"
+      "url": "https://github.com/wizzense/opentofu-lab-automation/actions/runs/15602402057",
+      "workflowName": ".github/workflows/pester-windows.yml"
     },
     {
       "conclusion": "failure",
-      "createdAt": "2025-06-12T03:35:37Z",
+      "createdAt": "2025-06-12T05:28:47Z",
       "status": "completed",
-      "url": "https://github.com/wizzense/opentofu-lab-automation/actions/runs/15600986144",
-      "workflowName": "Pester"
+      "url": "https://github.com/wizzense/opentofu-lab-automation/actions/runs/15602401978",
+      "workflowName": ".github/workflows/auto-test-generation-setup.yml"
+    },
+    {
+      "conclusion": "failure",
+      "createdAt": "2025-06-12T05:28:47Z",
+      "status": "completed",
+      "url": "https://github.com/wizzense/opentofu-lab-automation/actions/runs/15602401913",
+      "workflowName": ".github/workflows/auto-test-generation-execution.yml"
+    },
+    {
+      "conclusion": "failure",
+      "createdAt": "2025-06-12T05:28:47Z",
+      "status": "completed",
+      "url": "https://github.com/wizzense/opentofu-lab-automation/actions/runs/15602401871",
+      "workflowName": ".github/workflows/pester-linux.yml"
+    },
+    {
+      "conclusion": "failure",
+      "createdAt": "2025-06-12T05:28:46Z",
+      "status": "completed",
+      "url": "https://github.com/wizzense/opentofu-lab-automation/actions/runs/15602401834",
+      "workflowName": ".github/workflows/auto-test-generation-reporting.yml"
+    },
+    {
+      "conclusion": "failure",
+      "createdAt": "2025-06-12T05:28:46Z",
+      "status": "completed",
+      "url": "https://github.com/wizzense/opentofu-lab-automation/actions/runs/15602401751",
+      "workflowName": ".github/workflows/pester-macos.yml"
     },
     {
       "conclusion": "success",
-      "createdAt": "2025-06-12T03:33:25Z",
+      "createdAt": "2025-06-12T05:17:17Z",
       "status": "completed",
-      "url": "https://github.com/wizzense/opentofu-lab-automation/actions/runs/15600958132",
-      "workflowName": "Example Infrastructure"
-    },
-    {
-      "conclusion": "success",
-      "createdAt": "2025-06-12T02:51:06Z",
-      "status": "completed",
-      "url": "https://github.com/wizzense/opentofu-lab-automation/actions/runs/15600446357",
+      "url": "https://github.com/wizzense/opentofu-lab-automation/actions/runs/15602244665",
       "workflowName": "Example Infrastructure"
     },
     {
       "conclusion": "failure",
-      "createdAt": "2025-06-12T02:51:06Z",
+      "createdAt": "2025-06-12T05:17:16Z",
       "status": "completed",
-      "url": "https://github.com/wizzense/opentofu-lab-automation/actions/runs/15600446354",
-      "workflowName": "Auto Test Generation"
+      "url": "https://github.com/wizzense/opentofu-lab-automation/actions/runs/15602244447",
+      "workflowName": ".github/workflows/pester-linux.yml"
     },
     {
-      "conclusion": "success",
-      "createdAt": "2025-06-12T02:37:21Z",
+      "conclusion": "failure",
+      "createdAt": "2025-06-12T05:17:16Z",
       "status": "completed",
-      "url": "https://github.com/wizzense/opentofu-lab-automation/actions/runs/15600278301",
-      "workflowName": "Example Infrastructure"
+      "url": "https://github.com/wizzense/opentofu-lab-automation/actions/runs/15602244366",
+      "workflowName": ".github/workflows/pester-macos.yml"
     }
   ],
   "summary": {
-    "total_workflows": 13,
-    "with_cache": 4,
-    "with_artifacts": 6,
+    "total_workflows": 19,
+    "with_cache": 9,
+    "with_artifacts": 11,
     "with_matrix": 4,
     "issues": [
       "\u26a0\ufe0f  pester.yml is very long (263 lines)",
-      "\u26a0\ufe0f  auto-test-generation.yml is very long (482 lines)"
+      "\u26a0\ufe0f  auto-test-generation-execution.yml has no platform specified",
+      "\u26a0\ufe0f  auto-test-generation-reporting.yml is very long (232 lines)",
+      "\u26a0\ufe0f  pester-windows.yml is very long (214 lines)"
     ],
     "recommendations": [
       "\ud83d\udca1 Consider adding caching to more workflows to improve performance",
-      "\ud83d\udca1 Consider adding artifact uploads for better debugging",
-      "\ud83d\udca1 Consider splitting long workflows (2 found)"
+      "\ud83d\udca1 Consider splitting long workflows (4 found)"
     ]
   }
 }
