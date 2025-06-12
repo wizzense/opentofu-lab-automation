@@ -142,6 +142,7 @@ scripts/batch-fix-remaining-tests.ps1: scripts/batch-fix-remaining-tests.ps1
 scripts/complete-pester-fixes.ps1: scripts/complete-pester-fixes.ps1
 scripts/final-validation.ps1: scripts/final-validation.ps1
 scripts/fix-pester-function-tests.ps1: scripts/fix-pester-function-tests.ps1
+scripts/generate-dashboard.ps1: scripts/generate-dashboard.ps1
 scripts/suggest-testing-improvements.ps1: scripts/suggest-testing-improvements.ps1
 scripts/test-workflow-locally.ps1: scripts/test-workflow-locally.ps1
 scripts/update_index.py: scripts/update_index.py
@@ -152,6 +153,7 @@ test-all-syntax.ps1: test-all-syntax.ps1
 test-bootstrap-fixes.py: test-bootstrap-fixes.py
 test-bootstrap-syntax.py: test-bootstrap-syntax.py
 test-cross-platform-executor.ps1: test-cross-platform-executor.ps1
+test-lint.ps1: test-lint.ps1
 test-param-issue.ps1: test-param-issue.ps1
 tests/0000_Cleanup-Files.Tests.ps1: tests/0000_Cleanup-Files.Tests.ps1
 tests/0001_Reset-Git.Tests.ps1: tests/0001_Reset-Git.Tests.ps1
