@@ -47,18 +47,22 @@ try:
     with open('$workflow', 'r') as f:
         content = yaml.safe_load(f)
     
-    # Basic structure validation
     if not content:
         print('Error: Empty or invalid YAML')
         sys.exit(1)
     
-    # Check for required fields
-    if 'jobs' not in content and content.get('jobs') is None:
-        print('Warning: No jobs section found')
-    
+    if not isinstance(content, dict):
+        print('Error: Invalid workflow structure')
+        sys.exit(1)
+        
+    # Check for required fields (handle 'on' being parsed as True in YAML)
     triggers = content.get('on', content.get(True, None))
     if not triggers:
         print('Warning: No trigger configuration found')
+    
+    if 'jobs' not in content:
+        print('Error: No jobs section found')
+        sys.exit(1)
     
     print('✓ Valid YAML syntax and structure')
     
@@ -82,31 +86,6 @@ except Exception as e:
           else
             echo "✅ All workflows validated successfully"
           fi
-    if content is None:
-        print(f'✗ {os.path.basename(workflow_path)}: Empty workflow file')
-        sys.exit(1)
-    
-    if not isinstance(content, dict):
-        print(f'✗ {os.path.basename(workflow_path)}: Invalid workflow structure')
-        sys.exit(1)
-        
-    # Check for required fields
-    if 'jobs' not in content and True not in content:  # 'on' might be parsed as True
-        print(f'✗ {os.path.basename(workflow_path)}: Missing required fields')
-        sys.exit(1)
-    
-    print(f'✓ {os.path.basename(workflow_path)}: Valid syntax and structure')
-    
-except yaml.YAMLError as e:
-    print(f'✗ {os.path.basename(workflow_path)}: YAML syntax error - {e}')
-    sys.exit(1)
-except Exception as e:
-    print(f'✗ {os.path.basename(workflow_path)}: Validation error - {e}')
-    sys.exit(1)
-"
-          done
-          
-          echo "✅ All workflow files validated successfully"
           
       - name: Check repository structure
         run: |
@@ -171,7 +150,7 @@ except Exception as e:
     needs: [validate]
     if: always()
     steps:
-      - name: Check results and trigger other workflows
+      - name: Check results and provide summary
         run: |
           echo "## CI Summary" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
@@ -179,5 +158,10 @@ except Exception as e:
           echo "|-----|--------|" >> $GITHUB_STEP_SUMMARY
           echo "| Validation | ${{ needs.validate.result }} |" >> $GITHUB_STEP_SUMMARY
           
-          echo "✅ Quick validation completed"
-          echo "Other workflows (lint, pester, pytest, test) will run independently"
+          if [ "${{ needs.validate.result }}" = "failure" ]; then
+            echo "❌ Validation failed - check logs for details"
+            exit 1
+          else
+            echo "✅ Quick validation completed successfully"
+            echo "Other workflows (lint, pester, pytest, test) will run independently"
+          fi
