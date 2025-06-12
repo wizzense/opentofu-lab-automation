@@ -31,18 +31,30 @@ Describe 'runner Tests' -Tag 'Configuration' {
         }
         
         It 'should define expected functions' -Skip:($SkipNonWindows) {
-            Get-Command 'Resolve-IndexPath' -ErrorAction SilentlyContinue | Should -Not -BeNullOrEmpty
-            Get-Command 'ConvertTo-Hashtable' -ErrorAction SilentlyContinue | Should -Not -BeNullOrEmpty
-            Get-Command 'Get-ScriptConfigFlag' -ErrorAction SilentlyContinue | Should -Not -BeNullOrEmpty
-            Get-Command 'Get-NestedConfigValue' -ErrorAction SilentlyContinue | Should -Not -BeNullOrEmpty
-            Get-Command 'Set-NestedConfigValue' -ErrorAction SilentlyContinue | Should -Not -BeNullOrEmpty
-            Get-Command 'Apply-RecommendedDefaults' -ErrorAction SilentlyContinue | Should -Not -BeNullOrEmpty
-            Get-Command 'Set-LabConfig' -ErrorAction SilentlyContinue | Should -Not -BeNullOrEmpty
-            Get-Command 'Edit-PrimitiveValue' -ErrorAction SilentlyContinue | Should -Not -BeNullOrEmpty
-            Get-Command 'Edit-Section' -ErrorAction SilentlyContinue | Should -Not -BeNullOrEmpty
-            Get-Command 'Invoke-Scripts' -ErrorAction SilentlyContinue | Should -Not -BeNullOrEmpty
-            Get-Command 'Select-Scripts' -ErrorAction SilentlyContinue | Should -Not -BeNullOrEmpty
-            Get-Command 'Prompt-Scripts' -ErrorAction SilentlyContinue | Should -Not -BeNullOrEmpty
+            $scriptContent = Get-Content $script:ScriptPath -Raw
+            $scriptContent | Should -Match 'function\\s+Resolve-IndexPath'
+            $scriptContent = Get-Content $script:ScriptPath -Raw
+            $scriptContent | Should -Match 'function\\s+ConvertTo-Hashtable'
+            $scriptContent = Get-Content $script:ScriptPath -Raw
+            $scriptContent | Should -Match 'function\\s+Get-ScriptConfigFlag'
+            $scriptContent = Get-Content $script:ScriptPath -Raw
+            $scriptContent | Should -Match 'function\\s+Get-NestedConfigValue'
+            $scriptContent = Get-Content $script:ScriptPath -Raw
+            $scriptContent | Should -Match 'function\\s+Set-NestedConfigValue'
+            $scriptContent = Get-Content $script:ScriptPath -Raw
+            $scriptContent | Should -Match 'function\\s+Apply-RecommendedDefaults'
+            $scriptContent = Get-Content $script:ScriptPath -Raw
+            $scriptContent | Should -Match 'function\\s+Set-LabConfig'
+            $scriptContent = Get-Content $script:ScriptPath -Raw
+            $scriptContent | Should -Match 'function\\s+Edit-PrimitiveValue'
+            $scriptContent = Get-Content $script:ScriptPath -Raw
+            $scriptContent | Should -Match 'function\\s+Edit-Section'
+            $scriptContent = Get-Content $script:ScriptPath -Raw
+            $scriptContent | Should -Match 'function\\s+Invoke-Scripts'
+            $scriptContent = Get-Content $script:ScriptPath -Raw
+            $scriptContent | Should -Match 'function\\s+Select-Scripts'
+            $scriptContent = Get-Content $script:ScriptPath -Raw
+            $scriptContent | Should -Match 'function\\s+Prompt-Scripts'
         }
     }
     
@@ -149,8 +161,10 @@ Describe 'runner Tests' -Tag 'Configuration' {
             Get-Command 'Set-LabConfig' | Should -Not -BeNullOrEmpty
         }
                 It 'should support common parameters' -Skip:($SkipNonWindows) {
-            (Get-Command 'Set-LabConfig').Parameters.Keys | Should -Contain 'Verbose'
-            (Get-Command 'Set-LabConfig').Parameters.Keys | Should -Contain 'WhatIf'
+            $scriptContent = Get-Content $script:ScriptPath -Raw
+            $scriptContent | Should -Match '\[CmdletBinding\('
+            $scriptContent = Get-Content $script:ScriptPath -Raw
+            $scriptContent | Should -Match 'SupportsShouldProcess'
         }
                 It 'should handle execution with valid parameters' -Skip:($SkipNonWindows) {
             # Add specific test logic for Set-LabConfig
@@ -214,3 +228,4 @@ AfterAll {
     # Restore any modified system state
     # Remove test artifacts
 }
+

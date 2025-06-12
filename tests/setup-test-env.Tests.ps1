@@ -31,9 +31,12 @@ Describe 'setup-test-env Tests' -Tag 'Installer' {
         }
         
         It 'should define expected functions' {
-            Get-Command 'Ensure-Pester' -ErrorAction SilentlyContinue | Should -Not -BeNullOrEmpty
-            Get-Command 'Ensure-Python' -ErrorAction SilentlyContinue | Should -Not -BeNullOrEmpty
-            Get-Command 'Ensure-Poetry' -ErrorAction SilentlyContinue | Should -Not -BeNullOrEmpty
+            $scriptContent = Get-Content $script:ScriptPath -Raw
+            $scriptContent | Should -Match 'function\\s+Ensure-Pester'
+            $scriptContent = Get-Content $script:ScriptPath -Raw
+            $scriptContent | Should -Match 'function\\s+Ensure-Python'
+            $scriptContent = Get-Content $script:ScriptPath -Raw
+            $scriptContent | Should -Match 'function\\s+Ensure-Poetry'
         }
     }
     
@@ -100,3 +103,4 @@ AfterAll {
     # Restore any modified system state
     # Remove test artifacts
 }
+

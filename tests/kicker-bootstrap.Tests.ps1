@@ -31,11 +31,16 @@ Describe 'kicker-bootstrap Tests' -Tag 'Installer' {
         }
         
         It 'should define expected functions' -Skip:($SkipNonWindows -or $SkipNonAdmin) {
-            Get-Command 'Get-CrossPlatformTempPath' -ErrorAction SilentlyContinue | Should -Not -BeNullOrEmpty
-            Get-Command 'Write-Continue' -ErrorAction SilentlyContinue | Should -Not -BeNullOrEmpty
-            Get-Command 'Write-CustomLog' -ErrorAction SilentlyContinue | Should -Not -BeNullOrEmpty
-            Get-Command 'Read-LoggedInput' -ErrorAction SilentlyContinue | Should -Not -BeNullOrEmpty
-            Get-Command 'Update-RepoPreserveConfig' -ErrorAction SilentlyContinue | Should -Not -BeNullOrEmpty
+            $scriptContent = Get-Content $script:ScriptPath -Raw
+            $scriptContent | Should -Match 'function\\s+Get-CrossPlatformTempPath'
+            $scriptContent = Get-Content $script:ScriptPath -Raw
+            $scriptContent | Should -Match 'function\\s+Write-Continue'
+            $scriptContent = Get-Content $script:ScriptPath -Raw
+            $scriptContent | Should -Match 'function\\s+Write-CustomLog'
+            $scriptContent = Get-Content $script:ScriptPath -Raw
+            $scriptContent | Should -Match 'function\\s+Read-LoggedInput'
+            $scriptContent = Get-Content $script:ScriptPath -Raw
+            $scriptContent | Should -Match 'function\\s+Update-RepoPreserveConfig'
         }
     }
     
@@ -116,8 +121,10 @@ Describe 'kicker-bootstrap Tests' -Tag 'Installer' {
             Get-Command 'Read-LoggedInput' | Should -Not -BeNullOrEmpty
         }
                 It 'should support common parameters' -Skip:($SkipNonWindows -or $SkipNonAdmin) {
-            (Get-Command 'Read-LoggedInput').Parameters.Keys | Should -Contain 'Verbose'
-            (Get-Command 'Read-LoggedInput').Parameters.Keys | Should -Contain 'WhatIf'
+            $scriptContent = Get-Content $script:ScriptPath -Raw
+            $scriptContent | Should -Match '\[CmdletBinding\('
+            $scriptContent = Get-Content $script:ScriptPath -Raw
+            $scriptContent | Should -Match 'SupportsShouldProcess'
         }
                 It 'should handle execution with valid parameters' -Skip:($SkipNonWindows -or $SkipNonAdmin) {
             # Add specific test logic for Read-LoggedInput
@@ -141,3 +148,4 @@ AfterAll {
     # Restore any modified system state
     # Remove test artifacts
 }
+

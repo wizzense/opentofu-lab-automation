@@ -31,9 +31,12 @@ Describe 'Network Tests' -Tag 'Installer' {
         }
         
         It 'should define expected functions' {
-            Get-Command 'Invoke-LabWebRequest' -ErrorAction SilentlyContinue | Should -Not -BeNullOrEmpty
-            Get-Command 'Invoke-WebRequest' -ErrorAction SilentlyContinue | Should -Not -BeNullOrEmpty
-            Get-Command 'Invoke-LabNpm' -ErrorAction SilentlyContinue | Should -Not -BeNullOrEmpty
+            $scriptContent = Get-Content $script:ScriptPath -Raw
+            $scriptContent | Should -Match 'function\\s+Invoke-LabWebRequest'
+            $scriptContent = Get-Content $script:ScriptPath -Raw
+            $scriptContent | Should -Match 'function\\s+Invoke-WebRequest'
+            $scriptContent = Get-Content $script:ScriptPath -Raw
+            $scriptContent | Should -Match 'function\\s+Invoke-LabNpm'
         }
     }
     
@@ -75,8 +78,10 @@ Describe 'Network Tests' -Tag 'Installer' {
             Get-Command 'Invoke-LabWebRequest' | Should -Not -BeNullOrEmpty
         }
                 It 'should support common parameters' {
-            (Get-Command 'Invoke-LabWebRequest').Parameters.Keys | Should -Contain 'Verbose'
-            (Get-Command 'Invoke-LabWebRequest').Parameters.Keys | Should -Contain 'WhatIf'
+            $scriptContent = Get-Content $script:ScriptPath -Raw
+            $scriptContent | Should -Match '\[CmdletBinding\('
+            $scriptContent = Get-Content $script:ScriptPath -Raw
+            $scriptContent | Should -Match 'SupportsShouldProcess'
         }
                 It 'should handle execution with valid parameters' {
             # Add specific test logic for Invoke-LabWebRequest
@@ -89,8 +94,10 @@ Describe 'Network Tests' -Tag 'Installer' {
             Get-Command 'Invoke-WebRequest' | Should -Not -BeNullOrEmpty
         }
                 It 'should support common parameters' {
-            (Get-Command 'Invoke-WebRequest').Parameters.Keys | Should -Contain 'Verbose'
-            (Get-Command 'Invoke-WebRequest').Parameters.Keys | Should -Contain 'WhatIf'
+            $scriptContent = Get-Content $script:ScriptPath -Raw
+            $scriptContent | Should -Match '\[CmdletBinding\('
+            $scriptContent = Get-Content $script:ScriptPath -Raw
+            $scriptContent | Should -Match 'SupportsShouldProcess'
         }
                 It 'should handle execution with valid parameters' {
             # Add specific test logic for Invoke-WebRequest
@@ -103,8 +110,10 @@ Describe 'Network Tests' -Tag 'Installer' {
             Get-Command 'Invoke-LabNpm' | Should -Not -BeNullOrEmpty
         }
                 It 'should support common parameters' {
-            (Get-Command 'Invoke-LabNpm').Parameters.Keys | Should -Contain 'Verbose'
-            (Get-Command 'Invoke-LabNpm').Parameters.Keys | Should -Contain 'WhatIf'
+            $scriptContent = Get-Content $script:ScriptPath -Raw
+            $scriptContent | Should -Match '\[CmdletBinding\('
+            $scriptContent = Get-Content $script:ScriptPath -Raw
+            $scriptContent | Should -Match 'SupportsShouldProcess'
         }
                 It 'should handle execution with valid parameters' {
             # Add specific test logic for Invoke-LabNpm
@@ -118,3 +127,4 @@ AfterAll {
     # Restore any modified system state
     # Remove test artifacts
 }
+

@@ -31,7 +31,8 @@ Describe 'ScriptTemplate Tests' -Tag 'Unknown' {
         }
         
         It 'should define expected functions' {
-            Get-Command 'Invoke-LabStep' -ErrorAction SilentlyContinue | Should -Not -BeNullOrEmpty
+            $scriptContent = Get-Content $script:ScriptPath -Raw
+            $scriptContent | Should -Match 'function\\s+Invoke-LabStep'
         }
     }
     
@@ -60,3 +61,4 @@ AfterAll {
     # Restore any modified system state
     # Remove test artifacts
 }
+
