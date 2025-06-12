@@ -537,9 +537,12 @@ if ([System.IO.Path]::IsPathRooted($runnerScriptName)) {
     $runnerScriptPath = Join-Path $repoPath $runnerScriptName
 }
 
+Write-Host "[DEBUG] ConfigFile: $ConfigFile" -ForegroundColor Cyan
 Write-Host "[DEBUG] repoPath: $repoPath" -ForegroundColor Cyan
 Write-Host "[DEBUG] runnerScriptName: $runnerScriptName" -ForegroundColor Cyan
 Write-Host "[DEBUG] runnerScriptPath: $runnerScriptPath" -ForegroundColor Cyan
+Write-Host "[DEBUG] Directory contents of repoPath ($repoPath):" -ForegroundColor Cyan
+Get-ChildItem -Path $repoPath -Recurse | Select-Object FullName
 
 if (!(Test-Path $runnerScriptPath)) {
     Write-Error "ERROR: Could not find runner script at $runnerScriptPath. Exiting."
