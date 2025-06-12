@@ -30,19 +30,23 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.local/share/powershell/Modules
-          key: linux-pwsh-modules-${{ hashFiles(\'.github/actions/lint/requirements.txt\') }}
+          key: linux-pwsh-modules-${{ hashFiles('tests/PesterConfiguration.psd1') }}
           restore-keys: linux-pwsh-modules-
       - name: Install Pester
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
-          Install-Module -Name Pester -Force -Scope CurrentUser -ErrorAction Stop || {
-            Write-Error "Failed to install Pester"; exit 1;
+          try {
+            Install-Module -Name Pester -RequiredVersion 5.7.1 -Force -Scope CurrentUser -ErrorAction Stop
+            Write-Host "Pester 5.7.1 installed successfully" -ForegroundColor Green
+          } catch {
+            Write-Error "Failed to install Pester: $_"
+            exit 1
           }
       - name: Install powershell-yaml
         shell: pwsh
         run: |
-          $ErrorActionPreference = \'Stop\'
+          $ErrorActionPreference = 'Stop'
           try {
             Install-Module -Name powershell-yaml -Force -Scope CurrentUser
             Write-Host "powershell-yaml installed successfully" -ForegroundColor Green
