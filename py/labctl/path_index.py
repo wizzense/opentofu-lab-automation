@@ -27,20 +27,20 @@ def load_index() -> dict:
     """Load path-index.yaml from repository root, if available."""
     global _INDEX
     if not _INDEX:
-        root = repo_root()
-        candidates = [root / 'path-index.yaml',
-                      root / 'configs/project/path-index.yaml']
 
-        for index_path in candidates:
-            if index_path.exists() and yaml is not None:
-                with index_path.open('r') as f:
-                    data = yaml.safe_load(f) or {}
-                _INDEX = dict(data)
-                # also allow lookup by base filename
-                for key, val in data.items():
-                    basename = Path(key).name
-                    _INDEX.setdefault(basename, val)
-                break
+        index_path = repo_root() / 'path-index.yaml'
+        if not index_path.exists():
+            fallback_path = repo_root() / 'configs' / 'project' / 'path-index.yaml'
+            if fallback_path.exists():
+                index_path = fallback_path
+        if index_path.exists() and yaml is not None:
+            with index_path.open('r') as f:
+                data = yaml.safe_load(f) or {}
+            _INDEX = dict(data)
+            # also allow lookup by base filename
+            for key, val in data.items():
+                basename = Path(key).name
+                _INDEX.setdefault(basename, val)
         else:
             _INDEX = {}
     return _INDEX
