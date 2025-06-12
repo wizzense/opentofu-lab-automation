@@ -48,16 +48,16 @@ jobs:
         run: |
           $result = & ./comprehensive-health-check.ps1 -CI -Detailed -OutputFormat JSON
           $healthData = $result | ConvertFrom-Json
-          
+
           # Set outputs for other jobs
           echo "status=$($healthData.OverallStatus)" >> $env:GITHUB_OUTPUT
           echo "healthy-count=$($healthData.Summary.Healthy)" >> $env:GITHUB_OUTPUT
           echo "warning-count=$($healthData.Summary.Warning)" >> $env:GITHUB_OUTPUT
           echo "critical-count=$($healthData.Summary.Critical)" >> $env:GITHUB_OUTPUT
-          
+
           # Save detailed report
           $result | Out-File health-report.json -Encoding UTF8
-          
+
           Write-Host "Health Check Complete:"
           Write-Host "  Status: $($healthData.OverallStatus)"
           Write-Host "  Healthy: $($healthData.Summary.Healthy)"
@@ -83,14 +83,14 @@ jobs:
             "Critical" { "red" }
             default { "lightgrey" }
           }
-          
+
           $badgeData = @{
             schemaVersion = 1
             label = "Health Status"
             message = $status
             color = $color
           }
-          
+
           $badgeData | ConvertTo-Json | Out-File health-badge.json -Encoding UTF8
 
       - name: Notify on Critical Issues
@@ -104,24 +104,24 @@ jobs:
               title: '🚨 Critical System Health Issues Detected',
               body: `
             ## Critical Health Check Failure
-            
+
             The comprehensive health check has detected critical issues in the automation system.
-            
+
             **Status**: Critical
             **Workflow Run**: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
             **Branch**: ${{ github.ref_name }}
             **Commit**: ${{ github.sha }}
-            
+
             ### Next Steps
             1. Review the health check report artifact
             2. Address critical issues immediately
             3. Re-run health check to verify fixes
-            
+
             This issue was automatically created by the health monitoring system.
             `,
               labels: ['health-check', 'critical', 'automated']
             };
-            
+
             // Check if similar issue already exists
             const existingIssues = await github.rest.issues.listForRepo({
               owner: context.repo.owner,
@@ -129,7 +129,7 @@ jobs:
               labels: 'health-check,critical',
               state: 'open'
             });
-            
+
             if (existingIssues.data.length === 0) {
               await github.rest.issues.create(issue);
             }
@@ -145,7 +145,7 @@ jobs:
       - name: Validate YAML Syntax
         run: |
           sudo snap install yq
-          
+
           # Check all workflow files
           for file in .github/workflows/*.yml; do
             echo "Validating $file..."
@@ -163,22 +163,22 @@ jobs:
           # Verify all workflows have required elements
           for file in .github/workflows/*.yml; do
             echo "Checking structure of $file..."
-            
+
             if ! grep -q "^name:" "$file"; then
               echo "  ❌ Missing 'name' field"
               exit 1
             fi
-            
+
             if ! grep -q "^on:" "$file"; then
               echo "  ❌ Missing 'on' field"
               exit 1
             fi
-            
+
             if ! grep -q "^jobs:" "$file"; then
               echo "  ❌ Missing 'jobs' field"
               exit 1
             fi
-            
+
             echo "  ✅ Structure valid"
           done
 
@@ -218,14 +218,14 @@ jobs:
         shell: pwsh
         run: |
           $errors = @()
-          
+
           # Test key scripts on this platform
           $coreScripts = @(
             "pwsh/runner.ps1",
             "pwsh/kicker-bootstrap.ps1",
             "pwsh/ScriptTemplate.ps1"
           )
-          
+
           foreach ($script in $coreScripts) {
             if (Test-Path $script) {
               try {
@@ -241,13 +241,13 @@ jobs:
               Write-Host "❌ $script - File not found" -ForegroundColor Red
             }
           }
-          
+
           if ($errors.Count -gt 0) {
             Write-Host "`nSyntax errors found on ${{ matrix.os }}:" -ForegroundColor Red
             $errors | ForEach-Object { Write-Host "  - $_" -ForegroundColor Red }
             exit 1
           }
-          
+
           Write-Host "`n✅ All core scripts pass syntax validation on ${{ matrix.os }}" -ForegroundColor Green
 
       - name: Test PowerShell Module Loading
@@ -260,7 +260,7 @@ jobs:
               . ./tools/Validate-PowerShellScripts.ps1
               Write-Host "✅ Validation tools loaded successfully" -ForegroundColor Green
             }
-            
+
             # Test bootstrap script basic functionality
             if (Test-Path "pwsh/kicker-bootstrap.ps1") {
               $output = & ./pwsh/kicker-bootstrap.ps1 -WhatIf 2>&1
@@ -271,7 +271,7 @@ jobs:
                 exit 1
               }
             }
-            
+
           } catch {
             Write-Host "❌ Module loading test failed: $($_.Exception.Message)" -ForegroundColor Red
             exit 1
@@ -294,16 +294,16 @@ jobs:
           $healthStatus = "${{ needs.health-check.outputs.overall-status }}"
           $workflowStatus = "${{ needs.validate-workflows.result }}"
           $crossPlatformStatus = "${{ needs.test-cross-platform.result }}"
-          
+
           Write-Host "🏥 COMPREHENSIVE HEALTH REPORT" -ForegroundColor Cyan
           Write-Host "=" * 50
           Write-Host "Health Check: $healthStatus" -ForegroundColor $(if ($healthStatus -eq 'Healthy') { 'Green' } elseif ($healthStatus -eq 'Warning') { 'Yellow' } else { 'Red' })
           Write-Host "Workflow Validation: $workflowStatus" -ForegroundColor $(if ($workflowStatus -eq 'success') { 'Green' } else { 'Red' })
           Write-Host "Cross-Platform Tests: $crossPlatformStatus" -ForegroundColor $(if ($crossPlatformStatus -eq 'success') { 'Green' } else { 'Red' })
-          
+
           # Determine overall system status
           $overallHealthy = ($healthStatus -eq "Healthy" -and $workflowStatus -eq "success" -and $crossPlatformStatus -eq "success")
-          
+
           if ($overallHealthy) {
             Write-Host "`n🎉 SYSTEM STATUS: FULLY OPERATIONAL" -ForegroundColor Green
             Write-Host "All components are healthy and functioning correctly across all platforms." -ForegroundColor Green
@@ -311,18 +311,18 @@ jobs:
             Write-Host "`n⚠️ SYSTEM STATUS: REQUIRES ATTENTION" -ForegroundColor Yellow
             Write-Host "One or more components need attention. Review the detailed reports above." -ForegroundColor Yellow
           }
-          
+
           # Set job summary
           $summary = @"
           ## System Health Summary
-          
+
           | Component | Status |
           |-----------|---------|
           | Health Check | $healthStatus |
           | Workflow Validation | $workflowStatus |
           | Cross-Platform Tests | $crossPlatformStatus |
-          
+
           **Overall Status**: $(if ($overallHealthy) { "✅ Operational" } else { "⚠️ Needs Attention" })
           "@
-          
+
           $summary | Out-File $env:GITHUB_STEP_SUMMARY -Encoding utf8
