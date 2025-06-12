@@ -80,6 +80,7 @@ Describe '0008_Install-OpenTofu Tests' -Tag 'Installer' {
     Context 'Install-OpenTofu Function Tests' {
         It 'should be defined and accessible' -Skip:($SkipNonWindows) {
             $scriptContent = Get-Content $script:ScriptPath -Raw
+            # Match the definition of a function in PowerShell. Triple single quotes are used to escape single quotes in the regex pattern.
             $scriptContent | Should -Match 'function\s+[^''']*'
         }
                 It 'should support common parameters' -Skip:($SkipNonWindows) {
