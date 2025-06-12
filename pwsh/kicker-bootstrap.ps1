@@ -248,7 +248,8 @@ try {
     Write-CustomLog "Config file loaded from $resolvedConfigPath."
     Write-CustomLog (Format-Config -Config $config)
 } catch {
-    Write-Error "ERROR: Failed to load configuration file '$ConfigFile' - $($_.Exception.Message)"
+    $errorPath = if ($resolvedConfigPath) { $resolvedConfigPath } else { $ConfigFile }
+    Write-Error "ERROR: Failed to load configuration file '$errorPath' - $($_.Exception.Message)"
     exit 1
 }
 
