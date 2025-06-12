@@ -17,7 +17,7 @@ jobs:
       - name: Validate workflow files
         run: |
           echo "Validating GitHub Actions workflow syntax..."
-          
+          python3 scripts/validate-workflows.py
           # Check if workflow directory exists
           if [ ! -d ".github/workflows" ]; then
             echo "✗ .github/workflows directory not found"

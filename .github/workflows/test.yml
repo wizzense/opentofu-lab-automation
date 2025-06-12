@@ -10,6 +10,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: opentofu/setup-opentofu@v1
+      - name: Cache OpenTofu providers
+        uses: actions/cache@v4
+        with:
+          path: opentofu/examples/hyperv/.terraform/providers
+          key: ${{ runner.os }}-tofu-providers-${{ hashFiles('opentofu/examples/hyperv/.terraform.lock.hcl') }}
+          restore-keys: |
+            ${{ runner.os }}-tofu-providers-
       - name: Init and validate
         working-directory: opentofu/examples/hyperv
         run: |
@@ -37,6 +44,13 @@ jobs:
       - uses: opentofu/setup-opentofu@v1
         with:
           tofu_wrapper: false
+      - name: Cache OpenTofu providers
+        uses: actions/cache@v4
+        with:
+          path: opentofu/examples/hyperv/.terraform/providers
+          key: ${{ runner.os }}-tofu-providers-${{ hashFiles('opentofu/examples/hyperv/.terraform.lock.hcl') }}
+          restore-keys: |
+            ${{ runner.os }}-tofu-providers-
       - name: Init and validate
         shell: pwsh
         working-directory: opentofu/examples/hyperv
