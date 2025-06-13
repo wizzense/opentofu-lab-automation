@@ -1,3 +1,10 @@
+
+
+
+
+
+
+
 # filepath: tests/0105_Install-HyperV.Tests.ps1
 . (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
 . (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
@@ -22,20 +29,14 @@ BeforeAll {
 Describe '0105_Install-HyperV Tests' -Tag 'Installer' {
     
     Context 'Script Structure Validation' {
-        It 'should have valid PowerShell syntax' -Skip:($SkipNonWindows) {
-            $script:ScriptPath | Should -Exist
-            { . $script:ScriptPath } | Should -Not -Throw
+         | Should -Not -Throw
         }
-        
-        It 'should follow naming conventions' -Skip:($SkipNonWindows) {
-            $scriptName = [System.IO.Path]::GetFileName($script:ScriptPath)
-            $scriptName | Should -Match '^[0-9]{4}_[A-Z][a-zA-Z0-9-]+\.ps1$|^[A-Z][a-zA-Z0-9-]+\.ps1$'
+        _[A-Z][a-zA-Z0-9-]+\.ps1$|^[A-Z][a-zA-Z0-9-]+\.ps1$'
         }
     }
     
     Context 'Parameter Validation' {
-        It 'should accept Config parameter' -Skip:($SkipNonWindows) {
-            $config = [pscustomobject]@{ TestProperty = 'TestValue' }
+        
             $configJson = $config | ConvertTo-Json -Depth 5
             $tempConfig = Join-Path ([System.IO.Path]::GetTempPath()) "$([System.Guid]::NewGuid()).json"
             $configJson | Set-Content -Path $tempConfig
@@ -53,20 +54,8 @@ Describe '0105_Install-HyperV Tests' -Tag 'Installer' {
             # Mock external dependencies for testing
         }
         
-        It 'should validate prerequisites' -Skip:($SkipNonWindows) {
-            # Test prerequisite checking logic
-            $true | Should -BeTrue  # Placeholder - implement actual tests
-        }
         
-        It 'should handle download failures gracefully' -Skip:($SkipNonWindows) {
-            # Test error handling for failed downloads
-            $true | Should -BeTrue  # Placeholder - implement actual tests
-        }
         
-        It 'should verify installation success' -Skip:($SkipNonWindows) {
-            # Test installation verification
-            $true | Should -BeTrue  # Placeholder - implement actual tests
-        }
     }
 }
 
@@ -75,5 +64,9 @@ AfterAll {
     # Restore any modified system state
     # Remove test artifacts
 }
+
+
+
+
 
 

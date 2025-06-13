@@ -4,7 +4,7 @@ Describe '0203_Install-npm' {
     AfterEach {
         Remove-Item Function:npm -ErrorAction SilentlyContinue
     }
-    It 'runs npm install in configured NpmPath' {
+        It 'runs npm install in configured NpmPath' {
         $script = Get-RunnerScriptPath '0203_Install-npm.ps1'
         $npmDir = Join-Path ([System.IO.Path]::GetTempPath()) ([System.Guid]::NewGuid())
         $null = New-Item -ItemType Directory -Path $npmDir
@@ -14,7 +14,14 @@ Describe '0203_Install-npm' {
         $script:calledPath = $null
         function global:npm {
             param([string[]]$NpmArgs)
-            $script:calledPath = (Get-Location).Path
+            
+
+
+
+
+
+
+$script:calledPath = (Get-Location).Path
             $null = $NpmArgs
         }
 
@@ -26,8 +33,7 @@ Describe '0203_Install-npm' {
 
         Remove-Item -Recurse -Force $npmDir
     }
-
-    It 'succeeds when NpmPath exists' {
+        It 'succeeds when NpmPath exists' {
         $script = Get-RunnerScriptPath '0203_Install-npm.ps1'
         $npmDir = Join-Path ([System.IO.Path]::GetTempPath()) ([System.Guid]::NewGuid())
         $null = New-Item -ItemType Directory -Path $npmDir
@@ -36,7 +42,14 @@ Describe '0203_Install-npm' {
 
         function global:npm {
             param([string[]]$testArgs)
-            $null = $testArgs
+            
+
+
+
+
+
+
+$null = $testArgs
         }
 
         . $script -Config $cfg
@@ -47,8 +60,7 @@ Describe '0203_Install-npm' {
 
         Remove-Item -Recurse -Force $npmDir
     }
-
-    It 'errors when NpmPath is missing and CreateNpmPath is false' {
+        It 'errors when NpmPath is missing and CreateNpmPath is false' {
         $script = Get-RunnerScriptPath '0203_Install-npm.ps1'
         $npmDir = Join-Path ([System.IO.Path]::GetTempPath()) ([System.Guid]::NewGuid())
         $cfg = @{ Node_Dependencies = @{ NpmPath = $npmDir; CreateNpmPath = $false } }
@@ -60,8 +72,7 @@ Describe '0203_Install-npm' {
         { Install-NpmDependencies -Config $cfg } | Should -Throw
         $script:called | Should -BeFalse
     }
-
-    It 'errors when NpmPath is empty string' {
+        It 'errors when NpmPath is empty string' {
         $script = Get-RunnerScriptPath '0203_Install-npm.ps1'
         $cfg = @{ Node_Dependencies = @{ NpmPath = ''; CreateNpmPath = $false } }
 
@@ -72,14 +83,20 @@ Describe '0203_Install-npm' {
         { Install-NpmDependencies -Config $cfg } | Should -Throw
         $script:called | Should -BeFalse
     }
-
-    It 'creates NpmPath when CreateNpmPath is true' {
+        It 'creates NpmPath when CreateNpmPath is true' {
         $script = Get-RunnerScriptPath '0203_Install-npm.ps1'
         $npmDir = Join-Path ([System.IO.Path]::GetTempPath()) ([System.Guid]::NewGuid())
         $cfg = @{ Node_Dependencies = @{ NpmPath = $npmDir; CreateNpmPath = $true } }
 
         $script:calledPath = $null
-        function global:npm { param([string[]]$Args) $script:calledPath = (Get-Location).Path }
+        function global:npm { param([string[]]$Args) 
+
+
+
+
+
+
+$script:calledPath = (Get-Location).Path }
 
         . $script -Config $cfg
         Install-NpmDependencies -Config $cfg
@@ -90,3 +107,6 @@ Describe '0203_Install-npm' {
         Remove-Item -Recurse -Force $npmDir
     }
 }
+
+
+

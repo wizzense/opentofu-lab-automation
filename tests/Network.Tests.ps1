@@ -1,3 +1,10 @@
+
+
+
+
+
+
+
 # filepath: tests/Network.Tests.ps1
 . (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
 . (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
@@ -24,12 +31,10 @@ Describe 'Network Tests' -Tag 'Installer' {
             $scriptPath | Should -Exist
             { . $scriptPath } | Should -Not -Throw
         }
-        
         It 'should follow naming conventions' {
             $scriptName = [System.IO.Path]::GetFileName($scriptPath)
             $scriptName | Should -Match '^[0-9]{4}_[A-Z][a-zA-Z0-9-]+\.ps1$|^[A-Z][a-zA-Z0-9-]+\.ps1$'
         }
-        
         It 'should define expected functions' {
             $scriptContent = Get-Content $script:ScriptPath -Raw
             $scriptContent | Should -Match 'function\\s+Invoke-LabWebRequest'
@@ -56,17 +61,14 @@ Describe 'Network Tests' -Tag 'Installer' {
         BeforeEach {
             # Mock external dependencies for testing
         }
-        
         It 'should validate prerequisites' {
             # Test prerequisite checking logic
             $true | Should -BeTrue  # Placeholder - implement actual tests
         }
-        
         It 'should handle download failures gracefully' {
             # Test error handling for failed downloads
             $true | Should -BeTrue  # Placeholder - implement actual tests
         }
-        
         It 'should verify installation success' {
             # Test installation verification
             $true | Should -BeTrue  # Placeholder - implement actual tests
@@ -78,13 +80,13 @@ Describe 'Network Tests' -Tag 'Installer' {
             $scriptContent = Get-Content $script:ScriptPath -Raw
             $scriptContent | Should -Match 'function\s+Invoke-LabWebRequest'
         }
-                It 'should support common parameters' {
+        It 'should support common parameters' {
             $scriptContent = Get-Content $script:ScriptPath -Raw
             $scriptContent | Should -Match '\[CmdletBinding\('
             $scriptContent = Get-Content $script:ScriptPath -Raw
             $scriptContent | Should -Match 'SupportsShouldProcess'
         }
-                It 'should handle execution with valid parameters' {
+        It 'should handle execution with valid parameters' {
             # Add specific test logic for Invoke-LabWebRequest
             $true | Should -BeTrue  # Placeholder - implement actual tests
         }
@@ -95,13 +97,13 @@ Describe 'Network Tests' -Tag 'Installer' {
             $scriptContent = Get-Content $script:ScriptPath -Raw
             $scriptContent | Should -Match 'function\s+Invoke-WebRequest'
         }
-                It 'should support common parameters' {
+        It 'should support common parameters' {
             $scriptContent = Get-Content $script:ScriptPath -Raw
             $scriptContent | Should -Match '\[CmdletBinding\('
             $scriptContent = Get-Content $script:ScriptPath -Raw
             $scriptContent | Should -Match 'SupportsShouldProcess'
         }
-                It 'should handle execution with valid parameters' {
+        It 'should handle execution with valid parameters' {
             # Add specific test logic for Invoke-WebRequest
             $true | Should -BeTrue  # Placeholder - implement actual tests
         }
@@ -112,13 +114,13 @@ Describe 'Network Tests' -Tag 'Installer' {
             $scriptContent = Get-Content $script:ScriptPath -Raw
             $scriptContent | Should -Match 'function\s+Invoke-LabNpm'
         }
-                It 'should support common parameters' {
+        It 'should support common parameters' {
             $scriptContent = Get-Content $script:ScriptPath -Raw
             $scriptContent | Should -Match '\[CmdletBinding\('
             $scriptContent = Get-Content $script:ScriptPath -Raw
             $scriptContent | Should -Match 'SupportsShouldProcess'
         }
-                It 'should handle execution with valid parameters' {
+        It 'should handle execution with valid parameters' {
             # Add specific test logic for Invoke-LabNpm
             $true | Should -BeTrue  # Placeholder - implement actual tests
         }
@@ -130,4 +132,7 @@ AfterAll {
     # Restore any modified system state
     # Remove test artifacts
 }
+
+
+
 

@@ -25,6 +25,13 @@ param(
     [int]$WatchIntervalSeconds = 30
 )
 
+
+
+
+
+
+
+
 . (Join-Path $PSScriptRoot 'TestHelpers.ps1')
 
 function Get-ScriptAnalysis {
@@ -34,7 +41,14 @@ function Get-ScriptAnalysis {
     #>
     param([string]$ScriptPath)
     
-    if (-not (Test-Path $ScriptPath)) {
+    
+
+
+
+
+
+
+if (-not (Test-Path $ScriptPath)) {
         throw "Script not found: $ScriptPath"
     }
     
@@ -130,7 +144,14 @@ function New-TestTemplate {
         [string]$ScriptPath
     )
     
-    $testName = $ScriptName -replace '\.ps1$', '.Tests.ps1'
+    
+
+
+
+
+
+
+$testName = $ScriptName -replace '\.ps1$', '.Tests.ps1'
     $scriptRelativePath = $ScriptPath -replace [regex]::Escape((Get-Location).Path + '\'), ''
     
     $skipConditions = @()
@@ -148,11 +169,9 @@ function New-TestTemplate {
         $skipConditions += '$SkipNonAdmin'
     }
     
-    $skipClause = if ($skipConditions.Count -gt 0) {
-        " -Skip:(" + ($skipConditions -join ' -or ') + ")"
-    } else {
-        ""
-    }
+    $skipClause = if ($skipConditions.Count -gt 0) { " -Skip:(" + ($skipConditions -join ' -or ') + ")"
+       } else { ""
+       }
     
     $template = @"
 # filepath: tests/$testName
@@ -383,7 +402,14 @@ function Format-ScriptName {
     #>
     param([string]$OriginalName)
     
-    # Remove file extension
+    
+
+
+
+
+
+
+# Remove file extension
     $baseName = [System.IO.Path]::GetFileNameWithoutExtension($OriginalName)
     
     # Check if already follows convention (nnnn_Verb-Noun format)
@@ -439,7 +465,7 @@ function Format-ScriptName {
                 ForEach-Object { [int]($_.Name.Substring(0,4)) } |
                 Sort-Object
             
-            $nextNumber = if ($existingScripts.Count -gt 0) { $existingScripts[-1] + 1 } else { 100 }
+            $nextNumber = if ($existingScripts.Count -gt 0) { $existingScripts[-1] + 1    } else { 100    }
         } else {
             $nextNumber = 100
         }
@@ -456,7 +482,14 @@ function Watch-ScriptDirectory {
     #>
     param([string]$Directory, [int]$IntervalSeconds = 30)
     
-    Write-Host "Starting script directory watcher for: $Directory" -ForegroundColor Green
+    
+
+
+
+
+
+
+Write-Host "Starting script directory watcher for: $Directory" -ForegroundColor Green
     Write-Host "Checking every $IntervalSeconds seconds. Press Ctrl+C to stop." -ForegroundColor Yellow
     
     $processedFiles = @{}
@@ -520,7 +553,14 @@ function New-TestForScript {
         [string]$OutputPath
     )
     
-    $scriptName = [System.IO.Path]::GetFileName($ScriptPath)
+    
+
+
+
+
+
+
+$scriptName = [System.IO.Path]::GetFileName($ScriptPath)
     Write-Host "Analyzing script: $scriptName" -ForegroundColor Cyan
     
     $analysis = Get-ScriptAnalysis $ScriptPath
@@ -619,3 +659,6 @@ if ($ScriptPath) {
         }
     }
 }
+
+
+

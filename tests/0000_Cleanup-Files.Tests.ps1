@@ -1,3 +1,10 @@
+
+
+
+
+
+
+
 # filepath: tests/0000_Cleanup-Files.Tests.ps1
 . (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
 . (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
@@ -26,25 +33,21 @@ Describe '0000_Cleanup-Files Tests' -Tag 'Maintenance' {
             It 'should have valid PowerShell syntax' {
                 $errors = $null
                 [System.Management.Automation.Language.Parser]::ParseFile($script:ScriptPath, [ref]$null, [ref]$errors) | Out-Null
-                ($errors ? $errors.Count : 0) | Should -Be 0
+                $(if ($errors) { $errors.Count  } else { 0 }) | Should -Be 0
             }
-            
-            It 'should follow naming conventions' {
+        It 'should follow naming conventions' {
                 $scriptName = [System.IO.Path]::GetFileName($script:ScriptPath)
                 $scriptName | Should -Match '^[0-9]{4}_[A-Z][a-zA-Z0-9-]+\.ps1$|^[A-Z][a-zA-Z0-9-]+\.ps1$'
             }
-            
-            It 'should have Config parameter' {
+        It 'should have Config parameter' {
                 $content = Get-Content $script:ScriptPath -Raw
                 $content | Should -Match 'Param\s*\(\s*.*\$Config'
             }
-            
-            It 'should import LabRunner module' {
+        It 'should import LabRunner module' {
                 $content = Get-Content $script:ScriptPath -Raw
                 $content | Should -Match 'Import-Module.*LabRunner'
             }
-            
-            It 'should contain Invoke-LabStep call' {
+        It 'should contain Invoke-LabStep call' {
                 $content = Get-Content $script:ScriptPath -Raw
                 $content | Should -Match 'Invoke-LabStep'
             }
@@ -63,8 +66,7 @@ Describe '0000_Cleanup-Files Tests' -Tag 'Maintenance' {
                     Remove-Item $tempConfig -Force -ErrorAction SilentlyContinue
                 }
             }
-            
-            It 'should handle whatif parameter' {
+        It 'should handle whatif parameter' {
                 $config = [pscustomobject]@{}
                 $configJson = $config | ConvertTo-Json -Depth 5
                 $tempConfig = Join-Path ([System.IO.Path]::GetTempPath()) "$([System.Guid]::NewGuid()).json"
@@ -82,3 +84,9 @@ Describe '0000_Cleanup-Files Tests' -Tag 'Maintenance' {
             # Cleanup any test artifacts
         }
 }
+
+
+
+
+
+

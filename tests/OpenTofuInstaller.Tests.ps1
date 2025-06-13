@@ -26,14 +26,21 @@ if ($IsLinux -or $IsMacOS) { return }
 
     Describe 'logging' -Skip:($SkipNonWindows) {
         It 'creates log files and removes them for elevated unpack' {
-        $script:scriptPath = Join-Path $PSScriptRoot '..' 'pwsh' 'lab_utils' 'LabRunner' 'OpenTofuInstaller.ps1'
+        $script:scriptPath = Join-Path $PSScriptRoot '..' 'pwsh/modules/LabRunner' 'OpenTofuInstaller.ps1'
         $temp = $script:temp
         $zipPath = Join-Path $temp 'tofu_0.0.0_windows_amd64.zip'
         'dummy' | Set-Content $zipPath
         $hash = (Get-FileHash -Algorithm SHA256 $zipPath).Hash
         Mock Invoke-WebRequest {
             param([string]$Uri, [string]$OutFile)
-            if ($Uri -match 'SHA256SUMS$') {
+            
+
+
+
+
+
+
+if ($Uri -match 'SHA256SUMS$') {
                 "${hash}  tofu_0.0.0_windows_amd64.zip" | Set-Content $OutFile
             } else { 'dummy' | Set-Content $OutFile }
         }
@@ -45,7 +52,14 @@ if ($IsLinux -or $IsMacOS) { return }
         $global:startProcessCalled = $false
         function global:Start-Process {
             param($FilePath, $ArgumentList, $Verb, $WorkingDirectory, [switch]$Wait, [switch]$Passthru)
-            $global:startProcessCalled = $true
+            
+
+
+
+
+
+
+$global:startProcessCalled = $true
 
             $logDir = $global:OpenTofuInstallerLogDir
             if ($logDir) {
@@ -69,16 +83,22 @@ if ($IsLinux -or $IsMacOS) { return }
 
         (Test-Path $global:OpenTofuInstallerLogDir) | Should -BeFalse
         }
-
         It 'gracefully handles missing log directory' {
-        $script:scriptPath = Join-Path $PSScriptRoot '..' 'pwsh' 'lab_utils' 'LabRunner' 'OpenTofuInstaller.ps1'
+        $script:scriptPath = Join-Path $PSScriptRoot '..' 'pwsh/modules/LabRunner' 'OpenTofuInstaller.ps1'
         $temp = $script:temp
         $zipPath = Join-Path $temp 'tofu_0.0.0_windows_amd64.zip'
         'dummy' | Set-Content $zipPath
         $hash = (Get-FileHash -Algorithm SHA256 $zipPath).Hash
         Mock Invoke-WebRequest {
             param([string]$Uri, [string]$OutFile)
-            if ($Uri -match 'SHA256SUMS$') {
+            
+
+
+
+
+
+
+if ($Uri -match 'SHA256SUMS$') {
                 "${hash}  tofu_0.0.0_windows_amd64.zip" | Set-Content $OutFile
             } else { 'dummy' | Set-Content $OutFile }
         }
@@ -95,7 +115,14 @@ if ($IsLinux -or $IsMacOS) { return }
                 [switch]$Wait,
                 [switch]$Passthru
             )
-            $global:startProcessCalled = $true
+            
+
+
+
+
+
+
+$global:startProcessCalled = $true
 
             $dir = $global:OpenTofuInstallerLogDir
             if ($dir -and (Test-Path $dir)) { Remove-Item -Recurse -Force $dir }
@@ -111,7 +138,7 @@ if ($IsLinux -or $IsMacOS) { return }
 
     Describe 'error handling' {
         It 'returns requirement not met exit code when cosign is missing' {
-            $script:scriptPath = Join-Path $PSScriptRoot '..' 'pwsh' 'lab_utils' 'LabRunner' 'OpenTofuInstaller.ps1'
+            $script:scriptPath = Join-Path $PSScriptRoot '..' 'pwsh/modules/LabRunner' 'OpenTofuInstaller.ps1'
             $arguments = @(
                 '-NoLogo',
                 '-NoProfile',
@@ -128,7 +155,7 @@ if ($IsLinux -or $IsMacOS) { return }
 
     Describe 'macOS defaults' {
         It 'allows -allUsers when Programfiles is missing' -Skip:(-not $IsMacOS) {
-            $scriptPath = Join-Path $PSScriptRoot '..' 'pwsh' 'lab_utils' 'LabRunner' 'OpenTofuInstaller.ps1'
+            $scriptPath = Join-Path $PSScriptRoot '..' 'pwsh/modules/LabRunner' 'OpenTofuInstaller.ps1'
             $zip = Join-Path $script:temp 'dummy.zip'
             'dummy' | Set-Content $zip
             Mock Expand-Archive {}
@@ -138,3 +165,8 @@ if ($IsLinux -or $IsMacOS) { return }
     }
 
 }
+
+
+
+
+

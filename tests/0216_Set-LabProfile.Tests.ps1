@@ -1,3 +1,10 @@
+
+
+
+
+
+
+
 # filepath: tests/0216_Set-LabProfile.Tests.ps1
 . (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
 . (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
@@ -27,12 +34,10 @@ Describe '0216_Set-LabProfile Tests' -Tag 'Unknown' {
             # Test syntax by parsing the script content instead of dot-sourcing
             { $null = [System.Management.Automation.PSParser]::Tokenize((Get-Content $script:ScriptPath -Raw), [ref]$null) } | Should -Not -Throw
         }
-        
         It 'should follow naming conventions' {
             $scriptName = [System.IO.Path]::GetFileName($script:ScriptPath)
             $scriptName | Should -Match '^[0-9]{4}_[A-Z][a-zA-Z0-9-]+\.ps1$|^[A-Z][a-zA-Z0-9-]+\.ps1$'
         }
-        
         It 'should define expected functions' {
             $scriptContent = Get-Content $script:ScriptPath -Raw
             $scriptContent | Should -Match 'function\s+Set-LabProfile'
@@ -59,13 +64,11 @@ Describe '0216_Set-LabProfile Tests' -Tag 'Unknown' {
             $scriptContent = Get-Content $script:ScriptPath -Raw
             $scriptContent | Should -Match 'function\s+Set-LabProfile'
         }
-        
         It 'should support common parameters' {
             $scriptContent = Get-Content $script:ScriptPath -Raw
             $scriptContent | Should -Match '\[CmdletBinding\('
             $scriptContent | Should -Match 'SupportsShouldProcess'
         }
-        
         It 'should handle execution with valid parameters' {
             # Test that the script can be executed with a config parameter
             $testConfig = @{ TestProperty = 'TestValue' }
@@ -86,5 +89,8 @@ AfterAll {
     # Restore any modified system state
     # Remove test artifacts
 }
+
+
+
 
 

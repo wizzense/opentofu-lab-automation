@@ -5,6 +5,13 @@ param(
     [long]$RunId
 )
 
+
+
+
+
+
+
+
 $tempDir = Join-Path ([System.IO.Path]::GetTempPath()) "gh-artifacts-$([System.Guid]::NewGuid())"
 New-Item -ItemType Directory -Path $tempDir | Out-Null
 
@@ -35,12 +42,12 @@ if ($useGh) {
         }
     } else {
         $runsJson = gh api "repos/$Repo/actions/workflows/$Workflow/runs?branch=main&status=completed&per_page=10"
-        $runs = if ($runsJson) { (ConvertFrom-Json $runsJson).workflow_runs } else { @() }
+        $runs = if ($runsJson) { (ConvertFrom-Json $runsJson).workflow_runs    } else { @()    }
 
         $found = $false
         foreach ($run in $runs) {
             $artJson = gh api "repos/$Repo/actions/runs/$($run.id)/artifacts"
-            $artifacts = if ($artJson) { (ConvertFrom-Json $artJson).artifacts } else { @() }
+            $artifacts = if ($artJson) { (ConvertFrom-Json $artJson).artifacts    } else { @()    }
             $cov = $artifacts | Where-Object { $_.name -match 'coverage.*windows-latest' }
             $res = $artifacts | Where-Object { $_.name -match 'results.*windows-latest' }
             if ($res) {
@@ -99,3 +106,6 @@ if ($failed) {
 } else {
     Write-Host 'All tests passed.' -ForegroundColor Green
 }
+
+
+

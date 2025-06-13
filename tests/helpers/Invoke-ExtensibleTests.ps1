@@ -18,7 +18,14 @@ This script provides enhanced test execution with:
 #>
 
 param(
-    [string[]]$Category = @(),
+    [string[]]$Category = @()
+
+
+
+
+
+
+,
     
     [ValidateSet('Windows', 'Linux', 'macOS', 'All')]
     [string]$Platform = 'All',
@@ -50,7 +57,14 @@ function Get-TestCategories {
     #>
     param([string]$TestsPath)
     
-    $testFiles = Get-ChildItem $TestsPath -Filter "*.Tests.ps1" -Recurse
+    
+
+
+
+
+
+
+$testFiles = Get-ChildItem $TestsPath -Filter "*.Tests.ps1" -Recurse
     $categories = @{}
     
     foreach ($file in $testFiles) {
@@ -106,7 +120,14 @@ function Get-TestCategories {
 function Test-PlatformCompatibility {
     param([string[]]$TestPlatforms, [string]$TargetPlatform)
     
-    if ($TargetPlatform -eq 'All') {
+    
+
+
+
+
+
+
+if ($TargetPlatform -eq 'All') {
         return $true
     }
     
@@ -120,7 +141,14 @@ function Invoke-TestBatch {
         [switch]$Parallel
     )
     
-    if ($Parallel -and $Tests.Count -gt 1) {
+    
+
+
+
+
+
+
+if ($Parallel -and $Tests.Count -gt 1) {
         Write-Host "Running $($Tests.Count) tests in parallel..." -ForegroundColor Yellow
         
         # Convert PesterConfiguration to hashtable for serialization
@@ -146,7 +174,14 @@ function Invoke-TestBatch {
             $job = Start-Job -ScriptBlock {
                 param($TestPath, $ConfigHash)
                 
-                try {
+                
+
+
+
+
+
+
+try {
                     # Recreate PesterConfiguration from hashtable
                     $config = New-PesterConfiguration -Hashtable $ConfigHash
                     $result = Invoke-Pester -Path $TestPath -Configuration $config -PassThru
@@ -209,7 +244,14 @@ function Invoke-TestBatch {
 function New-TestReport {
     param([object[]]$Results, [string]$OutputPath)
     
-    $reportData = @{
+    
+
+
+
+
+
+
+$reportData = @{
         Timestamp = Get-Date
         Platform = $script:CurrentPlatform
         TotalTests = $Results.Count
@@ -282,7 +324,7 @@ function New-TestReport {
     
     foreach ($cat in $reportData.Categories.Keys) {
         $catData = $reportData.Categories[$cat]
-        $successRate = if ($catData.Total -gt 0) { [math]::Round(($catData.Passed / $catData.Total) * 100, 1) } else { 0 }
+        $successRate = if ($catData.Total -gt 0) { [math]::Round(($catData.Passed / $catData.Total) * 100, 1)    } else { 0    }
         $html += "<tr><td>$cat</td><td>$($catData.Total)</td><td class='passed'>$($catData.Passed)</td><td class='failed'>$($catData.Failed)</td><td>$successRate%</td></tr>`n"
     }
     
@@ -298,10 +340,10 @@ function New-TestReport {
     
     foreach ($result in $Results) {
         $testName = [System.IO.Path]::GetFileNameWithoutExtension($result.Path)
-        $status = if ($result.Success -and $result.Result.FailedCount -eq 0) { 'PASSED' } else { 'FAILED' }
-        $statusClass = if ($status -eq 'PASSED') { 'passed' } else { 'failed' }
-        $duration = if ($result.Result) { $result.Result.Duration } else { 'N/A' }
-        $details = if ($result.Error) { $result.Error } else { "$($result.Result.PassedCount) passed, $($result.Result.FailedCount) failed" }
+        $status = if ($result.Success -and $result.Result.FailedCount -eq 0) { 'PASSED'    } else { 'FAILED'    }
+        $statusClass = if ($status -eq 'PASSED') { 'passed'    } else { 'failed'    }
+        $duration = if ($result.Result) { $result.Result.Duration    } else { 'N/A'    }
+        $details = if ($result.Error) { $result.Error    } else { "$($result.Result.PassedCount) passed, $($result.Result.FailedCount) failed"    }
         
         $html += "<tr><td>$testName</td><td class='$statusClass'>$status</td><td>$duration</td><td>$details</td></tr>`n"
     }
@@ -405,7 +447,7 @@ try {
         $failedResults = $results | Where-Object { -not $_.Success -or $_.Result.FailedCount -gt 0 }
         foreach ($failed in $failedResults) {
             $testName = [System.IO.Path]::GetFileNameWithoutExtension($failed.Path)
-            $error = if ($failed.Error) { $failed.Error } else { "Test failures: $($failed.Result.FailedCount)" }
+            $error = if ($failed.Error) { $failed.Error    } else { "Test failures: $($failed.Result.FailedCount)"    }
             Write-Host "  - $testName`: $error" -ForegroundColor Red
         }
         exit 1
@@ -417,3 +459,6 @@ try {
     Write-Error "Test execution failed: $_"
     exit 1
 }
+
+
+

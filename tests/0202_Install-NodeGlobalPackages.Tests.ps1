@@ -1,3 +1,10 @@
+
+
+
+
+
+
+
 # filepath: tests/0202_Install-NodeGlobalPackages.Tests.ps1
 . (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
 . (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
@@ -26,14 +33,12 @@ Describe '0202_Install-NodeGlobalPackages Tests' -Tag 'Installer' {
             $script:ScriptPath | Should -Exist
             $errors = $null
                 [System.Management.Automation.Language.Parser]::ParseFile($script:ScriptPath, [ref]$null, [ref]$errors) | Out-Null
-                ($errors ? $errors.Count : 0) | Should -Be 0
+                $(if ($errors) { $errors.Count  } else { 0 }) | Should -Be 0
         }
-        
         It 'should follow naming conventions' {
             $scriptName = [System.IO.Path]::GetFileName($script:ScriptPath)
             $scriptName | Should -Match '^[0-9]{4}_[A-Z][a-zA-Z0-9-]+\.ps1$|^[A-Z][a-zA-Z0-9-]+\.ps1$'
         }
-        
         It 'should define expected functions' {
             $scriptContent = Get-Content $script:ScriptPath -Raw
             $scriptContent | Should -Match 'function\s+Install-GlobalPackage'
@@ -60,17 +65,14 @@ Describe '0202_Install-NodeGlobalPackages Tests' -Tag 'Installer' {
         BeforeEach {
             # Mock external dependencies for testing
         }
-        
         It 'should validate prerequisites' {
             # Test prerequisite checking logic
             $true | Should -BeTrue  # Placeholder - implement actual tests
         }
-        
         It 'should handle download failures gracefully' {
             # Test error handling for failed downloads
             $true | Should -BeTrue  # Placeholder - implement actual tests
         }
-        
         It 'should verify installation success' {
             # Test installation verification
             $true | Should -BeTrue  # Placeholder - implement actual tests
@@ -82,12 +84,10 @@ Describe '0202_Install-NodeGlobalPackages Tests' -Tag 'Installer' {
             $scriptContent = Get-Content $script:ScriptPath -Raw
             $scriptContent | Should -Match 'function\s+Install-GlobalPackage'
         }
-        
         It 'should support common parameters' {
             $scriptContent = Get-Content $script:ScriptPath -Raw
             $scriptContent | Should -Match '\[CmdletBinding\('
         }
-        
         It 'should handle execution with valid parameters' {
             # Add specific test logic for Install-GlobalPackage
             $true | Should -BeTrue  # Placeholder - implement actual tests
@@ -99,13 +99,11 @@ Describe '0202_Install-NodeGlobalPackages Tests' -Tag 'Installer' {
             $scriptContent = Get-Content $script:ScriptPath -Raw
             $scriptContent | Should -Match 'function\s+Install-NodeGlobalPackages'
         }
-        
         It 'should support common parameters' {
             $scriptContent = Get-Content $script:ScriptPath -Raw
             $scriptContent | Should -Match '\[CmdletBinding\('
             $scriptContent | Should -Match 'SupportsShouldProcess'
         }
-        
         It 'should handle execution with valid parameters' {
             # Test that the script can be executed with a config parameter
             $testConfig = @{ Node_Dependencies = @{ InstallNode = $false; GlobalPackages = @() } }
@@ -126,6 +124,11 @@ AfterAll {
     # Restore any modified system state
     # Remove test artifacts
 }
+
+
+
+
+
 
 
 

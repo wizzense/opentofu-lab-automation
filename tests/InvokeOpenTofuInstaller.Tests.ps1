@@ -1,3 +1,10 @@
+
+
+
+
+
+
+
 # filepath: tests/InvokeOpenTofuInstaller.Tests.ps1
 . (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
 . (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
@@ -24,12 +31,10 @@ Describe 'InvokeOpenTofuInstaller Tests' -Tag 'Unknown' {
             $scriptPath | Should -Exist
             { . $scriptPath } | Should -Not -Throw
         }
-        
         It 'should follow naming conventions' {
             $scriptName = [System.IO.Path]::GetFileName($scriptPath)
             $scriptName | Should -Match '^[0-9]{4}_[A-Z][a-zA-Z0-9-]+\.ps1$|^[A-Z][a-zA-Z0-9-]+\.ps1$'
         }
-        
         It 'should define expected functions' {
             $scriptContent = Get-Content $script:ScriptPath -Raw
             $scriptContent | Should -Match 'function\\s+Invoke-OpenTofuInstaller'
@@ -50,7 +55,7 @@ Describe 'InvokeOpenTofuInstaller Tests' -Tag 'Unknown' {
             $scriptContent = Get-Content $script:ScriptPath -Raw
             $scriptContent | Should -Match 'function\s+Invoke-OpenTofuInstaller'
         }
-                It 'should handle execution with valid parameters' {
+        It 'should handle execution with valid parameters' {
             # Add specific test logic for Invoke-OpenTofuInstaller
             $true | Should -BeTrue  # Placeholder - implement actual tests
         }
@@ -62,4 +67,7 @@ AfterAll {
     # Restore any modified system state
     # Remove test artifacts
 }
+
+
+
 

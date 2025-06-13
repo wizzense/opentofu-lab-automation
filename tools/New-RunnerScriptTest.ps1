@@ -26,7 +26,14 @@ Array of test case definitions. Each test case should have:
         Config = @{InstallGo = $true; GoVersion = '1.21.0'}
         Mocks = @{
             'Get-Command' = { $null }
-            'Invoke-LabDownload' = { param($Uri, $Action) & $Action 'mock-installer.msi' }
+            'Invoke-LabDownload' = { param($Uri, $Action) 
+
+
+
+
+
+
+& $Action 'mock-installer.msi' }
         }
         ExpectedInvocations = @{
             'Invoke-LabDownload' = 1
@@ -44,7 +51,14 @@ Array of test case definitions. Each test case should have:
 #>
 
 param(
-    [Parameter(Mandatory)]
+    [Parameter(Mandatory)
+
+
+
+
+
+
+]
     [string]$ScriptName,
     
     [Parameter(Mandatory)]
@@ -153,3 +167,6 @@ try {
 } catch {
     Write-Warning "Syntax validation failed: $_"
 }
+
+
+

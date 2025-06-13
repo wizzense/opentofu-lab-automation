@@ -18,17 +18,38 @@ function global:New-RunnerTestEnv {
     $rsDir = Join-Path $pwshDir 'runner_scripts'
     New-Item -ItemType Directory -Path $rsDir | Out-Null
 
-    $utils = Join-Path $pwshDir 'lab_utils' 'LabRunner'
+    $utils = Join-Path $pwshDir 'modules/LabRunner'
     New-Item -ItemType Directory -Path $utils -Force | Out-Null
-    'function Write-CustomLog { param([string]$Message,[string]$Level) }' |
+    'function Write-CustomLog { param([string]$Message,[string]$Level) 
+
+
+
+
+
+
+}' |
         Set-Content -Path (Join-Path $utils 'Logger.ps1')
 
     $labs = Join-Path $pwshDir 'lab_utils'
     New-Item -ItemType Directory -Path $labs | Out-Null
     Copy-Item (Join-Path $repoRoot 'pwsh' 'lab_utils' 'Resolve-ProjectPath.ps1') -Destination $labs -Force -ErrorAction SilentlyContinue
-    'function Get-LabConfig { param([string]$Path) Get-Content -Raw $Path | ConvertFrom-Json }' |
+    'function Get-LabConfig { param([string]$Path) 
+
+
+
+
+
+
+Get-Content -Raw $Path | ConvertFrom-Json }' |
         Set-Content -Path (Join-Path $labs 'Get-LabConfig.ps1')
-    'function Format-Config { param($Config) $Config | ConvertTo-Json -Depth 5 }' |
+    'function Format-Config { param($Config) 
+
+
+
+
+
+
+$Config | ConvertTo-Json -Depth 5 }' |
         Set-Content -Path (Join-Path $labs 'Format-Config.ps1')
     'function Get-Platform {
         if ($IsWindows) { return "Windows" }
@@ -61,3 +82,7 @@ function global:Remove-RunnerTestEnv {
     }
     $script:RunnerTestEnvDirs = @()
 }
+
+
+
+

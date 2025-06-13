@@ -21,17 +21,29 @@ Describe 'Runner scripts parameter and command checks'  {
     $testCases = $scripts | ForEach-Object {
         @{ Name = $_.Name; File = $_; Commands = $mandatory }
     }
-
-    It 'parses without errors' -TestCases $testCases {
+        It 'parses without errors' -TestCases $testCases {
         param($File)
-        $errors = $null
-        [System.Management.Automation.Language.Parser]::ParseFile($File.FullName, [ref]$null, [ref]$errors) | Out-Null
-        ($errors ? $errors.Count : 0) | Should -Be 0
-    }
+        
 
-    It 'declares a Config parameter when required' -TestCases $testCases {
+
+
+
+
+
+$errors = $null
+        [System.Management.Automation.Language.Parser]::ParseFile($File.FullName, [ref]$null, [ref]$errors) | Out-Null
+        $(if ($errors) { $errors.Count  } else { 0 }) | Should -Be 0
+    }
+        It 'declares a Config parameter when required' -TestCases $testCases {
         param($File, $Commands)
-        $ast = Get-ScriptAst $File.FullName
+        
+
+
+
+
+
+
+$ast = Get-ScriptAst $File.FullName
         $paramBlock = $ast.ParamBlock
         $configParam = $null
         if ($paramBlock) {
@@ -43,11 +55,24 @@ Describe 'Runner scripts parameter and command checks'  {
         }
         $configParam | Should -Not -BeNullOrEmpty
     }
-
-    It 'contains mandatory command invocations' -TestCases $testCases {
+        It 'contains mandatory command invocations' -TestCases $testCases {
         param($File, $Commands)
-        $ast = Get-ScriptAst $File.FullName
-        $scriptCommands = if ($ast) { $ast.FindAll({ param($n) $n -is [System.Management.Automation.Language.CommandAst] }, $true) } else { @() }
+        
+
+
+
+
+
+
+$ast = Get-ScriptAst $File.FullName
+        $scriptCommands = if ($ast) { $ast.FindAll({ param($n) 
+
+
+
+
+
+
+$n -is [System.Management.Automation.Language.CommandAst] }, $true) } else { @() }
         
         foreach ($cmdName in $Commands) {
             $found = $scriptCommands | Where-Object { $_.GetCommandName() -eq $cmdName }
@@ -57,23 +82,49 @@ Describe 'Runner scripts parameter and command checks'  {
             ($found | Measure-Object).Count | Should -BeGreaterThan 0
         }
     }
-
-    It 'contains Invoke-LabStep call' -TestCases $testCases {
+        It 'contains Invoke-LabStep call' -TestCases $testCases {
         param($File, $Commands)
-        $ast = Get-ScriptAst $File.FullName
-        $commands = if ($ast) { $ast.FindAll({ param($n) $n -is [System.Management.Automation.Language.CommandAst] }, $true) } else { @() }
+        
+
+
+
+
+
+
+$ast = Get-ScriptAst $File.FullName
+        $commands = if ($ast) { $ast.FindAll({ param($n) 
+
+
+
+
+
+
+$n -is [System.Management.Automation.Language.CommandAst] }, $true) } else { @() }
         $found = $commands | Where-Object { $_.GetCommandName() -eq 'Invoke-LabStep' }
         if (-not $found) {
             Write-Host "Invoke-LabStep not found in $($File.FullName)"
         }
         ($found | Measure-Object).Count | Should -BeGreaterThan 0
     }
-
-    It 'imports LabRunner module' -TestCases $testCases {
+        It 'imports LabRunner module' -TestCases $testCases {
         param($File)
-        $ast = Get-ScriptAst $File.FullName
+        
+
+
+
+
+
+
+$ast = Get-ScriptAst $File.FullName
         $commands = if ($ast) {
-            $ast.FindAll({ param($n) $n -is [System.Management.Automation.Language.CommandAst] }, $true)
+            $ast.FindAll({ param($n) 
+
+
+
+
+
+
+$n -is [System.Management.Automation.Language.CommandAst] }, $true)
         } else { @() }
 
         $foundImport = $commands | Where-Object {
@@ -114,8 +165,7 @@ Describe 'Runner scripts parameter and command checks'  {
 
         ($foundImport | Measure-Object).Count | Should -BeGreaterThan 0
     }
-
-    It 'resolves PSScriptRoot when run with pwsh -File' {
+        It 'resolves PSScriptRoot when run with pwsh -File' {
         $tempDir = Join-Path ([System.IO.Path]::GetTempPath()) ([guid]::NewGuid())
         New-Item -ItemType Directory -Path $tempDir | Out-Null
         try {
@@ -123,6 +173,13 @@ Describe 'Runner scripts parameter and command checks'  {
             # Ensure the here-string content is valid PowerShell
             $scriptContent = @"
 Param([pscustomobject]`$Config)
+
+
+
+
+
+
+
 `$env:LAB_CONSOLE_LEVEL = '0';
 Import-Module LabRunner;
 Invoke-LabStep -Config `$Config -Body { Write-Output `$PSScriptRoot }
@@ -144,3 +201,8 @@ Invoke-LabStep -Config `$Config -Body { Write-Output `$PSScriptRoot }
         }
     }
 }
+
+
+
+
+

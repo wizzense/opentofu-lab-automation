@@ -2,7 +2,14 @@ Param(
     [object]$Config,
     [switch]$AsJson
 )
-Import-Module "$PSScriptRoot/../lab_utils/LabRunner/LabRunner.psd1" -Force
+
+
+
+
+
+
+
+Import-Module "$PSScriptRoot/../modules/LabRunner/LabRunner.psd1" -Force
 
 Write-CustomLog "Starting $MyInvocation.MyCommand"
 function Get-SystemInfo {
@@ -12,7 +19,14 @@ function Get-SystemInfo {
         [object]$Config
     )
 
-    Invoke-LabStep -Config $Config -Body {
+    
+
+
+
+
+
+
+Invoke-LabStep -Config $Config -Body {
         Write-CustomLog "Running $($MyInvocation.MyCommand.Name)"
         $platform = Get-Platform
         Write-CustomLog "Detected platform: $platform"
@@ -129,3 +143,6 @@ if ($MyInvocation.InvocationName -ne '.') {
     Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
 }
 Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
+
+
+

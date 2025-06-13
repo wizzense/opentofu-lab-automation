@@ -1,6 +1,13 @@
 function Get-MenuSelection {
     param(
-        [Parameter(Mandatory)]
+        [Parameter(Mandatory)
+
+
+
+
+
+
+]
         [array]$Items,
         [string]$Title = 'Select items',
         [switch]$AllowAll,
@@ -21,7 +28,7 @@ function Get-MenuSelection {
         if ($env:LAB_CONSOLE_LEVEL -lt 1) { Write-Host $line }
     }
     for ($i = 0; $i -lt $MaxRetries; $i++) {
-        $prompt = if ($AllowAll) { "Enter numbers/prefixes (comma separated), 'all', or 'exit'" } else { "Enter numbers/prefixes or 'exit'" }
+        $prompt = if ($AllowAll) { "Enter numbers/prefixes (comma separated), 'all', or 'exit'"    } else { "Enter numbers/prefixes or 'exit'"    }
         $input = Read-LoggedInput $prompt
         if ($input -match '^(?i)exit$') { return @() }
         if ($AllowAll -and $input -eq 'all') { return $Items }
@@ -34,3 +41,6 @@ function Get-MenuSelection {
     }
     return @()
 }
+
+
+

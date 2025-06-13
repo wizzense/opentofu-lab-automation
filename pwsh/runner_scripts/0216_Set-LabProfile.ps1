@@ -2,7 +2,14 @@ Param(
     [object]$Config
 )
 
-Import-Module "$PSScriptRoot/../lab_utils/LabRunner/LabRunner.psd1" -Force
+
+
+
+
+
+
+
+Import-Module "$PSScriptRoot/../modules/LabRunner/LabRunner.psd1" -Force
 
 Write-CustomLog "Starting $MyInvocation.MyCommand"
 
@@ -10,9 +17,23 @@ function Set-LabProfile {
     [CmdletBinding(SupportsShouldProcess = $true)]
     param([object]$Config)
 
-    Invoke-LabStep -Config $Config -Body {
+    
+
+
+
+
+
+
+Invoke-LabStep -Config $Config -Body {
         param($Config)
-        Write-CustomLog "Running $($MyInvocation.MyCommand.Name)"
+        
+
+
+
+
+
+
+Write-CustomLog "Running $($MyInvocation.MyCommand.Name)"
         if ($Config.SetupLabProfile -eq $true) {
             $profilePath = $PROFILE.CurrentUserAllHosts
             $profileDir  = Split-Path $profilePath
@@ -23,7 +44,7 @@ function Set-LabProfile {
             $content = @"
 # OpenTofu Lab Automation profile
 `$env:PATH = \"$repoRoot;`$env:PATH\"
-`$env:PSModulePath = \"$repoRoot\lab_utils;`$env:PSModulePath\"
+`$env:PSModulePath = \"$repoRoot\pwsh\modules;`$env:PSModulePath\"
 "@
             Set-Content -Path $profilePath -Value $content -Encoding utf8
             Write-CustomLog "Profile written to $profilePath"
@@ -36,3 +57,7 @@ function Set-LabProfile {
 
 if ($MyInvocation.InvocationName -ne '.') { Set-LabProfile @PSBoundParameters }
 Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
+
+
+
+

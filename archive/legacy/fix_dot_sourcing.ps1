@@ -1,3 +1,10 @@
+
+
+
+
+
+
+
 # Script to fix the remaining dot-sourcing pattern in numbered test files
 # filepath: /workspaces/opentofu-lab-automation/fix_dot_sourcing.ps1
 
@@ -26,7 +33,7 @@ foreach ($testFile in $testFiles) {
     $newPattern = @'
 $errors = $null
                 [System.Management.Automation.Language.Parser]::ParseFile($script:ScriptPath, [ref]$null, [ref]$errors) | Out-Null
-                ($errors ? $errors.Count : 0) | Should -Be 0
+                ($$(if (errors) { $errors.Count } else { 0) | Should -Be 0 })
 '@
     
     # Apply replacement
@@ -42,3 +49,6 @@ $errors = $null
 }
 
 Write-Host "`nCompleted processing all files with dot-sourcing issues."
+
+
+

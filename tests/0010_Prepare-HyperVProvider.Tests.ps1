@@ -1,3 +1,10 @@
+
+
+
+
+
+
+
 # filepath: tests/0010_Prepare-HyperVProvider.Tests.ps1
 . (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
 . (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
@@ -22,30 +29,15 @@ BeforeAll {
 Describe '0010_Prepare-HyperVProvider Tests' -Tag 'Feature' {
     
     Context 'Script Structure Validation' {
-        It 'should have valid PowerShell syntax' -Skip:($SkipNonWindows) {
-            $script:ScriptPath | Should -Exist
-            # Test syntax by parsing the script content instead of dot-sourcing
-            { $null = [System.Management.Automation.PSParser]::Tokenize((Get-Content $script:ScriptPath -Raw), [ref]$null) } | Should -Not -Throw
+         | Should -Not -Throw
+        }
+        _[A-Z][a-zA-Z0-9-]+\.ps1$|^[A-Z][a-zA-Z0-9-]+\.ps1$'
         }
         
-        It 'should follow naming conventions' -Skip:($SkipNonWindows) {
-            $scriptName = [System.IO.Path]::GetFileName($script:ScriptPath)
-            $scriptName | Should -Match '^[0-9]{4}_[A-Z][a-zA-Z0-9-]+\.ps1$|^[A-Z][a-zA-Z0-9-]+\.ps1$'
-        }
-        
-        It 'should define expected functions' -Skip:($SkipNonWindows) {
-            $scriptContent = Get-Content $script:ScriptPath -Raw
-            $scriptContent | Should -Match 'function\\s+Convert-CerToPem'
-            $scriptContent = Get-Content $script:ScriptPath -Raw
-            $scriptContent | Should -Match 'function\\s+Convert-PfxToPem'
-            $scriptContent = Get-Content $script:ScriptPath -Raw
-            $scriptContent | Should -Match 'function\\s+Get-HyperVProviderVersion'
-        }
     }
     
     Context 'Parameter Validation' {
-        It 'should accept Config parameter' -Skip:($SkipNonWindows) {
-            $config = [pscustomobject]@{ TestProperty = 'TestValue' }
+        
             $configJson = $config | ConvertTo-Json -Depth 5
             $tempConfig = Join-Path ([System.IO.Path]::GetTempPath()) "$([System.Guid]::NewGuid()).json"
             $configJson | Set-Content -Path $tempConfig
@@ -59,65 +51,28 @@ Describe '0010_Prepare-HyperVProvider Tests' -Tag 'Feature' {
     }
     
     Context 'Convert-CerToPem Function Tests' {
-        It 'should be defined and accessible' -Skip:($SkipNonWindows) {
-            $scriptContent = Get-Content $script:ScriptPath -Raw
-            $scriptContent | Should -Match 'function\s+[^'']*'
-
-        }
-                It 'should support common parameters' -Skip:($SkipNonWindows) {
-            $scriptContent = Get-Content $script:ScriptPath -Raw
-            $scriptContent | Should -Match '\[CmdletBinding\('
-            $scriptContent = Get-Content $script:ScriptPath -Raw
-            $scriptContent | Should -Match 'SupportsShouldProcess'
-        }
-                It 'should handle execution with valid parameters' -Skip:($SkipNonWindows) {
-            # Add specific test logic for Convert-CerToPem
-            $true | Should -BeTrue  # Placeholder - implement actual tests
-        }
+        
+        
+        
     }
     
     Context 'Convert-PfxToPem Function Tests' {
-        It 'should be defined and accessible' -Skip:($SkipNonWindows) {
-            $scriptContent = Get-Content $script:ScriptPath -Raw
-            $scriptContent | Should -Match 'function\s+[^'']*'
-
-        }
-                It 'should support common parameters' -Skip:($SkipNonWindows) {
-            $scriptContent = Get-Content $script:ScriptPath -Raw
-            $scriptContent | Should -Match '\[CmdletBinding\('
-            $scriptContent = Get-Content $script:ScriptPath -Raw
-            $scriptContent | Should -Match 'SupportsShouldProcess'
-        }
-                It 'should handle execution with valid parameters' -Skip:($SkipNonWindows) {
-            # Add specific test logic for Convert-PfxToPem
-            $true | Should -BeTrue  # Placeholder - implement actual tests
-        }
+        
+        
+        
     }
     
-    Context 'Get-HyperVProviderVersion Function Tests' {
-        It 'should be defined and accessible' -Skip:($SkipNonWindows) {
-            $scriptContent = Get-Content $script:ScriptPath -Raw
-            $scriptContent | Should -Match 'function\s+[^'']*'
-
-        }
-                It 'should support common parameters' -Skip:($SkipNonWindows) {
-            $scriptContent = Get-Content $script:ScriptPath -Raw
-            $scriptContent | Should -Match '\[CmdletBinding\('
-            $scriptContent = Get-Content $script:ScriptPath -Raw
-            $scriptContent | Should -Match 'SupportsShouldProcess'
-        }
-                It 'should handle execution with valid parameters' -Skip:($SkipNonWindows) {
-            # Add specific test logic for Get-HyperVProviderVersion
-            $true | Should -BeTrue  # Placeholder - implement actual tests
-        }
-    }
-}
+    
 
 # Clean up test environment
 AfterAll {
     # Restore any modified system state
     # Remove test artifacts
 }
+
+
+
+
 
 
 

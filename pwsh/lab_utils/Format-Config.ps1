@@ -2,7 +2,14 @@ function Format-Config {
     [CmdletBinding()]
     param(
         [Parameter(Mandatory, ValueFromPipeline = $true,
-                   ValueFromPipelineByPropertyName = $true)]
+                   ValueFromPipelineByPropertyName = $true)
+
+
+
+
+
+
+]
         [AllowNull()]
         [pscustomobject]$Config
     )
@@ -45,3 +52,6 @@ function Format-Config {
         }
     }
 }
+
+
+

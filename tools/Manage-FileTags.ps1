@@ -9,6 +9,13 @@ param(
     [string[]]$RemoveTags
 )
 
+
+
+
+
+
+
+
 $tagIndexPath = "file-tags-index.json"
 
 function Initialize-TagIndex {
@@ -53,7 +60,14 @@ function Initialize-TagIndex {
 function Get-AutoTags {
     param($FileName, $Content = $null)
     
-    $autoTags = @()
+    
+
+
+
+
+
+
+$autoTags = @()
     
     # Pattern-based auto-tagging
     $patterns = @{
@@ -90,7 +104,14 @@ function Get-AutoTags {
 function Set-FileTags {
     param($FilePath, $Tags)
     
-    $index = Initialize-TagIndex
+    
+
+
+
+
+
+
+$index = Initialize-TagIndex
     $relativePath = Resolve-Path $FilePath -Relative
     
     # Update file entry
@@ -118,7 +139,14 @@ function Set-FileTags {
 function Get-FileTags {
     param($FilePath)
     
-    $index = Initialize-TagIndex
+    
+
+
+
+
+
+
+$index = Initialize-TagIndex
     $relativePath = Resolve-Path $FilePath -Relative -ErrorAction SilentlyContinue
     
     if ($relativePath -and $index.files.$relativePath) {
@@ -131,7 +159,14 @@ function Get-FileTags {
 function Get-FilesByTag {
     param($Tag)
     
-    $index = Initialize-TagIndex
+    
+
+
+
+
+
+
+$index = Initialize-TagIndex
     
     if ($index.tags.$Tag) {
         return $index.tags.$Tag
@@ -166,7 +201,7 @@ function Update-AutoTags {
         
         if ($autoTags.Count -gt 0) {
             # Check if file already has tags
-            $existingTags = if ($index.files.$relativePath) { $index.files.$relativePath.tags } else { @() }
+            $existingTags = if ($index.files.$relativePath) { $index.files.$relativePath.tags    } else { @()    }
             
             # Merge auto tags with existing manual tags
             $allTags = ($existingTags + $autoTags) | Sort-Object -Unique
@@ -267,3 +302,6 @@ if ($ListTags) {
     Write-Host "  List all tags:  $($MyInvocation.MyCommand.Name) -ListTags"
     Write-Host "  Update index:   $($MyInvocation.MyCommand.Name) -UpdateIndex"
 }
+
+
+

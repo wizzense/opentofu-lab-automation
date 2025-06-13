@@ -1,0 +1,185 @@
+<#
+.SYNOPSIS
+Runs PowerShell code linting and analysis
+
+.DESCRIPTION
+This function performs comprehensive PowerShell linting using PSScriptAnalyzer
+and AST parsing to identify syntax errors, style issues, and potential problems.
+
+.PARAMETER Path
+Root path to scan for PowerShell files (default: current directory)
+
+.PARAMETER OutputFormat
+Output format: Text (console), JSON, or CI (for pipelines)
+
+.PARAMETER PassThru
+Return the lint results object
+
+.PARAMETER Parallel
+Use parallel processing for faster analysis
+
+.EXAMPLE
+Invoke-PowerShellLint
+
+.EXAMPLE
+Invoke-PowerShellLint -Path "/scripts" -OutputFormat JSON -Parallel
+#>
+function Invoke-PowerShellLint {
+    [CmdletBinding(DefaultParameterSetName='Path')]
+    param(
+        [Parameter(ParameterSetName='Path')]
+        [string]$Path = ".",
+        
+        [Parameter(ParameterSetName='Files', ValueFromPipeline=$true)]
+        [System.IO.FileInfo[]]$Files,
+        
+        [ValidateSet('Text', 'JSON', 'CI')]
+        [string]$OutputFormat = 'Text',
+        [switch]$PassThru,
+        [switch]$Parallel,
+        
+        [int]$BatchSize = 10,
+        [int]$MaxJobs = [Environment]::ProcessorCount
+    )
+    
+    begin {
+        $ErrorActionPreference = "Continue"
+        $collectedFiles = [System.Collections.ArrayList]::new()
+        
+        Write-Host "Running PowerShell linting..." -ForegroundColor Cyan
+        
+        # Simple PSScriptAnalyzer import - copy the working pattern that's used elsewhere
+        try {
+            Import-Module PSScriptAnalyzer -Force
+            $null = Invoke-ScriptAnalyzer -ScriptDefinition "Write-Host 'test'" -ErrorAction Stop
+            $psaAvailable = $true
+            Write-Host "✅ PSScriptAnalyzer imported successfully" -ForegroundColor Green
+        } catch {
+            Write-Host "❌ PSScriptAnalyzer failed to import: $($_.Exception.Message)" -ForegroundColor Red
+            $psaAvailable = $false
+        }
+    }
+    
+    process {
+        if ($PSCmdlet.ParameterSetName -eq 'Files' -and $Files) {
+            $collectedFiles.AddRange(@($Files))
+        }
+    }
+    
+    end {
+        # Find all PowerShell files
+        if ($PSCmdlet.ParameterSetName -eq 'Files') {
+            $powerShellFiles = @($collectedFiles)
+        } else {
+            $powerShellFiles = Get-ChildItem -Path $Path -Recurse -Include "*.ps1", "*.psm1", "*.psd1" -File
+        }
+    
+        Write-Host "Found $($powerShellFiles.Count) PowerShell files" -ForegroundColor Green
+    
+        if ($powerShellFiles.Count -eq 0) {
+            $location = if ($PSCmdlet.ParameterSetName -eq 'Files') { "from pipeline input"   } else { "in $Path"   }
+            Write-Host "No PowerShell files found $location" -ForegroundColor Yellow
+            return
+        }
+    
+        Write-Host "Found $($powerShellFiles.Count) PowerShell files to analyze" -ForegroundColor Green
+    
+        $allIssues = @()
+    
+        if ($Parallel -and $psaAvailable -and $powerShellFiles.Count -gt 1) {
+            Write-Host "🚀 Using parallel processing for $($powerShellFiles.Count) files..." -ForegroundColor Cyan
+            Write-Host "⚙️ Batch size: $BatchSize, Max jobs: $MaxJobs" -ForegroundColor Gray
+            $allIssues = Invoke-ParallelScriptAnalyzer -Files $powerShellFiles -BatchSize $BatchSize -MaxJobs $MaxJobs
+        } else {
+            Write-Host "🔄 Processing files sequentially..." -ForegroundColor Yellow
+            foreach ($file in $powerShellFiles) {
+                Write-Host "  📄 Analyzing: $($file.Name)" -ForegroundColor Gray
+                
+                if ($psaAvailable) {
+                    try {
+                        $issues = Invoke-ScriptAnalyzer -Path $file.FullName -Severity Error,Warning
+                        $allIssues += $issues
+                    } catch {
+                        Write-Host "    ⚠️ Analysis failed: $($_.Exception.Message)" -ForegroundColor Yellow
+                    }
+                } else {
+                    # Fallback to basic syntax checking
+                    try {
+                        $content = Get-Content $file.FullName -Raw
+                        $null = [System.Management.Automation.PSParser]::Tokenize($content, [ref]$null)
+                        Write-Host "    ✅ Syntax OK" -ForegroundColor Green
+                    } catch {
+                        Write-Host "    ❌ Syntax Error: $($_.Exception.Message)" -ForegroundColor Red
+                        $allIssues += [PSCustomObject]@{
+                            RuleName = "SyntaxError"
+                            Severity = "Error"
+                            ScriptName = $file.Name
+                            Line = 0
+                            Message = $_.Exception.Message
+                        }
+                    }
+                }
+            }
+        }
+    
+        # Output results based on format
+        $errorCount = ($allIssues | Where-Object { $_.Severity -eq 'Error' }).Count
+        $warningCount = ($allIssues | Where-Object { $_.Severity -eq 'Warning' }).Count
+        $totalIssues = $allIssues.Count
+    
+        switch ($OutputFormat) {
+            'JSON' {
+                $result = @{
+                    TotalFiles = $powerShellFiles.Count
+                    TotalIssues = $totalIssues
+                    ErrorCount = $errorCount
+                    WarningCount = $warningCount
+                    Issues = $allIssues
+                    Timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+                }
+                $result | ConvertTo-Json -Depth 10
+            }
+            'CI' {
+                Write-Host "::group::PowerShell Linting Results"
+                Write-Host "Files analyzed: $($powerShellFiles.Count)"
+                Write-Host "Total issues: $totalIssues (Errors: $errorCount, Warnings: $warningCount)"
+                
+                foreach ($issue in $allIssues) {
+                    $level = if ($issue.Severity -eq 'Error') { 'error'   } else { 'warning'   }
+                    Write-Host "::$level file=$($issue.ScriptName),line=$($issue.Line)::$($issue.RuleName): $($issue.Message)"
+                }
+                Write-Host "::endgroup::"
+            }
+            default {
+                Write-Host "`n📊 Linting Summary:" -ForegroundColor Cyan
+                Write-Host "  Files analyzed: $($powerShellFiles.Count)" -ForegroundColor White
+                Write-Host "  Issues found: $totalIssues" -ForegroundColor White
+                Write-Host "  Errors: $errorCount" -ForegroundColor Red
+                Write-Host "  Warnings: $warningCount" -ForegroundColor Yellow
+                
+                if ($allIssues.Count -gt 0) {
+                    Write-Host "`n🔍 Issues Details:" -ForegroundColor Yellow
+                    $allIssues | Group-Object Severity | ForEach-Object {
+                        $severityColor = if ($_.Name -eq 'Error') { 'Red'   } else { 'Yellow'   }
+                        Write-Host "`n  $($_.Name) ($($_.Count)):" -ForegroundColor $severityColor
+                        $_.Group | ForEach-Object {
+                            Write-Host "    $($_.ScriptName):$($_.Line) - $($_.RuleName): $($_.Message)" -ForegroundColor Gray
+                        }
+                    }
+                } else {
+                    Write-Host "`n✅ No issues found!" -ForegroundColor Green
+                }
+            }
+        }
+    
+        if ($PassThru) {
+            return @{
+                TotalFiles = $powerShellFiles.Count
+                TotalIssues = $totalIssues
+                ErrorCount = $errorCount
+                WarningCount = $warningCount
+                Issues = $allIssues
+            }
+        }
+    }
+}

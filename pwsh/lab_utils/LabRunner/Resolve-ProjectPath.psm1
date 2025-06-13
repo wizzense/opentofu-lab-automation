@@ -1,7 +1,14 @@
 function Resolve-ProjectPath {
     [CmdletBinding()]
     param(
-        [Parameter(Mandatory=$true)][string]$Name,
+        [Parameter(Mandatory=$true)
+
+
+
+
+
+
+][string]$Name,
         [string]$Root
     )
     if (-not $Root) {
@@ -32,3 +39,6 @@ function Resolve-ProjectPath {
 }
 
 Export-ModuleMember -Function Resolve-ProjectPath
+
+
+

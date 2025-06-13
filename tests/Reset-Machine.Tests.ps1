@@ -1,17 +1,23 @@
+
+
+
+
+
+
+
 . (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
 . (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
-Describe 'Reset-Machine script' -Skip:$SkipNonWindows {
+Describe 'Reset-Machine script' -Skip:($SkipNonWindows) {
     BeforeAll {
         Enable-WindowsMocks
         $script:ScriptPath = Get-RunnerScriptPath '9999_Reset-Machine.ps1'
-        . (Join-Path $PSScriptRoot '..' 'pwsh' 'lab_utils' 'Get-Platform.ps1')
+        . (Join-Path $PSScriptRoot '..' 'pwsh/modules/LabRunner/Get-Platform.ps1')
     }
 
     BeforeEach {
         Remove-Variable -Name LogFilePath -Scope Script -ErrorAction SilentlyContinue
     }
-
-    It 'invokes sysprep and configures Remote Desktop on Windows'  {
+        It 'invokes sysprep and configures Remote Desktop on Windows'  {
         Mock Get-Platform { 'Windows' }
         $sysprep = 'C:\\Windows\\System32\\Sysprep\\Sysprep.exe'
         Mock Test-Path { $true } -ParameterFilter { $Path -eq $sysprep }
@@ -30,15 +36,13 @@ Describe 'Reset-Machine script' -Skip:$SkipNonWindows {
         Should -Invoke -CommandName Set-ItemProperty -Times 1
         Should -Invoke -CommandName New-NetFirewallRule -Times 1
     }
-
-    It 'calls Restart-Computer on Linux' {
+        It 'calls Restart-Computer on Linux' {
         Mock Get-Platform { 'Linux' }
         Mock Restart-Computer {}
         . $script:ScriptPath -Config ([pscustomobject]@{})
         Should -Invoke -CommandName Restart-Computer -Times 1
     }
-
-    It 'returns exit code 1 for unknown platform' {
+        It 'returns exit code 1 for unknown platform' {
         Mock Get-Platform { 'Unknown' }
         Mock Restart-Computer {}
         try {
@@ -58,3 +62,7 @@ Describe 'Reset-Machine script' -Skip:$SkipNonWindows {
         }
     }
 }
+
+
+
+

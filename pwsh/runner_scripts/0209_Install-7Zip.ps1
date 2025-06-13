@@ -1,19 +1,40 @@
 Param([object]$Config)
-Import-Module "$PSScriptRoot/../lab_utils/LabRunner/LabRunner.psd1" -Force
+
+
+
+
+
+
+
+Import-Module "$PSScriptRoot/../modules/LabRunner/LabRunner.psd1" -Force
 
 Write-CustomLog "Starting $MyInvocation.MyCommand"
 function Install-7Zip {
     [CmdletBinding(SupportsShouldProcess = $true)]
     param([object]$Config)
 
-    Invoke-LabStep -Config $Config -Body {
+    
+
+
+
+
+
+
+Invoke-LabStep -Config $Config -Body {
         Write-CustomLog "Running $($MyInvocation.MyCommand.Name)"
         if ($Config.Install7Zip -eq $true) {
             if (-not (Get-Command 7z -ErrorAction SilentlyContinue)) {
                 $url = 'https://www.7-zip.org/a/7z2301-x64.exe'
                 Invoke-LabDownload -Uri $url -Prefix '7zip' -Extension '.exe' -Action {
                     param($installer)
-                    Start-Process -FilePath $installer -ArgumentList '/S' -Wait
+                    
+
+
+
+
+
+
+Start-Process -FilePath $installer -ArgumentList '/S' -Wait
                 }
             } else {
                 Write-CustomLog '7-Zip already installed.'
@@ -26,3 +47,6 @@ function Install-7Zip {
 }
 if ($MyInvocation.InvocationName -ne '.') { Install-7Zip @PSBoundParameters }
 Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
+
+
+

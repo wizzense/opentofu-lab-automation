@@ -1,0 +1,32 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Run All Tests",
+			"type": "shell",
+			"command": "pwsh",
+			"args": [
+				"-File",
+				"run-comprehensive-tests.ps1"
+			],
+			"group": "test",
+			"problemMatcher": [],
+			"isBackground": false
+		},
+		{
+			"label": "Run Final Validation",
+			"type": "shell",
+			"command": "pwsh",
+			"args": [
+				"-File",
+				"run-final-validation.ps1"
+			],
+			"group": {
+				"kind": "test",
+				"isDefault": true
+			},
+			"problemMatcher": [],
+			"isBackground": false
+		}
+	]
+}

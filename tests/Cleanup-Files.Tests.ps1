@@ -20,9 +20,15 @@ Describe 'Cleanup-Files script' {
         Remove-Item -Recurse -Force $script:temp -ErrorAction SilentlyContinue
         Remove-Variable -Name LogFilePath -Scope Script -ErrorAction SilentlyContinue
     }
+        It 'uses ErrorAction Stop for Remove-Item calls' {
+        $removes = $script:ast.FindAll({ param($n) 
 
-    It 'uses ErrorAction Stop for Remove-Item calls' {
-        $removes = $script:ast.FindAll({ param($n) $n -is [System.Management.Automation.Language.CommandAst] -and $n.GetCommandName() -eq 'Remove-Item' }, $true)
+
+
+
+
+
+$n -is [System.Management.Automation.Language.CommandAst] -and $n.GetCommandName() -eq 'Remove-Item' }, $true)
         $removes.Count | Should -BeGreaterThan 0
         foreach ($cmd in $removes) {
             $ea = $cmd.CommandElements | Where-Object {
@@ -46,8 +52,7 @@ Describe 'Cleanup-Files script' {
             }
         }
     }
-
-    It 'removes repo and infra directories when they exist' {
+        It 'removes repo and infra directories when they exist' {
         $temp = $script:temp
 
         $script:LogFilePath = Join-Path $temp 'cleanup.log'
@@ -71,8 +76,7 @@ Describe 'Cleanup-Files script' {
 
         # cleanup handled in AfterEach
     }
-
-    It 'handles missing directories gracefully' {
+        It 'handles missing directories gracefully' {
         $temp = $script:temp
         $infraPath = Join-Path $temp 'infra'
         $script:LogFilePath = Join-Path $temp 'cleanup.log'
@@ -84,8 +88,7 @@ Describe 'Cleanup-Files script' {
 
         { . $script:scriptPath -Config $config } | Should -Not -Throw
     }
-
-    It 'runs without a global log file' {
+        It 'runs without a global log file' {
         $temp = $script:temp
         $infraPath = Join-Path $temp 'infra'
         Remove-Variable -Name LogFilePath -Scope Script -ErrorAction SilentlyContinue
@@ -97,8 +100,7 @@ Describe 'Cleanup-Files script' {
 
         { . $script:scriptPath -Config $config } | Should -Not -Throw
     }
-
-    It 'completes when LogFilePath is undefined' {
+        It 'completes when LogFilePath is undefined' {
         $temp = $script:temp
         $repoName = 'opentofu-lab-automation'
         $repoPath = Join-Path $temp $repoName
@@ -117,8 +119,7 @@ Describe 'Cleanup-Files script' {
         (Test-Path $repoPath) | Should -BeFalse
         (Test-Path $infraPath) | Should -BeFalse
     }
-
-    It 'completes when the repo directory is removed' {
+        It 'completes when the repo directory is removed' {
         $temp = $script:temp
         $repoName = 'opentofu-lab-automation'
         $repoPath = Join-Path $temp $repoName
@@ -142,8 +143,7 @@ Describe 'Cleanup-Files script' {
 
         Set-Location $orig
     }
-
-    It 'throws when repo removal fails' {
+        It 'throws when repo removal fails' {
         $temp = $script:temp
         $repoName = 'opentofu-lab-automation'
         $repoPath = Join-Path $temp $repoName
@@ -163,4 +163,7 @@ Describe 'Cleanup-Files script' {
         { & $script:scriptPath -Config $config } | Should -Throw '*Cleanup failed:*'
     }
 }
+
+
+
 

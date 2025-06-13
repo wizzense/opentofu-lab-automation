@@ -6,14 +6,12 @@ Describe 'Customize-ISO.ps1'  {
         Enable-WindowsMocks
         $script:ScriptPath = Join-Path $PSScriptRoot '..' 'tools' 'iso' 'Customize-ISO.ps1'
     }
-
-    It 'parses without errors' {
+        It 'parses without errors' {
         $errs = $null
         [System.Management.Automation.Language.Parser]::ParseFile($script:ScriptPath, [ref]$null, [ref]$errs) | Out-Null
-        ($errs ? $errs.Count : 0) | Should -Be 0
+        $(if ($errs) { $errs.Count  } else { 0 }) | Should -Be 0
     }
-
-    It 'honours parameters and logs each step' {
+        It 'honours parameters and logs each step' {
         $temp = Join-Path $TestDrive ([guid]::NewGuid())
         New-Item -ItemType Directory -Path $temp | Out-Null
 
@@ -35,9 +33,23 @@ Describe 'Customize-ISO.ps1'  {
         Mock Mount-DiskImage { $diskImage } -ParameterFilter { $ImagePath -eq $iso -and $PassThru }
         Mock Get-Volume { [pscustomobject]@{ DriveLetter = 'Z' } }
         Mock Dismount-DiskImage {} -ParameterFilter { $ImagePath -eq $iso }
-        function dism { param([Parameter(ValueFromRemainingArguments=$true)][string[]]$dismArgs) }
+        function dism { param([Parameter(ValueFromRemainingArguments=$true)
+
+
+
+
+
+
+][string[]]$dismArgs) }
         Mock dism {}
-        function Start-Process { param([Parameter(ValueFromRemainingArguments=$true)][string[]]$procArgs) }
+        function Start-Process { param([Parameter(ValueFromRemainingArguments=$true)
+
+
+
+
+
+
+][string[]]$procArgs) }
         Mock Start-Process {}
         Mock robocopy {}
         Mock Copy-Item {}
@@ -66,3 +78,8 @@ Describe 'Customize-ISO.ps1'  {
         Should -Invoke -CommandName Write-CustomLog -Times 1 -ParameterFilter { $Message -eq "Custom ISO creation complete! New ISO saved as $outIso" }
     }
 }
+
+
+
+
+

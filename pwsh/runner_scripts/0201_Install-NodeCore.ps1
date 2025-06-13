@@ -1,8 +1,15 @@
 # Ensure the Param block is at the top if it's meant for the whole script
 Param([object]$Config)
 
+
+
+
+
+
+
+
 # Import necessary modules
-Import-Module "$PSScriptRoot/../lab_utils/LabRunner/LabRunner.psd1" -Force
+Import-Module "$PSScriptRoot/../modules/LabRunner/LabRunner.psd1" -Force
 
 Write-CustomLog "Starting $MyInvocation.MyCommand"
 
@@ -10,11 +17,18 @@ function Install-NodeCore {
     [CmdletBinding(SupportsShouldProcess = $true)]
     param([object]$Config)
 
-    Write-CustomLog "Running $($MyInvocation.MyCommand.Name)"
+    
+
+
+
+
+
+
+Write-CustomLog "Running $($MyInvocation.MyCommand.Name)"
 
     Write-CustomLog "==== [0201] Installing Node.js Core ===="
 
-    $nodeDeps = if ($Config -is [hashtable]) { $Config['Node_Dependencies'] } else { $Config.Node_Dependencies }
+    $nodeDeps = if ($Config -is [hashtable]) { $Config['Node_Dependencies']    } else { $Config.Node_Dependencies    }
     if (-not $nodeDeps) {
         Write-CustomLog "Config missing Node_Dependencies; skipping Node.js installation."
         return
@@ -40,7 +54,14 @@ function Install-NodeCore {
 
             Invoke-LabDownload -Uri $url -Prefix 'node-installer' -Extension '.msi' -Action {
                 param($installerPath)
-                Start-Process msiexec.exe -ArgumentList "/i `"$installerPath`" /quiet /norestart" -Wait -NoNewWindow
+                
+
+
+
+
+
+
+Start-Process msiexec.exe -ArgumentList "/i `"$installerPath`" /quiet /norestart" -Wait -NoNewWindow
             }
 
             if (Get-Command node -ErrorAction SilentlyContinue) {
@@ -63,3 +84,7 @@ function Install-NodeCore {
 # Start the NodeCore installation if the script is directly invoked
 if ($MyInvocation.InvocationName -ne '.') { Install-NodeCore @PSBoundParameters }
 Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
+
+
+
+

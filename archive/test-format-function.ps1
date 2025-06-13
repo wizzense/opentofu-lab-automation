@@ -1,3 +1,10 @@
+
+
+
+
+
+
+
 # Test script for Format-ScriptName function
 . ./tests/helpers/New-AutoTestGenerator.ps1
 
@@ -33,3 +40,6 @@ try {
 
 Write-Host ""
 Write-Host "Test completed" -ForegroundColor Cyan
+
+
+

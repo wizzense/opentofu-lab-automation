@@ -15,7 +15,14 @@ function New-InstallerScriptTest {
     Creates a standardized test for installer scripts
     #>
     param(
-        [Parameter(Mandatory)]
+        [Parameter(Mandatory)
+
+
+
+
+
+
+]
         [string]$ScriptName,
         
         [Parameter(Mandatory)]
@@ -55,7 +62,14 @@ function New-InstallerScriptTest {
         # or to a user-provided Get-Command in AdditionalMocks
         'Get-Command' = { 
             param($Name)
-            if ($Name -eq $SoftwareCommandName) { return $null } 
+            
+
+
+
+
+
+
+if ($Name -eq $SoftwareCommandName) { return $null } 
             # If AdditionalMocks has a Get-Command, use it for other names
             if ($AdditionalMocks.ContainsKey('Get-Command')) {
                 return (& $AdditionalMocks['Get-Command'] $Name)
@@ -80,7 +94,14 @@ function New-InstallerScriptTest {
         # but we can keep it consistent or simple.
         'Get-Command' = { 
             param($Name)
-            # If AdditionalMocks has a Get-Command, use it
+            
+
+
+
+
+
+
+# If AdditionalMocks has a Get-Command, use it
             if ($AdditionalMocks.ContainsKey('Get-Command')) {
                 return (& $AdditionalMocks['Get-Command'] $Name)
             }
@@ -102,7 +123,14 @@ function New-InstallerScriptTest {
         # Mock Get-Command: Software IS already installed
         'Get-Command' = { 
             param($Name)
-            if ($Name -eq $SoftwareCommandName) { return [PSCustomObject]@{ Name = $SoftwareCommandName; Source = "/fake/path/to/$SoftwareCommandName" } } 
+            
+
+
+
+
+
+
+if ($Name -eq $SoftwareCommandName) { return [PSCustomObject]@{ Name = $SoftwareCommandName; Source = "/fake/path/to/$SoftwareCommandName" } } 
             # If AdditionalMocks has a Get-Command, use it for other names
             if ($AdditionalMocks.ContainsKey('Get-Command')) {
                 return (& $AdditionalMocks['Get-Command'] $Name)
@@ -129,7 +157,14 @@ function New-FeatureScriptTest {
     Creates a standardized test for feature enablement scripts
     #>
     param(
-        [Parameter(Mandatory)]
+        [Parameter(Mandatory)
+
+
+
+
+
+
+]
         [string]$ScriptName,
         
         [Parameter(Mandatory)]
@@ -186,7 +221,14 @@ function New-ServiceScriptTest {
     Creates a standardized test for service management scripts
     #>
     param(
-        [Parameter(Mandatory)]
+        [Parameter(Mandatory)
+
+
+
+
+
+
+]
         [string]$ScriptName,
         
         [Parameter(Mandatory)]
@@ -230,7 +272,14 @@ function New-ConfigurationScriptTest {
     Creates a standardized test for configuration scripts
     #>
     param(
-        [Parameter(Mandatory)]
+        [Parameter(Mandatory)
+
+
+
+
+
+
+]
         [string]$ScriptName,
         
         [Parameter(Mandatory)]
@@ -286,7 +335,14 @@ function New-CrossPlatformScriptTest {
     Creates tests that validate cross-platform compatibility
     #>
     param(
-        [Parameter(Mandatory)]
+        [Parameter(Mandatory)
+
+
+
+
+
+
+]
         [string]$ScriptName,
         
         [hashtable]$WindowsConfig = @{},
@@ -324,7 +380,14 @@ function New-IntegrationTest {
     Creates integration tests that validate end-to-end functionality
     #>
     param(
-        [Parameter(Mandatory)]
+        [Parameter(Mandatory)
+
+
+
+
+
+
+]
         [string]$TestName,
         
         [Parameter(Mandatory)]
@@ -348,11 +411,9 @@ function New-IntegrationTest {
             # For now, assuming it's sourced and PSScriptRoot is available.
         }
         
-        $skipReason = if ($RequiredPlatforms.Count -gt 0 -and $script:CurrentPlatform -notin $RequiredPlatforms) {
-            "Not compatible with platform: $script:CurrentPlatform"
-        } else {
-            $null
-        }
+        $skipReason = if ($RequiredPlatforms.Count -gt 0 -and $script:CurrentPlatform -notin $RequiredPlatforms) { "Not compatible with platform: $script:CurrentPlatform"
+           } else { $null
+           }
         
         It "executes script sequence successfully" -Skip:($null -ne $skipReason) {
             InModuleScope LabRunner {
@@ -386,3 +447,6 @@ function New-IntegrationTest {
 # Do NOT include Export-ModuleMember in this .ps1 file.
 # If you convert this to a .psm1 module, then add:
 # Export-ModuleMember -Function New-InstallerScriptTest, New-FeatureScriptTest, New-ServiceScriptTest, New-ConfigurationScriptTest, New-CrossPlatformScriptTest, New-IntegrationTest
+
+
+

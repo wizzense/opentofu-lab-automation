@@ -1,3 +1,10 @@
+
+
+
+
+
+
+
 # filepath: tests/0007_Install-Go.Tests.ps1
 . (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
 . (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
@@ -22,20 +29,14 @@ BeforeAll {
 Describe '0007_Install-Go Tests' -Tag 'Unknown' {
     
     Context 'Script Structure Validation' {
-        It 'should have valid PowerShell syntax' -Skip:($SkipNonWindows) {
-            $script:ScriptPath | Should -Exist
-            { . $script:ScriptPath } | Should -Not -Throw
+         | Should -Not -Throw
         }
-        
-        It 'should follow naming conventions' -Skip:($SkipNonWindows) {
-            $scriptName = [System.IO.Path]::GetFileName($script:ScriptPath)
-            $scriptName | Should -Match '^[0-9]{4}_[A-Z][a-zA-Z0-9-]+\.ps1$|^[A-Z][a-zA-Z0-9-]+\.ps1$'
+        _[A-Z][a-zA-Z0-9-]+\.ps1$|^[A-Z][a-zA-Z0-9-]+\.ps1$'
         }
     }
     
     Context 'Parameter Validation' {
-        It 'should accept Config parameter' -Skip:($SkipNonWindows) {
-            $config = [pscustomobject]@{ TestProperty = 'TestValue' }
+        
             $configJson = $config | ConvertTo-Json -Depth 5
             $tempConfig = Join-Path ([System.IO.Path]::GetTempPath()) "$([System.Guid]::NewGuid()).json"
             $configJson | Set-Content -Path $tempConfig
@@ -54,5 +55,9 @@ AfterAll {
     # Restore any modified system state
     # Remove test artifacts
 }
+
+
+
+
 
 

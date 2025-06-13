@@ -98,7 +98,11 @@ $defaultConfig = "${baseUrl}${targetBranch}/configs/config_files/default-config.
 function Write-Continue {
     param([string]$Message = "Press any key to continue...")
     
-    # Skip interactive prompts in WhatIf or NonInteractive modes
+    
+
+
+
+# Skip interactive prompts in WhatIf or NonInteractive modes
     if ($WhatIf -or $NonInteractive -or $Quiet) {
         Write-CustomLog "Skipping interactive prompt: $Message" 'INFO'
         return
@@ -112,7 +116,7 @@ $ErrorActionPreference = 'Stop'  # So any error throws an exception
 $ProgressPreference = 'SilentlyContinue'
 
 # Resolve script root even when $PSScriptRoot is not populated (e.g. -Command)
-$scriptRoot = if ($PSScriptRoot) { $PSScriptRoot } else { Split-Path -Parent $MyInvocation.MyCommand.Path }
+$scriptRoot = if ($PSScriptRoot) { $PSScriptRoot    } else { Split-Path -Parent $MyInvocation.MyCommand.Path    }
 $isWindowsOS = [System.Environment]::OSVersion.Platform -eq 'Win32NT'
 
 # Ensure the logger utility is available even when this script is executed
@@ -123,7 +127,7 @@ if (-not (Test-Path $loggerPath)) {
     if (-not (Test-Path $loggerDir)) {
         New-Item -ItemType Directory -Path $loggerDir -Force | Out-Null
     }
-    $loggerUrl = "${baseUrl}${targetBranch}/pwsh/lab_utils/LabRunner/Logger.ps1"
+    $loggerUrl = "${baseUrl}${targetBranch}/pwsh/modules/LabRunner/Logger.ps1"
     Invoke-WebRequest -Uri $loggerUrl -OutFile $loggerPath
 }
 try {
@@ -149,12 +153,16 @@ if (-not (Get-Command Write-CustomLog -ErrorAction SilentlyContinue)) {
     function Write-CustomLog {
         param(
             [string]$Message,
-            [ValidateSet('INFO','WARN','ERROR')] [string]$Level = 'INFO'
+            [ValidateSet('INFO','WARN','ERROR')
+
+
+
+] [string]$Level = 'INFO'
         )
         $levelIdx = @{ INFO = 1; WARN = 1; ERROR = 0 }[$Level]
         if (-not (Get-Variable -Name LogFilePath -Scope Script -ErrorAction SilentlyContinue)) {
             $logDir = $env:LAB_LOG_DIR
-            if (-not $logDir) { $logDir = if ($isWindowsOS) { 'C:\\temp' } else { [System.IO.Path]::GetTempPath() } }
+            if (-not $logDir) { $logDir = if ($isWindowsOS) { 'C:\\temp'    } else { [System.IO.Path]::GetTempPath()    } }
             $script:LogFilePath = Join-Path $logDir 'lab.log'
         }
         if (-not (Get-Variable -Name ConsoleLevel -Scope Script -ErrorAction SilentlyContinue)) {
@@ -172,7 +180,11 @@ if (-not (Get-Command Write-CustomLog -ErrorAction SilentlyContinue)) {
     function Read-LoggedInput {
         [CmdletBinding()]
         param(
-            [Parameter(Mandatory)][string]$Prompt,
+            [Parameter(Mandatory)
+
+
+
+][string]$Prompt,
             [switch]$AsSecureString
         )
 
@@ -195,7 +207,7 @@ if (-not (Test-Path $labConfigScript)) {
     if (-not (Test-Path $labUtilsDir)) {
         New-Item -ItemType Directory -Path $labUtilsDir -Force | Out-Null
     }
-    $labConfigUrl = 'https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/main/pwsh/lab_utils/Get-LabConfig.ps1'
+    $labConfigUrl = 'https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/main/pwsh/modules/LabRunner/Get-LabConfig.ps1'
     Invoke-WebRequest -Uri $labConfigUrl -OutFile $labConfigScript
 }
 if (-not (Test-Path $formatScript)) {
@@ -316,7 +328,7 @@ try {
     Write-CustomLog "Config file loaded from $resolvedConfigPath."
     Write-CustomLog (Format-Config -Config $config)
 } catch {
-    $errorPath = if ($resolvedConfigPath) { $resolvedConfigPath } else { $ConfigFile }
+    $errorPath = if ($resolvedConfigPath) { $resolvedConfigPath    } else { $ConfigFile    }
     Write-Error "ERROR: Failed to load configuration file '$errorPath' - $($_.Exception.Message)"
     exit 1
 }
@@ -481,7 +493,11 @@ function Update-RepoPreserveConfig {
         [string]$Branch,
         [string]$GitPath
     )
-    Push-Location $RepoPath
+    
+
+
+
+Push-Location $RepoPath
     $configChanges = & $GitPath status --porcelain "configs/config_files" 2>$null
     $backupDir = $null
     if ($configChanges -and (Test-Path 'configs/config_files')) {
@@ -706,6 +722,12 @@ if ($exitCode -ne 0) {
 
 Write-CustomLog "`n=== Kicker script finished successfully! ==="
 exit 0
+
+
+
+
+
+
 
 
 

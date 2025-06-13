@@ -9,7 +9,14 @@ function Invoke-LabStep {
         [object]$Config
     )
 
-    if ($Config -is [string]) {
+    
+
+
+
+
+
+
+if ($Config -is [string]) {
         if (Test-Path $Config) {
             $Config = Get-Content -Raw -Path $Config | ConvertFrom-Json
         } else {
@@ -30,3 +37,6 @@ function Invoke-LabStep {
 }
 
 Export-ModuleMember -Function Invoke-LabStep, Write-CustomLog, Get-Platform, Invoke-LabWebRequest, Invoke-WebRequest, Invoke-LabNpm
+
+
+

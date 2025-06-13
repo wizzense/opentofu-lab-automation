@@ -1,9 +1,16 @@
+
+
+
+
+
+
+
 . (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
 . (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
 Describe '0002_Setup-Directories'  {
     BeforeAll {
         $script:ScriptPath = Get-RunnerScriptPath '0002_Setup-Directories.ps1'
-        . (Join-Path $PSScriptRoot '..' 'pwsh' 'lab_utils' 'LabRunner' 'Logger.ps1')
+        . (Join-Path $PSScriptRoot '..' 'pwsh/modules/LabRunner/Logger.ps1')
     }
 
     BeforeEach {
@@ -15,8 +22,7 @@ Describe '0002_Setup-Directories'  {
         Remove-Item -Recurse -Force $script:temp -ErrorAction SilentlyContinue
         Remove-Variable -Name LogFilePath -Scope Script -ErrorAction SilentlyContinue
     }
-
-    It 'creates directories when the script runs' {
+        It 'creates directories when the script runs' {
         $hv  = Join-Path $script:temp 'hyperv'
         $iso = Join-Path $script:temp 'iso'
         $cfg = [pscustomobject]@{ Directories = @{ HyperVPath = $hv; IsoSharePath = $iso } }
@@ -24,8 +30,7 @@ Describe '0002_Setup-Directories'  {
         (Test-Path $hv)  | Should -BeTrue
         (Test-Path $iso) | Should -BeTrue
     }
-
-    It 'handles existing directories gracefully' {
+        It 'handles existing directories gracefully' {
         $hv  = Join-Path $script:temp 'hyperv'
         $iso = Join-Path $script:temp 'iso'
         New-Item -ItemType Directory -Path $hv  | Out-Null
@@ -36,3 +41,7 @@ Describe '0002_Setup-Directories'  {
         (Test-Path $iso) | Should -BeTrue
     }
 }
+
+
+
+

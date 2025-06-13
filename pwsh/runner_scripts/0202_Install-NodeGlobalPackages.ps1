@@ -1,6 +1,13 @@
 Param([object]$Config)
 
-Import-Module "$PSScriptRoot/../lab_utils/LabRunner/LabRunner.psd1" -Force
+
+
+
+
+
+
+
+Import-Module "$PSScriptRoot/../modules/LabRunner/LabRunner.psd1" -Force
 
 Write-CustomLog "Starting $MyInvocation.MyCommand"
 
@@ -11,7 +18,14 @@ function Install-GlobalPackage {
         [string]$package
     )
 
-    . "$PSScriptRoot/../lab_utils/LabRunner/Logger.ps1"
+    
+
+
+
+
+
+
+. "$PSScriptRoot/../modules/LabRunner/Logger.ps1"
 
     if (Get-Command npm -ErrorAction SilentlyContinue) {
         Write-CustomLog "Installing npm package: $package..."
@@ -27,9 +41,23 @@ function Install-NodeGlobalPackages {
     [CmdletBinding(SupportsShouldProcess = $true)]
     param([object]$Config)
 
-    Invoke-LabStep -Config $Config -Body {
+    
+
+
+
+
+
+
+Invoke-LabStep -Config $Config -Body {
     param($Config)
-    Write-CustomLog "Running $($MyInvocation.MyCommand.Name)"
+    
+
+
+
+
+
+
+Write-CustomLog "Running $($MyInvocation.MyCommand.Name)"
 <#
 .SYNOPSIS
     Installs global npm packages like yarn, vite, and nodemon using config-based logic.
@@ -59,7 +87,7 @@ Write-CustomLog "Config parameter is: $Config"
 
 Write-CustomLog "==== [0202] Installing Global npm Packages ===="
 
-$nodeDeps = if ($Config -is [hashtable]) { $Config['Node_Dependencies'] } else { $Config.Node_Dependencies }
+$nodeDeps = if ($Config -is [hashtable]) { $Config['Node_Dependencies']    } else { $Config.Node_Dependencies    }
 if (-not $nodeDeps) {
     Write-CustomLog "Config missing Node_Dependencies; skipping global package install."
     return
@@ -106,3 +134,7 @@ Write-CustomLog "==== Global npm package installation complete ===="
 }
 if ($MyInvocation.InvocationName -ne '.') { Install-NodeGlobalPackages @PSBoundParameters }
 Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
+
+
+
+

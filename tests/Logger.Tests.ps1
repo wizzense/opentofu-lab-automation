@@ -2,23 +2,21 @@
 . (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
 Describe 'Write-CustomLog' {
     BeforeAll {
-        . (Join-Path $PSScriptRoot '..' 'pwsh' 'lab_utils' 'LabRunner' 'Logger.ps1')
+        . (Join-Path $PSScriptRoot '..' 'pwsh/modules/LabRunner/Logger.ps1')
     }
-    It 'works when LogFilePath variable is not defined' {
+        It 'works when LogFilePath variable is not defined' {
         Remove-Variable -Name LogFilePath -Scope Script -ErrorAction SilentlyContinue
         Remove-Variable -Name LogFilePath -Scope Global -ErrorAction SilentlyContinue
         { Write-CustomLog 'test message' } | Should -Not -Throw
     }
-
-    It 'works under strict mode without global variable' {
+        It 'works under strict mode without global variable' {
         Remove-Variable -Name LogFilePath -Scope Script -ErrorAction SilentlyContinue
         Remove-Variable -Name LogFilePath -Scope Global -ErrorAction SilentlyContinue
         Set-StrictMode -Version Latest
         { Write-CustomLog 'another test' } | Should -Not -Throw
         Set-StrictMode -Off
     }
-
-    It 'appends to log file when LogFilePath is set' {
+        It 'appends to log file when LogFilePath is set' {
         $tempFile = (Join-Path ([System.IO.Path]::GetTempPath()) ([System.Guid]::NewGuid().ToString())) + '.log'
         $script:LogFilePath = $tempFile
         try {
@@ -30,8 +28,7 @@ Describe 'Write-CustomLog' {
             Remove-Variable -Name LogFilePath -Scope Script -ErrorAction SilentlyContinue
         }
     }
-
-    It 'defaults to LogFilePath variable when not provided' {
+        It 'defaults to LogFilePath variable when not provided' {
         $tempFile = (Join-Path ([System.IO.Path]::GetTempPath()) ([System.Guid]::NewGuid().ToString())) + '.log'
         $script:LogFilePath = $tempFile
         try {
@@ -47,22 +44,40 @@ Describe 'Write-CustomLog' {
 
 Describe 'Read-LoggedInput' {
     BeforeAll {
-        . (Join-Path $PSScriptRoot '..' 'pwsh' 'lab_utils' 'LabRunner' 'Logger.ps1')
+        . (Join-Path $PSScriptRoot '..' 'pwsh/modules/LabRunner/Logger.ps1')
     }
     AfterEach {
         Remove-Item Function:Read-Host -ErrorAction SilentlyContinue
     }
-    It 'logs prompt and input' {
+        It 'logs prompt and input' {
         Mock Write-CustomLog {}
-        function global:Read-Host { param($Prompt) 'val' }
+        function global:Read-Host { param($Prompt) 
+
+
+
+
+
+
+'val' }
         Read-LoggedInput -Prompt 'Ask?'
         Should -Invoke -CommandName Write-CustomLog -Times 1 -ParameterFilter { $Message -eq 'Ask?: val' }
     }
-    It 'handles secure strings without logging value' {
+        It 'handles secure strings without logging value' {
         Mock Write-CustomLog {}
         $sec = [System.Security.SecureString]::new()
-        function global:Read-Host { param([string]$Prompt, [switch]$AsSecureString) if ($AsSecureString) { return $sec } 'val' }
+        function global:Read-Host { param([string]$Prompt, [switch]$AsSecureString) 
+
+
+
+
+
+
+if ($AsSecureString) { return $sec } 'val' }
         Read-LoggedInput -Prompt 'Secret' -AsSecureString | Should -Be $sec
         Should -Invoke -CommandName Write-CustomLog -Times 1 -ParameterFilter { $Message -eq 'Secret (secure input)' }
     }
 }
+
+
+
+

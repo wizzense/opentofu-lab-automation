@@ -43,7 +43,14 @@ $testFiles = @(
 # Function to restore files from git
 function Restore-TestFile {
     param([string]$FilePath)
-    Write-Host "Restoring $FilePath from git..."
+    
+
+
+
+
+
+
+Write-Host "Restoring $FilePath from git..."
     git checkout HEAD -- $FilePath
 }
 
@@ -51,7 +58,14 @@ function Restore-TestFile {
 function Fix-TestFile {
     param([string]$FilePath)
     
-    $content = Get-Content $FilePath -Raw
+    
+
+
+
+
+
+
+$content = Get-Content $FilePath -Raw
     
     # Define the working pattern to look for and replace
     $basicExecutionPattern = @'
@@ -133,3 +147,6 @@ foreach ($testFile in $testFiles) {
 }
 
 Write-Host "`nCompleted processing all numbered test files."
+
+
+

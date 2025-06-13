@@ -1,3 +1,10 @@
+
+
+
+
+
+
+
 # filepath: tests/0102_Configure-Firewall.Tests.ps1
 . (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
 . (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
@@ -26,9 +33,8 @@ Describe '0102_Configure-Firewall Tests' -Tag 'Unknown' {
             $script:ScriptPath | Should -Exist
             $errors = $null
                 [System.Management.Automation.Language.Parser]::ParseFile($script:ScriptPath, [ref]$null, [ref]$errors) | Out-Null
-                ($errors ? $errors.Count : 0) | Should -Be 0
+                $(if ($errors) { $errors.Count  } else { 0 }) | Should -Be 0
         }
-        
         It 'should follow naming conventions' {
             $scriptName = [System.IO.Path]::GetFileName($script:ScriptPath)
             $scriptName | Should -Match '^[0-9]{4}_[A-Z][a-zA-Z0-9-]+\.ps1$|^[A-Z][a-zA-Z0-9-]+\.ps1$'
@@ -56,6 +62,11 @@ AfterAll {
     # Restore any modified system state
     # Remove test artifacts
 }
+
+
+
+
+
 
 
 

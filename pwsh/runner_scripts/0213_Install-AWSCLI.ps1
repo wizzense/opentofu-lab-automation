@@ -1,19 +1,40 @@
 Param([object]$Config)
-Import-Module "$PSScriptRoot/../lab_utils/LabRunner/LabRunner.psd1" -Force
+
+
+
+
+
+
+
+Import-Module "$PSScriptRoot/../modules/LabRunner/LabRunner.psd1" -Force
 
 Write-CustomLog "Starting $MyInvocation.MyCommand"
 function Install-AWSCLI {
     [CmdletBinding(SupportsShouldProcess = $true)]
     param([object]$Config)
 
-    Invoke-LabStep -Config $Config -Body {
+    
+
+
+
+
+
+
+Invoke-LabStep -Config $Config -Body {
         Write-CustomLog "Running $($MyInvocation.MyCommand.Name)"
         if ($Config.InstallAWSCLI -eq $true) {
             if (-not (Get-Command aws -ErrorAction SilentlyContinue)) {
                 $url = 'https://awscli.amazonaws.com/AWSCLIV2.msi'
                 Invoke-LabDownload -Uri $url -Prefix 'awscli' -Extension '.msi' -Action {
                     param($msi)
-                    Start-Process msiexec.exe -ArgumentList "/i `"$msi`" /quiet /norestart" -Wait -NoNewWindow
+                    
+
+
+
+
+
+
+Start-Process msiexec.exe -ArgumentList "/i `"$msi`" /quiet /norestart" -Wait -NoNewWindow
                 }
             } else {
                 Write-CustomLog 'AWS CLI already installed.'
@@ -26,3 +47,6 @@ function Install-AWSCLI {
 }
 if ($MyInvocation.InvocationName -ne '.') { Install-AWSCLI @PSBoundParameters }
 Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
+
+
+

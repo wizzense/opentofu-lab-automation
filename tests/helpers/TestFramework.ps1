@@ -97,7 +97,14 @@ function New-TestScenario {
     Creates a new test scenario with standardized configuration
     #>
     param(
-        [Parameter(Mandatory)]
+        [Parameter(Mandatory)
+
+
+
+
+
+
+]
         [string]$Name,
         
         [string]$Description,
@@ -139,7 +146,14 @@ function Invoke-ScriptTest {
     Executes a test scenario against a runner script with comprehensive validation
     #>
     param(
-        [Parameter(Mandatory)]
+        [Parameter(Mandatory)
+
+
+
+
+
+
+]
         [string]$ScriptPath,
         
         [Parameter(Mandatory)]
@@ -227,14 +241,28 @@ function New-StandardTestMocks {
         [string]$LabRunnerModuleName # Module name for LabRunner specific functions
     )
     
-    # LabRunner specific mocks
+    
+
+
+
+
+
+
+# LabRunner specific mocks
     Mock Write-CustomLog -ModuleName $LabRunnerModuleName {}
     Mock Read-LoggedInput -ModuleName $LabRunnerModuleName { 'n' }
     Mock Get-MenuSelection -ModuleName $LabRunnerModuleName { @() }
     
     # Global mocks (PowerShell built-ins or external commands)
     # Default Get-Command returns null. Specific scenarios or platform mocks can override for specific commands.
-    Mock Get-Command { param($Name) $null } 
+    Mock Get-Command { param($Name) 
+
+
+
+
+
+
+$null } 
     Mock Start-Process {}
     Mock Invoke-WebRequest {}
     Mock Invoke-RestMethod { @{ download_url = 'https://example.com/file.zip' } } # Example, can be overridden
@@ -272,7 +300,14 @@ function New-WindowsSpecificMocks {
         [string]$LabRunnerModuleName # For LabRunner module specific mocks, if any
     )
     
-    # Windows Services (Global cmdlets)
+    
+
+
+
+
+
+
+# Windows Services (Global cmdlets)
     Mock Get-Service {
         [PSCustomObject]@{ Name = 'MockService'; Status = 'Running' }
     }
@@ -336,7 +371,14 @@ function New-LinuxSpecificMocks {
         [string]$LabRunnerModuleName # For LabRunner module specific mocks, if any
     )
     
-    # Linux package managers (Global Get-Command mocks for discoverability, and global mocks for the commands themselves)
+    
+
+
+
+
+
+
+# Linux package managers (Global Get-Command mocks for discoverability, and global mocks for the commands themselves)
     Mock Get-Command {
         [PSCustomObject]@{ Name = 'apt-get'; Source = '/usr/bin/apt-get'; CommandType = 'Application' }
     } -ParameterFilter { $Name -eq 'apt-get' }
@@ -364,7 +406,14 @@ function New-MacOSSpecificMocks {
         [string]$LabRunnerModuleName # For LabRunner module specific mocks, if any
     )
     
-    # Homebrew (Global Get-Command and command mock)
+    
+
+
+
+
+
+
+# Homebrew (Global Get-Command and command mock)
     Mock Get-Command {
         [PSCustomObject]@{ Name = 'brew'; Source = '/usr/local/bin/brew'; CommandType = 'Application' }
     } -ParameterFilter { $Name -eq 'brew' }
@@ -383,7 +432,14 @@ function Test-RunnerScript {
     Comprehensive testing function for runner scripts with multiple scenarios
     #>
     param(
-        [Parameter(Mandatory)]
+        [Parameter(Mandatory)
+
+
+
+
+
+
+]
         [string]$ScriptName,
         
         [TestScenario[]]$Scenarios = @(),
@@ -421,7 +477,7 @@ function Test-RunnerScript {
                     }
                     $errors = $null
                     [System.Management.Automation.Language.Parser]::ParseFile($script:ScriptPath, [ref]$null, [ref]$errors) | Out-Null
-                    ($errors ? $errors.Count : 0) | Should -Be 0
+                    $(if (errors) { $errors.Count  } else { 0 }) | Should -Be 0
                 }
                 
                 It 'has required Config parameter' {
@@ -485,7 +541,14 @@ function New-CommonTestScenarios {
         [hashtable]$AdditionalMocks = @{}
     )
     
-    $scenarios = @()
+    
+
+
+
+
+
+
+$scenarios = @()
     
     if ($EnabledConfig) {
         $scenarios += New-TestScenario -Name 'Enabled' -Description "executes when $EnabledProperty is true" -Config $EnabledConfig -Mocks $AdditionalMocks
@@ -511,3 +574,7 @@ if ($MyInvocation.MyCommand.CommandType -eq 'ExternalScript') {
         'New-CommonTestScenarios'
     )
 }
+
+
+
+

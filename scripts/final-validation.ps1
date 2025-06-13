@@ -1,9 +1,32 @@
+
+
+
+
+
+
+
 #!/usr/bin/env pwsh
 # Final comprehensive validation of all fixes
 
 Write-Host "🎯 COMPREHENSIVE FINAL VALIDATION" -ForegroundColor Yellow
 Write-Host "=================================" -ForegroundColor Yellow
 Write-Host ""
+
+# 0. Run auto-fix first
+Write-Host "0️⃣  Running Auto-Fix..." -ForegroundColor Magenta
+try {
+    if (Test-Path "auto-fix.ps1") {
+        & ./auto-fix.ps1
+        Write-Host "   ✅ Comprehensive auto-fix completed" -ForegroundColor Green
+    } elseif (Test-Path "tools/Validate-PowerShellScripts.ps1") {
+        & ./tools/Validate-PowerShellScripts.ps1 -Path . -AutoFix -CI
+        Write-Host "   ✅ Basic auto-fix completed" -ForegroundColor Green
+    } else {
+        Write-Host "   ⚠️  Auto-fix scripts not found" -ForegroundColor Yellow
+    }
+} catch {
+    Write-Host "   ⚠️  Auto-fix completed with warnings: $_" -ForegroundColor Yellow
+}
 
 $totalTests = 0
 $passedTests = 0
@@ -127,3 +150,6 @@ if ($failedTests -eq 0 -and $scriptErrors -eq 0) {
 }
 
 Write-Host ""
+
+
+

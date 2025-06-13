@@ -1,3 +1,10 @@
+
+
+
+
+
+
+
 . (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
 . (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
 if ($SkipNonWindows) { return }
@@ -10,8 +17,7 @@ Describe '0008_Install-OpenTofu'  {
         Mock Invoke-OpenTofuInstaller {}
         Mock-WriteLog
     }
-
-    It 'calls OpenTofuInstaller when enabled' {
+        It 'calls OpenTofuInstaller when enabled' {
         $cfg = [pscustomobject]@{
             InstallOpenTofu = $true
             CosignPath      = 'C:\\temp'
@@ -26,8 +32,7 @@ Describe '0008_Install-OpenTofu'  {
             $OpenTofuVersion -eq $cfg.OpenTofuVersion
         }
     }
-
-    It 'skips install when flag is false' {
+        It 'skips install when flag is false' {
         $cfg = [pscustomobject]@{ InstallOpenTofu = $false }
 
         Install-OpenTofu -Config $cfg
@@ -35,3 +40,6 @@ Describe '0008_Install-OpenTofu'  {
         Should -Invoke -CommandName Invoke-OpenTofuInstaller -Times 0
     }
 }
+
+
+

@@ -1,19 +1,27 @@
+
+
+
+
+
+
+
 . (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
 
 Describe 'Normalize-RelativePath' {
     BeforeAll {
         . (Join-Path $PSScriptRoot '..' 'pwsh' 'lab_utils' 'PathUtils.ps1')
     }
-
-    It 'joins mixed separators into platform path' {
+        It 'joins mixed separators into platform path' {
         $input = 'folder/subdir\\file.txt'
         $expected = Join-Path (Join-Path 'folder' 'subdir') 'file.txt'
         Normalize-RelativePath $input | Should -Be $expected
     }
-
-    It 'handles trailing separators' {
+        It 'handles trailing separators' {
         $input = 'a/b/c/'
         $expected = Join-Path (Join-Path 'a' 'b') 'c'
         Normalize-RelativePath $input | Should -Be $expected
     }
 }
+
+
+
