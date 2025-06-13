@@ -32,3 +32,15 @@ archive/legacy-modules/
 
 # Temporary deployment configs
 temp-deploy-config.json
+
+# Prevent root directory clutter
+*-SUMMARY*.md
+*-REPORT*.md
+fix-*.ps1
+test-*.ps1
+deploy.*
+launch-*.*
+*.temp
+*.tmp
+__pycache__/
+*.pyc
