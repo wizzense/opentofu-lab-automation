@@ -294,3 +294,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 **💡 Need help?** Check the [documentation](docs/) or open an [issue](https://github.com/wizzense/opentofu-lab-automation/issues).
 
 **🔧 Want to contribute?** See [CONTRIBUTING.md](docs/CONTRIBUTING.md) for guidelines.
+
