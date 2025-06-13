@@ -6,6 +6,9 @@ Param(
 
 
 
+
+
+
 Import-Module "$PSScriptRoot/../modules/LabRunner/LabRunner.psd1" -Force
 
 Write-CustomLog "Starting $MyInvocation.MyCommand"
@@ -17,6 +20,9 @@ function Get-SystemInfo {
     )
 
     
+
+
+
 
 
 
@@ -137,5 +143,6 @@ if ($MyInvocation.InvocationName -ne '.') {
     Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
 }
 Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
+
 
 

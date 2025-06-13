@@ -6,6 +6,9 @@ Param(
 
 
 
+
+
+
 Import-Module "$PSScriptRoot/../modules/LabRunner/LabRunner.psd1" -Force
 
 Write-CustomLog "Starting $MyInvocation.MyCommand"
@@ -18,9 +21,15 @@ function Set-LabProfile {
 
 
 
+
+
+
 Invoke-LabStep -Config $Config -Body {
         param($Config)
         
+
+
+
 
 
 
@@ -48,6 +57,7 @@ Write-CustomLog "Running $($MyInvocation.MyCommand.Name)"
 
 if ($MyInvocation.InvocationName -ne '.') { Set-LabProfile @PSBoundParameters }
 Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
+
 
 
 

@@ -11,6 +11,9 @@ param(
 
 
 
+
+
+
 $ErrorActionPreference = 'Continue'
 
 Write-Host "=== Comprehensive Syntax Checker ===" -ForegroundColor Cyan
@@ -25,6 +28,9 @@ function Test-PowerShellSyntax {
     param([string]$FilePath)
     
     
+
+
+
 
 
 
@@ -125,6 +131,9 @@ function Test-JsonSyntax {
 
 
 
+
+
+
 $issues = @()
     
     try {
@@ -149,6 +158,9 @@ function Fix-CommonIssues {
     param([PSCustomObject]$Issue)
     
     
+
+
+
 
 
 
@@ -252,5 +264,6 @@ Write-Host "JSON files: $($jsonFiles.Count)" -ForegroundColor White
 Write-Host "Issues found: $($issuesFound.Count)" -ForegroundColor White
 
 return $issuesFound.Count
+
 
 

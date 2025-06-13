@@ -30,6 +30,9 @@ Array of test case definitions. Each test case should have:
 
 
 
+
+
+
 & $Action 'mock-installer.msi' }
         }
         ExpectedInvocations = @{
@@ -49,6 +52,9 @@ Array of test case definitions. Each test case should have:
 
 param(
     [Parameter(Mandatory)
+
+
+
 
 
 
@@ -161,5 +167,6 @@ try {
 } catch {
     Write-Warning "Syntax validation failed: $_"
 }
+
 
 

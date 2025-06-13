@@ -17,6 +17,9 @@
 
 
 
+
+
+
 block BEFORE Import-Module statements
     This template prevents the parameter ordering syntax errors
 #>
@@ -24,6 +27,9 @@ block BEFORE Import-Module statements
 # CORRECT ORDER: Param block comes FIRST
 Param(
     [Parameter(Mandatory = $true)
+
+
+
 
 
 
@@ -74,6 +80,7 @@ try {
 # ✅ Proper logging using lab utilities
 # ✅ Configuration validation
 # ✅ Consistent formatting and style
+
 
 
 

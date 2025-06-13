@@ -46,6 +46,9 @@ function Invoke-CrossPlatformCommand {
 
 
 
+
+
+
 ]
         [string]$CommandName,
         
@@ -81,6 +84,9 @@ function Invoke-LabStep {
     )
 
     
+
+
+
 
 
 
@@ -127,6 +133,9 @@ function Invoke-LabDownload {
 
 
 
+
+
+
 ][string]$Uri,
         [Parameter(Mandatory)][scriptblock]$Action,
         [string]$Prefix = 'download',
@@ -155,5 +164,11 @@ try {
     Write-Verbose "Failed to import Resolve-ProjectPath.psm1: $_"
 }
 
+# Import all public functions
+Get-ChildItem -Path "$PSScriptRoot/Public/*.ps1" | ForEach-Object {
+    . $_.FullName
+}
+
 Export-ModuleMember -Function Invoke-LabStep, Invoke-LabDownload, Write-CustomLog, Read-LoggedInput, Get-Platform, Invoke-LabWebRequest, Invoke-LabNpm, Resolve-ProjectPath, Format-Config, Expand-All, Get-MenuSelection, Get-GhDownloadArgs, Invoke-ArchiveDownload, Get-CrossPlatformTempPath, Invoke-CrossPlatformCommand, Invoke-CrossPlatformCommand
+
 

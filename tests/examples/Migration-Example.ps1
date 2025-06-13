@@ -106,6 +106,9 @@ New-InstallerScriptTest -ScriptName '0007_Install-Go.ps1' -EnabledProperty 'Inst
 
 
 
+
+
+
 if ($Name -eq 'go') { 
             return $null  # Simulate Go not installed
         } 
@@ -167,6 +170,9 @@ $customScenarios += New-TestScenario -Name 'Custom installer path' -Description 
 
 
 
+
+
+
 # Verify custom path was used
     Should -Invoke -CommandName Start-Process -ParameterFilter { 
         $ArgumentList -contains 'INSTALLDIR=C:\CustomGo' 
@@ -176,5 +182,6 @@ $customScenarios += New-TestScenario -Name 'Custom installer path' -Description 
 # Add the custom scenarios to the standard test
 Test-RunnerScript -ScriptName '0007_Install-Go.ps1' -Scenarios $customScenarios
 #>
+
 
 

@@ -10,6 +10,9 @@ Param(
 
 
 
+
+
+
 Write-Host "Script executed successfully"
 Write-Host "Config type: $($Config.GetType().Name)"
 Write-Host "Config value: $Config"
@@ -20,6 +23,7 @@ if ($Config -is [string] -and (Test-Path $Config)) {
     Write-Host "Loaded config: $($Config | ConvertTo-Json -Depth 2)"
 }
 Import-Module (Join-Path $PSScriptRoot "pwsh/modules/CodeFixer/CodeFixer.psd1") -Force
+
 
 
 

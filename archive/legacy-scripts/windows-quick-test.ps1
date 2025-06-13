@@ -2,6 +2,9 @@
 
 
 
+
+
+
 # OpenTofu Lab Automation - Windows Quick Test Script
 # Run this script to download and test the improved GUI
 
@@ -64,5 +67,6 @@ Write-Host "2. .\launch-gui.ps1       (PowerShell launcher)" -ForegroundColor Wh
 Write-Host "3. .\launch-gui.ps1 -Quiet (silent launcher)" -ForegroundColor White
 
 Write-Host "`n✅ Test complete! GUI should be running with performance optimizations." -ForegroundColor Green
+
 
 

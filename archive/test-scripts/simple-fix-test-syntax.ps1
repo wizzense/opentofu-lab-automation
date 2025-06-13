@@ -7,6 +7,9 @@ param(
 
 
 
+
+
+
 ]
     [switch]$WhatIf
 )
@@ -62,5 +65,6 @@ foreach ($file in $files) {
 }
 
 Write-Host "✅ Completed syntax fixes!" -ForegroundColor Green
+
 
 

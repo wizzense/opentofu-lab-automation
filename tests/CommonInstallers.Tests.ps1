@@ -24,6 +24,9 @@ Describe 'Additional installer scripts' {
 
 
 
+
+
+
 $cfg = [pscustomobject]@{ $Flag = $true }
         $path = Get-RunnerScriptPath $Script
         Mock Invoke-LabWebRequest {}
@@ -39,6 +42,9 @@ $cfg = [pscustomobject]@{ $Flag = $true }
 
 
 
+
+
+
 $cfg = [pscustomobject]@{ $Flag = $false }
         $path = Get-RunnerScriptPath $Script
         Mock Invoke-LabWebRequest {}
@@ -50,5 +56,6 @@ $cfg = [pscustomobject]@{ $Flag = $false }
     }
 }
 }
+
 
 

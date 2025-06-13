@@ -2,6 +2,9 @@
 
 
 
+
+
+
 #!/usr/bin/env pwsh
 # Batch fix remaining Pester test files with Get-Command issues
 
@@ -106,5 +109,6 @@ if ($fixedCount -gt 0) {
         }
     }
 }
+
 
 

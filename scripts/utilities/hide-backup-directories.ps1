@@ -25,6 +25,9 @@ param(
 
 
 
+
+
+
 $ErrorActionPreference = "Stop"
 $vscodePath = "/workspaces/opentofu-lab-automation/.vscode"
 $settingsPath = "$vscodePath/settings.json"
@@ -56,6 +59,9 @@ function Update-VSCodeSettings {
     param($HidingRules, $Remove = $false)
     
     
+
+
+
 
 
 
@@ -138,5 +144,6 @@ try {
     Write-Error "Failed to update VS Code settings: $_"
     exit 1
 }
+
 
 

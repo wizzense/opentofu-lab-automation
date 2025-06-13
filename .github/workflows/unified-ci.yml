@@ -5,6 +5,11 @@ on:
   workflow_dispatch:
   pull_request:
     branches: [main]
+  push:
+    branches: [main]
+  schedule:
+    # Run daily at 6 AM UTC for maintenance
+    - cron: '0 6 * * *'
 
 jobs:
   # First job: Validate all workflow files
@@ -69,7 +74,7 @@ jobs:
             Write-Host "PSScriptAnalyzer already installed" -ForegroundColor Green
           }
 
-      - name: "� Auto-fix PowerShell Issues"
+      - name: "🔧 Auto-fix PowerShell Issues"
         shell: pwsh
         run: |
           Write-Host "Running auto-fix on PowerShell scripts..." -ForegroundColor Yellow
@@ -79,6 +84,18 @@ jobs:
           } catch {
             Write-Warning "Auto-fix encountered issues: $_"
             # Continue to validation even if auto-fix has issues
+          }
+
+      - name: "⚡ Quick Issue Check & Auto-Fix"
+        shell: pwsh
+        run: |
+          Write-Host "Running quick issue detection and auto-fixing..." -ForegroundColor Cyan
+          try {
+            & "${{ github.workspace }}/scripts/maintenance/quick-issue-check.ps1" -Target "All" -AutoFix
+            Write-Host "✅ Quick issue check completed" -ForegroundColor Green
+          } catch {
+            Write-Warning "Quick issue check encountered issues: $_"
+            # Continue even if there are issues - they will be caught in validation
           }
 
       - name: "�🔍 Run PowerShell Linting"
@@ -166,6 +183,14 @@ jobs:
         run: |
           # Import the CodeFixer module
           Import-Module ./pwsh/modules/CodeFixer/CodeFixer.psd1 -Force
+          
+          # Run quick issue check and auto-fix before tests
+          Write-Host "Running pre-test quick issue check..." -ForegroundColor Cyan
+          try {
+            & "${{ github.workspace }}/scripts/maintenance/quick-issue-check.ps1" -Target "KnownIssues" -AutoFix
+          } catch {
+            Write-Warning "Pre-test quick issue check had issues: $_"
+          }
           
           # Run any necessary fixes before tests
           Invoke-AutoFix -ApplyFixes -Quiet

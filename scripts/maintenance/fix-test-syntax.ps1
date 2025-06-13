@@ -29,6 +29,9 @@ param(
 
 
 
+
+
+
 ]
     [switch]$DryRun
 )
@@ -39,6 +42,9 @@ $ProjectRoot = "/workspaces/opentofu-lab-automation"
 function Write-SyntaxLog {
     param([string]$Message, [string]$Level = "INFO")
     
+
+
+
 
 
 
@@ -60,6 +66,9 @@ function Test-PowerShellSyntax {
 
 
 
+
+
+
 try {
         $null = [System.Management.Automation.PSParser]::Tokenize((Get-Content $FilePath -Raw), [ref]$null)
         return $true
@@ -73,6 +82,9 @@ function Fix-TestFileSyntax {
     param([string]$FilePath)
     
     
+
+
+
 
 
 
@@ -237,5 +249,6 @@ if ($fixedCount -gt 0 -and -not $DryRun) {
 }
 
 Write-SyntaxLog "Test syntax fixes completed!" "SUCCESS"
+
 
 

@@ -2,6 +2,9 @@
 
 
 
+
+
+
 # Fix all test syntax errors systematically
 # filepath: fix-test-syntax-errors.ps1
 
@@ -41,6 +44,7 @@ foreach ($file in $problematicFiles) {
 
 Write-Host "🎯 Syntax error fixes complete!" -ForegroundColor Green
 Import-Module (Join-Path $PSScriptRoot "pwsh/modules/CodeFixer/CodeFixer.psd1") -Force
+
 
 
 

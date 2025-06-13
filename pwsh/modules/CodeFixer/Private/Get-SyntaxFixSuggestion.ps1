@@ -19,6 +19,9 @@ function Get-SyntaxFixSuggestion {
 
 
 
+
+
+
 ]
         [System.Management.Automation.Language.ParseError]$Error
     )
@@ -55,5 +58,6 @@ function Get-SyntaxFixSuggestion {
         }
     }
 }
+
 
 

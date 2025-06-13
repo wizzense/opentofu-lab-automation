@@ -4,9 +4,15 @@ Param([object]$Config)
 
 
 
+
+
+
 Import-Module "$PSScriptRoot/../modules/LabRunner/LabRunner.psd1" -Force
 
 # Param([pscustomobject]$Config)
+
+
+
 
 
 
@@ -20,6 +26,9 @@ function Install-OpenTofu {
     param([object]$Config)
 
     
+
+
+
 
 
 
@@ -37,6 +46,7 @@ Invoke-LabStep -Config $Config -Body {
 
 if ($MyInvocation.InvocationName -ne '.') { Install-OpenTofu @PSBoundParameters }
 Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
+
 
 
 

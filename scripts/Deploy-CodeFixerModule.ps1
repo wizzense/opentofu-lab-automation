@@ -13,6 +13,9 @@ param(
 
 
 
+
+
+
 $ErrorActionPreference = 'Stop'
 
 Write-Host "CodeFixer Module - Deployment and Integration" -ForegroundColor Cyan
@@ -37,6 +40,9 @@ function Invoke-DeploymentScript {
     )
 
     
+
+
+
 
 
 
@@ -190,5 +196,6 @@ else {
 }
 
 Write-Host "`nThank you for using the CodeFixer module!" -ForegroundColor Cyan
+
 
 

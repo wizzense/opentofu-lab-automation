@@ -3,6 +3,9 @@ Param([object]$Config)
 
 
 
+
+
+
 Import-Module "$PSScriptRoot/../modules/LabRunner/LabRunner.psd1" -Force
 
 Write-CustomLog "Starting $MyInvocation.MyCommand"
@@ -14,6 +17,9 @@ function Install-Git {
 
 
 
+
+
+
 Invoke-LabStep -Config $Config -Body {
         Write-CustomLog "Running $($MyInvocation.MyCommand.Name)"
         if ($Config.InstallGit -eq $true) {
@@ -22,6 +28,9 @@ Invoke-LabStep -Config $Config -Body {
                 Invoke-LabDownload -Uri $url -Prefix 'git-installer' -Extension '.exe' -Action {
                     param($installer)
                     
+
+
+
 
 
 
@@ -38,5 +47,6 @@ Start-Process -FilePath $installer -ArgumentList '/SILENT' -Wait
 }
 if ($MyInvocation.InvocationName -ne '.') { Install-Git @PSBoundParameters }
 Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
+
 
 

@@ -24,9 +24,13 @@ New-InstallerScriptTest -ScriptName '0007_Install-Go.ps1' -EnabledProperty 'Inst
 
 
 
+
+
+
 if ($Name -eq 'go') { return $null } 
         return [PSCustomObject]@{ Name = $Name; Source = "/usr/bin/$Name" }
     }
 }
+
 
 

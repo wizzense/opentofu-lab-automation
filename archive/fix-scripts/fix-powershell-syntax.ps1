@@ -2,6 +2,9 @@
 
 
 
+
+
+
 # PowerShell Script Syntax Fixer
 # Fixes the Import-Module/Param order issue in all runner scripts
 
@@ -89,6 +92,7 @@ Write-Host "✅ Fixed: $fixedCount scripts" -ForegroundColor Green
 Write-Host "⏭️  Skipped: $skippedCount scripts" -ForegroundColor Gray
 Write-Host "🎯 All PowerShell syntax errors should now be resolved!" -ForegroundColor Green -BackgroundColor Black
 Import-Module (Join-Path $PSScriptRoot "pwsh/modules/CodeFixer/CodeFixer.psd1") -Force
+
 
 
 

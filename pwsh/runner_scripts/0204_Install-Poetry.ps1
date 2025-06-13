@@ -6,6 +6,9 @@ Param(
 
 
 
+
+
+
 Import-Module "$PSScriptRoot/../modules/LabRunner/LabRunner.psd1" -Force
 
 Write-CustomLog "Starting $MyInvocation.MyCommand"
@@ -18,9 +21,15 @@ function Install-Poetry {
 
 
 
+
+
+
 Invoke-LabStep -Config $Config -Body {
         param($Config)
         
+
+
+
 
 
 
@@ -31,6 +40,9 @@ Write-CustomLog "Running $($MyInvocation.MyCommand.Name)"
             Invoke-LabDownload -Uri $installerUrl -Prefix 'install-poetry' -Extension '.py' -Action {
                 param($installerPath)
                 
+
+
+
 
 
 
@@ -57,6 +69,7 @@ $args = @()
 
 if ($MyInvocation.InvocationName -ne '.') { Install-Poetry @PSBoundParameters }
 Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
+
 
 
 

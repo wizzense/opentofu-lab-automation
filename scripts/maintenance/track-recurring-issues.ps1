@@ -33,6 +33,9 @@ param(
 
 
 
+
+
+
 ]
     [ValidateSet('Analyze', 'Track', 'GenerateReport', 'UpdateChangelog', 'All')]
     [string]$Mode,
@@ -48,6 +51,9 @@ $IssueTrackingPath = "$ProjectRoot/docs/reports/issue-tracking"
 function Write-TrackLog {
     param([string]$Message, [string]$Level = "INFO")
     
+
+
+
 
 
 
@@ -67,14 +73,34 @@ $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
 function Get-LatestTestResults {
     Write-TrackLog "Analyzing existing test results..." "TRACK"
     
-    $testResultsFile = "$ProjectRoot/TestResults.xml"
-    if (-not (Test-Path $testResultsFile)) {
-        Write-TrackLog "No existing test results found" "WARNING"
+    # Search for test results in multiple locations
+    $possiblePaths = @(
+        "$ProjectRoot/TestResults.xml",
+        "$ProjectRoot/scripts/testing/TestResults.xml",
+        "$ProjectRoot/coverage/testResults.xml",
+        "$ProjectRoot/archive/testResults.xml"
+    )
+    
+    $testResultsFile = $null
+    $latestTime = [DateTime]::MinValue
+    
+    foreach ($path in $possiblePaths) {
+        if (Test-Path $path) {
+            $lastModified = (Get-Item $path).LastWriteTime
+            if ($lastModified -gt $latestTime) {
+                $latestTime = $lastModified
+                $testResultsFile = $path
+            }
+        }
+    }
+    
+    if (-not $testResultsFile) {
+        Write-TrackLog "No existing test results found in any location" "WARNING"
         return $null
     }
     
-    $lastModified = (Get-Item $testResultsFile).LastWriteTime
-    Write-TrackLog "Found test results from: $lastModified" "SUCCESS"
+    Write-TrackLog "Found latest test results: $testResultsFile" "SUCCESS"
+    Write-TrackLog "Results from: $latestTime" "SUCCESS"
     
     try {
         [xml]$testResults = Get-Content $testResultsFile
@@ -90,6 +116,9 @@ function Analyze-RecurringIssues {
     param([xml]$TestResults)
     
     
+
+
+
 
 
 
@@ -164,6 +193,9 @@ function Generate-IssueSummary {
 
 
 
+
+
+
 $summary = @{
         Timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
         TestResultsDate = (Get-Item "$ProjectRoot/TestResults.xml").LastWriteTime.ToString("yyyy-MM-dd HH:mm:ss")
@@ -193,6 +225,9 @@ function Save-IssueTracking {
 
 
 
+
+
+
 # Ensure issue tracking directory exists
     if (-not (Test-Path $IssueTrackingPath)) {
         New-Item -ItemType Directory -Path $IssueTrackingPath -Force | Out-Null
@@ -215,6 +250,9 @@ function Generate-IssueReport {
     param([object]$Summary)
     
     
+
+
+
 
 
 
@@ -338,6 +376,9 @@ function Update-ChangelogWithIssues {
 
 
 
+
+
+
 $changelogPath = "$ProjectRoot/CHANGELOG.md"
     if (-not (Test-Path $changelogPath)) {
         Write-TrackLog "CHANGELOG.md not found" "WARNING"
@@ -437,5 +478,6 @@ catch {
     Write-TrackLog "Tracking failed: $($_.Exception.Message)" "ERROR"
     exit 1
 }
+
 
 

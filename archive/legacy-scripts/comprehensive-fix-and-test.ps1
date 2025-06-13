@@ -10,6 +10,9 @@ param(
     [switch]$Force
 )
 
+
+
+
 $ErrorActionPreference = "Continue"
 $ProgressPreference = "Continue"
 
@@ -156,3 +159,4 @@ if ($RunTests) {
 
 Write-Host "ℹ️  Use -UseParallel for faster test execution" -ForegroundColor Blue
 Write-Host "ℹ️  Use -MaxJobs N to control parallel job count" -ForegroundColor Blue
+

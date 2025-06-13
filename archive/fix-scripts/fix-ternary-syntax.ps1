@@ -10,6 +10,9 @@ param(
 
 
 
+
+
+
 $ErrorActionPreference = 'Stop'
 
 # Find all PowerShell files
@@ -55,5 +58,6 @@ if ($WhatIf) {
 } else {
     Write-Host "Fixed ternary operator syntax in $fixedCount files."
 }
+
 
 

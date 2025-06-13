@@ -5,6 +5,9 @@ function Write-CustomLog {
 
 
 
+
+
+
 ] [string]$Level = 'INFO'
     )
     $levelIdx = @{ INFO = 1; WARN = 0; ERROR = 0 }[$Level]
@@ -40,6 +43,9 @@ function Read-LoggedInput {
 
 
 
+
+
+
 ][string]$Prompt,
         [switch]$AsSecureString
     )
@@ -53,5 +59,6 @@ function Read-LoggedInput {
     Write-CustomLog "$($Prompt): $answer"
     return $answer
 }
+
 
 

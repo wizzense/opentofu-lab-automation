@@ -2,6 +2,9 @@
 
 
 
+
+
+
 # Windows PowerShell Quick Start Test
 # This script tests the PowerShell instructions from the README
 
@@ -124,5 +127,6 @@ if (Test-Path "test-launch-gui.bat") { Remove-Item "test-launch-gui.bat" -Force 
 
 Write-Host "`n🎉 PowerShell Quick Start test completed!" -ForegroundColor Green
 Write-Host "You can now use the commands from the README.md with confidence." -ForegroundColor White
+
 
 

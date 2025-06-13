@@ -27,6 +27,9 @@ param(
 
 
 
+
+
+
 $ErrorActionPreference = 'Stop'
 
 Write-Host "Setting up OpenTofu Lab Automation Testing Framework" -ForegroundColor Cyan
@@ -200,6 +203,9 @@ function Start-FileWatcher {
 
 
 
+
+
+
 & $WatcherScript -WatchMode -WatchDirectory $WatchPath -WatchIntervalSeconds 30
     } -ArgumentList $watcherScript, $watchPath
     
@@ -333,5 +339,6 @@ try {
     Write-Host "Check the error above and try again" -ForegroundColor Gray
     exit 1
 }
+
 
 

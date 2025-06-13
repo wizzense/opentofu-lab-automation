@@ -31,6 +31,9 @@ function Invoke-SyntaxFix {
 
 
 
+
+
+
 ]
         [string]$Path,
         
@@ -149,6 +152,9 @@ function Fix-TernarySyntax {
 
 
 
+
+
+
 ]
         [string]$Path
     )
@@ -201,6 +207,9 @@ function Fix-TestSyntax {
     [CmdletBinding(SupportsShouldProcess=$true)]
     param(
         [Parameter(Mandatory=$true)
+
+
+
 
 
 
@@ -260,6 +269,9 @@ function Fix-ParamSyntax {
 
 
 
+
+
+
 ]
         [string]$Path
     )
@@ -288,6 +300,9 @@ function Fix-ParamSyntax {
     
     # Fix 3: Fix incorrect Import-Module / Param order
     if ($content -match '^Import-Module.*LabRunner.*-Force' -and $content -match '^Param\(' -and $content -match '{##This}#Replace Import-Module/Param##') 
+
+
+
 
 
 
@@ -322,6 +337,9 @@ function Test-SyntaxValidity {
     [CmdletBinding()]
     param(
         [Parameter(Mandatory=$true)
+
+
+
 
 
 
@@ -361,6 +379,9 @@ function Fix-BootstrapScript {
 
 
 
+
+
+
 ]
         [string]$Path
     )
@@ -392,6 +413,9 @@ function Write-Continue($prompt) {
 function Write-Continue {
     param([string]$Message = "Press any key to continue...")
     
+
+
+
 
 
 
@@ -437,6 +461,9 @@ function Fix-RunnerScriptIssues {
 
 
 
+
+
+
 ]
         [string]$Path
     )
@@ -479,5 +506,6 @@ function Fix-RunnerScriptIssues {
     
     return $false
 }
+
 
 

@@ -10,11 +10,17 @@ param(
 
 
 
+
+
+
 $ErrorActionPreference = "Continue"
 
 function Write-TestResult {
     param([string]$Test, [bool]$Passed, [string]$Details = "")
     
+
+
+
 
 
 
@@ -185,5 +191,6 @@ Write-Host "`nNext steps:" -ForegroundColor Cyan
 Write-Host "1. Run 'Invoke-ImportAnalysis -AutoFix' to fix any remaining import issues" -ForegroundColor White
 Write-Host "2. Run 'Invoke-Pester tests/' to verify all tests pass" -ForegroundColor White
 Write-Host "3. Run 'Invoke-PowerShellLint .' to lint the entire project" -ForegroundColor White
+
 
 

@@ -4,6 +4,9 @@ Param([object]$Config)
 
 
 
+
+
+
 Import-Module "$PSScriptRoot/../modules/LabRunner/LabRunner.psd1" -Force
 
 Write-CustomLog "Starting $MyInvocation.MyCommand"
@@ -16,6 +19,9 @@ function Install-GlobalPackage {
     )
 
     
+
+
+
 
 
 
@@ -39,9 +45,15 @@ function Install-NodeGlobalPackages {
 
 
 
+
+
+
 Invoke-LabStep -Config $Config -Body {
     param($Config)
     
+
+
+
 
 
 
@@ -122,6 +134,7 @@ Write-CustomLog "==== Global npm package installation complete ===="
 }
 if ($MyInvocation.InvocationName -ne '.') { Install-NodeGlobalPackages @PSBoundParameters }
 Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
+
 
 
 

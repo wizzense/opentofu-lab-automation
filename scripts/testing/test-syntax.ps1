@@ -2,6 +2,9 @@
 
 
 
+
+
+
 # Test all runner scripts for valid PowerShell syntax
 $ErrorActionPreference = 'Continue'
 
@@ -35,6 +38,7 @@ if ($errorCount -eq 0) {
     Write-Host "⚠️  Some scripts still have syntax errors" -ForegroundColor Yellow
 }
 Import-Module (Join-Path $PSScriptRoot "pwsh/modules/CodeFixer/CodeFixer.psd1") -Force
+
 
 
 

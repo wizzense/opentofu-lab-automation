@@ -2,6 +2,9 @@
 
 
 
+
+
+
 # filepath: tests/0208_Install-DockerDesktop.Tests.ps1
 . (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
 . (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
@@ -26,24 +29,15 @@ BeforeAll {
 Describe '0208_Install-DockerDesktop Tests' -Tag 'Installer' {
     
     Context 'Script Structure Validation' {
-        It 'should ' -Skip: {
-            $script:ScriptPath | Should -Exist
-            # Test syntax by parsing the script content instead of dot-sourcing
-            { $null = [System.Management.Automation.PSParser]::Tokenize((Get-Content $script:ScriptPath -Raw), [ref]$null) } | Should -Not -Throw
+         | Should -Not -Throw
         }
-        It 'should ' -Skip: {
-            $scriptName = [System.IO.Path]::GetFileName($script:ScriptPath)
-            $scriptName | Should -Match '^[0-9]{4}_[A-Z][a-zA-Z0-9-]+\.ps1$|^[A-Z][a-zA-Z0-9-]+\.ps1$'
+        _[A-Z][a-zA-Z0-9-]+\.ps1$|^[A-Z][a-zA-Z0-9-]+\.ps1$'
         }
-        It 'should ' -Skip: {
-            $scriptContent = Get-Content $script:ScriptPath -Raw
-            $scriptContent | Should -Match 'function\\s+Install-DockerDesktop'
-        }
+        
     }
     
     Context 'Parameter Validation' {
-        It 'should ' -Skip: {
-            $config = [pscustomobject]@{ TestProperty = 'TestValue' }
+        
             $configJson = $config | ConvertTo-Json -Depth 5
             $tempConfig = Join-Path ([System.IO.Path]::GetTempPath()) "$([System.Guid]::NewGuid()).json"
             $configJson | Set-Content -Path $tempConfig
@@ -62,43 +56,20 @@ Describe '0208_Install-DockerDesktop Tests' -Tag 'Installer' {
             Mock Invoke-WebRequest { return @{ StatusCode = 200 } }
             Mock Start-Process { return @{ ExitCode = 0 } }
         }
-        It 'should ' -Skip: {
-            # Test prerequisite checking logic
-            $true | Should -BeTrue  # Placeholder - implement actual tests
-        }
-        It 'should ' -Skip: {
-            # Test error handling for failed downloads
-            $true | Should -BeTrue  # Placeholder - implement actual tests
-        }
-        It 'should ' -Skip: {
-            # Test installation verification
-            $true | Should -BeTrue  # Placeholder - implement actual tests
-        }
+        
+        
+        
     }
     
-    Context 'Install-DockerDesktop Function Tests' {
-        It 'should ' -Skip: {
-            $scriptContent = Get-Content $script:ScriptPath -Raw
-            $scriptContent | Should -Match 'function\s+Install-DockerDesktop'
-        }
-        It 'should ' -Skip: {
-            $scriptContent = Get-Content $script:ScriptPath -Raw
-            $scriptContent | Should -Match '\[CmdletBinding\('
-            $scriptContent = Get-Content $script:ScriptPath -Raw
-            $scriptContent | Should -Match 'SupportsShouldProcess'
-        }
-        It 'should ' -Skip: {
-            # Add specific test logic for Install-DockerDesktop
-            $true | Should -BeTrue  # Placeholder - implement actual tests
-        }
-    }
-}
+    
 
 # Clean up test environment
 AfterAll {
     # Restore any modified system state
     # Remove test artifacts
 }
+
+
 
 
 

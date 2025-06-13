@@ -9,6 +9,9 @@ param(
 
 
 
+
+
+
 Write-Host "Testing syntax validation for: $FilePath" -ForegroundColor Cyan
 
 try {
@@ -82,5 +85,6 @@ try {
 } catch {
     Write-Host "  ScriptBlock creation failed: $_" -ForegroundColor Red
 }
+
 
 

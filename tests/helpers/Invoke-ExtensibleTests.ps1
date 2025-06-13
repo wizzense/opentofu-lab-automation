@@ -22,6 +22,9 @@ param(
 
 
 
+
+
+
 ,
     
     [ValidateSet('Windows', 'Linux', 'macOS', 'All')]
@@ -55,6 +58,9 @@ function Get-TestCategories {
     param([string]$TestsPath)
     
     
+
+
+
 
 
 
@@ -118,6 +124,9 @@ function Test-PlatformCompatibility {
 
 
 
+
+
+
 if ($TargetPlatform -eq 'All') {
         return $true
     }
@@ -133,6 +142,9 @@ function Invoke-TestBatch {
     )
     
     
+
+
+
 
 
 
@@ -163,6 +175,9 @@ if ($Parallel -and $Tests.Count -gt 1) {
                 param($TestPath, $ConfigHash)
                 
                 
+
+
+
 
 
 
@@ -230,6 +245,9 @@ function New-TestReport {
     param([object[]]$Results, [string]$OutputPath)
     
     
+
+
+
 
 
 
@@ -441,5 +459,6 @@ try {
     Write-Error "Test execution failed: $_"
     exit 1
 }
+
 
 

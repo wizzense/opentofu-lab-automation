@@ -3,6 +3,9 @@ Param([object]$Config)
 
 
 
+
+
+
 Import-Module "$PSScriptRoot/../modules/LabRunner/LabRunner.psd1" -Force
 
 Write-CustomLog "Starting $MyInvocation.MyCommand"
@@ -11,6 +14,9 @@ function Install-Cosign {
     [CmdletBinding(SupportsShouldProcess)]
     param()
     
+
+
+
 
 
 
@@ -86,5 +92,6 @@ if (-not $Config.InstallCosign -and -not $Config.InstallGpg) {
     Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
 }
 Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
+
 
 

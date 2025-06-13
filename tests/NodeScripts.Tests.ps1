@@ -25,11 +25,17 @@ Describe 'Node installation scripts' -Skip:($skipNpm) {
 
 
 
+
+
+
 ][string[]]$Args) }
         }
         It 'resolves script paths from the tests directory' -TestCases $script:nodeScripts {
         param($scriptName)
         
+
+
+
 
 
 
@@ -75,6 +81,9 @@ $path = Get-RunnerScriptPath $scriptName
 
 
 
+
+
+
 ][string[]]$testArgs)
             $null = $testArgs
         }
@@ -95,6 +104,9 @@ $path = Get-RunnerScriptPath $scriptName
 
 
 
+
+
+
 ][string[]]$testArgs)
             $null = $testArgs
         }
@@ -110,6 +122,9 @@ $path = Get-RunnerScriptPath $scriptName
         param($scriptName)
 
         
+
+
+
 
 
 
@@ -133,6 +148,9 @@ $path = Get-RunnerScriptPath $scriptName
 
 
 
+
+
+
 ][string[]]$testArgs) }
 
         Mock Invoke-LabNpm -ModuleName LabRunner {}
@@ -149,6 +167,9 @@ $path = Get-RunnerScriptPath $scriptName
         $cfg = @{ Node_Dependencies = @{ NpmPath = $temp } }
         function Invoke-LabNpm {
             param([Parameter(ValueFromRemainingArguments = $true)
+
+
+
 
 
 
@@ -183,6 +204,7 @@ $path = Get-RunnerScriptPath $scriptName
     }
     }
 }
+
 
 
 

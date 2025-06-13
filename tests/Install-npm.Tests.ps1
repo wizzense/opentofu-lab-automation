@@ -18,6 +18,9 @@ Describe '0203_Install-npm' {
 
 
 
+
+
+
 $script:calledPath = (Get-Location).Path
             $null = $NpmArgs
         }
@@ -40,6 +43,9 @@ $script:calledPath = (Get-Location).Path
         function global:npm {
             param([string[]]$testArgs)
             
+
+
+
 
 
 
@@ -87,6 +93,9 @@ $null = $testArgs
 
 
 
+
+
+
 $script:calledPath = (Get-Location).Path }
 
         . $script -Config $cfg
@@ -98,5 +107,6 @@ $script:calledPath = (Get-Location).Path }
         Remove-Item -Recurse -Force $npmDir
     }
 }
+
 
 

@@ -10,6 +10,9 @@ param(
 
 
 
+
+
+
 $ErrorActionPreference = 'Stop'
 
 # Helper function to backup files before modifying them
@@ -19,6 +22,9 @@ function Backup-File {
     )
 
     
+
+
+
 
 
 
@@ -49,6 +55,9 @@ function Update-WorkflowFile {
     )
 
     
+
+
+
 
 
 
@@ -218,5 +227,6 @@ try {
     Write-Host "Full error: $_" -ForegroundColor Red
     exit 1
 }
+
 
 

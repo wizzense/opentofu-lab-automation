@@ -2,6 +2,9 @@
 
 
 
+
+
+
 @{
     RootModule = 'TestAutoFixer.psm1'
     ModuleVersion = '0.1.0'
@@ -44,5 +47,6 @@
         }
     }
 }
+
 
 

@@ -12,11 +12,17 @@ param(
 
 
 
+
+
+
 $ErrorActionPreference = "Stop"
 
 function Write-Step {
     param([string]$Message, [string]$Color = "Cyan")
     
+
+
+
 
 
 
@@ -31,6 +37,9 @@ function Move-ProjectFile {
     )
     
     
+
+
+
 
 
 
@@ -75,6 +84,9 @@ function Copy-ProjectFile {
 
 
 
+
+
+
 if (-not (Test-Path $Source)) {
         Write-Warning "Source file not found: $Source"
         return $false
@@ -112,6 +124,9 @@ function Archive-ProjectFile {
     )
     
     
+
+
+
 
 
 
@@ -445,5 +460,6 @@ Write-Host "`nNext steps:" -ForegroundColor Cyan
 Write-Host "1. Update GitHub Actions workflows to reference new script paths" -ForegroundColor White
 Write-Host "2. Run validation to ensure all scripts work in their new locations" -ForegroundColor White
 Write-Host "3. Update documentation to reflect new structure" -ForegroundColor White
+
 
 

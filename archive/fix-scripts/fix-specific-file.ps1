@@ -2,6 +2,9 @@
 
 
 
+
+
+
 #!/usr/bin/env pwsh
 # Fix a specific PowerShell test file
 
@@ -19,5 +22,6 @@ $newContent = $newContent -replace 'if\s+([^(].+?)\s+\{', 'if ($1) {'
 $newContent | Set-Content -Path $filePath -NoNewline
 
 Write-Host "Fixed file: $filePath" -ForegroundColor Green
+
 
 

@@ -3,6 +3,9 @@ Param([object]$Config)
 
 
 
+
+
+
 Import-Module "$PSScriptRoot/../modules/LabRunner/LabRunner.psd1" -Force
 $scriptRoot = $PSScriptRoot
 
@@ -196,5 +199,6 @@ exit 0
     Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
 }
 Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
+
 
 

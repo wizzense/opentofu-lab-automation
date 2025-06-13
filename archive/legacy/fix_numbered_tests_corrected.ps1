@@ -47,6 +47,9 @@ function Restore-TestFile {
 
 
 
+
+
+
 Write-Host "Restoring $FilePath from git..."
     git checkout HEAD -- $FilePath
 }
@@ -56,6 +59,9 @@ function Fix-TestFile {
     param([string]$FilePath)
     
     
+
+
+
 
 
 
@@ -141,5 +147,6 @@ foreach ($testFile in $testFiles) {
 }
 
 Write-Host "`nCompleted processing all numbered test files."
+
 
 

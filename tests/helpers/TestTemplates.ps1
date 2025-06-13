@@ -19,6 +19,9 @@ function New-InstallerScriptTest {
 
 
 
+
+
+
 ]
         [string]$ScriptName,
         
@@ -63,6 +66,9 @@ function New-InstallerScriptTest {
 
 
 
+
+
+
 if ($Name -eq $SoftwareCommandName) { return $null } 
             # If AdditionalMocks has a Get-Command, use it for other names
             if ($AdditionalMocks.ContainsKey('Get-Command')) {
@@ -92,6 +98,9 @@ if ($Name -eq $SoftwareCommandName) { return $null }
 
 
 
+
+
+
 # If AdditionalMocks has a Get-Command, use it
             if ($AdditionalMocks.ContainsKey('Get-Command')) {
                 return (& $AdditionalMocks['Get-Command'] $Name)
@@ -115,6 +124,9 @@ if ($Name -eq $SoftwareCommandName) { return $null }
         'Get-Command' = { 
             param($Name)
             
+
+
+
 
 
 
@@ -146,6 +158,9 @@ function New-FeatureScriptTest {
     #>
     param(
         [Parameter(Mandatory)
+
+
+
 
 
 
@@ -210,6 +225,9 @@ function New-ServiceScriptTest {
 
 
 
+
+
+
 ]
         [string]$ScriptName,
         
@@ -255,6 +273,9 @@ function New-ConfigurationScriptTest {
     #>
     param(
         [Parameter(Mandatory)
+
+
+
 
 
 
@@ -318,6 +339,9 @@ function New-CrossPlatformScriptTest {
 
 
 
+
+
+
 ]
         [string]$ScriptName,
         
@@ -357,6 +381,9 @@ function New-IntegrationTest {
     #>
     param(
         [Parameter(Mandatory)
+
+
+
 
 
 
@@ -420,5 +447,6 @@ function New-IntegrationTest {
 # Do NOT include Export-ModuleMember in this .ps1 file.
 # If you convert this to a .psm1 module, then add:
 # Export-ModuleMember -Function New-InstallerScriptTest, New-FeatureScriptTest, New-ServiceScriptTest, New-ConfigurationScriptTest, New-CrossPlatformScriptTest, New-IntegrationTest
+
 
 

@@ -11,6 +11,9 @@ param(
 
 
 
+
+
+
 $ErrorActionPreference = 'Stop'
 
 function Backup-File {
@@ -19,6 +22,9 @@ function Backup-File {
     )
 
     
+
+
+
 
 
 
@@ -49,6 +55,9 @@ function Update-RunnerScript {
     )
 
     
+
+
+
 
 
 
@@ -96,6 +105,9 @@ function Update-WorkflowFile {
     )
 
     
+
+
+
 
 
 
@@ -187,6 +199,9 @@ param(
 
 
 
+
+
+
 ]
     [string]$OutputFormat = 'Default',
     [string]$OutputPath,
@@ -253,6 +268,9 @@ param(
 
 
 
+
+
+
 ]
     [string]$OutputFormat = 'Text',
     [string]$OutputPath
@@ -314,6 +332,9 @@ param(
     [switch]$GenerateTests,
     [switch]$SaveResults,
     [ValidateSet('JSON','Text','CI')
+
+
+
 
 
 
@@ -416,6 +437,9 @@ param(
     [switch]$Force,
     [string[]]$ScriptPaths,
     [ValidateSet('All', 'Syntax', 'Ternary', 'ScriptOrder', 'ImportModule')
+
+
+
 
 
 
@@ -679,5 +703,6 @@ catch {
     Write-Host "Full error: $_" -ForegroundColor Red
     exit 1
 }
+
 
 

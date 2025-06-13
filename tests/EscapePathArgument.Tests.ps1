@@ -8,6 +8,9 @@ Describe 'escapePathArgument' {
 
 
 
+
+
+
 $n -is [System.Management.Automation.Language.FunctionDefinitionAst] -and $n.Name -eq 'escapePathArgument' }, $false)
         Invoke-Expression $funcAst.Extent.Text
     }
@@ -21,6 +24,7 @@ $n -is [System.Management.Automation.Language.FunctionDefinitionAst] -and $n.Nam
         { escapePathArgument -Path 'C:\Bad"Path' } | Should -Throw
     }
 }
+
 
 
 

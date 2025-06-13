@@ -14,7 +14,7 @@ Describe 'CustomLint.ps1' {
         It 'parses without errors' {
         $errs = $null
         [System.Management.Automation.Language.Parser]::ParseFile($script:ScriptPath, [ref]$null, [ref]$errs) | Out-Null
-        $(if (errs) { $errs.Count  } else { 0 }) | Should -Be 0
+        $(if ($errs) { $errs.Count  } else { 0 }) | Should -Be 0
     }
         It 'returns exit code 1 when analyzer reports errors' {
         Mock Invoke-ScriptAnalyzer { [pscustomobject]@{ Severity = 'Error' } }
@@ -38,6 +38,7 @@ Describe 'CustomLint.ps1' {
         $LASTEXITCODE | Should -Be 0
     }
 }
+
 
 
 

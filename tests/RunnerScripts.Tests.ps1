@@ -27,13 +27,19 @@ Describe 'Runner scripts parameter and command checks'  {
 
 
 
+
+
+
 $errors = $null
         [System.Management.Automation.Language.Parser]::ParseFile($File.FullName, [ref]$null, [ref]$errors) | Out-Null
-        $(if (errors) { $errors.Count  } else { 0 }) | Should -Be 0
+        $(if ($errors) { $errors.Count  } else { 0 }) | Should -Be 0
     }
         It 'declares a Config parameter when required' -TestCases $testCases {
         param($File, $Commands)
         
+
+
+
 
 
 
@@ -55,8 +61,14 @@ $ast = Get-ScriptAst $File.FullName
 
 
 
+
+
+
 $ast = Get-ScriptAst $File.FullName
         $scriptCommands = if ($ast) { $ast.FindAll({ param($n) 
+
+
+
 
 
 
@@ -76,8 +88,14 @@ $n -is [System.Management.Automation.Language.CommandAst] }, $true) } else { @()
 
 
 
+
+
+
 $ast = Get-ScriptAst $File.FullName
         $commands = if ($ast) { $ast.FindAll({ param($n) 
+
+
+
 
 
 
@@ -94,9 +112,15 @@ $n -is [System.Management.Automation.Language.CommandAst] }, $true) } else { @()
 
 
 
+
+
+
 $ast = Get-ScriptAst $File.FullName
         $commands = if ($ast) {
             $ast.FindAll({ param($n) 
+
+
+
 
 
 
@@ -153,6 +177,9 @@ Param([pscustomobject]`$Config)
 
 
 
+
+
+
 `$env:LAB_CONSOLE_LEVEL = '0';
 Import-Module LabRunner;
 Invoke-LabStep -Config `$Config -Body { Write-Output `$PSScriptRoot }
@@ -174,6 +201,8 @@ Invoke-LabStep -Config `$Config -Body { Write-Output `$PSScriptRoot }
         }
     }
 }
+
+
 
 
 

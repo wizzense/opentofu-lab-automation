@@ -31,6 +31,9 @@ function Invoke-LabStep {
 
 
 
+
+
+
 if ($Config -is [string]) {
         if (Test-Path $Config) {
             $Config = Get-Content -Raw -Path $Config | ConvertFrom-Json
@@ -71,6 +74,9 @@ function Invoke-LabDownload {
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)
+
+
+
 
 
 
@@ -121,6 +127,9 @@ function Invoke-CrossPlatformCommand {
 
 
 
+
+
+
 ]
         [string]$CommandName,
         
@@ -152,4 +161,5 @@ try {
 }
 
 Export-ModuleMember -Function Invoke-LabStep, Invoke-LabDownload, Write-CustomLog, Read-LoggedInput, Get-Platform, Invoke-LabWebRequest, Invoke-LabNpm, Resolve-ProjectPath, Get-CrossPlatformTempPath, Invoke-CrossPlatformCommand, Expand-All, Format-Config, Normalize-RelativePath, Get-LabConfig, Download-Archive, Get-GhDownloadArgs
+
 

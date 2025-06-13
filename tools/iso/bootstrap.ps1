@@ -6,6 +6,9 @@ param(
 
 
 
+
+
+
 Set-ExecutionPolicy -ExecutionPolicy Bypass
 
 $bootstrapUrl = "https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/refs/heads/$Branch/pwsh/kicker-bootstrap.ps1"
@@ -17,5 +20,6 @@ if (Test-Path '.\kicker-bootstrap.ps1') {
 } else {
   Write-Error 'kicker-bootstrap.ps1 was not found after download.'
 }
+
 
 

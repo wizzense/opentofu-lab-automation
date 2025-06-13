@@ -27,6 +27,9 @@ param(
 
 
 
+
+
+
 $ErrorActionPreference = "Stop"
 
 Write-Host "🔍 Generating Comprehensive Dashboard Report..." -ForegroundColor Cyan
@@ -345,5 +348,6 @@ Write-Host "Overall Health: $($dashboardData.OverallHealth) ($($dashboardData.He
 if ($dashboardData.HealthScore -lt 85) {
     Write-Host "`n⚠️  Health score is below 85% - consider reviewing the recommendations above" -ForegroundColor Yellow
 }
+
 
 

@@ -3,6 +3,9 @@ Param(
 
 
 
+
+
+
 ]
     [object]$Config
 )
@@ -19,10 +22,16 @@ function Install-NpmDependencies {
 
 
 
+
+
+
 Invoke-LabStep -Config $Config -Body {
         param($Config)
 
         
+
+
+
 
 
 
@@ -130,6 +139,7 @@ Write-CustomLog "Running $($MyInvocation.MyCommand.Name)"
 Install-NpmDependencies -Config $Config
 
 Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
+
 
 
 

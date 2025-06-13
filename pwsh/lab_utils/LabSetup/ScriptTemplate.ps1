@@ -8,9 +8,15 @@ if (-not $PSScriptRoot) {
 
 
 
+
+
+
 function Invoke-LabStep {
     param([scriptblock]$Body, [object]$Config)
     
+
+
+
 
 
 
@@ -41,6 +47,7 @@ Invoke-LabStep -Config $Config -Body {
     Write-CustomLog "Running $($MyInvocation.MyCommand.Name)"
 
 }
+
 
 
 

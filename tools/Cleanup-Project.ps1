@@ -9,6 +9,9 @@ param(
 
 
 
+
+
+
 "
 )
 
@@ -89,6 +92,9 @@ function Create-Backup {
 
 
 
+
+
+
 Write-Host "`n💾 Creating backup..." -ForegroundColor Yellow
     
     # Create backup directory
@@ -108,6 +114,9 @@ function Execute-Cleanup {
     param($Categories, $WhatIf)
     
     
+
+
+
 
 
 
@@ -251,5 +260,6 @@ try {
         Write-Host "💾 Backup is available at: $BackupPath" -ForegroundColor Cyan
     }
 }
+
 
 

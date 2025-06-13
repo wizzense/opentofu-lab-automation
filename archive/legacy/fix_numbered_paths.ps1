@@ -2,6 +2,9 @@
 
 
 
+
+
+
 # Script to fix the path issues in numbered test files
 # filepath: /workspaces/opentofu-lab-automation/fix_numbered_paths.ps1
 
@@ -81,5 +84,6 @@ foreach ($testFile in $testFiles) {
 }
 
 Write-Host "`nCompleted processing all numbered test files."
+
 
 

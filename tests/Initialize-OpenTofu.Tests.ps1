@@ -30,6 +30,9 @@ Describe 'Initialize-OpenTofu script' {
 
 
 
+
+
+
 if ($Name -eq 'gh') { return @{ Name = 'gh' } }
                 if ($Name -eq 'tofu') { return @{ Name = 'tofu' } }
             } -ParameterFilter { $Name -in @('gh','tofu') }
@@ -63,6 +66,9 @@ if ($Name -eq 'gh') { return @{ Name = 'gh' } }
 
 
 
+
+
+
 if ($Name -eq 'gh') { return @{ Name = 'gh' } }
                 if ($Name -eq 'tofu') { return @{ Name = 'tofu' } }
             } -ParameterFilter { $Name -in @('gh','tofu') }
@@ -93,6 +99,9 @@ if ($Name -eq 'gh') { return @{ Name = 'gh' } }
             Mock Get-Command {
                 param($Name)
                 
+
+
+
 
 
 
@@ -130,6 +139,9 @@ if ($Name -eq 'gh') { return @{ Name = 'gh' } }
             Mock Get-Command {
                 param($Name)
                 
+
+
+
 
 
 
@@ -172,6 +184,9 @@ if ($Name -eq 'gh') { return @{ Name = 'gh' } }
 
 
 
+
+
+
 if ($Name -eq 'gh') { return @{ Name = 'gh' } }
                 if ($Name -eq 'tofu') { return $null }
             } -ParameterFilter { $Name -in @('gh','tofu') }
@@ -203,6 +218,9 @@ if ($Name -eq 'gh') { return @{ Name = 'gh' } }
 
 
 
+
+
+
 if ($Name -eq 'gh')   { return @{ Name = 'gh' } }
                 if ($Name -eq 'tofu') { return $null }
                 if ($Name -eq 'Invoke-OpenTofuInstaller') { return $null }
@@ -218,5 +236,6 @@ if ($Name -eq 'gh')   { return @{ Name = 'gh' } }
         }
     }
 }
+
 
 

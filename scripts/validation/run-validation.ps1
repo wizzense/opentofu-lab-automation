@@ -13,6 +13,9 @@ param(
 
 
 
+
+
+
 $ErrorActionPreference = 'Stop'
 $startTime = Get-Date
 
@@ -57,5 +60,6 @@ $duration = (Get-Date) - $startTime
 Write-Host "`n🏁 VALIDATION COMPLETE" -ForegroundColor Cyan
 Write-Host "Duration: $($duration.ToString('hh\:mm\:ss'))" -ForegroundColor Cyan
 Write-Host "=" * 50 -ForegroundColor Cyan
+
 
 

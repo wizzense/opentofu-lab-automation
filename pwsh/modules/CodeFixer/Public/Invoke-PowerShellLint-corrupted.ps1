@@ -33,7 +33,10 @@ This func    if ($Parallel -and $psaAvailable -and $powerShellFiles.Count -gt 5)
                 # Start new job
                 $job = Start-ThreadJob -ScriptBlock {
                     param($FilePath)
-                    try {
+                    
+
+
+try {
                         Import-Module PSScriptAnalyzer -Force -ErrorAction SilentlyContinue
                         return Invoke-ScriptAnalyzer -Path $FilePath -Severity Error,Warning -ErrorAction SilentlyContinue
                     } catch {
@@ -81,7 +84,10 @@ function Invoke-PowerShellLint {
     [CmdletBinding()]
     param(
         [string]$Path = ".",
-        [ValidateSet('Text', 'JSON', 'CI')]
+        [ValidateSet('Text', 'JSON', 'CI')
+
+
+]
         [string]$OutputFormat = 'Text',
         [switch]$PassThru,
         [switch]$Parallel
@@ -330,6 +336,7 @@ function Invoke-PowerShellLint {
         }
     }
 }
+
 
 
 

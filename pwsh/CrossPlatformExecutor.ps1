@@ -8,6 +8,9 @@ param(
 
 
 
+
+
+
 ]
     [string]$Action,  # 'encode', 'execute', 'validate'
     
@@ -33,6 +36,9 @@ function ConvertTo-Base64Script {
     )
     
     
+
+
+
 
 
 
@@ -121,6 +127,9 @@ function ConvertFrom-Base64Script {
 
 
 
+
+
+
 try {
         $bytes = [System.Convert]::FromBase64String($EncodedScript)
         $scriptContent = [System.Text.Encoding]::UTF8.GetString($bytes)
@@ -137,6 +146,9 @@ function Invoke-EncodedScript {
     )
     
     
+
+
+
 
 
 
@@ -181,6 +193,9 @@ function Test-EncodedScript {
     )
     
     
+
+
+
 
 
 
@@ -291,5 +306,6 @@ switch ($Action.ToLower()) {
 # CI usage (JSON output)
 .\CrossPlatformExecutor.ps1 -Action encode -ScriptPath "script.ps1" -CI
 #>
+
 
 

@@ -17,6 +17,9 @@ param([switch]$UsePoetry)
 
 
 
+
+
+
 $ErrorActionPreference = 'Stop'
 $repoRoot = Split-Path $PSScriptRoot -Parent
 . "$repoRoot/pwsh/modules/LabRunner/Get-Platform.ps1"
@@ -64,6 +67,7 @@ if ($UsePoetry) {
 }
 
 Write-Host 'Test environment ready.'
+
 
 
 

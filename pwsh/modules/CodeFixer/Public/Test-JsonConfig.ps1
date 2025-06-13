@@ -29,6 +29,9 @@ function Test-JsonConfig {
 
 
 
+
+
+
 ,
         [ValidateSet('Text', 'JSON', 'CI')]
         [string]$OutputFormat = 'Text',
@@ -196,6 +199,9 @@ function Test-ConfigFileStructure {
 
 
 
+
+
+
 $issues = @()
     
     # Check for required config properties
@@ -232,5 +238,6 @@ $issues = @()
     
     return $issues
 }
+
 
 

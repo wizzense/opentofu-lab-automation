@@ -101,6 +101,9 @@ function New-TestScenario {
 
 
 
+
+
+
 ]
         [string]$Name,
         
@@ -144,6 +147,9 @@ function Invoke-ScriptTest {
     #>
     param(
         [Parameter(Mandatory)
+
+
+
 
 
 
@@ -239,6 +245,9 @@ function New-StandardTestMocks {
 
 
 
+
+
+
 # LabRunner specific mocks
     Mock Write-CustomLog -ModuleName $LabRunnerModuleName {}
     Mock Read-LoggedInput -ModuleName $LabRunnerModuleName { 'n' }
@@ -247,6 +256,9 @@ function New-StandardTestMocks {
     # Global mocks (PowerShell built-ins or external commands)
     # Default Get-Command returns null. Specific scenarios or platform mocks can override for specific commands.
     Mock Get-Command { param($Name) 
+
+
+
 
 
 
@@ -289,6 +301,9 @@ function New-WindowsSpecificMocks {
     )
     
     
+
+
+
 
 
 
@@ -360,6 +375,9 @@ function New-LinuxSpecificMocks {
 
 
 
+
+
+
 # Linux package managers (Global Get-Command mocks for discoverability, and global mocks for the commands themselves)
     Mock Get-Command {
         [PSCustomObject]@{ Name = 'apt-get'; Source = '/usr/bin/apt-get'; CommandType = 'Application' }
@@ -392,6 +410,9 @@ function New-MacOSSpecificMocks {
 
 
 
+
+
+
 # Homebrew (Global Get-Command and command mock)
     Mock Get-Command {
         [PSCustomObject]@{ Name = 'brew'; Source = '/usr/local/bin/brew'; CommandType = 'Application' }
@@ -412,6 +433,9 @@ function Test-RunnerScript {
     #>
     param(
         [Parameter(Mandatory)
+
+
+
 
 
 
@@ -521,6 +545,9 @@ function New-CommonTestScenarios {
 
 
 
+
+
+
 $scenarios = @()
     
     if ($EnabledConfig) {
@@ -547,6 +574,7 @@ if ($MyInvocation.MyCommand.CommandType -eq 'ExternalScript') {
         'New-CommonTestScenarios'
     )
 }
+
 
 
 

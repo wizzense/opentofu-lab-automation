@@ -3,6 +3,9 @@ Param([object]$Config)
 
 
 
+
+
+
 Import-Module "$PSScriptRoot/../modules/LabRunner/LabRunner.psd1" -Force
 
 Write-CustomLog "Starting $MyInvocation.MyCommand"
@@ -14,6 +17,9 @@ function Install-7Zip {
 
 
 
+
+
+
 Invoke-LabStep -Config $Config -Body {
         Write-CustomLog "Running $($MyInvocation.MyCommand.Name)"
         if ($Config.Install7Zip -eq $true) {
@@ -22,6 +28,9 @@ Invoke-LabStep -Config $Config -Body {
                 Invoke-LabDownload -Uri $url -Prefix '7zip' -Extension '.exe' -Action {
                     param($installer)
                     
+
+
+
 
 
 
@@ -38,5 +47,6 @@ Start-Process -FilePath $installer -ArgumentList '/S' -Wait
 }
 if ($MyInvocation.InvocationName -ne '.') { Install-7Zip @PSBoundParameters }
 Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
+
 
 

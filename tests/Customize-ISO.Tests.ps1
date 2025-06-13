@@ -9,7 +9,7 @@ Describe 'Customize-ISO.ps1'  {
         It 'parses without errors' {
         $errs = $null
         [System.Management.Automation.Language.Parser]::ParseFile($script:ScriptPath, [ref]$null, [ref]$errs) | Out-Null
-        $(if (errs) { $errs.Count  } else { 0 }) | Should -Be 0
+        $(if ($errs) { $errs.Count  } else { 0 }) | Should -Be 0
     }
         It 'honours parameters and logs each step' {
         $temp = Join-Path $TestDrive ([guid]::NewGuid())
@@ -37,9 +37,15 @@ Describe 'Customize-ISO.ps1'  {
 
 
 
+
+
+
 ][string[]]$dismArgs) }
         Mock dism {}
         function Start-Process { param([Parameter(ValueFromRemainingArguments=$true)
+
+
+
 
 
 
@@ -72,6 +78,8 @@ Describe 'Customize-ISO.ps1'  {
         Should -Invoke -CommandName Write-CustomLog -Times 1 -ParameterFilter { $Message -eq "Custom ISO creation complete! New ISO saved as $outIso" }
     }
 }
+
+
 
 
 

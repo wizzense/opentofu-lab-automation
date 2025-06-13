@@ -35,6 +35,9 @@ function New-TestFromScript {
 
 
 
+
+
+
 ]
         [string]$ScriptPath,
         
@@ -97,6 +100,9 @@ function Add-AutoFixTrigger {
     [CmdletBinding(SupportsShouldProcess=$true)]
     param(
         [Parameter(Mandatory=$true)
+
+
+
 
 
 
@@ -202,6 +208,9 @@ function Update-ExistingTests {
 
 
 
+
+
+
 ]
         [string]$TestDirectory = "tests",
         
@@ -245,6 +254,9 @@ function New-FixWorkflow {
     [CmdletBinding(SupportsShouldProcess=$true)]
     param(
         [Parameter()
+
+
+
 
 
 
@@ -387,6 +399,9 @@ function Get-ScriptCategory {
 
 
 
+
+
+
 ]
         [string]$Path
     )
@@ -425,6 +440,9 @@ function Get-ScriptAnalysis {
     [CmdletBinding()]
     param(
         [Parameter(Mandatory=$true)
+
+
+
 
 
 
@@ -515,6 +533,9 @@ function Generate-TestContent {
     [CmdletBinding()]
     param(
         [Parameter(Mandatory=$true)
+
+
+
 
 
 
@@ -824,6 +845,7 @@ Describe '$scriptBaseName Tests' -Tag '$($Analysis.Category)' {
 }
 
 }
+
 
 
 

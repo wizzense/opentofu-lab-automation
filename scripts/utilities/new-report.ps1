@@ -8,6 +8,9 @@ param(
 
 
 
+
+
+
 ]
     [ValidateSet('test-analysis', 'workflow-analysis', 'project-status')]
     [string]$Type,
@@ -269,5 +272,6 @@ if ($Open) {
 Write-Host ""
 Write-Host "📝 Don't forget to update the INDEX.md file with your new report!" -ForegroundColor Yellow
 Write-Host "📂 Location: docs/reports/INDEX.md" -ForegroundColor Cyan
+
 
 

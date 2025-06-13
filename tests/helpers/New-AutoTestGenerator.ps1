@@ -29,6 +29,9 @@ param(
 
 
 
+
+
+
 . (Join-Path $PSScriptRoot 'TestHelpers.ps1')
 
 function Get-ScriptAnalysis {
@@ -39,6 +42,9 @@ function Get-ScriptAnalysis {
     param([string]$ScriptPath)
     
     
+
+
+
 
 
 
@@ -139,6 +145,9 @@ function New-TestTemplate {
     )
     
     
+
+
+
 
 
 
@@ -397,6 +406,9 @@ function Format-ScriptName {
 
 
 
+
+
+
 # Remove file extension
     $baseName = [System.IO.Path]::GetFileNameWithoutExtension($OriginalName)
     
@@ -474,6 +486,9 @@ function Watch-ScriptDirectory {
 
 
 
+
+
+
 Write-Host "Starting script directory watcher for: $Directory" -ForegroundColor Green
     Write-Host "Checking every $IntervalSeconds seconds. Press Ctrl+C to stop." -ForegroundColor Yellow
     
@@ -539,6 +554,9 @@ function New-TestForScript {
     )
     
     
+
+
+
 
 
 
@@ -641,5 +659,6 @@ if ($ScriptPath) {
         }
     }
 }
+
 
 

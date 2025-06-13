@@ -13,6 +13,9 @@ param(
 
 
 
+
+
+
 $tagIndexPath = "file-tags-index.json"
 
 function Initialize-TagIndex {
@@ -61,6 +64,9 @@ function Get-AutoTags {
 
 
 
+
+
+
 $autoTags = @()
     
     # Pattern-based auto-tagging
@@ -102,6 +108,9 @@ function Set-FileTags {
 
 
 
+
+
+
 $index = Initialize-TagIndex
     $relativePath = Resolve-Path $FilePath -Relative
     
@@ -134,6 +143,9 @@ function Get-FileTags {
 
 
 
+
+
+
 $index = Initialize-TagIndex
     $relativePath = Resolve-Path $FilePath -Relative -ErrorAction SilentlyContinue
     
@@ -148,6 +160,9 @@ function Get-FilesByTag {
     param($Tag)
     
     
+
+
+
 
 
 
@@ -287,5 +302,6 @@ if ($ListTags) {
     Write-Host "  List all tags:  $($MyInvocation.MyCommand.Name) -ListTags"
     Write-Host "  Update index:   $($MyInvocation.MyCommand.Name) -UpdateIndex"
 }
+
 
 

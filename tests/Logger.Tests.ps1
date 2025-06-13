@@ -55,6 +55,9 @@ Describe 'Read-LoggedInput' {
 
 
 
+
+
+
 'val' }
         Read-LoggedInput -Prompt 'Ask?'
         Should -Invoke -CommandName Write-CustomLog -Times 1 -ParameterFilter { $Message -eq 'Ask?: val' }
@@ -66,11 +69,15 @@ Describe 'Read-LoggedInput' {
 
 
 
+
+
+
 if ($AsSecureString) { return $sec } 'val' }
         Read-LoggedInput -Prompt 'Secret' -AsSecureString | Should -Be $sec
         Should -Invoke -CommandName Write-CustomLog -Times 1 -ParameterFilter { $Message -eq 'Secret (secure input)' }
     }
 }
+
 
 
 

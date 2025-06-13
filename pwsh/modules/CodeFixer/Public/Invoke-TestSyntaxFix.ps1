@@ -35,6 +35,9 @@ function Invoke-TestSyntaxFix {
 
 
 
+
+
+
 ]
         [string]$Path,
         
@@ -129,5 +132,6 @@ function Invoke-TestSyntaxFix {
         return $fixedFiles
     }
 }
+
 
 

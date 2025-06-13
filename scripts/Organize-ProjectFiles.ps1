@@ -11,6 +11,9 @@ param(
 
 
 
+
+
+
 $ErrorActionPreference = 'Stop'
 
 # Create timestamps for organization
@@ -25,6 +28,9 @@ function Backup-Files {
     )
 
     
+
+
+
 
 
 
@@ -71,6 +77,9 @@ function Move-ToArchive {
 
 
 
+
+
+
 $archiveDir = Join-Path $PSScriptRoot "archive" $Category
     if (-not (Test-Path $archiveDir)) {
         if (-not $WhatIf) {
@@ -111,6 +120,9 @@ function Remove-DeprecatedFiles {
 
 
 
+
+
+
 foreach ($file in $FilePaths) {
         if (Test-Path $file) {
             if ($WhatIf) {
@@ -138,6 +150,9 @@ function New-ArchiveReadme {
     )
 
     
+
+
+
 
 
 
@@ -486,5 +501,6 @@ Write-Host "`nFor details on the new project structure, see:" -ForegroundColor C
 Write-Host "- docs/TESTING.md" -ForegroundColor White
 Write-Host "- docs/CODEFIXER-GUIDE.md" -ForegroundColor White
 Write-Host "- INTEGRATION-SUMMARY.md" -ForegroundColor White
+
 
 

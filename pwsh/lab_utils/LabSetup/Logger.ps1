@@ -5,6 +5,9 @@ function Write-CustomLog {
 
 
 
+
+
+
 ] [string]$Level = 'INFO'
     )
     $levelIdx = @{ INFO = 1; WARN = 0; ERROR = 0 }[$Level]
@@ -32,5 +35,6 @@ function Write-CustomLog {
         Write-Host $fmt -ForegroundColor $color
     }
 }
+
 
 

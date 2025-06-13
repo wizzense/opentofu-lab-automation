@@ -9,12 +9,18 @@ param(
 
 
 
+
+
+
 $ErrorActionPreference = "Continue"
 
 # Function to log progress
 function Write-Progress {
     param([string]$Message, [string]$Color = "Cyan")
     
+
+
+
 
 
 Write-Host $Message -ForegroundColor $Color
@@ -178,4 +184,5 @@ Write-Progress "`nNext steps:" "Cyan"
 Write-Progress "1. Run 'Invoke-Pester tests/' to verify all tests work" "White"
 Write-Progress "2. Test CodeFixer: 'Import-Module pwsh/modules/CodeFixer; Invoke-PowerShellLint'" "White"
 Write-Progress "3. Validate the full CI workflow" "White"
+
 

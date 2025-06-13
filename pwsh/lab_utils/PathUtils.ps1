@@ -5,6 +5,9 @@ function Normalize-RelativePath {
 
 
 
+
+
+
 ][string]$Path
     )
     if ([string]::IsNullOrEmpty($Path)) {
@@ -13,5 +16,6 @@ function Normalize-RelativePath {
     $segments = $Path -split '[\\/]+'
     $segments -join [System.IO.Path]::DirectorySeparatorChar
 }
+
 
 

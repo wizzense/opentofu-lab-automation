@@ -6,6 +6,9 @@ function Get-GhDownloadArgs {
 
 
 
+
+
+
 if (Get-Command gh -ErrorAction SilentlyContinue) {
         try {
             gh auth status --hostname github.com *> $null
@@ -22,6 +25,9 @@ function Invoke-ArchiveDownload {
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)
+
+
+
 
 
 
@@ -52,5 +58,6 @@ function Invoke-ArchiveDownload {
         }
     }
 }
+
 
 

@@ -4,6 +4,9 @@ param(
 
 
 
+
+
+
 ]
     [switch]$Quiet,
 
@@ -30,6 +33,9 @@ if (Test-Path $indexPath) {
 function Resolve-IndexPath {
     param([string]$Key)
     
+
+
+
 
 
 
@@ -132,6 +138,9 @@ function ConvertTo-Hashtable {
 
 
 
+
+
+
 switch ($obj) {
         { $_ -is [System.Collections.IDictionary] } {
             $ht = @{}
@@ -156,6 +165,9 @@ function Get-ScriptConfigFlag {
 
 
 
+
+
+
 $content = Get-Content -Path $Path -Raw -ErrorAction SilentlyContinue
     if ($content -match '\$Config\.([A-Za-z0-9_\.]+)\s*-eq\s*\$true') { return $matches[1] }
     if ($content -match '\$config\.([A-Za-z0-9_\.]+)\s*-eq\s*\$true') { return $matches[1] }
@@ -165,6 +177,9 @@ $content = Get-Content -Path $Path -Raw -ErrorAction SilentlyContinue
 function Get-NestedConfigValue {
     param([hashtable]$Config, [string]$Path)
     
+
+
+
 
 
 
@@ -183,6 +198,9 @@ function Set-NestedConfigValue {
 
 
 
+
+
+
 $parts = $Path -split '\.'
     $cur   = $Config
     for ($i = 0; $i -lt $parts.Length - 1; $i++) {
@@ -196,6 +214,9 @@ function Apply-RecommendedDefaults {
     param([hashtable]$ConfigObject)
 
     
+
+
+
 
 
 
@@ -220,9 +241,15 @@ function Set-LabConfig {
 
 
 
+
+
+
 function Edit-PrimitiveValue {
         param([string]$Path, [object]$Current)
         
+
+
+
 
 
 
@@ -237,6 +264,9 @@ $prompt = "New value for '$Path' [$Current]"
     function Edit-Section {
         param([hashtable]$Section, [string]$Prefix)
         
+
+
+
 
 
 
@@ -331,6 +361,9 @@ function Invoke-Scripts {
     param([array]$ScriptsToRun)
 
     
+
+
+
 
 
 
@@ -375,6 +408,9 @@ param(
 
 
 
+
+
+
 ]
     [switch]$Quiet,
 
@@ -401,6 +437,9 @@ if (Test-Path $indexPath) {
 function Resolve-IndexPath {
     param([string]$Key)
     
+
+
+
 
 
 
@@ -503,6 +542,9 @@ function ConvertTo-Hashtable {
 
 
 
+
+
+
 switch ($obj) {
         { $_ -is [System.Collections.IDictionary] } {
             $ht = @{}
@@ -527,6 +569,9 @@ function Get-ScriptConfigFlag {
 
 
 
+
+
+
 $content = Get-Content -Path $Path -Raw -ErrorAction SilentlyContinue
     if ($content -match '\$Config\.([A-Za-z0-9_\.]+)\s*-eq\s*\$true') { return $matches[1] }
     if ($content -match '\$config\.([A-Za-z0-9_\.]+)\s*-eq\s*\$true') { return $matches[1] }
@@ -536,6 +581,9 @@ $content = Get-Content -Path $Path -Raw -ErrorAction SilentlyContinue
 function Get-NestedConfigValue {
     param([hashtable]$Config, [string]$Path)
     
+
+
+
 
 
 
@@ -554,6 +602,9 @@ function Set-NestedConfigValue {
 
 
 
+
+
+
 $parts = $Path -split '\.'
     $cur   = $Config
     for ($i = 0; $i -lt $parts.Length - 1; $i++) {
@@ -567,6 +618,9 @@ function Apply-RecommendedDefaults {
     param([hashtable]$ConfigObject)
 
     
+
+
+
 
 
 
@@ -591,9 +645,15 @@ function Set-LabConfig {
 
 
 
+
+
+
 function Edit-PrimitiveValue {
         param([string]$Path, [object]$Current)
         
+
+
+
 
 
 
@@ -608,6 +668,9 @@ $prompt = "New value for '$Path' [$Current]"
     function Edit-Section {
         param([hashtable]$Section, [string]$Prefix)
         
+
+
+
 
 
 
@@ -702,6 +765,9 @@ function Invoke-Scripts {
     param([array]$ScriptsToRun)
 
     
+
+
+
 
 
 
@@ -829,6 +895,9 @@ function Select-Scripts {
     param([string]$Spec)
 
     
+
+
+
 
 
 
@@ -980,6 +1049,9 @@ function Select-Scripts {
 
 
 
+
+
+
 if (-not $Spec) { Write-CustomLog 'No script selection provided.'; return @() }
     if ($Spec -eq 'all') { return $ScriptFiles }
 
@@ -1026,6 +1098,7 @@ Write-CustomLog "`nAll done!"
 if (-not $overallSuccess) { $global:LASTEXITCODE = 1 } else { $global:LASTEXITCODE = 0 }
 Remove-Item Env:LAB_CONSOLE_LEVEL -ErrorAction SilentlyContinue
 exit $LASTEXITCODE
+
 
 
 

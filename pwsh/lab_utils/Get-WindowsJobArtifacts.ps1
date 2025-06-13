@@ -9,6 +9,9 @@ param(
 
 
 
+
+
+
 $tempDir = Join-Path ([System.IO.Path]::GetTempPath()) "gh-artifacts-$([System.Guid]::NewGuid())"
 New-Item -ItemType Directory -Path $tempDir | Out-Null
 
@@ -103,5 +106,6 @@ if ($failed) {
 } else {
     Write-Host 'All tests passed.' -ForegroundColor Green
 }
+
 
 

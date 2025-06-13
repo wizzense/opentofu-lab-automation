@@ -71,6 +71,9 @@ Describe 'Get-WindowsJobArtifacts' {
 
 
 
+
+
+
 ; $script:messages += $Object }
 
         & $global:scriptPath -RunId $id 2>$null
@@ -86,12 +89,16 @@ Describe 'Get-WindowsJobArtifacts' {
 
 
 
+
+
+
 ; $script:messages += $Object }
         try { & $global:scriptPath } catch {}
 
         $LASTEXITCODE | Should -Be 1
     }
 }
+
 
 
 

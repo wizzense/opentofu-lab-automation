@@ -1,3 +1,6 @@
+
+
+
 function Initialize-PSScriptAnalyzer {
     <#
     .SYNOPSIS
@@ -30,3 +33,4 @@ function Initialize-PSScriptAnalyzer {
         }
     }
 }
+

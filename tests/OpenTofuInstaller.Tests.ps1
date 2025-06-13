@@ -37,6 +37,9 @@ if ($IsLinux -or $IsMacOS) { return }
 
 
 
+
+
+
 if ($Uri -match 'SHA256SUMS$') {
                 "${hash}  tofu_0.0.0_windows_amd64.zip" | Set-Content $OutFile
             } else { 'dummy' | Set-Content $OutFile }
@@ -50,6 +53,9 @@ if ($Uri -match 'SHA256SUMS$') {
         function global:Start-Process {
             param($FilePath, $ArgumentList, $Verb, $WorkingDirectory, [switch]$Wait, [switch]$Passthru)
             
+
+
+
 
 
 
@@ -89,6 +95,9 @@ $global:startProcessCalled = $true
 
 
 
+
+
+
 if ($Uri -match 'SHA256SUMS$') {
                 "${hash}  tofu_0.0.0_windows_amd64.zip" | Set-Content $OutFile
             } else { 'dummy' | Set-Content $OutFile }
@@ -107,6 +116,9 @@ if ($Uri -match 'SHA256SUMS$') {
                 [switch]$Passthru
             )
             
+
+
+
 
 
 
@@ -153,6 +165,8 @@ $global:startProcessCalled = $true
     }
 
 }
+
+
 
 
 

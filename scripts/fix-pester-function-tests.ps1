@@ -2,6 +2,9 @@
 
 
 
+
+
+
 #!/usr/bin/env pwsh
 # Script to fix Pester test files that have Get-Command issues with mandatory parameters
 
@@ -60,5 +63,6 @@ foreach ($file in $testFiles) {
 
 Write-Host "`n🎉 Batch fix completed!" -ForegroundColor Green
 Write-Host "Run tests to verify the fixes work correctly." -ForegroundColor Cyan
+
 
 

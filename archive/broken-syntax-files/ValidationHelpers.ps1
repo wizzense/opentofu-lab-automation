@@ -12,7 +12,10 @@ function Get-TestFailures {
     #>
     [CmdletBinding()]
     param(
-        [Parameter(Mandatory=$true)]
+        [Parameter(Mandatory=$true)
+
+
+]
         [string]$ResultsPath
     )
     
@@ -80,6 +83,9 @@ function Get-LintIssues {
 
 
 
+
+
+
 # Auto-added import for PSScriptAnalyzer
 if (-not (Get-Module -ListAvailable PSScriptAnalyzer -ErrorAction SilentlyContinue)) { Install-Module PSScriptAnalyzer -Force -Scope CurrentUser }
 Import-Module PSScriptAnalyzer -Force
@@ -142,6 +148,9 @@ function Invoke-ValidationChecks {
     [CmdletBinding()]
     param(
         [Parameter(Mandatory=$true)
+
+
+
 
 
 
@@ -263,6 +272,9 @@ function Show-ValidationSummary {
     [CmdletBinding()]
     param(
         [Parameter(Mandatory=$true)
+
+
+
 
 
 
@@ -391,6 +403,9 @@ function Get-RunnerScriptPath {
 
 
 
+
+
+
 # Auto-added import for PSScriptAnalyzer
 if (-not (Get-Module -ListAvailable PSScriptAnalyzer -ErrorAction SilentlyContinue)) { Install-Module PSScriptAnalyzer -Force -Scope CurrentUser }
 Import-Module PSScriptAnalyzer -Force
@@ -433,5 +448,6 @@ Import-Module PSScriptAnalyzer -Force
     
     return $null
 }
+
 
 

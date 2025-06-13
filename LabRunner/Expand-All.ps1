@@ -8,12 +8,18 @@ function Expand-All {
 
 
 
+
+
+
 # Ensure logging helpers are available for each invocation
     if (-not (Get-Command Read-LoggedInput -ErrorAction SilentlyContinue)) {
         $logger = Join-Path $PSScriptRoot '..\LabRunner\Logger.ps1'
         if (Test-Path $logger) { . $logger }
         if (-not (Get-Command Read-LoggedInput -ErrorAction SilentlyContinue)) {
             function Read-LoggedInput { param($Prompt) 
+
+
+
 
 
 
@@ -54,5 +60,6 @@ Read-Host $Prompt }
         Write-CustomLog "All archives expanded."
     }
 }
+
 
 

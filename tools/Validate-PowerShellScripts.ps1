@@ -21,6 +21,9 @@ param(
     [Parameter(Mandatory = $false)
 
 
+
+
+
 ]
     [string]$Path = ".",
     
@@ -53,6 +56,9 @@ function Write-ValidationMessage {
 
 
 
+
+
+
 $timestamp = Get-Date -Format "HH:mm:ss"
     $color = switch ($Level) {
         "Error" { "Red" }
@@ -70,6 +76,9 @@ function Test-PowerShellSyntax {
     param([string]$FilePath)
     
     
+
+
+
 
 
 
@@ -103,6 +112,9 @@ function Test-ParameterImportOrder {
     param([string]$FilePath)
     
     
+
+
+
 
 
 
@@ -148,6 +160,9 @@ function Fix-ParameterImportOrder {
     param([string]$FilePath)
     
     
+
+
+
 
 
 
@@ -213,6 +228,9 @@ function Test-ScriptStyle {
 
 
 
+
+
+
 $content = Get-Content $FilePath -Raw
     $issues = @()
     
@@ -243,6 +261,9 @@ function Validate-PowerShellFile {
     param([string]$FilePath)
     
     
+
+
+
 
 
 
@@ -340,6 +361,9 @@ function Get-PowerShellFiles {
 
 
 
+
+
+
 if (Test-Path $Path -PathType Leaf) {
         if ($Path -match '\.ps1$') {
             return @($Path)
@@ -357,6 +381,9 @@ function Should-IgnoreFile {
     param([string]$FilePath)
     
     
+
+
+
 
 
 
@@ -389,6 +416,9 @@ function Preprocess-ContentForValidation {
     param([string]$Content, [string]$FilePath)
     
     
+
+
+
 
 
 
@@ -473,6 +503,9 @@ function Fix-SyntaxErrors {
 
 
 
+
+
+
 $content = Get-Content $FilePath -Raw
     $originalContent = $content
     $hasChanges = $false
@@ -517,5 +550,6 @@ $content = Get-Content $FilePath -Raw
     
     return $false
 }
+
 
 

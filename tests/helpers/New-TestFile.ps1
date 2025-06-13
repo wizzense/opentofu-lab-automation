@@ -18,6 +18,9 @@ param(
 
 
 
+
+
+
 ]
     [string]$ScriptName,
     
@@ -39,6 +42,9 @@ function Get-ScriptAnalysis {
     param([string]$ScriptPath)
     
     
+
+
+
 
 
 
@@ -95,6 +101,9 @@ function New-InstallerTestContent {
 
 
 
+
+
+
 $enabledProperty = $Analysis.ConfigProperties | Where-Object { $_ -match 'Install' } | Select-Object -First 1
     if (-not $enabledProperty) {
         $enabledProperty = 'InstallEnabled'  # fallback
@@ -142,6 +151,9 @@ function New-FeatureTestContent {
     param($ScriptName, $Analysis)
     
     
+
+
+
 
 
 
@@ -195,6 +207,9 @@ function New-ServiceTestContent {
 
 
 
+
+
+
 $serviceName = 'TestService'  # This would need manual specification
     
     return @"
@@ -228,6 +243,9 @@ function New-ConfigurationTestContent {
     param($ScriptName, $Analysis)
     
     
+
+
+
 
 
 
@@ -319,5 +337,6 @@ try {
     Write-Error "Failed to generate test: $_"
     exit 1
 }
+
 
 

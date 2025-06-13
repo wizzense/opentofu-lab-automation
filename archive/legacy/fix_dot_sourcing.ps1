@@ -2,6 +2,9 @@
 
 
 
+
+
+
 # Script to fix the remaining dot-sourcing pattern in numbered test files
 # filepath: /workspaces/opentofu-lab-automation/fix_dot_sourcing.ps1
 
@@ -46,5 +49,6 @@ $errors = $null
 }
 
 Write-Host "`nCompleted processing all files with dot-sourcing issues."
+
 
 

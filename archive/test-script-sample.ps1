@@ -17,6 +17,9 @@ param(
 
 
 
+
+
+
 ]
     [string]$Version = "latest",
     
@@ -32,6 +35,9 @@ function Install-SampleTool {
     )
     
     
+
+
+
 
 
 
@@ -62,5 +68,6 @@ Write-Host "Installing SampleTool version $Version"
 if ($MyInvocation.InvocationName -ne '.') {
     Install-SampleTool -Version $Version -Force:$Force
 }
+
 
 

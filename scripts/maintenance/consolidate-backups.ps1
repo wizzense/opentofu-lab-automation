@@ -34,6 +34,9 @@ param(
 
 
 
+
+
+
 # Initialize logging
 $ErrorActionPreference = "Stop"
 $timestamp = Get-Date -Format "yyyyMMdd-HHmmss"
@@ -48,6 +51,9 @@ if (-not (Test-Path $reportPath)) {
 function Write-Log {
     param($Message, $Level = "INFO")
     
+
+
+
 
 
 
@@ -85,6 +91,9 @@ function Get-BackupDestination {
 
 
 
+
+
+
 $relativePath = $SourceFile.FullName.Replace("/workspaces/opentofu-lab-automation/", "")
     $pathParts = $relativePath.Split("/")
     
@@ -108,6 +117,9 @@ function Move-BackupFiles {
     param($BackupFiles)
     
     
+
+
+
 
 
 
@@ -144,6 +156,9 @@ function Test-DirectoryEmpty {
     param($Path)
     
     
+
+
+
 
 
 
@@ -298,5 +313,6 @@ try {
 } finally {
     Finalize-Report
 }
+
 
 

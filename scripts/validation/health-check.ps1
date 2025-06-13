@@ -8,6 +8,9 @@ param(
 
 
 
+
+
+
 ]
     [string]$OutputFormat = 'Text',
     [string]$OutputPath
@@ -54,5 +57,6 @@ try {
     Write-Host "Full error: $_" -ForegroundColor Red
     exit 1
 }
+
 
 

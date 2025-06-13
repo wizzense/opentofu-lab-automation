@@ -32,6 +32,9 @@ function Invoke-ScriptOrderFix {
 
 
 
+
+
+
 ]
         [string]$Path,
         
@@ -133,5 +136,6 @@ function Invoke-ScriptOrderFix {
         return $fixedFiles
     }
 }
+
 
 

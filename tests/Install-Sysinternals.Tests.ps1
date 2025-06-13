@@ -16,6 +16,9 @@ Describe '0205_Install-Sysinternals' -Skip:($SkipNonWindows) {
 
 
 
+
+
+
 $tempFile = Join-Path ([System.IO.Path]::GetTempPath()) "mock_$Prefix.zip"
                 New-Item -ItemType File -Path $tempFile -Force | Out-Null
                 try { & $Action $tempFile } finally { Remove-Item $tempFile -Force -ErrorAction SilentlyContinue }
@@ -46,5 +49,6 @@ $tempFile = Join-Path ([System.IO.Path]::GetTempPath()) "mock_$Prefix.zip"
         Get-Module LabRunner | Remove-Module -Force -ErrorAction SilentlyContinue
     }
 }
+
 
 

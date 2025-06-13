@@ -75,6 +75,9 @@ param(
 
 
 
+
+
+
 ]
     [switch]$help = $false,
 
@@ -235,6 +238,9 @@ function logInfo() {
 
 
 
+
+
+
 Write-Information "${blue}${message}${normal}"
 }
 
@@ -246,6 +252,9 @@ function logWarning() {
 
 
 
+
+
+
 Write-Warning "${orange}${message}${normal}"
 }
 
@@ -254,6 +263,9 @@ function logError() {
         $message
     )
     
+
+
+
 
 
 
@@ -660,6 +672,9 @@ function escapePathArgument {
 
 
 
+
+
+
 ]
         [string] $Path
     )
@@ -763,5 +778,6 @@ try
 }
 
 exit $exitCodeOK
+
 
 

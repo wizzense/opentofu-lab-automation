@@ -3,6 +3,9 @@ Param([object]$Config)
 
 
 
+
+
+
 Import-Module "$PSScriptRoot/../modules/LabRunner/LabRunner.psd1" -Force
 
 Write-CustomLog "Starting $MyInvocation.MyCommand"
@@ -26,5 +29,6 @@ if ($Config.ConfigPXE -eq $true) {
     Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
 }
 Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
+
 
 

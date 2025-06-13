@@ -8,6 +8,9 @@ function Get-LabConfig {
 
 
 
+
+
+
 $scriptDir = if ($PSScriptRoot) { $PSScriptRoot    } else { Split-Path -Parent $MyInvocation.MyCommand.Path    }
 
     if (-not $Path) {
@@ -60,5 +63,6 @@ $scriptDir = if ($PSScriptRoot) { $PSScriptRoot    } else { Split-Path -Parent $
 
     }
 }
+
 
 

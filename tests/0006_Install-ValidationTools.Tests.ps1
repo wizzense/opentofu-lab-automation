@@ -2,6 +2,9 @@
 
 
 
+
+
+
 # .SYNOPSIS
 # Tests for the 0006_Install-ValidationTools script.
 
@@ -20,18 +23,14 @@ BeforeAll {
 }
 
 Describe '0006_Install-ValidationTools Tests' -Tag 'Installer' {
-    Context 'Install-Cosign Function Tests' {
-        It 'should ' -Skip: {
-            $scriptContent = Get-Content $script:ScriptPath -Raw
-            $scriptContent | Should -Match '\[CmdletBinding\(\s*\(.*SupportsShouldProcess.*\)\s*\)'  # Corrected usage
-        }
-    }
-}
+    
 
 # Clean up test environment
 AfterAll {
     # Restore any modified system state
 }
+
+
 
 
 

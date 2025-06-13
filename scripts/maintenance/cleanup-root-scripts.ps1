@@ -25,6 +25,9 @@ param(
 
 
 
+
+
+
 ]
     [switch]$WhatIf
 )
@@ -35,6 +38,9 @@ $ProjectRoot = "/workspaces/opentofu-lab-automation"
 function Write-CleanupLog {
     param([string]$Message, [string]$Level = "INFO")
     
+
+
+
 
 
 
@@ -58,6 +64,9 @@ function Move-ScriptFile {
     )
     
     
+
+
+
 
 
 
@@ -99,6 +108,9 @@ function Remove-EmptyScript {
     param([string]$ScriptFile, [string]$Reason = "")
     
     
+
+
+
 
 
 
@@ -308,5 +320,6 @@ if (-not $WhatIf) {
 
 Write-CleanupLog "🎉 Root directory cleanup completed!" "SUCCESS"
 Write-CleanupLog "Use the unified maintenance system for ongoing project maintenance" "INFO"
+
 
 

@@ -3,6 +3,9 @@ Param([object]$Config)
 
 
 
+
+
+
 Import-Module "$PSScriptRoot/../modules/LabRunner/LabRunner.psd1" -Force
 
 Write-CustomLog "Starting $MyInvocation.MyCommand"
@@ -44,6 +47,9 @@ Invoke-LabStep -Config $Config -Body {
 
 
 
+
+
+
 Write-CustomLog "Installing Go silently..."
             Start-Process msiexec.exe -Wait -ArgumentList "/i `"$installerPath`" /qn /L*v `"$(Get-CrossPlatformTempPath)\GoInstall.log`""
             Write-CustomLog "Go installation complete."
@@ -54,5 +60,6 @@ Write-CustomLog "Installing Go silently..."
     Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
 }
 Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
+
 
 

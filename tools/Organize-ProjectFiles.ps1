@@ -11,6 +11,9 @@ param(
 
 
 
+
+
+
 $ErrorActionPreference = 'Stop'
 
 # File organization rules with smart tagging
@@ -61,6 +64,9 @@ function Get-FileTag {
 
 
 
+
+
+
 # Smart tagging based on content and patterns
     $tags = @()
     
@@ -104,6 +110,9 @@ function Get-RecommendedLocation {
     param($FileName, $Tags, $CurrentPath)
     
     
+
+
+
 
 
 
@@ -219,6 +228,9 @@ function Invoke-FileOrganization {
 
 
 
+
+
+
 if (-not $Force -and -not $WhatIf) {
         $confirm = Read-Host "`nProceed with file organization? (y/N)"
         if ($confirm -ne 'y' -and $confirm -ne 'Y') {
@@ -295,5 +307,6 @@ try {
 } catch {
     Write-Error "Organization failed: $_"
 }
+
 
 

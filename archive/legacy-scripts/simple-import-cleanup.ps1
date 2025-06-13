@@ -1,6 +1,9 @@
 
 
 
+
+
+
 #!/usr/bin/env pwsh
 <#
 .SYNOPSIS
@@ -35,4 +38,5 @@ foreach ($file in $files) {
 }
 
 Write-Host "✅ Simple cleanup complete!" -ForegroundColor Green
+
 

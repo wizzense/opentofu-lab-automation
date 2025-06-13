@@ -8,6 +8,9 @@ function Get-SyntaxError {
 
 
 
+
+
+
 ]
         [string]$FilePath
     )
@@ -27,5 +30,6 @@ function Get-SyntaxError {
         return $null
     }
 }
+
 
 

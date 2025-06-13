@@ -483,3 +483,33 @@ function global:Write-Continue {
 
 
 
+
+
+
+# Auto-generated mock for missing command: errors
+function global:errors {
+    param([Parameter(ValueFromRemainingArguments)][string[]]$Arguments)
+    Write-Host "Mock errors called with: $Arguments" -ForegroundColor Yellow
+    return $true
+}
+
+# Auto-generated mock for missing command: Format-Config
+function global:Format-Config {
+    param([Parameter(ValueFromRemainingArguments)][string[]]$Arguments)
+    Write-Host "Mock Format-Config called with: $Arguments" -ForegroundColor Yellow
+    return $true
+}
+
+# Auto-generated mock for missing command: Invoke-LabStep
+function global:Invoke-LabStep {
+    param([Parameter(ValueFromRemainingArguments)][string[]]$Arguments)
+    Write-Host "Mock Invoke-LabStep called with: $Arguments" -ForegroundColor Yellow
+    return $true
+}
+
+# Auto-generated mock for missing command: Write-Continue
+function global:Write-Continue {
+    param([Parameter(ValueFromRemainingArguments)][string[]]$Arguments)
+    Write-Host "Mock Write-Continue called with: $Arguments" -ForegroundColor Yellow
+    return $true
+}

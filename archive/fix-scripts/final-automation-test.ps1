@@ -8,6 +8,9 @@ param()
 
 
 
+
+
+
 $ErrorActionPreference = "Stop"
 
 Write-Host "🧪 FINAL AUTOMATION SYSTEM VALIDATION TEST" -ForegroundColor Cyan
@@ -201,5 +204,6 @@ if ($passedTests -eq $totalTests) {
     Write-Host "   Review the issues above and re-run validation" -ForegroundColor Yellow
     exit 1
 }
+
 
 

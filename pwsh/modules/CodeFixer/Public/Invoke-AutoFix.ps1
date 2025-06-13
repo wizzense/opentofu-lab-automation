@@ -32,6 +32,9 @@ function Invoke-AutoFix {
 
 
 
+
+
+
 $ErrorActionPreference = "Stop"
     
     Write-Host "Starting automatic PowerShell syntax fixing..." -ForegroundColor Cyan
@@ -166,5 +169,6 @@ $ErrorActionPreference = "Stop"
         return $fixedFiles
     }
 }
+
 
 

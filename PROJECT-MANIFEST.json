@@ -1,13 +1,20 @@
 {
   "project": {
-    "version": "1.0.0",
-    "lastUpdated": "2025-06-13 19:18:34",
     "name": "OpenTofu Lab Automation",
-    "description": "Comprehensive automation framework for OpenTofu lab environments with unified maintenance and validation systems"
+    "lastUpdated": "2025-06-13 19:41:53",
+    "description": "Comprehensive automation framework for OpenTofu lab environments with unified maintenance and validation systems",
+    "version": "1.0.0"
   },
   "core": {
     "modules": {
       "CodeFixer": {
+        "dependencies": [
+          "PSScriptAnalyzer"
+        ],
+        "purpose": "Automated code analysis, fixing, and validation",
+        "entryPoint": "CodeFixer.psd1",
+        "path": "/pwsh/modules/CodeFixer/",
+        "version": "0.1.0",
         "keyFunctions": [
           "Invoke-AutoFix",
           "Invoke-AutoFixCapture",
@@ -18,7 +25,6 @@
           "Invoke-ParallelScriptAnalyzer",
           "Invoke-PowerShellLint-clean",
           "Invoke-PowerShellLint-corrupted",
-          "Invoke-PowerShellLint-new",
           "Invoke-PowerShellLint",
           "Invoke-ResultsAnalysis",
           "Invoke-ScriptOrderFix",
@@ -28,25 +34,18 @@
           "Test-JsonConfig",
           "Watch-ScriptDirectory"
         ],
-        "path": "/pwsh/modules/CodeFixer/",
-        "lastUpdated": "2025-06-13",
-        "entryPoint": "CodeFixer.psd1",
         "type": "PowerShell Module",
-        "dependencies": [
-          "PSScriptAnalyzer"
-        ],
-        "version": "0.1.0",
-        "purpose": "Automated code analysis, fixing, and validation"
+        "lastUpdated": "2025-06-13"
       },
       "LabRunner": {
-        "keyFunctions": "Invoke-ParallelLabRunner",
-        "path": "/pwsh/modules/LabRunner/",
-        "lastUpdated": "2025-06-13",
-        "entryPoint": "LabRunner.psd1",
-        "type": "PowerShell Module",
         "dependencies": [],
+        "purpose": "Lab environment automation and management",
+        "entryPoint": "LabRunner.psd1",
+        "path": "/pwsh/modules/LabRunner/",
         "version": "0.1.0",
-        "purpose": "Lab environment automation and management"
+        "keyFunctions": "Invoke-ParallelLabRunner",
+        "type": "PowerShell Module",
+        "lastUpdated": "2025-06-13"
       }
     },
     "maintenanceSystem": {
@@ -281,18 +280,18 @@
   },
   "metrics": {
     "codebase": {
-      "activeModules": 2,
-      "validationScripts": 0,
-      "testFiles": 97,
       "maintenanceScripts": 0,
-      "powerShellFiles": 283
+      "testFiles": 97,
+      "powerShellFiles": 283,
+      "validationScripts": 0,
+      "activeModules": 2
     },
     "performance": {
-      "healthCheckTime": "< 1 minute",
       "batchProcessingOptimization": "Dynamic CPU scaling",
-      "fullMaintenanceTime": "2-5 minutes",
-      "lastHealthCheck": "2025-06-13 19:18:33"
+      "healthCheckTime": "< 1 minute",
+      "lastHealthCheck": "2025-06-13 19:41:51",
+      "fullMaintenanceTime": "2-5 minutes"
     },
-    "lastCalculated": "2025-06-13 19:18:34"
+    "lastCalculated": "2025-06-13 19:41:54"
   }
 }

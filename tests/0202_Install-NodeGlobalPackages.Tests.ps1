@@ -2,6 +2,9 @@
 
 
 
+
+
+
 # filepath: tests/0202_Install-NodeGlobalPackages.Tests.ps1
 . (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
 . (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
@@ -30,7 +33,7 @@ Describe '0202_Install-NodeGlobalPackages Tests' -Tag 'Installer' {
             $script:ScriptPath | Should -Exist
             $errors = $null
                 [System.Management.Automation.Language.Parser]::ParseFile($script:ScriptPath, [ref]$null, [ref]$errors) | Out-Null
-                $(if (errors) { $errors.Count  } else { 0 }) | Should -Be 0
+                $(if ($errors) { $errors.Count  } else { 0 }) | Should -Be 0
         }
         It 'should follow naming conventions' {
             $scriptName = [System.IO.Path]::GetFileName($script:ScriptPath)
@@ -121,6 +124,8 @@ AfterAll {
     # Restore any modified system state
     # Remove test artifacts
 }
+
+
 
 
 

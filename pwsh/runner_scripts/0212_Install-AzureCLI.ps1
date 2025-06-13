@@ -3,6 +3,9 @@ Param([object]$Config)
 
 
 
+
+
+
 Import-Module "$PSScriptRoot/../modules/LabRunner/LabRunner.psd1" -Force
 
 Write-CustomLog "Starting $MyInvocation.MyCommand"
@@ -14,6 +17,9 @@ function Install-AzureCLI {
 
 
 
+
+
+
 Invoke-LabStep -Config $Config -Body {
         Write-CustomLog "Running $($MyInvocation.MyCommand.Name)"
         if ($Config.InstallAzureCLI -eq $true) {
@@ -22,6 +28,9 @@ Invoke-LabStep -Config $Config -Body {
                 Invoke-LabDownload -Uri $url -Prefix 'azure-cli' -Extension '.msi' -Action {
                     param($msi)
                     
+
+
+
 
 
 
@@ -38,5 +47,6 @@ Start-Process msiexec.exe -ArgumentList "/i `"$msi`" /quiet /norestart" -Wait -N
 }
 if ($MyInvocation.InvocationName -ne '.') { Install-AzureCLI @PSBoundParameters }
 Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
+
 
 

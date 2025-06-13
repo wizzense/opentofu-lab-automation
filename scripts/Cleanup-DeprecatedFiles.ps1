@@ -11,6 +11,9 @@ param(
 
 
 
+
+
+
 $ErrorActionPreference = 'Stop'
 
 # Helper function to backup files before removing them
@@ -20,6 +23,9 @@ function Backup-Files {
     )
 
     
+
+
+
 
 
 
@@ -58,6 +64,9 @@ function Remove-DeprecatedFiles {
 
 
 
+
+
+
 # Backup files before removing
     if (-not $WhatIf) {
         Backup-Files -FilePaths $FilePaths
@@ -86,6 +95,9 @@ function Move-ToArchive {
     )
 
     
+
+
+
 
 
 
@@ -126,6 +138,9 @@ function Update-ReadmeFile {
     )
 
     
+
+
+
 
 
 
@@ -233,5 +248,6 @@ try {
     Write-Host "Full error: $_" -ForegroundColor Red
     exit 1
 }
+
 
 

@@ -5,6 +5,9 @@ function Invoke-LabWebRequest {
 
 
 
+
+
+
 ][string]$Uri,
         [string]$OutFile,
         [switch]$UseBasicParsing
@@ -18,6 +21,9 @@ function Invoke-WebRequest {
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)
+
+
+
 
 
 
@@ -35,10 +41,14 @@ function Invoke-LabNpm {
 
 
 
+
+
+
 ]
         [string[]]$Args
     )
     npm @Args
 }
+
 
 

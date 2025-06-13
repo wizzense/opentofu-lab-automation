@@ -3,6 +3,9 @@ Param([object]$Config)
 
 
 
+
+
+
 Import-Module "$PSScriptRoot/../modules/LabRunner/LabRunner.psd1" -Force
 
 Write-CustomLog "Starting $MyInvocation.MyCommand"
@@ -12,6 +15,9 @@ function Convert-CerToPem {
     [CmdletBinding(SupportsShouldProcess)]
     param(
         [Parameter(Mandatory)
+
+
+
 
 
 
@@ -36,6 +42,9 @@ function Convert-PfxToPem {
     [CmdletBinding(SupportsShouldProcess)]
     param(
         [Parameter(Mandatory)
+
+
+
 
 
 
@@ -96,6 +105,9 @@ function Get-HyperVProviderVersion {
     )
 
     
+
+
+
 
 
 
@@ -382,6 +394,9 @@ Invoke-LabDownload -Uri $downloadInfo.download_url -Prefix 'hyperv_provider' -Ex
 
 
 
+
+
+
 Expand-Archive -Path $zipPath -DestinationPath $tempDir -Force
 }
 
@@ -434,6 +449,7 @@ You can now run 'tofu plan'/'tofu apply' in $infraRepoPath.
 Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
 }
 }
+
 
 
 

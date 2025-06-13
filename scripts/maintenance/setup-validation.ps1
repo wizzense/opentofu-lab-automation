@@ -31,6 +31,9 @@ Param(
 
 
 
+
+
+
 ]
     [object]$Config
 )
@@ -83,6 +86,9 @@ Param(
 
 
 
+
+
+
 ]
     [string]$Path,
     
@@ -93,6 +99,9 @@ function Test-PowerShellSyntax {
     param([string]$FilePath)
     
     
+
+
+
 
 
 
@@ -109,6 +118,9 @@ function Test-ParamBlockPosition {
     param([string]$FilePath)
     
     
+
+
+
 
 
 
@@ -129,6 +141,9 @@ $lines = Get-Content $FilePath
         }
         
         if ($line.StartsWith('Param(')
+
+
+
 
 
 
@@ -153,6 +168,9 @@ function Test-ImportModulePosition {
     param([string]$FilePath)
     
     
+
+
+
 
 
 
@@ -201,6 +219,9 @@ function Repair-ScriptStructure {
     param([string]$FilePath)
     
     
+
+
+
 
 
 
@@ -348,6 +369,7 @@ Write-Host "`n=== Next Steps ===" -ForegroundColor Cyan
 Write-Host "1. Run validation: pwsh tools/Validate-PowerShellScripts.ps1 -Path pwsh/runner_scripts" -ForegroundColor White
 Write-Host "2. Auto-fix issues: pwsh tools/Validate-PowerShellScripts.ps1 -Path pwsh/runner_scripts -Fix" -ForegroundColor White
 Write-Host "3. Use template for new scripts: pwsh/ScriptTemplate.ps1" -ForegroundColor White
+
 
 
 

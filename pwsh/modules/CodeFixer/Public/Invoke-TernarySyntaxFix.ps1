@@ -31,6 +31,9 @@ function Invoke-TernarySyntaxFix {
 
 
 
+
+
+
 ]
         [string]$Path,
         
@@ -122,5 +125,6 @@ function Invoke-TernarySyntaxFix {
         return $fixedFiles
     }
 }
+
 
 

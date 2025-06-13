@@ -5,6 +5,9 @@ Param([object]$Config)
 
 
 
+
+
+
 # Import necessary modules
 Import-Module "$PSScriptRoot/../modules/LabRunner/LabRunner.psd1" -Force
 
@@ -15,6 +18,9 @@ function Install-NodeCore {
     param([object]$Config)
 
     
+
+
+
 
 
 
@@ -52,6 +58,9 @@ Write-CustomLog "Running $($MyInvocation.MyCommand.Name)"
 
 
 
+
+
+
 Start-Process msiexec.exe -ArgumentList "/i `"$installerPath`" /quiet /norestart" -Wait -NoNewWindow
             }
 
@@ -75,6 +84,7 @@ Start-Process msiexec.exe -ArgumentList "/i `"$installerPath`" /quiet /norestart
 # Start the NodeCore installation if the script is directly invoked
 if ($MyInvocation.InvocationName -ne '.') { Install-NodeCore @PSBoundParameters }
 Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
+
 
 
 

@@ -115,6 +115,9 @@ Describe '0001_Reset-Git' -Skip:($SkipNonWindows) {
 
 
 
+
+
+
 if ($Sub -eq 'auth' -and $Action -eq 'status') { $global:LASTEXITCODE = 1 }
             }
             Mock git {}
@@ -180,6 +183,7 @@ if ($Sub -eq 'auth' -and $Action -eq 'status') { $global:LASTEXITCODE = 1 }
         }
     }
 }
+
 
 
 

@@ -16,6 +16,9 @@ param(
 
 
 
+
+
+
 Write-Host "🧹 Cleaning up root directory..." -ForegroundColor Cyan
 
 # Files to move to archive
@@ -61,6 +64,9 @@ param(
 
 
 
+
+
+
 ]
     [string]$Path = ".",
     
@@ -89,5 +95,6 @@ if ($WhatIf) {
 } else {
     Write-Host "  📁 Archive created: $archiveDir" -ForegroundColor Yellow
 }
+
 
 

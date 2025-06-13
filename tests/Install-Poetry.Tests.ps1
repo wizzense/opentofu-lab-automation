@@ -14,12 +14,18 @@ Describe '0204_Install-Poetry' {
 
 
 
+
+
+
 $tempFile = Join-Path ([System.IO.Path]::GetTempPath()) "mock_$Prefix.py"
                 New-Item -ItemType File -Path $tempFile -Force | Out-Null
                 try { & $Action $tempFile } finally { Remove-Item $tempFile -Force -ErrorAction SilentlyContinue }
             }
             Mock Get-Command { [PSCustomObject]@{ Path = 'python' } } -ParameterFilter { $Name -eq 'python' }
             function python { param([Parameter(ValueFromRemainingArguments=$true)
+
+
+
 
 
 
@@ -36,6 +42,9 @@ $tempFile = Join-Path ([System.IO.Path]::GetTempPath()) "mock_$Prefix.py"
             Mock Invoke-LabWebRequest {}
             Mock Get-Command { [PSCustomObject]@{ Path = 'python' } } -ParameterFilter { $Name -eq 'python' }
             function python { param([Parameter(ValueFromRemainingArguments=$true)
+
+
+
 
 
 
@@ -65,5 +74,6 @@ $tempFile = Join-Path ([System.IO.Path]::GetTempPath()) "mock_$Prefix.py"
         Get-Module LabRunner | Remove-Module -Force -ErrorAction SilentlyContinue
     }
 }
+
 
 

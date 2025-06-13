@@ -25,6 +25,9 @@ Describe 'Cleanup-Files script' {
 
 
 
+
+
+
 $n -is [System.Management.Automation.Language.CommandAst] -and $n.GetCommandName() -eq 'Remove-Item' }, $true)
         $removes.Count | Should -BeGreaterThan 0
         foreach ($cmd in $removes) {
@@ -160,6 +163,7 @@ $n -is [System.Management.Automation.Language.CommandAst] -and $n.GetCommandName
         { & $script:scriptPath -Config $config } | Should -Throw '*Cleanup failed:*'
     }
 }
+
 
 
 

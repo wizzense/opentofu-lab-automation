@@ -16,6 +16,9 @@ param(
 
 
 
+
+
+
 $ErrorActionPreference = "Stop"
 
 Write-Host "🔧 COMPREHENSIVE POWERSHELL SYNTAX FIX" -ForegroundColor Cyan
@@ -29,6 +32,9 @@ function Fix-GitHubActionsSyntax {
     param([string]$FilePath, [string]$Content)
     
     
+
+
+
 
 
 
@@ -72,6 +78,9 @@ function Fix-CommonSyntaxErrors {
     param([string]$FilePath, [string]$Content)
     
     
+
+
+
 
 
 
@@ -253,5 +262,6 @@ if ($WhatIf) {
 }
 
 Write-Host "=====================================" -ForegroundColor Cyan
+
 
 

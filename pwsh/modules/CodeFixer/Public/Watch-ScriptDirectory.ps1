@@ -29,6 +29,9 @@ function Watch-ScriptDirectory {
 
 
 
+
+
+
 ]
         [string]$Directory,
         
@@ -130,5 +133,6 @@ function Watch-ScriptDirectory {
         Start-Sleep 5
     }
 }
+
 
 

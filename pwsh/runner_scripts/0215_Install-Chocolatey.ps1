@@ -3,6 +3,9 @@ Param([object]$Config)
 
 
 
+
+
+
 Import-Module "$PSScriptRoot/../modules/LabRunner/LabRunner.psd1" -Force
 
 Write-CustomLog "Starting $MyInvocation.MyCommand"
@@ -11,6 +14,9 @@ function Install-Chocolatey {
     param([object]$Config)
 
     
+
+
+
 
 
 
@@ -31,5 +37,6 @@ Invoke-LabStep -Config $Config -Body {
 }
 if ($MyInvocation.InvocationName -ne '.') { Install-Chocolatey @PSBoundParameters }
 Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
+
 
 

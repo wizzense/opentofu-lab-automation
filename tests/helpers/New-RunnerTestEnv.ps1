@@ -24,6 +24,9 @@ function global:New-RunnerTestEnv {
 
 
 
+
+
+
 }' |
         Set-Content -Path (Join-Path $utils 'Logger.ps1')
 
@@ -34,9 +37,15 @@ function global:New-RunnerTestEnv {
 
 
 
+
+
+
 Get-Content -Raw $Path | ConvertFrom-Json }' |
         Set-Content -Path (Join-Path $labs 'Get-LabConfig.ps1')
     'function Format-Config { param($Config) 
+
+
+
 
 
 
@@ -73,6 +82,7 @@ function global:Remove-RunnerTestEnv {
     }
     $script:RunnerTestEnvDirs = @()
 }
+
 
 
 

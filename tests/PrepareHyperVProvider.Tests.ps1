@@ -34,6 +34,9 @@ Describe 'Prepare-HyperVProvider' -Skip:($SkipNonWindows) {
 
 
 
+
+
+
 $script:location = $Path }
             Mock Pop-Location {
                 if ($script:stack.Count -gt 0) {
@@ -66,6 +69,9 @@ $script:location = $Path }
                 $pwd
             }
             Mock Resolve-Path { param([string]$Path) 
+
+
+
 
 
 
@@ -111,11 +117,17 @@ $script:location = $Path }
 
 
 
+
+
+
 & $global:origConvertCerToPem -CerPath $CerPath -PemPath $PemPath
             }
             Mock Convert-PfxToPem {
                 param($PfxPath, $Password, $CertPath, $KeyPath)
                 
+
+
+
 
 
 
@@ -221,6 +233,9 @@ $script:location = $Path }
 
 
 
+
+
+
 @() }
             $stub | Add-Member -MemberType ScriptMethod -Name GetRSAPrivateKey -Value { $rsa }
             Mock Set-Content {}
@@ -278,6 +293,8 @@ $script:location = $Path }
         }
     }
 }
+
+
 
 
 

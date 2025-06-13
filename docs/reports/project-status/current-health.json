@@ -1,15 +1,9 @@
 {
-  "OverallStatus": "Critical",
-  "Timestamp": "2025-06-13 19:18:33",
-  "Recommendations": [
-    "Run automated fixes: ./scripts/maintenance/fix-infrastructure-issues.ps1 -Fix All",
-    "Fix syntax errors: ./scripts/maintenance/fix-test-syntax.ps1"
-  ],
   "Issues": [
     {
-      "Count": 9,
       "Description": "PowerShell files with syntax errors",
-      "Fix": "./scripts/maintenance/fix-test-syntax.ps1",
+      "Category": "PowerShell Syntax",
+      "Count": 8,
       "Files": [
         "./archive/legacy/test-format-function.ps1",
         "./archive/legacy/test-script-sample.ps1",
@@ -17,13 +11,13 @@
         "./archive/root-fix-scripts-20250613-080518/organize-project-fixed.ps1",
         "./archive/root-fix-scripts-20250613-080518/organize-project.ps1"
       ],
-      "Category": "PowerShell Syntax",
-      "Severity": "High"
+      "Severity": "High",
+      "Fix": "./scripts/maintenance/fix-test-syntax.ps1"
     },
     {
-      "Count": 22,
       "Description": "Files using old lab_utils import paths",
-      "Fix": "./scripts/maintenance/fix-infrastructure-issues.ps1 -Fix ImportPaths",
+      "Category": "Deprecated Import Paths",
+      "Count": 22,
       "Files": [
         "Download-Archive.ps1",
         "Expand-All.ps1",
@@ -31,16 +25,22 @@
         "Download-Archive.ps1",
         "Expand-All.ps1"
       ],
-      "Category": "Deprecated Import Paths",
-      "Severity": "Medium"
+      "Severity": "Medium",
+      "Fix": "./scripts/maintenance/fix-infrastructure-issues.ps1 -Fix ImportPaths"
     }
   ],
+  "OverallStatus": "Critical",
+  "Recommendations": [
+    "Run automated fixes: ./scripts/maintenance/fix-infrastructure-issues.ps1 -Fix All",
+    "Fix syntax errors: ./scripts/maintenance/fix-test-syntax.ps1"
+  ],
   "Metrics": {
-    "IssueCount": 2,
-    "SyntaxErrorFiles": 9,
-    "TestFiles": 86,
-    "DeprecatedImports": 22,
+    "TotalPowerShellFiles": 389,
     "MissingMocks": 0,
-    "TotalPowerShellFiles": 389
-  }
+    "IssueCount": 2,
+    "DeprecatedImports": 22,
+    "TestFiles": 86,
+    "SyntaxErrorFiles": 8
+  },
+  "Timestamp": "2025-06-13 19:41:51"
 }

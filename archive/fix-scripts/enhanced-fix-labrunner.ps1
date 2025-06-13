@@ -8,6 +8,9 @@ param(
 
 
 
+
+
+
 $ErrorActionPreference = "Continue"
 
 Write-Host "🔍 Finding all files with lab_utils references..." -ForegroundColor Cyan
@@ -124,5 +127,6 @@ if (-not $WhatIf) {
 }
 
 Write-Host "`n🎉 Enhanced fix script completed!" -ForegroundColor Green
+
 
 

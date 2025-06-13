@@ -9,6 +9,9 @@ param(
 
 
 
+
+
+
 ]
     [switch]$WhatIf
 )
@@ -49,6 +52,9 @@ $newPromptSection = @'
 function Write-Continue {
     param([string]$Message = "Press any key to continue...")
     
+
+
+
 
 
 
@@ -216,6 +222,7 @@ Write-Host "  3. Check configuration selection works properly" -ForegroundColor 
 Write-Host "  4. Monitor for the ':' character issues" -ForegroundColor White
 
 Write-Host "`n✨ Bootstrap script fixes completed successfully!" -ForegroundColor Green
+
 
 
 

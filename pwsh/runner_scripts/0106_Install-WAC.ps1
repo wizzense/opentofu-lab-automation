@@ -3,6 +3,9 @@ Param([object]$Config)
 
 
 
+
+
+
 Import-Module "$PSScriptRoot/../modules/LabRunner/LabRunner.psd1" -Force
 
 Write-CustomLog "Starting $MyInvocation.MyCommand"
@@ -12,6 +15,9 @@ function Get-WacRegistryInstallation {
         [string]$RegistryPath
     )
     
+
+
+
 
 
 
@@ -68,6 +74,9 @@ if ($Config.InstallWAC -eq $true) {
 
 
 
+
+
+
 Write-CustomLog "Installing WAC silently on port $installPort"
         Start-Process msiexec.exe -Wait -ArgumentList "/i `"$installerPath`" /qn /L*v `"$(Get-CrossPlatformTempPath)\WacInstall.log`" SME_PORT=$installPort ACCEPT_EULA=1"
         Write-CustomLog "WAC installation complete."
@@ -78,5 +87,6 @@ Write-CustomLog "Installing WAC silently on port $installPort"
     Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
 }
 Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
+
 
 

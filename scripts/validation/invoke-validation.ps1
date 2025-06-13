@@ -9,6 +9,9 @@ param(
 
 
 
+
+
+
 ]
     [string]$OutputFormat = 'Text',
     [string]$OutputDirectory = "reports/validation"
@@ -93,5 +96,6 @@ try {
     Write-Host "Full error: $_" -ForegroundColor Red
     exit 1
 }
+
 
 
