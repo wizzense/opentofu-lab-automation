@@ -141,11 +141,65 @@ function Step-FixInfrastructureIssues {
 }
 
 function Step-FixTestSyntax {
-    $syntaxScript = "$ProjectRoot/scripts/maintenance/fix-test-syntax.ps1"
-    if (Test-Path $syntaxScript) {
-        & $syntaxScript
+    $fixScript = "$ProjectRoot/scripts/maintenance/fix-infrastructure-issues.ps1"
+    if (Test-Path $fixScript) {
+        & $fixScript -Fix "TestSyntax" -AutoFix:$AutoFix
     } else {
-        Write-MaintenanceLog "Test syntax fix script not found" "WARNING"
+        Write-MaintenanceLog "Fix script not found, using basic syntax validation" "WARNING"
+        # Basic syntax validation fallback
+        Get-ChildItem -Path "$ProjectRoot/tests" -Filter "*.ps1" -Recurse | ForEach-Object {
+            $null = [System.Management.Automation.Language.Parser]::ParseFile($_.FullName, [ref]$null, [ref]$null)
+        }
+    }
+}
+
+function Step-ValidateYaml {
+    Write-MaintenanceLog "Validating and fixing YAML files..." "INFO"
+    $yamlScript = "$ProjectRoot/scripts/validation/Invoke-YamlValidation.ps1"
+    if (Test-Path $yamlScript) {
+        try {
+            if ($AutoFix) {
+                Write-MaintenanceLog "Running YAML validation with auto-fix..." "INFO"
+                & $yamlScript -Mode "Fix" -Path ".github/workflows"
+            } else {
+                Write-MaintenanceLog "Running YAML validation (check only)..." "INFO"
+                & $yamlScript -Mode "Check" -Path ".github/workflows"
+            }
+            Write-MaintenanceLog "YAML validation completed" "SUCCESS"
+        } catch {
+            Write-MaintenanceLog "YAML validation failed: $($_.Exception.Message)" "ERROR"
+            if ($AutoFix) {
+                Write-MaintenanceLog "Attempting basic YAML fixes..." "WARNING"
+                # Basic fallback validation
+                Get-ChildItem -Path "$ProjectRoot/.github/workflows" -Filter "*.yml","*.yaml" -ErrorAction SilentlyContinue | ForEach-Object {
+                    try {
+                        $content = Get-Content $_.FullName -Raw
+                        $null = ConvertFrom-Yaml $content -ErrorAction Stop
+                        Write-MaintenanceLog "✓ $($_.Name) syntax is valid" "SUCCESS"
+                    } catch {
+                        Write-MaintenanceLog "✗ $($_.Name) has syntax issues: $($_.Exception.Message)" "ERROR"
+                    }
+                }
+            }
+        }
+    } else {
+        Write-MaintenanceLog "YAML validation script not found: $yamlScript" "WARNING"
+        Write-MaintenanceLog "Please ensure the validation script exists" "WARNING"
+    }
+}
+
+function Step-UpdateDocumentation {
+    Write-MaintenanceLog "Updating project documentation and configuration..." "INFO"
+    $docScript = "$ProjectRoot/scripts/utilities/Update-ProjectDocumentation.ps1"
+    if (Test-Path $docScript) {
+        try {
+            & $docScript
+            Write-MaintenanceLog "Documentation updated successfully" "SUCCESS"
+        } catch {
+            Write-MaintenanceLog "Failed to update documentation: $($_.Exception.Message)" "WARNING"
+        }
+    } else {
+        Write-MaintenanceLog "Documentation update script not found" "WARNING"
     }
 }
 
@@ -272,6 +326,7 @@ try {
     switch ($Mode) {
         'Quick' {
             Invoke-MaintenanceStep "Infrastructure Health Check" { Step-InfrastructureHealthCheck }
+            Invoke-MaintenanceStep "YAML Validation" { Step-ValidateYaml } $false
             if ($AutoFix) {
                 Invoke-MaintenanceStep "Basic Fixes" { Step-FixInfrastructureIssues } $false
             }
@@ -279,8 +334,10 @@ try {
         
         'Full' {
             Invoke-MaintenanceStep "Infrastructure Health Check" { Step-InfrastructureHealthCheck }
+            Invoke-MaintenanceStep "YAML Validation" { Step-ValidateYaml }
             Invoke-MaintenanceStep "Fix Infrastructure Issues" { Step-FixInfrastructureIssues }
             Invoke-MaintenanceStep "Fix Test Syntax" { Step-FixTestSyntax } $false
+            Invoke-MaintenanceStep "Update Documentation" { Step-UpdateDocumentation } $false
             Invoke-MaintenanceStep "Generate Reports" { Step-GenerateReports } $false
         }
         
@@ -302,8 +359,10 @@ try {
         
         'All' {
             Invoke-MaintenanceStep "Infrastructure Health Check" { Step-InfrastructureHealthCheck }
+            Invoke-MaintenanceStep "YAML Validation" { Step-ValidateYaml }
             Invoke-MaintenanceStep "Fix Infrastructure Issues" { Step-FixInfrastructureIssues }
             Invoke-MaintenanceStep "Fix Test Syntax" { Step-FixTestSyntax } $false
+            Invoke-MaintenanceStep "Update Documentation" { Step-UpdateDocumentation } $false
             
             if (-not $SkipTests) {
                 Invoke-MaintenanceStep "Run Tests" { Step-RunTests } $false

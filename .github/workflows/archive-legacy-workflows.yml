@@ -48,7 +48,7 @@ jobs:
             "update-path-index.yml"
             "update-pester-failures-doc.yml"
           )
-          
+
           # Move each workflow to the archive directory
           for workflow in "${LEGACY_WORKFLOWS[@]}"; do
             if [ -f ".github/workflows/$workflow" ]; then
@@ -58,7 +58,7 @@ jobs:
               echo "Workflow $workflow not found"
             fi
           done
-          
+
           # Update the README with a list of archived workflows
           echo "## Archived Workflows" >> .github/archived_workflows/README.md
           echo "" >> .github/archived_workflows/README.md

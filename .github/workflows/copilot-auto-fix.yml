@@ -1,7 +1,7 @@
 ---
 name: "🤖 Copilot Auto-Fix"
 
-on: 
+on:
   workflow_dispatch:
   schedule:
     # Run weekly on Sunday at 1 AM UTC

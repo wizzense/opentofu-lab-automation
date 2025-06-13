@@ -8,39 +8,45 @@
 
 ## 🎯 Quick Start (30 seconds)
 
-### One Command - Any Platform
+### Option 1: One-Line Install (All Platforms)
 
-**🚀 Universal Quick Start (Recommended):**
-
-**🪟 Windows (PowerShell):**
+**🪟 Windows (PowerShell - Works on Desktop/Server Core):**
 ```powershell
-# Download and run
-iwr -useb https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/HEAD/quick-start.py | iex
+# Download and run installer (no curl required)
+iwr -useb https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/HEAD/install.ps1 | iex
 
-# Alternative: Download first, then run
-Invoke-WebRequest -Uri "https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/HEAD/quick-start.py" -OutFile "quick-start.py"
-python quick-start.py
+# Or download first, then run
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/HEAD/install.ps1" -OutFile "install.ps1"
+./install.ps1
 ```
 
-**🐧 Linux/macOS:**
+**🪟 Windows (Command Prompt/Batch):**
+```batch
+REM Download batch installer (no external tools required)
+powershell -Command "Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/HEAD/install-windows.bat' -OutFile 'install-windows.bat'"
+install-windows.bat
+```
+
+**🐧 Linux/macOS/Unix:**
 ```bash
 # One-line install
-curl -sSL https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/HEAD/quick-start.sh | bash
+curl -sSL https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/HEAD/install.sh | bash
 
-# Alternative: Download Python version directly
-curl -sSL -o quick-start.py https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/HEAD/quick-start.py
-python3 quick-start.py
+# Or download first, then run
+curl -LO https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/HEAD/install.sh
+chmod +x install.sh && ./install.sh
+
+# Alternative with wget (if curl unavailable)
+wget -qO- https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/HEAD/install.sh | bash
 ```
 
-**📋 Requirements:**
-- Python 3.7+ (included on most systems)
-- Internet connection
-- Git (recommended, but optional)
+### Option 2: Manual Download (Cross-Platform)
 
-That's it! The quick-start script will:
-1. ✅ Check your system
-2. 📥 Download the project
-3. 🚀 Launch the interactive menu
+**🚀 Unified Launcher (Recommended):**
+```bash
+# Windows PowerShell:
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/HEAD/launcher.py" -OutFile "launcher.py"
+python launcher.py
 
 # Linux/macOS with curl:
 curl -LO https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/HEAD/launcher.py

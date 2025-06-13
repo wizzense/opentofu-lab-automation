@@ -60,7 +60,7 @@ jobs:
               if (!workflowStats[workflowName]) {
                 workflowStats[workflowName] = { total: 0, success: 0, failure: 0 };
               }
-              
+
               workflowStats[workflowName].total++;
               if (run.conclusion === 'success') {
                 workflowStats[workflowName].success++;
@@ -72,13 +72,13 @@ jobs:
             // Calculate success rates and identify unhealthy workflows
             const unhealthyWorkflows = [];
             let overallSuccess = true;
-            
+
             Object.keys(workflowStats).forEach(workflow => {
               const stats = workflowStats[workflow];
               if (stats.total > 0) {
                 const successRate = (stats.success / stats.total) * 100;
                 stats.successRate = successRate.toFixed(2) + '%';
-                
+
                 // Consider workflows with < 70% success rate as unhealthy
                 if (successRate < 70 && stats.total >= 3) {
                   unhealthyWorkflows.push({
@@ -95,42 +95,42 @@ jobs:
             // Output results
             core.setOutput('healthy', overallSuccess.toString());
             core.setOutput('unhealthy-count', unhealthyWorkflows.length.toString());
-            
+
             // Create summary for GitHub summary
             const summary = ["## 🩺 Workflow Health Summary", "", `Overall System Health: ${overallSuccess ? '✅ Healthy' : '❌ Issues Detected'}`, ""];
-            
+
             if (unhealthyWorkflows.length > 0) {
               summary.push("### ⚠️ Unhealthy Workflows");
               summary.push("");
               summary.push("| Workflow | Success Rate | Failures | Total Runs |");
               summary.push("|----------|-------------|----------|------------|");
-              
+
               unhealthyWorkflows.forEach(wf => {
                 summary.push(`| ${wf.name} | ${wf.successRate} | ${wf.failures} | ${wf.total} |`);
               });
             } else {
               summary.push("✅ All monitored workflows are healthy");
             }
-            
+
             // Add all workflow stats
             summary.push("", "### 📊 All Workflow Statistics", "");
             summary.push("| Workflow | Success Rate | Successes | Failures | Total Runs |");
             summary.push("|----------|-------------|-----------|----------|------------|");
-            
+
             Object.keys(workflowStats).forEach(workflow => {
               const stats = workflowStats[workflow];
               if (stats.total > 0) {
                 summary.push(`| ${workflow} | ${stats.successRate} | ${stats.success} | ${stats.failure} | ${stats.total} |`);
               }
             });
-            
+
             // Write the summary
             await core.summary.addHeading('Workflow Health Check Results')
               .addRaw(summary.join('\n'))
               .write();
-              
-            return { 
-              workflowStats, 
+
+            return {
+              workflowStats,
               unhealthyWorkflows,
               summary: summary.join('\n')
             };
@@ -142,14 +142,14 @@ jobs:
             echo "Failed to install PowerShell" >&2
             exit 1
           fi
-          
+
       - name: "🧪 Run Health Check Scripts"
         id: health-check
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
           $results = @{}
-          
+
           try {
             # Run the health check script
             $output = & "${{ github.workspace }}/scripts/validation/health-check.ps1" -CI
@@ -161,12 +161,12 @@ jobs:
             $results.healthy = $false
             $results.error = $_.Exception.Message
           }
-          
+
           # Convert to JSON for output
           $jsonResults = $results | ConvertTo-Json -Compress
           Write-Host "Health check results: $jsonResults"
           "health-results=$jsonResults" >> $env:GITHUB_OUTPUT
-          
+
           # Exit with specific code for main script
           exit $results.exitCode
 
@@ -176,7 +176,7 @@ jobs:
         run: |
           $ErrorActionPreference = 'Stop'
           $problems = @()
-          
+
           # Check for crucial directories and files
           $requiredPaths = @(
             "pwsh/modules/LabRunner",
@@ -185,36 +185,36 @@ jobs:
             "scripts/validation",
             "scripts/testing"
           )
-          
+
           foreach ($path in $requiredPaths) {
             if (-not (Test-Path $path)) {
               $problems += "Missing required path: $path"
             }
           }
-          
+
           # Check for module manifests
           $requiredManifests = @(
             "pwsh/modules/LabRunner/LabRunner.psd1",
             "pwsh/modules/CodeFixer/CodeFixer.psd1"
           )
-          
+
           foreach ($manifest in $requiredManifests) {
             if (-not (Test-Path $manifest)) {
               $problems += "Missing module manifest: $manifest"
             }
           }
-          
+
           # Output results
           $structureHealthy = $problems.Count -eq 0
           $jsonProblems = $problems | ConvertTo-Json -Compress
-          
+
           "structure-healthy=$structureHealthy" >> $env:GITHUB_OUTPUT
           "structure-problems=$jsonProblems" >> $env:GITHUB_OUTPUT
-          
+
           # Write to GitHub summary
           Write-Host "## 🏗️ Repository Structure Check" | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append
           Write-Host "" | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append
-          
+
           if ($structureHealthy) {
             Write-Host "✅ Repository structure is healthy" | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append
           } else {
@@ -238,27 +238,27 @@ jobs:
             const healthCheckResults = JSON.parse('${{ steps.health-check.outputs.health-results || '{"healthy":false,"error":"No results"}' }}');
             const structureHealthy = ${{ steps.structure-check.outputs.structure-healthy || 'false' }};
             const structureProblems = JSON.parse('${{ steps.structure-check.outputs.structure-problems || '[]' }}');
-            
+
             // Create an issue title and body
             const date = new Date().toISOString().split('T')[0];
             const title = `🚨 System Health Issues Detected - ${date}`;
-            
+
             let body = `# System Health Alert\n\n`;
-            
+
             // Add workflow health information
             body += `## Workflow Health\n\n`;
             if (workflowHealth.unhealthyWorkflows && workflowHealth.unhealthyWorkflows.length > 0) {
               body += `❌ **Unhealthy Workflows Detected**\n\n`;
               body += `| Workflow | Success Rate | Failures | Total Runs |\n`;
               body += `|----------|-------------|----------|------------|\n`;
-              
+
               workflowHealth.unhealthyWorkflows.forEach(wf => {
                 body += `| ${wf.name} | ${wf.successRate} | ${wf.failures} | ${wf.total} |\n`;
               });
             } else {
               body += `✅ All workflows are healthy\n\n`;
             }
-            
+
             // Add health check script results
             body += `\n## Health Check Script Results\n\n`;
             if (healthCheckResults.healthy) {
@@ -272,7 +272,7 @@ jobs:
                 body += "```\n" + healthCheckResults.output + "\n```\n\n";
               }
             }
-            
+
             // Add structure check results
             body += `\n## Repository Structure Check\n\n`;
             if (structureHealthy) {
@@ -283,13 +283,13 @@ jobs:
                 body += `- ${problem}\n`;
               });
             }
-            
+
             // Add action items
             body += `\n## Action Items\n\n`;
             body += `1. Review the workflow runs for more details on failures\n`;
             body += `2. Check the health check script output for specific issues\n`;
             body += `3. Address repository structure problems if any\n`;
-            
+
             // Create the issue
             await github.rest.issues.create({
               owner: context.repo.owner,
@@ -298,7 +298,7 @@ jobs:
               body: body,
               labels: ['automated', 'health-monitor', 'needs-triage']
             });
-            
+
             console.log('Created issue for unhealthy system');
 
   generate-health-report:
@@ -311,21 +311,21 @@ jobs:
     steps:
       - name: "📥 Checkout Repository"
         uses: actions/checkout@v4
-        
+
       - name: "📦 Setup Python"
         uses: actions/setup-python@v5
         with:
           python-version: '3.10'
-          
+
       - name: "📦 Install Dependencies"
         run: |
           python -m pip install --upgrade pip
           pip install pytest pyyaml matplotlib pandas
-          
+
       - name: "📊 Generate Health Report"
         run: |
           python scripts/generate-health-report.py --output health-report.html
-          
+
       - name: "📤 Upload Health Report"
         uses: actions/upload-artifact@v4
         with:

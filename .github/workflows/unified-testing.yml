@@ -159,7 +159,7 @@ jobs:
           Write-Host "Running Pester tests..." -ForegroundColor Yellow
           try {
             $result = Invoke-Pester -Configuration $config
-            
+
             # Process the results
             Write-Host "----- Pester Test Results -----" -ForegroundColor Cyan
             Write-Host "Total: $($result.TotalCount)" -ForegroundColor White
@@ -168,7 +168,7 @@ jobs:
             Write-Host "Skipped: $($result.SkippedCount)" -ForegroundColor Yellow
             Write-Host "NotRun: $($result.NotRunCount)" -ForegroundColor Yellow
             Write-Host ""
-            
+
             # Output result details for GitHub Actions
             "result_total=$($result.TotalCount)" >> $env:GITHUB_OUTPUT
             "result_passed=$($result.PassedCount)" >> $env:GITHUB_OUTPUT
@@ -199,7 +199,7 @@ jobs:
         with:
           name: coverage-results-${{ matrix.os }}
           path: ${{ github.workspace }}/coverage/
-          
+
       - name: "📝 Post Test Results Summary"
         if: always()
         run: |
@@ -215,18 +215,18 @@ jobs:
     steps:
       - name: "📥 Checkout Repository"
         uses: actions/checkout@v4
-        
+
       - name: "🐍 Setup Python"
         uses: actions/setup-python@v5
         with:
           python-version: '3.10'
-          
+
       - name: "📦 Install Dependencies"
         run: |
           python -m pip install --upgrade pip
           pip install pytest pytest-cov
           if [ -f py/requirements.txt ]; then pip install -r py/requirements.txt; fi
-          
+
       - name: "🧪 Run PyTest"
         run: |
           cd py
@@ -247,7 +247,7 @@ jobs:
     steps:
       - name: "📥 Checkout Repository"
         uses: actions/checkout@v4
-        
+
       - name: "📊 Generate Test Summary"
         run: |
           echo "# 🧪 Test Results Summary" >> $GITHUB_STEP_SUMMARY

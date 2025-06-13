@@ -31,7 +31,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0  # Fetch all history for comparing changes
-      
+
       - name: "🔍 Detect Changed Scripts"
         id: detect-changes
         shell: bash
@@ -41,9 +41,9 @@ jobs:
           else
             FORCE_REGENERATE=false
           fi
-          
+
           echo "Force regenerate: $FORCE_REGENERATE"
-          
+
           if [[ "$FORCE_REGENERATE" == "true" ]]; then
             echo "Forcing regeneration of all tests"
             # Get all PowerShell scripts (excluding test files)
@@ -57,21 +57,21 @@ jobs:
               # For pushes, get the parent commit
               BASE_SHA=$(git rev-parse HEAD^)
             fi
-            
+
             # Get changed PowerShell scripts (excluding test files)
             CHANGED_SCRIPTS=$(git diff --name-only "$BASE_SHA" HEAD -- "pwsh/**/*.ps1" | grep -v ".Tests.ps1" | tr '\n' ' ')
-            
+
             if [[ -n "$CHANGED_SCRIPTS" ]]; then
               HAS_CHANGES="true"
             else
               HAS_CHANGES="false"
             fi
           fi
-          
+
           # Detect renamed files
           RENAMED_FILES=$(git diff --name-status "$BASE_SHA" HEAD | grep "^R" || true)
           RENAMED_JSON="[]"
-          
+
           if [[ -n "$RENAMED_FILES" ]]; then
             # Convert to JSON
             RENAMED_JSON="["
@@ -84,18 +84,18 @@ jobs:
                 fi
               fi
             done <<< "$RENAMED_FILES"
-            
+
             # Remove trailing comma if needed
             if [[ "$RENAMED_JSON" != "[" ]]; then
               RENAMED_JSON="${RENAMED_JSON:0:-1}"
             fi
             RENAMED_JSON="${RENAMED_JSON}]"
           fi
-          
+
           echo "has-changes=$HAS_CHANGES" >> $GITHUB_OUTPUT
           echo "changed-scripts=$CHANGED_SCRIPTS" >> $GITHUB_OUTPUT
           echo "renamed-files-json=$RENAMED_JSON" >> $GITHUB_OUTPUT
-          
+
           echo "Changes detected: $HAS_CHANGES"
           echo "Changed scripts: $CHANGED_SCRIPTS"
           echo "Renamed files: $RENAMED_JSON"
@@ -112,7 +112,7 @@ jobs:
     steps:
       - name: "📥 Checkout Repository"
         uses: actions/checkout@v4
-      
+
       - name: "📦 Setup PowerShell"
         if: matrix.os == 'ubuntu-latest'
         shell: bash
@@ -121,7 +121,7 @@ jobs:
             echo "Failed to install PowerShell" >&2
             exit 1
           fi
-      
+
       - name: "💾 Cache PowerShell Modules"
         uses: actions/cache@v4
         with:
@@ -131,7 +131,7 @@ jobs:
             C:\\Users\\runneradmin\\Documents\\PowerShell\\Modules
           key: ${{ matrix.os }}-ps-modules-${{ hashFiles('pwsh/modules/*/**.psd1') }}
           restore-keys: ${{ matrix.os }}-ps-modules-
-      
+
       - name: "📦 Install Dependencies"
         shell: pwsh
         run: |
@@ -144,18 +144,18 @@ jobs:
             # Install specific Pester version
             Install-Module -Name Pester -RequiredVersion 5.7.1 -Force -Scope CurrentUser -AllowClobber
           }
-          
+
           # Import helper modules
           Import-Module "${{ github.workspace }}/pwsh/modules/CodeFixer/CodeFixer.psd1" -Force
-      
+
       - name: "🧪 Generate Tests"
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
-          
+
           # Parse changed scripts
           $changedScripts = "${{ needs.setup.outputs.changed-scripts }}".Trim().Split(' ', [StringSplitOptions]::RemoveEmptyEntries)
-          
+
           # Parse renamed files JSON
           $renamedFilesJson = "${{ needs.setup.outputs.renamed-files-json }}"
           $renamedFiles = if ($renamedFilesJson -and $renamedFilesJson -ne '[]') {
@@ -163,28 +163,28 @@ jobs:
           } else {
             @()
           }
-          
+
           Write-Host "Processing $($changedScripts.Count) changed scripts:"
           foreach ($script in $changedScripts) {
             Write-Host "- $script"
-            
+
             # Generate the test file path
             $testFilePath = $script -replace '\.ps1$', '.Tests.ps1'
             $testFilePath = $testFilePath -replace '^pwsh/', 'tests/'
-            
+
             # Ensure the directory exists
             $testDir = Split-Path -Parent $testFilePath
             if (-not (Test-Path $testDir)) {
               New-Item -Path $testDir -ItemType Directory -Force | Out-Null
             }
-            
+
             # Generate the test file
             Write-Host "Generating test for $script to $testFilePath"
-            
+
             try {
               # Use CodeFixer module to generate test (this is a hypothetical function)
               $result = Invoke-TestGeneration -SourcePath $script -OutputPath $testFilePath -Force
-              
+
               if ($LASTEXITCODE -eq 0) {
                 Write-Host "✅ Test generated successfully" -ForegroundColor Green
               } else {
@@ -194,22 +194,22 @@ jobs:
               Write-Error "Error generating test for $script: $_"
             }
           }
-          
+
           # Handle renamed files
           foreach ($rename in $renamedFiles) {
             # Update the corresponding test file if it exists
             $oldTestPath = $rename.from -replace '\.ps1$', '.Tests.ps1'
             $oldTestPath = $oldTestPath -replace '^pwsh/', 'tests/'
-            
+
             $newTestPath = $rename.to -replace '\.ps1$', '.Tests.ps1'
             $newTestPath = $newTestPath -replace '^pwsh/', 'tests/'
-            
+
             if (Test-Path $oldTestPath) {
               $testDir = Split-Path -Parent $newTestPath
               if (-not (Test-Path $testDir)) {
                 New-Item -Path $testDir -ItemType Directory -Force | Out-Null
               }
-              
+
               Move-Item -Path $oldTestPath -Destination $newTestPath -Force
               Write-Host "📦 Moved test file from $oldTestPath to $newTestPath"
             }
@@ -220,7 +220,7 @@ jobs:
         with:
           name: generated-tests-${{ matrix.os }}
           path: tests/**/*.Tests.ps1
-          
+
   report-results:
     name: "📊 Test Generation Report"
     if: always() && needs.setup.outputs.has-changes == 'true'
@@ -229,21 +229,21 @@ jobs:
     steps:
       - name: "📥 Checkout Repository"
         uses: actions/checkout@v4
-      
+
       - name: "📥 Download Generated Tests"
         uses: actions/download-artifact@v4
         with:
           pattern: generated-tests-*
           merge-multiple: true
           path: tests
-      
+
       - name: "🔍 Count Generated Tests"
         id: count
         shell: bash
         run: |
           TEST_COUNT=$(find tests -name "*.Tests.ps1" | wc -l)
           echo "count=$TEST_COUNT" >> $GITHUB_OUTPUT
-      
+
       - name: "📝 Generate Report"
         run: |
           echo "# 🧪 Test Generation Report" >> $GITHUB_STEP_SUMMARY

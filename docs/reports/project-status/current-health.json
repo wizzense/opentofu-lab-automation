@@ -1,9 +1,16 @@
 {
+  "Metrics": {
+    "SyntaxErrorFiles": 6,
+    "TotalPowerShellFiles": 595,
+    "MissingMocks": 0,
+    "DeprecatedImports": 27,
+    "IssueCount": 2,
+    "TestFiles": 88
+  },
+  "OverallStatus": "Critical",
   "Issues": [
     {
-      "Description": "PowerShell files with syntax errors",
-      "Category": "PowerShell Syntax",
-      "Count": 8,
+      "Severity": "High",
       "Files": [
         "./archive/legacy/test-format-function.ps1",
         "./archive/legacy/test-script-sample.ps1",
@@ -11,36 +18,29 @@
         "./archive/root-fix-scripts-20250613-080518/organize-project-fixed.ps1",
         "./archive/root-fix-scripts-20250613-080518/organize-project.ps1"
       ],
-      "Severity": "High",
-      "Fix": "./scripts/maintenance/fix-test-syntax.ps1"
+      "Count": 6,
+      "Description": "PowerShell files with syntax errors",
+      "Fix": "./scripts/maintenance/fix-test-syntax.ps1",
+      "Category": "PowerShell Syntax"
     },
     {
-      "Description": "Files using old lab_utils import paths",
-      "Category": "Deprecated Import Paths",
-      "Count": 22,
+      "Severity": "Medium",
       "Files": [
+        "auto-maintenance.ps1",
         "Download-Archive.ps1",
         "Expand-All.ps1",
-        "Menu.ps1",
-        "Download-Archive.ps1",
-        "Expand-All.ps1"
+        "fix-infrastructure-issues.ps1",
+        "fix-test-syntax.ps1"
       ],
-      "Severity": "Medium",
-      "Fix": "./scripts/maintenance/fix-infrastructure-issues.ps1 -Fix ImportPaths"
+      "Count": 27,
+      "Description": "Files using old lab_utils import paths",
+      "Fix": "./scripts/maintenance/fix-infrastructure-issues.ps1 -Fix ImportPaths",
+      "Category": "Deprecated Import Paths"
     }
   ],
-  "OverallStatus": "Critical",
   "Recommendations": [
     "Run automated fixes: ./scripts/maintenance/fix-infrastructure-issues.ps1 -Fix All",
     "Fix syntax errors: ./scripts/maintenance/fix-test-syntax.ps1"
   ],
-  "Metrics": {
-    "TotalPowerShellFiles": 389,
-    "MissingMocks": 0,
-    "IssueCount": 2,
-    "DeprecatedImports": 22,
-    "TestFiles": 86,
-    "SyntaxErrorFiles": 8
-  },
-  "Timestamp": "2025-06-13 19:41:51"
+  "Timestamp": "2025-06-13 22:15:19"
 }

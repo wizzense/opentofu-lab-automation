@@ -59,12 +59,12 @@ jobs:
               // Get recent workflow runs
               const workflows = [
                 'unified-ci.yml',
-                'unified-testing.yml', 
+                'unified-testing.yml',
                 'auto-test-generation-consolidated.yml',
                 'system-health-monitor.yml',
                 'unified-utilities.yml'
               ];
-              
+
               let allRuns = [];
               for (const workflow of workflows) {
                 const workflowRuns = await github.rest.actions.listWorkflowRuns({
@@ -73,10 +73,10 @@ jobs:
                   workflow_id: workflow,
                   created: `>=${sevenDaysAgo.toISOString()}`
                 });
-                
+
                 allRuns = allRuns.concat(workflowRuns.data.workflow_runs);
               }
-              
+
               // Calculate stats
               const stats = {
                 totalRuns: allRuns.length,
@@ -84,7 +84,7 @@ jobs:
                 failedRuns: allRuns.filter(run => run.conclusion === 'failure').length,
                 workflowStats: {}
               };
-              
+
               // Group by workflow
               for (const run of allRuns) {
                 const name = run.name;
@@ -95,16 +95,16 @@ jobs:
                     failure: 0
                   };
                 }
-                
+
                 stats.workflowStats[name].total++;
                 if (run.conclusion === 'success') stats.workflowStats[name].success++;
                 if (run.conclusion === 'failure') stats.workflowStats[name].failure++;
               }
-              
+
               // Write stats to file
               const fs = require('fs');
               fs.writeFileSync('workflow-dashboard-data.json', JSON.stringify(stats, null, 2));
-              
+
               console.log(`Generated dashboard data with ${allRuns.length} workflow runs`);
               return { success: true, message: `Generated dashboard with ${allRuns.length} workflow runs` };
             } catch (error) {
@@ -117,46 +117,46 @@ jobs:
         run: |
           try {
             $ErrorActionPreference = 'Stop'
-            
+
             # Import dashboard data
             $dashboardData = Get-Content -Path workflow-dashboard-data.json | ConvertFrom-Json
-            
+
             # Generate dashboard markdown
             $date = Get-Date -Format "yyyy-MM-dd HH:mm:ss UTC"
             $dashboardMd = "## 📊 Workflow Status Dashboard`n`n"
             $dashboardMd += "> Last updated: $date`n`n"
             $dashboardMd += "| Workflow | Success Rate | Total Runs |`n"
             $dashboardMd += "|----------|-------------|------------|`n"
-            
+
             foreach ($workflow in $dashboardData.workflowStats.PSObject.Properties) {
               $name = $workflow.Name
               $stats = $workflow.Value
               $successRate = [math]::Round(($stats.success / [math]::Max(1, $stats.total)) * 100, 1)
-              
+
               # Add emoji based on success rate
-              $emoji = if ($successRate -ge 95) { "✅" } 
-                      elseif ($successRate -ge 80) { "⚠️" } 
+              $emoji = if ($successRate -ge 95) { "✅" }
+                      elseif ($successRate -ge 80) { "⚠️" }
                       else { "❌" }
-              
+
               $dashboardMd += "| $emoji $name | $successRate% | $($stats.total) |`n"
             }
-            
+
             $dashboardMd += "`n### Summary`n`n"
             $dashboardMd += "- Total workflow runs: $($dashboardData.totalRuns)`n"
             $totalSuccessRate = [math]::Round(($dashboardData.successfulRuns / [math]::Max(1, $dashboardData.totalRuns)) * 100, 1)
             $dashboardMd += "- Success rate: $totalSuccessRate%`n"
             $dashboardMd += "- Failed runs: $($dashboardData.failedRuns)`n"
-            
+
             # Update the README.md file, replacing the dashboard section
             $readmePath = "README.md"
             $readmeContent = Get-Content -Path $readmePath -Raw
-            
+
             # Look for dashboard section and replace it
             $dashboardPattern = "(?ms)## 📊 Workflow Status Dashboard.*?(?=^##\s)"
             $newReadmeContent = $readmeContent -replace $dashboardPattern, "$dashboardMd`n`n"
-            
+
             Set-Content -Path $readmePath -Value $newReadmeContent
-            
+
             Write-Host "✅ Dashboard updated successfully in README.md"
           }
           catch {
@@ -168,7 +168,7 @@ jobs:
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
-          
+
           if git diff --quiet README.md; then
             echo "No changes to README dashboard"
           else
@@ -200,12 +200,12 @@ jobs:
         run: |
           echo "Regenerating path index..."
           python scripts/update_index.py
-          
+
           if [ $? -ne 0 ]; then
             echo "❌ Failed to update path index"
             exit 1
           fi
-          
+
           echo "✅ Path index regenerated successfully"
 
       - name: "🔍 Check for Changes"
@@ -261,12 +261,12 @@ jobs:
         run: |
           echo "Building documentation..."
           mkdocs build
-          
+
           if [ $? -ne 0 ]; then
             echo "❌ Failed to build documentation"
             exit 1
           fi
-          
+
           echo "✅ Documentation built successfully"
 
       - name: "📝 Generate Documentation Summary"
