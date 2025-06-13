@@ -408,3 +408,4 @@ python deploy.py --quick
 - Linux/macOS: `deploy.sh`
 
 Your lab environment will be ready in minutes! 🎉
+
