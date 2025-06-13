@@ -3,7 +3,11 @@
 function Resolve-ProjectPath {
     [CmdletBinding()]
     param(
-        [Parameter(Mandatory=$true)][string]$Name,
+        [Parameter(Mandatory=$true)
+
+
+
+][string]$Name,
         [string]$Root
     )
     if (-not $Root) {
@@ -21,7 +25,7 @@ function Resolve-ProjectPath {
         if ($index.ContainsKey($Name) -and $index[$Name]) {
             $pathFromIndex = $index[$Name]
             # Defensive trim for potential CR from YAML value
-            $trimmedPath = if ($pathFromIndex -is [string]) { $pathFromIndex.TrimEnd("`r") } else { $pathFromIndex }
+            $trimmedPath = if ($pathFromIndex -is [string]) { $pathFromIndex.TrimEnd("`r")    } else { $pathFromIndex    }
             if (-not [string]::IsNullOrEmpty($trimmedPath)) {
                 $normalizedPath = Normalize-RelativePath $trimmedPath
                 return (Join-Path $Root $normalizedPath)
@@ -31,7 +35,7 @@ function Resolve-ProjectPath {
             if ((Split-Path $key -Leaf) -eq $Name -and $index[$key]) {
                 $pathFromIndex = $index[$key]
                 # Defensive trim for potential CR from YAML value
-                $trimmedPath = if ($pathFromIndex -is [string]) { $pathFromIndex.TrimEnd("`r") } else { $pathFromIndex }
+                $trimmedPath = if ($pathFromIndex -is [string]) { $pathFromIndex.TrimEnd("`r")    } else { $pathFromIndex    }
                 if (-not [string]::IsNullOrEmpty($trimmedPath)) {
                     $normalizedPath = Normalize-RelativePath $trimmedPath
                     return (Join-Path $Root $normalizedPath)
@@ -44,3 +48,5 @@ function Resolve-ProjectPath {
     if ($null -ne $match) { return $match.FullName }
     return $null
 }
+
+

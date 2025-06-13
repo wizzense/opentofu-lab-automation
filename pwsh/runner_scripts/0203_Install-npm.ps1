@@ -1,9 +1,13 @@
 Param(
-    [Parameter(Mandatory)]
+    [Parameter(Mandatory)
+
+
+
+]
     [object]$Config
 )
 
-Import-Module "$PSScriptRoot/../lab_utils/LabRunner/LabRunner.psd1" -Force
+Import-Module "$PSScriptRoot/../modules/LabRunner/LabRunner.psd1" -Force
 
 Write-CustomLog "Starting $MyInvocation.MyCommand"
 function Install-NpmDependencies {
@@ -11,10 +15,18 @@ function Install-NpmDependencies {
     param([object]$Config)
 
 
-    Invoke-LabStep -Config $Config -Body {
+    
+
+
+
+Invoke-LabStep -Config $Config -Body {
         param($Config)
 
-        Write-CustomLog "Running $($MyInvocation.MyCommand.Name)"
+        
+
+
+
+Write-CustomLog "Running $($MyInvocation.MyCommand.Name)"
 <#
 .SYNOPSIS
     Installs npm dependencies for the frontend project.
@@ -31,7 +43,7 @@ function Install-NpmDependencies {
 #>
 
         # Pull Node_Dependencies block
-        $nodeDeps = if ($Config -is [hashtable]) { $Config['Node_Dependencies'] } else { $Config.Node_Dependencies }
+        $nodeDeps = if ($Config -is [hashtable]) { $Config['Node_Dependencies']    } else { $Config.Node_Dependencies    }
         if (-not $nodeDeps) {
             Write-CustomLog 'Config missing Node_Dependencies; skipping npm install.'
             return
@@ -118,3 +130,6 @@ function Install-NpmDependencies {
 Install-NpmDependencies -Config $Config
 
 Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
+
+
+

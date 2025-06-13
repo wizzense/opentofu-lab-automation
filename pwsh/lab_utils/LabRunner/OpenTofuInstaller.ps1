@@ -71,7 +71,11 @@ PS> .\install-opentofu.ps1 -installMethod standalone
 #>
 param(
 
-    [Parameter(Mandatory = $false)]
+    [Parameter(Mandatory = $false)
+
+
+
+]
     [switch]$help = $false,
 
     [Parameter(Mandatory = $false)]
@@ -227,21 +231,33 @@ function logInfo() {
     param(
         $message
     )
-    Write-Information "${blue}${message}${normal}"
+    
+
+
+
+Write-Information "${blue}${message}${normal}"
 }
 
 function logWarning() {
     param(
         $message
     )
-    Write-Warning "${orange}${message}${normal}"
+    
+
+
+
+Write-Warning "${orange}${message}${normal}"
 }
 
 function logError() {
     param(
         $message
     )
-    try
+    
+
+
+
+try
     {
         [Console]::Error.WriteLine("${red}${message}${normal}")
     } catch {
@@ -640,7 +656,11 @@ function installStandalone() {
 function escapePathArgument {
     [CmdletBinding()]
     param(
-        [Parameter(Mandatory=$true, ValueFromPipeline=$true)]
+        [Parameter(Mandatory=$true, ValueFromPipeline=$true)
+
+
+
+]
         [string] $Path
     )
 
@@ -743,3 +763,5 @@ try
 }
 
 exit $exitCodeOK
+
+

@@ -4,7 +4,11 @@ function Get-LabConfig {
         [string]$Path
     )
 
-    $scriptDir = if ($PSScriptRoot) { $PSScriptRoot } else { Split-Path -Parent $MyInvocation.MyCommand.Path }
+    
+
+
+
+$scriptDir = if ($PSScriptRoot) { $PSScriptRoot    } else { Split-Path -Parent $MyInvocation.MyCommand.Path    }
 
     if (-not $Path) {
         $Path = Join-Path $scriptDir '..' '..' 'configs' 'config_files' 'default-config.json'
@@ -56,3 +60,5 @@ function Get-LabConfig {
 
     }
 }
+
+

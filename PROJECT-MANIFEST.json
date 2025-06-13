@@ -1,0 +1,298 @@
+{
+  "project": {
+    "version": "1.0.0",
+    "lastUpdated": "2025-06-13 19:18:34",
+    "name": "OpenTofu Lab Automation",
+    "description": "Comprehensive automation framework for OpenTofu lab environments with unified maintenance and validation systems"
+  },
+  "core": {
+    "modules": {
+      "CodeFixer": {
+        "keyFunctions": [
+          "Invoke-AutoFix",
+          "Invoke-AutoFixCapture",
+          "Invoke-ComprehensiveAutoFix",
+          "Invoke-ComprehensiveValidation",
+          "Invoke-HereStringFix",
+          "Invoke-ImportAnalysis",
+          "Invoke-ParallelScriptAnalyzer",
+          "Invoke-PowerShellLint-clean",
+          "Invoke-PowerShellLint-corrupted",
+          "Invoke-PowerShellLint-new",
+          "Invoke-PowerShellLint",
+          "Invoke-ResultsAnalysis",
+          "Invoke-ScriptOrderFix",
+          "Invoke-TernarySyntaxFix",
+          "Invoke-TestSyntaxFix",
+          "New-AutoTest",
+          "Test-JsonConfig",
+          "Watch-ScriptDirectory"
+        ],
+        "path": "/pwsh/modules/CodeFixer/",
+        "lastUpdated": "2025-06-13",
+        "entryPoint": "CodeFixer.psd1",
+        "type": "PowerShell Module",
+        "dependencies": [
+          "PSScriptAnalyzer"
+        ],
+        "version": "0.1.0",
+        "purpose": "Automated code analysis, fixing, and validation"
+      },
+      "LabRunner": {
+        "keyFunctions": "Invoke-ParallelLabRunner",
+        "path": "/pwsh/modules/LabRunner/",
+        "lastUpdated": "2025-06-13",
+        "entryPoint": "LabRunner.psd1",
+        "type": "PowerShell Module",
+        "dependencies": [],
+        "version": "0.1.0",
+        "purpose": "Lab environment automation and management"
+      }
+    },
+    "maintenanceSystem": {
+      "unifiedMaintenance": {
+        "path": "/scripts/maintenance/unified-maintenance.ps1",
+        "purpose": "Single entry point for all maintenance operations",
+        "modes": [
+          "Quick",
+          "Full",
+          "Test",
+          "Track",
+          "Report",
+          "All"
+        ],
+        "features": [
+          "Infrastructure health monitoring",
+          "Automated issue tracking",
+          "Syntax validation and fixing",
+          "Report generation",
+          "Changelog integration"
+        ]
+      },
+      "healthCheck": {
+        "path": "/scripts/maintenance/infrastructure-health-check.ps1",
+        "purpose": "Real-time infrastructure analysis without test dependency",
+        "modes": [
+          "Quick",
+          "Full",
+          "Report",
+          "All"
+        ],
+        "features": [
+          "Syntax error detection (350+ files)",
+          "Import path validation",
+          "Mock function completeness",
+          "Module structure integrity",
+          "Auto-fix capabilities"
+        ]
+      },
+      "issueTracking": {
+        "path": "/scripts/maintenance/track-recurring-issues.ps1",
+        "purpose": "Pattern recognition and prevention tracking",
+        "modes": [
+          "Analyze",
+          "Track",
+          "GenerateReport",
+          "UpdateChangelog",
+          "All"
+        ],
+        "features": [
+          "Automatic issue categorization",
+          "Historical trend analysis",
+          "Prevention recommendations",
+          "JSON-based persistence"
+        ]
+      },
+      "emergencyFixes": {
+        "path": "/scripts/maintenance/fix-infrastructure-issues.ps1",
+        "purpose": "Automated problem resolution",
+        "fixes": [
+          "All",
+          "CodeFixer",
+          "MissingCommands",
+          "TestContainers",
+          "ImportPaths",
+          "GitHubActions"
+        ],
+        "features": [
+          "Smart pattern-based fixes",
+          "Dry-run capabilities",
+          "Targeted problem resolution"
+        ]
+      }
+    }
+  },
+  "validation": {
+    "preCommitHook": {
+      "path": "/.git/hooks/pre-commit",
+      "installer": "/tools/Pre-Commit-Hook.ps1",
+      "features": [
+        "Batch processing validation",
+        "Dynamic CPU-based scaling",
+        "Syntax error prevention",
+        "Runner script structure validation"
+      ]
+    },
+    "validators": {
+      "powershellValidation": "/scripts/validation/validate-powershell-scripts.ps1",
+      "workflowHealth": "/scripts/workflow-health-check.sh",
+      "finalValidation": "/run-final-validation.ps1",
+      "comprehensiveTests": "/run-comprehensive-tests.ps1"
+    }
+  },
+  "testing": {
+    "framework": {
+      "pester": {
+        "version": ">=5.0.0",
+        "testHelpers": "/tests/helpers/TestHelpers.ps1",
+        "testFramework": "/tests/helpers/TestFramework.ps1"
+      },
+      "testGeneration": {
+        "autoTest": "CodeFixer.New-AutoTest",
+        "watchDirectory": "CodeFixer.Watch-ScriptDirectory"
+      }
+    },
+    "coverage": {
+      "resultsPath": "/coverage/testResults.xml",
+      "analyzer": "/tools/TestAutoFixer/ResultAnalyzer.ps1"
+    }
+  },
+  "automation": {
+    "deployment": {
+      "crossPlatform": {
+        "windows": "/deploy.bat",
+        "powershell": "/deploy.ps1",
+        "python": "/deploy.py",
+        "bash": "/deploy.sh"
+      },
+      "gui": {
+        "launcher": "/launch-gui.py",
+        "interface": "/gui.py"
+      }
+    },
+    "workflows": {
+      "ci": "/.github/workflows/unified-ci.yml",
+      "systemHealth": "/.github/workflows/system-health-monitor.yml"
+    }
+  },
+  "reporting": {
+    "reportGenerator": "/scripts/utilities/new-report.ps1",
+    "categories": [
+      "test-analysis",
+      "workflow-analysis",
+      "project-status"
+    ],
+    "templates": [
+      "test",
+      "workflow",
+      "project",
+      "custom"
+    ],
+    "outputPath": "/docs/reports/",
+    "indexPath": "/docs/reports/INDEX.md"
+  },
+  "dependencies": {
+    "external": {
+      "PSScriptAnalyzer": {
+        "purpose": "PowerShell code analysis",
+        "autoInstall": true,
+        "usedBy": [
+          "CodeFixer"
+        ]
+      },
+      "Pester": {
+        "purpose": "PowerShell testing framework",
+        "version": ">=5.0.0",
+        "usedBy": [
+          "TestFramework",
+          "validation scripts"
+        ]
+      }
+    },
+    "internal": {
+      "moduleStructure": {
+        "LabRunner": {
+          "dependents": [
+            "TestHelpers",
+            "runner scripts",
+            "tests"
+          ],
+          "importPath": "/pwsh/modules/LabRunner/"
+        },
+        "CodeFixer": {
+          "dependents": [
+            "maintenance scripts",
+            "validation",
+            "CI"
+          ],
+          "importPath": "/pwsh/modules/CodeFixer/"
+        }
+      }
+    }
+  },
+  "configuration": {
+    "project": "/configs/project/",
+    "lab": "/configs/lab_config.yaml",
+    "pathIndex": "/configs/project/path-index.yaml"
+  },
+  "documentation": {
+    "agents": "/AGENTS.md",
+    "copilotInstructions": "/.github/copilot-instructions.md",
+    "codeFixerGuide": "/docs/CODEFIXER-GUIDE.md",
+    "testing": "/docs/testing.md",
+    "changelog": "/CHANGELOG.md"
+  },
+  "architecture": {
+    "coreDirectories": {
+      "/pwsh/": "PowerShell modules and scripts",
+      "/scripts/": "Operational and maintenance scripts",
+      "/tests/": "Test files and testing framework",
+      "/tools/": "Development and utility tools",
+      "/docs/": "Documentation and reports",
+      "/configs/": "Configuration files",
+      "/.github/": "GitHub workflows and settings"
+    },
+    "specialDirectories": {
+      "/archive/": "Deprecated and historical files",
+      "/backups/": "Backup files with timestamps",
+      "/coverage/": "Test coverage reports"
+    }
+  },
+  "integrations": {
+    "ai": {
+      "capabilities": [
+        "Automated maintenance through unified system",
+        "Pattern recognition for recurring issues",
+        "Smart issue categorization and fixes",
+        "Dependency mapping and validation"
+      ],
+      "entryPoints": [
+        "unified-maintenance.ps1",
+        "infrastructure-health-check.ps1",
+        "Invoke-ComprehensiveValidation",
+        "Invoke-ImportAnalysis"
+      ]
+    },
+    "ci": {
+      "healthMonitoring": "Real-time infrastructure health checks",
+      "automatedFixes": "Pattern-based problem resolution",
+      "reportGeneration": "Automated maintenance documentation"
+    }
+  },
+  "metrics": {
+    "codebase": {
+      "activeModules": 2,
+      "validationScripts": 0,
+      "testFiles": 97,
+      "maintenanceScripts": 0,
+      "powerShellFiles": 283
+    },
+    "performance": {
+      "healthCheckTime": "< 1 minute",
+      "batchProcessingOptimization": "Dynamic CPU scaling",
+      "fullMaintenanceTime": "2-5 minutes",
+      "lastHealthCheck": "2025-06-13 19:18:33"
+    },
+    "lastCalculated": "2025-06-13 19:18:34"
+  }
+}

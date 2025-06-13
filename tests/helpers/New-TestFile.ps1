@@ -14,7 +14,11 @@ using the extensible testing framework templates.
 #>
 
 param(
-    [Parameter(Mandatory)]
+    [Parameter(Mandatory)
+
+
+
+]
     [string]$ScriptName,
     
     [Parameter(Mandatory)]
@@ -34,7 +38,11 @@ param(
 function Get-ScriptAnalysis {
     param([string]$ScriptPath)
     
-    if (-not (Test-Path $ScriptPath)) {
+    
+
+
+
+if (-not (Test-Path $ScriptPath)) {
         throw "Script not found: $ScriptPath"
     }
     
@@ -83,7 +91,11 @@ function Get-ScriptAnalysis {
 function New-InstallerTestContent {
     param($ScriptName, $Analysis)
     
-    $enabledProperty = $Analysis.ConfigProperties | Where-Object { $_ -match 'Install' } | Select-Object -First 1
+    
+
+
+
+$enabledProperty = $Analysis.ConfigProperties | Where-Object { $_ -match 'Install' } | Select-Object -First 1
     if (-not $enabledProperty) {
         $enabledProperty = 'InstallEnabled'  # fallback
     }
@@ -93,7 +105,7 @@ function New-InstallerTestContent {
         $installerCommand = 'Start-Process'  # fallback
     }
     
-    $platformClause = if ($Analysis.Platform -ne 'Any') { " -RequiredPlatforms @('$($Analysis.Platform)')" } else { '' }
+    $platformClause = if ($Analysis.Platform -ne 'Any') { " -RequiredPlatforms @('$($Analysis.Platform)')"    } else { ''    }
     
     return @"
 # filepath: /workspaces/opentofu-lab-automation/tests/$($ScriptName -replace '\.ps1$', '.Tests.ps1')
@@ -129,7 +141,11 @@ New-InstallerScriptTest -ScriptName '$ScriptName' -EnabledProperty '$enabledProp
 function New-FeatureTestContent {
     param($ScriptName, $Analysis)
     
-    $enabledProperty = $Analysis.ConfigProperties | Where-Object { $_ -match 'Enable|Allow' } | Select-Object -First 1
+    
+
+
+
+$enabledProperty = $Analysis.ConfigProperties | Where-Object { $_ -match 'Enable|Allow' } | Select-Object -First 1
     if (-not $enabledProperty) {
         $enabledProperty = 'FeatureEnabled'  # fallback
     }
@@ -140,7 +156,7 @@ function New-FeatureTestContent {
     }
     
     $commandsArray = "'" + ($featureCommands -join "', '") + "'"
-    $platformClause = if ($Analysis.Platform -ne 'Any') { " -RequiredPlatforms @('$($Analysis.Platform)')" } else { '' }
+    $platformClause = if ($Analysis.Platform -ne 'Any') { " -RequiredPlatforms @('$($Analysis.Platform)')"    } else { ''    }
     
     return @"
 # filepath: /workspaces/opentofu-lab-automation/tests/$($ScriptName -replace '\.ps1$', '.Tests.ps1')
@@ -175,7 +191,11 @@ New-FeatureScriptTest -ScriptName '$ScriptName' -EnabledProperty '$enabledProper
 function New-ServiceTestContent {
     param($ScriptName, $Analysis)
     
-    $serviceName = 'TestService'  # This would need manual specification
+    
+
+
+
+$serviceName = 'TestService'  # This would need manual specification
     
     return @"
 # filepath: /workspaces/opentofu-lab-automation/tests/$($ScriptName -replace '\.ps1$', '.Tests.ps1')
@@ -207,7 +227,11 @@ New-ServiceScriptTest -ScriptName '$ScriptName' -ServiceName '$serviceName' -Req
 function New-ConfigurationTestContent {
     param($ScriptName, $Analysis)
     
-    $enabledProperty = $Analysis.ConfigProperties | Where-Object { $_ -match 'Config|Setup|Set' } | Select-Object -First 1
+    
+
+
+
+$enabledProperty = $Analysis.ConfigProperties | Where-Object { $_ -match 'Config|Setup|Set' } | Select-Object -First 1
     if (-not $enabledProperty) {
         $enabledProperty = 'ConfigEnabled'  # fallback
     }
@@ -218,7 +242,7 @@ function New-ConfigurationTestContent {
     }
     
     $commandsArray = "'" + ($configCommands -join "', '") + "'"
-    $platformClause = if ($Analysis.Platform -ne 'Any') { " -RequiredPlatforms @('$($Analysis.Platform)')" } else { '' }
+    $platformClause = if ($Analysis.Platform -ne 'Any') { " -RequiredPlatforms @('$($Analysis.Platform)')"    } else { ''    }
     
     return @"
 # filepath: /workspaces/opentofu-lab-automation/tests/$($ScriptName -replace '\.ps1$', '.Tests.ps1')
@@ -295,3 +319,5 @@ try {
     Write-Error "Failed to generate test: $_"
     exit 1
 }
+
+

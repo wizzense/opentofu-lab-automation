@@ -1,9 +1,13 @@
+
+
+
+
 . (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
 . (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
 Describe 'Get-LabConfig' {
 
     It 'returns PSCustomObject for valid JSON and populates Directories' {
-        $modulePath = Join-Path $PSScriptRoot '..' 'pwsh' 'lab_utils' 'Get-LabConfig.ps1'
+        $modulePath = Join-Path $PSScriptRoot '..' 'pwsh/modules/LabRunner/Get-LabConfig.ps1'
         . $modulePath
         $tempFile = Join-Path ([System.IO.Path]::GetTempPath()) ([guid]::NewGuid().ToString() + '.json')
         @{
@@ -19,9 +23,8 @@ Describe 'Get-LabConfig' {
             Remove-Item $tempFile
         }
     }
-
-    It 'uses custom Directories from JSON file' {
-        $modulePath = Join-Path $PSScriptRoot '..' 'pwsh' 'lab_utils' 'Get-LabConfig.ps1'
+        It 'uses custom Directories from JSON file' {
+        $modulePath = Join-Path $PSScriptRoot '..' 'pwsh/modules/LabRunner/Get-LabConfig.ps1'
         . $modulePath
         $tempFile = Join-Path ([System.IO.Path]::GetTempPath()) ([guid]::NewGuid().ToString() + '.json')
         @{
@@ -39,15 +42,13 @@ Describe 'Get-LabConfig' {
             Remove-Item $tempFile
         }
     }
-
-    It 'throws when file does not exist' {
-        $modulePath = Join-Path $PSScriptRoot '..' 'pwsh' 'lab_utils' 'Get-LabConfig.ps1'
+        It 'throws when file does not exist' {
+        $modulePath = Join-Path $PSScriptRoot '..' 'pwsh/modules/LabRunner/Get-LabConfig.ps1'
         . $modulePath
         { Get-LabConfig -Path 'nonexistent.json' } | Should -Throw
     }
-
-    It 'throws on invalid JSON' {
-        $modulePath = Join-Path $PSScriptRoot '..' 'pwsh' 'lab_utils' 'Get-LabConfig.ps1'
+        It 'throws on invalid JSON' {
+        $modulePath = Join-Path $PSScriptRoot '..' 'pwsh/modules/LabRunner/Get-LabConfig.ps1'
         . $modulePath
         $badFile = Join-Path $PSScriptRoot 'bad.json'
         Set-Content -Path $badFile -Value '{bad json}'
@@ -58,9 +59,8 @@ Describe 'Get-LabConfig' {
 
         }
     }
-
-    It 'parses valid YAML' -Skip:(-not (Get-Module -ListAvailable 'powershell-yaml')) {
-        $modulePath = Join-Path $PSScriptRoot '..' 'pwsh' 'lab_utils' 'Get-LabConfig.ps1'
+        It 'parses valid YAML' -Skip:(-not (Get-Module -ListAvailable 'powershell-yaml')) {
+        $modulePath = Join-Path $PSScriptRoot '..' 'pwsh/modules/LabRunner/Get-LabConfig.ps1'
         . $modulePath
         $yamlFile = Join-Path $PSScriptRoot 'test.yaml'
         "foo: bar" | Set-Content -Path $yamlFile
@@ -72,3 +72,6 @@ Describe 'Get-LabConfig' {
         }
     }
 }
+
+
+

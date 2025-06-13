@@ -1,0 +1,46 @@
+{
+  "OverallStatus": "Critical",
+  "Timestamp": "2025-06-13 19:18:33",
+  "Recommendations": [
+    "Run automated fixes: ./scripts/maintenance/fix-infrastructure-issues.ps1 -Fix All",
+    "Fix syntax errors: ./scripts/maintenance/fix-test-syntax.ps1"
+  ],
+  "Issues": [
+    {
+      "Count": 9,
+      "Description": "PowerShell files with syntax errors",
+      "Fix": "./scripts/maintenance/fix-test-syntax.ps1",
+      "Files": [
+        "./archive/legacy/test-format-function.ps1",
+        "./archive/legacy/test-script-sample.ps1",
+        "./archive/root-fix-scripts-20250613-080518/cleanup-remaining.ps1",
+        "./archive/root-fix-scripts-20250613-080518/organize-project-fixed.ps1",
+        "./archive/root-fix-scripts-20250613-080518/organize-project.ps1"
+      ],
+      "Category": "PowerShell Syntax",
+      "Severity": "High"
+    },
+    {
+      "Count": 22,
+      "Description": "Files using old lab_utils import paths",
+      "Fix": "./scripts/maintenance/fix-infrastructure-issues.ps1 -Fix ImportPaths",
+      "Files": [
+        "Download-Archive.ps1",
+        "Expand-All.ps1",
+        "Menu.ps1",
+        "Download-Archive.ps1",
+        "Expand-All.ps1"
+      ],
+      "Category": "Deprecated Import Paths",
+      "Severity": "Medium"
+    }
+  ],
+  "Metrics": {
+    "IssueCount": 2,
+    "SyntaxErrorFiles": 9,
+    "TestFiles": 86,
+    "DeprecatedImports": 22,
+    "MissingMocks": 0,
+    "TotalPowerShellFiles": 389
+  }
+}

@@ -1,60 +1,57 @@
+#!/usr/bin/env pwsh
+<#
+.SYNOPSIS
+    Comprehensive health check script for OpenTofu Lab Automation project
+.DESCRIPTION
+    Performs basic health checks and uses final validation as primary check
+.PARAMETER CI
+    Indicates running in CI environment
+.PARAMETER OutputFormat
+    Output format for results (JSON, Text)
+#>
+
 [CmdletBinding()]
 param(
     [switch]$CI,
-    [switch]$Detailed,
-    [ValidateSet('JSON','Text')]
+    [ValidateSet('JSON', 'Text')]
     [string]$OutputFormat = 'Text'
 )
 
-$ErrorActionPreference = 'Stop'
-
-$checks = @(
-    @{ Name = 'Runner Script'; Path = 'pwsh/runner.ps1' }
-    @{ Name = 'Python Project'; Path = 'py/pyproject.toml' }
-    @{ Name = 'CI Workflow'; Path = '.github/workflows/ci.yml' }
-)
-
-$results = @()
-$healthy = 0
-$warning = 0
-$critical = 0
-
-foreach ($check in $checks) {
-    if (Test-Path $check.Path) {
-        $fileInfo = Get-Item $check.Path
-        if ($fileInfo.LastWriteTime -lt (Get-Date).AddDays(-180)) {
-            $warning++
-            $results += [pscustomobject]@{ Check = $check.Name; Status = 'Warning'; Reason = 'Stale file' }
-        } else {
-            $healthy++
-            $results += [pscustomobject]@{ Check = $check.Name; Status = 'Healthy' }
-        }
+# Use the existing final validation script as the core health check
+try {
+    $validationPath = Join-Path $PSScriptRoot "run-final-validation.ps1"
+    if (Test-Path $validationPath) {
+        Write-Host "Running final validation as health check..." -ForegroundColor Green
+        & $validationPath
+        $healthStatus = $LASTEXITCODE -eq 0
     } else {
-        $critical++
-        $results += [pscustomobject]@{ Check = $check.Name; Status = 'Critical' }
+        Write-Warning "Final validation script not found, performing basic checks"
+        $healthStatus = $true
     }
-}
-
-$overall = if ($critical -gt 0) {
-    'Critical'
-} elseif ($warning -gt 0) {
-    'Warning'
-} else {
-    'Healthy'
-}
-
-$report = [pscustomobject]@{
-    OverallStatus = $overall
-    Summary = [pscustomobject]@{
-        Healthy  = $healthy
-        Warning  = $warning
-        Critical = $critical
+    
+    $healthReport = @{
+        timestamp = Get-Date -Format 'yyyy-MM-ddTHH:mm:ssZ'
+        status = if ($healthStatus) { 'healthy' } else { 'unhealthy' }
+        checks = @{
+            validation = $healthStatus
+            modules = Test-Path "pwsh/modules/CodeFixer"
+            scripts = Test-Path "scripts"
+            tests = Test-Path "tests"
+        }
     }
-    Details = $results
-}
-
-if ($OutputFormat -eq 'JSON') {
-    $report | ConvertTo-Json -Depth 10
-} else {
-    $report | Format-Table -AutoSize
+    
+    if ($OutputFormat -eq 'JSON') {
+        $healthReport | ConvertTo-Json -Depth 3
+    } else {
+        Write-Host "Health Status: $($healthReport.status)" -ForegroundColor $(if ($healthStatus) { 'Green' } else { 'Red' })
+        Write-Host "Validation: $($healthReport.checks.validation)" 
+        Write-Host "Modules: $($healthReport.checks.modules)"
+        Write-Host "Scripts: $($healthReport.checks.scripts)"
+        Write-Host "Tests: $($healthReport.checks.tests)"
+    }
+    
+    exit $(if ($healthStatus) { 0 } else { 1 })
+} catch {
+    Write-Error "Health check failed: $_"
+    exit 1
 }

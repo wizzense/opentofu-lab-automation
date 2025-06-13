@@ -1,5 +1,9 @@
 Param([object]$Config)
-Import-Module "$PSScriptRoot/../lab_utils/LabRunner/LabRunner.psd1" -Force
+
+
+
+
+Import-Module "$PSScriptRoot/../modules/LabRunner/LabRunner.psd1" -Force
 
 Write-CustomLog "Starting $MyInvocation.MyCommand"
 
@@ -7,7 +11,11 @@ function Get-WacRegistryInstallation {
     param(
         [string]$RegistryPath
     )
-    $items = Get-ChildItem $RegistryPath -ErrorAction SilentlyContinue
+    
+
+
+
+$items = Get-ChildItem $RegistryPath -ErrorAction SilentlyContinue
     foreach ($item in $items) {
         $itemProps = Get-ItemProperty $item.PSPath -ErrorAction SilentlyContinue
         # Only check if the DisplayName property exists
@@ -56,7 +64,11 @@ if ($Config.InstallWAC -eq $true) {
     $ProgressPreference = 'SilentlyContinue'
     Invoke-LabDownload -Uri $downloadUrl -Prefix 'WindowsAdminCenter' -Extension '.msi' -Action {
         param($installerPath)
-        Write-CustomLog "Installing WAC silently on port $installPort"
+        
+
+
+
+Write-CustomLog "Installing WAC silently on port $installPort"
         Start-Process msiexec.exe -Wait -ArgumentList "/i `"$installerPath`" /qn /L*v `"$(Get-CrossPlatformTempPath)\WacInstall.log`" SME_PORT=$installPort ACCEPT_EULA=1"
         Write-CustomLog "WAC installation complete."
     }
@@ -66,3 +78,5 @@ if ($Config.InstallWAC -eq $true) {
     Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
 }
 Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
+
+

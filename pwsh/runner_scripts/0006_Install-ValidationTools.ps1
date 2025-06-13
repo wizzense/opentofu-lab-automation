@@ -1,12 +1,20 @@
 Param([object]$Config)
-Import-Module "$PSScriptRoot/../lab_utils/LabRunner/LabRunner.psd1" -Force
+
+
+
+
+Import-Module "$PSScriptRoot/../modules/LabRunner/LabRunner.psd1" -Force
 
 Write-CustomLog "Starting $MyInvocation.MyCommand"
 
 function Install-Cosign {
     [CmdletBinding(SupportsShouldProcess)]
     param()
-    # Check if cosign is available in the current PATH
+    
+
+
+
+# Check if cosign is available in the current PATH
     if (-not (Test-Path (Join-Path $Config.CosignPath "cosign-windows-amd64.exe") -ErrorAction SilentlyContinue)) {
         Write-CustomLog "Cosign is not found. Installing cosign..."
         
@@ -78,3 +86,5 @@ if (-not $Config.InstallCosign -and -not $Config.InstallGpg) {
     Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
 }
 Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
+
+

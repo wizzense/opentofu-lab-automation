@@ -4,6 +4,9 @@ param(
     [string]$SettingsPath = (Join-Path $PSScriptRoot '..' '..' 'pwsh' 'PSScriptAnalyzerSettings.psd1')
 )
 
+# Simple PSScriptAnalyzer import
+Import-Module PSScriptAnalyzer -Force
+
 $ErrorActionPreference = 'Stop'
 
 
@@ -35,7 +38,8 @@ if ($results | Where-Object Severity -eq 'Error') {
 $mockIssues = @()
 foreach ($file in $files) {
     $ast = [System.Management.Automation.Language.Parser]::ParseFile($file, [ref]$null, [ref]$null)
-    $calls = $ast.FindAll({ param($n) $n -is [System.Management.Automation.Language.CommandAst] -and $n.GetCommandName() -eq 'Mock' }, $true)
+    $calls = $ast.FindAll({ param($n) 
+        $n -is [System.Management.Automation.Language.CommandAst] -and $n.GetCommandName() -eq 'Mock' }, $true)
     foreach ($c in $calls) {
         $first = $c.CommandElements[1]
         if ($first -and $first.Extent.Text -match 'Invoke-WebRequest') {
@@ -57,3 +61,5 @@ if ($failed) {
     return
 }
 $global:LASTEXITCODE = 0
+
+

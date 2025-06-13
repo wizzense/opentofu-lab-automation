@@ -7,6 +7,10 @@ param(
     [string]$ConfigFile = "file-organization-rules.json"
 )
 
+
+
+
+
 $ErrorActionPreference = 'Stop'
 
 # File organization rules with smart tagging
@@ -53,7 +57,11 @@ $organizationRules = @{
 function Get-FileTag {
     param($FilePath, $FileName)
     
-    # Smart tagging based on content and patterns
+    
+
+
+
+# Smart tagging based on content and patterns
     $tags = @()
     
     # Pattern-based tagging
@@ -95,7 +103,11 @@ function Get-FileTag {
 function Get-RecommendedLocation {
     param($FileName, $Tags, $CurrentPath)
     
-    # Check organization rules
+    
+
+
+
+# Check organization rules
     foreach ($category in $organizationRules.Keys) {
         $rule = $organizationRules[$category]
         
@@ -203,7 +215,11 @@ function Show-OrganizationPlan {
 function Invoke-FileOrganization {
     param($OrganizationPlan)
     
-    if (-not $Force -and -not $WhatIf) {
+    
+
+
+
+if (-not $Force -and -not $WhatIf) {
         $confirm = Read-Host "`nProceed with file organization? (y/N)"
         if ($confirm -ne 'y' -and $confirm -ne 'Y') {
             Write-Host "Organization cancelled." -ForegroundColor Yellow
@@ -279,3 +295,5 @@ try {
 } catch {
     Write-Error "Organization failed: $_"
 }
+
+

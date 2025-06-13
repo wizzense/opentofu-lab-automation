@@ -15,7 +15,6 @@ Describe 'Initialize-OpenTofu script' {
         AfterAll {
             Get-Module LabRunner | Remove-Module -Force -ErrorAction SilentlyContinue
         }
-
         It 'clones repo when InfraRepoUrl is provided' {
             $tempDir = Join-Path ([System.IO.Path]::GetTempPath()) ([guid]::NewGuid())
             $config = [pscustomobject]@{
@@ -27,7 +26,11 @@ Describe 'Initialize-OpenTofu script' {
 
             Mock Get-Command {
                 param($Name)
-                if ($Name -eq 'gh') { return @{ Name = 'gh' } }
+                
+
+
+
+if ($Name -eq 'gh') { return @{ Name = 'gh' } }
                 if ($Name -eq 'tofu') { return @{ Name = 'tofu' } }
             } -ParameterFilter { $Name -in @('gh','tofu') }
             function global:gh {}
@@ -44,7 +47,6 @@ Describe 'Initialize-OpenTofu script' {
 
             Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue
         }
-
         It 'pulls updates when repo already exists' {
             $tempDir = Join-Path ([System.IO.Path]::GetTempPath()) ([guid]::NewGuid())
             $null = New-Item -ItemType Directory -Path (Join-Path $tempDir '.git') -Force
@@ -57,7 +59,11 @@ Describe 'Initialize-OpenTofu script' {
 
             Mock Get-Command {
                 param($Name)
-                if ($Name -eq 'gh') { return @{ Name = 'gh' } }
+                
+
+
+
+if ($Name -eq 'gh') { return @{ Name = 'gh' } }
                 if ($Name -eq 'tofu') { return @{ Name = 'tofu' } }
             } -ParameterFilter { $Name -in @('gh','tofu') }
             function global:gh {}
@@ -74,7 +80,6 @@ Describe 'Initialize-OpenTofu script' {
 
             Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue
         }
-
         It 'runs tofu init in InfraRepoPath' {
             $tempDir = Join-Path ([System.IO.Path]::GetTempPath()) ([guid]::NewGuid())
             $config = [pscustomobject]@{
@@ -87,7 +92,11 @@ Describe 'Initialize-OpenTofu script' {
             $script:pushed = $null
             Mock Get-Command {
                 param($Name)
-                if ($Name -eq 'gh') { return @{ Name = 'gh' } }
+                
+
+
+
+if ($Name -eq 'gh') { return @{ Name = 'gh' } }
                 if ($Name -eq 'tofu') { return @{ Name = 'tofu' } }
             } -ParameterFilter { $Name -in @('gh','tofu') }
             function global:gh {}
@@ -104,7 +113,6 @@ Describe 'Initialize-OpenTofu script' {
 
             Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue
         }
-
         It 'installs OpenTofu when tofu command is missing' {
             $tempDir = Join-Path ([System.IO.Path]::GetTempPath()) ([guid]::NewGuid())
             $env:LOCALAPPDATA = $tempDir
@@ -121,7 +129,11 @@ Describe 'Initialize-OpenTofu script' {
             $script:getCalls = 0
             Mock Get-Command {
                 param($Name)
-                if ($Name -eq 'gh') { return @{ Name = 'gh' } }
+                
+
+
+
+if ($Name -eq 'gh') { return @{ Name = 'gh' } }
                 if ($Name -eq 'tofu') {
                     $script:getCalls++
                     if ($script:getCalls -eq 1) { return $null } else { return @{ Name = 'tofu' } }
@@ -141,7 +153,6 @@ Describe 'Initialize-OpenTofu script' {
 
             Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue
         }
-
         It 'throws when installation does not make tofu available' {
             $tempDir = Join-Path ([System.IO.Path]::GetTempPath()) ([guid]::NewGuid())
             $env:LOCALAPPDATA = $tempDir
@@ -157,7 +168,11 @@ Describe 'Initialize-OpenTofu script' {
 
             Mock Get-Command {
                 param($Name)
-                if ($Name -eq 'gh') { return @{ Name = 'gh' } }
+                
+
+
+
+if ($Name -eq 'gh') { return @{ Name = 'gh' } }
                 if ($Name -eq 'tofu') { return $null }
             } -ParameterFilter { $Name -in @('gh','tofu') }
             function global:gh {}
@@ -169,7 +184,6 @@ Describe 'Initialize-OpenTofu script' {
 
             Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue
         }
-
         It 'errors when Install-OpenTofu script is missing' {
             $tempDir = Join-Path ([System.IO.Path]::GetTempPath()) ([guid]::NewGuid())
             $env:LOCALAPPDATA = $tempDir
@@ -185,7 +199,11 @@ Describe 'Initialize-OpenTofu script' {
 
             Mock Get-Command {
                 param($Name)
-                if ($Name -eq 'gh')   { return @{ Name = 'gh' } }
+                
+
+
+
+if ($Name -eq 'gh')   { return @{ Name = 'gh' } }
                 if ($Name -eq 'tofu') { return $null }
                 if ($Name -eq 'Invoke-OpenTofuInstaller') { return $null }
             } -ParameterFilter { $Name -in @('gh','tofu','Invoke-OpenTofuInstaller') }
@@ -200,3 +218,5 @@ Describe 'Initialize-OpenTofu script' {
         }
     }
 }
+
+

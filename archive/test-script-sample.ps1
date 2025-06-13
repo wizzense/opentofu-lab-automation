@@ -13,7 +13,11 @@ Force installation even if already installed
 #>
 
 param(
-    [Parameter(Mandatory=$false)]
+    [Parameter(Mandatory=$false)
+
+
+
+]
     [string]$Version = "latest",
     
     [Parameter(Mandatory=$false)]
@@ -27,7 +31,11 @@ function Install-SampleTool {
         [switch]$Force
     )
     
-    Write-Host "Installing SampleTool version $Version"
+    
+
+
+
+Write-Host "Installing SampleTool version $Version"
     
     if ($Force) {
         Write-Host "Force installation requested"
@@ -54,3 +62,5 @@ function Install-SampleTool {
 if ($MyInvocation.InvocationName -ne '.') {
     Install-SampleTool -Version $Version -Force:$Force
 }
+
+

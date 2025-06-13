@@ -4,7 +4,11 @@
 
 [CmdletBinding()]
 param(
-    [Parameter(Mandatory = $true)]
+    [Parameter(Mandatory = $true)
+
+
+
+]
     [string]$Action,  # 'encode', 'execute', 'validate'
     
     [Parameter(Mandatory = $false)]
@@ -28,7 +32,11 @@ function ConvertTo-Base64Script {
         [hashtable]$Parameters = @{}
     )
     
-    if (-not (Test-Path $ScriptPath)) {
+    
+
+
+
+if (-not (Test-Path $ScriptPath)) {
         throw "Script not found: $ScriptPath"
     }
     
@@ -65,7 +73,7 @@ function ConvertTo-Base64Script {
                 }) -join "`n"
                 
                 $beforeParam = $lines[0..$paramBlockEnd] -join "`n"
-                $afterParam = if ($paramBlockEnd + 1 -lt $lines.Count) { $lines[($paramBlockEnd + 1)..($lines.Count - 1)] -join "`n" } else { "" }
+                $afterParam = if ($paramBlockEnd + 1 -lt $lines.Count) { $lines[($paramBlockEnd + 1)..($lines.Count - 1)] -join "`n"    } else { ""    }
                 
                 $scriptContent = @"
 $beforeParam
@@ -109,7 +117,11 @@ function ConvertFrom-Base64Script {
         [string]$EncodedScript
     )
     
-    try {
+    
+
+
+
+try {
         $bytes = [System.Convert]::FromBase64String($EncodedScript)
         $scriptContent = [System.Text.Encoding]::UTF8.GetString($bytes)
         return $scriptContent
@@ -124,7 +136,11 @@ function Invoke-EncodedScript {
         [switch]$WhatIf
     )
     
-    $decodedScript = ConvertFrom-Base64Script -EncodedScript $EncodedScript
+    
+
+
+
+$decodedScript = ConvertFrom-Base64Script -EncodedScript $EncodedScript
     
     if ($WhatIf) {
         Write-Host "Would execute the following script:" -ForegroundColor Cyan
@@ -164,7 +180,11 @@ function Test-EncodedScript {
         [string]$EncodedScript
     )
     
-    try {
+    
+
+
+
+try {
         $decodedScript = ConvertFrom-Base64Script -EncodedScript $EncodedScript
         
         # Validate PowerShell syntax
@@ -237,7 +257,7 @@ switch ($Action.ToLower()) {
             $result | ConvertTo-Json -Depth 3
         } else {
             Write-Host "Script validation result:" -ForegroundColor Cyan
-            Write-Host "  Valid: $($result.Valid)" -ForegroundColor $(if ($result.Valid) { "Green" } else { "Red" })
+            Write-Host "  Valid: $($result.Valid)" -ForegroundColor $$(if (result.Valid) { "Green" } else { "Red" })
             if ($result.Valid) {
                 Write-Host "  Decoded length: $($result.DecodedLength) characters" -ForegroundColor Gray
                 Write-Host "  Contains Param block: $($result.ContainsParam)" -ForegroundColor Gray
@@ -271,3 +291,5 @@ switch ($Action.ToLower()) {
 # CI usage (JSON output)
 .\CrossPlatformExecutor.ps1 -Action encode -ScriptPath "script.ps1" -CI
 #>
+
+

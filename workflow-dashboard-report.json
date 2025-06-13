@@ -1,0 +1,255 @@
+{
+  "timestamp": "2025-06-13T06:39:43.465965",
+  "workflows": [
+    {
+      "name": "system-health-monitor.yml",
+      "path": ".github/workflows/system-health-monitor.yml",
+      "size": 12829,
+      "lines": 333,
+      "has_matrix": false,
+      "has_cache": false,
+      "has_artifacts": true,
+      "platforms": [
+        "Linux"
+      ]
+    },
+    {
+      "name": "copilot-auto-fix.yml",
+      "path": ".github/workflows/copilot-auto-fix.yml",
+      "size": 1842,
+      "lines": 62,
+      "has_matrix": false,
+      "has_cache": false,
+      "has_artifacts": false,
+      "platforms": [
+        "Linux"
+      ]
+    },
+    {
+      "name": "unified-ci.yml",
+      "path": ".github/workflows/unified-ci.yml",
+      "size": 14389,
+      "lines": 395,
+      "has_matrix": false,
+      "has_cache": true,
+      "has_artifacts": true,
+      "platforms": [
+        "Linux"
+      ]
+    },
+    {
+      "name": "changelog.yml",
+      "path": ".github/workflows/changelog.yml",
+      "size": 1104,
+      "lines": 40,
+      "has_matrix": false,
+      "has_cache": true,
+      "has_artifacts": false,
+      "platforms": [
+        "Linux"
+      ]
+    },
+    {
+      "name": "auto-test-generation-consolidated.yml",
+      "path": ".github/workflows/auto-test-generation-consolidated.yml",
+      "size": 9904,
+      "lines": 261,
+      "has_matrix": true,
+      "has_cache": true,
+      "has_artifacts": true,
+      "platforms": [
+        "Windows",
+        "Linux",
+        "macOS"
+      ]
+    },
+    {
+      "name": "unified-utilities.yml",
+      "path": ".github/workflows/unified-utilities.yml",
+      "size": 9935,
+      "lines": 278,
+      "has_matrix": false,
+      "has_cache": false,
+      "has_artifacts": false,
+      "platforms": [
+        "Linux"
+      ]
+    },
+    {
+      "name": "package-labctl.yml",
+      "path": ".github/workflows/package-labctl.yml",
+      "size": 1831,
+      "lines": 68,
+      "has_matrix": false,
+      "has_cache": true,
+      "has_artifacts": true,
+      "platforms": [
+        "Windows"
+      ]
+    },
+    {
+      "name": "issue-on-fail.yml",
+      "path": ".github/workflows/issue-on-fail.yml",
+      "size": 8869,
+      "lines": 218,
+      "has_matrix": false,
+      "has_cache": false,
+      "has_artifacts": false,
+      "platforms": [
+        "Linux"
+      ]
+    },
+    {
+      "name": "archive-legacy-workflows.yml",
+      "path": ".github/workflows/archive-legacy-workflows.yml",
+      "size": 4344,
+      "lines": 86,
+      "has_matrix": false,
+      "has_cache": false,
+      "has_artifacts": false,
+      "platforms": [
+        "Linux"
+      ]
+    },
+    {
+      "name": "auto-merge.yml",
+      "path": ".github/workflows/auto-merge.yml",
+      "size": 775,
+      "lines": 30,
+      "has_matrix": false,
+      "has_cache": false,
+      "has_artifacts": false,
+      "platforms": [
+        "Linux"
+      ]
+    },
+    {
+      "name": "auto-test-generation.yml",
+      "path": ".github/workflows/auto-test-generation.yml",
+      "size": 0,
+      "lines": 0,
+      "has_matrix": false,
+      "has_cache": false,
+      "has_artifacts": false,
+      "platforms": []
+    },
+    {
+      "name": "unified-testing.yml",
+      "path": ".github/workflows/unified-testing.yml",
+      "size": 10348,
+      "lines": 261,
+      "has_matrix": true,
+      "has_cache": true,
+      "has_artifacts": true,
+      "platforms": [
+        "Windows",
+        "Linux",
+        "macOS"
+      ]
+    },
+    {
+      "name": "validate-workflows.yml",
+      "path": ".github/workflows/validate-workflows.yml",
+      "size": 996,
+      "lines": 33,
+      "has_matrix": false,
+      "has_cache": false,
+      "has_artifacts": false,
+      "platforms": [
+        "Linux"
+      ]
+    }
+  ],
+  "recent_runs": [
+    {
+      "conclusion": "failure",
+      "createdAt": "2025-06-13T06:08:21Z",
+      "status": "completed",
+      "url": "https://github.com/wizzense/opentofu-lab-automation/actions/runs/15627706461",
+      "workflowName": "Comprehensive Health Monitor"
+    },
+    {
+      "conclusion": "failure",
+      "createdAt": "2025-06-13T06:04:42Z",
+      "status": "completed",
+      "url": "https://github.com/wizzense/opentofu-lab-automation/actions/runs/15627650610",
+      "workflowName": "Workflow Health Monitor"
+    },
+    {
+      "conclusion": "startup_failure",
+      "createdAt": "2025-06-13T06:00:37Z",
+      "status": "completed",
+      "url": "https://github.com/wizzense/opentofu-lab-automation/actions/runs/15627588833",
+      "workflowName": "Update Dashboard"
+    },
+    {
+      "conclusion": "success",
+      "createdAt": "2025-06-13T05:33:34Z",
+      "status": "completed",
+      "url": "https://github.com/wizzense/opentofu-lab-automation/actions/runs/15627244745",
+      "workflowName": "Example Infrastructure"
+    },
+    {
+      "conclusion": "success",
+      "createdAt": "2025-06-13T05:27:46Z",
+      "status": "completed",
+      "url": "https://github.com/wizzense/opentofu-lab-automation/actions/runs/15627170547",
+      "workflowName": "Example Infrastructure"
+    },
+    {
+      "conclusion": "startup_failure",
+      "createdAt": "2025-06-13T05:00:25Z",
+      "status": "completed",
+      "url": "https://github.com/wizzense/opentofu-lab-automation/actions/runs/15626814457",
+      "workflowName": "Update Dashboard"
+    },
+    {
+      "conclusion": "startup_failure",
+      "createdAt": "2025-06-13T04:04:56Z",
+      "status": "completed",
+      "url": "https://github.com/wizzense/opentofu-lab-automation/actions/runs/15626170774",
+      "workflowName": "Update Dashboard"
+    },
+    {
+      "conclusion": "startup_failure",
+      "createdAt": "2025-06-13T03:22:18Z",
+      "status": "completed",
+      "url": "https://github.com/wizzense/opentofu-lab-automation/actions/runs/15625672637",
+      "workflowName": "Update Dashboard"
+    },
+    {
+      "conclusion": "startup_failure",
+      "createdAt": "2025-06-13T02:30:34Z",
+      "status": "completed",
+      "url": "https://github.com/wizzense/opentofu-lab-automation/actions/runs/15625063591",
+      "workflowName": "Update Dashboard"
+    },
+    {
+      "conclusion": "startup_failure",
+      "createdAt": "2025-06-13T01:28:13Z",
+      "status": "completed",
+      "url": "https://github.com/wizzense/opentofu-lab-automation/actions/runs/15624322048",
+      "workflowName": "Update Dashboard"
+    }
+  ],
+  "summary": {
+    "total_workflows": 13,
+    "with_cache": 5,
+    "with_artifacts": 5,
+    "with_matrix": 2,
+    "issues": [
+      "\u26a0\ufe0f  system-health-monitor.yml is very long (333 lines)",
+      "\u26a0\ufe0f  unified-ci.yml is very long (395 lines)",
+      "\u26a0\ufe0f  auto-test-generation-consolidated.yml is very long (261 lines)",
+      "\u26a0\ufe0f  unified-utilities.yml is very long (278 lines)",
+      "\u26a0\ufe0f  issue-on-fail.yml is very long (218 lines)",
+      "\u26a0\ufe0f  auto-test-generation.yml has no platform specified",
+      "\u26a0\ufe0f  unified-testing.yml is very long (261 lines)"
+    ],
+    "recommendations": [
+      "\ud83d\udca1 Consider adding caching to more workflows to improve performance",
+      "\ud83d\udca1 Consider adding artifact uploads for better debugging",
+      "\ud83d\udca1 Consider splitting long workflows (6 found)"
+    ]
+  }
+}

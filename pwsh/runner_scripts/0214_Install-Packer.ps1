@@ -1,12 +1,20 @@
 Param([object]$Config)
-Import-Module "$PSScriptRoot/../lab_utils/LabRunner/LabRunner.psd1" -Force
+
+
+
+
+Import-Module "$PSScriptRoot/../modules/LabRunner/LabRunner.psd1" -Force
 
 Write-CustomLog "Starting $MyInvocation.MyCommand"
 function Install-Packer {
     [CmdletBinding(SupportsShouldProcess = $true)]
     param([object]$Config)
 
-    Invoke-LabStep -Config $Config -Body {
+    
+
+
+
+Invoke-LabStep -Config $Config -Body {
         Write-CustomLog "Running $($MyInvocation.MyCommand.Name)"
         if ($Config.InstallPacker -eq $true) {
             if (-not (Get-Command packer -ErrorAction SilentlyContinue)) {
@@ -14,7 +22,11 @@ function Install-Packer {
                 $dest = Join-Path $env:ProgramFiles 'Packer'
                 Invoke-LabDownload -Uri $url -Prefix 'packer' -Extension '.zip' -Action {
                     param($zip)
-                    if (-not (Test-Path $dest)) { New-Item -ItemType Directory -Path $dest -Force | Out-Null }
+                    
+
+
+
+if (-not (Test-Path $dest)) { New-Item -ItemType Directory -Path $dest -Force | Out-Null }
                     Expand-Archive -Path $zip -DestinationPath $dest -Force
                 }
             } else {
@@ -28,3 +40,5 @@ function Install-Packer {
 }
 if ($MyInvocation.InvocationName -ne '.') { Install-Packer @PSBoundParameters }
 Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
+
+

@@ -1,3 +1,7 @@
+
+
+
+
 . (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
 . (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
 
@@ -8,10 +12,11 @@ Describe 'Get-HyperVProviderVersion'  {
         $cfg = [pscustomobject]@{ HyperV = @{ ProviderVersion = '9.9.9' } }
         Get-HyperVProviderVersion -Config $cfg | Should -Be '9.9.9'
     }
-
-    It 'falls back to default when not specified' {
+        It 'falls back to default when not specified' {
         $scriptPath = Get-RunnerScriptPath '0010_Prepare-HyperVProvider.ps1'
         . $scriptPath
         Get-HyperVProviderVersion -Config ([pscustomobject]@{}) | Should -Be '1.2.1'
     }
 }
+
+

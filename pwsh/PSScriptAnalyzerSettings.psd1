@@ -1,3 +1,7 @@
+
+
+
+
 @{
     IncludeRules = @(
         'PSUseConsistentIndentation',
@@ -24,3 +28,5 @@
         }
     }
 }
+
+

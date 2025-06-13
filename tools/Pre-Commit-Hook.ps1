@@ -14,7 +14,10 @@ param(
     [switch]$Install,
     
     [Parameter(Mandatory = $false)]
-    [switch]$Uninstall
+    [switch]$Uninstall,
+    
+    [Parameter(Mandatory = $false)]
+    [switch]$Test
 )
 
 $ErrorActionPreference = "Stop"
@@ -28,41 +31,128 @@ function Install-PreCommitHook {
     }
     
     $hookContent = @"
-#!/bin/sh
-# PowerShell Script Validation Pre-Commit Hook
+#!/usr/bin/env pwsh
+#Requires -Version 5.1
+# PowerShell Script Validation Pre-Commit Hook with Batch Processing
 
-# Check if PowerShell is available
-if ! command -v pwsh >/dev/null 2>&1; then
-    echo "PowerShell not found. Skipping PowerShell validation."
+`$ErrorActionPreference = 'Stop'
+
+# Check if we're in a git repository
+if (-not (Test-Path '.git')) {
+    Write-Host "❌ Not in a git repository" -ForegroundColor Red
+    exit 1
+}
+
+Write-Host "🔍 Pre-commit PowerShell validation..." -ForegroundColor Cyan
+
+# Get staged PowerShell files
+`$stagedFiles = git diff --cached --name-only --diff-filter=ACM | Where-Object { `$_ -match '\.ps1`$' }
+
+if (`$stagedFiles.Count -eq 0) {
+    Write-Host "✅ No PowerShell files to validate" -ForegroundColor Green
     exit 0
-fi
+}
 
-# Get list of PowerShell files being committed
-PS_FILES=`$(git diff --cached --name-only --diff-filter=ACM | grep '\.ps1$')
+Write-Host "📝 Validating `$(`$stagedFiles.Count) PowerShell files with batch processing..." -ForegroundColor Yellow
 
-if [ -z "`$PS_FILES" ]; then
-    echo "No PowerShell files to validate."
+# Load our new batch processing linting functions
+try {
+    . "./pwsh/modules/CodeFixer/Public/Invoke-PowerShellLint.ps1"
+    . "./pwsh/modules/CodeFixer/Public/Invoke-ParallelScriptAnalyzer.ps1"
+    
+    # Convert file paths to FileInfo objects
+    `$fileObjects = @()
+    foreach (`$file in `$stagedFiles) {
+        if (Test-Path `$file) {
+            `$fileObjects += Get-Item `$file
+        }
+    }
+    
+    if (`$fileObjects.Count -eq 0) {
+        Write-Host "✅ No valid PowerShell files to validate" -ForegroundColor Green
+        exit 0
+    }
+    
+    Write-Host "🚀 Using batch processing for `$(`$fileObjects.Count) files..." -ForegroundColor Cyan
+    
+    # Run the new batch linting with optimal batch processing parameters
+    # Dynamically adjust based on file count and available CPU cores
+    `$processorCount = [Environment]::ProcessorCount
+    
+    if (`$fileObjects.Count -lt 20) {
+        # Small file count: fewer, larger batches
+        `$batchSize = [Math]::Max(3, [Math]::Ceiling(`$fileObjects.Count / 4))
+        `$maxJobs = [Math]::Min(4, `$processorCount)
+    } elseif (`$fileObjects.Count -lt 100) {
+        # Medium file count: balanced approach
+        `$batchSize = 5
+        `$maxJobs = [Math]::Min(6, `$processorCount)
+    } else {
+        # Large file count: optimize for maximum throughput
+        `$batchSize = 4
+        # Scale jobs based on CPU cores, but cap for system stability
+        `$maxJobs = [Math]::Min([Math]::Max(4, `$processorCount), 12)
+    }
+    
+    Write-Host "⚙️ Using `$maxJobs concurrent jobs with batch size of `$batchSize files" -ForegroundColor Gray
+    `$lintResults = Invoke-PowerShellLint -Files `$fileObjects -Parallel -OutputFormat 'CI' -PassThru -BatchSize `$batchSize -MaxJobs `$maxJobs
+    
+    # Check for errors (syntax errors are critical for commits)
+    `$syntaxErrors = `$lintResults | Where-Object { `$_.Severity -eq 'Error' }
+    
+    if (`$syntaxErrors.Count -gt 0) {
+        Write-Host "`n❌ CRITICAL SYNTAX ERRORS found:" -ForegroundColor Red
+        foreach (`$error in `$syntaxErrors) {
+            Write-Host "  `$(`$error.ScriptName):`$(`$error.Line) - `$(`$error.Message)" -ForegroundColor Red
+        }
+        `$hasErrors = `$true
+    } else {
+        Write-Host "✅ No critical syntax errors found" -ForegroundColor Green
+        `$hasErrors = `$false
+    }
+    
+} catch {
+    Write-Host "⚠️ Could not load batch processing, falling back to basic validation..." -ForegroundColor Yellow
+    Write-Host "Error: `$(`$_.Exception.Message)" -ForegroundColor Gray
+    
+    # Fallback to basic syntax checking only
+    `$hasErrors = `$false
+    foreach (`$file in `$stagedFiles) {
+        if (-not (Test-Path `$file)) {
+            continue  # File might be deleted
+        }
+        
+        Write-Host "Checking: `$file" -ForegroundColor Gray
+        
+        # Test: Basic syntax
+        try {
+            `$content = Get-Content `$file -Raw -ErrorAction Stop
+            [System.Management.Automation.PSParser]::Tokenize(`$content, [ref]`$null) | Out-Null
+            Write-Host "  ✅ Valid syntax" -ForegroundColor Green
+        } catch {
+            Write-Host "  ❌ SYNTAX ERROR: `$(`$_.Exception.Message)" -ForegroundColor Red
+            `$hasErrors = `$true
+            continue
+        }
+    }
+}
+
+if (`$hasErrors) {
+    Write-Host "`n❌ Pre-commit validation FAILED!" -ForegroundColor Red -BackgroundColor Black
+    Write-Host "Fix the errors above before committing." -ForegroundColor Red
+    exit 1
+} else {
+    Write-Host "`n✅ All PowerShell files are valid!" -ForegroundColor Green -BackgroundColor Black
+    
+    # Re-stage any files that were auto-fixed
+    foreach (`$file in `$stagedFiles) {
+        if (Test-Path `$file) {
+            git add `$file
+        }
+    }
+    
     exit 0
-fi
-
-echo "Validating PowerShell files..."
-
-# Run validation on staged PowerShell files
-for file in `$PS_FILES; do
-    if [ -f "`$file" ]; then
-        echo "Validating: `$file"
-        pwsh -File "tools/Validate-PowerShellScripts.ps1" -Path "`$file" -CI
-        if [ `$? -ne 0 ]; then
-            echo "❌ Validation failed for: `$file"
-            echo "Please fix the issues and try again."
-            echo "To auto-fix parameter ordering: pwsh -File tools/Validate-PowerShellScripts.ps1 -Path '`$file' -AutoFix"
-            exit 1
-        fi
-    fi
-done
-
-echo "✅ All PowerShell files passed validation."
-exit 0
+}
 "@
 
     Set-Content -Path $preCommitPath -Value $hookContent -NoNewline
@@ -90,10 +180,11 @@ function Remove-PreCommitHook {
 function Test-PreCommitHook {
     Write-Host "Testing pre-commit hook..." -ForegroundColor Cyan
     
-    # Create a test file with parameter ordering issue
+    # Create a test file with syntax error
     $testFile = "temp/test-precommit.ps1"
     $testContent = @"
-ram([string]`$TestParam)
+# Test file with syntax error
+Param([string]`$TestParam
 
 Write-Host "Test script"
 "@
@@ -115,15 +206,13 @@ Write-Host "Test script"
             Write-Host "❌ Pre-commit hook failed to block invalid script" -ForegroundColor Red
         }
         
-Import-Module "SomeModule"
-Pa
-
         # Clean up
         git reset HEAD~1 --soft 2>/dev/null
         git reset HEAD $testFile 2>/dev/null
         
     } finally {
         Remove-Item $testFile -Force -ErrorAction SilentlyContinue
+        Remove-Item "temp" -Force -Recurse -ErrorAction SilentlyContinue
     }
 }
 
@@ -132,6 +221,8 @@ if ($Install) {
     Install-PreCommitHook
 } elseif ($Uninstall) {
     Remove-PreCommitHook
+} elseif ($Test) {
+    Test-PreCommitHook
 } else {
     Write-Host "PowerShell Pre-Commit Hook Manager" -ForegroundColor Cyan
     Write-Host "Usage:" -ForegroundColor White
@@ -139,3 +230,5 @@ if ($Install) {
     Write-Host "  Uninstall: .\Pre-Commit-Hook.ps1 -Uninstall" -ForegroundColor Gray
     Write-Host "  Test:      .\Pre-Commit-Hook.ps1 -Test" -ForegroundColor Gray
 }
+
+

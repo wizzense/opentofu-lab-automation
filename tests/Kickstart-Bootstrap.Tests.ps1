@@ -1,3 +1,7 @@
+
+
+
+
 . (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
 . (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
 Describe 'kickstart-bootstrap script' {
@@ -5,9 +9,11 @@ Describe 'kickstart-bootstrap script' {
         $path = Join-Path $PSScriptRoot '..' 'pwsh' 'kickstart-bootstrap.sh'
         (Test-Path $path) | Should -BeTrue
     }
-    It 'references kickstart.cfg' {
+        It 'references kickstart.cfg' {
         $path = Join-Path $PSScriptRoot '..' 'pwsh' 'kickstart-bootstrap.sh'
         $content = Get-Content $path -Raw
         $content | Should -Match 'kickstart.cfg'
     }
 }
+
+

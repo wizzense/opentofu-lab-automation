@@ -1,5 +1,9 @@
 Param([object]$Config)
-Import-Module "$PSScriptRoot/../lab_utils/LabRunner/LabRunner.psd1" -Force
+
+
+
+
+Import-Module "$PSScriptRoot/../modules/LabRunner/LabRunner.psd1" -Force
 
 Write-CustomLog "Starting $MyInvocation.MyCommand"
 
@@ -7,7 +11,11 @@ if (-not (Get-Command Convert-CerToPem -ErrorAction SilentlyContinue)) {
 function Convert-CerToPem {
     [CmdletBinding(SupportsShouldProcess)]
     param(
-        [Parameter(Mandatory)]
+        [Parameter(Mandatory)
+
+
+
+]
         [ValidateNotNullOrEmpty()]
         [string]$CerPath,
         [Parameter(Mandatory)]
@@ -27,7 +35,11 @@ if (-not (Get-Command Convert-PfxToPem -ErrorAction SilentlyContinue)) {
 function Convert-PfxToPem {
     [CmdletBinding(SupportsShouldProcess)]
     param(
-        [Parameter(Mandatory)]
+        [Parameter(Mandatory)
+
+
+
+]
         [ValidateNotNullOrEmpty()]
         [string]$PfxPath,
         [securestring]$Password,
@@ -83,7 +95,11 @@ function Get-HyperVProviderVersion {
         [pscustomobject]$Config
     )
 
-    $defaultVersion = '1.2.1'
+    
+
+
+
+$defaultVersion = '1.2.1'
 
     if ($Config -and $Config.HyperV -and $Config.HyperV.ProviderVersion) {
         return $Config.HyperV.ProviderVersion
@@ -354,7 +370,7 @@ try {
 # Determine OS/arch for registry request
 $info = Get-ComputerInfo -Property OsName, OsArchitecture
 $os   = if ($info.OsName -like '*Windows*') { 'windows' } elseif ($info.OsName -like '*Linux*') { 'linux' } else { 'darwin' }
-$arch = if ($info.OsArchitecture -match '64') { 'amd64' } else { '386' }
+$arch = if ($info.OsArchitecture -match '64') { 'amd64'    } else { '386'    }
 
 $registryEndpoint = "https://registry.terraform.io/v1/providers/taliesins/hyperv/$providerVersion/download/$os/$arch"
 Write-CustomLog "Querying provider registry: $registryEndpoint"
@@ -362,7 +378,11 @@ $downloadInfo = Invoke-RestMethod -Uri $registryEndpoint
 $tempDir = Join-Path (Get-CrossPlatformTempPath) "hyperv_provider_$($providerVersion)"
 Invoke-LabDownload -Uri $downloadInfo.download_url -Prefix 'hyperv_provider' -Extension '.zip' -Action {
     param($zipPath)
-    Expand-Archive -Path $zipPath -DestinationPath $tempDir -Force
+    
+
+
+
+Expand-Archive -Path $zipPath -DestinationPath $tempDir -Force
 }
 
 $provider
@@ -414,3 +434,6 @@ You can now run 'tofu plan'/'tofu apply' in $infraRepoPath.
 Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
 }
 }
+
+
+

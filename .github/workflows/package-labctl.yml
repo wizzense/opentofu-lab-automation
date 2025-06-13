@@ -1,14 +1,19 @@
 ---
-name: Package labctl
+name: "📦 Package LabCTL Tool"
 
 on:
   workflow_dispatch:
   push:
     branches: [main]
+    paths:
+      - 'py/**'
   pull_request:
+    paths:
+      - 'py/**'
 
 jobs:
   package-win:
+    name: "📦 Build Windows Package"
     runs-on: windows-latest
     defaults:
       run:

@@ -49,7 +49,6 @@ Describe '0001_Reset-Git' -Skip:($SkipNonWindows) {
 
             Remove-Item $tempDir -Recurse -Force -ErrorAction SilentlyContinue
         }
-
         It 'falls back to **git clone** when gh CLI is missing' {
             $tempDir = Join-Path ([System.IO.Path]::GetTempPath()) ([guid]::NewGuid())
 
@@ -100,7 +99,6 @@ Describe '0001_Reset-Git' -Skip:($SkipNonWindows) {
                 Remove-Item $tempDir -Recurse -Force -ErrorAction SilentlyContinue
             }
         }
-
         It 'aborts when gh CLI is unauthenticated' {
             $tempDir = Join-Path ([System.IO.Path]::GetTempPath()) ([guid]::NewGuid())
 
@@ -113,7 +111,11 @@ Describe '0001_Reset-Git' -Skip:($SkipNonWindows) {
             function global:gh {}
             Mock gh {
                 param($Sub, $Action)
-                if ($Sub -eq 'auth' -and $Action -eq 'status') { $global:LASTEXITCODE = 1 }
+                
+
+
+
+if ($Sub -eq 'auth' -and $Action -eq 'status') { $global:LASTEXITCODE = 1 }
             }
             Mock git {}
 
@@ -133,7 +135,7 @@ Describe '0001_Reset-Git' -Skip:($SkipNonWindows) {
 
     Context 'Logging' {
         It 'logs a success message when clone succeeds' {
-            . (Join-Path $PSScriptRoot '..' 'pwsh' 'lab_utils' 'LabRunner' 'Logger.ps1')
+            . (Join-Path $PSScriptRoot '..' 'pwsh/modules/LabRunner/Logger.ps1')
             $tempDir = Join-Path ([System.IO.Path]::GetTempPath()) ([guid]::NewGuid())
 
             $config = [pscustomobject]@{
@@ -154,9 +156,8 @@ Describe '0001_Reset-Git' -Skip:($SkipNonWindows) {
 
             Remove-Item $tempDir -Recurse -Force -ErrorAction SilentlyContinue
         }
-
         It 'logs a completion message when clone succeeds' {
-            . (Join-Path $PSScriptRoot '..' 'pwsh' 'lab_utils' 'LabRunner' 'Logger.ps1')
+            . (Join-Path $PSScriptRoot '..' 'pwsh/modules/LabRunner/Logger.ps1')
             $tempDir = Join-Path ([System.IO.Path]::GetTempPath()) ([guid]::NewGuid())
 
             $config = [pscustomobject]@{
@@ -179,3 +180,6 @@ Describe '0001_Reset-Git' -Skip:($SkipNonWindows) {
         }
     }
 }
+
+
+

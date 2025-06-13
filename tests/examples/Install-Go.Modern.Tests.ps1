@@ -20,7 +20,13 @@ New-InstallerScriptTest -ScriptName '0007_Install-Go.ps1' -EnabledProperty 'Inst
 } -RequiredPlatforms @('Windows') -AdditionalMocks @{
     'Get-Command' = { 
         param($Name)
-        if ($Name -eq 'go') { return $null } 
+        
+
+
+
+if ($Name -eq 'go') { return $null } 
         return [PSCustomObject]@{ Name = $Name; Source = "/usr/bin/$Name" }
     }
 }
+
+

@@ -1,12 +1,20 @@
 Param([object]$Config)
-Import-Module "$PSScriptRoot/../lab_utils/LabRunner/LabRunner.psd1" -Force
+
+
+
+
+Import-Module "$PSScriptRoot/../modules/LabRunner/LabRunner.psd1" -Force
 
 Write-CustomLog "Starting $MyInvocation.MyCommand"
 function Install-CA {
     [CmdletBinding(SupportsShouldProcess = $true)]
     param([object]$Config)
 
-    Invoke-LabStep -Config $Config -Body {
+    
+
+
+
+Invoke-LabStep -Config $Config -Body {
     Write-CustomLog "Running $($MyInvocation.MyCommand.Name)"
 
 if ($Config.InstallCA -eq $true) {
@@ -82,3 +90,5 @@ Write-CustomLog "Standalone Root CA '$CAName' installation complete."
     Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
 if ($MyInvocation.InvocationName -ne '.') { Install-CA @PSBoundParameters }
 Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
+
+

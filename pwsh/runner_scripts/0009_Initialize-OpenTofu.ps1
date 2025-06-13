@@ -1,5 +1,9 @@
 Param([object]$Config)
-Import-Module "$PSScriptRoot/../lab_utils/LabRunner/LabRunner.psd1" -Force
+
+
+
+
+Import-Module "$PSScriptRoot/../modules/LabRunner/LabRunner.psd1" -Force
 $scriptRoot = $PSScriptRoot
 
 Write-CustomLog "Starting $MyInvocation.MyCommand"
@@ -140,7 +144,7 @@ if (-not $tofuCmd) {
         }    } else {
         Write-Warning "Tofu executable not found at $defaultTofuExe. Attempting installation..."
         $cosign   = Join-Path $Config.CosignPath 'cosign-windows-amd64.exe'
-        $version  = if ($Config.OpenTofuVersion) { $Config.OpenTofuVersion } else { 'latest' }        if (Get-Command Invoke-OpenTofuInstaller -ErrorAction SilentlyContinue) {
+        $version = if ($Config.OpenTofuVersion) { $Config.OpenTofuVersion    } else { 'latest'    }        if (Get-Command Invoke-OpenTofuInstaller -ErrorAction SilentlyContinue) {
             Invoke-OpenTofuInstaller -CosignPath $cosign -OpenTofuVersion $version
         } else {
             throw "Cannot install OpenTofu because the installer function 'Invoke-OpenTofuInstaller' is not available."
@@ -192,3 +196,5 @@ exit 0
     Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
 }
 Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
+
+

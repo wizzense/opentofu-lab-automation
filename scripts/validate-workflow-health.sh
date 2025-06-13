@@ -67,19 +67,15 @@ done
 
 echo -e "${BLUE}Checking for common workflow issues...${NC}"
 
-# Check for escaped quotes in workflows
-if grep -r -E "\\'" .github/workflows/ >/dev/null 2>&1; then
+# Check for escaped quotes in workflows (literal \' sequence)
+if grep -r -E "\\\\'" .github/workflows/ >/dev/null 2>&1; then
     echo -e "  ${RED}ERROR Found escaped quotes in workflows${NC}"
     echo -e "  ${YELLOW}Matched lines:${NC}"
-    grep -rn -E "\\'" .github/workflows/
+    grep -rn -E "\\\\'" .github/workflows/
     ((errors++))
 else
     echo -e "  ${GREEN}OK No escaped quote issues${NC}"
 fi
-
-# Debugging escaped quotes issue
-echo -e "${BLUE}Debugging escaped quotes issue...${NC}"
-grep -rn -E "\\'" .github/workflows/ || echo "No escaped quotes found"
 
 # Check for invalid cache keys
 if grep -r "\.github/actions/lint/requirements\.txt" .github/workflows/ >/dev/null 2>&1; then

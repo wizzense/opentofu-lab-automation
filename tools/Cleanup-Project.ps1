@@ -5,7 +5,11 @@ param(
     [switch]$WhatIf,
     [switch]$Force,
     [switch]$CreateBackup,
-    [string]$BackupPath = "cleanup-backup-$(Get-Date -Format 'yyyyMMdd-HHmmss')"
+    [string]$BackupPath = "cleanup-backup-$(Get-Date -Format 'yyyyMMdd-HHmmss')
+
+
+
+"
 )
 
 $ErrorActionPreference = 'Stop'
@@ -35,7 +39,7 @@ function Show-CleanupPlan {
     foreach ($category in $categories.Keys) {
         $files = $categories[$category]
         if ($files.Count -gt 0) {
-            $color = if ($category -eq "Keep in Root") { "Green" } else { "Cyan" }
+            $color = if ($category -eq "Keep in Root") { "Green"    } else { "Cyan"    }
             Write-Host "   📂 $category`: $($files.Count) files" -ForegroundColor $color
             foreach ($file in $files) {
                 Write-Host "      📄 $($file.Name)" -ForegroundColor Gray
@@ -81,7 +85,11 @@ function Show-CleanupPlan {
 function Create-Backup {
     param($BackupPath)
     
-    Write-Host "`n💾 Creating backup..." -ForegroundColor Yellow
+    
+
+
+
+Write-Host "`n💾 Creating backup..." -ForegroundColor Yellow
     
     # Create backup directory
     New-Item -ItemType Directory -Path $BackupPath -Force | Out-Null
@@ -99,7 +107,11 @@ function Create-Backup {
 function Execute-Cleanup {
     param($Categories, $WhatIf)
     
-    Write-Host "`n🚀 Executing cleanup..." -ForegroundColor Yellow
+    
+
+
+
+Write-Host "`n🚀 Executing cleanup..." -ForegroundColor Yellow
     
     # Directory mappings
     $directoryMap = @{
@@ -239,3 +251,5 @@ try {
         Write-Host "💾 Backup is available at: $BackupPath" -ForegroundColor Cyan
     }
 }
+
+

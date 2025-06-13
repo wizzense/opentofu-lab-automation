@@ -4,6 +4,10 @@ param(
     [switch]$DryRun
 )
 
+
+
+
+
 Write-Host "🧪 Testing workflow components for $Platform..." -ForegroundColor Yellow
 
 # Ensure coverage directory exists
@@ -63,3 +67,5 @@ if ($DryRun) {
     Write-Host "✅ All workflow components validated successfully!" -ForegroundColor Green
     Write-Host "💡 Run with -DryRun to test Pester execution" -ForegroundColor Cyan
 }
+
+

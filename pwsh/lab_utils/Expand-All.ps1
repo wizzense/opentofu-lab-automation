@@ -6,12 +6,20 @@ function Expand-All {
         [string]$ZipFile
     )
 
-    # Ensure logging helpers are available for each invocation
+    
+
+
+
+# Ensure logging helpers are available for each invocation
     if (-not (Get-Command Read-LoggedInput -ErrorAction SilentlyContinue)) {
         $logger = Join-Path (Join-Path (Join-Path $PSScriptRoot '..') 'LabRunner') 'Logger.ps1'
         if (Test-Path $logger) { . $logger }
         if (-not (Get-Command Read-LoggedInput -ErrorAction SilentlyContinue)) {
-            function Read-LoggedInput { param($Prompt) Read-Host $Prompt }
+            function Read-LoggedInput { param($Prompt) 
+
+
+
+Read-Host $Prompt }
         }
     }
 
@@ -49,4 +57,6 @@ function Expand-All {
         Write-CustomLog "All archives expanded."
     }
 }
+
+
 
