@@ -10,55 +10,69 @@
 
 ### Option 1: Download & Run (No Git Required)
 
-**Download individual files via CLI:**
+**🎯 Smart Download (Auto-detects branch):**
+```bash
+# Intelligent downloader that adapts to current branch
+curl -sL https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/HEAD/quick-download.sh | bash
+
+# Or download the script first for multiple uses:
+curl -LO https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/HEAD/quick-download.sh
+chmod +x quick-download.sh
+
+./quick-download.sh        # Download deploy.py
+./quick-download.sh gui.py  # Download GUI  
+./quick-download.sh all     # Download everything
+```
+
+**📥 Manual Download:**
 ```bash
 # Download main deployment script
-curl -LO https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/main/deploy.py
+curl -LO https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/HEAD/deploy.py
 # OR with wget:
-wget https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/main/deploy.py
+wget https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/HEAD/deploy.py
 
 python3 deploy.py
 
 # Download GUI launcher
-curl -LO https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/main/gui.py
+curl -LO https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/HEAD/gui.py
 # OR with wget:
-wget https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/main/gui.py
+wget https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/HEAD/gui.py
 
 python3 gui.py
 
 # Download platform-specific launchers
 # Windows:
-curl -LO https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/main/deploy.bat
-curl -LO https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/main/launch-gui.bat
+curl -LO https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/HEAD/deploy.bat
+curl -LO https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/HEAD/launch-gui.bat
 
 # Linux/macOS:
-curl -LO https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/main/deploy.sh
-curl -LO https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/main/launch-gui.sh
+curl -LO https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/HEAD/deploy.sh
+curl -LO https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/HEAD/launch-gui.sh
 chmod +x *.sh
 ```
 
 **Quick download & run:**
 ```bash
 # One-liner CLI deployment
-curl -sL https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/main/deploy.py | python3
+curl -sL https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/HEAD/deploy.py | python3
 
 # One-liner GUI launcher
-curl -sL https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/main/gui.py | python3
+curl -sL https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/HEAD/gui.py | python3
 ```
 
 **PowerShell (Windows):**
 ```powershell
 # Download and run deployment script
-Invoke-WebRequest -Uri "https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/main/deploy.py" -OutFile "deploy.py"
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/HEAD/deploy.py" -OutFile "deploy.py"
 python deploy.py
 
 # Download and run GUI
-Invoke-WebRequest -Uri "https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/main/gui.py" -OutFile "gui.py"
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/HEAD/gui.py" -OutFile "gui.py"
 python gui.py
 
 # Download Windows launchers
-Invoke-WebRequest -Uri "https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/main/deploy.bat" -OutFile "deploy.bat"
-Invoke-WebRequest -Uri "https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/main/launch-gui.bat" -OutFile "launch-gui.bat"
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/HEAD/deploy.bat" -OutFile "deploy.bat"
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/HEAD/launch-gui.bat" -OutFile "launch-gui.bat"
 ```
 
 **What each file does:**
@@ -66,6 +80,12 @@ Invoke-WebRequest -Uri "https://raw.githubusercontent.com/wizzense/opentofu-lab-
 - `gui.py` - Cross-platform GUI with visual config builder
 - `deploy.bat/.sh` - Platform-specific wrappers for easy double-click execution
 - `launch-gui.bat/.sh` - GUI launchers with dependency checking
+
+> **📝 Branch Notes**: 
+> - URLs with `/HEAD/` automatically use the repository's default branch
+> - The `quick-download.sh` script auto-detects your current git branch for testing
+> - For testing latest features, manually replace `/HEAD/` with `/feature/deployment-wrapper-gui/`
+> - Once merged, all URLs will work with the main branch
 
 ### Option 2: One-Click Deployment (Full Clone)
 

@@ -33,11 +33,11 @@ launch-gui.bat
 #### 3. Test CLI Downloads (New Feature)
 ```bash
 # Test individual file download
-curl -LO https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/main/deploy.py
+curl -LO https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/HEAD/deploy.py
 python3 deploy.py
 
 # Test one-liner execution
-curl -sL https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/main/deploy.py | python3
+curl -sL https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/HEAD/deploy.py | python3
 ```
 
 ### 🎨 **GUI Testing**
@@ -114,7 +114,7 @@ REM Test Windows GUI launcher
 launch-gui.bat
 
 REM Test PowerShell downloads
-powershell -Command "Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/main/deploy.py' -OutFile 'deploy.py'"
+powershell -Command "Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/HEAD/deploy.py' -OutFile 'deploy.py'"
 python deploy.py
 ```
 
@@ -130,7 +130,7 @@ ls -la deploy.py gui.py launch-gui.py
 # Should show executable permissions (rwxrwxrwx)
 
 # Test curl downloads
-curl -LO https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/main/gui.py
+curl -LO https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/HEAD/gui.py
 python3 gui.py
 ```
 
@@ -221,7 +221,7 @@ python3 deploy.py --help
 python3 gui.py
 
 # 3. Download works
-curl -LO https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/main/deploy.py
+curl -LO https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/HEAD/deploy.py
 python3 deploy.py --help
 
 # 4. Platform launchers work
