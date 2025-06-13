@@ -1,15 +1,22 @@
 {
+  "Recommendations": [
+    "Run automated fixes: ./scripts/maintenance/fix-infrastructure-issues.ps1 -Fix All",
+    "Fix syntax errors: ./scripts/maintenance/fix-test-syntax.ps1"
+  ],
+  "Timestamp": "2025-06-13 23:21:40",
   "Metrics": {
-    "SyntaxErrorFiles": 6,
-    "TotalPowerShellFiles": 595,
-    "MissingMocks": 0,
-    "DeprecatedImports": 27,
+    "TestFiles": 88,
+    "SyntaxErrorFiles": 12,
+    "TotalPowerShellFiles": 944,
+    "DeprecatedImports": 44,
     "IssueCount": 2,
-    "TestFiles": 88
+    "MissingMocks": 0
   },
   "OverallStatus": "Critical",
   "Issues": [
     {
+      "Description": "PowerShell files with syntax errors",
+      "Category": "PowerShell Syntax",
       "Severity": "High",
       "Files": [
         "./archive/legacy/test-format-function.ps1",
@@ -18,12 +25,12 @@
         "./archive/root-fix-scripts-20250613-080518/organize-project-fixed.ps1",
         "./archive/root-fix-scripts-20250613-080518/organize-project.ps1"
       ],
-      "Count": 6,
-      "Description": "PowerShell files with syntax errors",
       "Fix": "./scripts/maintenance/fix-test-syntax.ps1",
-      "Category": "PowerShell Syntax"
+      "Count": 12
     },
     {
+      "Description": "Files using old lab_utils import paths",
+      "Category": "Deprecated Import Paths",
       "Severity": "Medium",
       "Files": [
         "auto-maintenance.ps1",
@@ -32,15 +39,8 @@
         "fix-infrastructure-issues.ps1",
         "fix-test-syntax.ps1"
       ],
-      "Count": 27,
-      "Description": "Files using old lab_utils import paths",
       "Fix": "./scripts/maintenance/fix-infrastructure-issues.ps1 -Fix ImportPaths",
-      "Category": "Deprecated Import Paths"
+      "Count": 44
     }
-  ],
-  "Recommendations": [
-    "Run automated fixes: ./scripts/maintenance/fix-infrastructure-issues.ps1 -Fix All",
-    "Fix syntax errors: ./scripts/maintenance/fix-test-syntax.ps1"
-  ],
-  "Timestamp": "2025-06-13 22:15:19"
+  ]
 }
