@@ -167,7 +167,7 @@ function Invoke-Scripts {
             $null = [System.Management.Automation.PSParser]::Tokenize($scriptContent, [ref]$null)
             Write-CustomLog "Script syntax validation passed for $($s.Name)"
         } catch {
-            Write-CustomLog "ERROR: Script has syntax errors in $scriptPath. Exception: $_" 'ERROR'
+            Write-CustomLog "ERROR: Script has syntax errors: $scriptPath" 'ERROR'
             $failed += $s.Name
             continue
         }
