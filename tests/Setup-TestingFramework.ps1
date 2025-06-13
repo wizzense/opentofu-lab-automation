@@ -23,6 +23,10 @@ param(
     [string]$WatchDirectory = "pwsh"
 )
 
+
+
+
+
 $ErrorActionPreference = 'Stop'
 
 Write-Host "Setting up OpenTofu Lab Automation Testing Framework" -ForegroundColor Cyan
@@ -192,7 +196,11 @@ function Start-FileWatcher {
     $watcherScript = Join-Path $helpersPath 'New-AutoTestGenerator.ps1'
     $job = Start-Job -ScriptBlock {
         param($WatcherScript, $WatchPath)
-        & $WatcherScript -WatchMode -WatchDirectory $WatchPath -WatchIntervalSeconds 30
+        
+
+
+
+& $WatcherScript -WatchMode -WatchDirectory $WatchPath -WatchIntervalSeconds 30
     } -ArgumentList $watcherScript, $watchPath
     
     Write-Host "  ✅ File watcher started (Job ID: $($job.Id))" -ForegroundColor Green
@@ -325,3 +333,5 @@ try {
     Write-Host "Check the error above and try again" -ForegroundColor Gray
     exit 1
 }
+
+

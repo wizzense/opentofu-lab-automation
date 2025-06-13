@@ -18,3 +18,17 @@ __pycache__/
 
 # Ignore Terraform state files
 *.tfstate*
+
+# Backup directories
+backups/
+*.backup*
+archive/legacy-modules/
+
+
+# Historical/development directories
+archive/historical-fixes/
+archive/legacy-modules/
+
+
+# Temporary deployment configs
+temp-deploy-config.json

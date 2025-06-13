@@ -1,3 +1,7 @@
+
+
+
+
 . (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
 . (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
 
@@ -11,8 +15,7 @@ Describe 'Expand-All' {
         Remove-Item Function:Write-CustomLog -ErrorAction SilentlyContinue
         Remove-Item Function:Read-LoggedInput -ErrorAction SilentlyContinue
     }
-
-    It 'expands a specific ZIP file when provided' {
+        It 'expands a specific ZIP file when provided' {
         $temp = Join-Path $TestDrive ([guid]::NewGuid())
         New-Item -ItemType Directory -Path $temp | Out-Null
         $zipPath = Join-Path $temp 'archive.zip'
@@ -29,8 +32,7 @@ Describe 'Expand-All' {
             $DestinationPath -eq (Join-Path $temp 'archive')
         }
     }
-
-    It 'expands all ZIP files recursively when no path is given' {
+        It 'expands all ZIP files recursively when no path is given' {
         $temp = Join-Path $TestDrive ([guid]::NewGuid())
         New-Item -ItemType Directory -Path $temp | Out-Null
         $zip1 = Join-Path $temp 'a.zip'
@@ -60,8 +62,7 @@ Describe 'Expand-All' {
         Should -Invoke -CommandName Expand-Archive -ModuleName LabRunner -Times 1 -ParameterFilter { $Path -eq $zip2 -and $DestinationPath -eq (Join-Path $subDir 'b') }
         Should -Invoke -CommandName Get-ChildItem -Times 1
     }
-
-    It 'logs message when specified ZIP file does not exist' {
+        It 'logs message when specified ZIP file does not exist' {
         $zipPath = Join-Path $TestDrive 'missing.zip'
 
         Mock Expand-Archive {} -ModuleName LabRunner
@@ -75,8 +76,7 @@ Describe 'Expand-All' {
             $Message -Like '*does not exist*'
         }
     }
-
-    It 'cancels when user declines expansion' {
+        It 'cancels when user declines expansion' {
         $temp = Join-Path $TestDrive ([guid]::NewGuid())
         New-Item -ItemType Directory -Path $temp | Out-Null
         $zipPath = Join-Path $temp 'archive.zip'
@@ -95,4 +95,6 @@ Describe 'Expand-All' {
     }
 }
 }
+
+
 

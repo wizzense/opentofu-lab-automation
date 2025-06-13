@@ -32,7 +32,23 @@ if %errorlevel% neq 0 (
 )
 
 echo Starting GUI...
-python "%~dp0gui.py"
+
+REM Check if gui.py exists
+if not exist "%~dp0gui.py" (
+    echo gui.py not found. Downloading from GitHub...
+    powershell -Command "try { Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/feature/deployment-wrapper-gui/gui.py' -OutFile '%~dp0gui.py' -UseBasicParsing; Write-Host 'Downloaded gui.py successfully' } catch { Write-Host 'Failed to download gui.py:' $_.Exception.Message; exit 1 }"
+    if not exist "%~dp0gui.py" (
+        echo Failed to download gui.py
+        pause
+        exit /b 1
+    )
+)
+
+REM Launch GUI without extra console windows on Windows
+start "" /B python "%~dp0gui.py"
+
+echo GUI launched successfully. You can close this window.
+echo (The GUI will continue running in the background)
 
 if %errorlevel% neq 0 (
     echo.

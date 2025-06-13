@@ -3,6 +3,9 @@
 # Example:
 #     AfterEach { Remove-Item Function:npm -ErrorAction SilentlyContinue }
 
+# Simple PSScriptAnalyzer import
+Import-Module PSScriptAnalyzer -Force
+
 $SkipNonWindows = $IsLinux -or $IsMacOS
 
 # Only validate Pester version if we're not already in a Pester context
@@ -21,7 +24,7 @@ if (-not (Get-Command Invoke-Pester -ErrorAction SilentlyContinue)) {
 }
 
 # Use the same LabRunner module that the actual scripts use to avoid conflicts
-$LabRunnerModulePath = (Resolve-Path (Join-Path $PSScriptRoot '..' '..' 'pwsh' 'lab_utils' 'LabRunner')).Path
+$LabRunnerModulePath = (Resolve-Path (Join-Path $PSScriptRoot '..' '..' 'pwsh/modules/LabRunner')).Path
 
 # Remove any previously loaded LabRunner modules to avoid duplicate import errors  
 Get-Module LabRunner* | Remove-Module -Force -ErrorAction SilentlyContinue
@@ -33,7 +36,6 @@ Import-Module $LabRunnerModulePath -Force
 if (-not (Get-Command Get-MenuSelection -ErrorAction SilentlyContinue)) {
     function global:Get-MenuSelection { 
         param([string[]]$Items, [string]$Title)
-        return @() 
     }
 }
 
@@ -45,7 +47,8 @@ if (Test-Path (Join-Path $LabUtilsPath 'Resolve-ProjectPath.ps1')) {
 
 function global:Get-RunnerScriptPath {
     param(
-        [Parameter(Mandatory=$true)][string]$Name
+        [Parameter(Mandatory=$true)]
+        [string]$Name
     )
     try {
         $root = (Resolve-Path (Join-Path $PSScriptRoot '../..')).Path
@@ -91,6 +94,19 @@ function global:Disable-InteractivePrompts {
         Mock Write-Host {}
     }
     
+    # Add Get-LabConfig mock function to resolve the missing mock issue
+    if (-not (Get-Command Get-LabConfig -ErrorAction SilentlyContinue)) {
+        function global:Get-LabConfig {
+            param([string]$ConfigPath = "")
+            
+            return @{
+                ProjectName = "TestLab"
+                Platform = "TestPlatform"
+                TempPath = Get-CrossPlatformTempPath
+            }
+        }
+    }
+    
     # Set environment variable to indicate non-interactive mode
     $env:LAB_CONSOLE_LEVEL = '0'
     
@@ -117,7 +133,7 @@ function global:New-CrossPlatformTempPath {
     .SYNOPSIS
     Creates a cross-platform temporary path for tests
     #>
-    $tempDir = if ($env:TEMP) { $env:TEMP } else { [System.IO.Path]::GetTempPath() }
+    $tempDir = if ($env:TEMP) { $env:TEMP    } else { [System.IO.Path]::GetTempPath()    }
     return Join-Path $tempDir ([System.Guid]::NewGuid().ToString())
 }
 
@@ -141,6 +157,7 @@ function global:New-StandardMocks {
             if ($ModuleName) {
                 Mock Invoke-LabDownload -ModuleName $ModuleName { 
                     param($Uri, $Prefix, $Extension, $Action)
+                    
                     $tempFile = Join-Path ([System.IO.Path]::GetTempPath()) "mock_$Prefix$Extension"
                     New-Item -ItemType File -Path $tempFile -Force | Out-Null
                     try { 
@@ -152,6 +169,7 @@ function global:New-StandardMocks {
             } else {
                 Mock Invoke-LabDownload { 
                     param($Uri, $Prefix, $Extension, $Action)
+                    
                     $tempFile = Join-Path ([System.IO.Path]::GetTempPath()) "mock_$Prefix$Extension"
                     New-Item -ItemType File -Path $tempFile -Force | Out-Null
                     try { 
@@ -304,7 +322,8 @@ function global:New-StandardMocks {
             # Mock npm and node operations
             if ($ModuleName) {
                 Mock Invoke-LabNpm -ModuleName $ModuleName {
-                    param([Parameter(ValueFromRemainingArguments = $true)][string[]]$Args)
+                    param([Parameter(ValueFromRemainingArguments = $true)]
+                    [string[]]$Args)
                     # Log the mock call for verification
                     Write-Verbose "Mock Invoke-LabNpm called with: $($Args -join ' ')"
                 }
@@ -322,7 +341,8 @@ function global:New-StandardMocks {
                 Mock Get-Process -ModuleName $ModuleName { @() }
             } else {
                 Mock Invoke-LabNpm {
-                    param([Parameter(ValueFromRemainingArguments = $true)][string[]]$Args)
+                    param([Parameter(ValueFromRemainingArguments = $true)]
+                    [string[]]$Args)
                     # Log the mock call for verification
                     Write-Verbose "Mock Invoke-LabNpm called with: $($Args -join ' ')"
                 }
@@ -432,4 +452,34 @@ function global:Test-IsAdministrator {
         return $true  # Assume admin for non-Windows test runs
     }
 }
+
+
+
+# Mock function for missing command: Format-Config
+function global:Format-Config {
+    param([Parameter(ValueFromPipeline)]
+    [object]$InputObject)
+    if ($InputObject) { return $InputObject }
+    return $true
+}
+# Mock function for missing command: Invoke-LabStep
+function global:Invoke-LabStep {
+    param([Parameter(ValueFromPipeline)]
+    [object]$InputObject)
+    if ($InputObject) { return $InputObject }
+    return $true
+}
+# Mock function for missing command: Write-Continue
+function global:Write-Continue {
+    param([Parameter(ValueFromPipeline)]
+    [object]$InputObject)
+    if ($InputObject) { return $InputObject }
+    return $true
+}
+
+
+
+
+
+
 

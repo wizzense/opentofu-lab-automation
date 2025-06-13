@@ -2,7 +2,11 @@ function Get-GhDownloadArgs {
     [CmdletBinding()]
     param()
 
-    if (Get-Command gh -ErrorAction SilentlyContinue) {
+    
+
+
+
+if (Get-Command gh -ErrorAction SilentlyContinue) {
         try {
             gh auth status --hostname github.com *> $null
             return @{ UseGh = $true }
@@ -17,7 +21,11 @@ function Get-GhDownloadArgs {
 function Download-Archive {
     [CmdletBinding()]
     param(
-        [Parameter(Mandatory)][string]$Url,
+        [Parameter(Mandatory)
+
+
+
+][string]$Url,
         [Parameter(Mandatory)][string]$Destination,
         [switch]$Required,
         [switch]$UseGh
@@ -45,3 +53,5 @@ function Download-Archive {
         }
     }
 }
+
+

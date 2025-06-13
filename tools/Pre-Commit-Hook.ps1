@@ -10,7 +10,11 @@
 
 [CmdletBinding()]
 param(
-    [Parameter(Mandatory = $false)]
+    [Parameter(Mandatory = $false)
+
+
+
+]
     [switch]$Install,
     
     [Parameter(Mandatory = $false)]
@@ -47,7 +51,23 @@ fi
 
 echo "Validating PowerShell files..."
 
-# Run validation on staged PowerShell files
+echo "Running auto-fix and validation on PowerShell files..."
+
+# First run auto-fix on all staged PowerShell files
+if [ -f "auto-fix.ps1" ]; then
+    echo "Using comprehensive auto-fix..."
+    pwsh -File "auto-fix.ps1" -Path "."
+else
+    echo "Using fallback auto-fix..."
+    for file in `$PS_FILES; do
+        if [ -f "`$file" ]; then
+            echo "Auto-fixing: `$file"
+            pwsh -File "tools/Validate-PowerShellScripts.ps1" -Path "`$file" -AutoFix -CI
+        fi
+    done
+fi
+
+# Then validate all files
 for file in `$PS_FILES; do
     if [ -f "`$file" ]; then
         echo "Validating: `$file"
@@ -55,11 +75,14 @@ for file in `$PS_FILES; do
         if [ `$? -ne 0 ]; then
             echo "❌ Validation failed for: `$file"
             echo "Please fix the issues and try again."
-            echo "To auto-fix parameter ordering: pwsh -File tools/Validate-PowerShellScripts.ps1 -Path '`$file' -AutoFix"
+            echo "Note: Auto-fix was already attempted."
             exit 1
         fi
     fi
 done
+
+# Re-stage any auto-fixed files
+git add `$PS_FILES
 
 echo "✅ All PowerShell files passed validation."
 exit 0
@@ -139,3 +162,5 @@ if ($Install) {
     Write-Host "  Uninstall: .\Pre-Commit-Hook.ps1 -Uninstall" -ForegroundColor Gray
     Write-Host "  Test:      .\Pre-Commit-Hook.ps1 -Test" -ForegroundColor Gray
 }
+
+

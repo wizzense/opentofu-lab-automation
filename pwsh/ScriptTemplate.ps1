@@ -13,13 +13,21 @@
 .EXAMPLE
     .\ScriptTemplate.ps1 -Config $labConfig
 .NOTES
-    Always place Param() block BEFORE Import-Module statements
+    Always place Param() 
+
+
+
+block BEFORE Import-Module statements
     This template prevents the parameter ordering syntax errors
 #>
 
 # CORRECT ORDER: Param block comes FIRST
 Param(
-    [Parameter(Mandatory = $true)]
+    [Parameter(Mandatory = $true)
+
+
+
+]
     [object]$Config,
     
     [Parameter(Mandatory = $false)]
@@ -27,7 +35,7 @@ Param(
 )
 
 # Import-Module statements go AFTER Param block
-Import-Module "$PSScriptRoot/../lab_utils/LabRunner/LabRunner.psd1" -Force
+Import-Module "$PSScriptRoot/../modules/LabRunner/LabRunner.psd1" -Force
 
 # Set error handling
 $ErrorActionPreference = "Stop"
@@ -66,3 +74,6 @@ try {
 # ✅ Proper logging using lab utilities
 # ✅ Configuration validation
 # ✅ Consistent formatting and style
+
+
+

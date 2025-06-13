@@ -1,3 +1,7 @@
+
+
+
+
 # filepath: tests/0113_Config-DNS.Tests.ps1
 . (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
 . (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
@@ -26,9 +30,8 @@ Describe '0113_Config-DNS Tests' -Tag 'Configuration' {
             $script:ScriptPath | Should -Exist
             $errors = $null
                 [System.Management.Automation.Language.Parser]::ParseFile($script:ScriptPath, [ref]$null, [ref]$errors) | Out-Null
-                ($errors ? $errors.Count : 0) | Should -Be 0
+                $(if (errors) { $errors.Count  } else { 0 }) | Should -Be 0
         }
-        
         It 'should follow naming conventions' {
             $scriptName = [System.IO.Path]::GetFileName($script:ScriptPath)
             $scriptName | Should -Match '^[0-9]{4}_[A-Z][a-zA-Z0-9-]+\.ps1$|^[A-Z][a-zA-Z0-9-]+\.ps1$'
@@ -55,12 +58,10 @@ Describe '0113_Config-DNS Tests' -Tag 'Configuration' {
             # Test configuration backup logic
             $true | Should -BeTrue  # Placeholder - implement actual tests
         }
-        
         It 'should validate configuration changes' {
             # Test configuration validation
             $true | Should -BeTrue  # Placeholder - implement actual tests
         }
-        
         It 'should handle rollback on failure' {
             # Test rollback functionality
             $true | Should -BeTrue  # Placeholder - implement actual tests
@@ -73,6 +74,9 @@ AfterAll {
     # Restore any modified system state
     # Remove test artifacts
 }
+
+
+
 
 
 

@@ -1,6 +1,10 @@
 [CmdletBinding(SupportsShouldProcess, DefaultParameterSetName='Verbose')]
 param(
-    [Parameter(ParameterSetName='Quiet')]
+    [Parameter(ParameterSetName='Quiet')
+
+
+
+]
     [switch]$Quiet,
 
     [Parameter(ParameterSetName='Verbose')]
@@ -25,7 +29,11 @@ if (Test-Path $indexPath) {
 
 function Resolve-IndexPath {
     param([string]$Key)
-    if ($script:PathIndex.ContainsKey($Key)) {
+    
+
+
+
+if ($script:PathIndex.ContainsKey($Key)) {
         $relative = Normalize-RelativePath $script:PathIndex[$Key]
         return Join-Path $repoRoot $relative
     }
@@ -44,7 +52,7 @@ if (-not $PSBoundParameters.ContainsKey('ConfigFile')) {
 # Determine pwsh executable path early for nested script execution
 $pwshPath = (Get-Command pwsh -ErrorAction SilentlyContinue).Source
 if (-not $pwshPath) {
-    $exeName  = if ($IsWindows) { 'pwsh.exe' } else { 'pwsh' }
+    $exeName = if ($IsWindows) { 'pwsh.exe'    } else { 'pwsh'    }
     $pwshPath = Join-Path $PSHOME $exeName
 }
 if (-not (Test-Path $pwshPath)) {
@@ -120,7 +128,11 @@ if (-not (Get-Variable -Name LogFilePath -Scope Script -ErrorAction SilentlyCont
 # ─── Utility helpers ──────────────────────────────────────────────────────────
 function ConvertTo-Hashtable {
     param($obj)
-    switch ($obj) {
+    
+
+
+
+switch ($obj) {
         { $_ -is [System.Collections.IDictionary] } {
             $ht = @{}
             foreach ($k in $_.Keys) { $ht[$k] = ConvertTo-Hashtable $_[$k] }
@@ -140,7 +152,11 @@ function ConvertTo-Hashtable {
 
 function Get-ScriptConfigFlag {
     param([string]$Path)
-    $content = Get-Content -Path $Path -Raw -ErrorAction SilentlyContinue
+    
+
+
+
+$content = Get-Content -Path $Path -Raw -ErrorAction SilentlyContinue
     if ($content -match '\$Config\.([A-Za-z0-9_\.]+)\s*-eq\s*\$true') { return $matches[1] }
     if ($content -match '\$config\.([A-Za-z0-9_\.]+)\s*-eq\s*\$true') { return $matches[1] }
     return $null
@@ -148,7 +164,11 @@ function Get-ScriptConfigFlag {
 
 function Get-NestedConfigValue {
     param([hashtable]$Config, [string]$Path)
-    $parts = $Path -split '\.'
+    
+
+
+
+$parts = $Path -split '\.'
     $cur   = $Config
     foreach ($p in $parts) {
         if (-not $cur.ContainsKey($p)) { return $null }
@@ -159,7 +179,11 @@ function Get-NestedConfigValue {
 
 function Set-NestedConfigValue {
     param([hashtable]$Config, [string]$Path, [object]$Value)
-    $parts = $Path -split '\.'
+    
+
+
+
+$parts = $Path -split '\.'
     $cur   = $Config
     for ($i = 0; $i -lt $parts.Length - 1; $i++) {
         if (-not $cur.ContainsKey($parts[$i])) { $cur[$parts[$i]] = @{} }
@@ -171,7 +195,11 @@ function Set-NestedConfigValue {
 function Apply-RecommendedDefaults {
     param([hashtable]$ConfigObject)
 
-    $recommendedPath = Join-Path $configFilesDir 'recommended-config.json'
+    
+
+
+
+$recommendedPath = Join-Path $configFilesDir 'recommended-config.json'
     if (-not (Test-Path $recommendedPath)) { return $ConfigObject }
     try {
         $recommended = Get-Content -Raw -Path $recommendedPath | ConvertFrom-Json
@@ -188,9 +216,17 @@ function Set-LabConfig {
     [CmdletBinding(SupportsShouldProcess)]
     param([hashtable]$ConfigObject)
 
-    function Edit-PrimitiveValue {
+    
+
+
+
+function Edit-PrimitiveValue {
         param([string]$Path, [object]$Current)
-        $prompt = "New value for '$Path' [$Current]"
+        
+
+
+
+$prompt = "New value for '$Path' [$Current]"
         $ans = Read-LoggedInput $prompt
         if (-not $ans) { return $Current }
         if ($Current -is [bool]) { return $ans -match '^(?i)y|true$' }
@@ -200,13 +236,17 @@ function Set-LabConfig {
 
     function Edit-Section {
         param([hashtable]$Section, [string]$Prefix)
-        while ($true) {
+        
+
+
+
+while ($true) {
             $keys  = $Section.Keys | Sort-Object
             $items = $keys + 'Back'
             $sel   = Get-MenuSelection -Items $items -Title "Edit $Prefix"
             if (-not $sel -or $sel -eq 'Back') { break }
             foreach ($key in @($sel)) {
-                $path = if ($Prefix) { "$Prefix.$key" } else { $key }
+                $path = if ($Prefix) { "$Prefix.$key"    } else { $key    }
                 $val  = $Section[$key]
                 if ($val -is [hashtable]) {
                     Edit-Section -Section $val -Prefix $path
@@ -290,7 +330,11 @@ $ScriptFiles | ForEach-Object { Write-CustomLog "$($_.Name.Substring(0,4)) - $($
 function Invoke-Scripts {
     param([array]$ScriptsToRun)
 
-    if ($ScriptsToRun.Count -gt 1) {
+    
+
+
+
+if ($ScriptsToRun.Count -gt 1) {
         $cleanup = $ScriptsToRun | Where-Object { $_.Name.Substring(0,4) -eq '0000' }
         if ($cleanup) {
             Write-CustomLog "WARNING: Cleanup script 0000 will remove local files."
@@ -327,7 +371,11 @@ function Invoke-Scripts {
             } catch {
                 Write-CustomLog "ERROR: Script has syntax errors: $scriptPath - [CmdletBinding(SupportsShouldProcess, DefaultParameterSetName='Verbose')]
 param(
-    [Parameter(ParameterSetName='Quiet')]
+    [Parameter(ParameterSetName='Quiet')
+
+
+
+]
     [switch]$Quiet,
 
     [Parameter(ParameterSetName='Verbose')]
@@ -352,7 +400,11 @@ if (Test-Path $indexPath) {
 
 function Resolve-IndexPath {
     param([string]$Key)
-    if ($script:PathIndex.ContainsKey($Key)) {
+    
+
+
+
+if ($script:PathIndex.ContainsKey($Key)) {
         $relative = Normalize-RelativePath $script:PathIndex[$Key]
         return Join-Path $repoRoot $relative
     }
@@ -371,7 +423,7 @@ if (-not $PSBoundParameters.ContainsKey('ConfigFile')) {
 # Determine pwsh executable path early for nested script execution
 $pwshPath = (Get-Command pwsh -ErrorAction SilentlyContinue).Source
 if (-not $pwshPath) {
-    $exeName  = if ($IsWindows) { 'pwsh.exe' } else { 'pwsh' }
+    $exeName = if ($IsWindows) { 'pwsh.exe'    } else { 'pwsh'    }
     $pwshPath = Join-Path $PSHOME $exeName
 }
 if (-not (Test-Path $pwshPath)) {
@@ -447,7 +499,11 @@ if (-not (Get-Variable -Name LogFilePath -Scope Script -ErrorAction SilentlyCont
 # ─── Utility helpers ──────────────────────────────────────────────────────────
 function ConvertTo-Hashtable {
     param($obj)
-    switch ($obj) {
+    
+
+
+
+switch ($obj) {
         { $_ -is [System.Collections.IDictionary] } {
             $ht = @{}
             foreach ($k in $_.Keys) { $ht[$k] = ConvertTo-Hashtable $_[$k] }
@@ -467,7 +523,11 @@ function ConvertTo-Hashtable {
 
 function Get-ScriptConfigFlag {
     param([string]$Path)
-    $content = Get-Content -Path $Path -Raw -ErrorAction SilentlyContinue
+    
+
+
+
+$content = Get-Content -Path $Path -Raw -ErrorAction SilentlyContinue
     if ($content -match '\$Config\.([A-Za-z0-9_\.]+)\s*-eq\s*\$true') { return $matches[1] }
     if ($content -match '\$config\.([A-Za-z0-9_\.]+)\s*-eq\s*\$true') { return $matches[1] }
     return $null
@@ -475,7 +535,11 @@ function Get-ScriptConfigFlag {
 
 function Get-NestedConfigValue {
     param([hashtable]$Config, [string]$Path)
-    $parts = $Path -split '\.'
+    
+
+
+
+$parts = $Path -split '\.'
     $cur   = $Config
     foreach ($p in $parts) {
         if (-not $cur.ContainsKey($p)) { return $null }
@@ -486,7 +550,11 @@ function Get-NestedConfigValue {
 
 function Set-NestedConfigValue {
     param([hashtable]$Config, [string]$Path, [object]$Value)
-    $parts = $Path -split '\.'
+    
+
+
+
+$parts = $Path -split '\.'
     $cur   = $Config
     for ($i = 0; $i -lt $parts.Length - 1; $i++) {
         if (-not $cur.ContainsKey($parts[$i])) { $cur[$parts[$i]] = @{} }
@@ -498,7 +566,11 @@ function Set-NestedConfigValue {
 function Apply-RecommendedDefaults {
     param([hashtable]$ConfigObject)
 
-    $recommendedPath = Join-Path $configFilesDir 'recommended-config.json'
+    
+
+
+
+$recommendedPath = Join-Path $configFilesDir 'recommended-config.json'
     if (-not (Test-Path $recommendedPath)) { return $ConfigObject }
     try {
         $recommended = Get-Content -Raw -Path $recommendedPath | ConvertFrom-Json
@@ -515,9 +587,17 @@ function Set-LabConfig {
     [CmdletBinding(SupportsShouldProcess)]
     param([hashtable]$ConfigObject)
 
-    function Edit-PrimitiveValue {
+    
+
+
+
+function Edit-PrimitiveValue {
         param([string]$Path, [object]$Current)
-        $prompt = "New value for '$Path' [$Current]"
+        
+
+
+
+$prompt = "New value for '$Path' [$Current]"
         $ans = Read-LoggedInput $prompt
         if (-not $ans) { return $Current }
         if ($Current -is [bool]) { return $ans -match '^(?i)y|true$' }
@@ -527,13 +607,17 @@ function Set-LabConfig {
 
     function Edit-Section {
         param([hashtable]$Section, [string]$Prefix)
-        while ($true) {
+        
+
+
+
+while ($true) {
             $keys  = $Section.Keys | Sort-Object
             $items = $keys + 'Back'
             $sel   = Get-MenuSelection -Items $items -Title "Edit $Prefix"
             if (-not $sel -or $sel -eq 'Back') { break }
             foreach ($key in @($sel)) {
-                $path = if ($Prefix) { "$Prefix.$key" } else { $key }
+                $path = if ($Prefix) { "$Prefix.$key"    } else { $key    }
                 $val  = $Section[$key]
                 if ($val -is [hashtable]) {
                     Edit-Section -Section $val -Prefix $path
@@ -617,7 +701,11 @@ $ScriptFiles | ForEach-Object { Write-CustomLog "$($_.Name.Substring(0,4)) - $($
 function Invoke-Scripts {
     param([array]$ScriptsToRun)
 
-    if ($ScriptsToRun.Count -gt 1) {
+    
+
+
+
+if ($ScriptsToRun.Count -gt 1) {
         $cleanup = $ScriptsToRun | Where-Object { $_.Name.Substring(0,4) -eq '0000' }
         if ($cleanup) {
             Write-CustomLog "WARNING: Cleanup script 0000 will remove local files."
@@ -740,7 +828,11 @@ function Invoke-Scripts {
 function Select-Scripts {
     param([string]$Spec)
 
-    if (-not $Spec) { Write-CustomLog 'No script selection provided.'; return @() }
+    
+
+
+
+if (-not $Spec) { Write-CustomLog 'No script selection provided.'; return @() }
     if ($Spec -eq 'all') { return $ScriptFiles }
 
     $prefixes = $Spec -split ',' |
@@ -884,7 +976,11 @@ exit $LASTEXITCODE
 function Select-Scripts {
     param([string]$Spec)
 
-    if (-not $Spec) { Write-CustomLog 'No script selection provided.'; return @() }
+    
+
+
+
+if (-not $Spec) { Write-CustomLog 'No script selection provided.'; return @() }
     if ($Spec -eq 'all') { return $ScriptFiles }
 
     $prefixes = $Spec -split ',' |
@@ -930,4 +1026,6 @@ Write-CustomLog "`nAll done!"
 if (-not $overallSuccess) { $global:LASTEXITCODE = 1 } else { $global:LASTEXITCODE = 0 }
 Remove-Item Env:LAB_CONSOLE_LEVEL -ErrorAction SilentlyContinue
 exit $LASTEXITCODE
+
+
 

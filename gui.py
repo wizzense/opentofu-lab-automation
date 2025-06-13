@@ -271,13 +271,37 @@ class DeploymentManager:
     def run_deployment_command(self, args: list):
         """Run deployment command in background thread"""
         try:
-            # Get deploy.py path
-            deploy_script = PROJECT_ROOT / "deploy.py"
+            # Find deploy.py - check multiple locations
+            possible_locations = [
+                PROJECT_ROOT / "deploy.py",  # Same directory as GUI
+                Path.cwd() / "deploy.py",    # Current working directory
+                Path(__file__).parent / "deploy.py",  # Script directory
+            ]
+            
+            deploy_script = None
+            for location in possible_locations:
+                if location.exists():
+                    deploy_script = location
+                    break
+            
+            if not deploy_script:
+                # Try to download deploy.py if not found
+                self.log_output("⚠️ deploy.py not found locally, attempting to download...")
+                try:
+                    import urllib.request
+                    deploy_url = "https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/feature/deployment-wrapper-gui/deploy.py"
+                    deploy_script = Path.cwd() / "deploy.py"
+                    urllib.request.urlretrieve(deploy_url, deploy_script)
+                    self.log_output(f"✅ Downloaded deploy.py to {deploy_script}")
+                except Exception as e:
+                    self.output_queue.put(('error', f"Could not find or download deploy.py: {str(e)}"))
+                    return
             
             # Build command
             cmd = [sys.executable, str(deploy_script)] + args
             
             self.log_output(f"Running: {' '.join(cmd)}")
+            self.log_output(f"Deploy script location: {deploy_script}")
             
             # Start process
             self.process = subprocess.Popen(
@@ -285,9 +309,10 @@ class DeploymentManager:
                 stdout=subprocess.PIPE,
                 stderr=subprocess.STDOUT,
                 text=True,
-                cwd=PROJECT_ROOT,
+                cwd=deploy_script.parent,  # Set working directory to script location
                 bufsize=1,
-                universal_newlines=True
+                universal_newlines=True,
+                creationflags=subprocess.CREATE_NO_WINDOW if platform.system() == "Windows" else 0
             )
             
             # Read output in real-time
@@ -307,22 +332,30 @@ class DeploymentManager:
     
     def check_output_queue(self):
         """Check for new output from deployment process"""
+        processed_count = 0
+        max_per_cycle = 10  # Limit processing to prevent GUI freezing
+        
         try:
-            while True:
+            while processed_count < max_per_cycle:
                 msg_type, data = self.output_queue.get_nowait()
                 
                 if msg_type == 'output':
                     self.log_output(data)
                 elif msg_type == 'complete':
                     self.deployment_complete(data)
+                    return  # Don't schedule next check if deployment is complete
                 elif msg_type == 'error':
                     self.deployment_error(data)
+                    return  # Don't schedule next check if there's an error
+                
+                processed_count += 1
                     
         except queue.Empty:
             pass
         
-        # Schedule next check
-        self.parent.after(100, self.check_output_queue)
+        # Schedule next check with slightly longer delay for better performance
+        if self.process is not None:
+            self.parent.after(200, self.check_output_queue)  # Increased from 100ms to 200ms
     
     def deployment_complete(self, return_code: int):
         """Handle deployment completion"""
@@ -419,10 +452,40 @@ class LabAutomationGUI:
         self.create_widgets()
         self.load_initial_config()
         
+        # Performance optimizations
+        self.optimize_performance()
+        
+    def optimize_performance(self):
+        """Optimize GUI performance, especially on Windows"""
+        # Reduce update frequency for better performance
+        self.root.tk.call('tk', 'scaling', 1.0)
+        
+        # Set priority and process optimizations for Windows
+        if platform.system() == "Windows":
+            try:
+                import psutil
+                import os
+                # Set normal priority instead of high priority
+                p = psutil.Process(os.getpid())
+                p.nice(psutil.NORMAL_PRIORITY_CLASS)
+            except ImportError:
+                pass  # psutil not available, continue without optimization
+        
+        # Optimize tkinter performance
+        self.root.option_add('*tearOff', False)
+        
     def setup_window(self):
         """Configure main window"""
         self.root.title("OpenTofu Lab Automation - GUI")
         self.root.geometry("900x800")
+        
+        # Hide console window on Windows if launched from .py file
+        if platform.system() == "Windows":
+            try:
+                import ctypes
+                ctypes.windll.user32.ShowWindow(ctypes.windll.kernel32.GetConsoleWindow(), 0)
+            except:
+                pass  # If it fails, continue without hiding console
         
         # Configure icon (if available)
         try:
@@ -438,6 +501,11 @@ class LabAutomationGUI:
         
         # Set minimum size
         self.root.minsize(800, 600)
+        
+        # Make window appear on top initially, then allow normal behavior
+        self.root.lift()
+        self.root.attributes('-topmost', True)
+        self.root.after(1000, lambda: self.root.attributes('-topmost', False))
         
     def create_widgets(self):
         """Create main UI widgets"""
@@ -596,6 +664,20 @@ def main():
         print("  Windows: tkinter should be included with Python")
         return 1
     
+    # Windows-specific optimizations
+    if platform.system() == "Windows":
+        try:
+            # Try to reduce process priority for better system performance
+            import ctypes
+            import ctypes.wintypes
+            
+            # Set process to below normal priority
+            BELOW_NORMAL_PRIORITY_CLASS = 0x00004000
+            handle = ctypes.windll.kernel32.GetCurrentProcess()
+            ctypes.windll.kernel32.SetPriorityClass(handle, BELOW_NORMAL_PRIORITY_CLASS)
+        except Exception:
+            pass  # Continue if optimization fails
+    
     # Create and run application
     try:
         app = LabAutomationGUI()
@@ -603,6 +685,13 @@ def main():
         return 0
     except Exception as e:
         print(f"Error starting GUI: {e}")
+        if platform.system() == "Windows":
+            # Show error dialog on Windows
+            try:
+                import ctypes
+                ctypes.windll.user32.MessageBoxW(0, f"Error starting GUI: {str(e)}", "OpenTofu Lab Automation", 0x10)
+            except:
+                pass
         return 1
 
 if __name__ == "__main__":

@@ -1,3 +1,7 @@
+
+
+
+
 # filepath: tests/0203_Install-npm.Tests.ps1
 . (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
 . (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
@@ -27,12 +31,10 @@ Describe '0203_Install-npm Tests' -Tag 'Installer' {
             # Test syntax by parsing the script content instead of dot-sourcing
             { $null = [System.Management.Automation.PSParser]::Tokenize((Get-Content $script:ScriptPath -Raw), [ref]$null) } | Should -Not -Throw
         }
-        
         It 'should follow naming conventions' {
             $scriptName = [System.IO.Path]::GetFileName($script:ScriptPath)
             $scriptName | Should -Match '^[0-9]{4}_[A-Z][a-zA-Z0-9-]+\.ps1$|^[A-Z][a-zA-Z0-9-]+\.ps1$'
         }
-        
         It 'should define expected functions' {
             $scriptContent = Get-Content $script:ScriptPath -Raw
             $scriptContent | Should -Match 'function\s+Install-NpmDependencies'
@@ -58,17 +60,14 @@ Describe '0203_Install-npm Tests' -Tag 'Installer' {
         BeforeEach {
             # Mock external dependencies for testing
         }
-        
         It 'should validate prerequisites' {
             # Test prerequisite checking logic
             $true | Should -BeTrue  # Placeholder - implement actual tests
         }
-        
         It 'should handle download failures gracefully' {
             # Test error handling for failed downloads
             $true | Should -BeTrue  # Placeholder - implement actual tests
         }
-        
         It 'should verify installation success' {
             # Test installation verification
             $true | Should -BeTrue  # Placeholder - implement actual tests
@@ -80,13 +79,11 @@ Describe '0203_Install-npm Tests' -Tag 'Installer' {
             $scriptContent = Get-Content $script:ScriptPath -Raw
             $scriptContent | Should -Match 'function\s+Install-NpmDependencies'
         }
-        
         It 'should support common parameters' {
             $scriptContent = Get-Content $script:ScriptPath -Raw
             $scriptContent | Should -Match '\[CmdletBinding\('
             $scriptContent | Should -Match 'SupportsShouldProcess'
         }
-        
         It 'should handle execution with valid parameters' {
             # Test that the script can be executed with a config parameter
             $testConfig = @{ Node_Dependencies = @{ InstallNpm = $false } }
@@ -107,5 +104,7 @@ AfterAll {
     # Restore any modified system state
     # Remove test artifacts
 }
+
+
 
 

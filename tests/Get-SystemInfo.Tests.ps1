@@ -1,17 +1,20 @@
+
+
+
+
 . (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
 . (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
 
 
 Describe '0200_Get-SystemInfo' {
     BeforeAll {
-        Import-Module (Join-Path $PSScriptRoot '..' 'pwsh' 'lab_utils' 'LabRunner' 'LabRunner.psd1')
+        Import-Module (Join-Path $PSScriptRoot '..' 'pwsh/modules/LabRunner.psd1')
         $script:ScriptPath = Get-RunnerScriptPath '0200_Get-SystemInfo.ps1'
         if (-not $script:ScriptPath -or -not (Test-Path $script:ScriptPath)) {
             throw "Script under test not found: 0200_Get-SystemInfo.ps1 (resolved path: $script:ScriptPath)"
         }
     }
-
-    It 'runs without throwing and returns expected keys' {
+        It 'runs without throwing and returns expected keys' {
         $result = & $script:ScriptPath -AsJson -Config @{}
         $obj = $result | ConvertFrom-Json
         $obj | Should -Not -BeNullOrEmpty
@@ -24,8 +27,7 @@ Describe '0200_Get-SystemInfo' {
             $obj.PSObject.Properties.Name | Should -Contain 'LatestHotfix'
         }
     }
-
-    It 'returns exit code 1 for unsupported platform' {
+        It 'returns exit code 1 for unsupported platform' {
         Mock Get-Platform { 'Solaris' }
         try {
             & $script:ScriptPath -Config @{} -AsJson | Out-Null
@@ -45,7 +47,7 @@ Describe 'runner.ps1 executing 0200_Get-SystemInfo' {
             $runnerPath = Join-Path $PSScriptRoot '..' 'pwsh' 'runner.ps1'
             Copy-Item $runnerPath -Destination $tempDir
             Copy-Item (Join-Path $PSScriptRoot '..' 'pwsh' 'lab_utils') -Destination $tempDir -Recurse
-            Copy-Item (Join-Path $PSScriptRoot '..' 'pwsh' 'lab_utils' 'LabRunner') -Destination (Join-Path $tempDir 'lab_utils' 'LabRunner') -Recurse
+            Copy-Item (Join-Path $PSScriptRoot '..' 'pwsh/modules/LabRunner') -Recurse
             Copy-Item (Join-Path $PSScriptRoot '..' 'configs' 'config_files') -Destination (Join-Path $tempDir 'configs' 'config_files') -Recurse
             $scriptsDir = Join-Path $tempDir 'runner_scripts'
             $null = New-Item -ItemType Directory -Path $scriptsDir
@@ -74,3 +76,6 @@ Describe 'runner.ps1 executing 0200_Get-SystemInfo' {
         }
     }
 }
+
+
+

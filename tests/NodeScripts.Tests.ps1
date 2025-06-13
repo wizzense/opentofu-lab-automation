@@ -1,7 +1,7 @@
 . (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
 . (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
 $skipNpm = -not (Get-Command npm -ErrorAction SilentlyContinue)
-Describe 'Node installation scripts' -Skip:$skipNpm {
+Describe 'Node installation scripts' -Skip:($skipNpm) {
     InModuleScope LabRunner {
         BeforeAll {
             # Set up standard mocks for cross-platform testing
@@ -21,16 +21,22 @@ Describe 'Node installation scripts' -Skip:$skipNpm {
             New-Item -ItemType Directory -Path $env:TEMP -Force | Out-Null
             $script:config = [pscustomobject]@{}
             Mock Get-Command { @{ Name = $Name } } -ParameterFilter { $Name -in 'npm','node' }
-            function node { param([Parameter(ValueFromRemainingArguments = $true)][string[]]$Args) }
-        }
+            function node { param([Parameter(ValueFromRemainingArguments = $true)
 
-    It 'resolves script paths from the tests directory' -TestCases $script:nodeScripts {
+
+
+][string[]]$Args) }
+        }
+        It 'resolves script paths from the tests directory' -TestCases $script:nodeScripts {
         param($scriptName)
-        $path = Get-RunnerScriptPath $scriptName
+        
+
+
+
+$path = Get-RunnerScriptPath $scriptName
         Test-Path $path | Should -BeTrue
     }
-
-    It 'uses Node_Dependencies.Node.InstallerUrl when installing Node' {
+        It 'uses Node_Dependencies.Node.InstallerUrl when installing Node' {
         $cfg = @{ Node_Dependencies = @{ InstallNode=$true; Node = @{ InstallerUrl = 'http://example.com/node.msi' } } }
         $core = Get-RunnerScriptPath '0201_Install-NodeCore.ps1'
         
@@ -44,8 +50,7 @@ Describe 'Node installation scripts' -Skip:$skipNpm {
         Install-NodeCore -Config $cfg
         Should -Invoke -CommandName Invoke-LabWebRequest -Times 1 -ParameterFilter { $Uri -eq 'http://example.com/node.msi' }
     }
-
-    It 'does nothing when InstallNode is $false' {
+        It 'does nothing when InstallNode is $false' {
         $cfg = @{ Node_Dependencies = @{ InstallNode = $false } }
         $core = Get-RunnerScriptPath '0201_Install-NodeCore.ps1'
 
@@ -61,13 +66,16 @@ Describe 'Node installation scripts' -Skip:$skipNpm {
         Should -Invoke -CommandName Start-Process -Times 0
         Should -Invoke -CommandName Remove-Item -Times 0
     }
-
-    It 'installs packages listed under GlobalPackages' {
+        It 'installs packages listed under GlobalPackages' {
         $cfg = @{ Node_Dependencies = @{ GlobalPackages = @('yarn','nodemon') } }
         $global = Get-RunnerScriptPath '0202_Install-NodeGlobalPackages.ps1'
         Mock Get-Command { @{Name='npm'} } -ParameterFilter { $Name -eq 'npm' }
         function Invoke-LabNpm {
-            param([Parameter(ValueFromRemainingArguments = $true)][string[]]$testArgs)
+            param([Parameter(ValueFromRemainingArguments = $true)
+
+
+
+][string[]]$testArgs)
             $null = $testArgs
         }
         . $global
@@ -78,13 +86,16 @@ Describe 'Node installation scripts' -Skip:$skipNpm {
         Should -Invoke -CommandName Invoke-LabNpm -Times 1 -ParameterFilter { ($testArgs -join ' ') -eq 'install -g nodemon' }
         Should -Invoke -CommandName Invoke-LabNpm -Times 0 -ParameterFilter { ($testArgs -join ' ') -eq 'install -g vite' }
     }
-
-    It 'falls back to boolean flags when GlobalPackages is missing' {
+        It 'falls back to boolean flags when GlobalPackages is missing' {
         $cfg = @{ Node_Dependencies = @{ InstallYarn=$true; InstallVite=$false; InstallNodemon=$true } }
         $global = Get-RunnerScriptPath '0202_Install-NodeGlobalPackages.ps1'
         Mock Get-Command { @{Name='npm'} } -ParameterFilter { $Name -eq 'npm' }
         function Invoke-LabNpm {
-            param([Parameter(ValueFromRemainingArguments = $true)][string[]]$testArgs)
+            param([Parameter(ValueFromRemainingArguments = $true)
+
+
+
+][string[]]$testArgs)
             $null = $testArgs
         }
         . $global
@@ -95,11 +106,14 @@ Describe 'Node installation scripts' -Skip:$skipNpm {
         Should -Invoke -CommandName Invoke-LabNpm -Times 1 -ParameterFilter { ($testArgs -join ' ') -eq 'install -g nodemon' }
         Should -Invoke -CommandName Invoke-LabNpm -Times 0 -ParameterFilter { ($testArgs -join ' ') -eq 'install -g vite' }
     }
-
-    It 'logs start message when running each node script' -TestCases $script:nodeScripts {
+        It 'logs start message when running each node script' -TestCases $script:nodeScripts {
         param($scriptName)
 
-        $path = Get-RunnerScriptPath $scriptName
+        
+
+
+
+$path = Get-RunnerScriptPath $scriptName
         Mock-WriteLog
         . $path
 
@@ -111,12 +125,15 @@ Describe 'Node installation scripts' -Skip:$skipNpm {
 
         Should -Invoke -CommandName Write-CustomLog -Times 1 -ParameterFilter { $Message -eq "Running $scriptName" }
     }
-
-    It 'honours -WhatIf for Install-GlobalPackage' {
+        It 'honours -WhatIf for Install-GlobalPackage' {
     
         $global = Get-RunnerScriptPath '0202_Install-NodeGlobalPackages.ps1'
 
-        function Invoke-LabNpm { param([Parameter(ValueFromRemainingArguments = $true)][string[]]$testArgs) }
+        function Invoke-LabNpm { param([Parameter(ValueFromRemainingArguments = $true)
+
+
+
+][string[]]$testArgs) }
 
         Mock Invoke-LabNpm -ModuleName LabRunner {}
 
@@ -125,14 +142,17 @@ Describe 'Node installation scripts' -Skip:$skipNpm {
         Install-NodeGlobalPackages -Config @{ Node_Dependencies = @{ InstallYarn=$false; InstallVite=$false; InstallNodemon=$false } } -WhatIf
         Should -Invoke -CommandName Invoke-LabNpm -Times 0
     }
-
-    It 'uses NpmPath from Node_Dependencies when installing project deps' {
+        It 'uses NpmPath from Node_Dependencies when installing project deps' {
         $temp = Join-Path $env:TEMP ([System.Guid]::NewGuid())
         New-Item -ItemType Directory -Path $temp | Out-Null
         New-Item -ItemType File -Path (Join-Path $temp 'package.json') | Out-Null
         $cfg = @{ Node_Dependencies = @{ NpmPath = $temp } }
         function Invoke-LabNpm {
-            param([Parameter(ValueFromRemainingArguments = $true)][string[]]$testArgs)
+            param([Parameter(ValueFromRemainingArguments = $true)
+
+
+
+][string[]]$testArgs)
             $null = $testArgs
         }
         $npmPath = Get-RunnerScriptPath '0203_Install-npm.ps1'
@@ -163,3 +183,6 @@ Describe 'Node installation scripts' -Skip:$skipNpm {
     }
     }
 }
+
+
+

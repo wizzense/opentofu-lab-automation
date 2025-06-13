@@ -4,9 +4,17 @@ if (-not $PSScriptRoot) {
 
 #Param([object]$Config)
 
+
+
+
+
 function Invoke-LabStep {
     param([scriptblock]$Body, [object]$Config)
-    if ($Config -is [string]) {
+    
+
+
+
+if ($Config -is [string]) {
         if (Test-Path $Config) {
             $Config = Get-Content -Raw -Path $Config | ConvertFrom-Json
         } else {
@@ -33,4 +41,6 @@ Invoke-LabStep -Config $Config -Body {
     Write-CustomLog "Running $($MyInvocation.MyCommand.Name)"
 
 }
+
+
 

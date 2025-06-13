@@ -1,0 +1,20 @@
+{
+  "search.exclude": {
+    "**/backups/**": true,
+    "**/*.backup*": true,
+    "**/archive/**": true,
+    "**/cleanup-backup-*/**": true
+  },
+  "files.exclude": {
+    "**/backups/**": true,
+    "**/*.backup*": true,
+    "**/archive/**": true,
+    "**/cleanup-backup-*/**": true
+  },
+  "files.watcherExclude": {
+    "**/backups/**": true,
+    "**/*.backup*": true,
+    "**/archive/**": true,
+    "**/cleanup-backup-*/**": true
+  }
+}

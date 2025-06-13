@@ -6,7 +6,7 @@ if ($SkipNonWindows) { return }
 # Skip tests if the Hyper-V module isn't available
 if (-not (Get-Module -ListAvailable -Name 'Hyper-V')) { return }
 
-Describe 'Prepare-HyperVProvider' -Skip:$SkipNonWindows {
+Describe 'Prepare-HyperVProvider' -Skip:($SkipNonWindows) {
     BeforeAll {
         Enable-WindowsMocks
         $script:scriptPath = Get-RunnerScriptPath '0010_Prepare-HyperVProvider.ps1'
@@ -30,7 +30,11 @@ Describe 'Prepare-HyperVProvider' -Skip:$SkipNonWindows {
 
             Mock Get-Location { $script:location }
             Mock Push-Location { $script:stack += $script:location }
-            Mock Set-Location { param($Path) $script:location = $Path }
+            Mock Set-Location { param($Path) 
+
+
+
+$script:location = $Path }
             Mock Pop-Location {
                 if ($script:stack.Count -gt 0) {
                     $script:location = $script:stack[-1]
@@ -61,7 +65,11 @@ Describe 'Prepare-HyperVProvider' -Skip:$SkipNonWindows {
                 $pwd.MakeReadOnly()
                 $pwd
             }
-            Mock Resolve-Path { param([string]$Path) @{ Path = $Path } }
+            Mock Resolve-Path { param([string]$Path) 
+
+
+
+@{ Path = $Path } }
 
             & $script:scriptPath -Config $config
 
@@ -99,11 +107,19 @@ Describe 'Prepare-HyperVProvider' -Skip:$SkipNonWindows {
 
             Mock Convert-CerToPem {
                 param($CerPath, $PemPath)
-                & $global:origConvertCerToPem -CerPath $CerPath -PemPath $PemPath
+                
+
+
+
+& $global:origConvertCerToPem -CerPath $CerPath -PemPath $PemPath
             }
             Mock Convert-PfxToPem {
                 param($PfxPath, $Password, $CertPath, $KeyPath)
-                & $global:origConvertPfxToPem -PfxPath $PfxPath -Password $Password -CertPath $CertPath -KeyPath $KeyPath
+                
+
+
+
+& $global:origConvertPfxToPem -PfxPath $PfxPath -Password $Password -CertPath $CertPath -KeyPath $KeyPath
             }
             # certificate operations should not touch the real store
             $rootStub = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2
@@ -170,7 +186,6 @@ Describe 'Prepare-HyperVProvider' -Skip:$SkipNonWindows {
             Remove-Item (Join-Path $executionPath "$hostName.pem") -ErrorAction SilentlyContinue
             Remove-Item (Join-Path $executionPath "$hostName-key.pem") -ErrorAction SilentlyContinue
        }
-
         It 'does not redefine Convert-PfxToPem when sourced twice' {
             $cmdFirst = Get-Command Convert-PfxToPem
             . $script:scriptPath -Config ([pscustomobject]@{ PrepareHyperVHost = $false })
@@ -192,7 +207,6 @@ Describe 'Prepare-HyperVProvider' -Skip:$SkipNonWindows {
             Should -Invoke -CommandName Set-Content -Times 0
             Remove-Item $cer -ErrorAction SilentlyContinue
         }
-
         It 'skips writing PFX outputs when WhatIf is used' -Skip:($SkipNonWindows) {
             $scriptPath = Get-RunnerScriptPath '0010_Prepare-HyperVProvider.ps1'
             . $scriptPath
@@ -203,7 +217,11 @@ Describe 'Prepare-HyperVProvider' -Skip:$SkipNonWindows {
             $rsa = New-Object psobject
             $rsa | Add-Member -MemberType ScriptMethod -Name ExportPkcs8PrivateKey -Value { @() }
             $stub = New-Object psobject
-            $stub | Add-Member -MemberType ScriptMethod -Name Export -Value { param($t) @() }
+            $stub | Add-Member -MemberType ScriptMethod -Name Export -Value { param($t) 
+
+
+
+@() }
             $stub | Add-Member -MemberType ScriptMethod -Name GetRSAPrivateKey -Value { $rsa }
             Mock Set-Content {}
             Mock New-Object { $stub } -ParameterFilter { $TypeName -eq 'System.Security.Cryptography.X509Certificates.X509Certificate2' }
@@ -230,7 +248,6 @@ Describe 'Prepare-HyperVProvider' -Skip:$SkipNonWindows {
             { Convert-CerToPem -CerPath 'x' -PemPath '' } | Should -Throw -ErrorType [System.Management.Automation.ParameterBindingException]
             { Convert-CerToPem -CerPath 'x' } | Should -Throw -ErrorType [System.Management.Automation.ParameterBindingException]
         }
-
         It 'errors when PfxPath, CertPath, or KeyPath is missing' {
             $scriptPath = Get-RunnerScriptPath '0010_Prepare-HyperVProvider.ps1'
             . $scriptPath
@@ -248,7 +265,6 @@ Describe 'Prepare-HyperVProvider' -Skip:$SkipNonWindows {
             { Convert-PfxToPem -PfxPath 'p' -Password $pwd -CertPath 'c' -KeyPath '' } | Should -Throw -ErrorType [System.Management.Automation.ParameterBindingException]
             { Convert-PfxToPem -PfxPath 'p' -Password $pwd -CertPath 'c' -KeyPath $null } | Should -Throw -ErrorType [System.Management.Automation.ParameterBindingException]
         }
-
         It 'throws when the PFX file is unreadable' {
             $scriptPath = Get-RunnerScriptPath '0010_Prepare-HyperVProvider.ps1'
             . $scriptPath
@@ -262,3 +278,6 @@ Describe 'Prepare-HyperVProvider' -Skip:$SkipNonWindows {
         }
     }
 }
+
+
+

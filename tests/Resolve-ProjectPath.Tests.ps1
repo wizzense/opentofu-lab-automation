@@ -1,3 +1,7 @@
+
+
+
+
 . (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
 
 Describe 'Resolve-ProjectPath' {
@@ -5,8 +9,7 @@ Describe 'Resolve-ProjectPath' {
         $modulePath = Join-Path $PSScriptRoot '..' 'pwsh' 'lab_utils' 'Resolve-ProjectPath.ps1'
         . $modulePath
     }
-
-    It 'finds file recursively and after move' {
+        It 'finds file recursively and after move' {
         $root = Join-Path $TestDrive 'repo'
         $dir1 = Join-Path $root 'a'
         $dir2 = Join-Path $root 'b'
@@ -19,8 +22,7 @@ Describe 'Resolve-ProjectPath' {
         $expected = Join-Path $dir2 'test.ps1'
         Resolve-ProjectPath -Name 'test.ps1' -Root $root | Should -Be $expected
     }
-
-    It 'resolves path from path-index.yaml' {
+        It 'resolves path from path-index.yaml' {
         $root = Join-Path $TestDrive 'repo2'
         $scripts = Join-Path $root 'scripts'
         New-Item -ItemType Directory -Path $scripts -Force | Out-Null
@@ -31,8 +33,7 @@ Describe 'Resolve-ProjectPath' {
         $expected = Join-Path $root 'scripts' 'script.ps1'
         Resolve-ProjectPath -Name 'script.ps1' -Root $root | Should -Be $expected
     }
-
-    It 'resolves direct index entry with normalized separators' {
+        It 'resolves direct index entry with normalized separators' {
         $root = Join-Path $TestDrive 'repo3'
         $scripts = Join-Path $root 'scripts'
         New-Item -ItemType Directory -Path $scripts -Force | Out-Null
@@ -44,3 +45,5 @@ Describe 'Resolve-ProjectPath' {
         Resolve-ProjectPath -Name 'script.ps1' -Root $root | Should -Be $expected
     }
 }
+
+

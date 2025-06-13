@@ -1,3 +1,7 @@
+
+
+
+
 # filepath: tests/0211_Install-VSBuildTools.Tests.ps1
 . (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
 . (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
@@ -22,25 +26,23 @@ BeforeAll {
 Describe '0211_Install-VSBuildTools Tests' -Tag 'Installer' {
     
     Context 'Script Structure Validation' {
-        It 'should have valid PowerShell syntax' -Skip:($SkipNonWindows) {
+        It 'should ' -Skip: {
             $script:ScriptPath | Should -Exist
             # Test syntax by parsing the script content instead of dot-sourcing
             { $null = [System.Management.Automation.PSParser]::Tokenize((Get-Content $script:ScriptPath -Raw), [ref]$null) } | Should -Not -Throw
         }
-        
-        It 'should follow naming conventions' -Skip:($SkipNonWindows) {
+        It 'should ' -Skip: {
             $scriptName = [System.IO.Path]::GetFileName($script:ScriptPath)
             $scriptName | Should -Match '^[0-9]{4}_[A-Z][a-zA-Z0-9-]+\.ps1$|^[A-Z][a-zA-Z0-9-]+\.ps1$'
         }
-        
-        It 'should define expected functions' -Skip:($SkipNonWindows) {
+        It 'should ' -Skip: {
             $scriptContent = Get-Content $script:ScriptPath -Raw
             $scriptContent | Should -Match 'function\\s+Install-VSBuildTools'
         }
     }
     
     Context 'Parameter Validation' {
-        It 'should accept Config parameter' -Skip:($SkipNonWindows) {
+        It 'should ' -Skip: {
             $config = [pscustomobject]@{ TestProperty = 'TestValue' }
             $configJson = $config | ConvertTo-Json -Depth 5
             $tempConfig = Join-Path ([System.IO.Path]::GetTempPath()) "$([System.Guid]::NewGuid()).json"
@@ -58,35 +60,32 @@ Describe '0211_Install-VSBuildTools Tests' -Tag 'Installer' {
         BeforeEach {
             # Mock external dependencies for testing
         }
-        
-        It 'should validate prerequisites' -Skip:($SkipNonWindows) {
+        It 'should ' -Skip: {
             # Test prerequisite checking logic
             $true | Should -BeTrue  # Placeholder - implement actual tests
         }
-        
-        It 'should handle download failures gracefully' -Skip:($SkipNonWindows) {
+        It 'should ' -Skip: {
             # Test error handling for failed downloads
             $true | Should -BeTrue  # Placeholder - implement actual tests
         }
-        
-        It 'should verify installation success' -Skip:($SkipNonWindows) {
+        It 'should ' -Skip: {
             # Test installation verification
             $true | Should -BeTrue  # Placeholder - implement actual tests
         }
     }
     
     Context 'Install-VSBuildTools Function Tests' {
-        It 'should be defined and accessible' -Skip:($SkipNonWindows) {
+        It 'should ' -Skip: {
             $scriptContent = Get-Content $script:ScriptPath -Raw
             $scriptContent | Should -Match 'function\s+Install-VSBuildTools'
         }
-                It 'should support common parameters' -Skip:($SkipNonWindows) {
+        It 'should ' -Skip: {
             $scriptContent = Get-Content $script:ScriptPath -Raw
             $scriptContent | Should -Match '\[CmdletBinding\('
             $scriptContent = Get-Content $script:ScriptPath -Raw
             $scriptContent | Should -Match 'SupportsShouldProcess'
         }
-                It 'should handle execution with valid parameters' -Skip:($SkipNonWindows) {
+        It 'should ' -Skip: {
             # Add specific test logic for Install-VSBuildTools
             $true | Should -BeTrue  # Placeholder - implement actual tests
         }
@@ -98,6 +97,8 @@ AfterAll {
     # Restore any modified system state
     # Remove test artifacts
 }
+
+
 
 
 

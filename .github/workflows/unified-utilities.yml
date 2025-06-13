@@ -1,0 +1,278 @@
+---
+name: "🔧 Unified Utilities"
+
+on:
+  schedule:
+    # Run every 6 hours
+    - cron: '0 */6 * * *'
+  workflow_run:
+    workflows: ["🚀 CI/CD Pipeline", "🧪 Cross-Platform Testing"]
+    types: [completed]
+  workflow_dispatch:
+    inputs:
+      update_dashboard:
+        description: "Update project dashboard"
+        type: boolean
+        default: true
+      update_path_index:
+        description: "Update path index file"
+        type: boolean
+        default: true
+      update_docs:
+        description: "Update documentation"
+        type: boolean
+        default: true
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  update-dashboard:
+    name: "📊 Update Project Dashboard"
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name != 'workflow_dispatch' || inputs.update_dashboard }}
+    steps:
+      - name: "📥 Checkout Repository"
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: "📦 Install PowerShell"
+        shell: bash
+        run: |
+          if ! sudo apt-get update || ! sudo apt-get install -y powershell; then
+            echo "Failed to install PowerShell" >&2
+            exit 1
+          fi
+
+      - name: "📊 Generate Dashboard Data"
+        id: dashboard
+        uses: actions/github-script@v7
+        with:
+          script: |
+            try {
+              const { owner, repo } = context.repo;
+              const now = new Date();
+              const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+
+              // Get recent workflow runs
+              const workflows = [
+                'unified-ci.yml',
+                'unified-testing.yml', 
+                'auto-test-generation-consolidated.yml',
+                'system-health-monitor.yml',
+                'unified-utilities.yml'
+              ];
+              
+              let allRuns = [];
+              for (const workflow of workflows) {
+                const workflowRuns = await github.rest.actions.listWorkflowRuns({
+                  owner,
+                  repo,
+                  workflow_id: workflow,
+                  created: `>=${sevenDaysAgo.toISOString()}`
+                });
+                
+                allRuns = allRuns.concat(workflowRuns.data.workflow_runs);
+              }
+              
+              // Calculate stats
+              const stats = {
+                totalRuns: allRuns.length,
+                successfulRuns: allRuns.filter(run => run.conclusion === 'success').length,
+                failedRuns: allRuns.filter(run => run.conclusion === 'failure').length,
+                workflowStats: {}
+              };
+              
+              // Group by workflow
+              for (const run of allRuns) {
+                const name = run.name;
+                if (!stats.workflowStats[name]) {
+                  stats.workflowStats[name] = {
+                    total: 0,
+                    success: 0,
+                    failure: 0
+                  };
+                }
+                
+                stats.workflowStats[name].total++;
+                if (run.conclusion === 'success') stats.workflowStats[name].success++;
+                if (run.conclusion === 'failure') stats.workflowStats[name].failure++;
+              }
+              
+              // Write stats to file
+              const fs = require('fs');
+              fs.writeFileSync('workflow-dashboard-data.json', JSON.stringify(stats, null, 2));
+              
+              console.log(`Generated dashboard data with ${allRuns.length} workflow runs`);
+              return { success: true, message: `Generated dashboard with ${allRuns.length} workflow runs` };
+            } catch (error) {
+              console.error('Error generating dashboard data:', error);
+              return { success: false, error: error.message };
+            }
+
+      - name: "📊 Update Dashboard in README"
+        shell: pwsh
+        run: |
+          try {
+            $ErrorActionPreference = 'Stop'
+            
+            # Import dashboard data
+            $dashboardData = Get-Content -Path workflow-dashboard-data.json | ConvertFrom-Json
+            
+            # Generate dashboard markdown
+            $date = Get-Date -Format "yyyy-MM-dd HH:mm:ss UTC"
+            $dashboardMd = "## 📊 Workflow Status Dashboard`n`n"
+            $dashboardMd += "> Last updated: $date`n`n"
+            $dashboardMd += "| Workflow | Success Rate | Total Runs |`n"
+            $dashboardMd += "|----------|-------------|------------|`n"
+            
+            foreach ($workflow in $dashboardData.workflowStats.PSObject.Properties) {
+              $name = $workflow.Name
+              $stats = $workflow.Value
+              $successRate = [math]::Round(($stats.success / [math]::Max(1, $stats.total)) * 100, 1)
+              
+              # Add emoji based on success rate
+              $emoji = if ($successRate -ge 95) { "✅" } 
+                      elseif ($successRate -ge 80) { "⚠️" } 
+                      else { "❌" }
+              
+              $dashboardMd += "| $emoji $name | $successRate% | $($stats.total) |`n"
+            }
+            
+            $dashboardMd += "`n### Summary`n`n"
+            $dashboardMd += "- Total workflow runs: $($dashboardData.totalRuns)`n"
+            $totalSuccessRate = [math]::Round(($dashboardData.successfulRuns / [math]::Max(1, $dashboardData.totalRuns)) * 100, 1)
+            $dashboardMd += "- Success rate: $totalSuccessRate%`n"
+            $dashboardMd += "- Failed runs: $($dashboardData.failedRuns)`n"
+            
+            # Update the README.md file, replacing the dashboard section
+            $readmePath = "README.md"
+            $readmeContent = Get-Content -Path $readmePath -Raw
+            
+            # Look for dashboard section and replace it
+            $dashboardPattern = "(?ms)## 📊 Workflow Status Dashboard.*?(?=^##\s)"
+            $newReadmeContent = $readmeContent -replace $dashboardPattern, "$dashboardMd`n`n"
+            
+            Set-Content -Path $readmePath -Value $newReadmeContent
+            
+            Write-Host "✅ Dashboard updated successfully in README.md"
+          }
+          catch {
+            Write-Error "Failed to update dashboard: $_"
+            exit 1
+          }
+
+      - name: "📤 Commit and Push Changes"
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          
+          if git diff --quiet README.md; then
+            echo "No changes to README dashboard"
+          else
+            git add README.md
+            git commit -m "docs: update workflow status dashboard [skip ci]"
+            git push
+            echo "✅ Dashboard changes committed and pushed"
+          fi
+
+  update-path-index:
+    name: "📑 Update Path Index"
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name != 'workflow_dispatch' || inputs.update_path_index }}
+    steps:
+      - name: "📥 Checkout Repository"
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: "📦 Setup Python"
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: "📦 Install Dependencies"
+        run: pip install pyyaml
+
+      - name: "📑 Regenerate Path Index"
+        run: |
+          echo "Regenerating path index..."
+          python scripts/update_index.py
+          
+          if [ $? -ne 0 ]; then
+            echo "❌ Failed to update path index"
+            exit 1
+          fi
+          
+          echo "✅ Path index regenerated successfully"
+
+      - name: "🔍 Check for Changes"
+        id: check_changes
+        run: |
+          if git diff --quiet path-index.yaml; then
+            echo "No changes detected"
+          else
+            echo "changes_detected=true" >> $GITHUB_ENV
+            echo "✅ Changes detected in path-index.yaml"
+          fi
+
+      - name: "📤 Commit and Push Changes"
+        if: env.changes_detected == 'true'
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add path-index.yaml
+          git commit -m 'chore: update path index [skip ci]'
+          git push
+          echo "✅ Path index changes committed and pushed"
+
+      - name: "📝 Generate Summary"
+        run: |
+          echo "# 📑 Path Index Update" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ "${changes_detected}" == "true" ]; then
+            echo "✅ Path index updated and changes committed" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "ℹ️ No changes detected in path index" >> $GITHUB_STEP_SUMMARY
+          fi
+
+  update-docs:
+    name: "📚 Update Documentation"
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name != 'workflow_dispatch' || inputs.update_docs }}
+    steps:
+      - name: "📥 Checkout Repository"
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: "📦 Setup Python"
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: "📦 Install Dependencies"
+        run: |
+          pip install mkdocs mkdocs-material pymdown-extensions
+
+      - name: "📚 Build Documentation"
+        run: |
+          echo "Building documentation..."
+          mkdocs build
+          
+          if [ $? -ne 0 ]; then
+            echo "❌ Failed to build documentation"
+            exit 1
+          fi
+          
+          echo "✅ Documentation built successfully"
+
+      - name: "📝 Generate Documentation Summary"
+        run: |
+          echo "# 📚 Documentation Update" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Documentation built successfully" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Documentation files generated: $(find site -type f | wc -l)" >> $GITHUB_STEP_SUMMARY

@@ -102,7 +102,11 @@ New-InstallerScriptTest -ScriptName '0007_Install-Go.ps1' -EnabledProperty 'Inst
     # Override the default Get-Command mock for Go-specific behavior
     'Get-Command' = { 
         param($Name)
-        if ($Name -eq 'go') { 
+        
+
+
+
+if ($Name -eq 'go') { 
             return $null  # Simulate Go not installed
         } 
         return [PSCustomObject]@{ Name = $Name; Source = "/usr/bin/$Name" }
@@ -159,7 +163,11 @@ $customScenarios += New-TestScenario -Name 'Custom installer path' -Description 
     'Start-Process' = 1
 } -CustomValidation {
     param($Result, $Error)
-    # Verify custom path was used
+    
+
+
+
+# Verify custom path was used
     Should -Invoke -CommandName Start-Process -ParameterFilter { 
         $ArgumentList -contains 'INSTALLDIR=C:\CustomGo' 
     }
@@ -168,3 +176,5 @@ $customScenarios += New-TestScenario -Name 'Custom installer path' -Description 
 # Add the custom scenarios to the standard test
 Test-RunnerScript -ScriptName '0007_Install-Go.ps1' -Scenarios $customScenarios
 #>
+
+

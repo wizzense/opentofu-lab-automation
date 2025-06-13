@@ -1,14 +1,17 @@
+
+
+
+
 . (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
 . (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
-Describe '0112_Enable-PXE' -Skip:$SkipNonWindows {
+Describe '0112_Enable-PXE' -Skip:($SkipNonWindows) {
     BeforeAll {
         Enable-WindowsMocks
         $script:scriptPath = Get-RunnerScriptPath '0112_Enable-PXE.ps1'
-        $loggerPath = Join-Path $PSScriptRoot '..' 'pwsh' 'lab_utils' 'LabRunner' 'Logger.ps1'
+        $loggerPath = Join-Path $PSScriptRoot '..' 'pwsh/modules/LabRunner/Logger.ps1'
         . $loggerPath
     }
-
-    It 'logs firewall rules when ConfigPXE is true'  {
+        It 'logs firewall rules when ConfigPXE is true'  {
         $Config = [pscustomobject]@{ ConfigPXE = $true }
         $logPath = Join-Path $env:TEMP ('pxe-log-' + [System.Guid]::NewGuid().ToString() + '.txt')
         $script:LogFilePath = $logPath
@@ -26,4 +29,7 @@ Describe '0112_Enable-PXE' -Skip:$SkipNonWindows {
         }
     }
 }
+
+
+
 

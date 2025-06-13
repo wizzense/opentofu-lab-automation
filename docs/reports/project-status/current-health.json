@@ -1,0 +1,57 @@
+{
+  "Recommendations": [
+    "Run automated fixes: ./scripts/maintenance/fix-infrastructure-issues.ps1 -Fix All",
+    "Fix syntax errors: ./scripts/maintenance/fix-test-syntax.ps1",
+    "Update TestHelpers.ps1 with missing mock functions"
+  ],
+  "Issues": [
+    {
+      "Severity": "High",
+      "Fix": "./scripts/maintenance/fix-test-syntax.ps1",
+      "Category": "PowerShell Syntax",
+      "Count": 23,
+      "Files": [
+        "./archive/legacy/test-format-function.ps1",
+        "./archive/legacy/test-script-sample.ps1",
+        "./archive/test-scripts/test-lint.ps1",
+        "./cleanup-backup-20250612-065942/test-format-function.ps1",
+        "./cleanup-backup-20250612-065942/test-script-sample.ps1"
+      ],
+      "Description": "PowerShell files with syntax errors"
+    },
+    {
+      "Severity": "Medium",
+      "Details": [
+        "Get-LabConfig"
+      ],
+      "Category": "Missing Test Mocks",
+      "Fix": "./scripts/maintenance/fix-infrastructure-issues.ps1 -Fix MissingCommands",
+      "Count": 1,
+      "Description": "Missing mock functions in TestHelpers.ps1"
+    },
+    {
+      "Severity": "Medium",
+      "Fix": "./scripts/maintenance/fix-infrastructure-issues.ps1 -Fix ImportPaths",
+      "Category": "Deprecated Import Paths",
+      "Count": 17,
+      "Files": [
+        "Download-Archive.ps1",
+        "Expand-All.ps1",
+        "Menu.ps1",
+        "Download-Archive.ps1",
+        "Expand-All.ps1"
+      ],
+      "Description": "Files using old lab_utils import paths"
+    }
+  ],
+  "Timestamp": "2025-06-13 04:33:39",
+  "Metrics": {
+    "TotalPowerShellFiles": 350,
+    "SyntaxErrorFiles": 23,
+    "TestFiles": 86,
+    "DeprecatedImports": 17,
+    "IssueCount": 3,
+    "MissingMocks": 1
+  },
+  "OverallStatus": "Critical"
+}

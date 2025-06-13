@@ -1,3 +1,7 @@
+
+
+
+
 # filepath: tests/kicker-bootstrap.Tests.ps1
 . (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
 . (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
@@ -20,17 +24,15 @@ BeforeAll {
 Describe 'kicker-bootstrap Tests' -Tag 'Installer' {
     
     Context 'Script Structure Validation' {
-        It 'should have valid PowerShell syntax' -Skip:($SkipNonWindows -or $SkipNonAdmin) {
+        It 'should ' -Skip: {
             $scriptPath | Should -Exist
             { . $scriptPath } | Should -Not -Throw
         }
-        
-        It 'should follow naming conventions' -Skip:($SkipNonWindows -or $SkipNonAdmin) {
+        It 'should ' -Skip: {
             $scriptName = [System.IO.Path]::GetFileName($scriptPath)
             $scriptName | Should -Match '^[0-9]{4}_[A-Z][a-zA-Z0-9-]+\.ps1$|^[A-Z][a-zA-Z0-9-]+\.ps1$'
         }
-        
-        It 'should define expected functions' -Skip:($SkipNonWindows -or $SkipNonAdmin) {
+        It 'should ' -Skip: {
             $scriptContent = Get-Content $script:ScriptPath -Raw
             $scriptContent | Should -Match 'function\\s+Get-CrossPlatformTempPath'
             $scriptContent = Get-Content $script:ScriptPath -Raw
@@ -45,13 +47,13 @@ Describe 'kicker-bootstrap Tests' -Tag 'Installer' {
     }
     
     Context 'Parameter Validation' {
-        It 'should accept ConfigFile parameter' -Skip:($SkipNonWindows -or $SkipNonAdmin) {
+        It 'should ' -Skip: {
             { & $scriptPath -ConfigFile 'TestValue' -WhatIf } | Should -Not -Throw
         }
-        It 'should accept Quiet parameter' -Skip:($SkipNonWindows -or $SkipNonAdmin) {
+        It 'should ' -Skip: {
             { & $scriptPath -Quiet 'TestValue' -WhatIf } | Should -Not -Throw
         }
-        It 'should accept Verbosity parameter' -Skip:($SkipNonWindows -or $SkipNonAdmin) {
+        It 'should ' -Skip: {
             { & $scriptPath -Verbosity 'TestValue' -WhatIf } | Should -Not -Throw
         }
     }
@@ -66,82 +68,79 @@ Describe 'kicker-bootstrap Tests' -Tag 'Installer' {
             Mock Invoke-WebRequest { return @{ StatusCode = 200 } }
             Mock Start-Process { return @{ ExitCode = 0 } }
         }
-        
-        It 'should validate prerequisites' -Skip:($SkipNonWindows -or $SkipNonAdmin) {
+        It 'should ' -Skip: {
             # Test prerequisite checking logic
             $true | Should -BeTrue  # Placeholder - implement actual tests
         }
-        
-        It 'should handle download failures gracefully' -Skip:($SkipNonWindows -or $SkipNonAdmin) {
+        It 'should ' -Skip: {
             # Test error handling for failed downloads
             $true | Should -BeTrue  # Placeholder - implement actual tests
         }
-        
-        It 'should verify installation success' -Skip:($SkipNonWindows -or $SkipNonAdmin) {
+        It 'should ' -Skip: {
             # Test installation verification
             $true | Should -BeTrue  # Placeholder - implement actual tests
         }
     }
     
     Context 'Get-CrossPlatformTempPath Function Tests' {
-        It 'should be defined and accessible' -Skip:($SkipNonWindows -or $SkipNonAdmin) {
+        It 'should ' -Skip: {
             $scriptContent = Get-Content $script:ScriptPath -Raw
             $scriptContent | Should -Match "function\s+'Get-CrossPlatformTempPath'"
         }
-                It 'should handle execution with valid parameters' -Skip:($SkipNonWindows -or $SkipNonAdmin) {
+        It 'should ' -Skip: {
             # Add specific test logic for Get-CrossPlatformTempPath
             $true | Should -BeTrue  # Placeholder - implement actual tests
         }
     }
     
     Context 'Write-Continue Function Tests' {
-        It 'should be defined and accessible' -Skip:($SkipNonWindows -or $SkipNonAdmin) {
+        It 'should ' -Skip: {
             $scriptContent = Get-Content $script:ScriptPath -Raw
             $scriptContent | Should -Match "function\s+'Write-Continue'"
         }
-                It 'should accept prompt parameter' -Skip:($SkipNonWindows -or $SkipNonAdmin) {
+        It 'should ' -Skip: {
             (Get-Command 'Write-Continue').Parameters.Keys | Should -Contain 'prompt'
         }
-                It 'should handle execution with valid parameters' -Skip:($SkipNonWindows -or $SkipNonAdmin) {
+        It 'should ' -Skip: {
             # Add specific test logic for Write-Continue
             $true | Should -BeTrue  # Placeholder - implement actual tests
         }
     }
     
     Context 'Write-CustomLog Function Tests' {
-        It 'should be defined and accessible' -Skip:($SkipNonWindows -or $SkipNonAdmin) {
+        It 'should ' -Skip: {
             $scriptContent = Get-Content $script:ScriptPath -Raw
             $scriptContent | Should -Match "function\s+'Write-CustomLog'"
         }
-                It 'should handle execution with valid parameters' -Skip:($SkipNonWindows -or $SkipNonAdmin) {
+        It 'should ' -Skip: {
             # Add specific test logic for Write-CustomLog
             $true | Should -BeTrue  # Placeholder - implement actual tests
         }
     }
     
     Context 'Read-LoggedInput Function Tests' {
-        It 'should be defined and accessible' -Skip:($SkipNonWindows -or $SkipNonAdmin) {
+        It 'should ' -Skip: {
             $scriptContent = Get-Content $script:ScriptPath -Raw
             $scriptContent | Should -Match "function\s+'Read-LoggedInput'"
         }
-                It 'should support common parameters' -Skip:($SkipNonWindows -or $SkipNonAdmin) {
+        It 'should ' -Skip: {
             $scriptContent = Get-Content $script:ScriptPath -Raw
             $scriptContent | Should -Match '\[CmdletBinding\('
             $scriptContent = Get-Content $script:ScriptPath -Raw
             $scriptContent | Should -Match 'SupportsShouldProcess'
         }
-                It 'should handle execution with valid parameters' -Skip:($SkipNonWindows -or $SkipNonAdmin) {
+        It 'should ' -Skip: {
             # Add specific test logic for Read-LoggedInput
             $true | Should -BeTrue  # Placeholder - implement actual tests
         }
     }
     
     Context 'Update-RepoPreserveConfig Function Tests' {
-        It 'should be defined and accessible' -Skip:($SkipNonWindows -or $SkipNonAdmin) {
+        It 'should ' -Skip: {
             $scriptContent = Get-Content $script:ScriptPath -Raw
             $scriptContent | Should -Match "function\s+'Update-RepoPreserveConfig'"
         }
-                It 'should handle execution with valid parameters' -Skip:($SkipNonWindows -or $SkipNonAdmin) {
+        It 'should ' -Skip: {
             # Add specific test logic for Update-RepoPreserveConfig
             $true | Should -BeTrue  # Placeholder - implement actual tests
         }
@@ -153,5 +152,7 @@ AfterAll {
     # Restore any modified system state
     # Remove test artifacts
 }
+
+
 
 

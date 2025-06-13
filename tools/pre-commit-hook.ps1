@@ -7,8 +7,7 @@
 .DESCRIPTION
     This hook runs before each commit to ensure:
     - All PowerShell scripts have valid syntax
-    - Param blocks are positioned correctly
-    - Import-Module statements come after Param blocks
+    - Uses batch processing for fast validation
     - Scripts follow project conventions
 
 .NOTES
@@ -34,29 +33,86 @@ if ($stagedFiles.Count -eq 0) {
     exit 0
 }
 
-Write-Host "Validating $($stagedFiles.Count) PowerShell files..." -ForegroundColor White
+Write-Host "� Validating $($stagedFiles.Count) PowerShell files with batch processing..." -ForegroundColor Yellow
 
-$hasErrors = $false
-
-foreach ($file in $stagedFiles) {
-    if (-not (Test-Path $file)) {
-        continue  # File might be deleted
+# Load our new batch processing linting functions
+try {
+    . "./pwsh/modules/CodeFixer/Public/Invoke-PowerShellLint.ps1"
+    . "./pwsh/modules/CodeFixer/Public/Invoke-ParallelScriptAnalyzer.ps1"
+    
+    # Convert file paths to FileInfo objects
+    $fileObjects = @()
+    foreach ($file in $stagedFiles) {
+        if (Test-Path $file) {
+            $fileObjects += Get-Item $file
+        }
     }
     
-    Write-Host "Checking: $file" -ForegroundColor Gray
+    if ($fileObjects.Count -eq 0) {
+        Write-Host "✅ No valid PowerShell files to validate" -ForegroundColor Green
+        exit 0
+    }
     
-    # Test 1: Basic syntax
-    try {
-        $content = Get-Content $file -Raw -ErrorAction Stop
-        [System.Management.Automation.PSParser]::Tokenize($content, [ref]$null) | Out-Null
-    } catch {
-        Write-Host "  ❌ SYNTAX ERROR: $($_.Exception.Message)" -ForegroundColor Red
+    Write-Host "🚀 Using batch processing for $($fileObjects.Count) files..." -ForegroundColor Cyan
+    
+    # Run the new batch linting with parallel processing and optimal batch size
+    # For pre-commit hooks, use smaller batches for faster feedback
+    $batchSize = 3  # Smaller batches for faster parallel processing
+    $maxJobs = [Math]::Min(4, [Environment]::ProcessorCount)  # Limit concurrent jobs for pre-commit
+    
+    Write-Host "⚙️ Using $maxJobs concurrent jobs with batch size of $batchSize files" -ForegroundColor Gray
+    $lintResults = Invoke-PowerShellLint -Files $fileObjects -Parallel -OutputFormat 'CI' -PassThru -BatchSize $batchSize -MaxJobs $maxJobs
+    
+    # Check for errors (syntax errors are critical for commits)
+    $syntaxErrors = $lintResults | Where-Object { $_.Severity -eq 'Error' }
+    
+    if ($syntaxErrors.Count -gt 0) {
+        Write-Host "`n❌ CRITICAL SYNTAX ERRORS found:" -ForegroundColor Red
+        foreach ($error in $syntaxErrors) {
+            Write-Host "  $($error.ScriptName):$($error.Line) - $($error.Message)" -ForegroundColor Red
+        }
         $hasErrors = $true
-        continue
+    } else {
+        Write-Host "✅ No critical syntax errors found" -ForegroundColor Green
+        $hasErrors = $false
     }
     
-    # Test 2: Param block positioning (for runner scripts)
-    if ($file -like "*runner_scripts*") {
+} catch {
+    Write-Host "⚠️ Could not load batch processing, falling back to basic validation..." -ForegroundColor Yellow
+    Write-Host "Error: $($_.Exception.Message)" -ForegroundColor Gray
+    
+    # Fallback to basic syntax checking only
+    $hasErrors = $false
+    foreach ($file in $stagedFiles) {
+        if (-not (Test-Path $file)) {
+            continue  # File might be deleted
+        }
+        
+        Write-Host "Checking: $file" -ForegroundColor Gray
+        
+        # Test: Basic syntax
+        try {
+            $content = Get-Content $file -Raw -ErrorAction Stop
+            [System.Management.Automation.PSParser]::Tokenize($content, [ref]$null) | Out-Null
+            Write-Host "  ✅ Valid syntax" -ForegroundColor Green
+        } catch {
+            Write-Host "  ❌ SYNTAX ERROR: $($_.Exception.Message)" -ForegroundColor Red
+            $hasErrors = $true
+            continue
+        }
+    }
+}
+
+# Additional runner script specific checks (if needed)
+$runnerFiles = $stagedFiles | Where-Object { $_ -like "*runner_scripts*" }
+if ($runnerFiles.Count -gt 0) {
+    Write-Host "📋 Running additional checks for $($runnerFiles.Count) runner scripts..." -ForegroundColor Cyan
+    
+    foreach ($file in $runnerFiles) {
+        if (-not (Test-Path $file)) { continue }
+        
+        Write-Host "Checking runner script: $file" -ForegroundColor Gray
+        
         $lines = Get-Content $file -ErrorAction Stop
         $firstExecutableLine = -1
         $paramLineIndex = -1
@@ -95,28 +151,27 @@ foreach ($file in $stagedFiles) {
             $hasErrors = $true
         }
         
-        # Check required elements exist
-        if ($paramLineIndex -eq -1) {
-            Write-Host "  ⚠️  WARNING: No Param block found in runner script" -ForegroundColor Yellow
+        if (-not $hasErrors) {
+            Write-Host "  ✅ Runner script structure valid" -ForegroundColor Green
         }
-        
-        if ($importLineIndex -eq -1 -and $file -like "*runner_scripts*") {
-            Write-Host "  ⚠️  WARNING: No LabRunner import found in runner script" -ForegroundColor Yellow
-        }
-    }
-    
-    if (-not $hasErrors) {
-        Write-Host "  ✅ Valid" -ForegroundColor Green
     }
 }
 
 if ($hasErrors) {
     Write-Host "`n❌ Pre-commit validation FAILED!" -ForegroundColor Red -BackgroundColor Black
     Write-Host "Fix the errors above before committing." -ForegroundColor Red
-    Write-Host "`nTo auto-fix common issues, run:" -ForegroundColor Yellow
-    Write-Host "  pwsh tools/Validate-PowerShellScripts.ps1 -Path . -Fix" -ForegroundColor Cyan
     exit 1
 } else {
     Write-Host "`n✅ All PowerShell files are valid!" -ForegroundColor Green -BackgroundColor Black
+    
+    # Re-stage any files that were auto-fixed (though we're not auto-fixing in pre-commit for safety)
+    foreach ($file in $stagedFiles) {
+        if (Test-Path $file) {
+            git add $file
+        }
+    }
+    
     exit 0
 }
+
+

@@ -24,6 +24,15 @@ import argparse
 from pathlib import Path
 from typing import Dict, Optional, Tuple
 
+# Set console encoding for Windows compatibility
+if platform.system() == "Windows":
+    try:
+        import codecs
+        sys.stdout.reconfigure(encoding='utf-8')
+        sys.stderr.reconfigure(encoding='utf-8')
+    except:
+        pass
+
 # Project constants
 PROJECT_ROOT = Path(__file__).parent
 PWSH_DIR = PROJECT_ROOT / "pwsh"
@@ -41,18 +50,29 @@ class Colors:
 
 def print_banner():
     """Display project banner"""
-    banner = f"""
+    # Use Windows-compatible characters and encoding
+    try:
+        banner = f"""
 {Colors.BLUE}{Colors.BOLD}
-╔═══════════════════════════════════════════════════════════════╗
-║                 OpenTofu Lab Automation                       ║
-║                 Cross-Platform Deployment                     ║
-╚═══════════════════════════════════════════════════════════════╝
+===============================================================
+                 OpenTofu Lab Automation                       
+                 Cross-Platform Deployment                     
+===============================================================
 {Colors.RESET}
-{Colors.GREEN}🚀 One-click infrastructure lab deployment{Colors.RESET}
-{Colors.YELLOW}📋 Platform: {platform.system()} {platform.release()}{Colors.RESET}
-{Colors.YELLOW}🏠 Project: {PROJECT_ROOT}{Colors.RESET}
+{Colors.GREEN}>> One-click infrastructure lab deployment{Colors.RESET}
+{Colors.YELLOW}Platform: {platform.system()} {platform.release()}{Colors.RESET}
+{Colors.YELLOW}Project: {PROJECT_ROOT}{Colors.RESET}
 """
-    print(banner)
+        print(banner)
+    except UnicodeEncodeError:
+        # Fallback for systems with encoding issues
+        print("\n" + "="*60)
+        print("         OpenTofu Lab Automation")
+        print("         Cross-Platform Deployment")
+        print("="*60)
+        print(f"Platform: {platform.system()} {platform.release()}")
+        print(f"Project: {PROJECT_ROOT}")
+        print("="*60 + "\n")
 
 def detect_platform() -> Tuple[str, str]:
     """Detect operating system and architecture"""
@@ -89,7 +109,7 @@ def check_powershell() -> Optional[str]:
             if result.returncode == 0:
                 version = int(result.stdout.strip())
                 if version >= 5:
-                    print(f"{Colors.YELLOW}⚠️  Using Windows PowerShell {version}. PowerShell 7+ recommended.{Colors.RESET}")
+                    print(f"{Colors.YELLOW}WARNING:  Using Windows PowerShell {version}. PowerShell 7+ recommended.{Colors.RESET}")
                     return 'powershell'
         except (subprocess.TimeoutExpired, subprocess.CalledProcessError, FileNotFoundError, ValueError):
             pass
@@ -141,16 +161,16 @@ def load_config(config_path: Optional[str] = None) -> Dict:
         config_file = DEFAULT_CONFIG
     
     if not config_file.exists():
-        print(f"{Colors.RED}❌ Config file not found: {config_file}{Colors.RESET}")
+        print(f"{Colors.RED}ERROR: Config file not found: {config_file}{Colors.RESET}")
         return {}
     
     try:
         with open(config_file, 'r') as f:
             config = json.load(f)
-        print(f"{Colors.GREEN}✅ Loaded config: {config_file}{Colors.RESET}")
+        print(f"{Colors.GREEN}OK: Loaded config: {config_file}{Colors.RESET}")
         return config
     except json.JSONDecodeError as e:
-        print(f"{Colors.RED}❌ Invalid JSON in config file: {e}{Colors.RESET}")
+        print(f"{Colors.RED}ERROR: Invalid JSON in config file: {e}{Colors.RESET}")
         return {}
 
 def run_kicker_bootstrap(config_path: Optional[str] = None, quiet: bool = False, non_interactive: bool = False) -> bool:
@@ -159,7 +179,7 @@ def run_kicker_bootstrap(config_path: Optional[str] = None, quiet: bool = False,
     pwsh_cmd = check_powershell()
     
     if not pwsh_cmd:
-        print(f"{Colors.RED}❌ PowerShell not found!{Colors.RESET}")
+        print(f"{Colors.RED}ERROR: PowerShell not found!{Colors.RESET}")
         print(install_powershell_instructions())
         return False
     
@@ -174,7 +194,8 @@ def run_kicker_bootstrap(config_path: Optional[str] = None, quiet: bool = False,
     if non_interactive:
         cmd.append('-NonInteractive')
     
-    print(f"{Colors.BLUE}🚀 Launching kicker-bootstrap...{Colors.RESET}")
+    safe_print(f"{Colors.BLUE}>> Launching kicker-bootstrap...{Colors.RESET}", 
+               f"{Colors.BLUE}Starting deployment...{Colors.RESET}")
     print(f"{Colors.YELLOW}Command: {' '.join(cmd)}{Colors.RESET}")
     
     try:
@@ -182,34 +203,47 @@ def run_kicker_bootstrap(config_path: Optional[str] = None, quiet: bool = False,
         result = subprocess.run(cmd, cwd=PROJECT_ROOT)
         return result.returncode == 0
     except KeyboardInterrupt:
-        print(f"\n{Colors.YELLOW}⚠️  Deployment interrupted by user{Colors.RESET}")
+        print(f"\n{Colors.YELLOW}WARNING:  Deployment interrupted by user{Colors.RESET}")
         return False
     except Exception as e:
-        print(f"{Colors.RED}❌ Error running kicker-bootstrap: {e}{Colors.RESET}")
+        print(f"{Colors.RED}ERROR: Error running kicker-bootstrap: {e}{Colors.RESET}")
         return False
 
 def interactive_setup() -> Dict:
     """Interactive configuration setup"""
-    print(f"\n{Colors.BOLD}🔧 Interactive Setup{Colors.RESET}")
+    print(f"\n{Colors.BOLD}Setup: Interactive Setup{Colors.RESET}")
     print("Configure your lab deployment (press Enter for defaults):")
     
     config = {}
     
     # Basic questions
-    repo_url = input(f"\n📦 Repository URL [{Colors.YELLOW}default: use built-in{Colors.RESET}]: ").strip()
+    repo_url = input(f"\nRepository: Repository URL [{Colors.YELLOW}default: use built-in{Colors.RESET}]: ").strip()
     if repo_url:
         config['RepoUrl'] = repo_url
     
-    local_path = input(f"📁 Local deployment path [{Colors.YELLOW}default: C:\\Temp or /tmp{Colors.RESET}]: ").strip()
+    local_path = input(f"Path: Local deployment path [{Colors.YELLOW}default: C:\\Temp or /tmp{Colors.RESET}]: ").strip()
     if local_path:
         config['LocalPath'] = local_path
     
     # Verbosity
-    verbosity = input(f"🔊 Verbosity (silent/normal/detailed) [{Colors.YELLOW}default: normal{Colors.RESET}]: ").strip().lower()
+    verbosity = input(f"Verbosity: Verbosity (silent/normal/detailed) [{Colors.YELLOW}default: normal{Colors.RESET}]: ").strip().lower()
     if verbosity in ['silent', 'normal', 'detailed']:
         config['Verbosity'] = verbosity
     
     return config
+
+def safe_print(text: str, fallback: str = None):
+    """Print text with Unicode fallback for Windows compatibility"""
+    try:
+        print(text)
+    except UnicodeEncodeError:
+        if fallback:
+            print(fallback)
+        else:
+            # Strip emoji and special characters
+            import re
+            clean_text = re.sub(r'[^\x00-\x7F]+', '', text)
+            print(clean_text)
 
 def main():
     """Main deployment function"""
@@ -242,7 +276,7 @@ Examples:
             subprocess.run([sys.executable, str(gui_script)])
             return 0
         except Exception as e:
-            print(f"{Colors.RED}❌ Failed to launch GUI: {e}{Colors.RESET}")
+            print(f"{Colors.RED}ERROR: Failed to launch GUI: {e}{Colors.RESET}")
             print(f"{Colors.YELLOW}Falling back to CLI interface...{Colors.RESET}")
             # Continue with CLI
     
@@ -252,25 +286,25 @@ Examples:
     print(f"\n{Colors.BOLD}🔍 Checking Prerequisites{Colors.RESET}")
     
     system, arch = detect_platform()
-    print(f"✅ Platform: {system} {arch}")
+    print(f"OK: Platform: {system} {arch}")
     
     pwsh_cmd = check_powershell()
     if pwsh_cmd:
-        print(f"✅ PowerShell: {pwsh_cmd}")
+        print(f"OK: PowerShell: {pwsh_cmd}")
     else:
-        print(f"{Colors.RED}❌ PowerShell 7+ not found{Colors.RESET}")
+        print(f"{Colors.RED}ERROR: PowerShell 7+ not found{Colors.RESET}")
         if not args.check:
             print(install_powershell_instructions())
             return 1
     
     git_available = check_git()
     if git_available:
-        print("✅ Git: Available")
+        print("OK: Git: Available")
     else:
-        print(f"{Colors.YELLOW}⚠️  Git: Not found (will be installed during deployment){Colors.RESET}")
+        print(f"{Colors.YELLOW}WARNING:  Git: Not found (will be installed during deployment){Colors.RESET}")
     
     if args.check:
-        print(f"\n{Colors.GREEN}✅ Prerequisites check complete{Colors.RESET}")
+        print(f"\n{Colors.GREEN}OK: Prerequisites check complete{Colors.RESET}")
         return 0
     
     # Configuration
@@ -283,17 +317,17 @@ Examples:
             with open(temp_config, 'w') as f:
                 json.dump(setup_config, f, indent=2)
             config_path = str(temp_config)
-            print(f"{Colors.GREEN}✅ Temporary config saved: {temp_config}{Colors.RESET}")
+            print(f"{Colors.GREEN}OK: Temporary config saved: {temp_config}{Colors.RESET}")
     
     # Load and display configuration
     config = load_config(config_path)
     if config:
-        print(f"\n{Colors.BOLD}📋 Configuration Summary{Colors.RESET}")
+        print(f"\n{Colors.BOLD}Platform: Configuration Summary{Colors.RESET}")
         for key, value in config.items():
             print(f"  {key}: {value}")
     
     # Deployment
-    print(f"\n{Colors.BOLD}🚀 Starting Deployment{Colors.RESET}")
+    print(f"\n{Colors.BOLD}>> Starting Deployment{Colors.RESET}")
     success = run_kicker_bootstrap(
         config_path=config_path,
         quiet=args.quiet,
@@ -314,7 +348,7 @@ Examples:
         print("3. Review the configuration for any needed adjustments")
         return 0
     else:
-        print(f"\n{Colors.RED}{Colors.BOLD}❌ Deployment failed{Colors.RESET}")
+        print(f"\n{Colors.RED}{Colors.BOLD}ERROR: Deployment failed{Colors.RESET}")
         print(f"\n{Colors.BLUE}Troubleshooting:{Colors.RESET}")
         print("1. Check the error messages above")
         print("2. Verify your configuration file")
@@ -326,8 +360,16 @@ if __name__ == "__main__":
     try:
         sys.exit(main())
     except KeyboardInterrupt:
-        print(f"\n{Colors.YELLOW}⚠️  Deployment interrupted by user{Colors.RESET}")
+        try:
+            print(f"\n{Colors.YELLOW}WARNING: Deployment interrupted by user{Colors.RESET}")
+        except UnicodeEncodeError:
+            print("\nWARNING: Deployment interrupted by user")
         sys.exit(130)
     except Exception as e:
-        print(f"\n{Colors.RED}💥 Unexpected error: {e}{Colors.RESET}")
+        try:
+            print(f"\n{Colors.RED}ERROR: Unexpected error: {e}{Colors.RESET}")
+        except UnicodeEncodeError:
+            print(f"\nERROR: Unexpected error: {e}")
         sys.exit(1)
+
+

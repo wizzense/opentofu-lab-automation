@@ -1,3 +1,7 @@
+
+
+
+
 @{
     RootModule = 'LabSetup.psm1'
     ModuleVersion = '0.1.0'
@@ -5,3 +9,5 @@
     Author = 'OpenTofu'
     FunctionsToExport = @('Invoke-LabStep','Write-CustomLog','Get-Platform','Invoke-LabWebRequest','Invoke-WebRequest','Invoke-LabNpm')
 }
+
+

@@ -18,10 +18,13 @@ Describe 'Additional installer scripts' {
             @{ Flag='InstallChocolatey';    Script='0215_Install-Chocolatey.ps1';    Command='Start-Process' }
         )
     }
-
-    It 'runs installer when flag enabled' -TestCases $script:cases {
+        It 'runs installer when flag enabled' -TestCases $script:cases {
         param($Flag,$Script,$Command)
-        $cfg = [pscustomobject]@{ $Flag = $true }
+        
+
+
+
+$cfg = [pscustomobject]@{ $Flag = $true }
         $path = Get-RunnerScriptPath $Script
         Mock Invoke-LabWebRequest {}
         Mock Start-Process {}
@@ -30,10 +33,13 @@ Describe 'Additional installer scripts' {
         & $path -Config $cfg
         Should -Invoke -CommandName $Command -Times 1
     }
-
-    It 'skips when flag disabled' -TestCases $script:cases {
+        It 'skips when flag disabled' -TestCases $script:cases {
         param($Flag,$Script,$Command)
-        $cfg = [pscustomobject]@{ $Flag = $false }
+        
+
+
+
+$cfg = [pscustomobject]@{ $Flag = $false }
         $path = Get-RunnerScriptPath $Script
         Mock Invoke-LabWebRequest {}
         Mock Start-Process {}
@@ -44,3 +50,5 @@ Describe 'Additional installer scripts' {
     }
 }
 }
+
+

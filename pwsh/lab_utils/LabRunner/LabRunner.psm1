@@ -27,7 +27,11 @@ function Invoke-LabStep {
         [object]$Config
     )
 
-    if ($Config -is [string]) {
+    
+
+
+
+if ($Config -is [string]) {
         if (Test-Path $Config) {
             $Config = Get-Content -Raw -Path $Config | ConvertFrom-Json
         } else {
@@ -66,7 +70,11 @@ function Invoke-LabStep {
 function Invoke-LabDownload {
     [CmdletBinding()]
     param(
-        [Parameter(Mandatory)][string]$Uri,
+        [Parameter(Mandatory)
+
+
+
+][string]$Uri,
         [Parameter(Mandatory)][scriptblock]$Action,
         [string]$Prefix = 'download',
         [string]$Extension
@@ -109,7 +117,11 @@ function Invoke-CrossPlatformCommand {
     If true, silently skip execution when cmdlet is unavailable instead of throwing
     #>
     param(
-        [Parameter(Mandatory)]
+        [Parameter(Mandatory)
+
+
+
+]
         [string]$CommandName,
         
         [hashtable]$Parameters = @{},
@@ -140,3 +152,4 @@ try {
 }
 
 Export-ModuleMember -Function Invoke-LabStep, Invoke-LabDownload, Write-CustomLog, Read-LoggedInput, Get-Platform, Invoke-LabWebRequest, Invoke-LabNpm, Resolve-ProjectPath, Get-CrossPlatformTempPath, Invoke-CrossPlatformCommand, Expand-All, Format-Config, Normalize-RelativePath, Get-LabConfig, Download-Archive, Get-GhDownloadArgs
+

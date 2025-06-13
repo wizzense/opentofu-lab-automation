@@ -1,5 +1,9 @@
 # Script to fix test files that fail due to "Param is not recognized" errors
-# These tests try to dot-source scripts with Param() blocks which causes parsing issues
+# These tests try to dot-source scripts with Param() 
+
+
+
+blocks which causes parsing issues
 
 # List of test files that have this issue - focus on numbered runner script tests
 $failingTests = @(
@@ -82,7 +86,7 @@ Describe '$($scriptName -replace '\.ps1$', '') Tests' -Tag 'Maintenance' {
             It 'should have valid PowerShell syntax' {
                 `$errors = `$null
                 [System.Management.Automation.Language.Parser]::ParseFile(`$script:ScriptPath, [ref]`$null, [ref]`$errors) | Out-Null
-                (`$errors ? `$errors.Count : 0) | Should -Be 0
+                (`$$(if (errors) { `$errors.Count } else { 0) | Should -Be 0 })
             }
             
             It 'should follow naming conventions' {
@@ -132,3 +136,5 @@ Describe '$($scriptName -replace '\.ps1$', '') Tests' -Tag 'Maintenance' {
 
 Write-Host "`nCompleted fixing test files with Param errors." -ForegroundColor Green
 Write-Host "The tests now use InModuleScope LabRunner with Get-RunnerScriptPath pattern." -ForegroundColor Green
+
+

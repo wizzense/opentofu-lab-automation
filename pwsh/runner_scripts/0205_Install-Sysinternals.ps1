@@ -1,5 +1,9 @@
 Param([object]$Config)
-Import-Module "$PSScriptRoot/../lab_utils/LabRunner/LabRunner.psd1" -Force
+
+
+
+
+Import-Module "$PSScriptRoot/../modules/LabRunner/LabRunner.psd1" -Force
 
 Write-CustomLog "Starting $MyInvocation.MyCommand"
 Invoke-LabStep -Config $Config -Body {
@@ -10,7 +14,7 @@ Invoke-LabStep -Config $Config -Body {
         return
     }
 
-    $destDir = if ($Config.SysinternalsPath) { $Config.SysinternalsPath } else { 'C:\\Sysinternals' }
+    $destDir = if ($Config.SysinternalsPath) { $Config.SysinternalsPath    } else { 'C:\\Sysinternals'    }
     if (-not (Test-Path $destDir)) {
         New-Item -ItemType Directory -Path $destDir -Force | Out-Null
     }
@@ -18,7 +22,11 @@ Invoke-LabStep -Config $Config -Body {
     $zipUrl  = 'https://download.sysinternals.com/files/SysinternalsSuite.zip'
     Invoke-LabDownload -Uri $zipUrl -Prefix 'SysinternalsSuite' -Extension '.zip' -Action {
         param($zipPath)
-        Write-CustomLog "Extracting to $destDir"
+        
+
+
+
+Write-CustomLog "Extracting to $destDir"
         Expand-Archive -Path $zipPath -DestinationPath $destDir -Force
     }
 
@@ -31,3 +39,5 @@ Invoke-LabStep -Config $Config -Body {
     Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
 }
 Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
+
+

@@ -1,3 +1,7 @@
+
+
+
+
 @{ 
 
     Run = @{ Path = 'tests' }
@@ -14,3 +18,5 @@
         OutputPath = 'coverage/testResults.xml' 
     }
 }
+
+

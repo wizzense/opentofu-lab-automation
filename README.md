@@ -62,7 +62,10 @@ curl -sL https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/HEAD
 
 **PowerShell (Windows):**
 ```powershell
-# Download and run deployment script
+# Method 1: One-liner (copy this entire line)
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/HEAD/gui.py" -OutFile "gui.py" -UseBasicParsing; python gui.py
+
+# Method 2: Step by step - Download and run deployment script
 Invoke-WebRequest -Uri "https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/HEAD/deploy.py" -OutFile "deploy.py"
 python deploy.py
 
@@ -73,13 +76,53 @@ python gui.py
 # Download Windows launchers
 Invoke-WebRequest -Uri "https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/HEAD/deploy.bat" -OutFile "deploy.bat"
 Invoke-WebRequest -Uri "https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/HEAD/launch-gui.bat" -OutFile "launch-gui.bat"
+
+# Alternative: PowerShell launcher (recommended for better performance)
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/HEAD/launch-gui.ps1" -OutFile "launch-gui.ps1"
+
+# One-liner deployment (PowerShell 5.1+)
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/HEAD/deploy.py" | Select-Object -ExpandProperty Content | python
+
+# One-liner GUI launcher (PowerShell 5.1+)
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/HEAD/gui.py" | Select-Object -ExpandProperty Content | python
 ```
 
 **What each file does:**
 - `deploy.py` - Main deployment script with CLI interface
-- `gui.py` - Cross-platform GUI with visual config builder
+- `gui.py` - Cross-platform GUI with visual config builder (**optimized for Windows performance**)
 - `deploy.bat/.sh` - Platform-specific wrappers for easy double-click execution
-- `launch-gui.bat/.sh` - GUI launchers with dependency checking
+- `launch-gui.bat/.sh` - GUI launchers with dependency checking and no-console mode
+- `launch-gui.ps1` - **NEW**: PowerShell launcher with enhanced Windows integration
+
+> **📝 Branch Notes**: 
+> - URLs with `/HEAD/` automatically use the repository's default branch
+> - The `quick-download.sh` script auto-detects your current git branch for testing
+> - **For testing latest features**: Replace `/HEAD/` with `/feature/deployment-wrapper-gui/` in URLs above
+> - Once merged, all URLs will work with the main branch
+> 
+> **✅ Verified Working**: All PowerShell commands tested and working on Windows/Linux systems
+> 
+> **🧪 Testing Instructions (Pre-merge):**
+> ```bash
+> # Clone for testing new features
+> git clone https://github.com/wizzense/opentofu-lab-automation.git
+> cd opentofu-lab-automation
+> git checkout feature/deployment-wrapper-gui
+> 
+> # Test locally
+> python deploy.py          # CLI deployment
+> python gui.py            # GUI launcher
+> ```
+> 
+> ```powershell
+> # PowerShell testing
+> git clone https://github.com/wizzense/opentofu-lab-automation.git
+> cd opentofu-lab-automation
+> git checkout feature/deployment-wrapper-gui
+> 
+> python deploy.py          # CLI deployment  
+> python gui.py            # GUI launcher
+> ```
 
 > **📝 Branch Notes**: 
 > - URLs with `/HEAD/` automatically use the repository's default branch

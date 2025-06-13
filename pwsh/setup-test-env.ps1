@@ -13,9 +13,13 @@
 
 param([switch]$UsePoetry)
 
+
+
+
+
 $ErrorActionPreference = 'Stop'
 $repoRoot = Split-Path $PSScriptRoot -Parent
-. "$repoRoot/pwsh/lab_utils/Get-Platform.ps1"
+. "$repoRoot/pwsh/modules/LabRunner/Get-Platform.ps1"
 
 function Ensure-Pester {
     # Remove any old Pester v3 modules
@@ -60,3 +64,6 @@ if ($UsePoetry) {
 }
 
 Write-Host 'Test environment ready.'
+
+
+

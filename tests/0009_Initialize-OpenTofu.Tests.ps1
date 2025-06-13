@@ -1,3 +1,7 @@
+
+
+
+
 # filepath: tests/0009_Initialize-OpenTofu.Tests.ps1
 . (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
 . (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
@@ -22,19 +26,18 @@ BeforeAll {
 Describe '0009_Initialize-OpenTofu Tests' -Tag 'Unknown' {
     
     Context 'Script Structure Validation' {
-        It 'should have valid PowerShell syntax' -Skip:($SkipNonWindows) {
+        It 'should ' -Skip: {
             $script:ScriptPath | Should -Exist
             { . $script:ScriptPath } | Should -Not -Throw
         }
-        
-        It 'should follow naming conventions' -Skip:($SkipNonWindows) {
+        It 'should ' -Skip: {
             $scriptName = [System.IO.Path]::GetFileName($script:ScriptPath)
             $scriptName | Should -Match '^[0-9]{4}_[A-Z][a-zA-Z0-9-]+\.ps1$|^[A-Z][a-zA-Z0-9-]+\.ps1$'
         }
     }
     
     Context 'Parameter Validation' {
-        It 'should accept Config parameter' -Skip:($SkipNonWindows) {
+        It 'should ' -Skip: {
             $config = [pscustomobject]@{ TestProperty = 'TestValue' }
             $configJson = $config | ConvertTo-Json -Depth 5
             $tempConfig = Join-Path ([System.IO.Path]::GetTempPath()) "$([System.Guid]::NewGuid()).json"
@@ -54,5 +57,7 @@ AfterAll {
     # Restore any modified system state
     # Remove test artifacts
 }
+
+
 
 

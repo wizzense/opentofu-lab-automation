@@ -1,0 +1,1148 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<test-results xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="nunit_schema_2.5.xsd" name="Pester" total="423" errors="0" failures="114" not-run="0" inconclusive="0" ignored="0" skipped="20" invalid="0" date="2025-06-13" time="15:19:34">
+  <environment clr-version="8.0.1" os-version="6.8.0-1027-azure" machine-name="codespaces-465dd5" user="codespace" nunit-version="2.5.8.0" cwd="/workspaces/opentofu-lab-automation" platform="Linux" user-domain="" />
+  <culture-info current-culture="" current-uiculture="" />
+  <test-suite type="TestFixture" name="Pester" executed="True" result="Failure" success="False" time="68.3905" asserts="0" description="Pester">
+    <results>
+      <test-suite type="TestFixture" name="/workspaces/opentofu-lab-automation/tests/0000_Cleanup-Files.Tests.ps1" executed="True" result="Failure" success="False" time="3.6173" asserts="0" description="/workspaces/opentofu-lab-automation/tests/0000_Cleanup-Files.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="0000_Cleanup-Files Tests" executed="True" result="Failure" success="False" time="3.125" asserts="0" description="0000_Cleanup-Files Tests">
+            <results>
+              <test-suite type="TestFixture" name="0000_Cleanup-Files Tests.Script Structure Validation" executed="True" result="Failure" success="False" time="0.2899" asserts="0" description="0000_Cleanup-Files Tests.Script Structure Validation">
+                <results>
+                  <test-case description="should have valid PowerShell syntax" name="0000_Cleanup-Files Tests.Script Structure Validation.should have valid PowerShell syntax" time="0.1696" asserts="0" success="False" result="Failure" executed="True">
+                    <failure>
+                      <message>CommandNotFoundException: The term 'errors' is not recognized as a name of a cmdlet, function, script file, or executable program.
+Check the spelling of the name, or if a path was included, verify that the path is correct and try again.</message>
+                      <stack-trace>at &lt;ScriptBlock&gt;, /workspaces/opentofu-lab-automation/tests/0000_Cleanup-Files.Tests.ps1:33</stack-trace>
+                    </failure>
+                  </test-case>
+                  <test-case description="should follow naming conventions" name="0000_Cleanup-Files Tests.Script Structure Validation.should follow naming conventions" time="0.0486" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="should have Config parameter" name="0000_Cleanup-Files Tests.Script Structure Validation.should have Config parameter" time="0.0076" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="should import LabRunner module" name="0000_Cleanup-Files Tests.Script Structure Validation.should import LabRunner module" time="0.009" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="should contain Invoke-LabStep call" name="0000_Cleanup-Files Tests.Script Structure Validation.should contain Invoke-LabStep call" time="0.0125" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="0000_Cleanup-Files Tests.Basic Functionality" executed="True" result="Success" success="True" time="2.3762" asserts="0" description="0000_Cleanup-Files Tests.Basic Functionality">
+                <results>
+                  <test-case description="should execute without errors with valid config" name="0000_Cleanup-Files Tests.Basic Functionality.should execute without errors with valid config" time="1.082" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="should handle whatif parameter" name="0000_Cleanup-Files Tests.Basic Functionality.should handle whatif parameter" time="0.9953" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+      <test-suite type="TestFixture" name="/workspaces/opentofu-lab-automation/tests/0001_Reset-Git.Tests.ps1" executed="True" result="Failure" success="False" time="2.7017" asserts="0" description="/workspaces/opentofu-lab-automation/tests/0001_Reset-Git.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="0001_Reset-Git Tests" executed="True" result="Failure" success="False" time="2.2573" asserts="0" description="0001_Reset-Git Tests">
+            <results>
+              <test-suite type="TestFixture" name="0001_Reset-Git Tests.Script Structure Validation" executed="True" result="Failure" success="False" time="0.2301" asserts="0" description="0001_Reset-Git Tests.Script Structure Validation">
+                <results>
+                  <test-case description="should have valid PowerShell syntax" name="0001_Reset-Git Tests.Script Structure Validation.should have valid PowerShell syntax" time="0.1941" asserts="0" success="False" result="Failure" executed="True">
+                    <failure>
+                      <message>CommandNotFoundException: The term 'errors' is not recognized as a name of a cmdlet, function, script file, or executable program.
+Check the spelling of the name, or if a path was included, verify that the path is correct and try again.</message>
+                      <stack-trace>at &lt;ScriptBlock&gt;, /workspaces/opentofu-lab-automation/tests/0001_Reset-Git.Tests.ps1:33</stack-trace>
+                    </failure>
+                  </test-case>
+                  <test-case description="should follow naming conventions" name="0001_Reset-Git Tests.Script Structure Validation.should follow naming conventions" time="0.0238" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="0001_Reset-Git Tests.Parameter Validation" executed="True" result="Success" success="True" time="2.2533" asserts="0" description="0001_Reset-Git Tests.Parameter Validation">
+                <results>
+                  <test-case description="should accept Config parameter" name="0001_Reset-Git Tests.Parameter Validation.should accept Config parameter" time="2.0079" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+      <test-suite type="TestFixture" name="/workspaces/opentofu-lab-automation/tests/0002_Setup-Directories.Tests.ps1" executed="True" result="Failure" success="False" time="0.9257" asserts="0" description="/workspaces/opentofu-lab-automation/tests/0002_Setup-Directories.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="0002_Setup-Directories Tests" executed="True" result="Failure" success="False" time="0.7918" asserts="0" description="0002_Setup-Directories Tests">
+            <results>
+              <test-suite type="TestFixture" name="0002_Setup-Directories Tests.Script Structure Validation" executed="True" result="Failure" success="False" time="0.072" asserts="0" description="0002_Setup-Directories Tests.Script Structure Validation">
+                <results>
+                  <test-case description="should have valid PowerShell syntax" name="0002_Setup-Directories Tests.Script Structure Validation.should have valid PowerShell syntax" time="0.0637" asserts="0" success="False" result="Failure" executed="True">
+                    <failure>
+                      <message>CommandNotFoundException: The term 'errors' is not recognized as a name of a cmdlet, function, script file, or executable program.
+Check the spelling of the name, or if a path was included, verify that the path is correct and try again.</message>
+                      <stack-trace>at &lt;ScriptBlock&gt;, /workspaces/opentofu-lab-automation/tests/0002_Setup-Directories.Tests.ps1:33</stack-trace>
+                    </failure>
+                  </test-case>
+                  <test-case description="should follow naming conventions" name="0002_Setup-Directories Tests.Script Structure Validation.should follow naming conventions" time="0.0052" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="0002_Setup-Directories Tests.Parameter Validation" executed="True" result="Success" success="True" time="0.7893" asserts="0" description="0002_Setup-Directories Tests.Parameter Validation">
+                <results>
+                  <test-case description="should accept Config parameter" name="0002_Setup-Directories Tests.Parameter Validation.should accept Config parameter" time="0.7149" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+      <test-suite type="TestFixture" name="/workspaces/opentofu-lab-automation/tests/0101_Enable-RemoteDesktop.Tests.ps1" executed="True" result="Failure" success="False" time="1.2656" asserts="0" description="/workspaces/opentofu-lab-automation/tests/0101_Enable-RemoteDesktop.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="0101_Enable-RemoteDesktop Tests" executed="True" result="Failure" success="False" time="1.024" asserts="0" description="0101_Enable-RemoteDesktop Tests">
+            <results>
+              <test-suite type="TestFixture" name="0101_Enable-RemoteDesktop Tests.Script Structure Validation" executed="True" result="Failure" success="False" time="0.0704" asserts="0" description="0101_Enable-RemoteDesktop Tests.Script Structure Validation">
+                <results>
+                  <test-case description="should have valid PowerShell syntax" name="0101_Enable-RemoteDesktop Tests.Script Structure Validation.should have valid PowerShell syntax" time="0.0633" asserts="0" success="False" result="Failure" executed="True">
+                    <failure>
+                      <message>CommandNotFoundException: The term 'errors' is not recognized as a name of a cmdlet, function, script file, or executable program.
+Check the spelling of the name, or if a path was included, verify that the path is correct and try again.</message>
+                      <stack-trace>at &lt;ScriptBlock&gt;, /workspaces/opentofu-lab-automation/tests/0101_Enable-RemoteDesktop.Tests.ps1:33</stack-trace>
+                    </failure>
+                  </test-case>
+                  <test-case description="should follow naming conventions" name="0101_Enable-RemoteDesktop Tests.Script Structure Validation.should follow naming conventions" time="0.0048" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="0101_Enable-RemoteDesktop Tests.Parameter Validation" executed="True" result="Success" success="True" time="1.0213" asserts="0" description="0101_Enable-RemoteDesktop Tests.Parameter Validation">
+                <results>
+                  <test-case description="should accept Config parameter" name="0101_Enable-RemoteDesktop Tests.Parameter Validation.should accept Config parameter" time="0.9428" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+      <test-suite type="TestFixture" name="/workspaces/opentofu-lab-automation/tests/0102_Configure-Firewall.Tests.ps1" executed="True" result="Failure" success="False" time="1.0665" asserts="0" description="/workspaces/opentofu-lab-automation/tests/0102_Configure-Firewall.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="0102_Configure-Firewall Tests" executed="True" result="Failure" success="False" time="0.9339" asserts="0" description="0102_Configure-Firewall Tests">
+            <results>
+              <test-suite type="TestFixture" name="0102_Configure-Firewall Tests.Script Structure Validation" executed="True" result="Failure" success="False" time="0.0881" asserts="0" description="0102_Configure-Firewall Tests.Script Structure Validation">
+                <results>
+                  <test-case description="should have valid PowerShell syntax" name="0102_Configure-Firewall Tests.Script Structure Validation.should have valid PowerShell syntax" time="0.0768" asserts="0" success="False" result="Failure" executed="True">
+                    <failure>
+                      <message>CommandNotFoundException: The term 'errors' is not recognized as a name of a cmdlet, function, script file, or executable program.
+Check the spelling of the name, or if a path was included, verify that the path is correct and try again.</message>
+                      <stack-trace>at &lt;ScriptBlock&gt;, /workspaces/opentofu-lab-automation/tests/0102_Configure-Firewall.Tests.ps1:33</stack-trace>
+                    </failure>
+                  </test-case>
+                  <test-case description="should follow naming conventions" name="0102_Configure-Firewall Tests.Script Structure Validation.should follow naming conventions" time="0.0059" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="0102_Configure-Firewall Tests.Parameter Validation" executed="True" result="Success" success="True" time="0.9305" asserts="0" description="0102_Configure-Firewall Tests.Parameter Validation">
+                <results>
+                  <test-case description="should accept Config parameter" name="0102_Configure-Firewall Tests.Parameter Validation.should accept Config parameter" time="0.8395" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+      <test-suite type="TestFixture" name="/workspaces/opentofu-lab-automation/tests/0111_Disable-TCPIP6.Tests.ps1" executed="True" result="Failure" success="False" time="0.7512" asserts="0" description="/workspaces/opentofu-lab-automation/tests/0111_Disable-TCPIP6.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="0111_Disable-TCPIP6 Tests" executed="True" result="Failure" success="False" time="0.6317" asserts="0" description="0111_Disable-TCPIP6 Tests">
+            <results>
+              <test-suite type="TestFixture" name="0111_Disable-TCPIP6 Tests.Script Structure Validation" executed="True" result="Failure" success="False" time="0.0632" asserts="0" description="0111_Disable-TCPIP6 Tests.Script Structure Validation">
+                <results>
+                  <test-case description="should have valid PowerShell syntax" name="0111_Disable-TCPIP6 Tests.Script Structure Validation.should have valid PowerShell syntax" time="0.0576" asserts="0" success="False" result="Failure" executed="True">
+                    <failure>
+                      <message>CommandNotFoundException: The term 'errors' is not recognized as a name of a cmdlet, function, script file, or executable program.
+Check the spelling of the name, or if a path was included, verify that the path is correct and try again.</message>
+                      <stack-trace>at &lt;ScriptBlock&gt;, /workspaces/opentofu-lab-automation/tests/0111_Disable-TCPIP6.Tests.ps1:33</stack-trace>
+                    </failure>
+                  </test-case>
+                  <test-case description="should follow naming conventions" name="0111_Disable-TCPIP6 Tests.Script Structure Validation.should follow naming conventions" time="0.0037" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="0111_Disable-TCPIP6 Tests.Parameter Validation" executed="True" result="Success" success="True" time="0.6291" asserts="0" description="0111_Disable-TCPIP6 Tests.Parameter Validation">
+                <results>
+                  <test-case description="should accept Config parameter" name="0111_Disable-TCPIP6 Tests.Parameter Validation.should accept Config parameter" time="0.5635" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+      <test-suite type="TestFixture" name="/workspaces/opentofu-lab-automation/tests/0112_Enable-PXE.Tests.ps1" executed="True" result="Failure" success="False" time="1.0063" asserts="0" description="/workspaces/opentofu-lab-automation/tests/0112_Enable-PXE.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="0112_Enable-PXE Tests" executed="True" result="Failure" success="False" time="0.7832" asserts="0" description="0112_Enable-PXE Tests">
+            <results>
+              <test-suite type="TestFixture" name="0112_Enable-PXE Tests.Script Structure Validation" executed="True" result="Failure" success="False" time="0.0827" asserts="0" description="0112_Enable-PXE Tests.Script Structure Validation">
+                <results>
+                  <test-case description="should have valid PowerShell syntax" name="0112_Enable-PXE Tests.Script Structure Validation.should have valid PowerShell syntax" time="0.0733" asserts="0" success="False" result="Failure" executed="True">
+                    <failure>
+                      <message>CommandNotFoundException: The term 'errors' is not recognized as a name of a cmdlet, function, script file, or executable program.
+Check the spelling of the name, or if a path was included, verify that the path is correct and try again.</message>
+                      <stack-trace>at &lt;ScriptBlock&gt;, /workspaces/opentofu-lab-automation/tests/0112_Enable-PXE.Tests.ps1:33</stack-trace>
+                    </failure>
+                  </test-case>
+                  <test-case description="should follow naming conventions" name="0112_Enable-PXE Tests.Script Structure Validation.should follow naming conventions" time="0.0052" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="0112_Enable-PXE Tests.Parameter Validation" executed="True" result="Success" success="True" time="0.7808" asserts="0" description="0112_Enable-PXE Tests.Parameter Validation">
+                <results>
+                  <test-case description="should accept Config parameter" name="0112_Enable-PXE Tests.Parameter Validation.should accept Config parameter" time="0.6944" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+      <test-suite type="TestFixture" name="/workspaces/opentofu-lab-automation/tests/0113_Config-DNS.Tests.ps1" executed="True" result="Failure" success="False" time="0.7843" asserts="0" description="/workspaces/opentofu-lab-automation/tests/0113_Config-DNS.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="0113_Config-DNS Tests" executed="True" result="Failure" success="False" time="0.5891" asserts="0" description="0113_Config-DNS Tests">
+            <results>
+              <test-suite type="TestFixture" name="0113_Config-DNS Tests.Script Structure Validation" executed="True" result="Failure" success="False" time="0.0668" asserts="0" description="0113_Config-DNS Tests.Script Structure Validation">
+                <results>
+                  <test-case description="should have valid PowerShell syntax" name="0113_Config-DNS Tests.Script Structure Validation.should have valid PowerShell syntax" time="0.0615" asserts="0" success="False" result="Failure" executed="True">
+                    <failure>
+                      <message>CommandNotFoundException: The term 'errors' is not recognized as a name of a cmdlet, function, script file, or executable program.
+Check the spelling of the name, or if a path was included, verify that the path is correct and try again.</message>
+                      <stack-trace>at &lt;ScriptBlock&gt;, /workspaces/opentofu-lab-automation/tests/0113_Config-DNS.Tests.ps1:33</stack-trace>
+                    </failure>
+                  </test-case>
+                  <test-case description="should follow naming conventions" name="0113_Config-DNS Tests.Script Structure Validation.should follow naming conventions" time="0.0033" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="0113_Config-DNS Tests.Parameter Validation" executed="True" result="Success" success="True" time="0.5609" asserts="0" description="0113_Config-DNS Tests.Parameter Validation">
+                <results>
+                  <test-case description="should accept Config parameter" name="0113_Config-DNS Tests.Parameter Validation.should accept Config parameter" time="0.4921" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="0113_Config-DNS Tests.Configuration Tests" executed="True" result="Success" success="True" time="0.5868" asserts="0" description="0113_Config-DNS Tests.Configuration Tests">
+                <results>
+                  <test-case description="should backup existing configuration" name="0113_Config-DNS Tests.Configuration Tests.should backup existing configuration" time="0.0098" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="should validate configuration changes" name="0113_Config-DNS Tests.Configuration Tests.should validate configuration changes" time="0.0032" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="should handle rollback on failure" name="0113_Config-DNS Tests.Configuration Tests.should handle rollback on failure" time="0.003" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+      <test-suite type="TestFixture" name="/workspaces/opentofu-lab-automation/tests/0202_Install-NodeGlobalPackages.Tests.ps1" executed="True" result="Failure" success="False" time="1.9582" asserts="0" description="/workspaces/opentofu-lab-automation/tests/0202_Install-NodeGlobalPackages.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="0202_Install-NodeGlobalPackages Tests" executed="True" result="Failure" success="False" time="1.8105" asserts="0" description="0202_Install-NodeGlobalPackages Tests">
+            <results>
+              <test-suite type="TestFixture" name="0202_Install-NodeGlobalPackages Tests.Script Structure Validation" executed="True" result="Failure" success="False" time="0.1076" asserts="0" description="0202_Install-NodeGlobalPackages Tests.Script Structure Validation">
+                <results>
+                  <test-case description="should have valid PowerShell syntax" name="0202_Install-NodeGlobalPackages Tests.Script Structure Validation.should have valid PowerShell syntax" time="0.0629" asserts="0" success="False" result="Failure" executed="True">
+                    <failure>
+                      <message>CommandNotFoundException: The term 'errors' is not recognized as a name of a cmdlet, function, script file, or executable program.
+Check the spelling of the name, or if a path was included, verify that the path is correct and try again.</message>
+                      <stack-trace>at &lt;ScriptBlock&gt;, /workspaces/opentofu-lab-automation/tests/0202_Install-NodeGlobalPackages.Tests.ps1:33</stack-trace>
+                    </failure>
+                  </test-case>
+                  <test-case description="should follow naming conventions" name="0202_Install-NodeGlobalPackages Tests.Script Structure Validation.should follow naming conventions" time="0.0197" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="should define expected functions" name="0202_Install-NodeGlobalPackages Tests.Script Structure Validation.should define expected functions" time="0.0176" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="0202_Install-NodeGlobalPackages Tests.Parameter Validation" executed="True" result="Success" success="True" time="1.2088" asserts="0" description="0202_Install-NodeGlobalPackages Tests.Parameter Validation">
+                <results>
+                  <test-case description="should accept Config parameter" name="0202_Install-NodeGlobalPackages Tests.Parameter Validation.should accept Config parameter" time="1.0945" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="0202_Install-NodeGlobalPackages Tests.Installation Tests" executed="True" result="Success" success="True" time="1.2205" asserts="0" description="0202_Install-NodeGlobalPackages Tests.Installation Tests">
+                <results>
+                  <test-case description="should validate prerequisites" name="0202_Install-NodeGlobalPackages Tests.Installation Tests.should validate prerequisites" time="0.0039" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="should handle download failures gracefully" name="0202_Install-NodeGlobalPackages Tests.Installation Tests.should handle download failures gracefully" time="0.0027" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="should verify installation success" name="0202_Install-NodeGlobalPackages Tests.Installation Tests.should verify installation success" time="0.0028" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="0202_Install-NodeGlobalPackages Tests.Install-GlobalPackage Function Tests" executed="True" result="Success" success="True" time="1.2328" asserts="0" description="0202_Install-NodeGlobalPackages Tests.Install-GlobalPackage Function Tests">
+                <results>
+                  <test-case description="should be defined and accessible" name="0202_Install-NodeGlobalPackages Tests.Install-GlobalPackage Function Tests.should be defined and accessible" time="0.0034" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="should support common parameters" name="0202_Install-NodeGlobalPackages Tests.Install-GlobalPackage Function Tests.should support common parameters" time="0.0035" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="should handle execution with valid parameters" name="0202_Install-NodeGlobalPackages Tests.Install-GlobalPackage Function Tests.should handle execution with valid parameters" time="0.0029" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="0202_Install-NodeGlobalPackages Tests.Install-NodeGlobalPackages Function Tests" executed="True" result="Success" success="True" time="1.8077" asserts="0" description="0202_Install-NodeGlobalPackages Tests.Install-NodeGlobalPackages Function Tests">
+                <results>
+                  <test-case description="should be defined and accessible" name="0202_Install-NodeGlobalPackages Tests.Install-NodeGlobalPackages Function Tests.should be defined and accessible" time="0.0039" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="should support common parameters" name="0202_Install-NodeGlobalPackages Tests.Install-NodeGlobalPackages Function Tests.should support common parameters" time="0.0041" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="should handle execution with valid parameters" name="0202_Install-NodeGlobalPackages Tests.Install-NodeGlobalPackages Function Tests.should handle execution with valid parameters" time="0.5643" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+      <test-suite type="TestFixture" name="/workspaces/opentofu-lab-automation/tests/0203_Install-npm.Tests.ps1" executed="True" result="Success" success="True" time="1.2353" asserts="0" description="/workspaces/opentofu-lab-automation/tests/0203_Install-npm.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="0203_Install-npm Tests" executed="True" result="Success" success="True" time="1.0867" asserts="0" description="0203_Install-npm Tests">
+            <results>
+              <test-suite type="TestFixture" name="0203_Install-npm Tests.Script Structure Validation" executed="True" result="Success" success="True" time="0.0255" asserts="0" description="0203_Install-npm Tests.Script Structure Validation">
+                <results>
+                  <test-case description="should have valid PowerShell syntax" name="0203_Install-npm Tests.Script Structure Validation.should have valid PowerShell syntax" time="0.0124" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="should follow naming conventions" name="0203_Install-npm Tests.Script Structure Validation.should follow naming conventions" time="0.0035" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="should define expected functions" name="0203_Install-npm Tests.Script Structure Validation.should define expected functions" time="0.0026" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="0203_Install-npm Tests.Parameter Validation" executed="True" result="Success" success="True" time="0.5645" asserts="0" description="0203_Install-npm Tests.Parameter Validation">
+                <results>
+                  <test-case description="should accept Config parameter" name="0203_Install-npm Tests.Parameter Validation.should accept Config parameter" time="0.5367" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="0203_Install-npm Tests.Installation Tests" executed="True" result="Success" success="True" time="0.5771" asserts="0" description="0203_Install-npm Tests.Installation Tests">
+                <results>
+                  <test-case description="should validate prerequisites" name="0203_Install-npm Tests.Installation Tests.should validate prerequisites" time="0.0037" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="should handle download failures gracefully" name="0203_Install-npm Tests.Installation Tests.should handle download failures gracefully" time="0.0028" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="should verify installation success" name="0203_Install-npm Tests.Installation Tests.should verify installation success" time="0.003" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="0203_Install-npm Tests.Install-NpmDependencies Function Tests" executed="True" result="Success" success="True" time="1.0848" asserts="0" description="0203_Install-npm Tests.Install-NpmDependencies Function Tests">
+                <results>
+                  <test-case description="should be defined and accessible" name="0203_Install-npm Tests.Install-NpmDependencies Function Tests.should be defined and accessible" time="0.0032" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="should support common parameters" name="0203_Install-npm Tests.Install-NpmDependencies Function Tests.should support common parameters" time="0.0034" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="should handle execution with valid parameters" name="0203_Install-npm Tests.Install-NpmDependencies Function Tests.should handle execution with valid parameters" time="0.4984" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+      <test-suite type="TestFixture" name="/workspaces/opentofu-lab-automation/tests/0204_Install-Poetry.Tests.ps1" executed="True" result="Success" success="True" time="1.1396" asserts="0" description="/workspaces/opentofu-lab-automation/tests/0204_Install-Poetry.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="0204_Install-Poetry Tests" executed="True" result="Success" success="True" time="1.03" asserts="0" description="0204_Install-Poetry Tests">
+            <results>
+              <test-suite type="TestFixture" name="0204_Install-Poetry Tests.Script Structure Validation" executed="True" result="Success" success="True" time="0.016" asserts="0" description="0204_Install-Poetry Tests.Script Structure Validation">
+                <results>
+                  <test-case description="should have valid PowerShell syntax" name="0204_Install-Poetry Tests.Script Structure Validation.should have valid PowerShell syntax" time="0.006" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="should follow naming conventions" name="0204_Install-Poetry Tests.Script Structure Validation.should follow naming conventions" time="0.0039" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="should define expected functions" name="0204_Install-Poetry Tests.Script Structure Validation.should define expected functions" time="0.0037" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="0204_Install-Poetry Tests.Parameter Validation" executed="True" result="Success" success="True" time="0.53" asserts="0" description="0204_Install-Poetry Tests.Parameter Validation">
+                <results>
+                  <test-case description="should accept Config parameter" name="0204_Install-Poetry Tests.Parameter Validation.should accept Config parameter" time="0.5116" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="0204_Install-Poetry Tests.Installation Tests" executed="True" result="Success" success="True" time="0.5489" asserts="0" description="0204_Install-Poetry Tests.Installation Tests">
+                <results>
+                  <test-case description="should validate prerequisites" name="0204_Install-Poetry Tests.Installation Tests.should validate prerequisites" time="0.0041" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="should handle download failures gracefully" name="0204_Install-Poetry Tests.Installation Tests.should handle download failures gracefully" time="0.0054" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="should verify installation success" name="0204_Install-Poetry Tests.Installation Tests.should verify installation success" time="0.0053" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="0204_Install-Poetry Tests.Install-Poetry Function Tests" executed="True" result="Success" success="True" time="1.0282" asserts="0" description="0204_Install-Poetry Tests.Install-Poetry Function Tests">
+                <results>
+                  <test-case description="should be defined and accessible" name="0204_Install-Poetry Tests.Install-Poetry Function Tests.should be defined and accessible" time="0.0029" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="should support common parameters" name="0204_Install-Poetry Tests.Install-Poetry Function Tests.should support common parameters" time="0.0034" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="should handle execution with valid parameters" name="0204_Install-Poetry Tests.Install-Poetry Function Tests.should handle execution with valid parameters" time="0.4705" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+      <test-suite type="TestFixture" name="/workspaces/opentofu-lab-automation/tests/0216_Set-LabProfile.Tests.ps1" executed="True" result="Success" success="True" time="1.2743" asserts="0" description="/workspaces/opentofu-lab-automation/tests/0216_Set-LabProfile.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="0216_Set-LabProfile Tests" executed="True" result="Success" success="True" time="1.0671" asserts="0" description="0216_Set-LabProfile Tests">
+            <results>
+              <test-suite type="TestFixture" name="0216_Set-LabProfile Tests.Script Structure Validation" executed="True" result="Success" success="True" time="0.0365" asserts="0" description="0216_Set-LabProfile Tests.Script Structure Validation">
+                <results>
+                  <test-case description="should have valid PowerShell syntax" name="0216_Set-LabProfile Tests.Script Structure Validation.should have valid PowerShell syntax" time="0.0145" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="should follow naming conventions" name="0216_Set-LabProfile Tests.Script Structure Validation.should follow naming conventions" time="0.012" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="should define expected functions" name="0216_Set-LabProfile Tests.Script Structure Validation.should define expected functions" time="0.0075" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="0216_Set-LabProfile Tests.Parameter Validation" executed="True" result="Success" success="True" time="0.526" asserts="0" description="0216_Set-LabProfile Tests.Parameter Validation">
+                <results>
+                  <test-case description="should accept Config parameter" name="0216_Set-LabProfile Tests.Parameter Validation.should accept Config parameter" time="0.4868" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="0216_Set-LabProfile Tests.Set-LabProfile Function Tests" executed="True" result="Success" success="True" time="1.065" asserts="0" description="0216_Set-LabProfile Tests.Set-LabProfile Function Tests">
+                <results>
+                  <test-case description="should be defined and accessible" name="0216_Set-LabProfile Tests.Set-LabProfile Function Tests.should be defined and accessible" time="0.0039" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="should support common parameters" name="0216_Set-LabProfile Tests.Set-LabProfile Function Tests.should support common parameters" time="0.0145" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="should handle execution with valid parameters" name="0216_Set-LabProfile Tests.Set-LabProfile Function Tests.should handle execution with valid parameters" time="0.518" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+      <test-suite type="TestFixture" name="/workspaces/opentofu-lab-automation/tests/Cleanup-Files.Tests.ps1" executed="True" result="Success" success="True" time="0.4193" asserts="0" description="/workspaces/opentofu-lab-automation/tests/Cleanup-Files.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="Cleanup-Files script" executed="True" result="Success" success="True" time="0.3855" asserts="0" description="Cleanup-Files script">
+            <results>
+              <test-case description="uses ErrorAction Stop for Remove-Item calls" name="Cleanup-Files script.uses ErrorAction Stop for Remove-Item calls" time="0.0424" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="removes repo and infra directories when they exist" name="Cleanup-Files script.removes repo and infra directories when they exist" time="0.0352" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="handles missing directories gracefully" name="Cleanup-Files script.handles missing directories gracefully" time="0.0145" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="runs without a global log file" name="Cleanup-Files script.runs without a global log file" time="0.0117" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="completes when LogFilePath is undefined" name="Cleanup-Files script.completes when LogFilePath is undefined" time="0.0181" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="completes when the repo directory is removed" name="Cleanup-Files script.completes when the repo directory is removed" time="0.0512" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="throws when repo removal fails" name="Cleanup-Files script.throws when repo removal fails" time="0.1393" asserts="0" success="True" result="Success" executed="True" />
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+      <test-suite type="TestFixture" name="/workspaces/opentofu-lab-automation/tests/Config-DNS.Tests.ps1" executed="True" result="Ignored" success="True" time="0.071" asserts="0" description="/workspaces/opentofu-lab-automation/tests/Config-DNS.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="0113_Config-DNS" executed="True" result="Ignored" success="True" time="0.0071" asserts="0" description="0113_Config-DNS">
+            <results>
+              <test-case description="calls Set-DnsClientServerAddress with value from config" name="0113_Config-DNS.calls Set-DnsClientServerAddress with value from config" time="0.0047" asserts="0" success="False" result="Ignored" executed="False" />
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+      <test-suite type="TestFixture" name="/workspaces/opentofu-lab-automation/tests/Config-TrustedHosts.Tests.ps1" executed="True" result="Success" success="True" time="0.1671" asserts="0" description="/workspaces/opentofu-lab-automation/tests/Config-TrustedHosts.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="0114_Config-TrustedHosts" executed="True" result="Success" success="True" time="0.1388" asserts="0" description="0114_Config-TrustedHosts">
+            <results>
+              <test-case description="calls Start-Process with winrm arguments using config value" name="0114_Config-TrustedHosts.calls Start-Process with winrm arguments using config value" time="0.135" asserts="0" success="True" result="Success" executed="True" />
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+      <test-suite type="TestFixture" name="/workspaces/opentofu-lab-automation/tests/Configure-Firewall.Tests.ps1" executed="True" result="Ignored" success="True" time="0.0232" asserts="0" description="/workspaces/opentofu-lab-automation/tests/Configure-Firewall.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="0102_Configure-Firewall" executed="True" result="Ignored" success="True" time="0.0054" asserts="0" description="0102_Configure-Firewall">
+            <results>
+              <test-case description="creates firewall rules for each port when ports are specified" name="0102_Configure-Firewall.creates firewall rules for each port when ports are specified" time="0.0016" asserts="0" success="False" result="Ignored" executed="False" />
+              <test-case description="skips when no FirewallPorts are provided" name="0102_Configure-Firewall.skips when no FirewallPorts are provided" time="0.0011" asserts="0" success="False" result="Ignored" executed="False" />
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+      <test-suite type="TestFixture" name="/workspaces/opentofu-lab-automation/tests/Customize-ISO.Tests.ps1" executed="True" result="Failure" success="False" time="0.2171" asserts="0" description="/workspaces/opentofu-lab-automation/tests/Customize-ISO.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="Customize-ISO.ps1" executed="True" result="Failure" success="False" time="0.1967" asserts="0" description="Customize-ISO.ps1">
+            <results>
+              <test-case description="parses without errors" name="Customize-ISO.ps1.parses without errors" time="0.0838" asserts="0" success="False" result="Failure" executed="True">
+                <failure>
+                  <message>CommandNotFoundException: The term 'errs' is not recognized as a name of a cmdlet, function, script file, or executable program.
+Check the spelling of the name, or if a path was included, verify that the path is correct and try again.</message>
+                  <stack-trace>at &lt;ScriptBlock&gt;, /workspaces/opentofu-lab-automation/tests/Customize-ISO.Tests.ps1:12</stack-trace>
+                </failure>
+              </test-case>
+              <test-case description="honours parameters and logs each step" name="Customize-ISO.ps1.honours parameters and logs each step" time="0.0332" asserts="0" success="False" result="Failure" executed="True">
+                <failure>
+                  <message>CommandNotFoundException: The term 'New-CimInstance' is not recognized as a name of a cmdlet, function, script file, or executable program.
+Check the spelling of the name, or if a path was included, verify that the path is correct and try again.</message>
+                  <stack-trace>at &lt;ScriptBlock&gt;, /workspaces/opentofu-lab-automation/tests/Customize-ISO.Tests.ps1:32</stack-trace>
+                </failure>
+              </test-case>
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+      <test-suite type="TestFixture" name="/workspaces/opentofu-lab-automation/tests/Download-Archive.Tests.ps1" executed="True" result="Success" success="True" time="0.225" asserts="0" description="/workspaces/opentofu-lab-automation/tests/Download-Archive.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="Invoke-ArchiveDownload" executed="True" result="Success" success="True" time="0.1852" asserts="0" description="Invoke-ArchiveDownload">
+            <results>
+              <test-case description="uses gh CLI when -UseGh" name="Invoke-ArchiveDownload.uses gh CLI when -UseGh" time="0.0325" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="uses Invoke-WebRequest when -UseGh not specified" name="Invoke-ArchiveDownload.uses Invoke-WebRequest when -UseGh not specified" time="0.0267" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="throws if gh fails and -Required is set" name="Invoke-ArchiveDownload.throws if gh fails and -Required is set" time="0.0242" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="throws if Invoke-WebRequest fails and -Required is set" name="Invoke-ArchiveDownload.throws if Invoke-WebRequest fails and -Required is set" time="0.0872" asserts="0" success="True" result="Success" executed="True" />
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+      <test-suite type="TestFixture" name="/workspaces/opentofu-lab-automation/tests/Enable-PXE.Tests.ps1" executed="True" result="Ignored" success="True" time="0.043" asserts="0" description="/workspaces/opentofu-lab-automation/tests/Enable-PXE.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="0112_Enable-PXE" executed="True" result="Ignored" success="True" time="0.0123" asserts="0" description="0112_Enable-PXE">
+            <results>
+              <test-case description="logs firewall rules when ConfigPXE is true" name="0112_Enable-PXE.logs firewall rules when ConfigPXE is true" time="0.0059" asserts="0" success="False" result="Ignored" executed="False" />
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+      <test-suite type="TestFixture" name="/workspaces/opentofu-lab-automation/tests/Enable-RemoteDesktop.Tests.ps1" executed="True" result="Ignored" success="True" time="0.0679" asserts="0" description="/workspaces/opentofu-lab-automation/tests/Enable-RemoteDesktop.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="0101_Enable-RemoteDesktop" executed="True" result="Ignored" success="True" time="0.0277" asserts="0" description="0101_Enable-RemoteDesktop">
+            <results>
+              <test-case description="enables RDP when allowed and currently disabled" name="0101_Enable-RemoteDesktop.enables RDP when allowed and currently disabled" time="0.0062" asserts="0" success="False" result="Ignored" executed="False" />
+              <test-case description="skips registry change when already enabled" name="0101_Enable-RemoteDesktop.skips registry change when already enabled" time="0.0015" asserts="0" success="False" result="Ignored" executed="False" />
+              <test-case description="does nothing when AllowRemoteDesktop is false" name="0101_Enable-RemoteDesktop.does nothing when AllowRemoteDesktop is false" time="0.0059" asserts="0" success="False" result="Ignored" executed="False" />
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+      <test-suite type="TestFixture" name="/workspaces/opentofu-lab-automation/tests/Enable-WinRM.Tests.ps1" executed="True" result="Ignored" success="True" time="0.0652" asserts="0" description="/workspaces/opentofu-lab-automation/tests/Enable-WinRM.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="0100_Enable-WinRM" executed="True" result="Ignored" success="True" time="0.0235" asserts="0" description="0100_Enable-WinRM">
+            <results>
+              <test-case description="enables WinRM when service is not running" name="0100_Enable-WinRM.enables WinRM when service is not running" time="0.0138" asserts="0" success="False" result="Ignored" executed="False" />
+              <test-case description="skips enabling when WinRM already running" name="0100_Enable-WinRM.skips enabling when WinRM already running" time="0.0046" asserts="0" success="False" result="Ignored" executed="False" />
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+      <test-suite type="TestFixture" name="/workspaces/opentofu-lab-automation/tests/EscapePathArgument.Tests.ps1" executed="True" result="Success" success="True" time="0.1463" asserts="0" description="/workspaces/opentofu-lab-automation/tests/EscapePathArgument.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="escapePathArgument" executed="True" result="Success" success="True" time="0.0902" asserts="0" description="escapePathArgument">
+            <results>
+              <test-case description="wraps path in quotes" name="escapePathArgument.wraps path in quotes" time="0.0183" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="accepts pipeline input" name="escapePathArgument.accepts pipeline input" time="0.0054" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="throws when path contains quotes" name="escapePathArgument.throws when path contains quotes" time="0.0102" asserts="0" success="True" result="Success" executed="True" />
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+      <test-suite type="TestFixture" name="/workspaces/opentofu-lab-automation/tests/Expand-All.Tests.ps1" executed="True" result="Success" success="True" time="0.8663" asserts="0" description="/workspaces/opentofu-lab-automation/tests/Expand-All.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="Expand-All" executed="True" result="Success" success="True" time="0.8406" asserts="0" description="Expand-All">
+            <results>
+              <test-case description="expands a specific ZIP file when provided" name="Expand-All.expands a specific ZIP file when provided" time="0.1392" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="expands all ZIP files recursively when no path is given" name="Expand-All.expands all ZIP files recursively when no path is given" time="0.2025" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="logs message when specified ZIP file does not exist" name="Expand-All.logs message when specified ZIP file does not exist" time="0.3387" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="cancels when user declines expansion" name="Expand-All.cancels when user declines expansion" time="0.1424" asserts="0" success="True" result="Success" executed="True" />
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+      <test-suite type="TestFixture" name="/workspaces/opentofu-lab-automation/tests/Format-Config.Tests.ps1" executed="True" result="Success" success="True" time="0.1045" asserts="0" description="/workspaces/opentofu-lab-automation/tests/Format-Config.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="Format-Config" executed="True" result="Success" success="True" time="0.0676" asserts="0" description="Format-Config">
+            <results>
+              <test-case description="formats config as indented JSON" name="Format-Config.formats config as indented JSON" time="0.0084" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="accepts pipeline input" name="Format-Config.accepts pipeline input" time="0.0036" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="accepts pipeline input by property name" name="Format-Config.accepts pipeline input by property name" time="0.0042" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="throws when no Config is provided" name="Format-Config.throws when no Config is provided" time="0.0267" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="throws when pipeline is empty" name="Format-Config.throws when pipeline is empty" time="0.0059" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="throws when Config is null" name="Format-Config.throws when Config is null" time="0.005" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="is a terminating error when Config is null" name="Format-Config.is a terminating error when Config is null" time="0.0043" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="is a terminating error when piped null" name="Format-Config.is a terminating error when piped null" time="0.0045" asserts="0" success="True" result="Success" executed="True" />
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+      <test-suite type="TestFixture" name="/workspaces/opentofu-lab-automation/tests/Get-HyperVProviderVersion.Tests.ps1" executed="True" result="Success" success="True" time="0.8393" asserts="0" description="/workspaces/opentofu-lab-automation/tests/Get-HyperVProviderVersion.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="Get-HyperVProviderVersion" executed="True" result="Success" success="True" time="0.8186" asserts="0" description="Get-HyperVProviderVersion">
+            <results>
+              <test-case description="uses version from config" name="Get-HyperVProviderVersion.uses version from config" time="0.4773" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="falls back to default when not specified" name="Get-HyperVProviderVersion.falls back to default when not specified" time="0.3376" asserts="0" success="True" result="Success" executed="True" />
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+      <test-suite type="TestFixture" name="/workspaces/opentofu-lab-automation/tests/Get-LabConfig.Tests.ps1" executed="True" result="Failure" success="False" time="0.1335" asserts="0" description="/workspaces/opentofu-lab-automation/tests/Get-LabConfig.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="Get-LabConfig" executed="True" result="Failure" success="False" time="0.1" asserts="0" description="Get-LabConfig">
+            <results>
+              <test-case description="returns PSCustomObject for valid JSON and populates Directories" name="Get-LabConfig.returns PSCustomObject for valid JSON and populates Directories" time="0.0573" asserts="0" success="False" result="Failure" executed="True">
+                <failure>
+                  <message>Expected regular expression 'pwsh/runner_scripts$' to match '/workspaces/opentofu-lab-automation/pwsh/modules/runner_scripts', but it did not match.</message>
+                  <stack-trace>at $result.Directories.RunnerScripts | Should -Match 'pwsh/runner_scripts$', /workspaces/opentofu-lab-automation/tests/Get-LabConfig.Tests.ps1:21
+at &lt;ScriptBlock&gt;, /workspaces/opentofu-lab-automation/tests/Get-LabConfig.Tests.ps1:21</stack-trace>
+                </failure>
+              </test-case>
+              <test-case description="uses custom Directories from JSON file" name="Get-LabConfig.uses custom Directories from JSON file" time="0.0144" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="throws when file does not exist" name="Get-LabConfig.throws when file does not exist" time="0.0061" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="throws on invalid JSON" name="Get-LabConfig.throws on invalid JSON" time="0.0103" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="parses valid YAML" name="Get-LabConfig.parses valid YAML" time="0.0079" asserts="0" success="True" result="Success" executed="True" />
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+      <test-suite type="TestFixture" name="/workspaces/opentofu-lab-automation/tests/Get-Platform.Tests.ps1" executed="True" result="Success" success="True" time="0.0283" asserts="0" description="/workspaces/opentofu-lab-automation/tests/Get-Platform.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="Get-Platform" executed="True" result="Success" success="True" time="0.0104" asserts="0" description="Get-Platform">
+            <results>
+              <test-case description="returns the correct platform for the current OS" name="Get-Platform.returns the correct platform for the current OS" time="0.0067" asserts="0" success="True" result="Success" executed="True" />
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+      <test-suite type="TestFixture" name="/workspaces/opentofu-lab-automation/tests/Get-SystemInfo.Tests.ps1" executed="True" result="Failure" success="False" time="0.0915" asserts="0" description="/workspaces/opentofu-lab-automation/tests/Get-SystemInfo.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="0200_Get-SystemInfo" executed="True" result="Failure" success="False" time="0.0216" asserts="0" description="0200_Get-SystemInfo">
+            <results>
+              <test-case description="runs without throwing and returns expected keys" name="0200_Get-SystemInfo.runs without throwing and returns expected keys" time="0" asserts="0" success="False" result="Failure" executed="True">
+                <failure>
+                  <message>This test should run but it did not. Most likely a setup in some parent block failed.</message>
+                  <stack-trace />
+                </failure>
+              </test-case>
+              <test-case description="returns exit code 1 for unsupported platform" name="0200_Get-SystemInfo.returns exit code 1 for unsupported platform" time="0" asserts="0" success="False" result="Failure" executed="True">
+                <failure>
+                  <message>This test should run but it did not. Most likely a setup in some parent block failed.</message>
+                  <stack-trace />
+                </failure>
+              </test-case>
+            </results>
+          </test-suite>
+          <test-suite type="TestFixture" name="runner.ps1 executing 0200_Get-SystemInfo" executed="True" result="Failure" success="False" time="0.0713" asserts="0" description="runner.ps1 executing 0200_Get-SystemInfo">
+            <results>
+              <test-case description="outputs system info when run via runner" name="runner.ps1 executing 0200_Get-SystemInfo.outputs system info when run via runner" time="0.0476" asserts="0" success="False" result="Failure" executed="True">
+                <failure>
+                  <message>ParameterBindingValidationException: Cannot bind argument to parameter 'Path' because it is null.</message>
+                  <stack-trace>at &lt;ScriptBlock&gt;, /workspaces/opentofu-lab-automation/tests/Get-SystemInfo.Tests.ps1:54</stack-trace>
+                </failure>
+              </test-case>
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+      <test-suite type="TestFixture" name="/workspaces/opentofu-lab-automation/tests/Get-WindowsJobArtifacts.Tests.ps1" executed="True" result="Failure" success="False" time="0.1837" asserts="0" description="/workspaces/opentofu-lab-automation/tests/Get-WindowsJobArtifacts.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="Get-WindowsJobArtifacts" executed="True" result="Failure" success="False" time="0.1589" asserts="0" description="Get-WindowsJobArtifacts">
+            <results>
+              <test-case description="uses gh CLI when authenticated" name="Get-WindowsJobArtifacts.uses gh CLI when authenticated" time="0.025" asserts="0" success="False" result="Failure" executed="True">
+                <failure>
+                  <message>CommandNotFoundException: The term '/workspaces/opentofu-lab-automation/tests/../pwsh/modules/LabRunner/Get-WindowsJobArtifacts.ps1' is not recognized as a name of a cmdlet, function, script file, or executable program.
+Check the spelling of the name, or if a path was included, verify that the path is correct and try again.</message>
+                  <stack-trace>at &lt;ScriptBlock&gt;, /workspaces/opentofu-lab-automation/tests/Get-WindowsJobArtifacts.Tests.ps1:24</stack-trace>
+                </failure>
+              </test-case>
+              <test-case description="falls back to nightly.link when gh auth fails" name="Get-WindowsJobArtifacts.falls back to nightly.link when gh auth fails" time="0.0209" asserts="0" success="False" result="Failure" executed="True">
+                <failure>
+                  <message>CommandNotFoundException: The term '/workspaces/opentofu-lab-automation/tests/../pwsh/modules/LabRunner/Get-WindowsJobArtifacts.ps1' is not recognized as a name of a cmdlet, function, script file, or executable program.
+Check the spelling of the name, or if a path was included, verify that the path is correct and try again.</message>
+                  <stack-trace>at &lt;ScriptBlock&gt;, /workspaces/opentofu-lab-automation/tests/Get-WindowsJobArtifacts.Tests.ps1:35</stack-trace>
+                </failure>
+              </test-case>
+              <test-case description="uses provided run ID with gh" name="Get-WindowsJobArtifacts.uses provided run ID with gh" time="0.0199" asserts="0" success="False" result="Failure" executed="True">
+                <failure>
+                  <message>CommandNotFoundException: The term '/workspaces/opentofu-lab-automation/tests/../pwsh/modules/LabRunner/Get-WindowsJobArtifacts.ps1' is not recognized as a name of a cmdlet, function, script file, or executable program.
+Check the spelling of the name, or if a path was included, verify that the path is correct and try again.</message>
+                  <stack-trace>at &lt;ScriptBlock&gt;, /workspaces/opentofu-lab-automation/tests/Get-WindowsJobArtifacts.Tests.ps1:47</stack-trace>
+                </failure>
+              </test-case>
+              <test-case description="uses provided run ID with nightly.link when gh auth fails" name="Get-WindowsJobArtifacts.uses provided run ID with nightly.link when gh auth fails" time="0.0246" asserts="0" success="False" result="Failure" executed="True">
+                <failure>
+                  <message>CommandNotFoundException: The term '/workspaces/opentofu-lab-automation/tests/../pwsh/modules/LabRunner/Get-WindowsJobArtifacts.ps1' is not recognized as a name of a cmdlet, function, script file, or executable program.
+Check the spelling of the name, or if a path was included, verify that the path is correct and try again.</message>
+                  <stack-trace>at &lt;ScriptBlock&gt;, /workspaces/opentofu-lab-automation/tests/Get-WindowsJobArtifacts.Tests.ps1:59</stack-trace>
+                </failure>
+              </test-case>
+              <test-case description="emits a clear message when artifacts are missing" name="Get-WindowsJobArtifacts.emits a clear message when artifacts are missing" time="0.0232" asserts="0" success="False" result="Failure" executed="True">
+                <failure>
+                  <message>CommandNotFoundException: The term '/workspaces/opentofu-lab-automation/tests/../pwsh/modules/LabRunner/Get-WindowsJobArtifacts.ps1' is not recognized as a name of a cmdlet, function, script file, or executable program.
+Check the spelling of the name, or if a path was included, verify that the path is correct and try again.</message>
+                  <stack-trace>at &lt;ScriptBlock&gt;, /workspaces/opentofu-lab-automation/tests/Get-WindowsJobArtifacts.Tests.ps1:76</stack-trace>
+                </failure>
+              </test-case>
+              <test-case description="returns nonzero exit code when download fails" name="Get-WindowsJobArtifacts.returns nonzero exit code when download fails" time="0.0225" asserts="0" success="False" result="Failure" executed="True">
+                <failure>
+                  <message>Expected 1, but got 0.</message>
+                  <stack-trace>at $LASTEXITCODE | Should -Be 1, /workspaces/opentofu-lab-automation/tests/Get-WindowsJobArtifacts.Tests.ps1:92
+at &lt;ScriptBlock&gt;, /workspaces/opentofu-lab-automation/tests/Get-WindowsJobArtifacts.Tests.ps1:92</stack-trace>
+                </failure>
+              </test-case>
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+      <test-suite type="TestFixture" name="/workspaces/opentofu-lab-automation/tests/Hypervisor.Tests.ps1" executed="True" result="Failure" success="False" time="0.0257" asserts="0" description="/workspaces/opentofu-lab-automation/tests/Hypervisor.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="Hypervisor module" executed="True" result="Failure" success="False" time="0.0074" asserts="0" description="Hypervisor module">
+            <results>
+              <test-case description="Get-HVFacts returns provider information" name="Hypervisor module.Get-HVFacts returns provider information" time="0" asserts="0" success="False" result="Failure" executed="True">
+                <failure>
+                  <message>This test should run but it did not. Most likely a setup in some parent block failed.</message>
+                  <stack-trace />
+                </failure>
+              </test-case>
+              <test-case description="Enable-Provider returns confirmation string" name="Hypervisor module.Enable-Provider returns confirmation string" time="0" asserts="0" success="False" result="Failure" executed="True">
+                <failure>
+                  <message>This test should run but it did not. Most likely a setup in some parent block failed.</message>
+                  <stack-trace />
+                </failure>
+              </test-case>
+              <test-case description="Deploy-VM returns deployment message" name="Hypervisor module.Deploy-VM returns deployment message" time="0" asserts="0" success="False" result="Failure" executed="True">
+                <failure>
+                  <message>This test should run but it did not. Most likely a setup in some parent block failed.</message>
+                  <stack-trace />
+                </failure>
+              </test-case>
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+      <test-suite type="TestFixture" name="/workspaces/opentofu-lab-automation/tests/Initialize-OpenTofu.Tests.ps1" executed="True" result="Failure" success="False" time="0.9038" asserts="0" description="/workspaces/opentofu-lab-automation/tests/Initialize-OpenTofu.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="Initialize-OpenTofu script" executed="True" result="Failure" success="False" time="0.8793" asserts="0" description="Initialize-OpenTofu script">
+            <results>
+              <test-case description="clones repo when InfraRepoUrl is provided" name="Initialize-OpenTofu script.clones repo when InfraRepoUrl is provided" time="0.1738" asserts="0" success="False" result="Failure" executed="True">
+                <failure>
+                  <message>RuntimeException: Should -Invoke: Could not find Mock for command gh in module LabRunner. Was the mock defined? Did you use the same -ModuleName as on the Mock? When using InModuleScope are InModuleScope, Mock and Should -Invoke using the same -ModuleName?</message>
+                  <stack-trace />
+                </failure>
+              </test-case>
+              <test-case description="pulls updates when repo already exists" name="Initialize-OpenTofu script.pulls updates when repo already exists" time="0.1228" asserts="0" success="False" result="Failure" executed="True">
+                <failure>
+                  <message>ParameterBindingValidationException: Cannot bind argument to parameter 'Path' because it is null.</message>
+                  <stack-trace>at &lt;ScriptBlock&gt;, /workspaces/opentofu-lab-automation/pwsh/runner_scripts/0009_Initialize-OpenTofu.ps1:134
+at Invoke-LabStep, /workspaces/opentofu-lab-automation/pwsh/modules/LabRunner/LabRunner.psm1:113
+at &lt;ScriptBlock&gt;, /workspaces/opentofu-lab-automation/pwsh/runner_scripts/0009_Initialize-OpenTofu.ps1:11
+at &lt;ScriptBlock&gt;, /workspaces/opentofu-lab-automation/tests/Initialize-OpenTofu.Tests.ps1:75</stack-trace>
+                </failure>
+              </test-case>
+              <test-case description="runs tofu init in InfraRepoPath" name="Initialize-OpenTofu script.runs tofu init in InfraRepoPath" time="0.2704" asserts="0" success="False" result="Failure" executed="True">
+                <failure>
+                  <message>CommandNotFoundException: Could not find Command tofu</message>
+                  <stack-trace />
+                </failure>
+              </test-case>
+              <test-case description="installs OpenTofu when tofu command is missing" name="Initialize-OpenTofu script.installs OpenTofu when tofu command is missing" time="0.0536" asserts="0" success="False" result="Failure" executed="True">
+                <failure>
+                  <message>CommandNotFoundException: Could not find Command Invoke-OpenTofuInstaller</message>
+                  <stack-trace />
+                </failure>
+              </test-case>
+              <test-case description="throws when installation does not make tofu available" name="Initialize-OpenTofu script.throws when installation does not make tofu available" time="0.0466" asserts="0" success="False" result="Failure" executed="True">
+                <failure>
+                  <message>CommandNotFoundException: Could not find Command Invoke-OpenTofuInstaller</message>
+                  <stack-trace />
+                </failure>
+              </test-case>
+              <test-case description="errors when Install-OpenTofu script is missing" name="Initialize-OpenTofu script.errors when Install-OpenTofu script is missing" time="0.11" asserts="0" success="False" result="Failure" executed="True">
+                <failure>
+                  <message>Expected an exception with message like '*installer*' to be thrown, but no exception was thrown.</message>
+                  <stack-trace>at Should -Throw '*installer*', /workspaces/opentofu-lab-automation/tests/Initialize-OpenTofu.Tests.ps1:215
+at &lt;ScriptBlock&gt;, /workspaces/opentofu-lab-automation/tests/Initialize-OpenTofu.Tests.ps1:214</stack-trace>
+                </failure>
+              </test-case>
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+      <test-suite type="TestFixture" name="/workspaces/opentofu-lab-automation/tests/Install-CA.Tests.ps1" executed="True" result="Ignored" success="True" time="0.0262" asserts="0" description="/workspaces/opentofu-lab-automation/tests/Install-CA.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="Install-CA" executed="True" result="Ignored" success="True" time="0.0068" asserts="0" description="Install-CA">
+            <results>
+              <test-case description="invokes CA installation when InstallCA is true" name="Install-CA.invokes CA installation when InstallCA is true" time="0.0016" asserts="0" success="False" result="Ignored" executed="False" />
+              <test-case description="honours -WhatIf for CA installation" name="Install-CA.honours -WhatIf for CA installation" time="0.0017" asserts="0" success="False" result="Ignored" executed="False" />
+              <test-case description="skips CA installation when InstallCA is false" name="Install-CA.skips CA installation when InstallCA is false" time="0.0017" asserts="0" success="False" result="Ignored" executed="False" />
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+      <test-suite type="TestFixture" name="/workspaces/opentofu-lab-automation/tests/Install-Go.Tests.ps1" executed="True" result="Failure" success="False" time="0.429" asserts="0" description="/workspaces/opentofu-lab-automation/tests/Install-Go.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="0007_Install-Go" executed="True" result="Failure" success="False" time="0.4034" asserts="0" description="0007_Install-Go">
+            <results>
+              <test-case description="installs Go when enabled" name="0007_Install-Go.installs Go when enabled" time="0.0827" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="skips when InstallGo is false" name="0007_Install-Go.skips when InstallGo is false" time="0.0454" asserts="0" success="False" result="Failure" executed="True">
+                <failure>
+                  <message>RuntimeException: Should -Invoke: Could not find Mock for command Invoke-LabDownload in module LabRunner. Was the mock defined? Did you use the same -ModuleName as on the Mock? When using InModuleScope are InModuleScope, Mock and Should -Invoke using the same -ModuleName?</message>
+                  <stack-trace />
+                </failure>
+              </test-case>
+              <test-case description="does nothing when Go is already installed" name="0007_Install-Go.does nothing when Go is already installed" time="0.0377" asserts="0" success="False" result="Failure" executed="True">
+                <failure>
+                  <message>RuntimeException: Should -Invoke: Could not find Mock for command Invoke-LabDownload in module LabRunner. Was the mock defined? Did you use the same -ModuleName as on the Mock? When using InModuleScope are InModuleScope, Mock and Should -Invoke using the same -ModuleName?</message>
+                  <stack-trace />
+                </failure>
+              </test-case>
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+      <test-suite type="TestFixture" name="/workspaces/opentofu-lab-automation/tests/Install-npm.Tests.ps1" executed="True" result="Failure" success="False" time="0.7418" asserts="0" description="/workspaces/opentofu-lab-automation/tests/Install-npm.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="0203_Install-npm" executed="True" result="Failure" success="False" time="0.7206" asserts="0" description="0203_Install-npm">
+            <results>
+              <test-case description="runs npm install in configured NpmPath" name="0203_Install-npm.runs npm install in configured NpmPath" time="0.2561" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="succeeds when NpmPath exists" name="0203_Install-npm.succeeds when NpmPath exists" time="0.1216" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="errors when NpmPath is missing and CreateNpmPath is false" name="0203_Install-npm.errors when NpmPath is missing and CreateNpmPath is false" time="0.0977" asserts="0" success="False" result="Failure" executed="True">
+                <failure>
+                  <message>RuntimeException: Frontend folder not found at: /tmp/7e805dd4-9e7e-4c2f-8b14-928f65dd3ca7</message>
+                  <stack-trace>at &lt;ScriptBlock&gt;, /workspaces/opentofu-lab-automation/pwsh/runner_scripts/0203_Install-npm.ps1:102
+at Invoke-LabStep, /workspaces/opentofu-lab-automation/pwsh/modules/LabRunner/LabRunner.psm1:113
+at Install-NpmDependencies, /workspaces/opentofu-lab-automation/pwsh/runner_scripts/0203_Install-npm.ps1:22
+at &lt;ScriptBlock&gt;, /workspaces/opentofu-lab-automation/pwsh/runner_scripts/0203_Install-npm.ps1:130
+at &lt;ScriptBlock&gt;, /workspaces/opentofu-lab-automation/tests/Install-npm.Tests.ps1:65</stack-trace>
+                </failure>
+              </test-case>
+              <test-case description="errors when NpmPath is empty string" name="0203_Install-npm.errors when NpmPath is empty string" time="0.0962" asserts="0" success="False" result="Failure" executed="True">
+                <failure>
+                  <message>RuntimeException: Frontend folder not found at: /workspaces/opentofu-lab-automation/pwsh/runner_scripts/../frontend</message>
+                  <stack-trace>at &lt;ScriptBlock&gt;, /workspaces/opentofu-lab-automation/pwsh/runner_scripts/0203_Install-npm.ps1:102
+at Invoke-LabStep, /workspaces/opentofu-lab-automation/pwsh/modules/LabRunner/LabRunner.psm1:113
+at Install-NpmDependencies, /workspaces/opentofu-lab-automation/pwsh/runner_scripts/0203_Install-npm.ps1:22
+at &lt;ScriptBlock&gt;, /workspaces/opentofu-lab-automation/pwsh/runner_scripts/0203_Install-npm.ps1:130
+at &lt;ScriptBlock&gt;, /workspaces/opentofu-lab-automation/tests/Install-npm.Tests.ps1:76</stack-trace>
+                </failure>
+              </test-case>
+              <test-case description="creates NpmPath when CreateNpmPath is true" name="0203_Install-npm.creates NpmPath when CreateNpmPath is true" time="0.1449" asserts="0" success="True" result="Success" executed="True" />
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+      <test-suite type="TestFixture" name="/workspaces/opentofu-lab-automation/tests/Install-Poetry.Tests.ps1" executed="True" result="Failure" success="False" time="28.3137" asserts="0" description="/workspaces/opentofu-lab-automation/tests/Install-Poetry.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="0204_Install-Poetry" executed="True" result="Failure" success="False" time="28.2924" asserts="0" description="0204_Install-Poetry">
+            <results>
+              <test-case description="invokes installer when enabled" name="0204_Install-Poetry.invokes installer when enabled" time="12.8737" asserts="0" success="False" result="Failure" executed="True">
+                <failure>
+                  <message>RuntimeException: Should -Invoke: Could not find Mock for command Invoke-LabDownload in module LabRunner. Was the mock defined? Did you use the same -ModuleName as on the Mock? When using InModuleScope are InModuleScope, Mock and Should -Invoke using the same -ModuleName?</message>
+                  <stack-trace />
+                </failure>
+              </test-case>
+              <test-case description="skips when InstallPoetry is false" name="0204_Install-Poetry.skips when InstallPoetry is false" time="0.0154" asserts="0" success="False" result="Failure" executed="True">
+                <failure>
+                  <message>RuntimeException: Should -Invoke: Could not find Mock for command Invoke-LabWebRequest in module LabRunner. Was the mock defined? Did you use the same -ModuleName as on the Mock? When using InModuleScope are InModuleScope, Mock and Should -Invoke using the same -ModuleName?</message>
+                  <stack-trace />
+                </failure>
+              </test-case>
+              <test-case description="throws when python is missing" name="0204_Install-Poetry.throws when python is missing" time="15.3224" asserts="0" success="False" result="Failure" executed="True">
+                <failure>
+                  <message>Expected an exception with message like '*Python executable*' to be thrown, but no exception was thrown.</message>
+                  <stack-trace>at { &amp; $script:ScriptPath -Config $cfg } | Should -Throw '*Python executable*', /workspaces/opentofu-lab-automation/tests/Install-Poetry.Tests.ps1:56
+at &lt;ScriptBlock&gt;, /workspaces/opentofu-lab-automation/tests/Install-Poetry.Tests.ps1:56</stack-trace>
+                </failure>
+              </test-case>
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+      <test-suite type="TestFixture" name="/workspaces/opentofu-lab-automation/tests/Install-Sysinternals.Tests.ps1" executed="True" result="Ignored" success="True" time="0.0241" asserts="0" description="/workspaces/opentofu-lab-automation/tests/Install-Sysinternals.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="0205_Install-Sysinternals" executed="True" result="Ignored" success="True" time="0.0047" asserts="0" description="0205_Install-Sysinternals">
+            <results>
+              <test-case description="downloads and extracts when enabled" name="0205_Install-Sysinternals.downloads and extracts when enabled" time="0.0014" asserts="0" success="False" result="Ignored" executed="False" />
+              <test-case description="skips when InstallSysinternals is false" name="0205_Install-Sysinternals.skips when InstallSysinternals is false" time="0.0011" asserts="0" success="False" result="Ignored" executed="False" />
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+      <test-suite type="TestFixture" name="/workspaces/opentofu-lab-automation/tests/Install-ValidationTools.Tests.ps1" executed="True" result="Ignored" success="True" time="0.0244" asserts="0" description="/workspaces/opentofu-lab-automation/tests/Install-ValidationTools.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="0006_Install-ValidationTools" executed="True" result="Ignored" success="True" time="0.006" asserts="0" description="0006_Install-ValidationTools">
+            <results>
+              <test-case description="downloads cosign when InstallCosign is true" name="0006_Install-ValidationTools.downloads cosign when InstallCosign is true" time="0.0013" asserts="0" success="False" result="Ignored" executed="False" />
+              <test-case description="checks for gpg when InstallGpg is true" name="0006_Install-ValidationTools.checks for gpg when InstallGpg is true" time="0.0011" asserts="0" success="False" result="Ignored" executed="False" />
+              <test-case description="logs a message when no option specified" name="0006_Install-ValidationTools.logs a message when no option specified" time="0.0017" asserts="0" success="False" result="Ignored" executed="False" />
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+      <test-suite type="TestFixture" name="/workspaces/opentofu-lab-automation/tests/Invoke-LabDownload.Tests.ps1" executed="True" result="Success" success="True" time="0.0645" asserts="0" description="/workspaces/opentofu-lab-automation/tests/Invoke-LabDownload.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="Invoke-LabDownload" executed="True" result="Success" success="True" time="0.0448" asserts="0" description="Invoke-LabDownload">
+            <results>
+              <test-case description="downloads and executes action with cleanup" name="Invoke-LabDownload.downloads and executes action with cleanup" time="0.0403" asserts="0" success="True" result="Success" executed="True" />
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+      <test-suite type="TestFixture" name="/workspaces/opentofu-lab-automation/tests/InvokeOpenTofuInstaller.Tests.ps1" executed="True" result="Failure" success="False" time="0.0815" asserts="0" description="/workspaces/opentofu-lab-automation/tests/InvokeOpenTofuInstaller.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="InvokeOpenTofuInstaller Tests" executed="True" result="Failure" success="False" time="0.0524" asserts="0" description="InvokeOpenTofuInstaller Tests">
+            <results>
+              <test-suite type="TestFixture" name="InvokeOpenTofuInstaller Tests.Script Structure Validation" executed="True" result="Failure" success="False" time="0.0152" asserts="0" description="InvokeOpenTofuInstaller Tests.Script Structure Validation">
+                <results>
+                  <test-case description="should have valid PowerShell syntax" name="InvokeOpenTofuInstaller Tests.Script Structure Validation.should have valid PowerShell syntax" time="0.0055" asserts="0" success="False" result="Failure" executed="True">
+                    <failure>
+                      <message>Expected path '/workspaces/opentofu-lab-automation/tests/../pwsh/Modules/LabRunner/InvokeOpenTofuInstaller.ps1' to exist, but it did not exist.</message>
+                      <stack-trace>at $scriptPath | Should -Exist, /workspaces/opentofu-lab-automation/tests/InvokeOpenTofuInstaller.Tests.ps1:28
+at &lt;ScriptBlock&gt;, /workspaces/opentofu-lab-automation/tests/InvokeOpenTofuInstaller.Tests.ps1:28</stack-trace>
+                    </failure>
+                  </test-case>
+                  <test-case description="should follow naming conventions" name="InvokeOpenTofuInstaller Tests.Script Structure Validation.should follow naming conventions" time="0.0035" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="should define expected functions" name="InvokeOpenTofuInstaller Tests.Script Structure Validation.should define expected functions" time="0.0042" asserts="0" success="False" result="Failure" executed="True">
+                    <failure>
+                      <message>ParameterBindingValidationException: Cannot bind argument to parameter 'Path' because it is null.</message>
+                      <stack-trace>at &lt;ScriptBlock&gt;, /workspaces/opentofu-lab-automation/tests/InvokeOpenTofuInstaller.Tests.ps1:36</stack-trace>
+                    </failure>
+                  </test-case>
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="InvokeOpenTofuInstaller Tests.Parameter Validation" executed="True" result="Failure" success="False" time="0.0385" asserts="0" description="InvokeOpenTofuInstaller Tests.Parameter Validation">
+                <results>
+                  <test-case description="should accept CosignPath parameter" name="InvokeOpenTofuInstaller Tests.Parameter Validation.should accept CosignPath parameter" time="0.0108" asserts="0" success="False" result="Failure" executed="True">
+                    <failure>
+                      <message>Expected no exception to be thrown, but an exception "The term '/workspaces/opentofu-lab-automation/tests/../pwsh/Modules/LabRunner/InvokeOpenTofuInstaller.ps1' is not recognized as a name of a cmdlet, function, script file, or executable program.
+Check the spelling of the name, or if a path was included, verify that the path is correct and try again." was thrown from /workspaces/opentofu-lab-automation/tests/InvokeOpenTofuInstaller.Tests.ps1:43 char:17
+    +             { &amp; $scriptPath -CosignPath 'TestValue' -WhatIf } | Shoul …
+    +                 ~~~~~~~~~~~.</message>
+                      <stack-trace>at { &amp; $scriptPath -CosignPath 'TestValue' -WhatIf } | Should -Not -Throw, /workspaces/opentofu-lab-automation/tests/InvokeOpenTofuInstaller.Tests.ps1:43
+at &lt;ScriptBlock&gt;, /workspaces/opentofu-lab-automation/tests/InvokeOpenTofuInstaller.Tests.ps1:43</stack-trace>
+                    </failure>
+                  </test-case>
+                  <test-case description="should accept OpenTofuVersion parameter" name="InvokeOpenTofuInstaller Tests.Parameter Validation.should accept OpenTofuVersion parameter" time="0.0104" asserts="0" success="False" result="Failure" executed="True">
+                    <failure>
+                      <message>Expected no exception to be thrown, but an exception "The term '/workspaces/opentofu-lab-automation/tests/../pwsh/Modules/LabRunner/InvokeOpenTofuInstaller.ps1' is not recognized as a name of a cmdlet, function, script file, or executable program.
+Check the spelling of the name, or if a path was included, verify that the path is correct and try again." was thrown from /workspaces/opentofu-lab-automation/tests/InvokeOpenTofuInstaller.Tests.ps1:46 char:17
+    +             { &amp; $scriptPath -OpenTofuVersion 'TestValue' -WhatIf } |  …
+    +                 ~~~~~~~~~~~.</message>
+                      <stack-trace>at { &amp; $scriptPath -OpenTofuVersion 'TestValue' -WhatIf } | Should -Not -Throw, /workspaces/opentofu-lab-automation/tests/InvokeOpenTofuInstaller.Tests.ps1:46
+at &lt;ScriptBlock&gt;, /workspaces/opentofu-lab-automation/tests/InvokeOpenTofuInstaller.Tests.ps1:46</stack-trace>
+                    </failure>
+                  </test-case>
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="InvokeOpenTofuInstaller Tests.Invoke-OpenTofuInstaller Function Tests" executed="True" result="Failure" success="False" time="0.0499" asserts="0" description="InvokeOpenTofuInstaller Tests.Invoke-OpenTofuInstaller Function Tests">
+                <results>
+                  <test-case description="should be defined and accessible" name="InvokeOpenTofuInstaller Tests.Invoke-OpenTofuInstaller Function Tests.should be defined and accessible" time="0.0059" asserts="0" success="False" result="Failure" executed="True">
+                    <failure>
+                      <message>ParameterBindingValidationException: Cannot bind argument to parameter 'Path' because it is null.</message>
+                      <stack-trace>at &lt;ScriptBlock&gt;, /workspaces/opentofu-lab-automation/tests/InvokeOpenTofuInstaller.Tests.ps1:52</stack-trace>
+                    </failure>
+                  </test-case>
+                  <test-case description="should handle execution with valid parameters" name="InvokeOpenTofuInstaller Tests.Invoke-OpenTofuInstaller Function Tests.should handle execution with valid parameters" time="0.0028" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+      <test-suite type="TestFixture" name="/workspaces/opentofu-lab-automation/tests/Kickstart-Bootstrap.Tests.ps1" executed="True" result="Success" success="True" time="0.07" asserts="0" description="/workspaces/opentofu-lab-automation/tests/Kickstart-Bootstrap.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="kickstart-bootstrap script" executed="True" result="Success" success="True" time="0.0166" asserts="0" description="kickstart-bootstrap script">
+            <results>
+              <test-case description="exists under pwsh" name="kickstart-bootstrap script.exists under pwsh" time="0.0042" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="references kickstart.cfg" name="kickstart-bootstrap script.references kickstart.cfg" time="0.0081" asserts="0" success="True" result="Success" executed="True" />
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+      <test-suite type="TestFixture" name="/workspaces/opentofu-lab-automation/tests/Logger.Tests.ps1" executed="True" result="Success" success="True" time="0.1265" asserts="0" description="/workspaces/opentofu-lab-automation/tests/Logger.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="Write-CustomLog" executed="True" result="Success" success="True" time="0.0446" asserts="0" description="Write-CustomLog">
+            <results>
+              <test-case description="works when LogFilePath variable is not defined" name="Write-CustomLog.works when LogFilePath variable is not defined" time="0.0093" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="works under strict mode without global variable" name="Write-CustomLog.works under strict mode without global variable" time="0.0096" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="appends to log file when LogFilePath is set" name="Write-CustomLog.appends to log file when LogFilePath is set" time="0.0135" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="defaults to LogFilePath variable when not provided" name="Write-CustomLog.defaults to LogFilePath variable when not provided" time="0.0044" asserts="0" success="True" result="Success" executed="True" />
+            </results>
+          </test-suite>
+          <test-suite type="TestFixture" name="Read-LoggedInput" executed="True" result="Success" success="True" time="0.092" asserts="0" description="Read-LoggedInput">
+            <results>
+              <test-case description="logs prompt and input" name="Read-LoggedInput.logs prompt and input" time="0.0198" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="handles secure strings without logging value" name="Read-LoggedInput.handles secure strings without logging value" time="0.0245" asserts="0" success="True" result="Success" executed="True" />
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+      <test-suite type="TestFixture" name="/workspaces/opentofu-lab-automation/tests/Menu.Tests.ps1" executed="True" result="Success" success="True" time="0.1667" asserts="0" description="/workspaces/opentofu-lab-automation/tests/Menu.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="Get-MenuSelection" executed="True" result="Success" success="True" time="0.1325" asserts="0" description="Get-MenuSelection">
+            <results>
+              <test-suite type="TestFixture" name="Get-MenuSelection.returns all items when user types all" executed="True" result="Success" success="True" time="0.0577" asserts="0" description="Get-MenuSelection.returns all items when user types all">
+                <results>
+                  <test-case description="returns all items" name="Get-MenuSelection.returns all items when user types all.returns all items" time="0.0446" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Get-MenuSelection.returns item by prefix" executed="True" result="Success" success="True" time="0.0786" asserts="0" description="Get-MenuSelection.returns item by prefix">
+                <results>
+                  <test-case description="returns item by prefix" name="Get-MenuSelection.returns item by prefix.returns item by prefix" time="0.016" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Get-MenuSelection.returns empty array when user types exit" executed="True" result="Success" success="True" time="0.1026" asserts="0" description="Get-MenuSelection.returns empty array when user types exit">
+                <results>
+                  <test-case description="returns empty array" name="Get-MenuSelection.returns empty array when user types exit.returns empty array" time="0.0182" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Get-MenuSelection.handles invalid input gracefully" executed="True" result="Success" success="True" time="0.1227" asserts="0" description="Get-MenuSelection.handles invalid input gracefully">
+                <results>
+                  <test-case description="returns empty array after max retries" name="Get-MenuSelection.handles invalid input gracefully.returns empty array after max retries" time="0.017" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+      <test-suite type="TestFixture" name="/workspaces/opentofu-lab-automation/tests/Network.Tests.ps1" executed="True" result="Failure" success="False" time="0.1607" asserts="0" description="/workspaces/opentofu-lab-automation/tests/Network.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="Network Tests" executed="True" result="Failure" success="False" time="0.1216" asserts="0" description="Network Tests">
+            <results>
+              <test-suite type="TestFixture" name="Network Tests.Script Structure Validation" executed="True" result="Failure" success="False" time="0.0233" asserts="0" description="Network Tests.Script Structure Validation">
+                <results>
+                  <test-case description="should have valid PowerShell syntax" name="Network Tests.Script Structure Validation.should have valid PowerShell syntax" time="0.0099" asserts="0" success="False" result="Failure" executed="True">
+                    <failure>
+                      <message>Expected path '/workspaces/opentofu-lab-automation/tests/../pwsh/Modules/LabRunner/Network.ps1' to exist, but it did not exist.</message>
+                      <stack-trace>at $scriptPath | Should -Exist, /workspaces/opentofu-lab-automation/tests/Network.Tests.ps1:28
+at &lt;ScriptBlock&gt;, /workspaces/opentofu-lab-automation/tests/Network.Tests.ps1:28</stack-trace>
+                    </failure>
+                  </test-case>
+                  <test-case description="should follow naming conventions" name="Network Tests.Script Structure Validation.should follow naming conventions" time="0.0045" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="should define expected functions" name="Network Tests.Script Structure Validation.should define expected functions" time="0.006" asserts="0" success="False" result="Failure" executed="True">
+                    <failure>
+                      <message>ParameterBindingValidationException: Cannot bind argument to parameter 'Path' because it is null.</message>
+                      <stack-trace>at &lt;ScriptBlock&gt;, /workspaces/opentofu-lab-automation/tests/Network.Tests.ps1:36</stack-trace>
+                    </failure>
+                  </test-case>
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Network Tests.Parameter Validation" executed="True" result="Failure" success="False" time="0.0623" asserts="0" description="Network Tests.Parameter Validation">
+                <results>
+                  <test-case description="should accept Uri parameter" name="Network Tests.Parameter Validation.should accept Uri parameter" time="0.0171" asserts="0" success="False" result="Failure" executed="True">
+                    <failure>
+                      <message>Expected no exception to be thrown, but an exception "The term '/workspaces/opentofu-lab-automation/tests/../pwsh/Modules/LabRunner/Network.ps1' is not recognized as a name of a cmdlet, function, script file, or executable program.
+Check the spelling of the name, or if a path was included, verify that the path is correct and try again." was thrown from /workspaces/opentofu-lab-automation/tests/Network.Tests.ps1:47 char:17
+    +             { &amp; $scriptPath -Uri 'TestValue' -WhatIf } | Should -Not  …
+    +                 ~~~~~~~~~~~.</message>
+                      <stack-trace>at { &amp; $scriptPath -Uri 'TestValue' -WhatIf } | Should -Not -Throw, /workspaces/opentofu-lab-automation/tests/Network.Tests.ps1:47
+at &lt;ScriptBlock&gt;, /workspaces/opentofu-lab-automation/tests/Network.Tests.ps1:47</stack-trace>
+                    </failure>
+                  </test-case>
+                  <test-case description="should accept OutFile parameter" name="Network Tests.Parameter Validation.should accept OutFile parameter" time="0.0096" asserts="0" success="False" result="Failure" executed="True">
+                    <failure>
+                      <message>Expected no exception to be thrown, but an exception "The term '/workspaces/opentofu-lab-automation/tests/../pwsh/Modules/LabRunner/Network.ps1' is not recognized as a name of a cmdlet, function, script file, or executable program.
+Check the spelling of the name, or if a path was included, verify that the path is correct and try again." was thrown from /workspaces/opentofu-lab-automation/tests/Network.Tests.ps1:50 char:17
+    +             { &amp; $scriptPath -OutFile 'TestValue' -WhatIf } | Should - …
+    +                 ~~~~~~~~~~~.</message>
+                      <stack-trace>at { &amp; $scriptPath -OutFile 'TestValue' -WhatIf } | Should -Not -Throw, /workspaces/opentofu-lab-automation/tests/Network.Tests.ps1:50
+at &lt;ScriptBlock&gt;, /workspaces/opentofu-lab-automation/tests/Network.Tests.ps1:50</stack-trace>
+                    </failure>
+                  </test-case>
+                  <test-case description="should accept UseBasicParsing parameter" name="Network Tests.Parameter Validation.should accept UseBasicParsing parameter" time="0.0095" asserts="0" success="False" result="Failure" executed="True">
+                    <failure>
+                      <message>Expected no exception to be thrown, but an exception "The term '/workspaces/opentofu-lab-automation/tests/../pwsh/Modules/LabRunner/Network.ps1' is not recognized as a name of a cmdlet, function, script file, or executable program.
+Check the spelling of the name, or if a path was included, verify that the path is correct and try again." was thrown from /workspaces/opentofu-lab-automation/tests/Network.Tests.ps1:53 char:17
+    +             { &amp; $scriptPath -UseBasicParsing 'TestValue' -WhatIf } |  …
+    +                 ~~~~~~~~~~~.</message>
+                      <stack-trace>at { &amp; $scriptPath -UseBasicParsing 'TestValue' -WhatIf } | Should -Not -Throw, /workspaces/opentofu-lab-automation/tests/Network.Tests.ps1:53
+at &lt;ScriptBlock&gt;, /workspaces/opentofu-lab-automation/tests/Network.Tests.ps1:53</stack-trace>
+                    </failure>
+                  </test-case>
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Network Tests.Installation Tests" executed="True" result="Success" success="True" time="0.0731" asserts="0" description="Network Tests.Installation Tests">
+                <results>
+                  <test-case description="should validate prerequisites" name="Network Tests.Installation Tests.should validate prerequisites" time="0.0025" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="should handle download failures gracefully" name="Network Tests.Installation Tests.should handle download failures gracefully" time="0.003" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="should verify installation success" name="Network Tests.Installation Tests.should verify installation success" time="0.0027" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Network Tests.Invoke-LabWebRequest Function Tests" executed="True" result="Failure" success="False" time="0.0878" asserts="0" description="Network Tests.Invoke-LabWebRequest Function Tests">
+                <results>
+                  <test-case description="should be defined and accessible" name="Network Tests.Invoke-LabWebRequest Function Tests.should be defined and accessible" time="0.0045" asserts="0" success="False" result="Failure" executed="True">
+                    <failure>
+                      <message>ParameterBindingValidationException: Cannot bind argument to parameter 'Path' because it is null.</message>
+                      <stack-trace>at &lt;ScriptBlock&gt;, /workspaces/opentofu-lab-automation/tests/Network.Tests.ps1:77</stack-trace>
+                    </failure>
+                  </test-case>
+                  <test-case description="should support common parameters" name="Network Tests.Invoke-LabWebRequest Function Tests.should support common parameters" time="0.0045" asserts="0" success="False" result="Failure" executed="True">
+                    <failure>
+                      <message>ParameterBindingValidationException: Cannot bind argument to parameter 'Path' because it is null.</message>
+                      <stack-trace>at &lt;ScriptBlock&gt;, /workspaces/opentofu-lab-automation/tests/Network.Tests.ps1:81</stack-trace>
+                    </failure>
+                  </test-case>
+                  <test-case description="should handle execution with valid parameters" name="Network Tests.Invoke-LabWebRequest Function Tests.should handle execution with valid parameters" time="0.0028" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Network Tests.Invoke-WebRequest Function Tests" executed="True" result="Failure" success="False" time="0.1022" asserts="0" description="Network Tests.Invoke-WebRequest Function Tests">
+                <results>
+                  <test-case description="should be defined and accessible" name="Network Tests.Invoke-WebRequest Function Tests.should be defined and accessible" time="0.0047" asserts="0" success="False" result="Failure" executed="True">
+                    <failure>
+                      <message>ParameterBindingValidationException: Cannot bind argument to parameter 'Path' because it is null.</message>
+                      <stack-trace>at &lt;ScriptBlock&gt;, /workspaces/opentofu-lab-automation/tests/Network.Tests.ps1:94</stack-trace>
+                    </failure>
+                  </test-case>
+                  <test-case description="should support common parameters" name="Network Tests.Invoke-WebRequest Function Tests.should support common parameters" time="0.0043" asserts="0" success="False" result="Failure" executed="True">
+                    <failure>
+                      <message>ParameterBindingValidationException: Cannot bind argument to parameter 'Path' because it is null.</message>
+                      <stack-trace>at &lt;ScriptBlock&gt;, /workspaces/opentofu-lab-automation/tests/Network.Tests.ps1:98</stack-trace>
+                    </failure>
+                  </test-case>
+                  <test-case description="should handle execution with valid parameters" name="Network Tests.Invoke-WebRequest Function Tests.should handle execution with valid parameters" time="0.003" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Network Tests.Invoke-LabNpm Function Tests" executed="True" result="Failure" success="False" time="0.1191" asserts="0" description="Network Tests.Invoke-LabNpm Function Tests">
+                <results>
+                  <test-case description="should be defined and accessible" name="Network Tests.Invoke-LabNpm Function Tests.should be defined and accessible" time="0.0056" asserts="0" success="False" result="Failure" executed="True">
+                    <failure>
+                      <message>ParameterBindingValidationException: Cannot bind argument to parameter 'Path' because it is null.</message>
+                      <stack-trace>at &lt;ScriptBlock&gt;, /workspaces/opentofu-lab-automation/tests/Network.Tests.ps1:111</stack-trace>
+                    </failure>
+                  </test-case>
+                  <test-case description="should support common parameters" name="Network Tests.Invoke-LabNpm Function Tests.should support common parameters" time="0.0056" asserts="0" success="False" result="Failure" executed="True">
+                    <failure>
+                      <message>ParameterBindingValidationException: Cannot bind argument to parameter 'Path' because it is null.</message>
+                      <stack-trace>at &lt;ScriptBlock&gt;, /workspaces/opentofu-lab-automation/tests/Network.Tests.ps1:115</stack-trace>
+                    </failure>
+                  </test-case>
+                  <test-case description="should handle execution with valid parameters" name="Network Tests.Invoke-LabNpm Function Tests.should handle execution with valid parameters" time="0.003" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+      <test-suite type="TestFixture" name="/workspaces/opentofu-lab-automation/tests/NodeScripts.Tests.ps1" executed="True" result="Failure" success="False" time="2.2097" asserts="0" description="/workspaces/opentofu-lab-automation/tests/NodeScripts.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="Node installation scripts" executed="True" result="Failure" success="False" time="2.1793" asserts="0" description="Node installation scripts">
+            <results>
+              <test-case description="uses Node_Dependencies.Node.InstallerUrl when installing Node" name="Node installation scripts.uses Node_Dependencies.Node.InstallerUrl when installing Node" time="0.108" asserts="0" success="False" result="Failure" executed="True">
+                <failure>
+                  <message>RuntimeException: Should -Invoke: Could not find Mock for command Invoke-LabWebRequest in module LabRunner. Was the mock defined? Did you use the same -ModuleName as on the Mock? When using InModuleScope are InModuleScope, Mock and Should -Invoke using the same -ModuleName?</message>
+                  <stack-trace />
+                </failure>
+              </test-case>
+              <test-case description="does nothing when InstallNode is $false" name="Node installation scripts.does nothing when InstallNode is $false" time="0.0773" asserts="0" success="False" result="Failure" executed="True">
+                <failure>
+                  <message>RuntimeException: Should -Invoke: Could not find Mock for command Invoke-LabWebRequest in module LabRunner. Was the mock defined? Did you use the same -ModuleName as on the Mock? When using InModuleScope are InModuleScope, Mock and Should -Invoke using the same -ModuleName?</message>
+                  <stack-trace />
+                </failure>
+              </test-case>
+              <test-case description="installs packages listed under GlobalPackages" name="Node installation scripts.installs packages listed under GlobalPackages" time="0.1451" asserts="0" success="False" result="Failure" executed="True">
+                <failure>
+                  <message>Expected Invoke-LabNpm in module LabRunner to be called at least 1 times, but was called 0 times</message>
+                  <stack-trace>at Should -Invoke -CommandName Invoke-LabNpm -Times 1 -ParameterFilter { ($testArgs -join ' ') -eq 'install -g yarn' }, /workspaces/opentofu-lab-automation/tests/NodeScripts.Tests.ps1:85
+at &lt;ScriptBlock&gt;, /workspaces/opentofu-lab-automation/tests/NodeScripts.Tests.ps1:85</stack-trace>
+                </failure>
+              </test-case>
+              <test-case description="falls back to boolean flags when GlobalPackages is missing" name="Node installation scripts.falls back to boolean flags when GlobalPackages is missing" time="0.1189" asserts="0" success="False" result="Failure" executed="True">
+                <failure>
+                  <message>Expected Invoke-LabNpm in module LabRunner to be called at least 1 times, but was called 0 times</message>
+                  <stack-trace>at Should -Invoke -CommandName Invoke-LabNpm -Times 1 -ParameterFilter { ($testArgs -join ' ') -eq 'install -g yarn' }, /workspaces/opentofu-lab-automation/tests/NodeScripts.Tests.ps1:105
+at &lt;ScriptBlock&gt;, /workspaces/opentofu-lab-automation/tests/NodeScripts.Tests.ps1:105</stack-trace>
+                </failure>
+              </test-case>
+              <test-case description="honours -WhatIf for Install-GlobalPackage" name="Node installation scripts.honours -WhatIf for Install-GlobalPackage" time="0.0766" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="uses NpmPath from Node_Dependencies when installing project deps" name="Node installation scripts.uses NpmPath from Node_Dependencies when installing project deps" time="1.2745" asserts="0" success="False" result="Failure" executed="True">
+                <failure>
+                  <message>RuntimeException: Should -Invoke: Could not find Mock for command Invoke-LabNpm in module LabRunner. Was the mock defined? Did you use the same -ModuleName as on the Mock? When using InModuleScope are InModuleScope, Mock and Should -Invoke using the same -ModuleName?</message>
+                  <stack-trace />
+                </failure>
+              </test-case>
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+      <test-suite type="TestFixture" name="/workspaces/opentofu-lab-automation/tests/PathUtils.Tests.ps1" executed="True" result="Failure" success="False" time="0.0414" asserts="0" description="/workspaces/opentofu-lab-automation/tests/PathUtils.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="Normalize-RelativePath" executed="True" result="Failure" success="False" time="0.0317" asserts="0" description="Normalize-RelativePath">
+            <results>
+              <test-case description="joins mixed separators into platform path" name="Normalize-RelativePath.joins mixed separators into platform path" time="0.0033" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="handles trailing separators" name="Normalize-RelativePath.handles trailing separators" time="0.0248" asserts="0" success="False" result="Failure" executed="True">
+                <failure>
+                  <message>Expected strings to be the same, but they were different.
+Expected length: 5
+Actual length:   6
+Strings differ at index 5.
+Expected: 'a/b/c'
+But was:  'a/b/c/'
+           -----^</message>
+                  <stack-trace>at Normalize-RelativePath $input | Should -Be $expected, /workspaces/opentofu-lab-automation/tests/PathUtils.Tests.ps1:19
+at &lt;ScriptBlock&gt;, /workspaces/opentofu-lab-automation/tests/PathUtils.Tests.ps1:19</stack-trace>
+                </failure>
+              </test-case>
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+      <test-suite type="TestFixture" name="/workspaces/opentofu-lab-automation/tests/Reset-Machine.Tests.ps1" executed="True" result="Ignored" success="True" time="0.0262" asserts="0" description="/workspaces/opentofu-lab-automation/tests/Reset-Machine.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="Reset-Machine script" executed="True" result="Ignored" success="True" time="0.0075" asserts="0" description="Reset-Machine script">
+            <results>
+              <test-case description="invokes sysprep and configures Remote Desktop on Windows" name="Reset-Machine script.invokes sysprep and configures Remote Desktop on Windows" time="0.0016" asserts="0" success="False" result="Ignored" executed="False" />
+              <test-case description="calls Restart-Computer on Linux" name="Reset-Machine script.calls Restart-Computer on Linux" time="0.0017" asserts="0" success="False" result="Ignored" executed="False" />
+              <test-case description="returns exit code 1 for unknown platform" name="Reset-Machine script.returns exit code 1 for unknown platform" time="0.0016" asserts="0" success="False" result="Ignored" executed="False" />
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+      <test-suite type="TestFixture" name="/workspaces/opentofu-lab-automation/tests/Resolve-ProjectPath.Tests.ps1" executed="True" result="Success" success="True" time="0.0536" asserts="0" description="/workspaces/opentofu-lab-automation/tests/Resolve-ProjectPath.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="Resolve-ProjectPath" executed="True" result="Success" success="True" time="0.0419" asserts="0" description="Resolve-ProjectPath">
+            <results>
+              <test-case description="finds file recursively and after move" name="Resolve-ProjectPath.finds file recursively and after move" time="0.0135" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="resolves path from path-index.yaml" name="Resolve-ProjectPath.resolves path from path-index.yaml" time="0.0068" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="resolves direct index entry with normalized separators" name="Resolve-ProjectPath.resolves direct index entry with normalized separators" time="0.009" asserts="0" success="True" result="Success" executed="True" />
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+      <test-suite type="TestFixture" name="/workspaces/opentofu-lab-automation/tests/RunnerScripts.Tests.ps1" executed="True" result="Failure" success="False" time="4.4288" asserts="0" description="/workspaces/opentofu-lab-automation/tests/RunnerScripts.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="Runner scripts parameter and command checks" executed="True" result="Failure" success="False" time="3.4921" asserts="0" description="Runner scripts parameter and command checks">
+            <results>
+              <test-case description="resolves PSScriptRoot when run with pwsh -File" name="Runner scripts parameter and command checks.resolves PSScriptRoot when run with pwsh -File" time="0.5782" asserts="0" success="False" result="Failure" executed="True">
+                <failure>
+                  <message>Expected strings to be the same, but they were different.
+Expected length: 41
+Actual length:   1543
+Strings differ at index 0.
+Expected: '/tmp/70b08412-2e2e-4172-a1df-36a507612e04'
