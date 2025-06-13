@@ -14,12 +14,12 @@
 
 **🪟 Windows (PowerShell):**
 ```powershell
-# Download and run
-iwr -useb https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/HEAD/quick-start.py | iex
-
-# Alternative: Download first, then run
+# Download and run (recommended)
 Invoke-WebRequest -Uri "https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/HEAD/quick-start.py" -OutFile "quick-start.py"
 python quick-start.py
+
+# Alternative: One-line using curl if available
+curl -sSL -o quick-start.py https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/HEAD/quick-start.py && python quick-start.py
 ```
 
 **🐧 Linux/macOS:**

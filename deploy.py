@@ -165,7 +165,7 @@ def load_config(config_path: Optional[str] = None) -> Dict:
         return {}
     
     try:
-        with open(config_file, 'r') as f:
+        with open(config_file, 'r', encoding='utf-8') as f:
             config = json.load(f)
         print(f"{Colors.GREEN}OK: Loaded config: {config_file}{Colors.RESET}")
         return config
@@ -314,7 +314,7 @@ Examples:
         if setup_config:
             # Save temporary config
             temp_config = PROJECT_ROOT / "temp-deploy-config.json"
-            with open(temp_config, 'w') as f:
+            with open(temp_config, 'w', encoding='utf-8') as f:
                 json.dump(setup_config, f, indent=2)
             config_path = str(temp_config)
             print(f"{Colors.GREEN}OK: Temporary config saved: {temp_config}{Colors.RESET}")

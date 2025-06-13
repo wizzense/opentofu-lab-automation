@@ -137,7 +137,7 @@ class ConfigBuilder:
         
         if file_path:
             try:
-                with open(file_path, 'r') as f:
+                with open(file_path, 'r', encoding='utf-8') as f:
                     config = json.load(f)
                 
                 # Clear and populate fields
@@ -170,7 +170,7 @@ class ConfigBuilder:
         
         if file_path:
             try:
-                with open(file_path, 'w') as f:
+                with open(file_path, 'w', encoding='utf-8') as f:
                     json.dump(config, f, indent=2)
                 
                 self.config_file = file_path
@@ -388,7 +388,7 @@ class DeploymentManager:
         # Save temporary config
         temp_config = PROJECT_ROOT / "temp-gui-config.json"
         try:
-            with open(temp_config, 'w') as f:
+            with open(temp_config, 'w', encoding='utf-8') as f:
                 json.dump(config, f, indent=2)
         except Exception as e:
             messagebox.showerror("Error", f"Failed to save configuration:\n{str(e)}")
@@ -399,7 +399,7 @@ class DeploymentManager:
         self.output_text.delete(1.0, tk.END)
         
         # Start deployment in background
-        args = ['--config', str(temp_config)]
+        args = ['--config', str(temp_config), '--non-interactive']
         threading.Thread(target=self.run_deployment_command, args=[args], daemon=True).start()
         
         # Start output monitoring
@@ -412,7 +412,7 @@ class DeploymentManager:
         self.output_text.delete(1.0, tk.END)
         
         # Start quick deployment
-        args = ['--quick']
+        args = ['--quick', '--non-interactive']
         threading.Thread(target=self.run_deployment_command, args=[args], daemon=True).start()
         
         # Start output monitoring
@@ -425,7 +425,7 @@ class DeploymentManager:
         self.output_text.delete(1.0, tk.END)
         
         # Start prerequisites check
-        args = ['--check']
+        args = ['--check', '--non-interactive']
         threading.Thread(target=self.run_deployment_command, args=[args], daemon=True).start()
         
         # Start output monitoring
@@ -568,7 +568,7 @@ class LabAutomationGUI:
         """Load default configuration if available"""
         if DEFAULT_CONFIG.exists():
             try:
-                with open(DEFAULT_CONFIG, 'r') as f:
+                with open(DEFAULT_CONFIG, 'r', encoding='utf-8') as f:
                     config = json.load(f)
                 
                 # Populate fields

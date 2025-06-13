@@ -56,20 +56,34 @@ def run_command(cmd, shell=True, check=True):
         return None
 
 def check_dependencies():
-    """Check if required tools are available"""
+    """Check if required tools are available and offer to install missing ones"""
     print_status("Checking dependencies...")
     
     # Check Python
     python_version = sys.version_info
     if python_version < (3, 7):
         print_status(f"Python 3.7+ required, found {python_version.major}.{python_version.minor}", "ERROR")
+        print_status("Please install Python 3.7+ from https://python.org", "ERROR")
         return False
     print_status(f"✓ Python {python_version.major}.{python_version.minor}.{python_version.micro}", "SUCCESS")
     
     # Check git
     git_result = run_command("git --version", check=False)
     if not git_result or git_result.returncode != 0:
-        print_status("Git not found. Installing git is recommended but not required.", "WARNING")
+        print_status("Git not found. Git is recommended for the best experience.", "WARNING")
+        
+        # Offer to install git on Windows
+        if platform.system() == "Windows":
+            try:
+                response = input("Would you like to install Git for Windows? (y/N): ").strip().lower()
+                if response == 'y':
+                    print_status("Please download Git from https://git-scm.com/download/windows", "INFO")
+                    print_status("After installing Git, restart this script.", "INFO")
+                    return False
+            except (EOFError, KeyboardInterrupt):
+                # Handle GUI/non-interactive mode
+                print_status("Running in non-interactive mode, continuing without Git", "WARNING")
+        
         return "no-git"
     print_status("✓ Git available", "SUCCESS")
     
@@ -81,10 +95,14 @@ def download_project():
     
     if project_dir.exists():
         print_status(f"Project directory already exists at {project_dir}", "WARNING")
-        response = input("Continue with existing directory? (y/N): ").strip().lower()
-        if response != 'y':
-            print_status("Aborted by user", "INFO")
-            return None
+        try:
+            response = input("Continue with existing directory? (y/N): ").strip().lower()
+            if response != 'y':
+                print_status("Aborted by user", "INFO")
+                return None
+        except (EOFError, KeyboardInterrupt):
+            # Handle GUI/non-interactive mode - default to continue
+            print_status("Running in non-interactive mode, using existing directory", "INFO")
         return project_dir
     
     print_status("Downloading OpenTofu Lab Automation...")
