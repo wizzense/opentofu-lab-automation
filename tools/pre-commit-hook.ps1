@@ -55,10 +55,24 @@ try {
     
     Write-Host "🚀 Using batch processing for $($fileObjects.Count) files..." -ForegroundColor Cyan
     
-    # Run the new batch linting with parallel processing and optimal batch size
-    # For pre-commit hooks, use smaller batches for faster feedback
-    $batchSize = 3  # Smaller batches for faster parallel processing
-    $maxJobs = [Math]::Min(4, [Environment]::ProcessorCount)  # Limit concurrent jobs for pre-commit
+    # Run the new batch linting with optimal batch processing parameters
+    # Dynamically adjust based on file count and available CPU cores
+    $processorCount = [Environment]::ProcessorCount
+    
+    if ($fileObjects.Count -lt 20) {
+        # Small file count: fewer, larger batches
+        $batchSize = [Math]::Max(3, [Math]::Ceiling($fileObjects.Count / 4))
+        $maxJobs = [Math]::Min(4, $processorCount)
+    } elseif ($fileObjects.Count -lt 100) {
+        # Medium file count: balanced approach
+        $batchSize = 5
+        $maxJobs = [Math]::Min(6, $processorCount)
+    } else {
+        # Large file count: optimize for maximum throughput
+        $batchSize = 4
+        # Scale jobs based on CPU cores, but cap for system stability
+        $maxJobs = [Math]::Min([Math]::Max(4, $processorCount), 12)
+    }
     
     Write-Host "⚙️ Using $maxJobs concurrent jobs with batch size of $batchSize files" -ForegroundColor Gray
     $lintResults = Invoke-PowerShellLint -Files $fileObjects -Parallel -OutputFormat 'CI' -PassThru -BatchSize $batchSize -MaxJobs $maxJobs
