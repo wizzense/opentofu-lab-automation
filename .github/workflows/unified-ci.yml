@@ -234,7 +234,7 @@ jobs:
         shell: pwsh
         run: |
           # Use the final validation script as the health check
-          ./run-final-validation.ps1 -CI | ConvertTo-Json | Out-File health-report.json
+          ./scripts/validation/run-validation.ps1 -CI | ConvertTo-Json | Out-File health-report.json
 
       - name: Upload health report
         uses: actions/upload-artifact@v4
