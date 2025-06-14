@@ -187,7 +187,7 @@ jobs:
           # Run quick issue check and auto-fix before tests
           Write-Host "Running pre-test quick issue check..." -ForegroundColor Cyan
           try {
-            & "${{ github.workspace }}/scripts/maintenance/quick-issue-check.ps1" -Target "KnownIssues" -AutoFix
+            & "${{ github.workspace }}/scripts/maintenance/quick-issue-check.ps1" -Target "KnownIssues" -AutoFix -WorkspacePath "${{ github.workspace }}"
           } catch {
             Write-Warning "Pre-test quick issue check had issues: $_"
           }
