@@ -34,35 +34,47 @@ Write-Host "Mode: $Mode" -ForegroundColor Yellow
 Write-Host "Path: $Path" -ForegroundColor Yellow
 Write-Host ""
 
-# Configuration for YAML linting
-$yamlLintConfig = @"
-extends: default
-rules:
-  line-length:
-    max: 120
-  indentation:
-    spaces: 2
-  trailing-spaces: enable
-  empty-lines:
-    max: 2
-  truthy:
-    allowed-values: [true, false]
-    check-keys: true
-  comments:
-    min-spaces-from-content: 1
-  brackets:
-    min-spaces-inside: 0
-    max-spaces-inside: 1
-  braces:
-    min-spaces-inside: 0
-    max-spaces-inside: 1
-  colons:
-    max-spaces-before: 0
-    max-spaces-after: 1
-  commas:
-    max-spaces-before: 0
-    max-spaces-after: 1
-"@
+# Load configuration from external file
+$scriptPath = $PSScriptRoot
+$configPath = Join-Path (Split-Path (Split-Path $scriptPath -Parent) -Parent) "configs\yamllint.yaml"
+
+function Get-PythonCommand {
+    $pythonCommands = @(
+        'python3',
+        'python',
+        'py -3'
+    )
+    
+    # Add potential Windows Python paths
+    if ($IsWindows) {
+        $programFiles = @($env:ProgramFiles, ${env:ProgramFiles(x86)}, $env:LocalAppData)
+        foreach ($pf in $programFiles) {
+            if ($pf) {
+                Get-ChildItem -Path $pf -Filter "Python*" -Directory -ErrorAction SilentlyContinue | 
+                ForEach-Object {
+                    $pythonExe = Join-Path $_.FullName "python.exe"
+                    if (Test-Path $pythonExe) {
+                        $pythonCommands += $pythonExe
+                    }
+                }
+            }
+        }
+    }
+    
+    foreach ($cmd in $pythonCommands) {
+        try {
+            $version = & $cmd --version 2>&1
+            if ($version -match "Python 3") {
+                return $cmd
+            }
+        }
+        catch {
+            continue
+        }
+    }
+    
+    throw "No Python 3 installation found"
+}
 
 function Test-YamlLintAvailable {
     try {
@@ -72,12 +84,23 @@ function Test-YamlLintAvailable {
     catch {
         Write-Host "⚠️ yamllint not available, installing..." -ForegroundColor Yellow
         try {
-            $pythonCmd = if ($IsWindows) { "C:\Users\alexa\AppData\Local\Programs\Python\Python313\python.exe" } else { "python3" }
-            & $pythonCmd -m pip install yamllint
+            $pythonCmd = Get-PythonCommand
+            Write-Host "Using Python: $pythonCmd" -ForegroundColor Cyan
+            & $pythonCmd -m pip install --user yamllint
+            
+            # Add pip user directory to PATH if on Windows
+            if ($IsWindows) {
+                $pipUserPath = & $pythonCmd -m site --user-site
+                $binPath = Join-Path (Split-Path $pipUserPath) "Scripts"
+                if (Test-Path $binPath) {
+                    $env:PATH = "$binPath;$env:PATH"
+                }
+            }
+            
             return $true
         }
         catch {
-            Write-Host "❌ Failed to install yamllint" -ForegroundColor Red
+            Write-Host "❌ Failed to install yamllint: $_" -ForegroundColor Red
             return $false
         }
     }
@@ -95,62 +118,131 @@ function Get-YamlFiles {
 }
 
 function Test-YamlSyntax {
-    param([string]$FilePath)
+    param(
+        [Parameter(Mandatory=$true)]
+        [string]$FilePath,
+        [int]$MaxRetries = 3
+    )
     
-    try {
-        # Test with Python YAML parser for syntax - handle encoding properly
-        $pythonCmd = if ($IsWindows) { "C:\Users\alexa\AppData\Local\Programs\Python\Python313\python.exe" } else { "python3" }
-        $pythonCode = "import yaml; yaml.safe_load(open(r'$FilePath', encoding='utf-8')); print('OK')"
-        $pythonTest = & $pythonCmd -c $pythonCode 2>&1
-        if ($pythonTest -notcontains "OK") {
-            return @{
-                Valid = $false
-                Errors = @($pythonTest)
+    $retryCount = 0
+    $success = $false
+    $lastError = $null
+    
+    do {
+        try {
+            # Get Python command dynamically
+            $pythonCmd = Get-PythonCommand
+            
+            # More comprehensive YAML validation script
+            $pythonCode = @'
+import sys
+import yaml
+try:
+    with open(r'{0}', 'r', encoding='utf-8') as f:
+        content = f.read()
+    yaml.safe_load(content)
+    print('OK')
+except Exception as e:
+    print(f'Error: {str(e)}', file=sys.stderr)
+    sys.exit(1)
+'@ -f $FilePath
+            
+            # Save the validation script to a temporary file
+            $tempScript = [System.IO.Path]::GetTempFileName() + ".py"
+            $pythonCode | Out-File -FilePath $tempScript -Encoding UTF8
+            
+            try {
+                $pythonTest = & $pythonCmd $tempScript 2>&1
+                if ($pythonTest -contains "OK") {
+                    return @{
+                        Valid = $true
+                        Errors = @()
+                    }
+                }
+                else {
+                    return @{
+                        Valid = $false
+                        Errors = @($pythonTest)
+                    }
+                }
+            }
+            finally {
+                Remove-Item $tempScript -ErrorAction SilentlyContinue
+            }
+            
+            $success = $true
+        }
+        catch {
+            $lastError = $_
+            $retryCount++
+            
+            if ($retryCount -lt $MaxRetries) {
+                Write-Host "⚠️ YAML syntax check attempt $retryCount failed, retrying..." -ForegroundColor Yellow
+                Start-Sleep -Seconds 1
             }
         }
-        
-        return @{
-            Valid = $true
-            Errors = @()
-        }
-    }
-    catch {
-        return @{
-            Valid = $false
-            Errors = @("Python YAML test failed: $_")
-        }
+    } while (-not $success -and $retryCount -lt $MaxRetries)
+    
+    return @{
+        Valid = $false
+        Errors = @("YAML syntax check failed after $MaxRetries attempts: $lastError")
     }
 }
 
 function Invoke-YamlLint {
-    param([string]$FilePath, [string]$ConfigData)
-    
-    # Create temporary config file
-    $tempConfig = [System.IO.Path]::GetTempFileName()
-    $yamlLintConfig | Out-File -FilePath $tempConfig -Encoding UTF8
-    
-    try {
-        $lintResult = yamllint -c $tempConfig -f parsable $FilePath 2>&1
-        $errors = @()
-        $warnings = @()
+    param(
+        [Parameter(Mandatory=$true)]
+        [string]$FilePath,
         
-        foreach ($line in $lintResult) {
-            if ($line -match "error") {
-                $errors += $line
-            }
-            elseif ($line -match "warning") {
-                $warnings += $line
-            }
-        }
-        
-        return @{
-            Errors = $errors
-            Warnings = $warnings
-            ExitCode = $LASTEXITCODE
-        }
+        [int]$MaxRetries = 3
+    )
+    
+    # Ensure the config file exists
+    if (-not (Test-Path $configPath)) {
+        throw "YAML lint config file not found at: $configPath"
     }
-    finally {
-        Remove-Item $tempConfig -ErrorAction SilentlyContinue
+    
+    $retryCount = 0
+    $success = $false
+    $lastError = $null
+    
+    do {
+        try {
+            $lintResult = yamllint -c $configPath -f parsable $FilePath 2>&1
+            $errors = @()
+            $warnings = @()
+            
+            foreach ($line in $lintResult) {
+                if ($line -match "error") {
+                    $errors += $line
+                }
+                elseif ($line -match "warning") {
+                    $warnings += $line
+                }
+            }
+            
+            $success = $true
+            
+            return @{
+                Errors = $errors
+                Warnings = $warnings
+                ExitCode = $LASTEXITCODE
+            }
+        }
+        catch {
+            $lastError = $_
+            $retryCount++
+            
+            if ($retryCount -lt $MaxRetries) {
+                Write-Host "⚠️ YAML lint attempt $retryCount failed, retrying..." -ForegroundColor Yellow
+                Start-Sleep -Seconds 1
+            }
+        }
+    } while (-not $success -and $retryCount -lt $MaxRetries)
+    
+    if (-not $success) {
+        Write-Host "❌ YAML lint failed after $MaxRetries attempts: $lastError" -ForegroundColor Red
+        throw $lastError
     }
 }
 
