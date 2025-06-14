@@ -1,7 +1,7 @@
 ---
 name: "📝 Update Changelog"
 
-true:
+on:
   push:
     branches: [main]
     paths:
@@ -13,13 +13,13 @@ true:
 jobs:
   update:
     name: "📝 Generate Changelog"
-    runs-true: ubuntu-latest
+    runs-on: ubuntu-latest
     steps:
       - name: "📥 Checkout Repository"
         uses: actions/checkout@v4
       - uses: actions/setup-python@v4
         with:
-          python-versitrue: '3.x'
+          python-version: '3.x'
       - name: Cache pip dependencies
         uses: actions/cache@v4
         with:

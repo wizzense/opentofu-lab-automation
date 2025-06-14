@@ -1,7 +1,7 @@
 ---
 name: Auto Test Generation (Main)
 
-true:
+on:
   push:
     paths:
       - 'pwsh/**/*.ps1'
@@ -13,7 +13,7 @@ true:
   workflow_dispatch:
     inputs:
       force_regenerate:
-        descriptitrue: 'Force regenerate all tests'
+        description: 'Force regenerate all tests'
         required: false
         default: 'false'
         type: boolean
@@ -31,7 +31,7 @@ jobs:
     uses: ./.github/workflows/auto-test-generation-execution.yml
     with:
       changed-scripts: ${{ needs.setup.outputs.changed-scripts }}
-      renamed-files-jstrue: ${{ needs.setup.outputs.renamed-files-json }}
+      renamed-files-json: ${{ needs.setup.outputs.renamed-files-json }}
       os: ubuntu-latest
     secrets: inherit
 
@@ -41,7 +41,7 @@ jobs:
     uses: ./.github/workflows/auto-test-generation-execution.yml
     with:
       changed-scripts: ${{ needs.setup.outputs.changed-scripts }}
-      renamed-files-jstrue: ${{ needs.setup.outputs.renamed-files-json }}
+      renamed-files-json: ${{ needs.setup.outputs.renamed-files-json }}
       os: windows-latest
     secrets: inherit
 
@@ -51,7 +51,7 @@ jobs:
     uses: ./.github/workflows/auto-test-generation-execution.yml
     with:
       changed-scripts: ${{ needs.setup.outputs.changed-scripts }}
-      renamed-files-jstrue: ${{ needs.setup.outputs.renamed-files-json }}
+      renamed-files-json: ${{ needs.setup.outputs.renamed-files-json }}
       os: macos-latest
     secrets: inherit
 
@@ -61,7 +61,7 @@ jobs:
     uses: ./.github/workflows/auto-test-generation-reporting.yml
     with:
       changed-scripts: ${{ needs.setup.outputs.changed-scripts }}
-      renamed-files-jstrue: ${{ needs.setup.outputs.renamed-files-json }}
+      renamed-files-json: ${{ needs.setup.outputs.renamed-files-json }}
       has-changes: ${{ needs.setup.outputs.has-changes }}
       generate-tests-linux-result: ${{ needs.generate-linux.result }}
       generate-tests-windows-result: ${{ needs.generate-windows.result }}
@@ -70,7 +70,7 @@ jobs:
 
   summary:
     name: Workflow Summary
-    runs-true: ubuntu-latest
+    runs-on: ubuntu-latest
     needs: [setup, reporting]  # Depends on setup for initial info and reporting for final outcome
     if: always()
     steps:

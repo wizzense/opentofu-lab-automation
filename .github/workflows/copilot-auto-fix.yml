@@ -1,11 +1,11 @@
 ---
 name: "🤖 Copilot Auto-Fix"
 
-true:
+on:
   workflow_dispatch:
   schedule:
     # Run weekly on Sunday at 1 AM UTC
-    - crtrue: '0 1 * * 0'
+    - cron: '0 1 * * 0'
 
 permissions:
   contents: write
@@ -15,7 +15,7 @@ permissions:
 jobs:
   copilot-suggest:
     name: "🤖 Generate AI-powered Fix Suggestions"
-    runs-true: ubuntu-latest
+    runs-on: ubuntu-latest
     env:
       GH_TOKEN: ${{ secrets.COPILOT_OAUTH_TOKEN }}
 

@@ -1,12 +1,14 @@
 ---
 name: "📦 Package LabCTL Tool"
 
-true:
+on:
   workflow_dispatch:
   push:
     branches: [main]
     paths:
       - 'py/**'
+      - 'gui_enhanced.py'
+      - 'gui.py'
   pull_request:
     paths:
       - 'py/**'
@@ -14,7 +16,7 @@ true:
 jobs:
   package-win:
     name: "📦 Build Windows Package"
-    runs-true: windows-latest
+    runs-on: windows-latest
     defaults:
       run:
         shell: pwsh
@@ -23,7 +25,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
-          python-versitrue: '3.x'
+          python-version: '3.x'
       - name: Install Poetry
         run: |
           python -m pip install --upgrade pip
@@ -66,3 +68,45 @@ jobs:
         with:
           name: labctl-installer
           path: dist/labctl-installer.exe
+
+  package-gui:
+    name: "🖥️ Build GUI Package"
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: pwsh
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install PyQt5 pyinstaller
+      - name: Build GUI executable
+        run: |
+          pyinstaller --name OpenTofuLabGUI --onefile --windowed gui_enhanced.py
+      - name: Create GUI installer
+        run: |
+          $iss = @"
+            [Setup]
+            AppName=OpenTofu Lab GUI
+            AppVersion=0.1.0
+            DefaultDirName={pf}\OpenTofuLab
+            OutputDir=dist
+            OutputBaseFilename=opentofu-lab-gui-installer
+            DisableProgramGroupPage=yes
+            [Files]
+            Source: "dist\OpenTofuLabGUI.exe"; DestDir: "{app}"; Flags: ignoreversion
+            [Icons]
+            Name: "{commondesktop}\OpenTofu Lab"; Filename: "{app}\OpenTofuLabGUI.exe"
+          "@
+          $iss | Out-File gui-installer.iss -Encoding ASCII
+          & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" gui-installer.iss
+      - name: Upload GUI installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: opentofu-lab-gui-installer
+          path: dist/opentofu-lab-gui-installer.exe

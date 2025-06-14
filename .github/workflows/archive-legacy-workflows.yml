@@ -1,11 +1,11 @@
 ---
 name: "🗄️ Archive Legacy Workflows"
 
-true:
+on:
   workflow_dispatch:
     inputs:
       confirm:
-        descriptitrue: "Type 'yes' to confirm archiving legacy workflows"
+        description: "Type 'yes' to confirm archiving legacy workflows"
         required: true
         default: 'no'
 
@@ -15,7 +15,7 @@ permissions:
 jobs:
   archive-workflows:
     name: "🗄️ Archive Legacy Workflows"
-    runs-true: ubuntu-latest
+    runs-on: ubuntu-latest
     if: ${{ github.event.inputs.confirm == 'yes' }}
     steps:
       - name: "📥 Checkout Repository"

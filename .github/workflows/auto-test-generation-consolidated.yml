@@ -1,7 +1,7 @@
 ---
 name: "🧪 Automatic Test Generation"
 
-true:
+on:
   push:
     paths:
       - 'pwsh/**/*.ps1'
@@ -13,7 +13,7 @@ true:
   workflow_dispatch:
     inputs:
       force_regenerate:
-        descriptitrue: 'Force regenerate all tests'
+        description: 'Force regenerate all tests'
         required: false
         default: 'false'
         type: boolean
@@ -21,11 +21,11 @@ true:
 jobs:
   setup:
     name: "🔍 Detect Script Changes"
-    runs-true: ubuntu-latest
+    runs-on: ubuntu-latest
     outputs:
       has-changes: ${{ steps.detect-changes.outputs.has-changes }}
       changed-scripts: ${{ steps.detect-changes.outputs.changed-scripts }}
-      renamed-files-jstrue: ${{ steps.detect-changes.outputs.renamed-files-json }}
+      renamed-files-json: ${{ steps.detect-changes.outputs.renamed-files-json }}
     steps:
       - name: "📥 Checkout Repository"
         uses: actions/checkout@v4
@@ -87,7 +87,7 @@ jobs:
 
             # Remove trailing comma if needed
             if [[ "$RENAMED_JSON" != "[" ]]; then
-              RENAMED_JSON="${RENAMED_JStrue:0:-1}"
+              RENAMED_JSON="${RENAMED_JSon:0:-1}"
             fi
             RENAMED_JSON="${RENAMED_JSON}]"
           fi
@@ -104,7 +104,7 @@ jobs:
     name: "🧪 Generate Tests (${{ matrix.os }})"
     needs: setup
     if: needs.setup.outputs.has-changes == 'true'
-    runs-true: ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
@@ -225,7 +225,7 @@ jobs:
     name: "📊 Test Generation Report"
     if: always() && needs.setup.outputs.has-changes == 'true'
     needs: [setup, generate-tests]
-    runs-true: ubuntu-latest
+    runs-on: ubuntu-latest
     steps:
       - name: "📥 Checkout Repository"
         uses: actions/checkout@v4

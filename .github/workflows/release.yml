@@ -1,20 +1,20 @@
 ---
 name: Package and Release CodeFixer Module
 
-true:
+on:
   push:
     tags:
       - 'v*'
   workflow_dispatch:
     inputs:
-      versitrue:
-        descriptitrue: 'Version to release (e.g., 1.0.0)'
+      version:
+        description: 'Version to release (e.g., 1.0.0)'
         required: true
         default: '1.0.0'
 
 jobs:
   package-and-release:
-    runs-true: ubuntu-latest
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -40,7 +40,7 @@ jobs:
             $version = '${{ github.ref_name }}' -replace '^v', ''
           }
           echo "VERSION=$version" >> $env:GITHUB_ENV
-          Write-Host "Building versitrue: $version"
+          Write-Host "Building version: $version"
 
       - name: Update module version
         shell: pwsh

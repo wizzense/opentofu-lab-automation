@@ -1,25 +1,25 @@
 ---
 name: "🔧 Unified Utilities"
 
-true:
+on:
   schedule:
     # Run every 6 hours
-    - crtrue: '0 */6 * * *'
+    - cron: '0 */6 * * *'
   workflow_run:
     workflows: ["🚀 CI/CD Pipeline", "🧪 Cross-Platform Testing"]
     types: [completed]
   workflow_dispatch:
     inputs:
       update_dashboard:
-        descriptitrue: "Update project dashboard"
+        description: "Update project dashboard"
         type: boolean
         default: true
       update_path_index:
-        descriptitrue: "Update path index file"
+        description: "Update path index file"
         type: boolean
         default: true
       update_docs:
-        descriptitrue: "Update documentation"
+        description: "Update documentation"
         type: boolean
         default: true
 
@@ -30,7 +30,7 @@ permissions:
 jobs:
   update-dashboard:
     name: "📊 Update Project Dashboard"
-    runs-true: ubuntu-latest
+    runs-on: ubuntu-latest
     if: ${{ github.event_name != 'workflow_dispatch' || inputs.update_dashboard }}
     steps:
       - name: "📥 Checkout Repository"
@@ -180,7 +180,7 @@ jobs:
 
   update-path-index:
     name: "📑 Update Path Index"
-    runs-true: ubuntu-latest
+    runs-on: ubuntu-latest
     if: ${{ github.event_name != 'workflow_dispatch' || inputs.update_path_index }}
     steps:
       - name: "📥 Checkout Repository"
@@ -191,7 +191,7 @@ jobs:
       - name: "📦 Setup Python"
         uses: actions/setup-python@v4
         with:
-          python-versitrue: '3.10'
+          python-version: '3.10'
 
       - name: "📦 Install Dependencies"
         run: pip install pyyaml
@@ -240,7 +240,7 @@ jobs:
 
   update-docs:
     name: "📚 Update Documentation"
-    runs-true: ubuntu-latest
+    runs-on: ubuntu-latest
     if: ${{ github.event_name != 'workflow_dispatch' || inputs.update_docs }}
     steps:
       - name: "📥 Checkout Repository"
@@ -251,7 +251,7 @@ jobs:
       - name: "📦 Setup Python"
         uses: actions/setup-python@v4
         with:
-          python-versitrue: '3.10'
+          python-version: '3.10'
 
       - name: "📦 Install Dependencies"
         run: |

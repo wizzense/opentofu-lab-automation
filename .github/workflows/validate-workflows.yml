@@ -1,7 +1,7 @@
 ---
 name: "🔍 Workflow Validation"
 
-true:
+on:
   pull_request:
     paths:
       - '.github/workflows/**'
@@ -10,7 +10,7 @@ true:
 jobs:
   validate:
     name: "🔍 Validate Workflows"
-    runs-true: ubuntu-latest
+    runs-on: ubuntu-latest
     steps:
       - name: "📥 Checkout Repository"
         uses: actions/checkout@v4
