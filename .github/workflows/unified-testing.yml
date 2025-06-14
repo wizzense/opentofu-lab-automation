@@ -112,7 +112,7 @@ jobs:
           $config.TestResult.OutputPath = "TestResults-${{ matrix.os }}.xml"
           $config.Output.Verbosity = "Detailed"
           $config.Filter.ExcludeTag = "Integration"
-          
+
           Invoke-Pester -Configuration $config
 
       - name: "Upload Test Results"

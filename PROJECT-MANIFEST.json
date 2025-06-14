@@ -1,22 +1,20 @@
 {
   "project": {
-    "description": "Comprehensive automation framework for OpenTofu lab environments with unified maintenance and validation systems",
-    "lastUpdated": "2025-06-14 03:07:23",
+    "version": "1.0.0",
     "name": "OpenTofu Lab Automation",
-    "version": "1.0.0"
+    "description": "Comprehensive automation framework for OpenTofu lab environments with unified maintenance and validation systems",
+    "lastUpdated": "2025-06-14 04:00:31"
   },
   "core": {
     "modules": {
       "CodeFixer": {
+        "entryPoint": "CodeFixer.psd1",
         "type": "PowerShell Module",
+        "path": "/pwsh/modules/CodeFixer/",
         "dependencies": [
           "PSScriptAnalyzer"
         ],
-        "lastUpdated": "2025-06-14",
         "purpose": "Automated code analysis, fixing, and validation",
-        "path": "/pwsh/modules/CodeFixer/",
-        "version": "0.1.0",
-        "entryPoint": "CodeFixer.psd1",
         "keyFunctions": [
           "Invoke-AutoFix",
           "Invoke-AutoFixCapture",
@@ -37,21 +35,23 @@
           "Test-OpenTofuConfig",
           "Test-YamlConfig",
           "Watch-ScriptDirectory"
-        ]
+        ],
+        "lastUpdated": "2025-06-14",
+        "version": "0.1.0"
       },
       "LabRunner": {
-        "type": "PowerShell Module",
-        "dependencies": [],
-        "lastUpdated": "2025-06-14",
-        "purpose": "Lab environment automation and management",
-        "path": "/pwsh/modules/LabRunner/",
-        "version": "0.1.0",
         "entryPoint": "LabRunner.psd1",
+        "type": "PowerShell Module",
+        "path": "/pwsh/modules/LabRunner/",
+        "dependencies": [],
+        "purpose": "Lab environment automation and management",
         "keyFunctions": [
           "Invoke-ParallelLabRunner",
           "Test-RunnerScriptSafety-Fixed",
           "Test-RunnerScriptSafety"
-        ]
+        ],
+        "lastUpdated": "2025-06-14",
+        "version": "0.1.0"
       }
     },
     "maintenanceSystem": {
@@ -286,18 +286,18 @@
   },
   "metrics": {
     "codebase": {
-      "testFiles": 99,
       "validationScripts": 0,
       "activeModules": 2,
       "maintenanceScripts": 0,
-      "powerShellFiles": 291
+      "powerShellFiles": 291,
+      "testFiles": 99
     },
     "performance": {
+      "lastHealthCheck": "2025-06-14 04:00:27",
       "healthCheckTime": "< 1 minute",
       "batchProcessingOptimization": "Dynamic CPU scaling",
-      "lastHealthCheck": "2025-06-14 03:07:22",
       "fullMaintenanceTime": "2-5 minutes"
     },
-    "lastCalculated": "2025-06-14 03:07:23"
+    "lastCalculated": "2025-06-14 04:00:32"
   }
 }

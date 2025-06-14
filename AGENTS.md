@@ -2,7 +2,7 @@
 
 ## 🤖 Project State Overview
 
-**Last Updated**: 2025-06-14 03:07:21
+**Last Updated**: 2025-06-14 03:59:27
 **Project Health**: < 1 minute
 **Total Modules**: 1
 
@@ -30,6 +30,8 @@
 - Invoke-TestSyntaxFix
 - New-AutoTest
 - Test-JsonConfig
+- Test-OpenTofuConfig
+- Test-YamlConfig
 - Watch-ScriptDirectory
 
 #### LabRunner
@@ -117,4 +119,4 @@ pwsh/modules/
 
 ---
 *This file is automatically updated by the maintenance system*
-*Last auto-update: 2025-06-14 03:07:21*
+*Last auto-update: 2025-06-14 03:59:27*

@@ -34,6 +34,8 @@ Invoke-TernarySyntaxFix
 Invoke-TestSyntaxFix
 New-AutoTest
 Test-JsonConfig
+Test-OpenTofuConfig
+Test-YamlConfig
 Watch-ScriptDirectory
 ````n
 #### LabRunner
@@ -122,4 +124,4 @@ $manifest.core.modules  # View all modules
 ---
 *Auto-generated from PROJECT-MANIFEST.json*
 *Project health: < 1 minute*
-*Last update: 2025-06-14 03:07:21*
+*Last update: 2025-06-14 03:59:27*
