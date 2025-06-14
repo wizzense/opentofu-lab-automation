@@ -193,7 +193,7 @@ jobs:
           }
 
           # Run any necessary fixes before tests
-          Invoke-AutoFix -ApplyFixes -Quiet
+          Invoke-AutoFix -Quiet
 
           $config = New-PesterConfiguration
           $config.Run.Path = "tests"
