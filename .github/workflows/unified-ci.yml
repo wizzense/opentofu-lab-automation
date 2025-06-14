@@ -424,3 +424,36 @@ jobs:
           else
             echo "✅ All checks completed successfully" | tee -a $GITHUB_STEP_SUMMARY
           fi
+
+  # Install missing dependencies
+  install-dependencies:
+    name: "📦 Install Missing Dependencies"
+    runs-on: ubuntu-latest
+    steps:
+      - name: "📥 Checkout Repository"
+        uses: actions/checkout@v4
+
+      - name: "📦 Install Missing Dependencies"
+        shell: bash
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y curl unzip
+          # Install tofu
+          curl -Lo tofu.zip https://github.com/opentofu/opentofu/releases/latest/download/tofu_linux_amd64.zip
+          unzip tofu.zip
+          sudo mv tofu /usr/local/bin/
+          # Install poetry
+          curl -sSL https://install.python-poetry.org | python3 -
+          export PATH="$HOME/.local/bin:$PATH"
+          # Install GitHub CLI
+          curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
+          sudo chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg
+          echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
+          sudo apt-get update
+          sudo apt-get install -y gh
+
+      - name: "📦 Ensure Module Imports"
+        shell: pwsh
+        run: |
+          Import-Module "$env:GITHUB_WORKSPACE/pwsh/modules/CodeFixer/CodeFixer.psd1" -Force
+          Import-Module "$env:GITHUB_WORKSPACE/pwsh/modules/LabRunner/LabRunner.psd1" -Force
