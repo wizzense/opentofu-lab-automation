@@ -194,7 +194,7 @@ function Test-ModuleHealth {
     return $moduleCheck
 }
 
-# Enhanced batch processing logic for script syntax validation
+# Enhanced script syntax validation using unified parallel processing
 function Test-ScriptSyntax {
     Write-HealthLog "Checking script syntax using parallel processing..." "INFO"
 
@@ -219,87 +219,69 @@ function Test-ScriptSyntax {
 
     Write-HealthLog "Found $($scriptPaths.Count) PowerShell scripts to validate" "INFO"
 
-    # Refactored batch processing logic with progress tracking and result aggregation
-    # Adjust batch size calculation to ensure parallel execution
-    $batchSize = [Math]::Max(10, [Math]::Ceiling($scriptPaths.Count / [Environment]::ProcessorCount))
-
-    # Log adjusted batch size
-    Write-CustomLog "Adjusted batch size: $batchSize" "INFO"
-
-    # Create batches
-    $batches = @()
-    for ($i = 0; $i -lt $scriptPaths.Count; $i += $batchSize) {
-        $batch = $scriptPaths[$i..([Math]::Min($i + $batchSize - 1, $scriptPaths.Count - 1))]
-        $batches += ,@($batch)
+    if ($scriptPaths.Count -eq 0) {
+        Write-HealthLog "No PowerShell scripts found to validate" "WARN"
+        return $syntaxCheck
     }
 
-    Write-CustomLog "Created $($batches.Count) script batches for parallel processing" "INFO"
-
-    # Start parallel jobs
-    $jobs = @()
-    foreach ($batch in $batches) {
-        $batchId = $batches.IndexOf($batch) + 1
-        Write-CustomLog "Starting batch $batchId with $($batch.Count) scripts" "INFO"
-        $job = Start-Job -ScriptBlock {
-            param($Batch, $BatchId)
-            try {
-                Import-Module "$projectRoot/pwsh/modules/CodeFixer/" -Force -ErrorAction Stop
-            } catch {
-                Write-Host "Failed to import CodeFixer module in job context: $_" -ForegroundColor Red
-                throw
-            }
-            $results = Invoke-ParallelScriptAnalyzer -Files $Batch -MaxJobs [Environment]::ProcessorCount
-            return @{ BatchId = $BatchId; Results = $results }
-        } -ArgumentList $batch, $batchId
-        $jobs += $job
+    # Import CodeFixer module for parallel processing
+    try {
+        $codeFixerPath = Join-Path $projectRoot "pwsh/modules/CodeFixer/"
+        Import-Module $codeFixerPath -Force -ErrorAction Stop
+        Write-CustomLog "CodeFixer module imported successfully" "INFO"
+    } catch {
+        Write-CustomLog "Failed to import CodeFixer module: $_" "ERROR"
+        $syntaxCheck.Passed = $false
+        $syntaxCheck.Issues += "CodeFixer module import failed"
+        return $syntaxCheck
     }
 
-    # Wait for all jobs to complete with progress indication
-    $completed = 0
-    $results = @()
-    while ($completed -lt $jobs.Count) {
-        $finishedJobs = $jobs | Where-Object { $_.State -eq 'Completed' }
-        foreach ($job in $finishedJobs) {
-            if ($job.Id -notin ($results | ForEach-Object { $_.JobId })) {
-                try {
-                    $result = Receive-Job -Job $job -Wait
-                    $result.JobId = $job.Id
-                    $results += $result
-                    $completed++
-                    Write-CustomLog "Batch $($result.BatchId) completed" "INFO"
-                } catch {
-                    Write-CustomLog "Failed to receive job result: $($_.Exception.Message)" "ERROR"
-                    $completed++
-                }
-                Remove-Job -Job $job -Force
+    # Use unified parallel processing framework
+    Write-CustomLog "Using Invoke-ParallelScriptAnalyzer for $($scriptPaths.Count) files" "INFO"
+    
+    try {        # Calculate optimal batch size based on file count and CPU cores
+        $processorCount = [Environment]::ProcessorCount
+        $optimalBatchSize = [Math]::Max(5, [Math]::Min(20, [Math]::Ceiling($scriptPaths.Count / $processorCount)))
+        
+        Write-CustomLog "Running parallel analysis with batch size: $optimalBatchSize, MaxJobs: $processorCount" "INFO"
+        
+        $analysisResults = Invoke-ParallelScriptAnalyzer -Files $scriptPaths -MaxJobs $processorCount -BatchSize $optimalBatchSize
+        
+        Write-CustomLog "Parallel analysis completed, processing $($analysisResults.Count) results" "INFO"
+        
+        # Process results
+        $scriptsWithIssues = @{}
+        
+        foreach ($issue in $analysisResults) {
+            $scriptName = Split-Path $issue.ScriptName -Leaf
+            if (-not $scriptsWithIssues.ContainsKey($scriptName)) {
+                $scriptsWithIssues[$scriptName] = @()
             }
+            $scriptsWithIssues[$scriptName] += $issue
         }
-        $progress = [Math]::Round(($completed / $jobs.Count) * 100, 1)
-        Write-Progress -Activity "Validating Scripts" -Status "$completed/$($jobs.Count) batches completed" -PercentComplete $progress
-        Start-Sleep -Milliseconds 500
-    }
-
-    Write-Progress -Activity "Validating Scripts" -Completed
-
-    # Aggregate results
-    $totalScripts = ($results | Measure-Object -Property Results.Count -Sum).Sum
-    $totalErrors = ($results | ForEach-Object { $_.Results | Where-Object { $_.Errors.Count -gt 0 } }).Count
-    Write-CustomLog "Validation complete: $totalScripts scripts processed, $totalErrors errors found" "INFO"
-
-    # Update health results with detailed validation outcomes
-    foreach ($result in $results) {
-        if ($result.Errors.Count -eq 0) {
-            $syntaxCheck.Details.ValidScripts++
-            Write-CustomLog "✓ Script passed validation: $($result.FilePath)" "INFO"
-        } else {
-            $syntaxCheck.Details.ErrorScripts++
+        
+        # Update syntax check results
+        $syntaxCheck.Details.ErrorScripts = $scriptsWithIssues.Count
+        $syntaxCheck.Details.ValidScripts = $scriptPaths.Count - $scriptsWithIssues.Count
+        $syntaxCheck.Details.Errors = $analysisResults
+        
+        if ($scriptsWithIssues.Count -gt 0) {
             $syntaxCheck.Passed = $false
-            $syntaxCheck.Details.Errors += $result.Errors
-            Write-CustomLog "✗ Script failed validation: $($result.FilePath) - Errors: $($result.Errors)" "ERROR"
+            $syntaxCheck.Issues += "Found syntax issues in $($scriptsWithIssues.Count) scripts"
+            
+            foreach ($scriptName in $scriptsWithIssues.Keys) {
+                $issueCount = $scriptsWithIssues[$scriptName].Count
+                Write-CustomLog "✗ Script has issues: $scriptName ($issueCount issues)" "ERROR"
+            }
         }
+        
+        Write-CustomLog "Script syntax validation completed. Valid: $($syntaxCheck.Details.ValidScripts), Issues: $($syntaxCheck.Details.ErrorScripts)" "INFO"
+        
+    } catch {
+        Write-CustomLog "Parallel script analysis failed: $($_.Exception.Message)" "ERROR"
+        $syntaxCheck.Passed = $false
+        $syntaxCheck.Issues += "Parallel script analysis failed: $($_.Exception.Message)"
     }
-
-    Write-CustomLog "Script syntax validation completed. Valid: $($syntaxCheck.Details.ValidScripts), Errors: $($syntaxCheck.Details.ErrorScripts)" "INFO"
 
     return $syntaxCheck
 }
