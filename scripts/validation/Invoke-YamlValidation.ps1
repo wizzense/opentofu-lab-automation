@@ -132,20 +132,19 @@ function Test-YamlSyntax {
         try {
             # Get Python command dynamically
             $pythonCmd = Get-PythonCommand
-            
-            # More comprehensive YAML validation script
-            $pythonCode = @'
+              # More comprehensive YAML validation script
+            $pythonCode = @"
 import sys
 import yaml
 try:
-    with open(r'{0}', 'r', encoding='utf-8') as f:
+    with open(r'$($FilePath.Replace('\', '\\'))', 'r', encoding='utf-8') as f:
         content = f.read()
     yaml.safe_load(content)
     print('OK')
 except Exception as e:
-    print(f'Error: {str(e)}', file=sys.stderr)
+    print(f'Error: {{str(e)}}', file=sys.stderr)
     sys.exit(1)
-'@ -f $FilePath
+"@
             
             # Save the validation script to a temporary file
             $tempScript = [System.IO.Path]::GetTempFileName() + ".py"
@@ -259,8 +258,7 @@ function Repair-YamlFile {
     if ($content -match '\s+$') {
         $content = $content -replace '\s+$', ''
         $fixesApplied += "Removed trailing whitespace"
-    }
-      # Fix 2: Fix truthy values while preserving GitHub Actions keywords
+    }      # Fix 2: Fix truthy values while preserving GitHub Actions keywords
     # Skip this fix for GitHub workflow files
     $isWorkflow = $FilePath -match '\.github[/\\]workflows[/\\].*\.ya?ml$'
     
@@ -279,10 +277,11 @@ function Repair-YamlFile {
             # Removed 'on:' -> 'true:' conversion as it's a valid GitHub Actions keyword
         )
     
-    foreach ($replacement in $truthyReplacements) {
-        if ($content -match [regex]::Escape($replacement.Pattern)) {
-            $content = $content -replace [regex]::Escape($replacement.Pattern), $replacement.Replace
-            $fixesApplied += "Fixed truthy value: $($replacement.Pattern) -> $($replacement.Replace)"
+        foreach ($replacement in $truthyReplacements) {
+            if ($content -match [regex]::Escape($replacement.Pattern)) {
+                $content = $content -replace [regex]::Escape($replacement.Pattern), $replacement.Replace
+                $fixesApplied += "Fixed truthy value: $($replacement.Pattern) -> $($replacement.Replace)"
+            }
         }
     }
     
@@ -402,9 +401,8 @@ function Invoke-YamlValidation {
             }
             continue
         }
-        
-        # Run detailed linting
-        $lintResult = Invoke-YamlLint -FilePath $file.FullName -ConfigData $yamlLintConfig
+          # Run detailed linting
+        $lintResult = Invoke-YamlLint -FilePath $file.FullName
         
         if ($lintResult.Errors.Count -gt 0) {
             Write-Host "  ❌ Linting errors:" -ForegroundColor Red

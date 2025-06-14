@@ -4,9 +4,9 @@ rules:
     max: 120
   indentation:
     spaces: 2
-  trailing-spaces: enable
-  empty-lines:
-    max: 2  truthy:
+  trailing-spaces: enable  empty-lines:
+    max: 2
+  truthy:
     allowed-values: [true, false, 'on']  # Allow 'on' for GitHub Actions
     check-keys: false  # Don't check keys to allow GitHub Actions keywords
   comments:
