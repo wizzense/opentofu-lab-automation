@@ -260,23 +260,24 @@ function Repair-YamlFile {
         $content = $content -replace '\s+$', ''
         $fixesApplied += "Removed trailing whitespace"
     }
+      # Fix 2: Fix truthy values while preserving GitHub Actions keywords
+    # Skip this fix for GitHub workflow files
+    $isWorkflow = $FilePath -match '\.github[/\\]workflows[/\\].*\.ya?ml$'
     
-    # Fix 2: Fix truthy values (common GitHub Actions issue)
-    # Define truthy value replacements as an array of replacement pairs
-    $truthyReplacements = @(
-        @{ Pattern = 'on:'; Replace = 'true:' }
-        @{ Pattern = 'off:'; Replace = 'false:' }
-        @{ Pattern = 'yes:'; Replace = 'true:' }
-        @{ Pattern = 'no:'; Replace = 'false:' }
-        @{ Pattern = 'On:'; Replace = 'true:' }
-        @{ Pattern = 'Off:'; Replace = 'false:' }
-        @{ Pattern = 'Yes:'; Replace = 'true:' }
-        @{ Pattern = 'No:'; Replace = 'false:' }
-        @{ Pattern = 'ON:'; Replace = 'true:' }
-        @{ Pattern = 'OFF:'; Replace = 'false:' }
-        @{ Pattern = 'YES:'; Replace = 'true:' }
-        @{ Pattern = 'NO:'; Replace = 'false:' }
-    )
+    if (-not $isWorkflow) {
+        # Define truthy value replacements as an array of replacement pairs
+        $truthyReplacements = @(
+            @{ Pattern = 'off:'; Replace = 'false:' }
+            @{ Pattern = 'yes:'; Replace = 'true:' }
+            @{ Pattern = 'no:'; Replace = 'false:' }
+            @{ Pattern = 'Off:'; Replace = 'false:' }
+            @{ Pattern = 'Yes:'; Replace = 'true:' }
+            @{ Pattern = 'No:'; Replace = 'false:' }
+            @{ Pattern = 'OFF:'; Replace = 'false:' }
+            @{ Pattern = 'YES:'; Replace = 'true:' }
+            @{ Pattern = 'NO:'; Replace = 'false:' }
+            # Removed 'on:' -> 'true:' conversion as it's a valid GitHub Actions keyword
+        )
     
     foreach ($replacement in $truthyReplacements) {
         if ($content -match [regex]::Escape($replacement.Pattern)) {
