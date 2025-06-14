@@ -55,7 +55,8 @@ function Write-QuickLog {
 $KnownIssues = @{
     "MissingCommands" = @(
         "errors", "Format-Config", "Invoke-LabStep", "Write-Continue"
-    )    "SyntaxErrors" = @(
+    )
+    "SyntaxErrors" = @(
         "$ProjectRoot/pwsh/Download-Archive.ps1",
         "$ProjectRoot/pwsh/Logger.ps1"
     )
