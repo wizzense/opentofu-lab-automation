@@ -40,6 +40,7 @@ Watch-ScriptDirectory
 ``powershell
 Import-Module "/pwsh/modules/LabRunner/"
 Invoke-ParallelLabRunner
+Test-RunnerScriptSafety-Fixed
 Test-RunnerScriptSafety
 ````n
 
@@ -121,4 +122,4 @@ $manifest.core.modules  # View all modules
 ---
 *Auto-generated from PROJECT-MANIFEST.json*
 *Project health: < 1 minute*
-*Last update: 2025-06-13 22:15:19*
+*Last update: 2025-06-13 23:15:08*

@@ -1,7 +1,7 @@
 ---
 name: "📦 Package LabCTL Tool"
 
-on:
+true:
   workflow_dispatch:
   push:
     branches: [main]
@@ -14,7 +14,7 @@ on:
 jobs:
   package-win:
     name: "📦 Build Windows Package"
-    runs-on: windows-latest
+    runs-true: windows-latest
     defaults:
       run:
         shell: pwsh
@@ -23,7 +23,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.x'
+          python-versitrue: '3.x'
       - name: Install Poetry
         run: |
           python -m pip install --upgrade pip

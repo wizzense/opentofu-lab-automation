@@ -30,7 +30,12 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
-$ProjectRoot = "/workspaces/opentofu-lab-automation"
+# Detect the correct project root based on the current environment
+if ($IsWindows -or $env:OS -eq "Windows_NT") {
+    $ProjectRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
+} else {
+    $ProjectRoot = "/workspaces/opentofu-lab-automation"
+}
 
 function Write-QuickLog {
     param([string]$Message, [string]$Level = "INFO")
@@ -50,13 +55,12 @@ function Write-QuickLog {
 $KnownIssues = @{
     "MissingCommands" = @(
         "errors", "Format-Config", "Invoke-LabStep", "Write-Continue"
-    )
-    "SyntaxErrors" = @(
-        "/workspaces/opentofu-lab-automation/pwsh/Download-Archive.ps1",
-        "/workspaces/opentofu-lab-automation/pwsh/Logger.ps1"
+    )    "SyntaxErrors" = @(
+        "$ProjectRoot/pwsh/Download-Archive.ps1",
+        "$ProjectRoot/pwsh/Logger.ps1"
     )
     "ImportPathIssues" = @(
-        "/workspaces/opentofu-lab-automation/tests/*.ps1"
+        "$ProjectRoot/tests/*.ps1"
     )
     "TestContainerIssues" = @(
         "Nested containers in Pester tests",

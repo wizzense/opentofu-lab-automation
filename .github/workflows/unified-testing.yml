@@ -1,7 +1,7 @@
 ---
 name: "🧪 Cross-Platform Testing"
 
-on:
+true:
   workflow_dispatch:
   pull_request:
   push:
@@ -14,7 +14,7 @@ on:
 jobs:
   pester-tests:
     name: "🧪 Pester Tests (${{ matrix.os }})"
-    runs-on: ${{ matrix.os }}
+    runs-true: ${{ matrix.os }}
     timeout-minutes: 45
     strategy:
       fail-fast: false
@@ -211,7 +211,7 @@ jobs:
 
   pytest-tests:
     name: "🧪 PyTest"
-    runs-on: ubuntu-latest
+    runs-true: ubuntu-latest
     steps:
       - name: "📥 Checkout Repository"
         uses: actions/checkout@v4
@@ -219,7 +219,7 @@ jobs:
       - name: "🐍 Setup Python"
         uses: actions/setup-python@v5
         with:
-          python-version: '3.10'
+          python-versitrue: '3.10'
 
       - name: "📦 Install Dependencies"
         run: |
@@ -241,7 +241,7 @@ jobs:
 
   test-summary:
     name: "📊 Test Summary"
-    runs-on: ubuntu-latest
+    runs-true: ubuntu-latest
     if: always()
     needs: [pester-tests, pytest-tests]
     steps:

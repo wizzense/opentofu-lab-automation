@@ -1,16 +1,20 @@
 {
   "project": {
-    "name": "OpenTofu Lab Automation",
+    "lastUpdated": "2025-06-13 23:16:46",
+    "version": "1.0.0",
     "description": "Comprehensive automation framework for OpenTofu lab environments with unified maintenance and validation systems",
-    "lastUpdated": "2025-06-13 23:21:44",
-    "version": "1.0.0"
+    "name": "OpenTofu Lab Automation"
   },
   "core": {
     "modules": {
       "CodeFixer": {
-        "lastUpdated": "2025-06-13",
-        "type": "PowerShell Module",
         "entryPoint": "CodeFixer.psd1",
+        "dependencies": [
+          "PSScriptAnalyzer"
+        ],
+        "path": "/pwsh/modules/CodeFixer/",
+        "type": "PowerShell Module",
+        "lastUpdated": "2025-06-13",
         "version": "0.1.0",
         "keyFunctions": [
           "Invoke-AutoFix",
@@ -31,23 +35,20 @@
           "Test-JsonConfig",
           "Watch-ScriptDirectory"
         ],
-        "path": "/pwsh/modules/CodeFixer/",
-        "dependencies": [
-          "PSScriptAnalyzer"
-        ],
         "purpose": "Automated code analysis, fixing, and validation"
       },
       "LabRunner": {
-        "lastUpdated": "2025-06-13",
-        "type": "PowerShell Module",
         "entryPoint": "LabRunner.psd1",
+        "dependencies": [],
+        "path": "/pwsh/modules/LabRunner/",
+        "type": "PowerShell Module",
+        "lastUpdated": "2025-06-13",
         "version": "0.1.0",
         "keyFunctions": [
           "Invoke-ParallelLabRunner",
+          "Test-RunnerScriptSafety-Fixed",
           "Test-RunnerScriptSafety"
         ],
-        "path": "/pwsh/modules/LabRunner/",
-        "dependencies": [],
         "purpose": "Lab environment automation and management"
       }
     },
@@ -283,18 +284,18 @@
   },
   "metrics": {
     "codebase": {
-      "activeModules": 2,
-      "testFiles": 99,
-      "powerShellFiles": 589,
       "maintenanceScripts": 0,
+      "testFiles": 99,
+      "powerShellFiles": 293,
+      "activeModules": 2,
       "validationScripts": 0
     },
     "performance": {
-      "batchProcessingOptimization": "Dynamic CPU scaling",
-      "lastHealthCheck": "2025-06-13 23:21:40",
+      "fullMaintenanceTime": "2-5 minutes",
       "healthCheckTime": "< 1 minute",
-      "fullMaintenanceTime": "2-5 minutes"
+      "lastHealthCheck": "2025-06-13 23:16:42",
+      "batchProcessingOptimization": "Dynamic CPU scaling"
     },
-    "lastCalculated": "2025-06-13 23:21:45"
+    "lastCalculated": "2025-06-13 23:16:46"
   }
 }

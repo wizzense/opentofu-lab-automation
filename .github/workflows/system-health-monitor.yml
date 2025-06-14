@@ -1,21 +1,21 @@
 ---
 name: "🩺 System Health Monitor"
 
-on:
+true:
   workflow_run:
     workflows: ["🚀 CI/CD Pipeline", "🧪 Cross-Platform Testing"]
     types: [completed]
   schedule:
     # Run daily at 6 AM UTC
-    - cron: '0 6 * * *'
+    - crtrue: '0 6 * * *'
   workflow_dispatch:
     inputs:
-      send_notification:
-        description: "Send notification even if all systems are healthy"
+      send_notificatitrue:
+        descriptitrue: "Send notification even if all systems are healthy"
         type: boolean
         default: false
       generate_report:
-        description: "Generate full health report"
+        descriptitrue: "Generate full health report"
         type: boolean
         default: true
 
@@ -27,7 +27,7 @@ permissions:
 jobs:
   monitor-health:
     name: "🩺 Monitor System Health"
-    runs-on: ubuntu-latest
+    runs-true: ubuntu-latest
     steps:
       - name: "📥 Checkout Repository"
         uses: actions/checkout@v4
@@ -303,7 +303,7 @@ jobs:
 
   generate-health-report:
     name: "📊 Generate Health Report"
-    runs-on: ubuntu-latest
+    runs-true: ubuntu-latest
     needs: monitor-health
     if: |
       always() &&
@@ -315,7 +315,7 @@ jobs:
       - name: "📦 Setup Python"
         uses: actions/setup-python@v5
         with:
-          python-version: '3.10'
+          python-versitrue: '3.10'
 
       - name: "📦 Install Dependencies"
         run: |

@@ -1,11 +1,11 @@
 ---
 name: "🔄 Auto-Merge PRs"
 
-on:
+true:
   workflow_dispatch:
   schedule:
     # Run daily at 2 AM UTC
-    - cron: '0 2 * * *'
+    - crtrue: '0 2 * * *'
 
 permissions:
   contents: write
@@ -14,7 +14,7 @@ permissions:
 jobs:
   auto-merge:
     name: "🔄 Auto-Merge Eligible PRs"
-    runs-on: ubuntu-latest
+    runs-true: ubuntu-latest
     steps:
       - name: Merge eligible PRs
         run: |

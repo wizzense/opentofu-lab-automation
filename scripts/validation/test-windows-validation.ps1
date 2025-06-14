@@ -20,10 +20,17 @@ if ($IsWindows -or $env:OS -eq "Windows_NT") {
     Write-Host "   ℹ️ Non-Windows environment (expected in Codespaces)" -ForegroundColor Cyan
 }
 
+# Detect the correct project root based on the current environment
+if ($IsWindows -or $env:OS -eq "Windows_NT") {
+    $ProjectRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
+} else {
+    $ProjectRoot = "/workspaces/opentofu-lab-automation"
+}
+
 # Test 2: Test PowerShell module loading
 Write-Host "2. Testing PowerShell Module Loading..." -ForegroundColor Yellow
 try {
-    $modulePath = "/workspaces/opentofu-lab-automation/pwsh/modules/LabRunner"
+    $modulePath = "$ProjectRoot/pwsh/modules/LabRunner"
     if (Test-Path $modulePath) {
         Import-Module $modulePath -Force
         Write-Host "   ✓ LabRunner module loaded successfully" -ForegroundColor Green
@@ -37,7 +44,7 @@ try {
 # Test 3: Test configuration loading
 Write-Host "3. Testing Configuration Loading..." -ForegroundColor Yellow
 try {
-    $configPath = "/workspaces/opentofu-lab-automation/configs/config_files/default-config.json"
+    $configPath = "$ProjectRoot/configs/config_files/default-config.json"
     if (Test-Path $configPath) {
         $config = Get-Content $configPath | ConvertFrom-Json
         Write-Host "   ✓ Configuration loaded successfully" -ForegroundColor Green
@@ -69,10 +76,9 @@ foreach ($feature in $windowsFeatures) {
 
 # Test 5: Test deployment scripts
 Write-Host "5. Testing Deployment Scripts..." -ForegroundColor Yellow
-$deployScripts = @(
-    "/workspaces/opentofu-lab-automation/deploy.py",
-    "/workspaces/opentofu-lab-automation/launcher.py",
-    "/workspaces/opentofu-lab-automation/gui.py"
+$deployScripts = @(    "$ProjectRoot/deploy.py",
+    "$ProjectRoot/launcher.py",
+    "$ProjectRoot/gui.py"
 )
 
 foreach ($script in $deployScripts) {

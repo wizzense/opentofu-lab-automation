@@ -72,7 +72,8 @@ function Test-YamlLintAvailable {
     catch {
         Write-Host "⚠️ yamllint not available, installing..." -ForegroundColor Yellow
         try {
-            pip install yamllint
+            $pythonCmd = if ($IsWindows) { "C:\Users\alexa\AppData\Local\Programs\Python\Python313\python.exe" } else { "python3" }
+            & $pythonCmd -m pip install yamllint
             return $true
         }
         catch {
@@ -97,8 +98,10 @@ function Test-YamlSyntax {
     param([string]$FilePath)
     
     try {
-        # Test with Python YAML parser for syntax
-        $pythonTest = python3 -c "import yaml; yaml.safe_load(open('$FilePath')); print('OK')" 2>&1
+        # Test with Python YAML parser for syntax - handle encoding properly
+        $pythonCmd = if ($IsWindows) { "C:\Users\alexa\AppData\Local\Programs\Python\Python313\python.exe" } else { "python3" }
+        $pythonCode = "import yaml; yaml.safe_load(open(r'$FilePath', encoding='utf-8')); print('OK')"
+        $pythonTest = & $pythonCmd -c $pythonCode 2>&1
         if ($pythonTest -notcontains "OK") {
             return @{
                 Valid = $false

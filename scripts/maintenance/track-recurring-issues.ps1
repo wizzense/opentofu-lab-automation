@@ -45,7 +45,12 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
-$ProjectRoot = "/workspaces/opentofu-lab-automation"
+# Detect the correct project root based on the current environment
+if ($IsWindows -or $env:OS -eq "Windows_NT") {
+    $ProjectRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
+} else {
+    $ProjectRoot = "/workspaces/opentofu-lab-automation"
+}
 $IssueTrackingPath = "$ProjectRoot/docs/reports/issue-tracking"
 
 function Write-TrackLog {

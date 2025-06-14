@@ -1,46 +1,46 @@
 {
+  "Issues": [
+    {
+      "Description": "PowerShell files with syntax errors",
+      "Fix": "./scripts/maintenance/fix-test-syntax.ps1",
+      "Severity": "High",
+      "Count": 17,
+      "Category": "PowerShell Syntax",
+      "Files": [
+        ".\\archive\\consolidated-20250613-223049\\maintenance-history\\consolidated-backups-20250613\\legacy\\test-format-function.ps1",
+        ".\\archive\\consolidated-20250613-223049\\maintenance-history\\consolidated-backups-20250613\\legacy\\test-script-sample.ps1",
+        ".\\archive\\consolidated-20250613-223049\\maintenance-history\\test-scripts\\test-lint.ps1",
+        ".\\archive\\legacy\\test-format-function.ps1",
+        ".\\archive\\legacy\\test-script-sample.ps1"
+      ]
+    },
+    {
+      "Description": "Files using old lab_utils import paths",
+      "Fix": "./scripts/maintenance/fix-infrastructure-issues.ps1 -Fix ImportPaths",
+      "Severity": "Medium",
+      "Count": 17,
+      "Category": "Deprecated Import Paths",
+      "Files": [
+        "Download-Archive.ps1",
+        "Expand-All.ps1",
+        "Menu.ps1",
+        "Download-Archive.ps1",
+        "Expand-All.ps1"
+      ]
+    }
+  ],
   "Recommendations": [
     "Run automated fixes: ./scripts/maintenance/fix-infrastructure-issues.ps1 -Fix All",
     "Fix syntax errors: ./scripts/maintenance/fix-test-syntax.ps1"
   ],
-  "Timestamp": "2025-06-13 23:21:40",
+  "Timestamp": "2025-06-13 23:16:42",
   "Metrics": {
+    "SyntaxErrorFiles": 17,
     "TestFiles": 88,
-    "SyntaxErrorFiles": 12,
-    "TotalPowerShellFiles": 944,
-    "DeprecatedImports": 44,
     "IssueCount": 2,
+    "TotalPowerShellFiles": 375,
+    "DeprecatedImports": 17,
     "MissingMocks": 0
   },
-  "OverallStatus": "Critical",
-  "Issues": [
-    {
-      "Description": "PowerShell files with syntax errors",
-      "Category": "PowerShell Syntax",
-      "Severity": "High",
-      "Files": [
-        "./archive/legacy/test-format-function.ps1",
-        "./archive/legacy/test-script-sample.ps1",
-        "./archive/root-fix-scripts-20250613-080518/cleanup-remaining.ps1",
-        "./archive/root-fix-scripts-20250613-080518/organize-project-fixed.ps1",
-        "./archive/root-fix-scripts-20250613-080518/organize-project.ps1"
-      ],
-      "Fix": "./scripts/maintenance/fix-test-syntax.ps1",
-      "Count": 12
-    },
-    {
-      "Description": "Files using old lab_utils import paths",
-      "Category": "Deprecated Import Paths",
-      "Severity": "Medium",
-      "Files": [
-        "auto-maintenance.ps1",
-        "Download-Archive.ps1",
-        "Expand-All.ps1",
-        "fix-infrastructure-issues.ps1",
-        "fix-test-syntax.ps1"
-      ],
-      "Fix": "./scripts/maintenance/fix-infrastructure-issues.ps1 -Fix ImportPaths",
-      "Count": 44
-    }
-  ]
+  "OverallStatus": "Critical"
 }
