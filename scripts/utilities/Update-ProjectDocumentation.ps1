@@ -1,76 +1,76 @@
 #!/usr/bin/env pwsh
 <#
 .SYNOPSIS
-    Updates AGENTS.md and copilot configuration files with current project state
+ Updates AGENTS.md and copilot configuration files with current project state
 
 .DESCRIPTION
-    This script automatically updates documentation and configuration files to reflect
-    the current project structure, modules, and capabilities.
+ This script automatically updates documentation and configuration files to reflect
+ the current project structure, modules, and capabilities.
 
 .PARAMETER Force
-    Force update even if files appear up-to-date
+ Force update even if files appear up-to-date
 
 .EXAMPLE
-    ./Update-ProjectDocumentation.ps1
+ ./Update-ProjectDocumentation.ps1
 
 .EXAMPLE
-    ./Update-ProjectDocumentation.ps1 -Force
+ ./Update-ProjectDocumentation.ps1 -Force
 #>
 
 param(
-    [switch]$Force
+ [switch]$Force
 )
 
 $ErrorActionPreference = "Stop"
 
-Write-Host "🔄 Updating project documentation and configuration..." -ForegroundColor Cyan
+Write-Host " Updating project documentation and configuration..." -ForegroundColor Cyan
 
 # Get current project state
 $ProjectRoot = Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
 $manifestPath = "$ProjectRoot/PROJECT-MANIFEST.json"
 
 if (-not (Test-Path $manifestPath)) {
-    Write-Warning "PROJECT-MANIFEST.json not found, generating..."
-    $updateScript = "$ProjectRoot/scripts/utilities/update-project-manifest.ps1"
-    if (Test-Path $updateScript) {
-        & $updateScript -Force
-    } else {
-        Write-Error "Cannot find update-project-manifest.ps1 script"
-        return
-    }
+ Write-Warning "PROJECT-MANIFEST.json not found, generating..."
+ $updateScript = "$ProjectRoot/scripts/utilities/update-project-manifest.ps1"
+ if (Test-Path $updateScript) {
+ & $updateScript -Force
+ } else {
+ Write-Error "Cannot find update-project-manifest.ps1 script"
+ return
+ }
 }
 
 $manifest = Get-Content $manifestPath | ConvertFrom-Json
 
 # Update AGENTS.md
 $agentsPath = "$ProjectRoot/AGENTS.md"
-Write-Host "📝 Updating AGENTS.md..." -ForegroundColor Yellow
+Write-Host " Updating AGENTS.md..." -ForegroundColor Yellow
 
 $functionsText = ""
 foreach ($moduleProperty in $manifest.core.modules.PSObject.Properties) {
-    $module = $moduleProperty.Name
-    $functions = $moduleProperty.Value.keyFunctions
-    $functionsText += "#### $module`n"
-    foreach ($func in $functions) {
-        $functionsText += "- $func`n"
-    }
-    $functionsText += "`n"
+ $module = $moduleProperty.Name
+ $functions = $moduleProperty.Value.keyFunctions
+ $functionsText += "#### $module`n"
+ foreach ($func in $functions) {
+ $functionsText += "- $func`n"
+ }
+ $functionsText += "`n"
 }
 
 $agentsContent = @"
 # AI Agent Integration Documentation
 
-## 🤖 Project State Overview
+## Project State Overview
 
 **Last Updated**: $(Get-Date -Format "yyyy-MM-dd HH:mm:ss")
 **Project Health**: $($manifest.metrics.performance.healthCheckTime)
 **Total Modules**: $($manifest.core.modules.Count)
 
-## 📊 Current Capabilities
+## Current Capabilities
 
 ### Core Modules
 $( ($manifest.core.modules.PSObject.Properties | ForEach-Object {
-    "- **$($_.Name)**: $($_.Value.description)"
+ "- **$($_.Name)**: $($_.Value.description)"
 }) -join "`n" )
 
 ### Key Functions Available
@@ -87,24 +87,24 @@ $functionsText
 - **YAML Workflows**: $($manifest.structure.fileTypes.yaml) files
 - **Total LOC**: $($manifest.metrics.codebase.totalLinesOfCode) lines
 
-## 🔧 Maintenance Integration
+## Maintenance Integration
 
 ### Automated Systems
 1. **Unified Maintenance**: ``./scripts/maintenance/unified-maintenance.ps1``
-   - Infrastructure health checks
-   - YAML validation and auto-fix
-   - PowerShell syntax validation
-   - Automated reporting
+ - Infrastructure health checks
+ - YAML validation and auto-fix
+ - PowerShell syntax validation
+ - Automated reporting
 
 2. **YAML Validation**: ``./scripts/validation/Invoke-YamlValidation.ps1``
-   - Real-time workflow validation
-   - Automatic formatting fixes
-   - Truthy value normalization
+ - Real-time workflow validation
+ - Automatic formatting fixes
+ - Truthy value normalization
 
 3. **CodeFixer Module**: Advanced PowerShell analysis and repair
-   - Batch processing capabilities
-   - Parallel execution
-   - Import path modernization
+ - Batch processing capabilities
+ - Parallel execution
+ - Import path modernization
 
 ### Quick Commands
 ```powershell
@@ -118,18 +118,18 @@ $functionsText
 ./scripts/validation/Invoke-YamlValidation.ps1 -Mode "Fix"
 
 # Comprehensive validation
-Import-Module "./pwsh/modules/CodeFixer"
+Import-Module "C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation/pwsh/modules/CodeFixer/" -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force
 Invoke-ComprehensiveValidation
 ```
 
-## 🏗️ Architecture
+## Architecture
 
 ### Module Structure
 ```
 pwsh/modules/
-├── LabRunner/          # Core lab automation
-├── CodeFixer/          # Code analysis and repair
-└── [Dynamic modules]   # Additional capabilities
+├── LabRunner/ # Core lab automation
+├── CodeFixer/ # Code analysis and repair
+└── [Dynamic modules] # Additional capabilities
 ```
 
 ### Validation Pipeline
@@ -139,7 +139,7 @@ pwsh/modules/
 4. **Import Analysis** → Dependency validation
 5. **Test Execution** → Functional verification
 
-## 📈 Usage Analytics
+## Usage Analytics
 
 ### Common Operations
 - **Quick deployment**: ``python deploy.py --quick``
@@ -158,31 +158,31 @@ pwsh/modules/
 "@
 
 Set-Content $agentsPath $agentsContent -Encoding UTF8
-Write-Host "✅ Updated AGENTS.md" -ForegroundColor Green
+Write-Host "[PASS] Updated AGENTS.md" -ForegroundColor Green
 
 # Update .github/copilot-instructions.md
 $copilotPath = "$ProjectRoot/.github/copilot-instructions.md"
-Write-Host "📝 Updating copilot instructions..." -ForegroundColor Yellow
+Write-Host " Updating copilot instructions..." -ForegroundColor Yellow
 
 # Build copilot functions text
 $copilotFunctionsText = ""
 foreach ($moduleProperty in $manifest.core.modules.PSObject.Properties) {
-    $module = $moduleProperty.Name
-    $functions = $moduleProperty.Value.keyFunctions
-    $modulePath = $moduleProperty.Value.path
-    $copilotFunctionsText += "#### $module`n"
-    $copilotFunctionsText += "````powershell`n"
-    $copilotFunctionsText += "Import-Module `"$modulePath`"`n"
-    foreach ($func in $functions) {
-        $copilotFunctionsText += "$func`n"
-    }
-    $copilotFunctionsText += "````````n`n"
+ $module = $moduleProperty.Name
+ $functions = $moduleProperty.Value.keyFunctions
+ $modulePath = $moduleProperty.Value.path
+ $copilotFunctionsText += "#### $module`n"
+ $copilotFunctionsText += "````powershell`n"
+ $copilotFunctionsText += "Import-Module `"$modulePath`"`n"
+ foreach ($func in $functions) {
+ $copilotFunctionsText += "$func`n"
+ }
+ $copilotFunctionsText += "````````n`n"
 }
 
 $copilotContent = @"
 # GitHub Copilot Instructions for OpenTofu Lab Automation
 
-## 📋 Project Context (Auto-Updated: $(Get-Date -Format "yyyy-MM-dd"))
+## Project Context (Auto-Updated: $(Get-Date -Format "yyyy-MM-dd"))
 
 This is a cross-platform OpenTofu (Terraform alternative) lab automation project with:
 - **$($manifest.core.modules.Count) PowerShell modules** for infrastructure automation
@@ -190,23 +190,23 @@ This is a cross-platform OpenTofu (Terraform alternative) lab automation project
 - **$($manifest.structure.fileTypes.tests) test files** for validation
 - **Cross-platform deployment** via Python scripts
 
-## 🏗️ Current Architecture
+## Current Architecture
 
 ### Module Locations (CRITICAL - Always Use These Paths)
 $( ($manifest.core.modules.PSObject.Properties | ForEach-Object {
-    "- **$($_.Name)**: $($_.Value.path)"
+ "- **$($_.Name)**: $($_.Value.path)"
 }) -join "`n" )
 
 ### Key Functions Available
 $copilotFunctionsText
 
-## 🔧 Development Guidelines
+## Development Guidelines
 
 ### Always Use Project Manifest First
 ```powershell
 # Check current state before making changes
 `$manifest = Get-Content "./PROJECT-MANIFEST.json" | ConvertFrom-Json
-`$manifest.core.modules  # View all modules
+`$manifest.core.modules # View all modules
 ```
 
 ### Maintenance Commands (Use These for Fixes)
@@ -240,10 +240,10 @@ $copilotFunctionsText
 - **Cross-Platform**: Windows, Linux, macOS deployment
 - **Real-time**: Live validation and error correction
 
-## 🚨 Critical Guidelines
+## Critical Guidelines
 
 ### Never Do These:
-- Don't use legacy ``pwsh/lab_utils/`` paths (migrated to modules)
+- Don't use legacy ``pwsh/modules/`` paths (migrated to modules)
 - Don't create files in project root without using report utility
 - Don't modify workflows without YAML validation
 - Don't use deprecated import patterns
@@ -260,7 +260,7 @@ $copilotFunctionsText
 ./scripts/utilities/new-report.ps1 -Type "test-analysis" -Title "My Report"
 ```
 
-## 🎯 Integration Points
+## Integration Points
 
 ### GitHub Actions Integration
 - All workflows validated with yamllint
@@ -281,9 +281,21 @@ $copilotFunctionsText
 "@
 
 Set-Content $copilotPath $copilotContent -Encoding UTF8
-Write-Host "✅ Updated copilot instructions" -ForegroundColor Green
+Write-Host "[PASS] Updated copilot instructions" -ForegroundColor Green
 
-Write-Host "🎉 Documentation update completed!" -ForegroundColor Green
-Write-Host "   - Updated AGENTS.md with current project state" -ForegroundColor White
-Write-Host "   - Updated .github/copilot-instructions.md with architecture" -ForegroundColor White
-Write-Host "   - Integrated manifest data and performance metrics" -ForegroundColor White
+Write-Host " Documentation update completed!" -ForegroundColor Green
+Write-Host " - Updated AGENTS.md with current project state" -ForegroundColor White
+Write-Host " - Updated .github/copilot-instructions.md with architecture" -ForegroundColor White
+Write-Host " - Integrated manifest data and performance metrics" -ForegroundColor White
+
+
+
+
+
+
+
+
+
+
+
+

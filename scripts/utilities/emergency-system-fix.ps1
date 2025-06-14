@@ -1,95 +1,95 @@
 #!/usr/bin/env pwsh
 <#
 .SYNOPSIS
-    Emergency system to resolve merge conflicts and implement proper branching workflow
+ Emergency system to resolve merge conflicts and implement proper branching workflow
 
 .DESCRIPTION
-    This script addresses the massive merge conflict situation and implements a robust
-    branching strategy to prevent this from happening again.
+ This script addresses the massive merge conflict situation and implements a robust
+ branching strategy to prevent this from happening again.
 
 .PARAMETER Action
-    Action to perform: ResolveConflicts, ImplementBranching, ValidateSystem, All
+ Action to perform: ResolveConflicts, ImplementBranching, ValidateSystem, All
 
 .EXAMPLE
-    ./emergency-system-fix.ps1 -Action All
+ ./emergency-system-fix.ps1 -Action All
 #>
 
 param(
-    [ValidateSet("ResolveConflicts", "ImplementBranching", "ValidateSystem", "All")]
-    [string]$Action = "All"
+ [ValidateSet("ResolveConflicts", "ImplementBranching", "ValidateSystem", "All")]
+ [string]$Action = "All"
 )
 
 $ErrorActionPreference = "Continue"
 
-Write-Host "🚨 Emergency System Recovery" -ForegroundColor Red
+Write-Host " Emergency System Recovery" -ForegroundColor Red
 Write-Host "================================" -ForegroundColor Red
 Write-Host "Date: $(Get-Date)" -ForegroundColor Yellow
 Write-Host "Action: $Action" -ForegroundColor Yellow
 Write-Host ""
 
 function Resolve-MergeConflicts {
-    Write-Host "🔧 Step 1: Resolving Merge Conflicts" -ForegroundColor Cyan
-    
-    # Find all files with merge conflict markers
-    $conflictFiles = @()
-    $conflictMarkers = @("<<<<<<< HEAD", "=======", ">>>>>>> ")
-    
-    foreach ($marker in $conflictMarkers) {
-        $files = git grep -l "$marker" 2>$null
-        if ($files) {
-            $conflictFiles += $files
-        }
-    }
-    
-    $conflictFiles = $conflictFiles | Sort-Object -Unique
-    
-    if ($conflictFiles.Count -gt 0) {
-        Write-Host "❌ Found $($conflictFiles.Count) files with merge conflicts:" -ForegroundColor Red
-        $conflictFiles | ForEach-Object { Write-Host "  - $_" -ForegroundColor Yellow }
-        
-        Write-Host ""
-        Write-Host "🛠️ Auto-resolving simple conflicts..." -ForegroundColor Yellow
-        
-        foreach ($file in $conflictFiles) {
-            try {
-                $content = Get-Content $file -Raw
-                
-                # Strategy 1: If conflict is just whitespace or formatting, take HEAD version
-                if ($content -match '<<<<<<< HEAD\s*\n(.*?)\n=======\s*\n\s*\n>>>>>>> ') {
-                    $resolved = $content -replace '<<<<<<< HEAD\s*\n(.*?)\n=======\s*\n\s*\n>>>>>>> [^\n]*\n', '$1'
-                    Set-Content $file $resolved -NoNewline
-                    Write-Host "  ✅ Auto-resolved whitespace conflict: $file" -ForegroundColor Green
-                    continue
-                }
-                
-                # Strategy 2: For workflow files, prefer the main branch version
-                if ($file -like "*.yml" -or $file -like "*.yaml") {
-                    $resolved = $content -replace '<<<<<<< HEAD\s*\n(.*?)\n=======.*?>>>>>>> [^\n]*\n', '$1'
-                    Set-Content $file $resolved -NoNewline
-                    Write-Host "  ✅ Auto-resolved workflow conflict: $file" -ForegroundColor Green
-                    continue
-                }
-                
-                Write-Host "  ⚠️ Manual resolution needed: $file" -ForegroundColor Yellow
-            }
-            catch {
-                Write-Host "  ❌ Error processing $file`: $_" -ForegroundColor Red
-            }
-        }
-    }
-    else {
-        Write-Host "✅ No merge conflicts found" -ForegroundColor Green
-    }
+ Write-Host " Step 1: Resolving Merge Conflicts" -ForegroundColor Cyan
+ 
+ # Find all files with merge conflict markers
+ $conflictFiles = @()
+ $conflictMarkers = @("<<<<<<< HEAD", "=======", ">>>>>>> ")
+ 
+ foreach ($marker in $conflictMarkers) {
+ $files = git grep -l "$marker" 2>$null
+ if ($files) {
+ $conflictFiles += $files
+ }
+ }
+ 
+ $conflictFiles = $conflictFiles | Sort-Object -Unique
+ 
+ if ($conflictFiles.Count -gt 0) {
+ Write-Host "[FAIL] Found $($conflictFiles.Count) files with merge conflicts:" -ForegroundColor Red
+ $conflictFiles | ForEach-Object { Write-Host " - $_" -ForegroundColor Yellow }
+ 
+ Write-Host ""
+ Write-Host " Auto-resolving simple conflicts..." -ForegroundColor Yellow
+ 
+ foreach ($file in $conflictFiles) {
+ try {
+ $content = Get-Content $file -Raw
+ 
+ # Strategy 1: If conflict is just whitespace or formatting, take HEAD version
+ if ($content -match '<<<<<<< HEAD\s*\n(.*?)\n=======\s*\n\s*\n>>>>>>> ') {
+ $resolved = $content -replace '<<<<<<< HEAD\s*\n(.*?)\n=======\s*\n\s*\n>>>>>>> [^\n]*\n', '$1'
+ Set-Content $file $resolved -NoNewline
+ Write-Host " [PASS] Auto-resolved whitespace conflict: $file" -ForegroundColor Green
+ continue
+ }
+ 
+ # Strategy 2: For workflow files, prefer the main branch version
+ if ($file -like "*.yml" -or $file -like "*.yaml") {
+ $resolved = $content -replace '<<<<<<< HEAD\s*\n(.*?)\n=======.*?>>>>>>> [^\n]*\n', '$1'
+ Set-Content $file $resolved -NoNewline
+ Write-Host " [PASS] Auto-resolved workflow conflict: $file" -ForegroundColor Green
+ continue
+ }
+ 
+ Write-Host " [WARN] Manual resolution needed: $file" -ForegroundColor Yellow
+ }
+ catch {
+ Write-Host " [FAIL] Error processing $file`: $_" -ForegroundColor Red
+ }
+ }
+ }
+ else {
+ Write-Host "[PASS] No merge conflicts found" -ForegroundColor Green
+ }
 }
 
 function Implement-BranchingStrategy {
-    Write-Host "🌳 Step 2: Implementing Proper Branching Strategy" -ForegroundColor Cyan
-    
-    # Create branching strategy documentation
-    $branchingDoc = @"
-# 🌳 Branching Strategy & Workflow Guidelines
+ Write-Host "� Step 2: Implementing Proper Branching Strategy" -ForegroundColor Cyan
+ 
+ # Create branching strategy documentation
+ $branchingDoc = @"
+# � Branching Strategy & Workflow Guidelines
 
-## 🎯 Branch Strategy
+## Branch Strategy
 
 ### Main Branches
 - **main**: Production-ready code, protected branch
@@ -101,7 +101,7 @@ function Implement-BranchingStrategy {
 - **hotfix/description**: Critical production fixes
 - **docs/description**: Documentation updates
 
-## 🔄 Workflow Process
+## Workflow Process
 
 ### 1. Creating Feature Branches
 \`\`\`bash
@@ -142,24 +142,24 @@ git push origin hotfix/critical-issue
 # Create PR for immediate review
 \`\`\`
 
-## 🛡️ Protection Rules
+## Protection Rules
 
 ### Main Branch Protection
-- ✅ Require PR reviews (1+ approvals)
-- ✅ Require status checks (CI/CD must pass)
-- ✅ Require up-to-date branches
-- ✅ Auto-delete head branches after merge
-- ✅ Restrict force pushes
-- ✅ Restrict deletions
+- [PASS] Require PR reviews (1+ approvals)
+- [PASS] Require status checks (CI/CD must pass)
+- [PASS] Require up-to-date branches
+- [PASS] Auto-delete head branches after merge
+- [PASS] Restrict force pushes
+- [PASS] Restrict deletions
 
 ### Auto-Validation Requirements
-- ✅ PowerShell syntax validation
-- ✅ YAML lint checks
-- ✅ Pester test execution
-- ✅ Auto-fix application
-- ✅ Security scanning
+- [PASS] PowerShell syntax validation
+- [PASS] YAML lint checks
+- [PASS] Pester test execution
+- [PASS] Auto-fix application
+- [PASS] Security scanning
 
-## 🔧 Auto-Fix Integration
+## Auto-Fix Integration
 
 ### Pre-commit Hooks
 - Syntax validation
@@ -173,7 +173,7 @@ git push origin hotfix/critical-issue
 - Merge conflict prevention
 - Dependency updates
 
-## 📋 Commit Message Convention
+## Commit Message Convention
 
 \`\`\`
 <type>(<scope>): <description>
@@ -185,7 +185,7 @@ git push origin hotfix/critical-issue
 
 ### Types
 - **feat**: New feature
-- **fix**: Bug fix  
+- **fix**: Bug fix 
 - **docs**: Documentation changes
 - **style**: Code style changes
 - **refactor**: Code refactoring
@@ -200,7 +200,7 @@ docs(readme): simplify deployment instructions for Server Core
 chore(deps): update PowerShell modules to latest versions
 \`\`\`
 
-## 🚨 Merge Conflict Prevention
+## Merge Conflict Prevention
 
 ### Before Creating PR
 1. **Sync with main**: \`git pull origin main\`
@@ -214,7 +214,7 @@ chore(deps): update PowerShell modules to latest versions
 4. **Re-validate**: Run tests and auto-fixes
 5. **Force push**: \`git push --force-with-lease\`
 
-## 🔄 Regular Maintenance
+## Regular Maintenance
 
 ### Daily (Automated)
 - Dependency updates
@@ -235,77 +235,77 @@ chore(deps): update PowerShell modules to latest versions
 - Tool evaluation
 "@
 
-    $branchingDoc | Out-File "docs/BRANCHING-STRATEGY.md" -Encoding UTF8
-    Write-Host "✅ Created branching strategy documentation" -ForegroundColor Green
+ $branchingDoc | Out-File "docs/BRANCHING-STRATEGY.md" -Encoding UTF8
+ Write-Host "[PASS] Created branching strategy documentation" -ForegroundColor Green
 }
 
 function Validate-SystemHealth {
-    Write-Host "🔍 Step 3: Validating System Health" -ForegroundColor Cyan
-    
-    $issues = @()
-    
-    # Check critical files
-    $criticalFiles = @(
-        ".github/workflows/unified-ci.yml",
-        "pwsh/modules/CodeFixer/CodeFixer.psm1",
-        "pwsh/modules/LabRunner/LabRunner.psm1",
-        "scripts/maintenance/unified-maintenance.ps1"
-    )
-    
-    foreach ($file in $criticalFiles) {
-        if (Test-Path $file) {
-            $content = Get-Content $file -Raw
-            if ($content -match '<<<<<<< HEAD|=======|>>>>>>> ') {
-                $issues += "Merge conflicts in $file"
-                Write-Host "  ❌ Merge conflicts: $file" -ForegroundColor Red
-            }
-            else {
-                Write-Host "  ✅ Clean: $file" -ForegroundColor Green
-            }
-        }
-        else {
-            $issues += "Missing critical file: $file"
-            Write-Host "  ❌ Missing: $file" -ForegroundColor Red
-        }
-    }
-    
-    # Test PowerShell modules
-    try {
-        Import-Module "./pwsh/modules/CodeFixer" -Force -ErrorAction Stop
-        Write-Host "  ✅ CodeFixer module loads" -ForegroundColor Green
-    }
-    catch {
-        $issues += "CodeFixer module failed to load: $_"
-        Write-Host "  ❌ CodeFixer module: $_" -ForegroundColor Red
-    }
-    
-    try {
-        Import-Module "./pwsh/modules/LabRunner" -Force -ErrorAction Stop  
-        Write-Host "  ✅ LabRunner module loads" -ForegroundColor Green
-    }
-    catch {
-        $issues += "LabRunner module failed to load: $_"
-        Write-Host "  ❌ LabRunner module: $_" -ForegroundColor Red
-    }
-    
-    # Summary
-    if ($issues.Count -eq 0) {
-        Write-Host "🎉 System validation passed!" -ForegroundColor Green
-        return $true
-    }
-    else {
-        Write-Host "⚠️ Found $($issues.Count) issues:" -ForegroundColor Yellow
-        $issues | ForEach-Object { Write-Host "  - $_" -ForegroundColor Red }
-        return $false
-    }
+ Write-Host " Step 3: Validating System Health" -ForegroundColor Cyan
+ 
+ $issues = @()
+ 
+ # Check critical files
+ $criticalFiles = @(
+ ".github/workflows/unified-ci.yml",
+ "pwsh/modules/CodeFixer/CodeFixer.psm1",
+ "pwsh/modules/LabRunner/LabRunner.psm1",
+ "scripts/maintenance/unified-maintenance.ps1"
+ )
+ 
+ foreach ($file in $criticalFiles) {
+ if (Test-Path $file) {
+ $content = Get-Content $file -Raw
+ if ($content -match '<<<<<<< HEAD|=======|>>>>>>> ') {
+ $issues += "Merge conflicts in $file"
+ Write-Host " [FAIL] Merge conflicts: $file" -ForegroundColor Red
+ }
+ else {
+ Write-Host " [PASS] Clean: $file" -ForegroundColor Green
+ }
+ }
+ else {
+ $issues += "Missing critical file: $file"
+ Write-Host " [FAIL] Missing: $file" -ForegroundColor Red
+ }
+ }
+ 
+ # Test PowerShell modules
+ try {
+ Import-Module "C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation/pwsh/modules/CodeFixer/" -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -ErrorAction Stop
+ Write-Host " [PASS] CodeFixer module loads" -ForegroundColor Green
+ }
+ catch {
+ $issues += "CodeFixer module failed to load: $_"
+ Write-Host " [FAIL] CodeFixer module: $_" -ForegroundColor Red
+ }
+ 
+ try {
+ Import-Module "C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation/pwsh/modules/LabRunner/" -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -ErrorAction Stop 
+ Write-Host " [PASS] LabRunner module loads" -ForegroundColor Green
+ }
+ catch {
+ $issues += "LabRunner module failed to load: $_"
+ Write-Host " [FAIL] LabRunner module: $_" -ForegroundColor Red
+ }
+ 
+ # Summary
+ if ($issues.Count -eq 0) {
+ Write-Host " System validation passed!" -ForegroundColor Green
+ return $true
+ }
+ else {
+ Write-Host "[WARN] Found $($issues.Count) issues:" -ForegroundColor Yellow
+ $issues | ForEach-Object { Write-Host " - $_" -ForegroundColor Red }
+ return $false
+ }
 }
 
 function Set-BranchProtection {
-    Write-Host "🛡️ Step 4: Setting Up Branch Protection" -ForegroundColor Cyan
-    
-    # This would normally use GitHub CLI or API
-    # For now, create instructions
-    $protectionScript = @"
+ Write-Host " Step 4: Setting Up Branch Protection" -ForegroundColor Cyan
+ 
+ # This would normally use GitHub CLI or API
+ # For now, create instructions
+ $protectionScript = @"
 # Branch Protection Setup (Run with GitHub CLI)
 
 # Install GitHub CLI if not available
@@ -313,53 +313,64 @@ function Set-BranchProtection {
 
 # Set up main branch protection
 gh api repos/wizzense/opentofu-lab-automation/branches/main/protection \
-  --method PUT \
-  --field required_status_checks='{"strict":true,"contexts":["CI/CD Pipeline"]}' \
-  --field enforce_admins=true \
-  --field required_pull_request_reviews='{"required_approving_review_count":1,"dismiss_stale_reviews":true}' \
-  --field restrictions=null \
-  --field allow_force_pushes=false \
-  --field allow_deletions=false
+ --method PUT \
+ --field required_status_checks='{"strict":true,"contexts":["CI/CD Pipeline"]}' \
+ --field enforce_admins=true \
+ --field required_pull_request_reviews='{"required_approving_review_count":1,"dismiss_stale_reviews":true}' \
+ --field restrictions=null \
+ --field allow_force_pushes=false \
+ --field allow_deletions=false
 
-echo "✅ Branch protection rules applied"
+echo "[PASS] Branch protection rules applied"
 "@
 
-    $protectionScript | Out-File "scripts/setup-branch-protection.sh" -Encoding UTF8
-    Write-Host "✅ Created branch protection setup script" -ForegroundColor Green
+ $protectionScript | Out-File "scripts/setup-branch-protection.sh" -Encoding UTF8
+ Write-Host "[PASS] Created branch protection setup script" -ForegroundColor Green
 }
 
 # Main execution
 switch ($Action) {
-    "ResolveConflicts" { Resolve-MergeConflicts }
-    "ImplementBranching" { Implement-BranchingStrategy }
-    "ValidateSystem" { Validate-SystemHealth }
-    "All" {
-        Resolve-MergeConflicts
-        Implement-BranchingStrategy
-        $systemHealthy = Validate-SystemHealth
-        Set-BranchProtection
-        
-        Write-Host ""
-        Write-Host "🎯 Emergency Recovery Summary" -ForegroundColor Cyan
-        Write-Host "==============================" -ForegroundColor Cyan
-        
-        if ($systemHealthy) {
-            Write-Host "✅ System is now healthy and operational" -ForegroundColor Green
-            Write-Host "✅ Branching strategy implemented" -ForegroundColor Green
-            Write-Host "✅ Protection rules ready for setup" -ForegroundColor Green
-            Write-Host ""
-            Write-Host "📋 Next Steps:" -ForegroundColor Yellow
-            Write-Host "1. Review and commit all changes" -ForegroundColor White
-            Write-Host "2. Run: ./scripts/setup-branch-protection.sh" -ForegroundColor White
-            Write-Host "3. Test the new workflow with a feature branch" -ForegroundColor White
-            Write-Host "4. Update team on new branching strategy" -ForegroundColor White
-        }
-        else {
-            Write-Host "⚠️ System needs manual intervention" -ForegroundColor Yellow
-            Write-Host "📋 Please resolve the issues above before proceeding" -ForegroundColor White
-        }
-    }
+ "ResolveConflicts" { Resolve-MergeConflicts }
+ "ImplementBranching" { Implement-BranchingStrategy }
+ "ValidateSystem" { Validate-SystemHealth }
+ "All" {
+ Resolve-MergeConflicts
+ Implement-BranchingStrategy
+ $systemHealthy = Validate-SystemHealth
+ Set-BranchProtection
+ 
+ Write-Host ""
+ Write-Host " Emergency Recovery Summary" -ForegroundColor Cyan
+ Write-Host "==============================" -ForegroundColor Cyan
+ 
+ if ($systemHealthy) {
+ Write-Host "[PASS] System is now healthy and operational" -ForegroundColor Green
+ Write-Host "[PASS] Branching strategy implemented" -ForegroundColor Green
+ Write-Host "[PASS] Protection rules ready for setup" -ForegroundColor Green
+ Write-Host ""
+ Write-Host " Next Steps:" -ForegroundColor Yellow
+ Write-Host "1. Review and commit all changes" -ForegroundColor White
+ Write-Host "2. Run: ./scripts/setup-branch-protection.sh" -ForegroundColor White
+ Write-Host "3. Test the new workflow with a feature branch" -ForegroundColor White
+ Write-Host "4. Update team on new branching strategy" -ForegroundColor White
+ }
+ else {
+ Write-Host "[WARN] System needs manual intervention" -ForegroundColor Yellow
+ Write-Host " Please resolve the issues above before proceeding" -ForegroundColor White
+ }
+ }
 }
 
 Write-Host ""
-Write-Host "🚀 Emergency recovery script completed" -ForegroundColor Green
+Write-Host " Emergency recovery script completed" -ForegroundColor Green
+
+
+
+
+
+
+
+
+
+
+

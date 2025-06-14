@@ -1,0 +1,65 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<test-results xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="nunit_schema_2.5.xsd" name="Pester" total="6" errors="0" failures="6" not-run="0" inconclusive="0" ignored="0" skipped="0" invalid="0" date="2025-06-14" time="09:26:26">
+  <environment machine-name="WZNS" nunit-version="2.5.8.0" clr-version="9.0.4" os-version="10.0.26100" user="alexa" user-domain="WZNS" platform="Microsoft Windows 11 Pro|C:\WINDOWS|\Device\Harddisk1\Partition3" cwd="C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation" />
+  <culture-info current-culture="en-US" current-uiculture="en-US" />
+  <test-suite type="TestFixture" name="Pester" executed="True" result="Failure" success="False" time="0.4095" asserts="0" description="Pester">
+    <results>
+      <test-suite type="TestFixture" name="C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\tests\0113_Config-DNS.Tests.ps1" executed="True" result="Failure" success="False" time="0.4095" asserts="0" description="C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\tests\0113_Config-DNS.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="0113_Config-DNS Tests" executed="True" result="Failure" success="False" time="0" asserts="0" description="0113_Config-DNS Tests">
+            <results>
+              <test-suite type="TestFixture" name="0113_Config-DNS Tests.Script Structure Validation" executed="True" result="Failure" success="False" time="0" asserts="0" description="0113_Config-DNS Tests.Script Structure Validation">
+                <results>
+                  <test-case description="should have valid PowerShell syntax" name="0113_Config-DNS Tests.Script Structure Validation.should have valid PowerShell syntax" time="0" asserts="0" success="False" result="Failure" executed="True">
+                    <failure>
+                      <message>This test should run but it did not. Most likely a setup in some parent block failed.</message>
+                      <stack-trace />
+                    </failure>
+                  </test-case>
+                  <test-case description="should follow naming conventions" name="0113_Config-DNS Tests.Script Structure Validation.should follow naming conventions" time="0" asserts="0" success="False" result="Failure" executed="True">
+                    <failure>
+                      <message>This test should run but it did not. Most likely a setup in some parent block failed.</message>
+                      <stack-trace />
+                    </failure>
+                  </test-case>
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="0113_Config-DNS Tests.Parameter Validation" executed="True" result="Failure" success="False" time="0" asserts="0" description="0113_Config-DNS Tests.Parameter Validation">
+                <results>
+                  <test-case description="should accept Config parameter" name="0113_Config-DNS Tests.Parameter Validation.should accept Config parameter" time="0" asserts="0" success="False" result="Failure" executed="True">
+                    <failure>
+                      <message>This test should run but it did not. Most likely a setup in some parent block failed.</message>
+                      <stack-trace />
+                    </failure>
+                  </test-case>
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="0113_Config-DNS Tests.Configuration Tests" executed="True" result="Failure" success="False" time="0" asserts="0" description="0113_Config-DNS Tests.Configuration Tests">
+                <results>
+                  <test-case description="should backup existing configuration" name="0113_Config-DNS Tests.Configuration Tests.should backup existing configuration" time="0" asserts="0" success="False" result="Failure" executed="True">
+                    <failure>
+                      <message>This test should run but it did not. Most likely a setup in some parent block failed.</message>
+                      <stack-trace />
+                    </failure>
+                  </test-case>
+                  <test-case description="should validate configuration changes" name="0113_Config-DNS Tests.Configuration Tests.should validate configuration changes" time="0" asserts="0" success="False" result="Failure" executed="True">
+                    <failure>
+                      <message>This test should run but it did not. Most likely a setup in some parent block failed.</message>
+                      <stack-trace />
+                    </failure>
+                  </test-case>
+                  <test-case description="should handle rollback on failure" name="0113_Config-DNS Tests.Configuration Tests.should handle rollback on failure" time="0" asserts="0" success="False" result="Failure" executed="True">
+                    <failure>
+                      <message>This test should run but it did not. Most likely a setup in some parent block failed.</message>
+                      <stack-trace />
+                    </failure>
+                  </test-case>
+                </results>
+              </test-suite>
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+    </results>
+  </test-suite>
+</test-results>

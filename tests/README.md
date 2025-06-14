@@ -4,14 +4,14 @@ This directory contains an extensible testing framework for OpenTofu Lab Automat
 
 ## Features
 
-- ✅ **Cross-Platform Compatibility**: Automatic platform detection and platform-specific mocking
-- ✅ **Extensible Templates**: Pre-built templates for common script patterns
-- ✅ **Automatic Test Generation**: Generate tests from existing scripts
-- ✅ **Comprehensive Mocking**: Standardized mocks for Windows, Linux, and macOS
-- ✅ **Test Discovery**: Automatic categorization and discovery of tests
-- ✅ **Parallel Execution**: Optional parallel test execution for faster results
-- ✅ **Detailed Reporting**: HTML and JSON reports with categorization
-- ✅ **Integration Testing**: Support for multi-script integration tests
+- [PASS] **Cross-Platform Compatibility**: Automatic platform detection and platform-specific mocking
+- [PASS] **Extensible Templates**: Pre-built templates for common script patterns
+- [PASS] **Automatic Test Generation**: Generate tests from existing scripts
+- [PASS] **Comprehensive Mocking**: Standardized mocks for Windows, Linux, and macOS
+- [PASS] **Test Discovery**: Automatic categorization and discovery of tests
+- [PASS] **Parallel Execution**: Optional parallel test execution for faster results
+- [PASS] **Detailed Reporting**: HTML and JSON reports with categorization
+- [PASS] **Integration Testing**: Support for multi-script integration tests
 
 ## Quick Start
 
@@ -21,7 +21,7 @@ This directory contains an extensible testing framework for OpenTofu Lab Automat
 # For an installer script
 ./tests/helpers/New-TestFile.ps1 -ScriptName "0025_Install-Docker.ps1" -TestType "Installer"
 
-# For a feature enablement script  
+# For a feature enablement script 
 ./tests/helpers/New-TestFile.ps1 -ScriptName "0050_Enable-Hyper-V.ps1" -TestType "Feature"
 
 # For a service management script
@@ -137,13 +137,13 @@ New-InstallerScriptTest -ScriptName 'MyScript.ps1' -EnabledProperty 'InstallMyAp
 $scenarios = @()
 
 $scenarios += New-TestScenario -Name 'Custom scenario' -Description 'Tests custom behavior' -Config @{ CustomProp = $true } -Mocks @{
-    'Get-CustomCommand' = { [PSCustomObject]@{ Status = 'Ready' } }
+ 'Get-CustomCommand' = { [PSCustomObject]@{ Status = 'Ready' } }
 } -ExpectedInvocations @{
-    'Get-CustomCommand' = 1
+ 'Get-CustomCommand' = 1
 } -CustomValidation {
-    param($Result, $Error)
-    # Custom validation logic
-    $Result | Should -Not -BeNull
+ param($Result, $Error)
+ # Custom validation logic
+ $Result | Should -Not -BeNull
 }
 
 Test-RunnerScript -ScriptName 'MyScript.ps1' -Scenarios $scenarios -IncludeStandardTests
@@ -153,16 +153,16 @@ Test-RunnerScript -ScriptName 'MyScript.ps1' -Scenarios $scenarios -IncludeStand
 
 ```powershell
 New-IntegrationTest -TestName 'Full Lab Setup' -ScriptSequence @(
-    '0001_Reset-Git.ps1',
-    '0002_Setup-Directories.ps1', 
-    '0007_Install-Go.ps1'
+ '0001_Reset-Git.ps1',
+ '0002_Setup-Directories.ps1', 
+ '0007_Install-Go.ps1'
 ) -Config @{
-    InstallGo = $true
-    Go = @{ InstallerUrl = 'https://example.com/go.msi' }
+ InstallGo = $true
+ Go = @{ InstallerUrl = 'https://example.com/go.msi' }
 } -Validation {
-    param($Results)
-    $Results.Count | Should -Be 3
-    # Additional validation
+ param($Results)
+ $Results.Count | Should -Be 3
+ # Additional validation
 }
 ```
 
@@ -178,20 +178,20 @@ New-IntegrationTest -TestName 'Full Lab Setup' -ScriptSequence @(
 #### Before (Manual Test)
 ```powershell
 Describe 'Install-Go' {
-    BeforeAll {
-        $script:ScriptPath = Get-RunnerScriptPath '0007_Install-Go.ps1'
-    }
-    
-    It 'installs when enabled' {
-        $cfg = @{ InstallGo = $true }
-        Mock Get-Command { $null }
-        Mock Start-Process {}
-        Mock Invoke-LabDownload {}
-        
-        & $script:ScriptPath -Config $cfg
-        
-        Should -Invoke Start-Process -Times 1
-    }
+ BeforeAll {
+ $script:ScriptPath = Get-RunnerScriptPath '0007_Install-Go.ps1'
+ }
+ 
+ It 'installs when enabled' {
+ $cfg = @{ InstallGo = $true }
+ Mock Get-Command { $null }
+ Mock Start-Process {}
+ Mock Invoke-LabDownload {}
+ 
+ & $script:ScriptPath -Config $cfg
+ 
+ Should -Invoke Start-Process -Times 1
+ }
 }
 ```
 
@@ -223,9 +223,9 @@ Always specify platform requirements for platform-specific functionality:
 Use custom validation blocks for complex verification:
 ```powershell
 -CustomValidation {
-    param($Result, $Error)
-    # Verify specific behavior
-    Test-Path $expectedFile | Should -BeTrue
+ param($Result, $Error)
+ # Verify specific behavior
+ Test-Path $expectedFile | Should -BeTrue
 }
 ```
 
@@ -245,7 +245,7 @@ Mock CommandName {} -ModuleName 'LabRunner'
 
 **Platform skipping**: Check platform requirements match your target platform:
 ```powershell
-$script:CurrentPlatform  # Shows detected platform
+$script:CurrentPlatform # Shows detected platform
 ```
 
 **Test discovery fails**: Ensure test files follow naming convention:

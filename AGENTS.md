@@ -1,16 +1,17 @@
 # AI Agent Integration Documentation
 
-## 🤖 Project State Overview
+## Project State Overview
 
-**Last Updated**: 2025-06-14 03:59:27
+**Last Updated**: 2025-06-14 16:45:01
 **Project Health**: < 1 minute
 **Total Modules**: 1
 
-## 📊 Current Capabilities
+## Current Capabilities
 
 ### Core Modules
 - **CodeFixer**: 
 - **LabRunner**: 
+- **BackupManager**: Comprehensive backup management module
 
 ### Key Functions Available
 #### CodeFixer
@@ -37,7 +38,12 @@
 #### LabRunner
 - Invoke-ParallelLabRunner
 - Test-RunnerScriptSafety-Fixed
-- Test-RunnerScriptSafety
+
+#### BackupManager
+- Invoke-BackupMaintenance
+- Invoke-BackupConsolidation
+- Invoke-PermanentCleanup
+- Get-BackupStatistics
 
 
 
@@ -52,24 +58,24 @@
 - **YAML Workflows**:  files
 - **Total LOC**:  lines
 
-## 🔧 Maintenance Integration
+## Maintenance Integration
 
 ### Automated Systems
 1. **Unified Maintenance**: `./scripts/maintenance/unified-maintenance.ps1`
-   - Infrastructure health checks
-   - YAML validation and auto-fix
-   - PowerShell syntax validation
-   - Automated reporting
+ - Infrastructure health checks
+ - YAML validation and auto-fix
+ - PowerShell syntax validation
+ - Automated reporting
 
 2. **YAML Validation**: `./scripts/validation/Invoke-YamlValidation.ps1`
-   - Real-time workflow validation
-   - Automatic formatting fixes
-   - Truthy value normalization
+ - Real-time workflow validation
+ - Automatic formatting fixes
+ - Truthy value normalization
 
 3. **CodeFixer Module**: Advanced PowerShell analysis and repair
-   - Batch processing capabilities
-   - Parallel execution
-   - Import path modernization
+ - Batch processing capabilities
+ - Parallel execution
+ - Import path modernization
 
 ### Quick Commands
 `powershell
@@ -83,18 +89,18 @@
 ./scripts/validation/Invoke-YamlValidation.ps1 -Mode "Fix"
 
 # Comprehensive validation
-Import-Module "./pwsh/modules/CodeFixer"
+Import-Module "C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation/pwsh/modules/CodeFixer/" -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force
 Invoke-ComprehensiveValidation
 `
 
-## 🏗️ Architecture
+## Architecture
 
 ### Module Structure
 `
 pwsh/modules/
-├── LabRunner/          # Core lab automation
-├── CodeFixer/          # Code analysis and repair
-└── [Dynamic modules]   # Additional capabilities
+├── LabRunner/ # Core lab automation
+├── CodeFixer/ # Code analysis and repair
+└── [Dynamic modules] # Additional capabilities
 `
 
 ### Validation Pipeline
@@ -104,7 +110,7 @@ pwsh/modules/
 4. **Import Analysis** → Dependency validation
 5. **Test Execution** → Functional verification
 
-## 📈 Usage Analytics
+## Usage Analytics
 
 ### Common Operations
 - **Quick deployment**: `python deploy.py --quick`
@@ -119,4 +125,4 @@ pwsh/modules/
 
 ---
 *This file is automatically updated by the maintenance system*
-*Last auto-update: 2025-06-14 03:59:27*
+*Last auto-update: 2025-06-14 16:45:01*

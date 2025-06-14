@@ -1,0 +1,58 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<test-results xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="nunit_schema_2.5.xsd" name="Pester" total="6" errors="0" failures="6" not-run="0" inconclusive="0" ignored="0" skipped="0" invalid="0" date="2025-06-14" time="09:26:29">
+  <environment machine-name="WZNS" nunit-version="2.5.8.0" clr-version="9.0.4" os-version="10.0.26100" user="alexa" user-domain="WZNS" platform="Microsoft Windows 11 Pro|C:\WINDOWS|\Device\Harddisk1\Partition3" cwd="C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation" />
+  <culture-info current-culture="en-US" current-uiculture="en-US" />
+  <test-suite type="TestFixture" name="Pester" executed="True" result="Failure" success="False" time="0.9948" asserts="0" description="Pester">
+    <results>
+      <test-suite type="TestFixture" name="C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\tests\Get-WindowsJobArtifacts.Tests.ps1" executed="True" result="Failure" success="False" time="0.9948" asserts="0" description="C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\tests\Get-WindowsJobArtifacts.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="Get-WindowsJobArtifacts" executed="True" result="Failure" success="False" time="0.5748" asserts="0" description="Get-WindowsJobArtifacts">
+            <results>
+              <test-case description="uses gh CLI when authenticated" name="Get-WindowsJobArtifacts.uses gh CLI when authenticated" time="0.2536" asserts="0" success="False" result="Failure" executed="True">
+                <failure>
+                  <message>CommandNotFoundException: The term 'C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\tests\..\pwsh\modules\LabRunner\Get-WindowsJobArtifacts.ps1' is not recognized as a name of a cmdlet, function, script file, or executable program.
+Check the spelling of the name, or if a path was included, verify that the path is correct and try again.</message>
+                  <stack-trace>at &lt;ScriptBlock&gt;, C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\tests\Get-WindowsJobArtifacts.Tests.ps1:24</stack-trace>
+                </failure>
+              </test-case>
+              <test-case description="falls back to nightly.link when gh auth fails" name="Get-WindowsJobArtifacts.falls back to nightly.link when gh auth fails" time="0.0451" asserts="0" success="False" result="Failure" executed="True">
+                <failure>
+                  <message>CommandNotFoundException: The term 'C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\tests\..\pwsh\modules\LabRunner\Get-WindowsJobArtifacts.ps1' is not recognized as a name of a cmdlet, function, script file, or executable program.
+Check the spelling of the name, or if a path was included, verify that the path is correct and try again.</message>
+                  <stack-trace>at &lt;ScriptBlock&gt;, C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\tests\Get-WindowsJobArtifacts.Tests.ps1:35</stack-trace>
+                </failure>
+              </test-case>
+              <test-case description="uses provided run ID with gh" name="Get-WindowsJobArtifacts.uses provided run ID with gh" time="0.0427" asserts="0" success="False" result="Failure" executed="True">
+                <failure>
+                  <message>CommandNotFoundException: The term 'C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\tests\..\pwsh\modules\LabRunner\Get-WindowsJobArtifacts.ps1' is not recognized as a name of a cmdlet, function, script file, or executable program.
+Check the spelling of the name, or if a path was included, verify that the path is correct and try again.</message>
+                  <stack-trace>at &lt;ScriptBlock&gt;, C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\tests\Get-WindowsJobArtifacts.Tests.ps1:47</stack-trace>
+                </failure>
+              </test-case>
+              <test-case description="uses provided run ID with nightly.link when gh auth fails" name="Get-WindowsJobArtifacts.uses provided run ID with nightly.link when gh auth fails" time="0.0645" asserts="0" success="False" result="Failure" executed="True">
+                <failure>
+                  <message>RuntimeException: No modules named 'LabSetup' are currently loaded.</message>
+                  <stack-trace />
+                </failure>
+              </test-case>
+              <test-case description="emits a clear message when artifacts are missing" name="Get-WindowsJobArtifacts.emits a clear message when artifacts are missing" time="0.0794" asserts="0" success="False" result="Failure" executed="True">
+                <failure>
+                  <message>CommandNotFoundException: The term 'C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\tests\..\pwsh\modules\LabRunner\Get-WindowsJobArtifacts.ps1' is not recognized as a name of a cmdlet, function, script file, or executable program.
+Check the spelling of the name, or if a path was included, verify that the path is correct and try again.</message>
+                  <stack-trace>at &lt;ScriptBlock&gt;, C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\tests\Get-WindowsJobArtifacts.Tests.ps1:79</stack-trace>
+                </failure>
+              </test-case>
+              <test-case description="returns nonzero exit code when download fails" name="Get-WindowsJobArtifacts.returns nonzero exit code when download fails" time="0.0697" asserts="0" success="False" result="Failure" executed="True">
+                <failure>
+                  <message>Expected 1, but got 4.</message>
+                  <stack-trace>at $LASTEXITCODE | Should -Be 1, C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\tests\Get-WindowsJobArtifacts.Tests.ps1:98
+at &lt;ScriptBlock&gt;, C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\tests\Get-WindowsJobArtifacts.Tests.ps1:98</stack-trace>
+                </failure>
+              </test-case>
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+    </results>
+  </test-suite>
+</test-results>

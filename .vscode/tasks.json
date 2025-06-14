@@ -27,6 +27,21 @@
 			},
 			"problemMatcher": [],
 			"isBackground": false
+		},
+		{
+			"label": "Run Infrastructure Health Check",
+			"type": "shell",
+			"command": "pwsh",
+			"args": [
+				"-File",
+				"scripts/maintenance/infrastructure-health-check.ps1",
+				"-Mode",
+				"Comprehensive",
+				"-AutoFix"
+			],
+			"group": "test",
+			"problemMatcher": [],
+			"isBackground": false
 		}
 	]
 }

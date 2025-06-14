@@ -21,8 +21,8 @@ Write-Host "=================================" -ForegroundColor Gray
 
 # Import modules
 try {
-    Import-Module "./pwsh/modules/CodeFixer" -Force
-    Import-Module "./pwsh/modules/LabRunner" -Force
+    Import-Module "C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation/pwsh/modules/CodeFixer/" -Force -Force -Force -Force -Force -Force -Force
+    Import-Module "C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation/pwsh/modules/LabRunner/" -Force -Force -Force -Force -Force -Force -Force
     Write-Host "✅ Modules imported successfully" -ForegroundColor Green
 } catch {
     Write-Host "❌ Failed to import modules: $($_.Exception.Message)" -ForegroundColor Red
@@ -159,4 +159,10 @@ if ($RunTests) {
 
 Write-Host "ℹ️  Use -UseParallel for faster test execution" -ForegroundColor Blue
 Write-Host "ℹ️  Use -MaxJobs N to control parallel job count" -ForegroundColor Blue
+
+
+
+
+
+
 

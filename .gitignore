@@ -44,3 +44,28 @@ launch-*.*
 *.tmp
 __pycache__/
 *.pyc
+
+
+# Exclude backup files and directories
+backups/consolidated-backups/**/*
+backups/consolidated-backups/
+backups/deprecated/**/*
+backups/deprecated/
+archive/**/*.bak
+**/backup-*/**/*
+**/backup_*/**/*
+
+# Backup file exclusions (added by BackupManager)
+.DS_Store
+*.backup
+*.bak
+*.cache
+*.lock
+*.old
+*.orig
+*.test.log
+*~
+coverage/lcov.info
+desktop.ini
+TestResults*.xml
+Thumbs.db

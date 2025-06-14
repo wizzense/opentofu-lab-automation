@@ -33,6 +33,20 @@ try {
     exit 1
 }
 
+# Run YAML validation first
+try {
+    Write-Host "Running YAML validation..." -ForegroundColor Cyan
+    $yamlScript = Join-Path $repoRoot "scripts/validation/Invoke-YamlValidation.ps1"
+    if (Test-Path $yamlScript) {
+        & $yamlScript -Mode "Check" -Path ".github/workflows"
+        Write-Host "YAML validation completed" -ForegroundColor Green
+    } else {
+        Write-Warning "YAML validation script not found at: $yamlScript"
+    }
+} catch {
+    Write-Warning "YAML validation failed: $($_.Exception.Message)"
+}
+
 # Run comprehensive validation using the module
 try {
     $params = @{

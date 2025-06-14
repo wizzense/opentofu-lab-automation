@@ -28,17 +28,9 @@ Show what would be fixed without making changes
 
 [CmdletBinding()]
 param(
-    [Parameter(Mandatory = $true)
-
-
-
-
-
-
-]
-    [ValidateSet('All', 'CodeFixer', 'MissingCommands', 'TestContainers', 'ImportPaths', 'GitHubActions')]
+    [Parameter(Mandatory=$true)]
+    [ValidateSet('All','CodeFixer','MissingCommands','TestContainers','ImportPaths','GitHubActions','TestSyntax')]
     [string]$Fix,
-    
     [Parameter()]
     [switch]$DryRun
 )
@@ -218,31 +210,41 @@ function Fix-TestContainers {
 function Fix-ImportPaths {
     Write-FixLog "Updating module import paths..." "FIX"
     
-    # Update deprecated lab_utils paths to new module paths
-    $filesToUpdate = Get-ChildItem -Path $ProjectRoot -Recurse -Include "*.ps1", "*.psm1" -File
-    $updatedCount = 0
-    
-    foreach ($file in $filesToUpdate) {
-        $content = Get-Content $file.FullName -Raw
-        $originalContent = $content
-        
-        # Update import paths
-        $content = $content -replace 'pwsh/modules/LabRunner', 'pwsh/modules/LabRunner'
-        $content = $content -replace 'Import-Module "$ProjectRoot/pwsh/modules/LabRunner""'
-        $content = $content -replace '\$PSScriptRoot\\\.\.\\lab_utils', '$PSScriptRoot/../modules'
-        
-        if ($content -ne $originalContent) {
-            if ($DryRun) {
-                Write-FixLog "Would update import paths in: $($file.Name)" "INFO"
-            } else {
-                Set-Content $file.FullName $content
-                Write-FixLog "Updated import paths in: $($file.Name)" "FIX"
-                $updatedCount++
-            }
-        }
+    # Define module path mappings
+    $modules = @{
+        "CodeFixer"     = "$ProjectRoot/pwsh/modules/CodeFixer/"
+        "LabRunner"     = "$ProjectRoot/pwsh/modules/LabRunner/"
+        "BackupManager" = "$ProjectRoot/pwsh/modules/BackupManager/"
     }
     
-    Write-FixLog "Updated import paths in $updatedCount files" "SUCCESS"
+    # Build regex patterns and replacements
+    $patterns = @()
+    foreach ($name in $modules.Keys) {
+        $escaped = [regex]::Escape("pwsh/modules/$name")
+        $replacement = "Import-Module `"$($modules[$name])`" -Force"
+        $pattern = 'Import-Module\s+[""''].*?' + $escaped + '.*?[""'']'
+        $patterns += @{ Pattern = $pattern; Replacement = $replacement }
+    }
+    $updatedCount = 0
+    # Scan all PS1 and PSM1 files under project
+    $filesToUpdate = Get-ChildItem -Path $ProjectRoot -Recurse -Include "*.ps1","*.psm1" -File -ErrorAction SilentlyContinue
+    foreach ($file in $filesToUpdate) {
+        $content = Get-Content $file.FullName -Raw
+        $newContent = $content
+        foreach ($p in $patterns) {
+            $newContent = $newContent -replace $p.Pattern, $p.Replacement
+        }
+        if ($newContent -ne $content) {
+            Set-Content $file.FullName $newContent
+            Write-FixLog "Updated import paths in: $($file.FullName)" "SUCCESS"
+            $updatedCount++
+        }
+    }
+    if ($updatedCount -eq 0) {
+        Write-FixLog "No files were updated with import path fixes" "WARNING"
+    } else {
+        Write-FixLog "Successfully fixed import paths in $updatedCount files" "SUCCESS"
+    }
 }
 
 function Fix-GitHubActions {
@@ -258,10 +260,9 @@ function Fix-GitHubActions {
         # Common GitHub Actions fixes
         $content = $content -replace 'uses: actions/checkout@v3', 'uses: actions/checkout@v4'
         $content = $content -replace 'uses: actions/setup-node@v3', 'uses: actions/setup-node@v4'
-        $content = $content -replace 'pwsh/lab_utils', 'pwsh/modules'
-        
-        # Fix PowerShell module path references in workflows
-        $content = $content -replace 'Import-Module "$ProjectRoot/pwsh/modules/LabRunner"'
+        $content = $content -replace 'pwsh/modules', 'pwsh/modules'
+          # Fix PowerShell module path references in workflows
+        $content = $content -replace 'Import-Module.*?-Force.*?-Force.*?-Force', 'Import-Module'
         
         if ($content -ne $originalContent) {
             if ($DryRun) {
@@ -280,13 +281,13 @@ if ($DryRun) {
     Write-FixLog "DRY RUN MODE - No changes will be made" "WARNING"
 }
 
-try {
-    switch ($Fix) {
+try {    switch ($Fix) {
         'CodeFixer' { Fix-CodeFixerSyntax }
         'MissingCommands' { Fix-MissingCommands }
         'TestContainers' { Fix-TestContainers }
         'ImportPaths' { Fix-ImportPaths }
         'GitHubActions' { Fix-GitHubActions }
+        'TestSyntax' { Fix-TestContainers } # TestSyntax uses the same function as TestContainers for now
         'All' {
             Write-FixLog "Running all infrastructure fixes..." "INFO"
             Fix-CodeFixerSyntax
@@ -296,8 +297,7 @@ try {
             Fix-GitHubActions
         }
     }
-    
-    Write-FixLog "Infrastructure fixes completed successfully!" "SUCCESS"
+      Write-FixLog "Infrastructure fixes completed successfully!" "SUCCESS"
     
     # Generate report if not dry run
     if (-not $DryRun) {
@@ -310,6 +310,14 @@ catch {
     Write-FixLog "Infrastructure fixes failed: $($_.Exception.Message)" "ERROR"
     exit 1
 }
+
+
+
+
+
+
+
+
 
 
 

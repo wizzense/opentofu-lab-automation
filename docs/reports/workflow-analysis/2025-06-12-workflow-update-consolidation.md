@@ -16,22 +16,22 @@ The GitHub Actions workflows for the OpenTofu Lab Automation project have been c
 ## Current Workflow Structure
 
 ### Core Workflows
-- 🚀 **CI/CD Pipeline** (unified-ci.yml)
-- 🧪 **Cross-Platform Testing** (unified-testing.yml)
-- 🩺 **System Health Monitor** (system-health-monitor.yml)
-- 🔧 **Unified Utilities** (unified-utilities.yml)
+- **CI/CD Pipeline** (unified-ci.yml)
+- **Cross-Platform Testing** (unified-testing.yml)
+- **System Health Monitor** (system-health-monitor.yml)
+- **Unified Utilities** (unified-utilities.yml)
 
 ### Support Workflows
-- 🔍 **Workflow Validation** (validate-workflows.yml)
-- 🧪 **Automatic Test Generation** (auto-test-generation-consolidated.yml)
-- 📝 **Update Changelog** (changelog.yml)
-- 🚨 **Automated Issue Creation** (issue-on-fail.yml)
+- **Workflow Validation** (validate-workflows.yml)
+- **Automatic Test Generation** (auto-test-generation-consolidated.yml)
+- **Update Changelog** (changelog.yml)
+- **Automated Issue Creation** (issue-on-fail.yml)
 
 ### Development Workflows
-- 🤖 **Copilot Auto-Fix** (copilot-auto-fix.yml)
-- 🔄 **Auto-Merge PRs** (auto-merge.yml)
-- 📦 **Package LabCTL Tool** (package-labctl.yml)
-- 🗄️ **Archive Legacy Workflows** (archive-legacy-workflows.yml)
+- **Copilot Auto-Fix** (copilot-auto-fix.yml)
+- **Auto-Merge PRs** (auto-merge.yml)
+- **Package LabCTL Tool** (package-labctl.yml)
+- � **Archive Legacy Workflows** (archive-legacy-workflows.yml)
 
 ## Legacy Workflows
 

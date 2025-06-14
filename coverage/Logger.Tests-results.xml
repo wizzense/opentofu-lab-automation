@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<test-results xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="nunit_schema_2.5.xsd" name="Pester" total="6" errors="0" failures="0" not-run="0" inconclusive="0" ignored="0" skipped="0" invalid="0" date="2025-06-14" time="09:26:31">
+  <environment machine-name="WZNS" nunit-version="2.5.8.0" clr-version="9.0.4" os-version="10.0.26100" user="alexa" user-domain="WZNS" platform="Microsoft Windows 11 Pro|C:\WINDOWS|\Device\Harddisk1\Partition3" cwd="C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation" />
+  <culture-info current-culture="en-US" current-uiculture="en-US" />
+  <test-suite type="TestFixture" name="Pester" executed="True" result="Success" success="True" time="0.7643" asserts="0" description="Pester">
+    <results>
+      <test-suite type="TestFixture" name="C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\tests\Logger.Tests.ps1" executed="True" result="Success" success="True" time="0.7643" asserts="0" description="C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\tests\Logger.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="Write-CustomLog" executed="True" result="Success" success="True" time="0.1652" asserts="0" description="Write-CustomLog">
+            <results>
+              <test-case description="works when LogFilePath variable is not defined" name="Write-CustomLog.works when LogFilePath variable is not defined" time="0.0446" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="works under strict mode without global variable" name="Write-CustomLog.works under strict mode without global variable" time="0.0207" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="appends to log file when LogFilePath is set" name="Write-CustomLog.appends to log file when LogFilePath is set" time="0.03" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="defaults to LogFilePath variable when not provided" name="Write-CustomLog.defaults to LogFilePath variable when not provided" time="0.031" asserts="0" success="True" result="Success" executed="True" />
+            </results>
+          </test-suite>
+          <test-suite type="TestFixture" name="Read-LoggedInput" executed="True" result="Success" success="True" time="0.4084" asserts="0" description="Read-LoggedInput">
+            <results>
+              <test-case description="logs prompt and input" name="Read-LoggedInput.logs prompt and input" time="0.177" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="handles secure strings without logging value" name="Read-LoggedInput.handles secure strings without logging value" time="0.0431" asserts="0" success="True" result="Success" executed="True" />
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+    </results>
+  </test-suite>
+</test-results>

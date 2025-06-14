@@ -1,0 +1,122 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<test-results xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="nunit_schema_2.5.xsd" name="Pester" total="13" errors="0" failures="5" not-run="0" inconclusive="0" ignored="0" skipped="0" invalid="0" date="2025-06-14" time="09:26:32">
+  <environment machine-name="WZNS" nunit-version="2.5.8.0" clr-version="9.0.4" os-version="10.0.26100" user="alexa" user-domain="WZNS" platform="Microsoft Windows 11 Pro|C:\WINDOWS|\Device\Harddisk1\Partition3" cwd="C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation" />
+  <culture-info current-culture="en-US" current-uiculture="en-US" />
+  <test-suite type="TestFixture" name="Pester" executed="True" result="Failure" success="False" time="11.2477" asserts="0" description="Pester">
+    <results>
+      <test-suite type="TestFixture" name="C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\tests\setup-test-env.Tests.ps1" executed="True" result="Failure" success="False" time="11.2477" asserts="0" description="C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\tests\setup-test-env.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="setup-test-env Tests" executed="True" result="Failure" success="False" time="5.0556" asserts="0" description="setup-test-env Tests">
+            <results>
+              <test-suite type="TestFixture" name="setup-test-env Tests.Script Structure Validation" executed="True" result="Failure" success="False" time="4.7514" asserts="0" description="setup-test-env Tests.Script Structure Validation">
+                <results>
+                  <test-case description="should have valid PowerShell syntax" name="setup-test-env Tests.Script Structure Validation.should have valid PowerShell syntax" time="4.7309" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="should follow naming conventions" name="setup-test-env Tests.Script Structure Validation.should follow naming conventions" time="0.0029" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="should define expected functions" name="setup-test-env Tests.Script Structure Validation.should define expected functions" time="0.0135" asserts="0" success="False" result="Failure" executed="True">
+                    <failure>
+                      <message>ParameterBindingValidationException: Cannot bind argument to parameter 'Path' because it is null.</message>
+                      <stack-trace>at &lt;ScriptBlock&gt;, C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\tests\setup-test-env.Tests.ps1:39</stack-trace>
+                    </failure>
+                  </test-case>
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="setup-test-env Tests.Parameter Validation" executed="True" result="Failure" success="False" time="4.9684" asserts="0" description="setup-test-env Tests.Parameter Validation">
+                <results>
+                  <test-case description="should accept UsePoetry parameter" name="setup-test-env Tests.Parameter Validation.should accept UsePoetry parameter" time="0.2139" asserts="0" success="False" result="Failure" executed="True">
+                    <failure>
+                      <message>Expected no exception to be thrown, but an exception "At C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\pwsh\modules\LabRunner\Public\Test-RunnerScriptSafety.ps1:350 char:13
++     [object]`$Config
++             ~~~~~~~~
+Unexpected token '`$Config' in expression or statement.
+At C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\pwsh\modules\LabRunner\Public\Test-RunnerScriptSafety.ps1:350 char:13
++     [object]`$Config
++             ~
+Missing closing ')' in expression.
+At C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\pwsh\modules\LabRunner\Public\Test-RunnerScriptSafety.ps1:338 char:9
++     try {
++         ~
+Missing closing '}' in statement block or type definition.
+At C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\pwsh\modules\LabRunner\Public\Test-RunnerScriptSafety.ps1:350 char:21
++     [object]`$Config
++                     ~
+The Try statement is missing its Catch or Finally block.
+At C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\pwsh\modules\LabRunner\Public\Test-RunnerScriptSafety.ps1:325 char:37
++ function Invoke-RunnerScriptAutoFix {
++                                     ~
+Missing closing '}' in statement block or type definition.
+At C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\pwsh\modules\LabRunner\Public\Test-RunnerScriptSafety.ps1:351 char:1
++ )
++ ~
+Unexpected token ')' in expression or statement.
+At C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\pwsh\modules\LabRunner\Public\Test-RunnerScriptSafety.ps1:355 char:16
++ Import-Module "$PSScent = $paramBlock + $newContent
++                ~~~~~~~~
+Unexpected token '$PSScent' in expression or statement.
+At C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\pwsh\modules\LabRunner\Public\Test-RunnerScriptSafety.ps1:358 char:9
++         }
++         ~
+Unexpected token '}' in expression or statement.
+At C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\pwsh\modules\LabRunner\Public\Test-RunnerScriptSafety.ps1:424 char:5
++     }
++     ~
+Unexpected token '}' in expression or statement.
+At C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\pwsh\modules\LabRunner\Public\Test-RunnerScriptSafety.ps1:430 char:1
++ }
++ ~
+Unexpected token '}' in expression or statement.
+Not all parse errors were reported.  Correct the reported errors and try again." was thrown from C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\pwsh\modules\LabRunner\LabRunner.psm1:168 char:52
+    + Get-ChildItem -Path "$PSScriptRoot/Public/*.ps1" | ForEach-Object {
+    +                                                    ~~~~~~~~~~~~~~~~.</message>
+                      <stack-trace>at { &amp; $scriptPath -UsePoetry 'TestValue' -WhatIf } | Should -Not -Throw, C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\tests\setup-test-env.Tests.ps1:50
+at &lt;ScriptBlock&gt;, C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\tests\setup-test-env.Tests.ps1:50</stack-trace>
+                    </failure>
+                  </test-case>
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="setup-test-env Tests.Installation Tests" executed="True" result="Success" success="True" time="4.9761" asserts="0" description="setup-test-env Tests.Installation Tests">
+                <results>
+                  <test-case description="should validate prerequisites" name="setup-test-env Tests.Installation Tests.should validate prerequisites" time="0.0021" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="should handle download failures gracefully" name="setup-test-env Tests.Installation Tests.should handle download failures gracefully" time="0.0015" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="should verify installation success" name="setup-test-env Tests.Installation Tests.should verify installation success" time="0.0015" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="setup-test-env Tests.Ensure-Pester Function Tests" executed="True" result="Failure" success="False" time="5.0018" asserts="0" description="setup-test-env Tests.Ensure-Pester Function Tests">
+                <results>
+                  <test-case description="should be defined and accessible" name="setup-test-env Tests.Ensure-Pester Function Tests.should be defined and accessible" time="0.012" asserts="0" success="False" result="Failure" executed="True">
+                    <failure>
+                      <message>ParameterBindingValidationException: Cannot bind argument to parameter 'Path' because it is null.</message>
+                      <stack-trace>at &lt;ScriptBlock&gt;, C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\tests\setup-test-env.Tests.ps1:74</stack-trace>
+                    </failure>
+                  </test-case>
+                  <test-case description="should handle execution with valid parameters" name="setup-test-env Tests.Ensure-Pester Function Tests.should handle execution with valid parameters" time="0.0108" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="setup-test-env Tests.Ensure-Python Function Tests" executed="True" result="Failure" success="False" time="5.0266" asserts="0" description="setup-test-env Tests.Ensure-Python Function Tests">
+                <results>
+                  <test-case description="should be defined and accessible" name="setup-test-env Tests.Ensure-Python Function Tests.should be defined and accessible" time="0.0115" asserts="0" success="False" result="Failure" executed="True">
+                    <failure>
+                      <message>ParameterBindingValidationException: Cannot bind argument to parameter 'Path' because it is null.</message>
+                      <stack-trace>at &lt;ScriptBlock&gt;, C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\tests\setup-test-env.Tests.ps1:85</stack-trace>
+                    </failure>
+                  </test-case>
+                  <test-case description="should handle execution with valid parameters" name="setup-test-env Tests.Ensure-Python Function Tests.should handle execution with valid parameters" time="0.0105" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="setup-test-env Tests.Ensure-Poetry Function Tests" executed="True" result="Failure" success="False" time="5.0506" asserts="0" description="setup-test-env Tests.Ensure-Poetry Function Tests">
+                <results>
+                  <test-case description="should be defined and accessible" name="setup-test-env Tests.Ensure-Poetry Function Tests.should be defined and accessible" time="0.0113" asserts="0" success="False" result="Failure" executed="True">
+                    <failure>
+                      <message>ParameterBindingValidationException: Cannot bind argument to parameter 'Path' because it is null.</message>
+                      <stack-trace>at &lt;ScriptBlock&gt;, C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\tests\setup-test-env.Tests.ps1:96</stack-trace>
+                    </failure>
+                  </test-case>
+                  <test-case description="should handle execution with valid parameters" name="setup-test-env Tests.Ensure-Poetry Function Tests.should handle execution with valid parameters" time="0.0094" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+    </results>
+  </test-suite>
+</test-results>

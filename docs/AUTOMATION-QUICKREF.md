@@ -1,29 +1,29 @@
-# 🤖 Automation Quick Reference
+# Automation Quick Reference
 
 Quick reference for AI agents, developers, and automated systems working on the OpenTofu Lab Automation project.
 
-## 🚨 Critical Rules
+## Critical Rules
 
-### ❌ NEVER DO
+### [FAIL] NEVER DO
 - Create `.md` summary files in project root directory
 - Use deprecated `pwsh/lab_utils/` import paths
 - Edit files without running validation afterwards
 - Skip report generation for significant changes (>5 files)
 
-### ✅ ALWAYS DO
+### [PASS] ALWAYS DO
 - Use report utility: `./scripts/utilities/new-report.ps1`
 - Validate after changes: Run appropriate validation scripts
 - Update CHANGELOG.md for major changes
 - Import modules with full paths: `/workspaces/opentofu-lab-automation/pwsh/modules/ModuleName`
 
-## 📋 Quick Commands
+## Quick Commands
 
 ### Create New Report
 ```powershell
 # Test analysis report
 ./scripts/utilities/new-report.ps1 -Type "test-analysis" -Title "Test Infrastructure Updates" -Template "test"
 
-# Workflow analysis report  
+# Workflow analysis report 
 ./scripts/utilities/new-report.ps1 -Type "workflow-analysis" -Title "CI Pipeline Optimization" -Template "workflow"
 
 # Project status report
@@ -65,28 +65,28 @@ Invoke-ComprehensiveValidation
 ./run-comprehensive-tests.ps1
 ```
 
-## 📁 Directory Structure (Key Paths)
+## � Directory Structure (Key Paths)
 
 ```
 /workspaces/opentofu-lab-automation/
-├── docs/reports/                    # ✅ All reports go here
-│   ├── test-analysis/              # Test & validation reports
-│   ├── workflow-analysis/          # CI/CD & workflow reports  
-│   ├── project-status/             # Milestone & status reports
-│   ├── README.md                   # Report templates & guidelines
-│   └── INDEX.md                    # Report index & quick links
-├── pwsh/modules/                   # ✅ Current module location
-│   ├── LabRunner/                  # ✅ Use this path
-│   └── CodeFixer/                  # ✅ Use this path
-├── pwsh/lab_utils/                 # ❌ DEPRECATED - Don't use
+├── docs/reports/ # [PASS] All reports go here
+│ ├── test-analysis/ # Test & validation reports
+│ ├── workflow-analysis/ # CI/CD & workflow reports 
+│ ├── project-status/ # Milestone & status reports
+│ ├── README.md # Report templates & guidelines
+│ └── INDEX.md # Report index & quick links
+├── pwsh/modules/ # [PASS] Current module location
+│ ├── LabRunner/ # [PASS] Use this path
+│ └── CodeFixer/ # [PASS] Use this path
+├── pwsh/lab_utils/ # [FAIL] DEPRECATED - Don't use
 ├── scripts/
-│   ├── utilities/new-report.ps1   # ✅ Report generation utility
-│   ├── maintenance/auto-maintenance.ps1  # ✅ Automated maintenance
-│   └── validation/                 # Validation scripts
+│ ├── utilities/new-report.ps1 # [PASS] Report generation utility
+│ ├── maintenance/auto-maintenance.ps1 # [PASS] Automated maintenance
+│ └── validation/ # Validation scripts
 └── .github/copilot-instructions.md # Agent guidelines
 ```
 
-## 🔄 Workflow Integration
+## Workflow Integration
 
 ### After Module Changes
 1. `Import-Module "/workspaces/opentofu-lab-automation/pwsh/modules/CodeFixer"`
@@ -109,18 +109,18 @@ Invoke-ComprehensiveValidation
 2. Ensure no summary files in root directory
 3. Update CHANGELOG.md if major changes
 
-## 🎯 Agent Decision Tree
+## Agent Decision Tree
 
 ```
 Change Type?
 ├── Module/Code → Run CodeFixer validation → Generate test report if needed
-├── Tests → Run test validation → Generate test analysis if >5 failures  
+├── Tests → Run test validation → Generate test analysis if >5 failures 
 ├── Workflows → Run workflow validation → Generate workflow analysis if pipeline affected
 ├── Documentation → Update INDEX.md if adding reports → Update CHANGELOG.md if major
 └── Major Feature → Run full maintenance → Generate project status report
 ```
 
-## 📞 Support Commands
+## � Support Commands
 
 ```powershell
 # Get current project health
@@ -135,4 +135,4 @@ Change Type?
 
 ---
 
-*Keep this reference handy for consistent project maintenance! 🚀*
+*Keep this reference handy for consistent project maintenance! *

@@ -179,7 +179,7 @@ function Invoke-HealthCheckTask {
         # Check for deprecated paths
         Write-MaintenanceLog "Checking for deprecated paths..." "INFO"
         $deprecatedPaths = Get-ChildItem -Path $ProjectRoot -Recurse -Include "*.ps1", "*.psm1" | 
-            Select-String -Pattern "pwsh/lab_utils" -SimpleMatch
+            Select-String -Pattern "pwsh/modules" -SimpleMatch
         
         if ($deprecatedPaths) {
             $healthData.Issues += "Deprecated lab_utils paths found in $($deprecatedPaths.Count) files"
@@ -287,6 +287,7 @@ else {
     Write-MaintenanceLog "Maintenance task '$Task' failed!" "ERROR"
     exit 1
 }
+
 
 
 

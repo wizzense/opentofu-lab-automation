@@ -167,7 +167,7 @@ $content = Get-Content $FilePath -Raw
         
         # Fix deprecated lab_utils paths
         @{
-            Pattern = "'pwsh/lab_utils/"
+            Pattern = "'pwsh/modules/"
             Replacement = "'pwsh/modules/LabRunner/"
             Description = "Update deprecated lab_utils paths"
         }
@@ -254,6 +254,7 @@ if ($fixedCount -gt 0 -and -not $DryRun) {
 }
 
 Write-SyntaxLog "Test syntax fixes completed!" "SUCCESS"
+
 
 
 

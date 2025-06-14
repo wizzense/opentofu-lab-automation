@@ -37,6 +37,9 @@ param(
     [switch]$SkipSyntaxCheck
 )
 
+# Import the shared logging module
+Import-Module "/pwsh/modules/Logging/" -Force
+
 # Initialize results tracking
 $script:Results = @{
     TotalFiles = 0
@@ -129,7 +132,7 @@ try {
         
         # Find Param block and Import-Module statements
         $paramMatch = [regex]::Match($content, '(?m)^\s*Param\s*\(', [System.Text.RegularExpressions.RegexOptions]::Multiline)
-        $importMatches = [regex]::Matches($content, '(?m)^\s*Import-Module\s+', [System.Text.RegularExpressions.RegexOptions]::Multiline)
+        $importMatches = [regex]::Matches($content, '(?m)^\s*Import-Module\s+"/pwsh/modules/(LabRunner|CodeFixer|BackupManager)/"', [System.Text.RegularExpressions.RegexOptions]::Multiline)
         
         $issues = @()
     } catch {
@@ -493,6 +496,21 @@ try {
         exit 1
     } else {
         throw
+    }
+}
+
+# Ensure Write-CustomLog is defined if not imported
+if (-not (Get-Command "Write-CustomLog" -ErrorAction SilentlyContinue)) {
+    function Write-CustomLog {
+        param([string]$Message, [string]$Level = "INFO")
+        $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+        $color = switch ($Level) {
+            "ERROR" { "Red" }
+            "WARN" { "Yellow" }
+            "INFO" { "Green" }
+            default { "White" }
+        }
+        Write-Host "[$timestamp] [$Level] $Message" -ForegroundColor $color
     }
 }
 

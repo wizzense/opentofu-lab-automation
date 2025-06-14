@@ -1,0 +1,137 @@
+---
+name: "Cross-Platform Testing"
+
+on:
+ workflow_dispatch:
+ pull_request:
+ push:
+ branches: [main]
+ paths:
+ - 'pwsh/**'
+ - 'tests/**'
+ - '.github/workflows/unified-testing.yml'
+
+jobs:
+ pester-tests:
+ name: "Pester Tests (${{ matrix.os }})"
+ runs-on: ${{ matrix.os }}
+ timeout-minutes: 45
+ strategy:
+ fail-fast: false
+ matrix:
+ include:
+ - os: windows-latest
+ shell: pwsh
+ pwsh-path: "C:\\Program Files\\PowerShell\\7\\pwsh.exe"
+ modules-path: "C:\\Users\\runneradmin\\Documents\\PowerShell\\Modules"
+ cache-key: windows-pwsh-modules
+ - os: ubuntu-latest
+ shell: pwsh
+ pwsh-path: "/usr/bin/pwsh"
+ modules-path: "/home/runner/.local/share/powershell/Modules"
+ cache-key: linux-pwsh-modules
+ - os: macos-latest
+ shell: pwsh
+ pwsh-path: "/usr/local/bin/pwsh"
+ modules-path: "/Users/runner/.local/share/powershell/Modules"
+ cache-key: macos-pwsh-modules
+
+ steps:
+ - name: "Checkout Repository"
+ uses: actions/checkout@v4
+
+ - name: "Cache PowerShell Modules"
+ uses: actions/cache@v4
+ with:
+ path: ${{ matrix.modules-path }}
+ key: ${{ matrix.cache-key }}-${{ hashFiles('tests/PesterConfiguration.psd1') }}
+ restore-keys: ${{ matrix.cache-key }}-
+
+ - name: "Remove Old Pester"
+ shell: ${{ matrix.shell }}
+ run: |
+ $ErrorActionPreference = 'Stop'
+ try {
+ $old = Get-Module -ListAvailable -Name Pester | Where-Object { $_.Version -lt [version]'5.0.0' }
+ foreach ($mod in $old) {
+ Remove-Item -Recurse -Force $mod.ModuleBase -ErrorAction SilentlyContinue
+ }
+ Write-Host "Old Pester modules removed successfully" -ForegroundColor Green
+ } catch {
+ Write-Warning "Could not remove old Pester modules: $_"
+ }
+
+ - name: "Install Pester"
+ shell: ${{ matrix.shell }}
+ run: |
+ $ErrorActionPreference = 'Stop'
+ try {
+ Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
+ Get-Module Pester -ListAvailable | Where-Object Version -lt 5.0.0 | Uninstall-Module -Force -ErrorAction SilentlyContinue
+ Install-Module -Name Pester -RequiredVersion 5.7.1 -Force -Scope CurrentUser -AllowClobber
+ Write-Host "Pester 5.7.1 installed successfully" -ForegroundColor Green
+ } catch {
+ Write-Error "Failed to install Pester: $_"
+ exit 1
+ }
+
+ - name: "Install PowerShell YAML"
+ shell: ${{ matrix.shell }}
+ run: |
+ $ErrorActionPreference = 'Stop'
+ try {
+ Install-Module -Name powershell-yaml -Force -Scope CurrentUser -AllowClobber
+ Write-Host "PowerShell YAML module installed successfully" -ForegroundColor Green
+ } catch {
+ Write-Error "Failed to install PowerShell YAML: $_"
+ exit 1
+ }
+
+ - name: "Import Required Modules"
+ shell: ${{ matrix.shell }}
+ run: |
+ $ErrorActionPreference = 'Stop'
+ try {
+ Import-Module ./pwsh/modules/CodeFixer/CodeFixer.psd1 -Force
+ Import-Module ./pwsh/modules/LabRunner/LabRunner.psd1 -Force
+ Write-Host "Required modules imported successfully" -ForegroundColor Green
+ } catch {
+ Write-Error "Failed to import modules: $_"
+ exit 1
+ }
+
+ - name: "Run Pester Tests"
+ shell: ${{ matrix.shell }}
+ run: |
+ $config = New-PesterConfiguration
+ $config.Run.Path = "tests"
+ $config.Run.Exit = true
+ $config.TestResult.Enabled = true
+ $config.TestResult.OutputFormat = "NUnitXml"
+ $config.TestResult.OutputPath = "TestResults-${{ matrix.os }}.xml"
+ $config.Output.Verbosity = "Detailed"
+ $config.Filter.ExcludeTag = "Integration"
+
+ Invoke-Pester -Configuration $config
+
+ - name: "Upload Test Results"
+ if: always()
+ uses: actions/upload-artifact@v4
+ with:
+ name: pester-results-${{ matrix.os }}
+ path: TestResults-${{ matrix.os }}.xml
+
+ test-summary:
+ name: "Test Summary"
+ needs: pester-tests
+ if: always()
+ runs-on: ubuntu-latest
+ steps:
+ - name: "Generate Test Summary"
+ run: |
+ echo "# Test Results Summary" >> $GITHUB_STEP_SUMMARY
+ echo "" >> $GITHUB_STEP_SUMMARY
+ echo "## Cross-Platform Tests" >> $GITHUB_STEP_SUMMARY
+ echo "- Windows: ${{ needs.pester-tests.result }}" >> $GITHUB_STEP_SUMMARY
+ echo "- Ubuntu: ${{ needs.pester-tests.result }}" >> $GITHUB_STEP_SUMMARY
+ echo "- macOS: ${{ needs.pester-tests.result }}" >> $GITHUB_STEP_SUMMARY

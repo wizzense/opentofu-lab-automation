@@ -414,7 +414,7 @@ try {
     
     if ($EnableCodeCoverage) {
         $pesterConfig.CodeCoverage.Enabled = $true
-        $pesterConfig.CodeCoverage.Path = @('pwsh/runner_scripts', 'pwsh/lab_utils')
+        $pesterConfig.CodeCoverage.Path = @('pwsh/runner_scripts', 'pwsh/modules')
         $pesterConfig.CodeCoverage.OutputPath = Join-Path $OutputPath 'coverage.xml'
     }
     
@@ -459,6 +459,7 @@ try {
     Write-Error "Test execution failed: $_"
     exit 1
 }
+
 
 
 

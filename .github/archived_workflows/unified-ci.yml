@@ -1,0 +1,500 @@
+---
+name: " CI/CD Pipeline"
+
+on:
+ workflow_dispatch:
+ pull_request:
+ branches: [main]
+ push:
+ branches: [main]
+ schedule:
+ # Run daily at 6 AM UTC for maintenance
+ - cron: '0 6 * * *'
+
+jobs:
+ # First job: Validate all workflow files
+ validate-workflows:
+ name: " Validate Workflows"
+ runs-on: ubuntu-latest
+ timeout-minutes: 10
+ steps:
+ - name: " Checkout Repository"
+ uses: actions/checkout@v4
+
+ - name: " Install Python Dependencies"
+ run: |
+ if ! pip install -r scripts/requirements.txt; then
+ echo "Failed to install Python dependencies" >&2
+ exit 1
+ fi
+
+ - name: " Validate Workflow Files"
+ run: |
+ echo "Validating workflow files..."
+ if ! python3 scripts/validate-workflows.py .github/workflows/*.yml; then
+ echo "Workflow validation failed" >&2
+ exit 1
+ fi
+ echo " All workflow files validated successfully"
+
+ # Lint PowerShell code
+ lint-powershell:
+ name: " PowerShell Linting"
+ needs: [validate-workflows]
+ runs-on: ubuntu-latest
+ steps:
+ - name: " Checkout Repository"
+ uses: actions/checkout@v4
+
+ - name: " Install PowerShell"
+ shell: bash
+ run: |
+ if ! sudo apt-get update || ! sudo apt-get install -y powershell; then
+ echo "Failed to install PowerShell" >&2
+ exit 1
+ fi
+
+ - name: " Cache PSScriptAnalyzer"
+ uses: actions/cache@v4
+ with:
+ path: /home/runner/.local/share/powershell/Modules
+ key: psscriptanalyzer-${{ hashFiles('scripts/validation/run-lint.ps1') }}
+ restore-keys: psscriptanalyzer-
+
+ - name: " Install PSScriptAnalyzer"
+ shell: pwsh
+ run: |
+ $ErrorActionPreference = 'Stop'
+ if (-not (Get-Module -ListAvailable -Name PSScriptAnalyzer)) {
+ # Ensure PowerShell Gallery is trusted
+ Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
+ Install-Module -Name PSScriptAnalyzer -Force -Scope CurrentUser -AllowClobber
+ Write-Host "PSScriptAnalyzer installed successfully" -ForegroundColor Green
+ } else {
+ Write-Host "PSScriptAnalyzer already installed" -ForegroundColor Green
+ }
+
+ - name: " Auto-fix PowerShell Issues"
+ shell: pwsh
+ run: |
+ Write-Host "Running auto-fix on PowerShell scripts..." -ForegroundColor Yellow
+ try {
+ # Import CodeFixer module
+ Import-Module ./pwsh/modules/CodeFixer/CodeFixer.psd1 -Force -ErrorAction SilentlyContinue
+ 
+ # Run basic auto-fix
+ if (Get-Command Invoke-AutoFix -ErrorAction SilentlyContinue) {
+ Invoke-AutoFix -Path "${{ github.workspace }}"
+ } else {
+ Write-Warning "CodeFixer module not available, skipping auto-fix"
+ }
+ Write-Host "[PASS] Auto-fix completed" -ForegroundColor Green
+ } catch {
+ Write-Warning "Auto-fix encountered issues: $_"
+ # Continue to validation even if auto-fix has issues
+ }
+
+ - name: " Quick Issue Check & Auto-Fix"
+ shell: pwsh
+ run: |
+ Write-Host "Running quick issue detection and auto-fixing..." -ForegroundColor Cyan
+ try {
+ # Import CodeFixer module
+ Import-Module ./pwsh/modules/CodeFixer/CodeFixer.psd1 -Force -ErrorAction SilentlyContinue
+ 
+ # Run comprehensive validation
+ if (Get-Command Invoke-ComprehensiveValidation -ErrorAction SilentlyContinue) {
+ Invoke-ComprehensiveValidation
+ } else {
+ Write-Warning "CodeFixer module not available for comprehensive validation"
+ }
+ Write-Host "[PASS] Quick issue check completed" -ForegroundColor Green
+ } catch {
+ Write-Warning "Quick issue check encountered issues: $_"
+ # Continue even if there are issues - they will be caught in validation
+ }
+
+ - name: " Run PowerShell Linting"
+ id: lint
+ shell: pwsh
+ run: |
+ try {
+ # Import CodeFixer module
+ Import-Module ./pwsh/modules/CodeFixer/CodeFixer.psd1 -Force -ErrorAction SilentlyContinue
+ 
+ # Run PowerShell linting using CodeFixer
+ if (Get-Command Invoke-PowerShellLint -ErrorAction SilentlyContinue) {
+ $results = Invoke-PowerShellLint -Path "${{ github.workspace }}/pwsh" -Recurse
+ $errorsCount = ($results | Where-Object { $_.Severity -eq 'Error' }).Count
+ "errors=$errorsCount" >> $env:GITHUB_OUTPUT
+ 
+ if ($errorsCount -gt 0) {
+ Write-Error "Found $errorsCount linting errors"
+ exit 1
+ }
+ } else {
+ Write-Warning "CodeFixer linting not available, running basic PSScriptAnalyzer"
+ $results = Invoke-ScriptAnalyzer -Path "${{ github.workspace }}/pwsh" -Recurse -Severity Error
+ $errorsCount = $results.Count
+ "errors=$errorsCount" >> $env:GITHUB_OUTPUT
+ 
+ if ($errorsCount -gt 0) {
+ Write-Error "Found $errorsCount linting errors"
+ exit 1
+ }
+ }
+ Write-Host "[PASS] Linting completed successfully" -ForegroundColor Green
+ } catch {
+ Write-Error "Linting failed: $_"
+ exit 1
+ }
+
+ - name: " Post Linting Results Summary"
+ if: always()
+ run: |
+ echo "### PowerShell Linting Results" >> $GITHUB_STEP_SUMMARY
+ echo "Errors found: ${{ steps.lint.outputs.errors || '0' }}" >> $GITHUB_STEP_SUMMARY
+
+ # Run Python tests
+ pytest:
+ name: " Python Tests"
+ needs: [validate-workflows]
+ runs-on: ubuntu-latest
+ steps:
+ - name: " Checkout Repository"
+ uses: actions/checkout@v4
+
+ - name: Set up Python
+ uses: actions/setup-python@v4
+ with:
+ python-version: '3.12'
+
+ - name: Install dependencies
+ run: |
+ python -m pip install --upgrade pip
+ pip install pytest pytest-cov typer textual
+ pip install -e .
+
+ - name: Run pytest
+ run: |
+ python -m pytest py/tests -v
+
+ # Run Pester tests on Linux
+ pester-linux:
+ name: Pester Tests (Linux)
+ needs: [validate-workflows]
+ runs-on: ubuntu-latest
+ timeout-minutes: 30
+ steps:
+ - uses: actions/checkout@v4
+
+ - name: Install PowerShell
+ shell: bash
+ run: |
+ sudo apt-get update
+ sudo apt-get install -y wget apt-transport-https software-properties-common
+ wget -q https://packages.microsoft.com/config/ubuntu/22.04/packages-microsoft-prod.deb
+ sudo dpkg -i packages-microsoft-prod.deb
+ sudo apt-get update
+ sudo apt-get install -y powershell
+
+ - name: Install Pester
+ shell: pwsh
+ run: |
+ $ErrorActionPreference = 'Stop'
+ # Ensure PowerShell Gallery is trusted
+ Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
+ # Remove old Pester versions that might conflict
+ Get-Module Pester -ListAvailable | Where-Object Version -lt 5.0.0 | Uninstall-Module -Force -ErrorAction SilentlyContinue
+ # Install specific Pester version
+ Install-Module -Name Pester -RequiredVersion 5.7.1 -Force -Scope CurrentUser -AllowClobber
+ Write-Host "Pester 5.7.1 installed successfully" -ForegroundColor Green
+
+ - name: Run Pester Tests
+ shell: pwsh
+ run: |
+ # Import the CodeFixer module
+ Import-Module ./pwsh/modules/CodeFixer/CodeFixer.psd1 -Force
+
+ # Run quick issue check and auto-fix before tests
+ Write-Host "Running pre-test quick issue check..." -ForegroundColor Cyan
+ try {
+ # Import CodeFixer module and run basic validation
+ Import-Module ./pwsh/modules/CodeFixer/CodeFixer.psd1 -Force -ErrorAction SilentlyContinue
+ if (Get-Command Invoke-AutoFix -ErrorAction SilentlyContinue) {
+ Invoke-AutoFix -Path "${{ github.workspace }}"
+ }
+ } catch {
+ Write-Warning "Pre-test quick issue check had issues: $_"
+ }
+
+ $config = New-PesterConfiguration
+ $config.Run.Path = "tests"
+ $config.Run.Exit = $true
+ $config.TestResult.Enabled = $true
+ $config.TestResult.OutputFormat = "NUnitXml"
+ $config.TestResult.OutputPath = "TestResults.xml"
+ $config.Output.Verbosity = "Detailed"
+
+ Invoke-Pester -Configuration $config
+
+ - name: Upload test results
+ if: always()
+ uses: actions/upload-artifact@v4
+ with:
+ name: pester-results-linux
+ path: TestResults.xml
+
+ # Health check
+ health-check:
+ name: Health Check
+ needs: [validate-workflows]
+ runs-on: ubuntu-latest
+ steps:
+ - uses: actions/checkout@v4
+
+ - name: Install PowerShell
+ shell: bash
+ run: |
+ sudo apt-get update
+ sudo apt-get install -y wget apt-transport-https software-properties-common
+ wget -q https://packages.microsoft.com/config/ubuntu/22.04/packages-microsoft-prod.deb
+ sudo dpkg -i packages-microsoft-prod.deb
+ sudo apt-get update
+ sudo apt-get install -y powershell
+
+ - name: Run Comprehensive Health Check
+ shell: pwsh
+ run: |
+ # Use the final validation script as the health check
+ ./scripts/validation/run-validation.ps1 -CI | ConvertTo-Json | Out-File health-report.json
+
+ - name: Upload health report
+ uses: actions/upload-artifact@v4
+ with:
+ name: health-report
+ path: health-report.json
+
+ # Workflow health monitor
+ workflow-health:
+ name: Workflow Health Monitor
+ needs: [lint-powershell, pytest, pester-linux, health-check]
+ if: always()
+ runs-on: ubuntu-latest
+ permissions:
+ contents: read
+ issues: write
+ actions: read
+ steps:
+ - uses: actions/checkout@v4
+
+ - name: Check workflow health
+ id: health
+ uses: actions/github-script@v7
+ with:
+ script: |
+ const { owner, repo } = context.repo;
+
+ // Get recent workflow runs (last 50)
+ const runs = await github.rest.actions.listWorkflowRunsForRepo({
+ owner,
+ repo,
+ per_page: 50,
+ status: 'completed'
+ });
+
+ // Analyze workflow success rates
+ const workflowStats = {};
+ const recentRuns = runs.data.workflow_runs.filter(run => {
+ const runDate = new Date(run.created_at);
+ const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+ return runDate > sevenDaysAgo;
+ });
+
+ for (const run of recentRuns) {
+ const workflowName = run.name;
+ if (!workflowStats[workflowName]) {
+ workflowStats[workflowName] = {
+ total: 0,
+ success: 0,
+ failure: 0,
+ cancelled: 0
+ };
+ }
+
+ workflowStats[workflowName].total++;
+ if (run.conclusion === 'success') {
+ workflowStats[workflowName].success++;
+ } else if (run.conclusion === 'failure') {
+ workflowStats[workflowName].failure++;
+ } else if (run.conclusion === 'cancelled') {
+ workflowStats[workflowName].cancelled++;
+ }
+ }
+
+ // Calculate success rates and identify problems
+ const healthReport = {
+ timestamp: new Date().toISOString(),
+ overallHealth: 'good',
+ workflows: {},
+ issues: []
+ };
+
+ for (const [workflowName, stats] of Object.entries(workflowStats)) {
+ const successRate = stats.total > 0 ? (stats.success / stats.total) * 100 : 0;
+ const failureRate = stats.total > 0 ? (stats.failure / stats.total) * 100 : 0;
+
+ healthReport.workflows[workflowName] = {
+ total: stats.total,
+ success: stats.success,
+ failure: stats.failure,
+ cancelled: stats.cancelled,
+ successRate: Math.round(successRate * 100) / 100,
+ failureRate: Math.round(failureRate * 100) / 100
+ };
+
+ // Flag issues
+ if (successRate < 80 && stats.total >= 5) {
+ healthReport.issues.push({
+ type: 'low_success_rate',
+ workflow: workflowName,
+ successRate: successRate,
+ severity: successRate < 50 ? 'critical' : 'warning'
+ });
+ healthReport.overallHealth = successRate < 50 ? 'critical' : 'degraded';
+ }
+ }
+
+ // Create a workflow health report
+ core.setOutput('health_status', healthReport.overallHealth);
+ core.setOutput('health_issues', healthReport.issues.length);
+
+ // Write health report to workflow summary
+ let summaryMarkdown = `## OpenTofu Lab Workflow Health Report\n\n`;
+ summaryMarkdown += `Overall Health: **${healthReport.overallHealth}**\n\n`;
+
+ if (healthReport.issues.length > 0) {
+ summaryMarkdown += `### Issues Detected\n\n`;
+ summaryMarkdown += `| Workflow | Success Rate | Severity |\n`;
+ summaryMarkdown += `|---------|--------------|----------|\n`;
+
+ for (const issue of healthReport.issues) {
+ summaryMarkdown += `| ${issue.workflow} | ${issue.successRate.toFixed(2)}% | ${issue.severity} |\n`;
+ }
+
+ summaryMarkdown += `\n`;
+ }
+
+ summaryMarkdown += `### Workflow Statistics\n\n`;
+ summaryMarkdown += `| Workflow | Success | Failure | Cancelled | Success Rate |\n`;
+ summaryMarkdown += `|---------|---------|---------|-----------|-------------|\n`;
+
+ for (const [workflowName, stats] of Object.entries(healthReport.workflows)) {
+ summaryMarkdown += `| ${workflowName} | ${stats.success} | ${stats.failure} | ${stats.cancelled} | ${stats.successRate}% |\n`;
+ }
+
+ await core.summary
+ .addRaw(summaryMarkdown)
+ .write();
+
+ // Optionally create GitHub issues for serious problems
+ if (healthReport.overallHealth === 'critical') {
+ const issueTitle = `Critical Workflow Health Issues Detected`;
+ const issueBody = `## Critical Workflow Health Issues\n\n${summaryMarkdown}`;
+
+ const { data: issues } = await github.rest.issues.listForRepo({
+ owner,
+ repo,
+ state: 'open',
+ labels: ['workflow-health']
+ });
+
+ // Don't create duplicate issues
+ if (issues.length === 0) {
+ await github.rest.issues.create({
+ owner,
+ repo,
+ title: issueTitle,
+ body: issueBody,
+ labels: ['workflow-health', 'critical']
+ });
+ }
+ }
+
+ # Summary of all jobs status
+ summary:
+ name: CI Summary
+ runs-on: ubuntu-latest
+ needs: [validate-workflows, lint-powershell, pytest, pester-linux, health-check, workflow-health]
+ if: always()
+ steps:
+ - name: Check results and provide summary
+ run: |
+ echo " # CI/CD Summary" >> $GITHUB_STEP_SUMMARY
+ echo "" >> $GITHUB_STEP_SUMMARY
+ echo "| Job | Status |" >> $GITHUB_STEP_SUMMARY
+ echo "|-----|--------|" >> $GITHUB_STEP_SUMMARY
+ echo "| Validation | ${{ needs.validate-workflows.result }} |" >> $GITHUB_STEP_SUMMARY
+ echo "| Lint | ${{ needs.lint-powershell.result }} |" >> $GITHUB_STEP_SUMMARY
+ echo "| PyTest | ${{ needs.pytest.result }} |" >> $GITHUB_STEP_SUMMARY
+ echo "| Pester (Linux) | ${{ needs.pester-linux.result }} |" >> $GITHUB_STEP_SUMMARY
+ echo "| Health Check | ${{ needs.health-check.result }} |" >> $GITHUB_STEP_SUMMARY
+ echo "| Workflow Health | ${{ needs.workflow-health.result }} |" >> $GITHUB_STEP_SUMMARY
+
+ overall="success"
+ if [[ "${{ needs.validate-workflows.result }}" != "success" ||
+ "${{ needs.lint-powershell.result }}" != "success" ||
+ "${{ needs.pytest.result }}" != "success" ||
+ "${{ needs.pester-linux.result }}" != "success" ||
+ "${{ needs.health-check.result }}" != "success" ||
+ "${{ needs.workflow-health.result }}" != "success" ]]; then
+ overall="failure"
+ fi
+
+ if [[ "$overall" == "failure" ]]; then
+ echo " Some tests failed - check logs for details" | tee -a $GITHUB_STEP_SUMMARY
+ exit 1
+ else
+ echo " All checks completed successfully" | tee -a $GITHUB_STEP_SUMMARY
+ fi
+
+ # Install missing dependencies
+ install-dependencies:
+ name: " Install Missing Dependencies"
+ runs-on: ubuntu-latest
+ steps:
+ - name: " Checkout Repository"
+ uses: actions/checkout@v4
+
+ - name: " Install Missing Dependencies"
+ shell: bash
+ run: |
+ sudo apt-get update
+ sudo apt-get install -y curl unzip
+ # Install tofu
+ curl -Lo tofu.zip https://github.com/opentofu/opentofu/releases/download/v1.10.0-rc1/tofu_1.10.0-rc1_linux_amd64.zip
+ unzip -o tofu.zip
+ sudo mv tofu /usr/local/bin/
+ # Install poetry
+ curl -sSL https://install.python-poetry.org | python3 -
+ export PATH="$HOME/.local/bin:$PATH"
+ # Install GitHub CLI
+ curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
+ sudo chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg
+ echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
+ sudo apt-get update
+ sudo apt-get install -y gh
+
+ - name: " Ensure Module Imports"
+ shell: pwsh
+ run: |
+ Import-Module "$env:GITHUB_WORKSPACE/pwsh/modules/CodeFixer/CodeFixer.psd1" -Force
+ Import-Module "$env:GITHUB_WORKSPACE/pwsh/modules/LabRunner/LabRunner.psd1" -Force
+
+ - name: Install OpenTofu (Windows)
+ if: runner.os == 'Windows'
+ shell: pwsh
+ run: |
+ Invoke-WebRequest -Uri "https://github.com/opentofu/opentofu/releases/download/v1.10.0-rc1/tofu_1.10.0-rc1_windows_amd64.zip" -OutFile "tofu.zip"
+ Expand-Archive -Path "tofu.zip" -DestinationPath "$env:ProgramFiles\OpenTofu"
+ $env:Path += ";$env:ProgramFiles\OpenTofu"

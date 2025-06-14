@@ -1,0 +1,93 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<test-results xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="nunit_schema_2.5.xsd" name="Pester" total="10" errors="0" failures="10" not-run="0" inconclusive="0" ignored="0" skipped="0" invalid="0" date="2025-06-14" time="09:26:25">
+  <environment machine-name="WZNS" nunit-version="2.5.8.0" clr-version="9.0.4" os-version="10.0.26100" user="alexa" user-domain="WZNS" platform="Microsoft Windows 11 Pro|C:\WINDOWS|\Device\Harddisk1\Partition3" cwd="C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation" />
+  <culture-info current-culture="en-US" current-uiculture="en-US" />
+  <test-suite type="TestFixture" name="Pester" executed="True" result="Failure" success="False" time="0.391" asserts="0" description="Pester">
+    <results>
+      <test-suite type="TestFixture" name="C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\tests\0203_Install-npm.Tests.ps1" executed="True" result="Failure" success="False" time="0.391" asserts="0" description="C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\tests\0203_Install-npm.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="0203_Install-npm Tests" executed="True" result="Failure" success="False" time="0" asserts="0" description="0203_Install-npm Tests">
+            <results>
+              <test-suite type="TestFixture" name="0203_Install-npm Tests.Script Structure Validation" executed="True" result="Failure" success="False" time="0" asserts="0" description="0203_Install-npm Tests.Script Structure Validation">
+                <results>
+                  <test-case description="should have valid PowerShell syntax" name="0203_Install-npm Tests.Script Structure Validation.should have valid PowerShell syntax" time="0" asserts="0" success="False" result="Failure" executed="True">
+                    <failure>
+                      <message>This test should run but it did not. Most likely a setup in some parent block failed.</message>
+                      <stack-trace />
+                    </failure>
+                  </test-case>
+                  <test-case description="should follow naming conventions" name="0203_Install-npm Tests.Script Structure Validation.should follow naming conventions" time="0" asserts="0" success="False" result="Failure" executed="True">
+                    <failure>
+                      <message>This test should run but it did not. Most likely a setup in some parent block failed.</message>
+                      <stack-trace />
+                    </failure>
+                  </test-case>
+                  <test-case description="should define expected functions" name="0203_Install-npm Tests.Script Structure Validation.should define expected functions" time="0" asserts="0" success="False" result="Failure" executed="True">
+                    <failure>
+                      <message>This test should run but it did not. Most likely a setup in some parent block failed.</message>
+                      <stack-trace />
+                    </failure>
+                  </test-case>
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="0203_Install-npm Tests.Parameter Validation" executed="True" result="Failure" success="False" time="0" asserts="0" description="0203_Install-npm Tests.Parameter Validation">
+                <results>
+                  <test-case description="should accept Config parameter" name="0203_Install-npm Tests.Parameter Validation.should accept Config parameter" time="0" asserts="0" success="False" result="Failure" executed="True">
+                    <failure>
+                      <message>This test should run but it did not. Most likely a setup in some parent block failed.</message>
+                      <stack-trace />
+                    </failure>
+                  </test-case>
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="0203_Install-npm Tests.Installation Tests" executed="True" result="Failure" success="False" time="0" asserts="0" description="0203_Install-npm Tests.Installation Tests">
+                <results>
+                  <test-case description="should validate prerequisites" name="0203_Install-npm Tests.Installation Tests.should validate prerequisites" time="0" asserts="0" success="False" result="Failure" executed="True">
+                    <failure>
+                      <message>This test should run but it did not. Most likely a setup in some parent block failed.</message>
+                      <stack-trace />
+                    </failure>
+                  </test-case>
+                  <test-case description="should handle download failures gracefully" name="0203_Install-npm Tests.Installation Tests.should handle download failures gracefully" time="0" asserts="0" success="False" result="Failure" executed="True">
+                    <failure>
+                      <message>This test should run but it did not. Most likely a setup in some parent block failed.</message>
+                      <stack-trace />
+                    </failure>
+                  </test-case>
+                  <test-case description="should verify installation success" name="0203_Install-npm Tests.Installation Tests.should verify installation success" time="0" asserts="0" success="False" result="Failure" executed="True">
+                    <failure>
+                      <message>This test should run but it did not. Most likely a setup in some parent block failed.</message>
+                      <stack-trace />
+                    </failure>
+                  </test-case>
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="0203_Install-npm Tests.Install-NpmDependencies Function Tests" executed="True" result="Failure" success="False" time="0" asserts="0" description="0203_Install-npm Tests.Install-NpmDependencies Function Tests">
+                <results>
+                  <test-case description="should be defined and accessible" name="0203_Install-npm Tests.Install-NpmDependencies Function Tests.should be defined and accessible" time="0" asserts="0" success="False" result="Failure" executed="True">
+                    <failure>
+                      <message>This test should run but it did not. Most likely a setup in some parent block failed.</message>
+                      <stack-trace />
+                    </failure>
+                  </test-case>
+                  <test-case description="should support common parameters" name="0203_Install-npm Tests.Install-NpmDependencies Function Tests.should support common parameters" time="0" asserts="0" success="False" result="Failure" executed="True">
+                    <failure>
+                      <message>This test should run but it did not. Most likely a setup in some parent block failed.</message>
+                      <stack-trace />
+                    </failure>
+                  </test-case>
+                  <test-case description="should handle execution with valid parameters" name="0203_Install-npm Tests.Install-NpmDependencies Function Tests.should handle execution with valid parameters" time="0" asserts="0" success="False" result="Failure" executed="True">
+                    <failure>
+                      <message>This test should run but it did not. Most likely a setup in some parent block failed.</message>
+                      <stack-trace />
+                    </failure>
+                  </test-case>
+                </results>
+              </test-suite>
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+    </results>
+  </test-suite>
+</test-results>

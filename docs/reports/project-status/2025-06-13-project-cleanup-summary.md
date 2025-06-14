@@ -1,51 +1,51 @@
 # OpenTofu Lab Automation Project Cleanup Summary
 
-## 🚀 Project Organization Cleanup
+## Project Organization Cleanup
 
 This document summarizes the cleanup and organization work performed on the OpenTofu Lab Automation project to improve maintainability and workflow integration.
 
-## 📁 Directory Structure
+## � Directory Structure
 
 The project has been organized into the following structure:
 
 `
 /workspaces/opentofu-lab-automation/
 ├── pwsh/
-│   ├── modules/
-│   │   ├── CodeFixer/        # CodeFixer module for automation fixes
-│   │   │   ├── Public/       # Public functions
-│   │   │   ├── Private/      # Private helper functions
-│   │   │   ├── CodeFixer.psd1
-│   │   │   └── CodeFixer.psm1
-│   │   │
-│   │   └── LabRunner/        # Lab automation runner module (moved from lab_utils)
-│   │       ├── LabRunner.psd1
-│   │       └── LabRunner.psm1
-│   │
-│   ├── runner_scripts/       # Core automation runner scripts
-│   └── runner.ps1            # Main execution script
+│ ├── modules/
+│ │ ├── CodeFixer/ # CodeFixer module for automation fixes
+│ │ │ ├── Public/ # Public functions
+│ │ │ ├── Private/ # Private helper functions
+│ │ │ ├── CodeFixer.psd1
+│ │ │ └── CodeFixer.psm1
+│ │ │
+│ │ └── LabRunner/ # Lab automation runner module (moved from lab_utils)
+│ │ ├── LabRunner.psd1
+│ │ └── LabRunner.psm1
+│ │
+│ ├── runner_scripts/ # Core automation runner scripts
+│ └── runner.ps1 # Main execution script
 │
-├── scripts/                  # Operational/workflow scripts
-│   ├── validation/           # Scripts for validation and verification
-│   ├── maintenance/          # Maintenance and cleanup scripts
-│   └── testing/              # Test execution scripts
+├── scripts/ # Operational/workflow scripts
+│ ├── validation/ # Scripts for validation and verification
+│ ├── maintenance/ # Maintenance and cleanup scripts
+│ └── testing/ # Test execution scripts
 │
-├── tools/                    # Helper tools and utilities
-│   ├── linting/              # Linting and code quality tools
-│   └── validation/           # Validation helpers and testers
+├── tools/ # Helper tools and utilities
+│ ├── linting/ # Linting and code quality tools
+│ └── validation/ # Validation helpers and testers
 │
-├── tests/                    # Test files and frameworks
-│   ├── helpers/              # Test helper utilities
-│   └── *.Tests.ps1           # Pester test files
+├── tests/ # Test files and frameworks
+│ ├── helpers/ # Test helper utilities
+│ └── *.Tests.ps1 # Pester test files
 │
-└── archive/                  # Archived/obsolete scripts and files
-    ├── fix-scripts/          # Old fix scripts
-    └── test-scripts/         # Old test scripts
+└── archive/ # Archived/obsolete scripts and files
+ ├── fix-scripts/ # Old fix scripts
+ └── test-scripts/ # Old test scripts
 `
 
-## 🔄 Scripts Cleanup Summary
+## Scripts Cleanup Summary
 
-### ✅ Scripts Consolidated into CodeFixer Module
+### [PASS] Scripts Consolidated into CodeFixer Module
 
 The following scripts have been incorporated into the CodeFixer module:
 
@@ -57,7 +57,7 @@ The following scripts have been incorporated into the CodeFixer module:
 | comprehensive-lint.ps1 | Invoke-ComprehensiveValidation | Run comprehensive validation |
 | enhanced-fix-labrunner.ps1 | Invoke-ImportAnalysis | Fix import paths and dependencies |
 
-### ✅ Scripts Moved to Operational Directories
+### [PASS] Scripts Moved to Operational Directories
 
 The following scripts have been moved to appropriate operational directories:
 
@@ -75,7 +75,7 @@ The following scripts have been moved to appropriate operational directories:
 | fix-runtime-execution-simple.ps1 | scripts/maintenance/simple-runtime-fix.ps1 | Simple runtime fixes |
 | update-labrunner-imports.ps1 | scripts/maintenance/update-imports.ps1 | Update import paths |
 
-### ✅ Scripts Archived
+### [PASS] Scripts Archived
 
 The following obsolete or redundant scripts have been archived:
 
@@ -99,7 +99,7 @@ The following obsolete or redundant scripts have been archived:
 | enhanced-fix-labrunner.ps1 | Fix script, functionality in CodeFixer |
 | final-automation-test.ps1 | Test script, functionality in test framework |
 
-## 🚀 Benefits of Reorganization
+## Benefits of Reorganization
 
 1. **Improved Maintainability**: Clear directory structure with logical organization
 2. **Reduced Duplication**: Consolidated overlapping functionality into modules
@@ -108,7 +108,7 @@ The following obsolete or redundant scripts have been archived:
 5. **Consistent Naming**: Applied consistent naming conventions
 6. **Integration with CI/CD**: Simplified paths for CI/CD workflows
 
-## 📋 Next Steps
+## Next Steps
 
 1. Update GitHub Actions workflows to use the new script paths
 2. Update documentation to reflect new structure
