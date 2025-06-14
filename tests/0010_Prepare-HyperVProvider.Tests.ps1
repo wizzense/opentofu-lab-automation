@@ -27,17 +27,29 @@ BeforeAll {
 }
 
 Describe '0010_Prepare-HyperVProvider Tests' -Tag 'Feature' {
-    
-    Context 'Script Structure Validation' {
-         | Should -Not -Throw
-        }
-        _[A-Z][a-zA-Z0-9-]+\.ps1$|^[A-Z][a-zA-Z0-9-]+\.ps1$'
+      Context 'Script Structure Validation' {
+        It 'Should exist and be readable' {
+            { Test-Path $script:ScriptPath } | Should -Not -Throw
+            $script:ScriptPath | Should -Exist
         }
         
+        It 'Should have valid PowerShell syntax' {
+            { & $PSScriptRoot\..\scripts\validation\Invoke-PowerShellLint.ps1 -ScriptPath $script:ScriptPath } | Should -Not -Throw
+        }
+        
+        It 'Should follow naming convention' {
+            [System.IO.Path]::GetFileName($script:ScriptPath) | Should -Match '^[0-9]{4}_[A-Z][a-zA-Z0-9-]+\.ps1$'
+        }
     }
     
     Context 'Parameter Validation' {
-        
+        It 'Should accept valid configuration' {
+            $config = @{
+                'hyperv' = @{
+                    'enabled' = $true
+                    'switchName' = 'Default Switch'
+                }
+            }
             $configJson = $config | ConvertTo-Json -Depth 5
             $tempConfig = Join-Path ([System.IO.Path]::GetTempPath()) "$([System.Guid]::NewGuid()).json"
             $configJson | Set-Content -Path $tempConfig

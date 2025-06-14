@@ -5,8 +5,10 @@
 
 
 
-# .SYNOPSIS
-# Tests for the 0006_Install-ValidationTools script.
+<#
+.SYNOPSIS
+Tests for the 0006_Install-ValidationTools script.
+#>
 
 . (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
 . (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
@@ -24,6 +26,23 @@ BeforeAll {
 
 Describe '0006_Install-ValidationTools Tests' -Tag 'Installer' {
     
+    Context 'Basic Script Validation' {
+        It 'Should exist and be readable' {
+            $script:ScriptPath | Should -Exist
+            $script:ScriptPath | Should -FileContentMatch 'param'
+        }
+
+        It 'Should have valid PowerShell syntax' -Skip:$SkipNonWindows {
+            { . $script:ScriptPath -WhatIf } | Should -Not -Throw
+        }
+    }
+    
+    Context 'Validation Tools Installation' {
+        It 'Should support WhatIf parameter' -Skip:$SkipNonWindows {
+            { . $script:ScriptPath -WhatIf } | Should -Not -Throw
+        }
+    }
+}
 
 # Clean up test environment
 AfterAll {

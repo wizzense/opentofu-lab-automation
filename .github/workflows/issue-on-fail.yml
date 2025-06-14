@@ -63,29 +63,26 @@ jobs:
           fi
 
           summary=""
-          echo "Checking for Pester test results..."
-          while IFS= read -r -d '' f; do
+          echo "Checking for Pester test results..."          while IFS= read -r -d '' f; do
             echo "Processing Pester file: $f"
             out=$(python -m labctl.pester_failures "$f" --summary || true)
-            if [-n "$out"]; then
+            if [ -n "$out" ]; then
               summary="$summary$out\n"
             fi
           done < <(find artifacts -name testResults.xml -print0)
 
-          echo "Checking for Pytest results..."
-          while IFS= read -r -d '' f; do
+          echo "Checking for Pytest results..."          while IFS= read -r -d '' f; do
             echo "Processing Pytest file: $f"
             out=$(python -m labctl.pytest_failures "$f" --summary || true)
-            if [-n "$out"]; then
+            if [ -n "$out" ]; then
               summary="$summary$out\n"
             fi
           done < <(find artifacts -name junit.xml -print0)
 
-          echo "Checking for lint results..."
-          while IFS= read -r -d '' f; do
+          echo "Checking for lint results..."          while IFS= read -r -d '' f; do
             echo "Processing lint file: $f"
             out=$(python -m labctl.lint_failures "$f" --summary || true)
-            if [-n "$out"]; then
+            if [ -n "$out" ]; then
               summary="$summary$out\n"
             fi
           done < <(find artifacts -path '*lint*' -name '*.txt' -print0)
@@ -96,19 +93,15 @@ jobs:
 
           # Use base64 encoding to safely pass the content
           summary_encoded=$(base64 -w 0 "$summary_file")
-          echo "failures_encoded=${summary_encoded}" >> "$GITHUB_OUTPUT"
-
-          # Also set a simple flag for whether there are failures
-          if [-n "$summary"]; then
+          echo "failures_encoded=${summary_encoded}" >> "$GITHUB_OUTPUT"          # Also set a simple flag for whether there are failures
+          if [ -n "$summary" ]; then
             echo "has_failures=true" >> "$GITHUB_OUTPUT"
           else
             echo "has_failures=false" >> "$GITHUB_OUTPUT"
           fi
 
-          rm -f "$summary_file"
-
-          echo "Summary length: ${  # summary}"
-          if [-z "$summary"]; then
+          rm -f "$summary_file"          echo "Summary length: ${#summary}"
+          if [ -z "$summary" ]; then
             echo "No failure summary generated"
           else
             echo "Generated failure summary successfully"
