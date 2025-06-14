@@ -23,6 +23,18 @@ param(
     [string]$Verbosity = 'normal'
 )
 
+# Auto-detect non-interactive mode if not explicitly set
+if (-not $NonInteractive) {
+    # Check if PowerShell was started with -NonInteractive
+    $commandLine = [Environment]::GetCommandLineArgs() -join ' '
+    if ($commandLine -match '-NonInteractive' -or 
+        $Host.Name -eq 'Default Host' -or
+        ([Environment]::UserInteractive -eq $false)) {
+        $NonInteractive = $true
+        Write-Verbose "Auto-detected non-interactive mode"
+    }
+}
+
 function Get-CrossPlatformTempPath {
     <#
     .SYNOPSIS
@@ -54,7 +66,7 @@ function Join-PathRobust {
     }
 }
 
-function Load-LabConfigSafe {
+function Get-SafeLabConfig {
     param([string]$Path)
     try {
         return Get-LabConfig -Path $Path
@@ -98,18 +110,28 @@ $defaultConfig = "${baseUrl}${targetBranch}/configs/config_files/default-config.
 function Write-Continue {
     param([string]$Message = "Press any key to continue...")
     
-    
-
-
-
-# Skip interactive prompts in WhatIf or NonInteractive modes
-    if ($WhatIf -or $NonInteractive -or $Quiet) {
+    # Skip interactive prompts in WhatIf, NonInteractive modes, or when PowerShell is in NonInteractive mode
+    if ($WhatIf -or $NonInteractive -or $Quiet -or 
+        ([Environment]::UserInteractive -eq $false) -or
+        ($Host.Name -eq "ConsoleHost" -and $Host.UI.RawUI.KeyAvailable -eq $false)) {
         Write-CustomLog "Skipping interactive prompt: $Message" 'INFO'
         return
     }
     
-    Write-Host $Message -ForegroundColor Yellow -NoNewline
-    $null = Read-Host
+    # Check if we're actually running in an interactive environment before using Read-Host
+    if ([Environment]::UserInteractive -and 
+        $Host.Name -ne 'Default Host' -and
+        (-not ($commandLine -match '-NonInteractive'))) {
+        try {
+            Write-Host $Message -ForegroundColor Yellow -NoNewline
+            $null = Read-Host
+        } catch {
+            Write-CustomLog "Interactive prompt skipped due to exception: $($_.Exception.Message)" 'INFO'
+        }
+    } else {
+        # In non-interactive mode, just log the message
+        Write-CustomLog $Message 'INFO'
+    }
 }
 
 $ErrorActionPreference = 'Stop'  # So any error throws an exception
@@ -175,27 +197,43 @@ if (-not (Get-Command Write-CustomLog -ErrorAction SilentlyContinue)) {
             $color = @{ INFO='Gray'; WARN='Yellow'; ERROR='Red' }[$Level]
             Write-Host $fmt -ForegroundColor $color
         }
-    }
-
-    function Read-LoggedInput {
+    }    function Read-LoggedInput {
         [CmdletBinding()]
         param(
-            [Parameter(Mandatory)
-
-
-
-][string]$Prompt,
-            [switch]$AsSecureString
+            [Parameter(Mandatory)][string]$Prompt,
+            [switch]$AsSecureString,
+            [string]$DefaultValue = ""
         )
 
-        if ($AsSecureString) {
-            Write-CustomLog "$Prompt (secure input)"
-            return Read-Host -Prompt $Prompt -AsSecureString
+        # Check if we're in non-interactive mode
+        if ($WhatIf -or $NonInteractive -or 
+            ([Environment]::UserInteractive -eq $false) -or
+            ($Host.Name -eq 'Default Host') -or
+            ($commandLine -match '-NonInteractive')) {
+            Write-CustomLog "Non-interactive mode detected. Using default value for: $Prompt" 'INFO'
+            if ($AsSecureString -and -not [string]::IsNullOrEmpty($DefaultValue)) {
+                return ConvertTo-SecureString -String $DefaultValue -AsPlainText -Force
+            }
+            return $DefaultValue
         }
 
-        $answer = Read-Host -Prompt $Prompt
-        Write-CustomLog "$($Prompt): $answer"
-        return $answer
+        try {
+            if ($AsSecureString) {
+                Write-CustomLog "$Prompt (secure input)"
+                return Read-Host -Prompt $Prompt -AsSecureString
+            }
+
+            $answer = Read-Host -Prompt $Prompt
+            Write-CustomLog "$($Prompt): $answer"
+            return $answer
+        }
+        catch {
+            Write-CustomLog "Error reading input: $($_.Exception.Message). Using default value." 'WARN'
+            if ($AsSecureString -and -not [string]::IsNullOrEmpty($DefaultValue)) {
+                return ConvertTo-SecureString -String $DefaultValue -AsPlainText -Force
+            }
+            return $DefaultValue
+        }
     }
 }
 
@@ -226,7 +264,8 @@ if (-not (Test-Path $formatScript)) {
 # ------------------------------------------------
 
 Write-CustomLog "`nYo!"
-Write-Continue "Press Enter to continue..."
+# Only show interactive prompt if we're in interactive mode
+Write-Continue "Press Enter to continue..." # Write-Continue already handles non-interactive mode checks internally
 Write-CustomLog "Use `-Quiet` to reduce output."
 Write-CustomLog "I know you totally read the readme first, but just in case you didn't...`n"
 
@@ -255,11 +294,11 @@ The script will do the following if you proceed:
 """
 
 # Prompt for input to provide remote/local or accept default
-if ($WhatIf -or $NonInteractive) {
+if ($WhatIf -or $NonInteractive -or [Environment]::UserInteractive -eq $false) {
     Write-CustomLog "Non-interactive mode: Using default configuration" 'INFO'
     $configOption = ""
 } else {
-    $configOption = Read-Host -Prompt "`nEnter a remote URL or local path, or leave blank for default."
+    $configOption = Read-LoggedInput -Prompt "`nEnter a remote URL or local path, or leave blank for default." -DefaultValue ""
 }
 
 if ($configOption -match "https://") {
@@ -283,8 +322,7 @@ if ($configOption -match "https://") {
         if ($WhatIf -or $NonInteractive) {
             Write-CustomLog "Non-interactive mode: Using first configuration file" 'INFO'
             $ConfigFile = $configFiles[0].FullName
-        } else {
-            $ans = Read-Host -Prompt "Select configuration number"
+        } else {            $ans = Read-LoggedInput -Prompt "Select configuration number" -DefaultValue "1"
             if ($ans -match '^[0-9]+$' -and [int]$ans -ge 1 -and [int]$ans -le $configFiles.Count) {
                 $ConfigFile = $configFiles[[int]$ans - 1].FullName
             } else {
@@ -324,7 +362,7 @@ if (-not (Test-Path -LiteralPath $ConfigFile)) {
 
 try {
     $resolvedConfigPath = (Resolve-Path -LiteralPath $ConfigFile).Path
-    $config = Load-LabConfigSafe "$resolvedConfigPath"
+    $config = Get-SafeLabConfig "$resolvedConfigPath"
     Write-CustomLog "Config file loaded from $resolvedConfigPath."
     Write-CustomLog (Format-Config -Config $config)
 } catch {
@@ -448,8 +486,13 @@ catch {
         Write-CustomLog "Non-interactive mode: Skipping GitHub authentication" 'WARN'
         Write-CustomLog "Note: Repository operations may fail without authentication" 'WARN'
     } else {
-        # Optional: Prompt user for a personal access token
-        $pat = Read-Host -Prompt "Enter your GitHub Personal Access Token (or press Enter to skip):"
+    # Optional: Prompt user for a personal access token
+        $pat = if ($NonInteractive -or [Environment]::UserInteractive -eq $false) {
+            # In non-interactive mode, check for environment variable
+            $env:GITHUB_PAT
+        } else {
+            Read-LoggedInput -Prompt "Enter your GitHub Personal Access Token (or press Enter to skip):" -DefaultValue ""
+        }
 
         if (-not [string]::IsNullOrWhiteSpace($pat)) {
             Write-CustomLog "Attempting PAT-based GitHub CLI login..."
@@ -463,13 +506,17 @@ catch {
         }
         else {
             # No PAT, attempt normal interactive login in the console
-            Write-CustomLog "No PAT provided. Attempting interactive login..."
-            try {
-                & "$ghExePath" auth login --hostname github.com --git-protocol https
-            }
-            catch {
-                Write-Error "ERROR: Interactive login failed: $($_.Exception.Message)"
-                exit 1
+            if ($NonInteractive -or [Environment]::UserInteractive -eq $false) {
+                Write-CustomLog "No PAT provided and in non-interactive mode. Repository operations may fail." 'WARN'
+            } else {
+                Write-CustomLog "No PAT provided. Attempting interactive login..."
+                try {
+                    & "$ghExePath" auth login --hostname github.com --git-protocol https
+                }
+                catch {
+                    Write-Error "ERROR: Interactive login failed: $($_.Exception.Message)"
+                    exit 1
+                }
             }
         }
 
@@ -711,8 +758,8 @@ Next steps:
 
 Write-CustomLog "Running $runnerScriptPath ..."
 
-$args = @('-NoLogo','-NoProfile','-File', $runnerScriptPath, '-ConfigFile', $ConfigFile, '-Verbosity', $Verbosity)
-$proc = Start-Process -FilePath $pwshPath -ArgumentList $args -Wait -NoNewWindow -PassThru
+$scriptArguments = @('-NoLogo','-NoProfile','-File', $runnerScriptPath, '-ConfigFile', $ConfigFile, '-Verbosity', $Verbosity)
+$proc = Start-Process -FilePath $pwshPath -ArgumentList $scriptArguments -Wait -NoNewWindow -PassThru
 $exitCode = $proc.ExitCode
 
 if ($exitCode -ne 0) {
