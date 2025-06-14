@@ -45,8 +45,21 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
-$ProjectRoot = "/workspaces/opentofu-lab-automation"
-$IssueTrackingPath = "$ProjectRoot/docs/reports/issue-tracking"
+
+# Cross-platform root path detection
+if ($PSScriptRoot) {
+    $ProjectRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
+} else {
+    $ProjectRoot = (Get-Location).Path
+    while ($ProjectRoot -and -not (Test-Path (Join-Path $ProjectRoot "PROJECT-MANIFEST.json"))) {
+        $parent = Split-Path -Parent $ProjectRoot
+        if ($parent -eq $ProjectRoot) { break }
+        $ProjectRoot = $parent
+    }
+    if (-not $ProjectRoot) { $ProjectRoot = "." }
+}
+
+$IssueTrackingPath = Join-Path $ProjectRoot "docs" "reports" "issue-tracking"
 
 function Write-TrackLog {
     param([string]$Message, [string]$Level = "INFO")

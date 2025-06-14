@@ -16,11 +16,15 @@ function Invoke-FixScriptConsolidation {
     #>
     param(
         [switch]$WhatIf,
-        [switch]$Archive
-    )
+        [switch]$Archive    )
+    
+    # Cross-platform project root detection
+    $projectRoot = if ($PSScriptRoot) {
+        Split-Path -Parent (Split-Path -Parent (Split-Path -Parent $PSScriptRoot))
+    } else { "." }
     
     # Find all fix scripts
-    $fixScripts = Get-ChildItem -Path "/workspaces/opentofu-lab-automation/" -Filter "fix-*.ps1"
+    $fixScripts = Get-ChildItem -Path $projectRoot -Filter "fix-*.ps1"
     
     # Create a tracking list of what was migrated
     $migratedScripts = @()
@@ -82,7 +86,7 @@ you can now use the consolidated functions:
 
 ```powershell
 # Import the module
-Import-Module /workspaces/opentofu-lab-automation/tools/TestAutoFixer/TestAutoFixer.psm1
+Import-Module $(Join-Path $projectRoot "tools" "TestAutoFixer" "TestAutoFixer.psm1")
 
 # Use the main fix function
 Invoke-SyntaxFix -Path "/path/to/scripts" -FixTypes "Ternary","Parameter","TestSyntax" -Recurse
@@ -95,13 +99,14 @@ Please review the original scripts if you encounter issues not addressed by the 
 "@
 
     # Save the report
-    Set-Content -Path "/workspaces/opentofu-lab-automation/MIGRATION-REPORT.md" -Value $reportContent
+    $reportPath = Join-Path $projectRoot "MIGRATION-REPORT.md"
+    Set-Content -Path $reportPath -Value $reportContent
 
-    Write-Host "`nMigration report saved to /workspaces/opentofu-lab-automation/MIGRATION-REPORT.md" -ForegroundColor Green
+    Write-Host "`nMigration report saved to $reportPath" -ForegroundColor Green
 
     # Create an archive folder if requested
     if ($Archive) {
-        $archiveFolder = "/workspaces/opentofu-lab-automation/archive/fix-scripts-archive"
+        $archiveFolder = Join-Path $projectRoot "archive" "fix-scripts-archive"
         
         if (-not (Test-Path $archiveFolder)) {
             New-Item -Path $archiveFolder -ItemType Directory -Force | Out-Null

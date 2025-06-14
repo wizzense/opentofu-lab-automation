@@ -97,8 +97,26 @@ function Test-YamlSyntax {
     param([string]$FilePath)
     
     try {
-        # Test with Python YAML parser for syntax
-        $pythonTest = python3 -c "import yaml; yaml.safe_load(open('$FilePath')); print('OK')" 2>&1
+        # Cross-platform Python command detection
+        $pythonCmd = if ($IsWindows -or $PSVersionTable.PSVersion.Major -le 5) { 
+            if (Get-Command python -ErrorAction SilentlyContinue) { "python" }
+            elseif (Get-Command python3 -ErrorAction SilentlyContinue) { "python3" }
+            else { $null }
+        } else { 
+            if (Get-Command python3 -ErrorAction SilentlyContinue) { "python3" }
+            elseif (Get-Command python -ErrorAction SilentlyContinue) { "python" }
+            else { $null }
+        }
+        
+        if (-not $pythonCmd) {
+            return @{
+                Valid = $false
+                Errors = @("Python not found. Please install Python and ensure it's in your PATH.")
+            }
+        }
+          # Test with Python YAML parser for syntax (escape backslashes for Windows paths)
+        $escapedPath = $FilePath -replace '\\', '\\\\'
+        $pythonTest = & $pythonCmd -c "import yaml; yaml.safe_load(open('$escapedPath')); print('OK')" 2>&1
         if ($pythonTest -notcontains "OK") {
             return @{
                 Valid = $false

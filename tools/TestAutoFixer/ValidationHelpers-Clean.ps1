@@ -246,16 +246,18 @@ function Get-RunnerScriptPath {
     #>
     [CmdletBinding()]
     param(
-        [Parameter(Mandatory=$true)]
-        [string]$ScriptName
+        [Parameter(Mandatory=$true)]        [string]$ScriptName
     )
     
-    # This is a placeholder function that would resolve script paths
-    # In the actual implementation, this would map script names to their locations
+    # Cross-platform path resolution for script locations
+    $projectRoot = if ($PSScriptRoot) {
+        Split-Path -Parent (Split-Path -Parent (Split-Path -Parent $PSScriptRoot))
+    } else { "." }
+    
     $possiblePaths = @(
-        "/workspaces/opentofu-lab-automation/pwsh/$ScriptName",
-        "/workspaces/opentofu-lab-automation/scripts/$ScriptName",
-        "/workspaces/opentofu-lab-automation/$ScriptName"
+        (Join-Path $projectRoot "pwsh" $ScriptName),
+        (Join-Path $projectRoot "scripts" $ScriptName),
+        (Join-Path $projectRoot $ScriptName)
     )
     
     foreach ($path in $possiblePaths) {

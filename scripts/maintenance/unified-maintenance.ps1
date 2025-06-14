@@ -517,9 +517,8 @@ try {
         Write-MaintenanceLog "Issues remaining: $($summary.IssueCount)" "WARNING"
         Write-MaintenanceLog "Run with -AutoFix to apply automatic fixes" "INFO"
     }
-    
-    # Update project manifest with current state
-    $manifestScript = "$ProjectRoot/scripts/utilities/update-project-manifest.ps1"
+      # Update project manifest with current state
+    $manifestScript = Join-Path $ProjectRoot "scripts" "utilities" "update-project-manifest.ps1"
     if (Test-Path $manifestScript) {
         Write-MaintenanceLog "Updating project manifest..." "INFO"
         try {
