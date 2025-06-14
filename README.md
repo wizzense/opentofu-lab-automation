@@ -42,6 +42,52 @@ That's it! The quick-start script will:
 2. 📥 Download the project
 3. 🚀 Launch the interactive menu
 
+## 🌟 Enhanced Features (NEW!)
+
+### Enhanced Launcher with Advanced Configuration
+For users who want more control and better error handling, use the enhanced launcher:
+
+```bash
+# Enhanced interactive menu with comprehensive features
+python enhanced_launcher.py
+
+# Launch enhanced GUI with detailed configuration builder
+python enhanced_launcher.py --gui
+
+# Command-line configuration builder with help text and validation
+python enhanced_launcher.py --config-builder
+
+# Enhanced deployment with working directory enforcement
+python enhanced_launcher.py --deploy
+
+# Complete system compatibility check
+python enhanced_launcher.py --check
+```
+
+### 🔧 Enhanced Configuration Builder
+- **📋 Organized Sections**: Repository, System, Security, Tools, Infrastructure
+- **💡 Help Text**: Detailed explanations for every configuration option
+- **✅ Validation**: Real-time validation with helpful error messages
+- **🎯 Smart Defaults**: Platform-specific recommended values
+- **📁 Working Directory Enforcement**: Always uses proper temp directories
+
+### 🛡️ Improved Reliability
+- **🌐 Cross-Platform PowerShell**: Enhanced PowerShell executor with proper encoding
+- **⚡ Non-Interactive Modes**: Prevents hanging on automated deployments
+- **🔒 Working Directory Control**: Forces `C:\temp\opentofu-lab-automation` (Windows) or `/tmp/opentofu-lab-automation` (Linux)
+- **📝 Better Error Messages**: Clear, actionable error descriptions
+- **🔍 Comprehensive Validation**: Checks dependencies, paths, and configuration
+
+### 📊 Enhanced User Experience
+- **🎨 Tabbed Interface**: Organized configuration sections
+- **⏱️ Real-time Progress**: Live deployment monitoring
+- **📱 Responsive Design**: Works across different screen sizes
+- **🌍 Platform Detection**: Automatic platform-specific optimizations
+
+## 🚀 Standard Quick Start
+
+If you prefer the original quick start experience:
+
 # Linux/macOS with curl:
 curl -LO https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/HEAD/launcher.py
 python3 launcher.py

@@ -272,7 +272,7 @@ switch ($Action.ToLower()) {
             $result | ConvertTo-Json -Depth 3
         } else {
             Write-Host "Script validation result:" -ForegroundColor Cyan
-            Write-Host "  Valid: $($result.Valid)" -ForegroundColor $$(if (result.Valid) { "Green" } else { "Red" })
+            Write-Host "  Valid: $($result.Valid)" -ForegroundColor $(if ($result.Valid) { "Green" } else { "Red" })
             if ($result.Valid) {
                 Write-Host "  Decoded length: $($result.DecodedLength) characters" -ForegroundColor Gray
                 Write-Host "  Contains Param block: $($result.ContainsParam)" -ForegroundColor Gray
