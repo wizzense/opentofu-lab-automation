@@ -1,5 +1,5 @@
 ---
-name: "🚀 CI/CD Pipeline"
+name: " CI/CD Pipeline"
 
 on:
   workflow_dispatch:
@@ -14,39 +14,39 @@ on:
 jobs:
   # First job: Validate all workflow files
   validate-workflows:
-    name: "🔍 Validate Workflows"
+    name: " Validate Workflows"
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - name: "📥 Checkout Repository"
+      - name: " Checkout Repository"
         uses: actions/checkout@v4
 
-      - name: "📦 Install Python Dependencies"
+      - name: " Install Python Dependencies"
         run: |
           if ! pip install -r scripts/requirements.txt; then
             echo "Failed to install Python dependencies" >&2
             exit 1
           fi
 
-      - name: "🔍 Validate Workflow Files"
+      - name: " Validate Workflow Files"
         run: |
           echo "Validating workflow files..."
           if ! python3 scripts/validate-workflows.py .github/workflows/*.yml; then
             echo "Workflow validation failed" >&2
             exit 1
           fi
-          echo "✅ All workflow files validated successfully"
+          echo " All workflow files validated successfully"
 
   # Lint PowerShell code
   lint-powershell:
-    name: "🔍 PowerShell Linting"
+    name: " PowerShell Linting"
     needs: [validate-workflows]
     runs-on: ubuntu-latest
     steps:
-      - name: "📥 Checkout Repository"
+      - name: " Checkout Repository"
         uses: actions/checkout@v4
 
-      - name: "📦 Install PowerShell"
+      - name: " Install PowerShell"
         shell: bash
         run: |
           if ! sudo apt-get update || ! sudo apt-get install -y powershell; then
@@ -54,14 +54,14 @@ jobs:
             exit 1
           fi
 
-      - name: "💾 Cache PSScriptAnalyzer"
+      - name: " Cache PSScriptAnalyzer"
         uses: actions/cache@v4
         with:
           path: /home/runner/.local/share/powershell/Modules
           key: psscriptanalyzer-${{ hashFiles('scripts/validation/run-lint.ps1') }}
           restore-keys: psscriptanalyzer-
 
-      - name: "📦 Install PSScriptAnalyzer"
+      - name: " Install PSScriptAnalyzer"
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
@@ -74,31 +74,31 @@ jobs:
             Write-Host "PSScriptAnalyzer already installed" -ForegroundColor Green
           }
 
-      - name: "🔧 Auto-fix PowerShell Issues"
+      - name: " Auto-fix PowerShell Issues"
         shell: pwsh
         run: |
           Write-Host "Running auto-fix on PowerShell scripts..." -ForegroundColor Yellow
           try {
             & "${{ github.workspace }}/tools/Validate-PowerShellScripts.ps1" -Path "${{ github.workspace }}" -AutoFix -CI
-            Write-Host "✅ Auto-fix completed" -ForegroundColor Green
+            Write-Host " Auto-fix completed" -ForegroundColor Green
           } catch {
             Write-Warning "Auto-fix encountered issues: $_"
             # Continue to validation even if auto-fix has issues
           }
 
-      - name: "⚡ Quick Issue Check & Auto-Fix"
+      - name: " Quick Issue Check & Auto-Fix"
         shell: pwsh
         run: |
           Write-Host "Running quick issue detection and auto-fixing..." -ForegroundColor Cyan
           try {
             & "${{ github.workspace }}/scripts/maintenance/quick-issue-check.ps1" -Target "All" -AutoFix
-            Write-Host "✅ Quick issue check completed" -ForegroundColor Green
+            Write-Host " Quick issue check completed" -ForegroundColor Green
           } catch {
             Write-Warning "Quick issue check encountered issues: $_"
             # Continue even if there are issues - they will be caught in validation
           }
 
-      - name: "�🔍 Run PowerShell Linting"
+      - name: " Run PowerShell Linting"
         id: lint
         shell: pwsh
         run: |
@@ -111,25 +111,25 @@ jobs:
               Write-Error "Found $errorsCount linting errors"
               exit 1
             }
-            Write-Host "✅ Linting completed successfully" -ForegroundColor Green
+            Write-Host " Linting completed successfully" -ForegroundColor Green
           } catch {
             Write-Error "Linting failed: $_"
             exit 1
           }
 
-      - name: "📝 Post Linting Results Summary"
+      - name: " Post Linting Results Summary"
         if: always()
         run: |
-          echo "### 🔍 PowerShell Linting Results" >> $GITHUB_STEP_SUMMARY
+          echo "###  PowerShell Linting Results" >> $GITHUB_STEP_SUMMARY
           echo "Errors found: ${{ steps.lint.outputs.errors || '0' }}" >> $GITHUB_STEP_SUMMARY
 
   # Run Python tests
   pytest:
-    name: "🐍 Python Tests"
+    name: " Python Tests"
     needs: [validate-workflows]
     runs-on: ubuntu-latest
     steps:
-      - name: "📥 Checkout Repository"
+      - name: " Checkout Repository"
         uses: actions/checkout@v4
 
       - name: Set up Python
@@ -419,27 +419,27 @@ jobs:
           fi
 
           if [[ "$overall" == "failure" ]]; then
-            echo "❌ Some tests failed - check logs for details" | tee -a $GITHUB_STEP_SUMMARY
+            echo " Some tests failed - check logs for details" | tee -a $GITHUB_STEP_SUMMARY
             exit 1
           else
-            echo "✅ All checks completed successfully" | tee -a $GITHUB_STEP_SUMMARY
+            echo " All checks completed successfully" | tee -a $GITHUB_STEP_SUMMARY
           fi
 
   # Install missing dependencies
   install-dependencies:
-    name: "📦 Install Missing Dependencies"
+    name: " Install Missing Dependencies"
     runs-on: ubuntu-latest
     steps:
-      - name: "📥 Checkout Repository"
+      - name: " Checkout Repository"
         uses: actions/checkout@v4
 
-      - name: "📦 Install Missing Dependencies"
+      - name: " Install Missing Dependencies"
         shell: bash
         run: |
           sudo apt-get update
           sudo apt-get install -y curl unzip
           # Install tofu
-          curl -Lo tofu.zip https://github.com/opentofu/opentofu/releases/latest/download/tofu_linux_amd64.zip
+          curl -Lo tofu.zip https://github.com/opentofu/opentofu/releases/latest/download/tofu_1.7.2_linux_amd64.zip
           unzip tofu.zip
           sudo mv tofu /usr/local/bin/
           # Install poetry
@@ -452,7 +452,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y gh
 
-      - name: "📦 Ensure Module Imports"
+      - name: " Ensure Module Imports"
         shell: pwsh
         run: |
           Import-Module "$env:GITHUB_WORKSPACE/pwsh/modules/CodeFixer/CodeFixer.psd1" -Force

@@ -1,5 +1,5 @@
 ---
-name: "📦 Package LabCTL Tool"
+name: " Package LabCTL Tool"
 
 on:
   workflow_dispatch:
@@ -15,7 +15,7 @@ on:
 
 jobs:
   package-win:
-    name: "📦 Build Windows Package"
+    name: " Build Windows Package"
     runs-on: windows-latest
     defaults:
       run:
@@ -70,7 +70,7 @@ jobs:
           path: dist/labctl-installer.exe
 
   package-gui:
-    name: "🖥️ Build GUI Package"
+    name: " Build GUI Package"
     runs-on: windows-latest
     defaults:
       run:

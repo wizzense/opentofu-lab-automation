@@ -1,5 +1,5 @@
 ---
-name: "🔄 Auto-Merge PRs"
+name: " Auto-Merge PRs"
 
 on:
   workflow_dispatch:
@@ -13,7 +13,7 @@ permissions:
 
 jobs:
   auto-merge:
-    name: "🔄 Auto-Merge Eligible PRs"
+    name: " Auto-Merge Eligible PRs"
     runs-on: ubuntu-latest
     steps:
       - name: Merge eligible PRs

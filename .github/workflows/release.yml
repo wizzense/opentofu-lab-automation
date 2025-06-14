@@ -88,19 +88,19 @@ jobs:
           body: |
             ## CodeFixer PowerShell Module v${{ env.VERSION }}
 
-            ### 🚀 Key Features
+            ###  Key Features
             - **Batch Processing**: Analyze hundreds of PowerShell files efficiently
             - **Parallel Execution**: Utilize multiple CPU cores for faster validation
             - **Auto-Fix**: Automatically resolve common PowerShell issues
             - **Import Analysis**: Modernize module import patterns
             - **Comprehensive Validation**: Full project health checks
 
-            ### 📦 Installation
+            ###  Installation
             1. Download `CodeFixer-v${{ env.VERSION }}.zip`
             2. Extract and run `Install-CodeFixer.ps1`
             3. Import with `Import-Module CodeFixer`
 
-            ### 🔧 Quick Start
+            ###  Quick Start
             ```powershell
             # Analyze with batch processing
             Invoke-PowerShellLint -Path "." -Parallel
@@ -109,7 +109,7 @@ jobs:
             Invoke-ComprehensiveValidation
             ```
 
-            ### 🏗️ Requirements
+            ###  Requirements
             - PowerShell 7.0+
             - PSScriptAnalyzer module (auto-installed)
           files: |

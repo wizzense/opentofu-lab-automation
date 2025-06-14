@@ -1,5 +1,5 @@
 ---
-name: "🧪 Automatic Test Generation"
+name: " Automatic Test Generation"
 
 on:
   push:
@@ -20,19 +20,19 @@ on:
 
 jobs:
   setup:
-    name: "🔍 Detect Script Changes"
+    name: " Detect Script Changes"
     runs-on: ubuntu-latest
     outputs:
       has-changes: ${{ steps.detect-changes.outputs.has-changes }}
       changed-scripts: ${{ steps.detect-changes.outputs.changed-scripts }}
       renamed-files-json: ${{ steps.detect-changes.outputs.renamed-files-json }}
     steps:
-      - name: "📥 Checkout Repository"
+      - name: " Checkout Repository"
         uses: actions/checkout@v4
         with:
           fetch-depth: 0  # Fetch all history for comparing changes
 
-      - name: "🔍 Detect Changed Scripts"
+      - name: " Detect Changed Scripts"
         id: detect-changes
         shell: bash
         run: |
@@ -101,7 +101,7 @@ jobs:
           echo "Renamed files: $RENAMED_JSON"
 
   generate-tests:
-    name: "🧪 Generate Tests (${{ matrix.os }})"
+    name: " Generate Tests (${{ matrix.os }})"
     needs: setup
     if: needs.setup.outputs.has-changes == 'true'
     runs-on: ${{ matrix.os }}
@@ -110,10 +110,10 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
     steps:
-      - name: "📥 Checkout Repository"
+      - name: " Checkout Repository"
         uses: actions/checkout@v4
 
-      - name: "📦 Setup PowerShell"
+      - name: " Setup PowerShell"
         if: matrix.os == 'ubuntu-latest'
         shell: bash
         run: |
@@ -122,7 +122,7 @@ jobs:
             exit 1
           fi
 
-      - name: "💾 Cache PowerShell Modules"
+      - name: " Cache PowerShell Modules"
         uses: actions/cache@v4
         with:
           path: |
@@ -132,7 +132,7 @@ jobs:
           key: ${{ matrix.os }}-ps-modules-${{ hashFiles('pwsh/modules/*/**.psd1') }}
           restore-keys: ${{ matrix.os }}-ps-modules-
 
-      - name: "📦 Install Dependencies"
+      - name: " Install Dependencies"
         shell: pwsh
         run: |
           # Install Pester for test generation
@@ -148,7 +148,7 @@ jobs:
           # Import helper modules
           Import-Module "${{ github.workspace }}/pwsh/modules/CodeFixer/CodeFixer.psd1" -Force
 
-      - name: "🧪 Generate Tests"
+      - name: " Generate Tests"
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
@@ -186,7 +186,7 @@ jobs:
               $result = Invoke-TestGeneration -SourcePath $script -OutputPath $testFilePath -Force
 
               if ($LASTEXITCODE -eq 0) {
-                Write-Host "✅ Test generated successfully" -ForegroundColor Green
+                Write-Host " Test generated successfully" -ForegroundColor Green
               } else {
                 Write-Error "Test generation failed for $script"
               }
@@ -211,51 +211,51 @@ jobs:
               }
 
               Move-Item -Path $oldTestPath -Destination $newTestPath -Force
-              Write-Host "📦 Moved test file from $oldTestPath to $newTestPath"
+              Write-Host " Moved test file from $oldTestPath to $newTestPath"
             }
           }
 
-      - name: "📊 Upload Generated Tests"
+      - name: " Upload Generated Tests"
         uses: actions/upload-artifact@v4
         with:
           name: generated-tests-${{ matrix.os }}
           path: tests/**/*.Tests.ps1
 
   report-results:
-    name: "📊 Test Generation Report"
+    name: " Test Generation Report"
     if: always() && needs.setup.outputs.has-changes == 'true'
     needs: [setup, generate-tests]
     runs-on: ubuntu-latest
     steps:
-      - name: "📥 Checkout Repository"
+      - name: " Checkout Repository"
         uses: actions/checkout@v4
 
-      - name: "📥 Download Generated Tests"
+      - name: " Download Generated Tests"
         uses: actions/download-artifact@v4
         with:
           pattern: generated-tests-*
           merge-multiple: true
           path: tests
 
-      - name: "🔍 Count Generated Tests"
+      - name: " Count Generated Tests"
         id: count
         shell: bash
         run: |
           TEST_COUNT=$(find tests -name "*.Tests.ps1" | wc -l)
           echo "count=$TEST_COUNT" >> $GITHUB_OUTPUT
 
-      - name: "📝 Generate Report"
+      - name: " Generate Report"
         run: |
-          echo "# 🧪 Test Generation Report" >> $GITHUB_STEP_SUMMARY
+          echo "#  Test Generation Report" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "Total generated tests: ${{ steps.count.outputs.count }}" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "Changed scripts processed: ${{ needs.setup.outputs.changed-scripts }}" >> $GITHUB_STEP_SUMMARY
 
-      - name: "📊 Push Generated Tests"
+      - name: " Push Generated Tests"
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         uses: EndBug/add-and-commit@v9
         with:
           add: 'tests'
-          message: '🤖 Auto-generated tests from CI [skip ci]'
+          message: ' Auto-generated tests from CI [skip ci]'
           default_author: github_actions

@@ -1,19 +1,19 @@
 ---
-name: "🚨 Automated Issue Creation"
+name: " Automated Issue Creation"
 on:
   workflow_run:
-    workflows: ["🚀 CI/CD Pipeline", "🧪 Cross-Platform Testing"]
+    workflows: [" CI/CD Pipeline", " Cross-Platform Testing"]
     types: [completed]
 
 jobs:
   create-issue:
-    name: "🚨 Create Issue for Failed Workflow"
+    name: " Create Issue for Failed Workflow"
     if: ${{ github.event.workflow_run.conclusion == 'failure' }}
     runs-on: ubuntu-latest
     permissions:
       issues: write
     steps:
-      - name: "📥 Checkout Repository"
+      - name: " Checkout Repository"
         uses: actions/checkout@v4
       - name: Collect job results
         id: jobs

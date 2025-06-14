@@ -1,5 +1,5 @@
 ---
-name: "🤖 Copilot Auto-Fix"
+name: " Copilot Auto-Fix"
 
 on:
   workflow_dispatch:
@@ -14,13 +14,15 @@ permissions:
 
 jobs:
   copilot-suggest:
-    name: "🤖 Generate AI-powered Fix Suggestions"
+    name: " Generate AI-powered Fix Suggestions"
     runs-on: ubuntu-latest
     env:
       GH_TOKEN: ${{ secrets.COPILOT_OAUTH_TOKEN }}
 
     steps:
-      - uses: actions/checkout@v4      - name: Fail if GH_TOKEN missing
+      - uses: actions/checkout@v4
+
+      - name: Fail if GH_TOKEN missing
         run: |
           if [ -z "$GH_TOKEN" ]; then
             echo "::error::COPILOT_OAUTH_TOKEN secret not set"
@@ -29,7 +31,7 @@ jobs:
 
       # 'gh' will authenticate automatically via GH_TOKEN
 
-      # Headless defaults – never prompt
+      # Headless defaults  never prompt
       - name: Pre-seed Copilot config
         run: |
           mkdir -p "$HOME/.config/gh-copilot"

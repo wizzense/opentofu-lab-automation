@@ -1,5 +1,5 @@
 ---
-name: "🗄️ Archive Legacy Workflows"
+name: " Archive Legacy Workflows"
 
 on:
   workflow_dispatch:
@@ -14,14 +14,14 @@ permissions:
 
 jobs:
   archive-workflows:
-    name: "🗄️ Archive Legacy Workflows"
+    name: " Archive Legacy Workflows"
     runs-on: ubuntu-latest
     if: ${{ github.event.inputs.confirm == 'yes' }}
     steps:
-      - name: "📥 Checkout Repository"
+      - name: " Checkout Repository"
         uses: actions/checkout@v4
 
-      - name: "🗄️ Create Archive Directory"
+      - name: " Create Archive Directory"
         run: |
           mkdir -p .github/archived_workflows
           echo "# Archived Workflows" > .github/archived_workflows/README.md
@@ -31,7 +31,7 @@ jobs:
           echo "" >> .github/archived_workflows/README.md
           echo "See the main [workflows README](./../workflows/README.md) for details on the current workflow structure." >> .github/archived_workflows/README.md
 
-      - name: "🗄️ Move Legacy Workflows to Archive"
+      - name: " Move Legacy Workflows to Archive"
         run: |
           # Define an array of legacy workflows
           LEGACY_WORKFLOWS=(
@@ -77,7 +77,7 @@ jobs:
           echo "| update-path-index.yml | unified-utilities.yml |" >> .github/archived_workflows/README.md
           echo "| update-pester-failures-doc.yml | unified-utilities.yml |" >> .github/archived_workflows/README.md
 
-      - name: "📝 Commit Changes"
+      - name: " Commit Changes"
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'

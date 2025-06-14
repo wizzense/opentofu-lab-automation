@@ -1,9 +1,9 @@
 ---
-name: "🩺 System Health Monitor"
+name: " System Health Monitor"
 
 on:
   workflow_run:
-    workflows: ["🚀 CI/CD Pipeline", "🧪 Cross-Platform Testing"]
+    workflows: [" CI/CD Pipeline", " Cross-Platform Testing"]
     types: [completed]
   schedule:
     # Run daily at 6 AM UTC
@@ -26,13 +26,13 @@ permissions:
 
 jobs:
   monitor-health:
-    name: "🩺 Monitor System Health"
+    name: " Monitor System Health"
     runs-on: ubuntu-latest
     steps:
-      - name: "📥 Checkout Repository"
+      - name: " Checkout Repository"
         uses: actions/checkout@v4
 
-      - name: "🔍 Check Workflow Health"
+      - name: " Check Workflow Health"
         id: workflow-health
         uses: actions/github-script@v7
         with:
@@ -97,10 +97,10 @@ jobs:
             core.setOutput('unhealthy-count', unhealthyWorkflows.length.toString());
 
             // Create summary for GitHub summary
-            const summary = ["## 🩺 Workflow Health Summary", "", `Overall System Health: ${overallSuccess ? '✅ Healthy' : '❌ Issues Detected'}`, ""];
+            const summary = ["##  Workflow Health Summary", "", `Overall System Health: ${overallSuccess ? ' Healthy' : ' Issues Detected'}`, ""];
 
             if (unhealthyWorkflows.length > 0) {
-              summary.push("### ⚠️ Unhealthy Workflows");
+              summary.push("###  Unhealthy Workflows");
               summary.push("");
               summary.push("| Workflow | Success Rate | Failures | Total Runs |");
               summary.push("|----------|-------------|----------|------------|");
@@ -109,11 +109,11 @@ jobs:
                 summary.push(`| ${wf.name} | ${wf.successRate} | ${wf.failures} | ${wf.total} |`);
               });
             } else {
-              summary.push("✅ All monitored workflows are healthy");
+              summary.push(" All monitored workflows are healthy");
             }
 
             // Add all workflow stats
-            summary.push("", "### 📊 All Workflow Statistics", "");
+            summary.push("", "###  All Workflow Statistics", "");
             summary.push("| Workflow | Success Rate | Successes | Failures | Total Runs |");
             summary.push("|----------|-------------|-----------|----------|------------|");
 
@@ -135,7 +135,7 @@ jobs:
               summary: summary.join('\n')
             };
 
-      - name: "📦 Install PowerShell"
+      - name: " Install PowerShell"
         shell: bash
         run: |
           if ! sudo apt-get update || ! sudo apt-get install -y powershell; then
@@ -143,7 +143,7 @@ jobs:
             exit 1
           fi
 
-      - name: "🧪 Run Health Check Scripts"
+      - name: " Run Health Check Scripts"
         id: health-check
         shell: pwsh
         run: |
@@ -170,7 +170,7 @@ jobs:
           # Exit with specific code for main script
           exit $results.exitCode
 
-      - name: "🔍 Check Repository Structure"
+      - name: " Check Repository Structure"
         id: structure-check
         shell: pwsh
         run: |
@@ -212,20 +212,20 @@ jobs:
           "structure-problems=$jsonProblems" >> $env:GITHUB_OUTPUT
 
           # Write to GitHub summary
-          Write-Host "## 🏗️ Repository Structure Check" | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append
+          Write-Host "##  Repository Structure Check" | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append
           Write-Host "" | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append
 
           if ($structureHealthy) {
-            Write-Host "✅ Repository structure is healthy" | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append
+            Write-Host " Repository structure is healthy" | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append
           } else {
-            Write-Host "❌ Repository structure has issues:" | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append
+            Write-Host " Repository structure has issues:" | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append
             Write-Host "" | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append
             foreach ($problem in $problems) {
               Write-Host "- $problem" | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append
             }
           }
 
-      - name: "🐛 Create Issue for Unhealthy System"
+      - name: " Create Issue for Unhealthy System"
         if: |
           (steps.workflow-health.outputs.healthy == 'false' ||
            steps.health-check.outputs.health-results contains '"healthy":false' ||
@@ -241,14 +241,14 @@ jobs:
 
             // Create an issue title and body
             const date = new Date().toISOString().split('T')[0];
-            const title = `🚨 System Health Issues Detected - ${date}`;
+            const title = ` System Health Issues Detected - ${date}`;
 
             let body = `# System Health Alert\n\n`;
 
             // Add workflow health information
             body += `## Workflow Health\n\n`;
             if (workflowHealth.unhealthyWorkflows && workflowHealth.unhealthyWorkflows.length > 0) {
-              body += `❌ **Unhealthy Workflows Detected**\n\n`;
+              body += ` **Unhealthy Workflows Detected**\n\n`;
               body += `| Workflow | Success Rate | Failures | Total Runs |\n`;
               body += `|----------|-------------|----------|------------|\n`;
 
@@ -256,15 +256,15 @@ jobs:
                 body += `| ${wf.name} | ${wf.successRate} | ${wf.failures} | ${wf.total} |\n`;
               });
             } else {
-              body += `✅ All workflows are healthy\n\n`;
+              body += ` All workflows are healthy\n\n`;
             }
 
             // Add health check script results
             body += `\n## Health Check Script Results\n\n`;
             if (healthCheckResults.healthy) {
-              body += `✅ Health check script passed\n\n`;
+              body += ` Health check script passed\n\n`;
             } else {
-              body += `❌ **Health check script failed**\n\n`;
+              body += ` **Health check script failed**\n\n`;
               if (healthCheckResults.error) {
                 body += `Error: ${healthCheckResults.error}\n\n`;
               }
@@ -276,9 +276,9 @@ jobs:
             // Add structure check results
             body += `\n## Repository Structure Check\n\n`;
             if (structureHealthy) {
-              body += `✅ Repository structure is healthy\n\n`;
+              body += ` Repository structure is healthy\n\n`;
             } else {
-              body += `❌ **Repository structure has issues**\n\n`;
+              body += ` **Repository structure has issues**\n\n`;
               structureProblems.forEach(problem => {
                 body += `- ${problem}\n`;
               });
@@ -302,31 +302,31 @@ jobs:
             console.log('Created issue for unhealthy system');
 
   generate-health-report:
-    name: "📊 Generate Health Report"
+    name: " Generate Health Report"
     runs-on: ubuntu-latest
     needs: monitor-health
     if: |
       always() &&
       (github.event_name == 'workflow_dispatch' && github.event.inputs.generate_report == 'true')
     steps:
-      - name: "📥 Checkout Repository"
+      - name: " Checkout Repository"
         uses: actions/checkout@v4
 
-      - name: "📦 Setup Python"
+      - name: " Setup Python"
         uses: actions/setup-python@v5
         with:
           python-version: '3.10'
 
-      - name: "📦 Install Dependencies"
+      - name: " Install Dependencies"
         run: |
           python -m pip install --upgrade pip
           pip install pytest pyyaml matplotlib pandas
 
-      - name: "📊 Generate Health Report"
+      - name: " Generate Health Report"
         run: |
           python scripts/generate-health-report.py --output health-report.html
 
-      - name: "📤 Upload Health Report"
+      - name: " Upload Health Report"
         uses: actions/upload-artifact@v4
         with:
           name: health-report

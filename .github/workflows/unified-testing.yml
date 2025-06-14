@@ -1,5 +1,5 @@
 ---
-name: "🧪 Cross-Platform Testing"
+name: " Cross-Platform Testing"
 
 on:
   workflow_dispatch:
@@ -13,7 +13,7 @@ on:
 
 jobs:
   pester-tests:
-    name: "🧪 Pester Tests (${{ matrix.os }})"
+    name: " Pester Tests (${{ matrix.os }})"
     runs-on: ${{ matrix.os }}
     timeout-minutes: 45
     strategy:
@@ -38,21 +38,21 @@ jobs:
             cache-key: macos-pwsh-modules
 
     steps:
-      - name: "📥 Checkout Repository"
+      - name: " Checkout Repository"
         uses: actions/checkout@v4
 
-      - name: "🔐 Authenticate GitHub CLI"
+      - name: " Authenticate GitHub CLI"
         shell: bash
         run: gh auth login --with-token <<< "${{ secrets.GITHUB_TOKEN }}"
 
-      - name: "💾 Cache PowerShell Modules"
+      - name: " Cache PowerShell Modules"
         uses: actions/cache@v4
         with:
           path: ${{ matrix.modules-path }}
           key: ${{ matrix.cache-key }}-${{ hashFiles('tests/PesterConfiguration.psd1') }}
           restore-keys: ${{ matrix.cache-key }}-
 
-      - name: "🧹 Remove Old Pester"
+      - name: " Remove Old Pester"
         shell: ${{ matrix.shell }}
         run: |
           $ErrorActionPreference = 'Stop'
@@ -66,7 +66,7 @@ jobs:
             Write-Warning "Could not remove old Pester modules: $_"
           }
 
-      - name: "📦 Install Pester"
+      - name: " Install Pester"
         shell: ${{ matrix.shell }}
         run: |
           $ErrorActionPreference = 'Stop'
@@ -83,7 +83,7 @@ jobs:
             exit 1
           }
 
-      - name: "📦 Install PowerShell YAML"
+      - name: " Install PowerShell YAML"
         shell: ${{ matrix.shell }}
         run: |
           $ErrorActionPreference = 'Stop'
@@ -97,7 +97,7 @@ jobs:
             exit 1
           }
 
-      - name: "✅ Verify Test Helpers"
+      - name: " Verify Test Helpers"
         shell: ${{ matrix.shell }}
         run: |
           $ErrorActionPreference = 'Stop'
@@ -113,7 +113,7 @@ jobs:
             exit 1
           }
 
-      - name: "📁 Create Coverage Directory"
+      - name: " Create Coverage Directory"
         shell: ${{ matrix.shell }}
         run: |
           $ErrorActionPreference = 'Stop'
@@ -126,7 +126,7 @@ jobs:
             exit 1
           }
 
-      - name: "🧪 Run Pester Tests"
+      - name: " Run Pester Tests"
         id: pester
         shell: ${{ matrix.shell }}
         run: |
@@ -186,53 +186,53 @@ jobs:
             exit 1
           }
 
-      - name: "📊 Upload Test Results"
+      - name: " Upload Test Results"
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: pester-results-${{ matrix.os }}
           path: ${{ github.workspace }}/*.xml
 
-      - name: "📊 Upload Coverage Results"
+      - name: " Upload Coverage Results"
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: coverage-results-${{ matrix.os }}
           path: ${{ github.workspace }}/coverage/
 
-      - name: "📝 Post Test Results Summary"
+      - name: " Post Test Results Summary"
         if: always()
         run: |
-          echo "### 🧪 Pester Test Results for ${{ matrix.os }}" >> $GITHUB_STEP_SUMMARY
-          echo "✅ Passed: ${{ steps.pester.outputs.result_passed }} tests" >> $GITHUB_STEP_SUMMARY
-          echo "❌ Failed: ${{ steps.pester.outputs.result_failed }} tests" >> $GITHUB_STEP_SUMMARY
-          echo "⏭️ Skipped: ${{ steps.pester.outputs.result_skipped }} tests" >> $GITHUB_STEP_SUMMARY
-          echo "📊 Total: ${{ steps.pester.outputs.result_total }} tests" >> $GITHUB_STEP_SUMMARY
+          echo "###  Pester Test Results for ${{ matrix.os }}" >> $GITHUB_STEP_SUMMARY
+          echo " Passed: ${{ steps.pester.outputs.result_passed }} tests" >> $GITHUB_STEP_SUMMARY
+          echo " Failed: ${{ steps.pester.outputs.result_failed }} tests" >> $GITHUB_STEP_SUMMARY
+          echo " Skipped: ${{ steps.pester.outputs.result_skipped }} tests" >> $GITHUB_STEP_SUMMARY
+          echo " Total: ${{ steps.pester.outputs.result_total }} tests" >> $GITHUB_STEP_SUMMARY
 
   pytest-tests:
-    name: "🧪 PyTest"
+    name: " PyTest"
     runs-on: ubuntu-latest
     steps:
-      - name: "📥 Checkout Repository"
+      - name: " Checkout Repository"
         uses: actions/checkout@v4
 
-      - name: "🐍 Setup Python"
+      - name: " Setup Python"
         uses: actions/setup-python@v5
         with:
           python-version: '3.10'
 
-      - name: "📦 Install Dependencies"
+      - name: " Install Dependencies"
         run: |
           python -m pip install --upgrade pip
           pip install pytest pytest-cov
           if [ -f py/requirements.txt ]; then pip install -r py/requirements.txt; fi
 
-      - name: "🧪 Run PyTest"
+      - name: " Run PyTest"
         run: |
           cd py
           pytest --cov=./ --cov-report=xml
 
-      - name: "📊 Upload Python Coverage Results"
+      - name: " Upload Python Coverage Results"
         if: always()
         uses: actions/upload-artifact@v4
         with:
@@ -240,22 +240,22 @@ jobs:
           path: py/coverage.xml
 
   test-summary:
-    name: "📊 Test Summary"
+    name: " Test Summary"
     runs-on: ubuntu-latest
     if: always()
     needs: [pester-tests, pytest-tests]
     steps:
-      - name: "📥 Checkout Repository"
+      - name: " Checkout Repository"
         uses: actions/checkout@v4
 
-      - name: "📊 Generate Test Summary"
+      - name: " Generate Test Summary"
         run: |
-          echo "# 🧪 Test Results Summary" >> $GITHUB_STEP_SUMMARY
+          echo "#  Test Results Summary" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "## 🔷 Pester Tests" >> $GITHUB_STEP_SUMMARY
-          echo "- ✅ Windows: ${{ needs.pester-tests.outputs.windows-passed || 'N/A' }} passed, ${{ needs.pester-tests.outputs.windows-failed || 'N/A' }} failed" >> $GITHUB_STEP_SUMMARY
-          echo "- ✅ Linux: ${{ needs.pester-tests.outputs.linux-passed || 'N/A' }} passed, ${{ needs.pester-tests.outputs.linux-failed || 'N/A' }} failed" >> $GITHUB_STEP_SUMMARY
-          echo "- ✅ macOS: ${{ needs.pester-tests.outputs.macos-passed || 'N/A' }} passed, ${{ needs.pester-tests.outputs.macos-failed || 'N/A' }} failed" >> $GITHUB_STEP_SUMMARY
+          echo "##  Pester Tests" >> $GITHUB_STEP_SUMMARY
+          echo "-  Windows: ${{ needs.pester-tests.outputs.windows-passed || 'N/A' }} passed, ${{ needs.pester-tests.outputs.windows-failed || 'N/A' }} failed" >> $GITHUB_STEP_SUMMARY
+          echo "-  Linux: ${{ needs.pester-tests.outputs.linux-passed || 'N/A' }} passed, ${{ needs.pester-tests.outputs.linux-failed || 'N/A' }} failed" >> $GITHUB_STEP_SUMMARY
+          echo "-  macOS: ${{ needs.pester-tests.outputs.macos-passed || 'N/A' }} passed, ${{ needs.pester-tests.outputs.macos-failed || 'N/A' }} failed" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "## 🔷 PyTest" >> $GITHUB_STEP_SUMMARY
-          echo "- ✅ Python tests completed" >> $GITHUB_STEP_SUMMARY
+          echo "##  PyTest" >> $GITHUB_STEP_SUMMARY
+          echo "-  Python tests completed" >> $GITHUB_STEP_SUMMARY

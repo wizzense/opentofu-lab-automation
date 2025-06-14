@@ -1,5 +1,5 @@
 ---
-name: "📝 Update Changelog"
+name: " Update Changelog"
 
 on:
   push:
@@ -12,10 +12,10 @@ on:
 
 jobs:
   update:
-    name: "📝 Generate Changelog"
+    name: " Generate Changelog"
     runs-on: ubuntu-latest
     steps:
-      - name: "📥 Checkout Repository"
+      - name: " Checkout Repository"
         uses: actions/checkout@v4
       - uses: actions/setup-python@v4
         with:

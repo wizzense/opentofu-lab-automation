@@ -104,8 +104,8 @@ jobs:
 
           if [[ "${{ needs.reporting.result }}" == "failure" ]]; then
             echo "" >> $GITHUB_STEP_SUMMARY
-            echo "⚠️ **One or more parts of the reporting/commit process failed. Check logs.**" >> $GITHUB_STEP_SUMMARY
+            echo " **One or more parts of the reporting/commit process failed. Check logs.**" >> $GITHUB_STEP_SUMMARY
           elif [[ "${{ needs.setup.outputs.has-changes }}" == "true" ]]; then
             echo "" >> $GITHUB_STEP_SUMMARY
-            echo "✅ Test generation and commit process completed." >> $GITHUB_STEP_SUMMARY
+            echo " Test generation and commit process completed." >> $GITHUB_STEP_SUMMARY
           fi
