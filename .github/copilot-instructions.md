@@ -3,9 +3,9 @@
 ## 📋 Project Context (Auto-Updated: 2025-06-13)
 
 This is a cross-platform OpenTofu (Terraform alternative) lab automation project with:
-- **1 PowerShell modules** for infrastructure automation
-- ** YAML workflows** for CI/CD
-- ** test files** for validation
+- **PowerShell modules** for infrastructure automation
+- **YAML workflows** for CI/CD
+- **Test files** for validation
 - **Cross-platform deployment** via Python scripts
 
 ## 🏗️ Current Architecture
@@ -16,7 +16,7 @@ This is a cross-platform OpenTofu (Terraform alternative) lab automation project
 
 ### Key Functions Available
 #### CodeFixer
-``powershell
+```powershell
 Import-Module "/pwsh/modules/CodeFixer/"
 Invoke-AutoFix
 Invoke-AutoFixCapture
@@ -37,7 +37,7 @@ Test-JsonConfig
 Watch-ScriptDirectory
 ````n
 #### LabRunner
-``powershell
+```powershell
 Import-Module "/pwsh/modules/LabRunner/"
 Invoke-ParallelLabRunner
 Test-RunnerScriptSafety
@@ -47,14 +47,14 @@ Test-RunnerScriptSafety
 ## 🔧 Development Guidelines
 
 ### Always Use Project Manifest First
-`powershell
+```powershell
 # Check current state before making changes
 $manifest = Get-Content "./PROJECT-MANIFEST.json" | ConvertFrom-Json
 $manifest.core.modules  # View all modules
-`
+```
 
 ### Maintenance Commands (Use These for Fixes)
-`powershell
+```powershell
 # Quick health check
 ./scripts/maintenance/unified-maintenance.ps1 -Mode "Quick"
 
@@ -63,11 +63,11 @@ $manifest.core.modules  # View all modules
 
 # YAML validation
 ./scripts/validation/Invoke-YamlValidation.ps1 -Mode "Fix"
-`
+```
 
 ### Code Generation Rules
 1. **Module Imports**: Always use full paths from manifest
-2. **Path References**: Use `/workspaces/opentofu-lab-automation/` prefix
+2. **Path References**: Use platform-agnostic code (`Join-Path`, `$PSScriptRoot`, `os.path.join`)
 3. **Testing**: Reference TestHelpers.ps1 with correct module paths
 4. **YAML**: All workflow files auto-validated and formatted
 
@@ -78,47 +78,16 @@ $manifest.core.modules  # View all modules
 - **Workflows**: `/.github/workflows/` (GitHub Actions)
 - **Documentation**: `/docs/` (project documentation)
 
-### Current Capabilities
-- **Performance**: < 1 minute health checks
-- **Automation**: Full YAML validation and auto-fix
-- **Cross-Platform**: Windows, Linux, macOS deployment
-- **Real-time**: Live validation and error correction
+### Critical Guidelines
+- Never hardcode Linux or Windows paths; always use platform detection or relative paths.
+- Always automate issue tracking from test/maintenance output.
+- Add CLI/GUI menu option for repo re-clone and refresh.
 
-## 🚨 Critical Guidelines
-
-### Never Do These:
-- Don't use legacy `pwsh/lab_utils/` paths (migrated to modules)
-- Don't create files in project root without using report utility
-- Don't modify workflows without YAML validation
-- Don't use deprecated import patterns
-
-### Always Do These:
-- Check PROJECT-MANIFEST.json before making changes
-- Use unified maintenance for validation
-- Reference correct module paths from manifest
-- Run YAML validation after workflow changes
-
-### Report Creation (MANDATORY)
-`powershell
-# Use the report utility, never create manual .md files in root
-./scripts/utilities/new-report.ps1 -Type "test-analysis" -Title "My Report"
-`
-
-## 🎯 Integration Points
-
-### GitHub Actions Integration
-- All workflows validated with yamllint
-- PowerShell scripts syntax-checked
-- Cross-platform testing enabled
-- Automated deployment workflows
-
-### Module System
-- Modern PowerShell module structure
-- Automated import path updates
-- Dependency validation
-- Performance optimized batch processing
+---
+## 🕒 Copilot Config Running Log
+- **2025-06-13 23:30** – Updated Copilot instructions for cross-platform, clarified automation, and added running log section. Next: ensure all scripts/platforms are supported and issue tracking is automated.
 
 ---
 *Auto-generated from PROJECT-MANIFEST.json*
 *Project health: < 1 minute*
-*Last update: 2025-06-13 22:15:19*
+*Last update: 2025-06-13 23:30*

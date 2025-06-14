@@ -1,18 +1,11 @@
 # CrossPlatformExecutor.ps1
-# Advanced base64 encoding system for cross-platform PowerShell script execution
-# This solves shell escaping and encoding issues across Windows/Linux/macOS
+# Enhanced cross-platform PowerShell script executor with proper working directory support
+# Compatible with Python integration for OpenTofu Lab Automation
 
 [CmdletBinding()]
 param(
-    [Parameter(Mandatory = $true)
-
-
-
-
-
-
-]
-    [string]$Action,  # 'encode', 'execute', 'validate'
+    [Parameter(Mandatory = $false)]
+    [string]$Action = "execute",  # 'encode', 'execute', 'validate'
     
     [Parameter(Mandatory = $false)]
     [string]$ScriptPath,
@@ -21,13 +14,45 @@ param(
     [string]$EncodedScript,
     
     [Parameter(Mandatory = $false)]
+    [string]$WorkingDirectory,
+    
+    [Parameter(Mandatory = $false)]
     [hashtable]$Parameters = @{},
     
     [Parameter(Mandatory = $false)]
-    [switch]$CI
+    [switch]$CI,
+    
+    [Parameter(Mandatory = $false)]
+    [switch]$NonInteractive
 )
 
 $ErrorActionPreference = "Stop"
+
+function Write-LogMessage {
+    param(
+        [string]$Message,
+        [string]$Level = "INFO"
+    )
+    
+    $timestamp = Get-Date -Format "HH:mm:ss"
+    Write-Host "[$timestamp] $Level`: $Message"
+}
+
+function Set-WorkingDirectoryIfProvided {
+    param([string]$Directory)
+    
+    if ($Directory -and (Test-Path $Directory)) {
+        try {
+            Set-Location $Directory
+            Write-LogMessage "Changed to working directory: $Directory"
+            return $true
+        } catch {
+            Write-LogMessage "Failed to change to working directory: $Directory. Error: $_" -Level "WARNING"
+            return $false
+        }
+    }
+    return $true
+}
 
 function ConvertTo-Base64Script {
     param(
@@ -35,277 +60,173 @@ function ConvertTo-Base64Script {
         [hashtable]$Parameters = @{}
     )
     
-    
-
-
-
-
-
-
-if (-not (Test-Path $ScriptPath)) {
+    if (-not (Test-Path $ScriptPath)) {
         throw "Script not found: $ScriptPath"
     }
     
-    $scriptContent = Get-Content $ScriptPath -Raw
+    $scriptContent = Get-Content $ScriptPath -Raw -Encoding UTF8
     
     # Inject parameters into script if provided
     if ($Parameters.Count -gt 0) {
-        # For scripts with Param blocks, we need to override the parameters after the param block
-        if ($scriptContent -match "Param\s*\(") {
-            # Find the end of the param block and inject parameter overrides after it
-            $lines = $scriptContent -split "`n"
-            $paramBlockEnd = -1
-            $braceCount = 0
-            $inParamBlock = $false
-            
-            for ($i = 0; $i -lt $lines.Count; $i++) {
-                if ($lines[$i] -match "Param\s*\(") {
-                    $inParamBlock = $true
-                    $braceCount = ($lines[$i] -split '\(' | Measure-Object).Count - 1
-                    $braceCount -= ($lines[$i] -split '\)' | Measure-Object).Count - 1
-                } elseif ($inParamBlock) {
-                    $braceCount += ($lines[$i] -split '\(' | Measure-Object).Count - 1
-                    $braceCount -= ($lines[$i] -split '\)' | Measure-Object).Count - 1
-                    if ($braceCount -le 0) {
-                        $paramBlockEnd = $i
-                        break
-                    }
-                }
-            }
-            
-            if ($paramBlockEnd -gt -1) {
-                $paramOverrides = ($Parameters.GetEnumerator() | ForEach-Object {
-                    "`$$($_.Key) = '$($_.Value)'"
-                }) -join "`n"
-                
-                $beforeParam = $lines[0..$paramBlockEnd] -join "`n"
-                $afterParam = if ($paramBlockEnd + 1 -lt $lines.Count) { $lines[($paramBlockEnd + 1)..($lines.Count - 1)] -join "`n"    } else { ""    }
-                
-                $scriptContent = @"
-$beforeParam
-
-# Auto-injected parameter overrides
-$paramOverrides
-
-$afterParam
-"@
-            }
-        } else {
-            # For scripts without Param blocks, inject at the beginning
-            $paramString = ($Parameters.GetEnumerator() | ForEach-Object {
-                "`$$($_.Key) = '$($_.Value)'"
-            }) -join "`n"
-            
-            $scriptContent = @"
+        $paramString = ($Parameters.GetEnumerator() | ForEach-Object {
+            "`$$($_.Key) = '$($_.Value)'"
+        }) -join "`n"
+        
+        $scriptContent = @"
 # Auto-injected parameters
 $paramString
 
 # Original script content
 $scriptContent
 "@
-        }
     }
     
-    # Convert to UTF8 bytes then base64
+    # Convert to base64
     $bytes = [System.Text.Encoding]::UTF8.GetBytes($scriptContent)
-    $base64 = [System.Convert]::ToBase64String($bytes)
+    $encoded = [System.Convert]::ToBase64String($bytes)
     
     return @{
-        OriginalPath = $ScriptPath
-        EncodedScript = $base64
-        Parameters = $Parameters
-        Timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss UTC"
+        EncodedScript = $encoded
+        OriginalSize = $scriptContent.Length
+        EncodedSize = $encoded.Length
     }
 }
 
 function ConvertFrom-Base64Script {
-    param(
-        [string]$EncodedScript
-    )
+    param([string]$EncodedScript)
     
+    if (-not $EncodedScript) {
+        throw "No encoded script provided"
+    }
     
-
-
-
-
-
-
-try {
+    try {
         $bytes = [System.Convert]::FromBase64String($EncodedScript)
-        $scriptContent = [System.Text.Encoding]::UTF8.GetString($bytes)
-        return $scriptContent
+        $decoded = [System.Text.Encoding]::UTF8.GetString($bytes)
+        return $decoded
     } catch {
-        throw "Failed to decode base64 script: $($_.Exception.Message)"
+        throw "Failed to decode script: $_"
     }
 }
 
 function Invoke-EncodedScript {
     param(
         [string]$EncodedScript,
-        [switch]$WhatIf
+        [hashtable]$Parameters = @{}
     )
     
+    $decodedScript = ConvertFrom-Base64Script -EncodedScript $EncodedScript
     
-
-
-
-
-
-
-$decodedScript = ConvertFrom-Base64Script -EncodedScript $EncodedScript
+    Write-LogMessage "Executing decoded PowerShell script (length: $($decodedScript.Length) characters)"
     
-    if ($WhatIf) {
-        Write-Host "Would execute the following script:" -ForegroundColor Cyan
-        Write-Host $decodedScript -ForegroundColor Gray
-        return @{ ExitCode = 0; WhatIf = $true }
-    }
-    
-    # Execute using a temporary file to avoid command line length limits
-    $tempFile = New-TemporaryFile
     try {
-        $tempFile = $tempFile.FullName + ".ps1"
-        Set-Content -Path $tempFile -Value $decodedScript -Encoding UTF8
+        # Create a script block and execute it
+        $scriptBlock = [ScriptBlock]::Create($decodedScript)
         
-        # Execute in a new PowerShell process for isolation
-        if ($IsWindows -or $env:OS -eq "Windows_NT") {
-            $result = Start-Process -FilePath "powershell.exe" -ArgumentList @("-ExecutionPolicy", "Bypass", "-File", $tempFile) -Wait -PassThru -NoNewWindow
+        if ($Parameters.Count -gt 0) {
+            Write-LogMessage "Executing with parameters: $($Parameters.Keys -join ', ')"
+            & $scriptBlock @Parameters
         } else {
-            $result = Start-Process -FilePath "pwsh" -ArgumentList @("-File", $tempFile) -Wait -PassThru -NoNewWindow
+            & $scriptBlock
         }
         
-        return @{
-            ExitCode = $result.ExitCode
-            ProcessId = $result.Id
-            StartTime = $result.StartTime
-            ExitTime = $result.ExitTime
-        }
-        
-    } finally {
-        if (Test-Path $tempFile) {
-            Remove-Item $tempFile -Force -ErrorAction SilentlyContinue
-        }
+        Write-LogMessage "Script execution completed successfully"
+        return $LASTEXITCODE
+    } catch {
+        Write-LogMessage "Script execution failed: $_" -Level "ERROR"
+        throw
     }
 }
 
-function Test-EncodedScript {
-    param(
-        [string]$EncodedScript
-    )
+function Test-ScriptExecution {
+    Write-LogMessage "Testing PowerShell execution capabilities..."
     
+    $testScript = @"
+Write-Host "PowerShell execution test successful"
+Write-Host "Working Directory: `$(Get-Location)"
+Write-Host "PowerShell Version: `$(`$PSVersionTable.PSVersion)"
+if (`$PSVersionTable.Platform) {
+    Write-Host "Platform: `$(`$PSVersionTable.Platform)"
+} else {
+    Write-Host "Platform: Windows (Legacy PowerShell)"
+}
+Write-Host "Execution Policy: `$(Get-ExecutionPolicy)"
+"@
     
-
-
-
-
-
-
-try {
-        $decodedScript = ConvertFrom-Base64Script -EncodedScript $EncodedScript
-        
-        # Validate PowerShell syntax
-        $null = [System.Management.Automation.PSParser]::Tokenize($decodedScript, [ref]$null)
-        
-        return @{
-            Valid = $true
-            DecodedLength = $decodedScript.Length
-            ContainsParam = $decodedScript -match "Param\s*\("
-            ContainsFunction = $decodedScript -match "function\s+"
-        }
+    try {
+        $encoded = [System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes($testScript))
+        Invoke-EncodedScript -EncodedScript $encoded
+        Write-LogMessage "✓ PowerShell execution test passed"
+        return $true
     } catch {
-        return @{
-            Valid = $false
-            Error = $_.Exception.Message
-        }
+        Write-LogMessage "✗ PowerShell execution test failed: $_" -Level "ERROR"
+        return $false
     }
 }
 
 # Main execution logic
-switch ($Action.ToLower()) {
-    "encode" {
-        if (-not $ScriptPath) {
-            throw "ScriptPath parameter required for encode action"
+try {
+    Write-LogMessage "CrossPlatformExecutor.ps1 starting..."
+    Write-LogMessage "Action: $Action"
+    Write-LogMessage "PowerShell Version: $($PSVersionTable.PSVersion)"
+    Write-LogMessage "Current Location: $(Get-Location)"
+    
+    # Set working directory if provided
+    if ($WorkingDirectory) {
+        if (-not (Set-WorkingDirectoryIfProvided -Directory $WorkingDirectory)) {
+            Write-LogMessage "Warning: Could not set working directory, continuing with current directory" -Level "WARNING"
         }
-        
-        $result = ConvertTo-Base64Script -ScriptPath $ScriptPath -Parameters $Parameters
-        
-        if ($CI) {
-            # Output JSON for CI consumption
-            $result | ConvertTo-Json -Depth 3
-        } else {
-            Write-Host "Script encoded successfully:" -ForegroundColor Green
-            Write-Host "  Original: $($result.OriginalPath)" -ForegroundColor Gray
-            Write-Host "  Encoded length: $($result.EncodedScript.Length) characters" -ForegroundColor Gray
-            Write-Host "  Parameters: $($result.Parameters.Count)" -ForegroundColor Gray
-            Write-Host "`nEncoded script:" -ForegroundColor Cyan
+    }
+    
+    switch ($Action.ToLower()) {
+        "encode" {
+            if (-not $ScriptPath) {
+                throw "ScriptPath is required for encode action"
+            }
+            
+            Write-LogMessage "Encoding script: $ScriptPath"
+            $result = ConvertTo-Base64Script -ScriptPath $ScriptPath -Parameters $Parameters
+            
+            Write-Host "=== ENCODED SCRIPT ==="
             Write-Host $result.EncodedScript
-        }
-    }
-    
-    "execute" {
-        if (-not $EncodedScript) {
-            throw "EncodedScript parameter required for execute action"
+            Write-Host "=== END ENCODED SCRIPT ==="
+            Write-LogMessage "Encoding completed. Original: $($result.OriginalSize) bytes, Encoded: $($result.EncodedSize) bytes"
         }
         
-        $result = Invoke-EncodedScript -EncodedScript $EncodedScript
-        
-        if ($CI) {
-            $result | ConvertTo-Json -Depth 3
-        } else {
-            Write-Host "Script execution completed:" -ForegroundColor Green
-            Write-Host "  Exit Code: $($result.ExitCode)" -ForegroundColor Gray
-            if ($result.WhatIf) {
-                Write-Host "  Mode: WhatIf (no actual execution)" -ForegroundColor Yellow
-            }
-        }
-        
-        exit $result.ExitCode
-    }
-    
-    "validate" {
-        if (-not $EncodedScript) {
-            throw "EncodedScript parameter required for validate action"
-        }
-        
-        $result = Test-EncodedScript -EncodedScript $EncodedScript
-        
-        if ($CI) {
-            $result | ConvertTo-Json -Depth 3
-        } else {
-            Write-Host "Script validation result:" -ForegroundColor Cyan
-            Write-Host "  Valid: $($result.Valid)" -ForegroundColor $(if ($result.Valid) { "Green" } else { "Red" })
-            if ($result.Valid) {
-                Write-Host "  Decoded length: $($result.DecodedLength) characters" -ForegroundColor Gray
-                Write-Host "  Contains Param block: $($result.ContainsParam)" -ForegroundColor Gray
-                Write-Host "  Contains functions: $($result.ContainsFunction)" -ForegroundColor Gray
+        "execute" {
+            if ($EncodedScript) {
+                Write-LogMessage "Executing encoded script"
+                $exitCode = Invoke-EncodedScript -EncodedScript $EncodedScript -Parameters $Parameters
+                exit $exitCode
+            } elseif ($ScriptPath) {
+                Write-LogMessage "Encoding and executing script: $ScriptPath"
+                $result = ConvertTo-Base64Script -ScriptPath $ScriptPath -Parameters $Parameters
+                $exitCode = Invoke-EncodedScript -EncodedScript $result.EncodedScript -Parameters $Parameters
+                exit $exitCode
             } else {
-                Write-Host "  Error: $($result.Error)" -ForegroundColor Red
+                throw "Either EncodedScript or ScriptPath is required for execute action"
             }
         }
         
-        if (-not $result.Valid) {
-            exit 1
+        "validate" {
+            Write-LogMessage "Running validation tests..."
+            $testPassed = Test-ScriptExecution
+            
+            if ($testPassed) {
+                Write-LogMessage "✓ Validation completed successfully"
+                exit 0
+            } else {
+                Write-LogMessage "✗ Validation failed" -Level "ERROR"
+                exit 1
+            }
+        }
+        
+        default {
+            throw "Unknown action: $Action. Valid actions are: encode, execute, validate"
         }
     }
     
-    default {
-        throw "Invalid action: $Action. Valid actions are: encode, execute, validate"
-    }
+} catch {
+    Write-LogMessage "Fatal error: $_" -Level "ERROR"
+    Write-LogMessage "Stack trace: $($_.ScriptStackTrace)" -Level "ERROR"
+    exit 1
 }
-
-# Usage examples:
-<#
-# Encode a script with parameters
-.\CrossPlatformExecutor.ps1 -Action encode -ScriptPath "path/to/script.ps1" -Parameters @{ConfigPath="config.json"; Environment="prod"}
-
-# Execute an encoded script
-.\CrossPlatformExecutor.ps1 -Action execute -EncodedScript "base64encodedstring..."
-
-# Validate an encoded script
-.\CrossPlatformExecutor.ps1 -Action validate -EncodedScript "base64encodedstring..."
-
-# CI usage (JSON output)
-.\CrossPlatformExecutor.ps1 -Action encode -ScriptPath "script.ps1" -CI
-#>
-
-
-

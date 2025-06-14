@@ -1,119 +1,48 @@
-# AI Agent Integration Documentation
+# AGENTS.md (Optimized for Cross-Platform & Automation)
 
-## 🤖 Project State Overview
+## Project Agent & Automation Guidelines
 
-**Last Updated**: 2025-06-13 22:15:19
-**Project Health**: < 1 minute
-**Total Modules**: 1
+### Key Principles
+- **Always use platform-agnostic paths** (PowerShell: `Join-Path`, Python: `os.path.join`).
+- **Run all maintenance and validation via unified scripts** in `/scripts/maintenance/`.
+- **Never hardcode Linux or Windows paths**; always detect platform or use relative paths.
+- **Automate issue tracking**: All test/maintenance failures should be logged to the issues tracker.
+- **Menu/CLI/GUI must support repo re-clone and refresh.**
 
-## 📊 Current Capabilities
+### Daily Agent Workflow
+```powershell
+# Quick health check (cross-platform)
+pwsh -File scripts/maintenance/unified-maintenance.ps1 -Mode "Quick"
 
-### Core Modules
-- **CodeFixer**: 
-- **LabRunner**: 
+# Full maintenance with fixes
+pwsh -File scripts/maintenance/unified-maintenance.ps1 -Mode "All" -AutoFix
 
-### Key Functions Available
-#### CodeFixer
-- Invoke-AutoFix
-- Invoke-AutoFixCapture
-- Invoke-ComprehensiveAutoFix
-- Invoke-ComprehensiveValidation
-- Invoke-HereStringFix
-- Invoke-ImportAnalysis
-- Invoke-ParallelScriptAnalyzer
-- Invoke-PowerShellLint-clean
-- Invoke-PowerShellLint-corrupted
-- Invoke-PowerShellLint
-- Invoke-ResultsAnalysis
-- Invoke-ScriptOrderFix
-- Invoke-TernarySyntaxFix
-- Invoke-TestSyntaxFix
-- New-AutoTest
-- Test-JsonConfig
-- Watch-ScriptDirectory
+# Run all tests
+pwsh -File scripts/testing/run-all-tests.ps1
+```
 
-#### LabRunner
-- Invoke-ParallelLabRunner
-- Test-RunnerScriptSafety
+### Maintenance & Cleanup
+- Use `unified-maintenance.ps1` for all cleanup and validation.
+- Use `cleanup-root-scripts.ps1` and `cleanup-duplicate-directories.ps1` for deep cleanup.
+- Always generate a report after major maintenance:  
+  `pwsh -File scripts/utilities/new-report.ps1 -Type "test-analysis" -Title "Maintenance Report"`
 
+### Issue Tracking
+- All test failures and maintenance warnings should be parsed and logged to the issues tracker automatically.
+- Manual issues should be added only for new/unknown problems.
 
+### Cross-Platform Notes
+- All scripts must work on both Windows and Linux.
+- Use `$PSScriptRoot` and `Join-Path` in PowerShell for all file operations.
+- Use `os.path.join` in Python.
+- **Test for platform at runtime** and adjust paths accordingly.
 
-### Performance Metrics
-- **Health Check Time**: < 1 minute
-- **Validation Speed**: 
-- **File Processing**: 
-
-### Infrastructure Status
-- **PowerShell Files**:  files
-- **Test Files**:  files
-- **YAML Workflows**:  files
-- **Total LOC**:  lines
-
-## 🔧 Maintenance Integration
-
-### Automated Systems
-1. **Unified Maintenance**: `./scripts/maintenance/unified-maintenance.ps1`
-   - Infrastructure health checks
-   - YAML validation and auto-fix
-   - PowerShell syntax validation
-   - Automated reporting
-
-2. **YAML Validation**: `./scripts/validation/Invoke-YamlValidation.ps1`
-   - Real-time workflow validation
-   - Automatic formatting fixes
-   - Truthy value normalization
-
-3. **CodeFixer Module**: Advanced PowerShell analysis and repair
-   - Batch processing capabilities
-   - Parallel execution
-   - Import path modernization
-
-### Quick Commands
-`powershell
-# Health check
-./scripts/maintenance/unified-maintenance.ps1 -Mode "Quick"
-
-# Full maintenance with auto-fix
-./scripts/maintenance/unified-maintenance.ps1 -Mode "All" -AutoFix
-
-# YAML validation
-./scripts/validation/Invoke-YamlValidation.ps1 -Mode "Fix"
-
-# Comprehensive validation
-Import-Module "./pwsh/modules/CodeFixer"
-Invoke-ComprehensiveValidation
-`
-
-## 🏗️ Architecture
-
-### Module Structure
-`
-pwsh/modules/
-├── LabRunner/          # Core lab automation
-├── CodeFixer/          # Code analysis and repair
-└── [Dynamic modules]   # Additional capabilities
-`
-
-### Validation Pipeline
-1. **Infrastructure Health** → Basic system checks
-2. **YAML Validation** → Workflow file integrity
-3. **PowerShell Syntax** → Code quality assurance
-4. **Import Analysis** → Dependency validation
-5. **Test Execution** → Functional verification
-
-## 📈 Usage Analytics
-
-### Common Operations
-- **Quick deployment**: `python deploy.py --quick`
-- **GUI interface**: `python gui.py`
-- **Cross-platform**: Windows, Linux, macOS support
-
-### Integration Points
-- GitHub Actions workflows validated and optimized
-- PowerShell module system modernized
-- Cross-platform launcher scripts maintained
-- Documentation auto-generated from manifest
+### Repo Refresh
+- Add a CLI and GUI menu option to re-clone the repo and refresh the menu.
 
 ---
-*This file is automatically updated by the maintenance system*
-*Last auto-update: 2025-06-13 22:15:19*
+## 🕒 Agent Running Log
+- **2025-06-13 23:30** – Updated agent guidelines for cross-platform, clarified automation, and added running log section. Next: ensure all scripts/platforms are supported and issue tracking is automated.
+
+---
+*Last updated: 2025-06-13 by GitHub Copilot*

@@ -9,6 +9,8 @@ and recommended defaults for the lab automation system.
 from typing import Dict, Any, List, Optional, Union
 from dataclasses import dataclass
 import platform
+import json
+import json
 
 @dataclass
 class ConfigField:
@@ -344,3 +346,39 @@ class ConfigSchema:
                         errors.append(f"'{field.display_name}' must be a number")
         
         return errors
+    
+    def reload_schema(self):
+        """Reload the configuration schema to pick up any changes"""
+        self.sections = self._build_schema()
+        
+    def add_dynamic_field(self, section_name: str, field: ConfigField):
+        """Add a new configuration field dynamically"""
+        if section_name not in self.sections:
+            self.sections[section_name] = []
+        self.sections[section_name].append(field)
+        
+    def remove_field(self, section_name: str, field_name: str):
+        """Remove a configuration field dynamically"""
+        if section_name in self.sections:
+            self.sections[section_name] = [
+                field for field in self.sections[section_name] 
+                if field.name != field_name
+            ]
+            
+    def load_external_config_schema(self, schema_file_path: str):
+        """Load configuration schema from external JSON file"""
+        try:
+            with open(schema_file_path, 'r') as f:
+                external_schema = json.load(f)
+                
+            # Add external fields to existing schema
+            for section_name, fields_data in external_schema.items():
+                if section_name not in self.sections:
+                    self.sections[section_name] = []
+                    
+                for field_data in fields_data:
+                    field = ConfigField(**field_data)
+                    self.sections[section_name].append(field)
+                    
+        except Exception as e:
+            print(f"Warning: Could not load external schema from {schema_file_path}: {e}")

@@ -337,7 +337,7 @@ function Invoke-RunnerScriptAutoFix {
     
     try {
         # Import CodeFixer module for advanced fixing
-        Import-Module "$PSScriptRoot/../../CodeFixer/CodeFixer.psm1" -Force -ErrorAction SilentlyContinue
+riptRoot/../../CodeFixer/CodeFixer.psm1" -Force -ErrorAction SilentlyContinue
         
         $originalContent = Get-Content $ScriptPath -Raw
         $newContent = $originalContent
@@ -351,7 +351,8 @@ Param(
 )
 
 "@
-            $newContent = $paramBlock + $newContent
+            $newCont
+Import-Module "$PSScent = $paramBlock + $newContent
             $result.FixesApplied++
             $result.FixDetails += "Added missing parameter block with Config parameter"
         }
@@ -443,7 +444,7 @@ function Invoke-CodeFixerOnRunnerScript {
     
     try {
         # Import CodeFixer module
-        Import-Module "$PSScriptRoot/../../CodeFixer/CodeFixer.psm1" -Force -ErrorAction SilentlyContinue
+riptRoot/../../CodeFixer/CodeFixer.psm1" -Force -ErrorAction SilentlyContinue
         
         if (Get-Command Invoke-PowerShellLint -ErrorAction SilentlyContinue) {
             $lintResult = Invoke-PowerShellLint -Path $ScriptPath -PassThru

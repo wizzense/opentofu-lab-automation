@@ -1,0 +1,26 @@
+{
+  "timestamp": "2025-06-13T19:38:57.198700",
+  "files_kept": 1195,
+  "files_archived": 19,
+  "archived_files": [
+    "AGENTS.md",
+    "AUTOMATED-EXECUTION-CONFIRMED.md",
+    "bootstrap.py",
+    "CLEANUP-REPORT-20250613-185822.md",
+    "cleanup_repository.py",
+    "comprehensive-cleanup.py",
+    "CROSS-PLATFORM-COMPLETE.md",
+    "FINAL-COMMIT-READY.md",
+    "final-project-cleanup.ps1",
+    "FINAL-PROJECT-STATUS.md",
+    "gui-backup.py",
+    "GUI-HANGING-FIX.md",
+    "gui.py",
+    "gui_enhanced_v2.py",
+    "MERGE-CONFLICT-CRISIS-ANALYSIS.md",
+    "migrate-to-enhanced-gui.py",
+    "MISSION-ACCOMPLISHED-FINAL.md",
+    "start.bat",
+    "WINDOWS-VALIDATION-COMPLETE.md"
+  ]
+}

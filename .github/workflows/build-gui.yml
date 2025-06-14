@@ -1,0 +1,329 @@
+name: 🖥️ Build GUI Executables
+
+on:
+  push:
+    branches: [ main, develop, feature/gui-* ]
+    paths:
+      - 'gui.py'
+      - 'gui-launcher.py'
+      - 'build-gui.py'
+      - 'gui-build.spec'
+      - 'requirements-gui.txt'
+      - '.github/workflows/build-gui.yml'
+  pull_request:
+    branches: [ main, develop ]
+    paths:
+      - 'gui.py'
+      - 'gui-launcher.py'
+      - 'build-gui.py'
+      - 'gui-build.spec'
+      - 'requirements-gui.txt'
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      optimization_level:
+        description: 'Optimization level for build'
+        required: false
+        default: 'balanced'
+        type: choice
+        options:
+          - speed
+          - size
+          - balanced
+      create_installer:
+        description: 'Create platform-specific installer'
+        required: false
+        default: false
+        type: boolean
+
+env:
+  PYTHON_VERSION: '3.11'
+
+jobs:
+  build-gui:
+    name: 🏗️ Build GUI (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            platform: windows
+            executable_ext: .exe
+            artifact_name: windows-x64
+          - os: ubuntu-latest
+            platform: linux
+            executable_ext: ''
+            artifact_name: linux-x64
+          - os: macos-latest
+            platform: macos
+            executable_ext: ''
+            artifact_name: macos-x64
+    
+    steps:
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: 🐍 Setup Python ${{ env.PYTHON_VERSION }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+      
+      - name: 📦 Install System Dependencies (Linux)
+        if: matrix.platform == 'linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3-tk python3-dev build-essential
+          # Install additional dependencies for GUI apps
+          sudo apt-get install -y libx11-dev libxext-dev libxrender-dev libxinerama-dev libxi-dev libxrandr-dev libxcursor-dev libxcomposite-dev libxdamage-dev libxfixes-dev
+      
+      - name: 📦 Install System Dependencies (macOS)
+        if: matrix.platform == 'macos'
+        run: |
+          # Ensure tkinter is available
+          brew install python-tk || true
+      
+      - name: 🔧 Install Python Dependencies
+        run: |
+          python -m pip install --upgrade pip wheel setuptools
+          pip install -r requirements-gui.txt
+      
+      - name: 🏗️ Build GUI Executable
+        run: |
+          python build-gui.py --optimization ${{ github.event.inputs.optimization_level || 'balanced' }}
+        env:
+          PYTHONOPTIMIZE: 1
+      
+      - name: 🧪 Test Executable (Basic)
+        run: |
+          # Basic test to ensure executable was created and is valid
+          if [ "${{ matrix.platform }}" = "windows" ]; then
+            if [ -f "dist/OpenTofu-Lab-GUI.exe" ]; then
+              echo "✅ Windows executable created successfully"
+              ls -la dist/
+            else
+              echo "❌ Windows executable not found"
+              exit 1
+            fi
+          else
+            if [ -f "dist/opentofu-lab-gui" ] || [ -f "dist/OpenTofu-Lab-GUI" ]; then
+              echo "✅ Unix executable created successfully"
+              ls -la dist/
+              # Make sure it's executable
+              chmod +x dist/* || true
+            else
+              echo "❌ Unix executable not found"
+              ls -la dist/ || echo "No dist directory"
+              exit 1
+            fi
+          fi
+        shell: bash
+      
+      - name: 📊 Collect Build Information
+        id: build_info
+        run: |
+          echo "build_date=$(date -u +'%Y-%m-%d %H:%M:%S UTC')" >> $GITHUB_OUTPUT
+          echo "commit_sha=${GITHUB_SHA:0:8}" >> $GITHUB_OUTPUT
+          echo "python_version=$(python --version)" >> $GITHUB_OUTPUT
+          
+          # Get file size and create build summary
+          if [ -d "dist" ]; then
+            total_size=$(du -sh dist/ | cut -f1)
+            echo "total_size=$total_size" >> $GITHUB_OUTPUT
+            
+            # List all files with sizes
+            echo "files<<EOF" >> $GITHUB_OUTPUT
+            ls -lah dist/ >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
+          fi
+        shell: bash
+      
+      - name: 📄 Create Build Summary
+        run: |
+          cat << EOF > build-summary-${{ matrix.artifact_name }}.md
+          # 🖥️ GUI Build Summary - ${{ matrix.platform }}
+          
+          **Build Information:**
+          - Platform: ${{ matrix.platform }}
+          - Python Version: ${{ steps.build_info.outputs.python_version }}
+          - Build Date: ${{ steps.build_info.outputs.build_date }}
+          - Commit: ${{ steps.build_info.outputs.commit_sha }}
+          - Optimization: ${{ github.event.inputs.optimization_level || 'balanced' }}
+          - Total Size: ${{ steps.build_info.outputs.total_size }}
+          
+          **Generated Files:**
+          \`\`\`
+          ${{ steps.build_info.outputs.files }}
+          \`\`\`
+          
+          **Installation:**
+          - Extract the archive
+          - Run the executable directly (no installation required)
+          - On Linux/macOS: Make sure the file is executable (\`chmod +x filename\`)
+          
+          ---
+          *Built automatically by GitHub Actions*
+          EOF
+        shell: bash
+      
+      - name: 📤 Upload Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: opentofu-lab-gui-${{ matrix.artifact_name }}
+          path: |
+            dist/
+            build-summary-${{ matrix.artifact_name }}.md
+          retention-days: 30
+      
+      - name: 📤 Upload Release Assets (Release Only)
+        if: github.event_name == 'release'
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: dist/
+          asset_name: opentofu-lab-gui-${{ matrix.artifact_name }}.zip
+          asset_content_type: application/zip
+
+  create-installer:
+    name: 🎁 Create Installers
+    runs-on: ${{ matrix.os }}
+    needs: build-gui
+    if: ${{ github.event.inputs.create_installer == 'true' || github.event_name == 'release' }}
+    
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            platform: windows
+            installer_type: nsis
+          - os: ubuntu-latest
+            platform: linux
+            installer_type: appimage
+          - os: macos-latest
+            platform: macos
+            installer_type: dmg
+    
+    steps:
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v4
+      
+      - name: 📥 Download Build Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: opentofu-lab-gui-${{ matrix.platform }}-x64
+          path: dist/
+      
+      - name: 🎁 Create Windows Installer (NSIS)
+        if: matrix.platform == 'windows'
+        run: |
+          echo "🚧 Windows installer creation would go here"
+          echo "Consider using NSIS, Inno Setup, or WiX Toolset"
+          echo "For now, the executable is ready to distribute"
+      
+      - name: 🎁 Create Linux AppImage
+        if: matrix.platform == 'linux'
+        run: |
+          echo "🚧 Linux AppImage creation would go here"
+          echo "Consider using linuxdeploy or appimage-builder"
+          echo "For now, the executable is ready to distribute"
+      
+      - name: 🎁 Create macOS DMG
+        if: matrix.platform == 'macos'
+        run: |
+          echo "🚧 macOS DMG creation would go here"
+          echo "Consider using create-dmg or DMG Canvas"
+          echo "For now, the executable is ready to distribute"
+
+  test-executables:
+    name: 🧪 Test Executables
+    runs-on: ${{ matrix.os }}
+    needs: build-gui
+    if: github.event_name != 'release'  # Skip intensive testing on releases
+    
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            platform: windows
+          - os: ubuntu-latest
+            platform: linux
+          - os: macos-latest
+            platform: macos
+    
+    steps:
+      - name: 📥 Download Build Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: opentofu-lab-gui-${{ matrix.platform }}-x64
+          path: dist/
+      
+      - name: 🧪 Basic Executable Test
+        run: |
+          echo "🧪 Testing executable creation and basic functionality..."
+          
+          # Find the executable
+          if [ "${{ matrix.platform }}" = "windows" ]; then
+            EXECUTABLE="dist/OpenTofu-Lab-GUI.exe"
+          else
+            EXECUTABLE=$(find dist/ -type f -executable | head -1)
+            chmod +x "$EXECUTABLE" 2>/dev/null || true
+          fi
+          
+          if [ -f "$EXECUTABLE" ]; then
+            echo "✅ Executable found: $EXECUTABLE"
+            
+            # Get file info
+            ls -la "$EXECUTABLE"
+            
+            # Test that the file is actually executable
+            file "$EXECUTABLE" || true
+            
+            echo "✅ Basic executable test passed"
+          else
+            echo "❌ Executable not found"
+            ls -la dist/
+            exit 1
+          fi
+        shell: bash
+
+  summary:
+    name: 📋 Build Summary
+    runs-on: ubuntu-latest
+    needs: [build-gui]
+    if: always()
+    
+    steps:
+      - name: 📋 Generate Summary
+        run: |
+          echo "## 🖥️ GUI Build Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          if [ "${{ needs.build-gui.result }}" = "success" ]; then
+            echo "✅ **All platform builds completed successfully!**" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "### 📦 Available Artifacts:" >> $GITHUB_STEP_SUMMARY
+            echo "- 🪟 Windows x64 executable" >> $GITHUB_STEP_SUMMARY
+            echo "- 🐧 Linux x64 executable" >> $GITHUB_STEP_SUMMARY
+            echo "- 🍎 macOS x64 executable" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ **Some builds failed**" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "Please check the individual job logs for details." >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 🚀 Usage:" >> $GITHUB_STEP_SUMMARY
+          echo "1. Download the appropriate artifact for your platform" >> $GITHUB_STEP_SUMMARY
+          echo "2. Extract the archive" >> $GITHUB_STEP_SUMMARY
+          echo "3. Run the executable (no installation required)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "*Built with ❤️ by GitHub Actions*" >> $GITHUB_STEP_SUMMARY

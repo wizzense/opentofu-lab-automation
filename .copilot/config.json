@@ -1,0 +1,17 @@
+{
+  "projectType": "opentofu-lab-automation",
+  "crossPlatform": true,
+  "enforcePlatformAgnosticPaths": true,
+  "maintenanceScripts": [
+    "scripts/maintenance/unified-maintenance.ps1",
+    "scripts/maintenance/cleanup-root-scripts.ps1",
+    "scripts/maintenance/cleanup-duplicate-directories.ps1"
+  ],
+  "testScripts": [
+    "scripts/testing/run-all-tests.ps1"
+  ],
+  "autoIssueTracking": true,
+  "repoRefreshMenu": true,
+  "documentationUpdateRequired": true,
+  "notes": "All scripts and automation must work on both Windows and Linux. Use Join-Path and $PSScriptRoot in PowerShell, os.path.join in Python. Maintenance and test failures should be logged to the issues tracker automatically."
+}

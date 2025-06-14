@@ -1,0 +1,6 @@
+{
+  "created": "2025-06-13T18:28:29.042142",
+  "algorithm": "HMAC-SHA256",
+  "key_length": 256,
+  "purpose": "OpenTofu Lab Automation Code Signing"
+}

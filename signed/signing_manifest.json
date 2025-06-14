@@ -1,0 +1,12 @@
+{
+  "project": "OpenTofu Lab Automation",
+  "signing_method": "HMAC-SHA256",
+  "signed_at": "2025-06-13T18:28:31.390262",
+  "total_files_signed": 551,
+  "files_skipped": 40,
+  "key_info": {
+    "algorithm": "HMAC-SHA256",
+    "key_length": 256
+  },
+  "verification_note": "Use verify_signature() method to check file integrity"
+}

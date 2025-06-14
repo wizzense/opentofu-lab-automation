@@ -1,0 +1,81 @@
+{
+  "Custom Lab Settings": [
+    {
+      "name": "CustomLabName",
+      "display_name": "Custom Lab Name",
+      "field_type": "text",
+      "default_value": "my-custom-lab",
+      "help_text": "Specify a custom name for your lab environment",
+      "required": true
+    },
+    {
+      "name": "EnableCustomMonitoring",
+      "display_name": "Enable Custom Monitoring",
+      "field_type": "bool",
+      "default_value": false,
+      "help_text": "Enable custom monitoring and alerting for the lab"
+    },
+    {
+      "name": "MonitoringProvider",
+      "display_name": "Monitoring Provider",
+      "field_type": "choice",
+      "default_value": "prometheus",
+      "help_text": "Choose the monitoring provider to use",
+      "choices": ["prometheus", "grafana", "datadog", "none"]
+    }
+  ],
+  "Advanced Network Settings": [
+    {
+      "name": "VLANId",
+      "display_name": "VLAN ID",
+      "field_type": "number",
+      "default_value": 100,
+      "help_text": "VLAN ID for lab network isolation (1-4094)"
+    },
+    {
+      "name": "NetworkSubnet",
+      "display_name": "Network Subnet",
+      "field_type": "text",
+      "default_value": "192.168.100.0/24",
+      "help_text": "IP subnet for the lab network (CIDR notation)"
+    },
+    {
+      "name": "EnableNAT",
+      "display_name": "Enable NAT",
+      "field_type": "bool",
+      "default_value": true,
+      "help_text": "Enable Network Address Translation for internet access"
+    }
+  ],
+  "Lab Environment Deployment": [
+    {
+      "name": "DeploymentTarget",
+      "display_name": "Deployment Target",
+      "field_type": "choice",
+      "default_value": "local",
+      "help_text": "Choose where to deploy the lab environment",
+      "choices": ["local", "aws", "azure", "gcp", "hybrid"]
+    },
+    {
+      "name": "CloudRegion",
+      "display_name": "Cloud Region",
+      "field_type": "text",
+      "default_value": "us-east-1",
+      "help_text": "Cloud region for deployment (when using cloud target)"
+    },
+    {
+      "name": "InstanceType",
+      "display_name": "Instance Type",
+      "field_type": "text",
+      "default_value": "t3.medium",
+      "help_text": "Instance type for cloud deployments"
+    },
+    {
+      "name": "AutoScaling",
+      "display_name": "Enable Auto Scaling",
+      "field_type": "bool",
+      "default_value": false,
+      "help_text": "Enable automatic scaling based on resource usage"
+    }
+  ]
+}
