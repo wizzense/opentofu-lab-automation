@@ -360,6 +360,43 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ** Want to contribute?** See [CONTRIBUTING.md](docs/CONTRIBUTING.md) for guidelines.
 
+## Project Maintenance
+
+> **⚠️ IMPORTANT**: All patching, fixes, and maintenance MUST use the PatchManager module
+
+### PatchManager - The Central Maintenance System
+
+The project uses a standardized approach to maintenance through the PatchManager module:
+
+```powershell
+# Import the PatchManager module
+Import-Module "/pwsh/modules/PatchManager" -Force
+
+# Run unified maintenance (health checks, fixes, reporting)
+Invoke-UnifiedMaintenance -Mode "All" -AutoFix -UpdateChangelog
+```
+
+### Key Maintenance Commands
+
+| **Command** | **Purpose** | **Example** |
+|-------------|-------------|-------------|
+| `Invoke-UnifiedMaintenance` | Orchestrate all maintenance | `Invoke-UnifiedMaintenance -Mode "Quick"` |
+| `Invoke-TestFileFix` | Fix test file syntax and patterns | `Invoke-TestFileFix -Mode "Comprehensive"` |
+| `Invoke-InfrastructureFix` | Fix infrastructure issues | `Invoke-InfrastructureFix -Fix "ImportPaths"` |
+| `Invoke-YamlValidation` | Validate and fix YAML files | `Invoke-YamlValidation -Mode "Fix"` |
+| `Invoke-HealthCheck` | Check project health | `Invoke-HealthCheck -Mode "Comprehensive"` |
+| `Invoke-PatchCleanup` | Clean up scattered fixes | `Invoke-PatchCleanup -Mode "Full"` |
+
+### Automated Integration
+
+PatchManager maintenance is integrated with:
+- **Pre-commit hooks** - Automatic health checks
+- **GitHub Actions** - Scheduled maintenance workflows
+- **Project commands** - CLI maintenance commands
+- **CI/CD pipeline** - Validation before deployment
+
+For more details, see [AGENTS.md](AGENTS.md) and [maintenance standards](.github/instructions/maintenance-standards.instructions.md).
+
 
 
 

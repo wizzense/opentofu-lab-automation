@@ -38,7 +38,7 @@ param(
 )
 
 # Import the shared logging module
-Import-Module "//pwsh/modules/CodeFixerLogging/" -Force
+Import-Module "////pwsh/modules/CodeFixerLogging/" -Force
 
 # Initialize results tracking
 $script:Results = @{

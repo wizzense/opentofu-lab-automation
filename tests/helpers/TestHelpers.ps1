@@ -540,14 +540,11 @@ function global:Write-Continue {
     return $true
 }
 
-
-
-
-
-
-
-
-
+# Prevent tests from hanging on interactive prompts by mocking input functions
+BeforeAll {
+    Mock -CommandName Read-LoggedInput -MockWith { '' }
+    Mock -CommandName Read-Host         -MockWith { '' }
+}
 
 # Auto-generated mock for missing command: errors
 function global:errors {
@@ -1197,6 +1194,8 @@ function Test-RunnerScriptDeployment {
 # ==============================================================================
 # End of Additional Test Helper Functions
 # ==============================================================================
+
+
 
 
 

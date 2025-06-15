@@ -1,4 +1,4 @@
-Import-Module "//pwsh/modules/CodeFixerLogging/" -Force
+Import-Module "////pwsh/modules/CodeFixerLogging/" -Force
 
 if (-not (Get-Command "Write-CustomLog" -ErrorAction SilentlyContinue)) {
     function Write-CustomLog {

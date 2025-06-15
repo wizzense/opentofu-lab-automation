@@ -1,0 +1,1428 @@
+{
+  "TopIssues": {
+    "Key": "Other: This test should run but it did not",
+    "Value": {
+      "Prevention": "Manual investigation required",
+      "Severity": [
+        "Critical",
+        "High",
+        "Medium"
+      ],
+      "Examples": [
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0000_Cleanup-Files Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0000_Cleanup-Files Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0001_Reset-Git Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0001_Reset-Git Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0002_Setup-Directories Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0002_Setup-Directories Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0006_Install-ValidationTools Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0006_Install-ValidationTools Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0007_Install-Go Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0007_Install-Go Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0008_Install-OpenTofu Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0008_Install-OpenTofu Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0009_Initialize-OpenTofu Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0009_Initialize-OpenTofu Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0010_Prepare-HyperVProvider Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0010_Prepare-HyperVProvider Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0100_Enable-WinRM Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0100_Enable-WinRM Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0101_Enable-RemoteDesktop Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0101_Enable-RemoteDesktop Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0102_Configure-Firewall Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0102_Configure-Firewall Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0103_Change-ComputerName Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0103_Change-ComputerName Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0104_Install-CA Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0104_Install-CA Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0105_Install-HyperV Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0105_Install-HyperV Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0106_Install-WAC Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0106_Install-WAC Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0111_Disable-TCPIP6 Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0111_Disable-TCPIP6 Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0112_Enable-PXE Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0112_Enable-PXE Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0113_Config-DNS Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0113_Config-DNS Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0114_Config-TrustedHosts Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0114_Config-TrustedHosts Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0200_Get-SystemInfo Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0200_Get-SystemInfo Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0201_Install-NodeCore Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0201_Install-NodeCore Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0202_Install-NodeGlobalPackages Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0202_Install-NodeGlobalPackages Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0203_Install-npm Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0203_Install-npm Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0204_Install-Poetry Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0204_Install-Poetry Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0205_Install-Sysinternals Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0205_Install-Sysinternals Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0206_Install-Python Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0206_Install-Python Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0207_Install-Git Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0207_Install-Git Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0208_Install-DockerDesktop Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0208_Install-DockerDesktop Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0209_Install-7Zip Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0209_Install-7Zip Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0210_Install-VSCode Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0210_Install-VSCode Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0211_Install-VSBuildTools Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0211_Install-VSBuildTools Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0212_Install-AzureCLI Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0212_Install-AzureCLI Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0213_Install-AWSCLI Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0213_Install-AWSCLI Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0214_Install-Packer Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0214_Install-Packer Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0215_Install-Chocolatey Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0215_Install-Chocolatey Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0216_Set-LabProfile Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0216_Set-LabProfile Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "9999_Reset-Machine Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "9999_Reset-Machine Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "BadRunnerScripts.Simple Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "BadRunnerScripts.Simple Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "BadRunnerScripts Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "BadRunnerScripts Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Cleanup-Files Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Cleanup-Files Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "CommonInstallers Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "CommonInstallers Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Config-DNS Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Config-DNS Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Config-TrustedHosts Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Config-TrustedHosts Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Configure-Firewall Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Configure-Firewall Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Customize-ISO Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Customize-ISO Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "CustomLint Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "CustomLint Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Download-Archive Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Download-Archive Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Enable-PXE Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Enable-PXE Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Enable-RemoteDesktop Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Enable-RemoteDesktop Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Enable-WinRM Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Enable-WinRM Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "EscapePathArgument Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "EscapePathArgument Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Expand-All Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Expand-All Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Format-Config Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Format-Config Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Get-HyperVProviderVersion Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Get-HyperVProviderVersion Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Get-LabConfig Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Get-LabConfig Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Get-Platform Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Get-Platform Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Get-SystemInfo Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Get-SystemInfo Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Get-WindowsJobArtifacts Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Get-WindowsJobArtifacts Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Hypervisor Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Hypervisor Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Initialize-OpenTofu Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Initialize-OpenTofu Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Install-CA Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Install-CA Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Install-Go Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Install-Go Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Install-npm Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Install-npm Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Install-OpenTofu Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Install-OpenTofu Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Install-Poetry Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Install-Poetry Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Install-Sysinternals Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Install-Sysinternals Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Install-ValidationTools Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Install-ValidationTools Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Invoke-LabDownload Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Invoke-LabDownload Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "InvokeOpenTofuInstaller Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "InvokeOpenTofuInstaller Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "kicker-bootstrap Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "kicker-bootstrap Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Kickstart-Bootstrap Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Kickstart-Bootstrap Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Logger Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Logger Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Menu Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Menu Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Network Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Network Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "NodeScripts Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "NodeScripts Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "OpenTofuInstaller Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "OpenTofuInstaller Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "PathUtils Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "PathUtils Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "PrepareHyperVProvider Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "PrepareHyperVProvider Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Reset-Git Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Reset-Git Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Reset-Machine Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Reset-Machine Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Resolve-ProjectPath Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Resolve-ProjectPath Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "runner Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "runner Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "RunnerScripts Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "RunnerScripts Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "ScriptTemplate Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "ScriptTemplate Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Set-LabProfile Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Set-LabProfile Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Setup-Directories Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Setup-Directories Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "setup-test-env Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "setup-test-env Tests.Functionality Tests.should execute without errors"
+        }
+      ],
+      "Count": 174
+    },
+    "Name": "Other: This test should run but it did not"
+  },
+  "TotalSkipped": 0,
+  "Timestamp": "2025-06-14 17:34:31",
+  "RecurringIssues": {
+    "Other: This test should run but it did not": {
+      "Prevention": "Manual investigation required",
+      "Severity": [
+        "Critical",
+        "High",
+        "Medium"
+      ],
+      "Examples": [
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0000_Cleanup-Files Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0000_Cleanup-Files Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0001_Reset-Git Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0001_Reset-Git Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0002_Setup-Directories Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0002_Setup-Directories Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0006_Install-ValidationTools Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0006_Install-ValidationTools Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0007_Install-Go Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0007_Install-Go Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0008_Install-OpenTofu Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0008_Install-OpenTofu Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0009_Initialize-OpenTofu Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0009_Initialize-OpenTofu Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0010_Prepare-HyperVProvider Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0010_Prepare-HyperVProvider Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0100_Enable-WinRM Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0100_Enable-WinRM Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0101_Enable-RemoteDesktop Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0101_Enable-RemoteDesktop Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0102_Configure-Firewall Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0102_Configure-Firewall Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0103_Change-ComputerName Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0103_Change-ComputerName Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0104_Install-CA Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0104_Install-CA Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0105_Install-HyperV Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0105_Install-HyperV Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0106_Install-WAC Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0106_Install-WAC Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0111_Disable-TCPIP6 Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0111_Disable-TCPIP6 Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0112_Enable-PXE Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0112_Enable-PXE Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0113_Config-DNS Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0113_Config-DNS Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0114_Config-TrustedHosts Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0114_Config-TrustedHosts Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0200_Get-SystemInfo Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0200_Get-SystemInfo Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0201_Install-NodeCore Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0201_Install-NodeCore Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0202_Install-NodeGlobalPackages Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0202_Install-NodeGlobalPackages Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0203_Install-npm Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0203_Install-npm Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0204_Install-Poetry Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0204_Install-Poetry Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0205_Install-Sysinternals Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0205_Install-Sysinternals Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0206_Install-Python Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0206_Install-Python Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0207_Install-Git Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0207_Install-Git Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0208_Install-DockerDesktop Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0208_Install-DockerDesktop Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0209_Install-7Zip Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0209_Install-7Zip Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0210_Install-VSCode Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0210_Install-VSCode Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0211_Install-VSBuildTools Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0211_Install-VSBuildTools Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0212_Install-AzureCLI Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0212_Install-AzureCLI Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0213_Install-AWSCLI Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0213_Install-AWSCLI Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0214_Install-Packer Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0214_Install-Packer Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0215_Install-Chocolatey Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0215_Install-Chocolatey Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0216_Set-LabProfile Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "0216_Set-LabProfile Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "9999_Reset-Machine Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "9999_Reset-Machine Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "BadRunnerScripts.Simple Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "BadRunnerScripts.Simple Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "BadRunnerScripts Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "BadRunnerScripts Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Cleanup-Files Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Cleanup-Files Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "CommonInstallers Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "CommonInstallers Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Config-DNS Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Config-DNS Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Config-TrustedHosts Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Config-TrustedHosts Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Configure-Firewall Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Configure-Firewall Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Customize-ISO Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Customize-ISO Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "CustomLint Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "CustomLint Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Download-Archive Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Download-Archive Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Enable-PXE Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Enable-PXE Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Enable-RemoteDesktop Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Enable-RemoteDesktop Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Enable-WinRM Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Enable-WinRM Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "EscapePathArgument Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "EscapePathArgument Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Expand-All Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Expand-All Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Format-Config Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Format-Config Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Get-HyperVProviderVersion Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Get-HyperVProviderVersion Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Get-LabConfig Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Get-LabConfig Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Get-Platform Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Get-Platform Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Get-SystemInfo Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Get-SystemInfo Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Get-WindowsJobArtifacts Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Get-WindowsJobArtifacts Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Hypervisor Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Hypervisor Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Initialize-OpenTofu Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Initialize-OpenTofu Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Install-CA Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Install-CA Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Install-Go Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Install-Go Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Install-npm Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Install-npm Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Install-OpenTofu Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Install-OpenTofu Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Install-Poetry Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Install-Poetry Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Install-Sysinternals Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Install-Sysinternals Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Install-ValidationTools Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Install-ValidationTools Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Invoke-LabDownload Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Invoke-LabDownload Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "InvokeOpenTofuInstaller Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "InvokeOpenTofuInstaller Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "kicker-bootstrap Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "kicker-bootstrap Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Kickstart-Bootstrap Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Kickstart-Bootstrap Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Logger Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Logger Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Menu Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Menu Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Network Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Network Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "NodeScripts Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "NodeScripts Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "OpenTofuInstaller Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "OpenTofuInstaller Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "PathUtils Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "PathUtils Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "PrepareHyperVProvider Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "PrepareHyperVProvider Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Reset-Git Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Reset-Git Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Reset-Machine Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Reset-Machine Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Resolve-ProjectPath Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Resolve-ProjectPath Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "runner Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "runner Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "RunnerScripts Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "RunnerScripts Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "ScriptTemplate Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "ScriptTemplate Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Set-LabProfile Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Set-LabProfile Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Setup-Directories Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "Setup-Directories Tests.Functionality Tests.should execute without errors"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "setup-test-env Tests.Module Loading.should load required modules"
+        },
+        {
+          "Message": "This test should run but it did not. Most likely a setup in some parent block failed.",
+          "Test": "setup-test-env Tests.Functionality Tests.should execute without errors"
+        }
+      ],
+      "Count": 174
+    }
+  },
+  "SuccessRate": 0.0,
+  "TotalFailures": 174,
+  "TestResultsDate": "2025-06-14 17:34:30",
+  "TotalTests": 174
+}

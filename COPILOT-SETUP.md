@@ -41,10 +41,36 @@ The project includes extensive Copilot customization for:
 ## Key Features
 
 ### Automatic Project Maintenance
-- **Health Checking**: Continuous validation with `unified-maintenance.ps1`
+- **Health Checking**: Centralized through PatchManager module with `Invoke-HealthCheck`
+- **Patching System**: All fixes, patches, and maintenance through `PatchManager` module
 - **File Synchronization**: Automatic PROJECT-MANIFEST.json and index updates
 - **Issue Tracking**: Automated issue creation and resolution tracking
 - **Performance Monitoring**: Health metrics and performance benchmarking
+
+### PatchManager Integration
+
+> **CRITICAL**: PatchManager is now the ONLY approved system for all patching, fixes, and maintenance
+
+#### Core PatchManager Functions
+- **Centralized Maintenance**: `Invoke-UnifiedMaintenance` for all maintenance tasks
+- **Test File Fixes**: `Invoke-TestFileFix` for all test file repair operations
+- **Infrastructure Fixes**: `Invoke-InfrastructureFix` for all infrastructure issues
+- **YAML Validation**: `Invoke-YamlValidation` for workflow validation and fixing
+- **Patch Cleanup**: `Invoke-PatchCleanup` for consolidating scattered patches
+- **Health Checks**: `Invoke-HealthCheck` for comprehensive health monitoring
+- **Issue Tracking**: `Invoke-RecurringIssueCheck` for detecting patterns
+- **Reporting**: `Show-MaintenanceReport` for reports and changelog generation
+
+#### Key Usage Guidelines
+- **NEVER create standalone fix scripts in project root**
+- **ALWAYS use PatchManager module functions for all fixes and patches**
+- **ALWAYS update changelogs when applying fixes** using `-UpdateChangelog` parameter
+- **ALWAYS run health checks before and after fixing** using `Invoke-HealthCheck`
+- **ALWAYS consolidate scattered fixes** using `Invoke-PatchCleanup`
+
+#### Standard Function Organization
+- `/pwsh/modules/PatchManager/Public/` for user-facing functions
+- `/pwsh/modules/PatchManager/Private/` for helper functions
 
 ### GitHub Workflow Integration
 - **Branch Management**: Enforced feature branch workflow with semantic commits
@@ -91,6 +117,47 @@ pwsh -Command "Invoke-PreCommitChecklist"
 
 # Semantic commits (guided by instructions)
 git commit -m "feat(modules): Add health checking integration"
+```
+
+### Maintenance and Patching
+
+```powershell
+# PREFERRED: Always use PatchManager for maintenance and patching
+Import-Module "/pwsh/modules/PatchManager" -Force
+
+# Fix test files with automated changelog updates
+Invoke-TestFileFix -Mode "Comprehensive" -Path "./tests/" -UpdateChangelog
+
+# Run infrastructure fixes with automatic application
+Invoke-InfrastructureFix -Fix "ImportPaths" -AutoFix -UpdateChangelog
+
+# Clean up scattered fix scripts
+Invoke-PatchCleanup -Mode "Full" -UpdateChangelog
+
+# Run health checks and generate reports
+$healthReport = Invoke-HealthCheck -Mode "Comprehensive" 
+Show-MaintenanceReport -HealthData $healthReport -OutputPath "./reports/maintenance.md"
+
+# YAML validation and fixes
+Invoke-YamlValidation -Path "./.github/workflows/" -Mode "Fix"
+```
+
+### Troubleshooting Process
+
+```powershell
+# Step 1: Import the module
+Import-Module "/pwsh/modules/PatchManager" -Force
+
+# Step 2: Run health check to identify issues
+$issues = Invoke-HealthCheck -Mode "Comprehensive" -OutputFormat "Object"
+
+# Step 3: Apply targeted fixes based on issue type
+foreach ($issue in $issues.Where{$_.Category -eq "TestSyntax"}) {
+    Invoke-TestFileFix -Path $issue.FilePath -FixType "Comprehensive" -UpdateChangelog
+}
+
+# Step 4: Verify fixes worked
+Invoke-HealthCheck -Mode "Quick"
 ```
 
 ## VS Code Settings Integration

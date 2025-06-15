@@ -4,14 +4,21 @@
  Comprehensive YAML validation and auto-fix for GitHub workflows
 
 .DESCRIPTION
- This script validates and automatically fixes YAML issues in GitHub workflow files.
- It integrates with our maintenance automation to ensure workflow files are always valid.
+ This script is a wrapper for the PatchManager module's Invoke-YamlValidation function.
+ It provides backward compatibility for scripts that depend on this location.
+ 
+ For new code, please use the PatchManager module directly:
+ Import-Module "/pwsh/modules/PatchManager"
+ Invoke-YamlValidation -Path ".github/workflows" -Mode "Fix"
 
 .PARAMETER Mode
  Validation mode: Check, Fix, Report
 
 .PARAMETER Path
  Path to check for YAML files (default: .github/workflows)
+
+.PARAMETER Verbose
+ Enable verbose output
 
 .EXAMPLE
  ./Invoke-YamlValidation.ps1 -Mode Fix
@@ -33,6 +40,10 @@ Write-Host "================================" -ForegroundColor Cyan
 Write-Host "Mode: $Mode" -ForegroundColor Yellow
 Write-Host "Path: $Path" -ForegroundColor Yellow
 Write-Host ""
+
+# Script Root and Project Root
+$scriptPath = $PSScriptRoot
+$projectRoot = Split-Path -Parent (Split-Path -Parent $scriptPath)
 
 # Load configuration from external file
 $scriptPath = $PSScriptRoot
@@ -455,8 +466,23 @@ function Invoke-YamlValidation {
  return $results
 }
 
-# Main execution
-$results = Invoke-YamlValidation -Mode $Mode -Path $Path
+# Try to use the PatchManager module
+try {
+    # Attempt to import the PatchManager module
+    Import-Module "/$projectRoot/pwsh/modules/PatchManager" -Force -ErrorAction Stop
+    
+    # Use the module's Invoke-YamlValidation function
+    $results = Invoke-YamlValidation -Mode $Mode -Path $Path -ProjectRoot $projectRoot
+    
+    Write-Host "✅ Successfully used PatchManager module for YAML validation" -ForegroundColor Green
+} 
+catch {
+    Write-Host "⚠️ Could not load PatchManager module: $($_.Exception.Message)" -ForegroundColor Yellow
+    Write-Host "Falling back to internal implementation..." -ForegroundColor Yellow
+    
+    # Fall back to the legacy internal implementation
+    $results = Invoke-YamlValidation -Mode $Mode -Path $Path
+}
 
 # Summary report
 Write-Host ""
@@ -467,7 +493,7 @@ Write-Host "Valid files: $($results.ValidFiles)" -ForegroundColor Green
 Write-Host "Invalid files: $($results.InvalidFiles)" -ForegroundColor Red
 
 if ($Mode -eq "Fix") {
- Write-Host "Fixed files: $($results.FixedFiles)" -ForegroundColor Yellow
+    Write-Host "Fixed files: $($results.FixedFiles)" -ForegroundColor Yellow
 }
 
 Write-Host "Errors: $($results.Errors.Count)" -ForegroundColor Red
@@ -484,3 +510,4 @@ else {
  Write-Host "[PASS] All YAML files are valid" -ForegroundColor Green
  exit 0
 }
+

@@ -24,8 +24,12 @@ $script:ProjectRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 
 # Import required modules
 try {
-    Import-Module "/$script:ProjectRoot\pwsh\modules\CodeFixer" -Force -ErrorAction Stop
-    Import-Module "/$script:ProjectRoot\pwsh\modules\LabRunner" -Force -ErrorAction Stop
+    # Import-Module "/$script:ProjectRoot/pwsh/modules/CodeFixer" -Force -ErrorAction Stop
+    Import-Module "$script:ProjectRoot\pwsh\modules\CodeFixer" -Force -ErrorAction Stop
+    # Import-Module "/$script:ProjectRoot/pwsh/modules/LabRunner" -Force -ErrorAction Stop
+    Import-Module "$script:ProjectRoot\pwsh\modules\LabRunner" -Force -ErrorAction Stop
+    # Import-Module "/$script:ProjectRoot/pwsh/modules/PatchManager" -Force -ErrorAction SilentlyContinue
+    Import-Module "$script:ProjectRoot\pwsh\modules\PatchManager" -Force -ErrorAction SilentlyContinue
 } catch {
     Write-Error "Failed to import required modules: $_"
     exit 1
@@ -595,8 +599,20 @@ switch ($OutputFormat) {
 }
 
 function Test-WorkflowHealth {
-    param([string]$WorkflowPath = ".github/workflows")
+    param(
+        [string]$WorkflowPath = ".github/workflows",
+        [switch]$AutoFix
+    )
     
+    # First try using the PatchManager module for comprehensive validation
+    $patchManagerResults = Test-WorkflowsUsingPatchManager -WorkflowPath $WorkflowPath -AutoFix:$AutoFix
+    
+    if ($null -ne $patchManagerResults) {
+        # PatchManager module was used successfully
+        return $patchManagerResults.Issues
+    }
+    
+    # Fall back to basic validation
     $issues = @()
     
     # Check workflow files exist
@@ -669,8 +685,65 @@ function Test-WorkflowHealth {
     return $issues
 }
 
+function Test-WorkflowsUsingPatchManager {
+    param(
+        [string]$WorkflowPath = "$script:ProjectRoot/.github/workflows",
+        [switch]$AutoFix
+    )
+    
+    $issues = @()
+    
+    # Try to use PatchManager's Invoke-YamlValidation if available
+    if (Get-Command "Invoke-YamlValidation" -ErrorAction SilentlyContinue) {
+        try {
+            Write-Host "Using PatchManager for advanced YAML validation..." -ForegroundColor Cyan
+            
+            $mode = if ($AutoFix) { "Fix" } else { "Check" }
+            $yamlResults = Invoke-YamlValidation -Path $WorkflowPath -Mode $mode -ProjectRoot $script:ProjectRoot
+            
+            # Process the results
+            foreach ($error in $yamlResults.Errors) {
+                $issues += @{
+                    File = $error.File
+                    Category = "YAML Syntax"
+                    Issue = $error.Message
+                    IsCritical = $true
+                    Line = $error.Line
+                    Column = $error.Column
+                }
+            }
+            
+            foreach ($warning in $yamlResults.Warnings) {
+                $issues += @{
+                    File = $warning.File
+                    Category = "YAML Structure"
+                    Issue = $warning.Message
+                    IsCritical = $false
+                    Line = $warning.Line
+                    Column = $warning.Column
+                }
+            }
+            
+            return @{
+                Issues = $issues
+                TotalFiles = $yamlResults.TotalFiles
+                ValidFiles = $yamlResults.ValidFiles
+                InvalidFiles = $yamlResults.InvalidFiles
+                FixedFiles = $yamlResults.FixedFiles
+            }
+        }
+        catch {
+            Write-Host "PatchManager YAML validation failed: $($_.Exception.Message)" -ForegroundColor Yellow
+            Write-Host "Falling back to basic validation..." -ForegroundColor Yellow
+            return $null  # Fall back to basic validation
+        }
+    }
+    
+    return $null  # Fall back to basic validation
+}
+
 # Update the checking workflow when analyzing infrastructure
-$workflowIssues = Test-WorkflowHealth
+$workflowIssues = Test-WorkflowHealth -AutoFix:$AutoFix
 if ($workflowIssues.Count -gt 0) {
     $report.Categories.Workflows = $workflowIssues
     
@@ -681,6 +754,23 @@ if ($workflowIssues.Count -gt 0) {
         Command = "./scripts/maintenance/unified-maintenance.ps1 -Mode 'All' -AutoFix"
     }
 }
+
+# Advanced workflow analysis using PatchManager
+if (Get-Command "Invoke-YamlValidation" -ErrorAction SilentlyContinue) {
+    $patchManagerResults = Test-WorkflowsUsingPatchManager -WorkflowPath "$script:ProjectRoot/.github/workflows" -AutoFix:$AutoFix
+    
+    if ($null -ne $patchManagerResults) {
+        $report.Summary.FilesWithErrors += $patchManagerResults.Issues.Count
+        $report.Summary.TotalErrors += $patchManagerResults.Issues.Count
+        $report.Categories.Workflows += $patchManagerResults.Issues
+        
+        if ($AutoFix) {
+            $report.Summary.AutoFixSuccess += ($patchManagerResults.FixedFiles)
+            $report.Summary.AutoFixFailed += ($patchManagerResults.InvalidFiles)
+        }
+    }
+}
+
 
 
 
