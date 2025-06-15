@@ -18,7 +18,10 @@
         'Invoke-PatchCleanup',
         'Invoke-TestFileFix',
         'Invoke-SelfHeal',
-        'New-ModuleValidationTests'
+        'New-ModuleValidationTests',
+        'Invoke-GitControlledPatch',
+        'Invoke-PatchValidation',
+        'New-PatchPullRequest'
     )
     CmdletsToExport = @()
     VariablesToExport = '*'

@@ -1,5 +1,33 @@
 # AI Agent Integration Documentation
 
+## CRITICAL: MANDATORY GIT-CONTROLLED WORKFLOW
+
+**Effective Date**: June 15, 2025
+
+### ALL CHANGES MUST USE GIT-CONTROLLED PATCHES
+
+NO changes (fixes, features, documentation) are allowed without:
+1. Creating a new branch via Invoke-GitControlledPatch
+2. Automated validation of all changes  
+3. Pull Request creation for human review
+4. Manual approval before merging
+
+### Workflow Commands
+PowerShell:
+Import-Module "/pwsh/modules/PatchManager" -Force
+Invoke-GitControlledPatch -PatchDescription "Description of fix" -PatchOperation { 
+    # Your fix code here
+} -AffectedFiles @("file1.ps1", "file2.py") -CreatePullRequest
+
+### STRICT NO-EMOJI POLICY
+- NO emojis anywhere in code, scripts, documentation
+- Emojis break workflows and automation  
+- Use clear text descriptions instead
+
+---
+
+## Project State Overview
+
 ## Project State Overview
 
 **Last Updated**: 2025-06-15 - **CRITICAL WORKFLOW CHANGE**
@@ -257,24 +285,24 @@ The project now uses a standardized patching system built around the PatchManage
 
 ```
 /pwsh/modules/PatchManager/
-├── PatchManager.psd1   # Module manifest
-├── PatchManager.psm1   # Module loader
-├── Public/
-│   ├── Invoke-UnifiedMaintenance.ps1  # Main entry point for maintenance
-│   ├── Invoke-YamlValidation.ps1      # YAML validation and fixing
-│   ├── Invoke-InfrastructureFix.ps1   # Infrastructure fixes
-│   ├── Invoke-ArchiveCleanup.ps1      # Archive cleanup
-│   ├── Show-MaintenanceReport.ps1     # Report generation
-│   ├── Invoke-HealthCheck.ps1         # Health checking
-│   ├── Invoke-RecurringIssueCheck.ps1 # Issue tracking
-│   ├── Invoke-PatchCleanup.ps1        # Patch consolidation
-│   └── Invoke-TestFileFix.ps1         # Test file fixes
-└── Private/
-    ├── Write-PatchLog.ps1             # Centralized logging
-    ├── Import-FixScripts.ps1          # Import archived fix scripts
-    ├── Repair-TestFile.ps1            # Test file repair helper
-    ├── Remove-ScatteredFiles.ps1      # File cleanup helper
-    └── Update-Changelog.ps1           # Changelog management
+ PatchManager.psd1   # Module manifest
+ PatchManager.psm1   # Module loader
+ Public/
+    Invoke-UnifiedMaintenance.ps1  # Main entry point for maintenance
+    Invoke-YamlValidation.ps1      # YAML validation and fixing
+    Invoke-InfrastructureFix.ps1   # Infrastructure fixes
+    Invoke-ArchiveCleanup.ps1      # Archive cleanup
+    Show-MaintenanceReport.ps1     # Report generation
+    Invoke-HealthCheck.ps1         # Health checking
+    Invoke-RecurringIssueCheck.ps1 # Issue tracking
+    Invoke-PatchCleanup.ps1        # Patch consolidation
+    Invoke-TestFileFix.ps1         # Test file fixes
+ Private/
+     Write-PatchLog.ps1             # Centralized logging
+     Import-FixScripts.ps1          # Import archived fix scripts
+     Repair-TestFile.ps1            # Test file repair helper
+     Remove-ScatteredFiles.ps1      # File cleanup helper
+     Update-Changelog.ps1           # Changelog management
 ```
 
 ### Key Features
@@ -362,17 +390,17 @@ Invoke-ComprehensiveValidation
 ### Module Structure
 `
 pwsh/modules/CodeFixer
-├── LabRunner/ # Core lab automation
-├── CodeFixer/ # Code analysis and repair
-└── [Dynamic modules] # Additional capabilities
+ LabRunner/ # Core lab automation
+ CodeFixer/ # Code analysis and repair
+ [Dynamic modules] # Additional capabilities
 `
 
 ### Validation Pipeline
-1. **Infrastructure Health** → Basic system checks
-2. **YAML Validation** → Workflow file integrity
-3. **PowerShell Syntax** → Code quality assurance
-4. **Import Analysis** → Dependency validation
-5. **Test Execution** → Functional verification
+1. **Infrastructure Health**  Basic system checks
+2. **YAML Validation**  Workflow file integrity
+3. **PowerShell Syntax**  Code quality assurance
+4. **Import Analysis**  Dependency validation
+5. **Test Execution**  Functional verification
 
 ## Usage Analytics
 
@@ -463,19 +491,19 @@ All new fixes should be added to PatchManager rather than creating standalone sc
 ### PatchManager Directory Structure
 ```
 /pwsh/modules/PatchManager/
-├── PatchManager.psd1   # Module manifest
-├── PatchManager.psm1   # Module loader
-├── Public/             # Public functions
-│   ├── Invoke-PatchCleanup.ps1
-│   ├── Invoke-TestFileFix.ps1
-│   ├── Invoke-InfrastructureFix.ps1
-│   └── ...
-├── Private/            # Internal helper functions
-│   ├── Import-FixScripts.ps1
-│   ├── Repair-TestFile.ps1
-│   ├── Update-Changelog.ps1
-│   └── ...
-└── README.md           # Documentation
+ PatchManager.psd1   # Module manifest
+ PatchManager.psm1   # Module loader
+ Public/             # Public functions
+    Invoke-PatchCleanup.ps1
+    Invoke-TestFileFix.ps1
+    Invoke-InfrastructureFix.ps1
+    ...
+ Private/            # Internal helper functions
+    Import-FixScripts.ps1
+    Repair-TestFile.ps1
+    Update-Changelog.ps1
+    ...
+ README.md           # Documentation
 ```
 
 ## Project Health Checking
@@ -565,3 +593,4 @@ Invoke-HealthCheck -Mode "Quick"
 # 5. Generate a report
 Show-MaintenanceReport -Mode "Recent" -OutputPath "./reports/maintenance-$(Get-Date -Format 'yyyyMMdd').md"
 ```
+
