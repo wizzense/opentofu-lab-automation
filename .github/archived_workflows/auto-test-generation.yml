@@ -86,11 +86,12 @@ jobs:
  echo "| Test Generation (macOS) | ${{ needs.generate-macos.result || 'skipped' }} | OS: macOS |" >> $GITHUB_STEP_SUMMARY
  echo "| Reporting & Commit | ${{ needs.reporting.result }} | Commits and runs generated tests |" >> $GITHUB_STEP_SUMMARY
 
- echo "" >> $GITHUB_STEP_SUMMARY if [[ "${{ needs.setup.outputs.has-changes }}" == "true" ]]; then
- echo "## Scripts Processed:" >> $GITHUB_STEP_SUMMARY
- echo '```json' >> $GITHUB_STEP_SUMMARY
- echo '${{ needs.setup.outputs.changed-scripts }}' >> $GITHUB_STEP_SUMMARY
- echo '```' >> $GITHUB_STEP_SUMMARY
+ if [[ "${{ needs.setup.outputs.has-changes }}" == "true" ]]; then
+     echo "" >> $GITHUB_STEP_SUMMARY
+     echo "## Scripts Processed:" >> $GITHUB_STEP_SUMMARY
+     echo '```json' >> $GITHUB_STEP_SUMMARY
+     echo '${{ needs.setup.outputs.changed-scripts }}' >> $GITHUB_STEP_SUMMARY
+     echo '```' >> $GITHUB_STEP_SUMMARY
 
  if [[ -n "${{ needs.setup.outputs.renamed-files-json }}" && "${{ needs.setup.outputs.renamed-files-json }}" != "[]" ]]; then
  echo "## Files Renamed:" >> $GITHUB_STEP_SUMMARY
