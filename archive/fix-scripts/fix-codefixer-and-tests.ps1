@@ -44,7 +44,7 @@ Write-Progress "🧪 Testing CodeFixer linting functionality..."
 
 try {
     $testResult = pwsh -c "
-        Import-Module /workspaces/opentofu-lab-automation/pwsh/modules/CodeFixer -Force
+        Import-Module "/workspaces/opentofu-lab-automation/pwsh/modules/CodeFixer/" -Force
         Invoke-PowerShellLint -Path /workspaces/opentofu-lab-automation/pwsh/runner.ps1 -OutputFormat Text
     "
     Write-Progress "✅ CodeFixer linting test completed" "Green"
@@ -182,7 +182,7 @@ if (-not $WhatIf) {
 Write-Progress "`n🎉 Comprehensive fixes completed!" "Green"
 Write-Progress "`nNext steps:" "Cyan"
 Write-Progress "1. Run 'Invoke-Pester tests/' to verify all tests work" "White"
-Write-Progress "2. Test CodeFixer: 'Import-Module pwsh/modules/CodeFixer; Invoke-PowerShellLint'" "White"
+Write-Progress "2. Test CodeFixer: 'Import-Module "/workspaces/opentofu-lab-automation/pwsh/modules/CodeFixer/"; Invoke-PowerShellLint'" "White"
 Write-Progress "3. Validate the full CI workflow" "White"
 
 

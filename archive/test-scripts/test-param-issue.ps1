@@ -22,7 +22,7 @@ if ($Config -is [string] -and (Test-Path $Config)) {
     $Config = Get-Content -Raw -Path $Config | ConvertFrom-Json
     Write-Host "Loaded config: $($Config | ConvertTo-Json -Depth 2)"
 }
-Import-Module (Join-Path $PSScriptRoot "pwsh/modules/CodeFixer/CodeFixer.psd1") -Force
+Import-Module "/workspaces/opentofu-lab-automation/pwsh/modules/CodeFixer/""/CodeFixer.psd1") -Force
 
 
 

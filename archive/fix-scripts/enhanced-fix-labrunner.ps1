@@ -102,7 +102,7 @@ if (-not $WhatIf) {
     # Test CodeFixer
     try {
         $codeFixerTest = pwsh -c "
-            Import-Module /workspaces/opentofu-lab-automation/pwsh/modules/CodeFixer -Force
+            Import-Module "/workspaces/opentofu-lab-automation/pwsh/modules/CodeFixer/" -Force
             Invoke-PowerShellLint -Path /workspaces/opentofu-lab-automation/pwsh/runner.ps1 -OutputFormat Text
         "
         Write-Host "✅ CodeFixer test passed" -ForegroundColor Green

@@ -2,32 +2,133 @@
 
 ## Project State Overview
 
-**Last Updated**: 2025-06-14 17:49:00
-**Project Health**: < 1 minute
+**Last Updated**: 2025-06-15 - **CRITICAL WORKFLOW CHANGE**
+**Project Health**: Maintenance Required  
 **Total Modules**: 4
+
+**MANDATORY CHANGE CONTROL IMPLEMENTED**
+
+## CRITICAL: New Git-Based Patch Management Workflow
+
+### ALL AUTOMATED FIXES NOW REQUIRE HUMAN VALIDATION
+
+As of 2025-06-15, **ALL automated patches and fixes MUST follow Git-based change control**:
+
+1. **NO DIRECT COMMITS TO MAIN** - All changes go through PR review
+2. **BRANCH-BASED PATCHING** - Every fix creates a dedicated patch branch  
+3. **MANDATORY PR REVIEW** - Human validation required before any merge
+4. **COMPREHENSIVE VALIDATION** - All patches validated before PR creation
+
+## CRITICAL: EMOJI USAGE STRICTLY PROHIBITED
+
+**NEVER USE EMOJIS IN ANY CODE, SCRIPTS, OR WORKFLOWS**
+- Emojis break GitHub Actions workflows
+- Emojis cause encoding issues in cross-platform environments  
+- Emojis break PowerShell execution on some systems
+- ALL code output must use plain text only
+- Any existing emojis must be removed immediately
+
+### Required Workflow for ALL Agents
+
+```powershell
+# CORRECT: Use Git-controlled patching
+Import-Module "/pwsh/modules/PatchManager" -Force
+
+# Apply syntax fixes with proper change control
+Invoke-GitControlledPatch -PatchType "Syntax" -CreatePR
+
+# Apply all fixes with proper change control  
+Invoke-GitControlledPatch -PatchType "All" -BranchName "fix-critical-issues" -CreatePR
+
+# This creates a patch branch and PR for manual review
+```
+
+```powershell
+# WRONG: Direct fixes without change control
+Invoke-PowerShellLint -Path "./scripts/" -AutoFix  # PROHIBITED
+Set-Content -Path "file.ps1" -Value $newContent   # PROHIBITED
+```
+
+### Change Control Requirements
+
+**Every automated change MUST:**
+1. Create a new Git branch prefixed with `patch-`
+2. Apply fixes in the isolated branch
+3. Create a pull request for human review
+4. Include comprehensive change documentation
+5. Require manual approval before merging
+6. Never include emojis or problematic Unicode characters
+
+1. **Branch Creation**: All fixes must create a new branch named `patch/YYYYMMDD-HHMMSS-description`
+2. **PR Template**: Use comprehensive PR template with validation checklist
+3. **Human Review**: ALL PRs require manual approval before merge
+4. **Validation Gates**: PowerShell, Python, YAML, and test validation must pass
+5. **Backup Creation**: Automatic backup before applying any changes
+6. **Audit Trail**: Full Git history of all changes with justification
+
+### Emergency Patch Protocol
+
+Only use for critical system-breaking issues:
+
+```powershell
+# Emergency patches still require branch creation but expedited review
+Invoke-GitControlledPatch -PatchType "All" -BranchName "emergency-critical-fix" -CreatePR
+# Then manually fast-track the PR review
+```
 
 ## Current Capabilities
 
-### Core Modules
-- **CodeFixer**: Automated code analysis and fixing
-- **LabRunner**: Lab environment automation and management
+### Core Modules (ALL NOW WITH MANDATORY CHANGE CONTROL)
+- **CodeFixer**: Automated code analysis and fixing with Git-controlled workflow
+- **LabRunner**: Lab environment automation and management  
 - **BackupManager**: Comprehensive backup management module
-- **PatchManager**: Unified patching, maintenance and health tracking system
+- **PatchManager**: **ENHANCED** Git-based patching with mandatory PR workflow
 
-### Patching System Architecture
+### NEW: Git-Based Patching System Architecture
 
-The patching system has been standardized around the PatchManager module for better organization:
+The patching system now enforces Git-based change control:
 
-1. **Unified Maintenance**: All maintenance functions are orchestrated through PatchManager using `Invoke-UnifiedMaintenance`
-2. **Module-Based Functions**: Core functionality is in the PatchManager module - never use scattered scripts directly
-3. **Cross-Platform Support**: Path handling is normalized for Windows/Linux compatibility
-4. **Automatic Logging**: All operations are logged automatically with standardized formats
-5. **Integrated Reporting**: Maintenance and patching activities are reported and tracked in changelogs
-6. **Centralized Testing**: All test fixes and validations now use the PatchManager module
+1. **Git-Controlled Maintenance**: All maintenance operations use `Invoke-GitControlledPatch`
+2. **Branch-Based Workflow**: Every patch creates a dedicated branch
+3. **PR-Based Review**: All changes require pull request approval
+4. **Comprehensive Validation**: PowerShell, Python, YAML, and test validation
+5. **Human Oversight**: Mandatory manual review for all automated fixes
+6. **Audit Trail**: Complete Git history with patch justification
+7. **Emoji Removal**: Automatic detection and removal of workflow-breaking characters
+
+### Patch Types Available
+
+```powershell
+# Syntax fixes (PowerShell linting, formatting)
+Invoke-GitControlledPatch -PatchType "Syntax" -CreatePR
+
+# Import path fixes (deprecated module paths)
+Invoke-GitControlledPatch -PatchType "Import" -CreatePR
+
+# Infrastructure fixes (module structure, dependencies)
+Invoke-GitControlledPatch -PatchType "Infrastructure" -CreatePR
+
+# YAML fixes (workflow files, remove emojis)
+Invoke-GitControlledPatch -PatchType "YAML" -CreatePR
+
+# All patch types combined
+Invoke-GitControlledPatch -PatchType "All" -CreatePR
+```
 
 ### Key Functions Available
-#### CodeFixer
-- Invoke-AutoFix
+
+#### PatchManager (PRIMARY MODULE - ALL FIXES GO THROUGH HERE)
+```powershell
+# NEW: Git-controlled patching (REQUIRED FOR ALL FIXES)
+Invoke-GitControlledPatch -PatchType "All" -CreatePR
+
+# Legacy functions (now deprecated in favor of Git-controlled versions)
+Invoke-UnifiedMaintenance -Mode "All" -AutoFix  # DEPRECATED
+Invoke-YamlValidation -Mode "Fix"               # DEPRECATED
+Invoke-TestFileFix -Mode "Comprehensive"        # DEPRECATED
+```
+
+#### CodeFixer (INTEGRATION WITH PATCHMANAGER REQUIRED)
 - Invoke-AutoFixCapture
 - Invoke-ComprehensiveAutoFix
 - Invoke-ComprehensiveValidation

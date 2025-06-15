@@ -38,7 +38,7 @@ param(
 )
 
 # Import the shared logging module
-Import-Module "////pwsh/modules/CodeFixerLogging/" -Force
+Import-Module "/workspaces/opentofu-lab-automation/pwsh/modules/CodeFixer/"Logging/" -Force
 
 # Initialize results tracking
 $script:Results = @{

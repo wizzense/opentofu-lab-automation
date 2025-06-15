@@ -8,7 +8,7 @@
  It provides backward compatibility for scripts that depend on this location.
  
  For new code, please use the PatchManager module directly:
- Import-Module "/pwsh/modules/PatchManager"
+ Import-Module "/workspaces/opentofu-lab-automation/pwsh/modules/PatchManager/""
  Invoke-YamlValidation -Path ".github/workflows" -Mode "Fix"
 
 .PARAMETER Mode
@@ -469,7 +469,7 @@ function Invoke-YamlValidation {
 # Try to use the PatchManager module
 try {
     # Attempt to import the PatchManager module
-    Import-Module "/$projectRoot/pwsh/modules/PatchManager" -Force -ErrorAction Stop
+    Import-Module "/workspaces/opentofu-lab-automation/pwsh/modules/PatchManager/"" -Force -ErrorAction Stop
     
     # Use the module's Invoke-YamlValidation function
     $results = Invoke-YamlValidation -Mode $Mode -Path $Path -ProjectRoot $projectRoot

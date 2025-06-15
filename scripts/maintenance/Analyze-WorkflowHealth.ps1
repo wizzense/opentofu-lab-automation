@@ -27,12 +27,12 @@ $ErrorActionPreference = 'Stop'
 
 if ($IsWindows -or $env:OS -eq "Windows_NT") {
     $ProjectRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
-    Import-Module "/$ProjectRoot\pwsh\modules\CodeFixer" -Force -ErrorAction Stop
-    Import-Module "/$ProjectRoot\pwsh\modules\LabRunner" -Force -ErrorAction Stop
+    Import-Module "/workspaces/opentofu-lab-automation/pwsh/modules/CodeFixer/"" -Force -ErrorAction Stop
+    Import-Module "/workspaces/opentofu-lab-automation/pwsh/modules/LabRunner/"" -Force -ErrorAction Stop
 } else {
     $ProjectRoot = "/workspaces/opentofu-lab-automation"
-    Import-Module "/pwsh/modules/CodeFixer" -Force -ErrorAction Stop
-    Import-Module "/pwsh/modules/LabRunner" -Force -ErrorAction Stop
+    Import-Module "/workspaces/opentofu-lab-automation/pwsh/modules/CodeFixer/"" -Force -ErrorAction Stop
+    Import-Module "/workspaces/opentofu-lab-automation/pwsh/modules/LabRunner/"" -Force -ErrorAction Stop
 }
 
 function Get-WorkflowAnalysis {

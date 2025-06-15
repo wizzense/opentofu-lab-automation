@@ -24,12 +24,12 @@ $script:ProjectRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 
 # Import required modules
 try {
-    # Import-Module "/$script:ProjectRoot/pwsh/modules/CodeFixer" -Force -ErrorAction Stop
-    Import-Module "$script:ProjectRoot\pwsh\modules\CodeFixer" -Force -ErrorAction Stop
-    # Import-Module "/$script:ProjectRoot/pwsh/modules/LabRunner" -Force -ErrorAction Stop
-    Import-Module "$script:ProjectRoot\pwsh\modules\LabRunner" -Force -ErrorAction Stop
-    # Import-Module "/$script:ProjectRoot/pwsh/modules/PatchManager" -Force -ErrorAction SilentlyContinue
-    Import-Module "$script:ProjectRoot\pwsh\modules\PatchManager" -Force -ErrorAction SilentlyContinue
+    # Import-Module "/workspaces/opentofu-lab-automation/pwsh/modules/CodeFixer/"" -Force -ErrorAction Stop
+    Import-Module "/workspaces/opentofu-lab-automation/pwsh/modules/CodeFixer/"" -Force -ErrorAction Stop
+    # Import-Module "/workspaces/opentofu-lab-automation/pwsh/modules/LabRunner/"" -Force -ErrorAction Stop
+    Import-Module "/workspaces/opentofu-lab-automation/pwsh/modules/LabRunner/"" -Force -ErrorAction Stop
+    # Import-Module "/workspaces/opentofu-lab-automation/pwsh/modules/PatchManager/"" -Force -ErrorAction SilentlyContinue
+    Import-Module "/workspaces/opentofu-lab-automation/pwsh/modules/PatchManager/"" -Force -ErrorAction SilentlyContinue
 } catch {
     Write-Error "Failed to import required modules: $_"
     exit 1
@@ -247,7 +247,9 @@ function Invoke-AutoFix {
     
     # Fix import paths
     if ($Issues.ImportPaths) {
-        $newContent = $content -replace 'Import-Module\s+"(?!/)([^"]+)"', 'Import-Module "/$1"'
+        $newContent = $content -replace 'Import-Module\s+"(?!/)([^"]+)"', '
+
+Import-Module "/$1"'
         if ($newContent -ne $content) {
             $content = $newContent
             $modified = $true

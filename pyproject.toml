@@ -41,9 +41,29 @@ where = ["."]
 include = ["py*", "scripts*"]
 
 [tool.pytest.ini_options]
-testpaths = ["tests", "py"]
+testpaths = ["py/tests", "tests"]
 python_files = ["test_*.py", "*_test.py"]
-addopts = "-v --tb=short"
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = [
+    "-v",
+    "--tb=short",
+    "--strict-markers",
+    "--strict-config", 
+    "--disable-warnings",
+    "--color=yes"
+]
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+    "integration: marks tests as integration tests",
+    "syntax: marks tests as syntax validation tests",
+    "security: marks tests as security validation tests"
+]
+filterwarnings = [
+    "error",
+    "ignore::UserWarning",
+    "ignore::DeprecationWarning"
+]
 
 [tool.black]
 line-length = 88

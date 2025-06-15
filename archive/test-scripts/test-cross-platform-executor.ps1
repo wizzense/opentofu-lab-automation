@@ -162,7 +162,7 @@ pwsh CrossPlatformExecutor.ps1 -Action execute -EncodedScript "`$(`$encoded.Enco
         Remove-Item $complexScriptPath -ErrorAction SilentlyContinue
     }
 }
-Import-Module (Join-Path $PSScriptRoot "pwsh/modules/CodeFixer/CodeFixer.psd1") -Force
+Import-Module "/workspaces/opentofu-lab-automation/pwsh/modules/CodeFixer/""/CodeFixer.psd1") -Force
 
 
 

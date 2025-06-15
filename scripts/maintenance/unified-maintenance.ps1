@@ -84,11 +84,11 @@ try {
     Import-Module "$ProjectRoot\pwsh\modules\FileInteractionLogger" -Force -ErrorAction Stop
     Write-Host "File interaction logging enabled - tracking all file operations" -ForegroundColor Green
     
-    Import-Module "$ProjectRoot\pwsh\modules\CodeFixer" -Force -ErrorAction Stop
-    Import-Module "$ProjectRoot\pwsh\modules\LabRunner" -Force -ErrorAction Stop
-    Import-Module "$ProjectRoot\pwsh\modules\BackupManager" -Force -ErrorAction Stop
-    Import-Module "$ProjectRoot\pwsh\modules\PatchManager" -Force -ErrorAction Stop
-    Import-Module "c:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\pwsh\modules\PatchManager\Private\Step-CleanupScatteredPatchFiles.ps1" -Force
+    Import-Module "/workspaces/opentofu-lab-automation/pwsh/modules/CodeFixer/"" -Force -ErrorAction Stop
+    Import-Module "/workspaces/opentofu-lab-automation/pwsh/modules/LabRunner/"" -Force -ErrorAction Stop
+    Import-Module "/workspaces/opentofu-lab-automation/pwsh/modules/BackupManager/"" -Force -ErrorAction Stop
+    Import-Module "/workspaces/opentofu-lab-automation/pwsh/modules/PatchManager/""" -Force -ErrorAction Stop
+    Import-Module "/workspaces/opentofu-lab-automation/pwsh/modules/PatchManager/""\Private\Step-CleanupScatteredPatchFiles.ps1" -Force
     $modulesLoaded = $true
 } catch {
     Write-Host "Warning: Not all modules could be loaded. Some functionality will be limited." -ForegroundColor Yellow

@@ -42,7 +42,7 @@ function Invoke-SelfHeal {
     
     # Step 1: Import CodeFixer and PSScriptAnalyzer for analysis
     try {
-        Import-Module "/$PSScriptRoot/../../../CodeFixer" -Force -ErrorAction Stop
+        Import-Module "/workspaces/opentofu-lab-automation/pwsh/modules/CodeFixer/"" -Force -ErrorAction Stop
         Write-Host "✓ CodeFixer module loaded" -ForegroundColor Green
     } catch {
         Write-Error "Failed to load CodeFixer module: $($_.Exception.Message)"

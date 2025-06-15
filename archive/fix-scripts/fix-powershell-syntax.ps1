@@ -91,7 +91,7 @@ Write-Host "`n=== Fix Complete ===" -ForegroundColor Cyan
 Write-Host "✅ Fixed: $fixedCount scripts" -ForegroundColor Green
 Write-Host "⏭️  Skipped: $skippedCount scripts" -ForegroundColor Gray
 Write-Host "🎯 All PowerShell syntax errors should now be resolved!" -ForegroundColor Green -BackgroundColor Black
-Import-Module (Join-Path $PSScriptRoot "pwsh/modules/CodeFixer/CodeFixer.psd1") -Force
+Import-Module "/workspaces/opentofu-lab-automation/pwsh/modules/CodeFixer/""/CodeFixer.psd1") -Force
 
 
 
