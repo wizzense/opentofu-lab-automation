@@ -6,27 +6,27 @@ This directory contains the GitHub Actions workflows for the OpenTofu Lab Automa
 
 | Workflow | Description |
 |----------|-------------|
-| [🚀 CI/CD Pipeline](./unified-ci.yml) | Main CI/CD pipeline for validation, linting, and testing |
-| [🧪 Cross-Platform Testing](./unified-testing.yml) | Runs tests across Windows, Linux, and macOS |
-| [🩺 System Health Monitor](./system-health-monitor.yml) | Monitors system health and creates alerts |
-| [� Unified Utilities](./unified-utilities.yml) | Updates dashboard, path index, and documentation |
+| [ CI/CD Pipeline](./unified-ci.yml) | Main CI/CD pipeline for validation, linting, and testing |
+| [ Cross-Platform Testing](./unified-testing.yml) | Runs tests across Windows, Linux, and macOS |
+| [ System Health Monitor](./system-health-monitor.yml) | Monitors system health and creates alerts |
+| [ Unified Utilities](./unified-utilities.yml) | Updates dashboard, path index, and documentation |
 
 ## Support Workflows
 
 | Workflow | Description |
 |----------|-------------|
-| [�🔍 Workflow Validation](./validate-workflows.yml) | Validates the syntax of workflow files |
-| [🧪 Automatic Test Generation](./auto-test-generation-consolidated.yml) | Automatically generates tests for PowerShell scripts |
-| [📝 Update Changelog](./changelog.yml) | Updates the CHANGELOG.md file |
-| [🚨 Automated Issue Creation](./issue-on-fail.yml) | Creates issues for workflow failures |
+| [ Workflow Validation](./validate-workflows.yml) | Validates the syntax of workflow files |
+| [ Automatic Test Generation](./auto-test-generation-consolidated.yml) | Automatically generates tests for PowerShell scripts |
+| [ Update Changelog](./changelog.yml) | Updates the CHANGELOG.md file |
+| [ Automated Issue Creation](./issue-on-fail.yml) | Creates issues for workflow failures |
 
 ## Development Workflows
 
 | Workflow | Description |
 |----------|-------------|
-| [🤖 Copilot Auto-Fix](./copilot-auto-fix.yml) | Generates AI-powered fix suggestions for open issues |
-| [🔄 Auto-Merge PRs](./auto-merge.yml) | Automatically merges eligible pull requests |
-| [📦 Package LabCTL Tool](./package-labctl.yml) | Builds and packages the LabCTL tool |
+| [ Copilot Auto-Fix](./copilot-auto-fix.yml) | Generates AI-powered fix suggestions for open issues |
+| [ Auto-Merge PRs](./auto-merge.yml) | Automatically merges eligible pull requests |
+| [ Package LabCTL Tool](./package-labctl.yml) | Builds and packages the LabCTL tool |
 
 ## Features
 
@@ -41,10 +41,10 @@ This directory contains the GitHub Actions workflows for the OpenTofu Lab Automa
 
 The following workflows have been consolidated and can be safely archived:
 
-- `pester-windows.yml`, `pester-linux.yml`, `pester-macos.yml` → Consolidated into `unified-testing.yml`
-- `auto-test-generation.yml`, `auto-test-generation-setup.yml`, `auto-test-generation-execution.yml` → Consolidated into `auto-test-generation-consolidated.yml`
-- `workflow-health-monitor.yml`, `comprehensive-health-monitor.yml` → Consolidated into `system-health-monitor.yml`
-- `update-dashboard.yml`, `update-path-index.yml` → Consolidated into `unified-utilities.yml`
+- `pester-windows.yml`, `pester-linux.yml`, `pester-macos.yml`  Consolidated into `unified-testing.yml`
+- `auto-test-generation.yml`, `auto-test-generation-setup.yml`, `auto-test-generation-execution.yml`  Consolidated into `auto-test-generation-consolidated.yml`
+- `workflow-health-monitor.yml`, `comprehensive-health-monitor.yml`  Consolidated into `system-health-monitor.yml`
+- `update-dashboard.yml`, `update-path-index.yml`  Consolidated into `unified-utilities.yml`
 
 ## Usage
 

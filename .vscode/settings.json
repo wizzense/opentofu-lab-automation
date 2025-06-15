@@ -16,5 +16,80 @@
     "**/*.backup*": true,
     "**/archive/**": true,
     "**/cleanup-backup-*/**": true
-  }
+  },  "github.copilot.chat.codeGeneration.useInstructionFiles": true,
+  "github.copilot.chat.codeGeneration.instructions": [],
+  "github.copilot.chat.testGeneration.instructions": [],
+  "github.copilot.chat.reviewSelection.instructions": [],
+  "github.copilot.chat.commitMessageGeneration.instructions": [
+    {
+      "text": "Use conventional commit format: type(scope): description"
+    },
+    {
+      "text": "Common types: feat, fix, docs, style, refactor, test, chore"
+    },
+    {
+      "text": "Reference module names in scope when applicable: codefixer, labrunner, backupmanager, etc."
+    }
+  ],
+  "github.copilot.instructionFiles": [
+    {
+      "pattern": "pwsh/modules/**/*.ps1",
+      "instructionFile": ".github/instructions/powershell-standards.instructions.md"
+    },
+    {
+      "pattern": "scripts/**/*.ps1",
+      "instructionFile": ".github/instructions/powershell-standards.instructions.md"
+    },
+    {
+      "pattern": "**/*Tests.ps1",
+      "instructionFile": ".github/instructions/testing-standards.instructions.md" 
+    },
+    {
+      "pattern": ".github/workflows/**/*.{yml,yaml}",
+      "instructionFile": ".github/instructions/yaml-standards.instructions.md"
+    },
+    {
+      "pattern": "configs/**/*.{yml,yaml}",
+      "instructionFile": ".github/instructions/yaml-standards.instructions.md"
+    },
+    {
+      "pattern": "docs/**/*.{md,markdown}",
+      "instructionFile": ".github/instructions/documentation-standards.instructions.md"
+    },
+    {
+      "pattern": "scripts/maintenance/**/*.ps1",
+      "instructionFile": [
+        ".github/instructions/powershell-standards.instructions.md",
+        ".github/instructions/maintenance-standards.instructions.md"
+      ]
+    },
+    {
+      "pattern": "**/config*.json",
+      "instructionFile": ".github/instructions/configuration-standards.instructions.md"
+    },
+    {
+      "pattern": "**/*.{js,ts,jsx,tsx}",
+      "instructionFile": ".github/instructions/javascript-standards.instructions.md"
+    },
+    {
+      "pattern": "**/*.{py,pyw}",
+      "instructionFile": ".github/instructions/python-standards.instructions.md"
+    },
+    {
+      "pattern": "**/PROJECT-MANIFEST.json",
+      "instructionFile": [
+        ".github/instructions/configuration-standards.instructions.md",
+        ".github/instructions/maintenance-standards.instructions.md"
+      ]
+    },
+    {
+      "pattern": "**/*.git*",
+      "instructionFile": ".github/instructions/git-collaboration.instructions.md"
+    }
+  ],
+  "python.testing.pytestArgs": [
+    "py"
+  ],
+  "python.testing.unittestEnabled": false,
+  "python.testing.pytestEnabled": true
 }

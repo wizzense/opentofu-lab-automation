@@ -1,6 +1,6 @@
 # Pester Test Fixes - Final Summary
 
-## ✅ Successfully Resolved Issues
+## [PASS] Successfully Resolved Issues
 
 ### 1. "Script file not found" Errors (MAJOR FIX)
 - **Problem**: Multiple tests failing with "Script file not found" for runner scripts
@@ -8,8 +8,8 @@
 - **Fix**: Updated `Normalize-RelativePath` function to use proper path joining
 - **Impact**: Fixed tests for `0000_Cleanup-Files.Tests.ps1`, `0001_Reset-Git.Tests.ps1`, `0002_Setup-Directories.Tests.ps1`, and others
 - **Files Modified**: 
-  - `/workspaces/opentofu-lab-automation/pwsh/lab_utils/PathUtils.ps1`
-  - `/workspaces/opentofu-lab-automation/pwsh/lab_utils/Resolve-ProjectPath.ps1` (added null checks)
+ - `/workspaces/opentofu-lab-automation/pwsh/lab_utils/PathUtils.ps1`
+ - `/workspaces/opentofu-lab-automation/pwsh/lab_utils/Resolve-ProjectPath.ps1` (added null checks)
 
 ### 2. "Export-ModuleMember" Error
 - **Problem**: "Export-ModuleMember cmdlet can only be called from inside a module"
@@ -24,7 +24,7 @@
 - **Fix**: Corrected JSON string escaping and variable scoping
 - **Files Modified**: `/workspaces/opentofu-lab-automation/tests/Get-WindowsJobArtifacts.Tests.ps1`
 
-## 📊 Quantified Improvement
+## Quantified Improvement
 
 **Before Fixes:**
 - Multiple tests failing with "Script file not found"
@@ -37,7 +37,7 @@
 - Core runner script tests now working properly
 - Path resolution functioning correctly
 
-## 🔄 Remaining Issues
+## Remaining Issues
 
 ### 1. Test Framework Validation Issues
 - Some tests in `TestFramework.ps1` still have parameter binding errors
@@ -48,7 +48,7 @@
 - Some tests failing due to missing module imports
 - **Next Steps**: Review module import strategy in test files
 
-## 🏗️ Infrastructure Improvements Made
+## Infrastructure Improvements Made
 
 ### 1. Enhanced Path Resolution
 - Added carriage return trimming for cross-platform compatibility
@@ -65,9 +65,9 @@
 - Improved test helper functions
 - Better cross-platform compatibility
 
-## 🎯 Overall Assessment
+## Overall Assessment
 
-**Status**: ✅ **MAJOR SUCCESS**
+**Status**: [PASS] **MAJOR SUCCESS**
 - Resolved the primary blockers preventing Pester tests from running
 - Achieved 76% test success rate in sample testing
 - Fixed fundamental path resolution and module import issues

@@ -4,7 +4,7 @@
 
 [CmdletBinding()]
 param(
-    [Parameter(Mandatory)
+ [Parameter(Mandatory)
 
 
 
@@ -12,15 +12,15 @@ param(
 
 
 ]
-    [ValidateSet('test-analysis', 'workflow-analysis', 'project-status')]
-    [string]$Type,
-    
-    [Parameter(Mandatory)]
-    [string]$Title,
-    
-    [string]$Date = (Get-Date -Format 'yyyy-MM-dd'),
-    
-    [switch]$Open
+ [ValidateSet('test-analysis', 'workflow-analysis', 'project-status')]
+ [string]$Type,
+ 
+ [Parameter(Mandatory)]
+ [string]$Title,
+ 
+ [string]$Date = (Get-Date -Format 'yyyy-MM-dd'),
+ 
+ [switch]$Open
 )
 
 $ErrorActionPreference = 'Stop'
@@ -33,13 +33,13 @@ $filePath = Join-Path $PSScriptRoot "../../docs/reports/$Type" $fileName
 # Ensure directory exists
 $dir = Split-Path $filePath -Parent
 if (-not (Test-Path $dir)) {
-    New-Item -ItemType Directory -Path $dir -Force | Out-Null
+ New-Item -ItemType Directory -Path $dir -Force | Out-Null
 }
 
 # Template based on type
 $template = switch ($Type) {
-    'test-analysis' {
-        @"
+ 'test-analysis' {
+ @"
 # $Title
 **Generated**: $Date
 **Test Run Duration**: [Duration]
@@ -57,7 +57,7 @@ $template = switch ($Type) {
 
 ---
 
-## 🚨 CRITICAL ISSUES
+## CRITICAL ISSUES
 
 ### 1. [Issue Category]
 **Impact**: [HIGH/MEDIUM/LOW] - [Brief description]
@@ -66,7 +66,7 @@ $template = switch ($Type) {
 
 ---
 
-## 📊 DETAILED BREAKDOWN
+## DETAILED BREAKDOWN
 
 ### [Test Category] Results
 
@@ -79,7 +79,7 @@ $template = switch ($Type) {
 
 ---
 
-## 🔧 ROOT CAUSE ANALYSIS
+## ROOT CAUSE ANALYSIS
 
 ### Primary Issues
 1. [Root cause 1]
@@ -91,7 +91,7 @@ $template = switch ($Type) {
 
 ---
 
-## 🚀 RECOMMENDED REMEDIATION PLAN
+## RECOMMENDED REMEDIATION PLAN
 
 ### Phase 1: Critical Fixes (High Priority)
 1. **[Fix 1]**: [Description and steps]
@@ -102,11 +102,11 @@ $template = switch ($Type) {
 
 ---
 
-## 📋 IMMEDIATE ACTION ITEMS
+## IMMEDIATE ACTION ITEMS
 
 ### For Next Development Session:
-1. ✅ **[Action 1]** - [Description]
-2. ✅ **[Action 2]** - [Description]
+1. [PASS] **[Action 1]** - [Description]
+2. [PASS] **[Action 2]** - [Description]
 
 ### Success Metrics:
 - **Target**: [Metric 1]
@@ -116,10 +116,10 @@ $template = switch ($Type) {
 
 *This report provides analysis of [scope]. Next review scheduled for [date].*
 "@
-    }
-    
-    'workflow-analysis' {
-        @"
+ }
+ 
+ 'workflow-analysis' {
+ @"
 # $Title
 **Generated**: $Date
 **Analysis Period**: [Period]
@@ -133,7 +133,7 @@ $template = switch ($Type) {
 
 ---
 
-## 🔍 WORKFLOW STATUS ANALYSIS
+## WORKFLOW STATUS ANALYSIS
 
 ### Failed Workflows ([Number]/[Total])
 1. **[Workflow Name]** - [Failure reason]
@@ -145,7 +145,7 @@ $template = switch ($Type) {
 
 ---
 
-## 📊 FAILURE PATTERN ANALYSIS
+## FAILURE PATTERN ANALYSIS
 
 ### Common Error Patterns
 1. **[Error Type]**: [Description and frequency]
@@ -157,7 +157,7 @@ $template = switch ($Type) {
 
 ---
 
-## 🚀 RECOMMENDED IMPROVEMENTS
+## RECOMMENDED IMPROVEMENTS
 
 ### Immediate Fixes
 1. **[Fix 1]**: [Description]
@@ -171,10 +171,10 @@ $template = switch ($Type) {
 
 *This analysis covers [scope]. Next review scheduled for [date].*
 "@
-    }
-    
-    'project-status' {
-        @"
+ }
+ 
+ 'project-status' {
+ @"
 # $Title
 **Generated**: $Date
 **Project Phase**: [Phase]
@@ -188,7 +188,7 @@ $template = switch ($Type) {
 
 ---
 
-## 🎯 COMPLETED WORK
+## COMPLETED WORK
 
 ### Major Achievements
 1. **[Achievement 1]**: [Description]
@@ -204,7 +204,7 @@ $template = switch ($Type) {
 
 ---
 
-## 🔄 IN PROGRESS
+## IN PROGRESS
 
 ### Current Work Items
 1. **[Work Item 1]**: [Status and details]
@@ -212,7 +212,7 @@ $template = switch ($Type) {
 
 ---
 
-## 📋 REMAINING WORK
+## REMAINING WORK
 
 ### High Priority
 1. **[Item 1]**: [Description and priority]
@@ -224,7 +224,7 @@ $template = switch ($Type) {
 
 ---
 
-## 🔍 TECHNICAL DEBT ASSESSMENT
+## TECHNICAL DEBT ASSESSMENT
 
 ### Current Debt
 - [Debt item 1]: [Impact and effort]
@@ -236,7 +236,7 @@ $template = switch ($Type) {
 
 ---
 
-## 📈 NEXT PHASE PLANNING
+## NEXT PHASE PLANNING
 
 ### Upcoming Milestones
 - **[Milestone 1]**: [Target date and scope]
@@ -250,28 +250,28 @@ $template = switch ($Type) {
 
 *This status report covers [scope]. Next update scheduled for [date].*
 "@
-    }
+ }
 }
 
 # Write the template
 Set-Content -Path $filePath -Value $template -Encoding UTF8
 
-Write-Host "✅ Created new $Type report: $fileName" -ForegroundColor Green
-Write-Host "📁 Location: $filePath" -ForegroundColor Cyan
+Write-Host "[PASS] Created new $Type report: $fileName" -ForegroundColor Green
+Write-Host "� Location: $filePath" -ForegroundColor Cyan
 
 if ($Open) {
-    if (Get-Command code -ErrorAction SilentlyContinue) {
-        code $filePath
-        Write-Host "📝 Opened in VS Code" -ForegroundColor Green
-    } else {
-        Write-Host "💡 Open with: code '$filePath'" -ForegroundColor Yellow
-    }
+ if (Get-Command code -ErrorAction SilentlyContinue) {
+ code $filePath
+ Write-Host " Opened in VS Code" -ForegroundColor Green
+ } else {
+ Write-Host " Open with: code '$filePath'" -ForegroundColor Yellow
+ }
 }
 
 # Update the INDEX.md file suggestion
 Write-Host ""
-Write-Host "📝 Don't forget to update the INDEX.md file with your new report!" -ForegroundColor Yellow
-Write-Host "📂 Location: docs/reports/INDEX.md" -ForegroundColor Cyan
+Write-Host " Don't forget to update the INDEX.md file with your new report!" -ForegroundColor Yellow
+Write-Host "� Location: docs/reports/INDEX.md" -ForegroundColor Cyan
 
 
 

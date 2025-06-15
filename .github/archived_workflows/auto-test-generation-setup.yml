@@ -3,142 +3,142 @@
 name: Auto Test Generation (Setup)
 
 on:
-  workflow_call:
-    inputs:
-      force_regenerate:
-        description: 'Force regenerate all tests'
-        required: false
-        default: false
-        type: boolean
-    outputs:
-      changed-scripts:
-        description: "JSON string of changed script paths"
-        value: ${{ jobs.detect-changes.outputs.changed-scripts }}
-      has-changes:
-        description: "Boolean indicating if there are changes"
-        value: ${{ jobs.detect-changes.outputs.has-changes }}
-      renamed-files-json:
-        description: "JSON string of renamed files"
-        value: ${{ jobs.validate-naming.outputs.renamed-files-json }}
+ workflow_call:
+ inputs:
+ force_regenerate:
+ description: 'Force regenerate all tests'
+ required: false
+ default: false
+ type: boolean
+ outputs:
+ changed-scripts:
+ description: "JSON string of changed script paths"
+ value: ${{ jobs.detect-changes.outputs.changed-scripts }}
+ has-changes:
+ description: "Boolean indicating if there are changes"
+ value: ${{ jobs.detect-changes.outputs.has-changes }}
+ renamed-files-json:
+ description: "JSON string of renamed files"
+ value: ${{ jobs.validate-naming.outputs.renamed-files-json }}
 
 jobs:
-  detect-changes:
-    name: Detect Script Changes
-    runs-on: ubuntu-latest
-    outputs:
-      changed-scripts: ${{ steps.changes.outputs.scripts }}
-      has-changes: ${{ steps.changes.outputs.has-changes }}
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+ detect-changes:
+ name: Detect Script Changes
+ runs-on: ubuntu-latest
+ outputs:
+ changed-scripts: ${{ steps.changes.outputs.scripts }}
+ has-changes: ${{ steps.changes.outputs.has-changes }}
+ steps:
+ - uses: actions/checkout@v4
+ with:
+ fetch-depth: 0
 
-      - name: Detect changed scripts
-        id: changes
-        run: |
-          if ["${{ inputs.force_regenerate }}" = "true"]; then
-            # Force regenerate all scripts
-            scripts=$(find pwsh -name "*.ps1" -not -name "*.Tests.ps1" | jq -R -s -c 'split("\\n")[:-1]')
-            echo "scripts=$scripts" >> $GITHUB_OUTPUT
-            echo "has-changes=true" >> $GITHUB_OUTPUT
-          else
-            # Only process changed files
-            if ["${{ github.event_name }}" = "pull_request"]; then
-              base_ref="${{ github.event.pull_request.base.sha }}"
-            else
-              base_ref="${{ github.event.before }}"
-            fi
+ - name: Detect changed scripts
+ id: changes
+ run: |
+ if ["${{ inputs.force_regenerate }}" = "true"]; then
+ # Force regenerate all scripts
+ scripts=$(find pwsh -name "*.ps1" -not -name "*.Tests.ps1" | jq -R -s -c 'split("\\n")[:-1]')
+ echo "scripts=$scripts" >> $GITHUB_OUTPUT
+ echo "has-changes=true" >> $GITHUB_OUTPUT
+ else
+ # Only process changed files
+ if ["${{ github.event_name }}" = "pull_request"]; then
+ base_ref="${{ github.event.pull_request.base.sha }}"
+ else
+ base_ref="${{ github.event.before }}"
+ fi
 
-            # Get changed PowerShell scripts (excluding test files)
-            changed_files=$(git diff --name-only $base_ref..HEAD | grep -E '^pwsh/.*\\.ps1$' | grep -v '\\.Tests\\.ps1$' || true)
+ # Get changed PowerShell scripts (excluding test files)
+ changed_files=$(git diff --name-only $base_ref..HEAD | grep -E '^pwsh/.*\\.ps1$' | grep -v '\\.Tests\\.ps1$' || true)
 
-            if [-n "$changed_files"]; then
-              scripts=$(echo "$changed_files" | jq -R -s -c 'split("\\n")[:-1]')
-              echo "scripts=$scripts" >> $GITHUB_OUTPUT
-              echo "has-changes=true" >> $GITHUB_OUTPUT
-              echo "Changed scripts detected:"
-              echo "$changed_files"
-            else
-              echo "scripts=[]" >> $GITHUB_OUTPUT
-              echo "has-changes=false" >> $GITHUB_OUTPUT
-              echo "No PowerShell script changes detected"
-            fi
-          fi
+ if [-n "$changed_files"]; then
+ scripts=$(echo "$changed_files" | jq -R -s -c 'split("\\n")[:-1]')
+ echo "scripts=$scripts" >> $GITHUB_OUTPUT
+ echo "has-changes=true" >> $GITHUB_OUTPUT
+ echo "Changed scripts detected:"
+ echo "$changed_files"
+ else
+ echo "scripts=[]" >> $GITHUB_OUTPUT
+ echo "has-changes=false" >> $GITHUB_OUTPUT
+ echo "No PowerShell script changes detected"
+ fi
+ fi
 
-  validate-naming:
-    name: Validate Script Naming
-    runs-on: ubuntu-latest
-    needs: detect-changes
-    if: needs.detect-changes.outputs.has-changes == 'true'
-    outputs:
-      renamed-files-json: ${{ steps.renaming.outputs.renamed-files-json }}
-    steps:
-      - uses: actions/checkout@v4
+ validate-naming:
+ name: Validate Script Naming
+ runs-on: ubuntu-latest
+ needs: detect-changes
+ if: needs.detect-changes.outputs.has-changes == 'true'
+ outputs:
+ renamed-files-json: ${{ steps.renaming.outputs.renamed-files-json }}
+ steps:
+ - uses: actions/checkout@v4
 
-      - name: Install PowerShell
-        shell: bash
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y wget apt-transport-https software-properties-common
-          wget -q https://packages.microsoft.com/config/ubuntu/22.04/packages-microsoft-prod.deb
-          sudo dpkg -i packages-microsoft-prod.deb
-          sudo apt-get update
-          sudo apt-get install -y powershell
+ - name: Install PowerShell
+ shell: bash
+ run: |
+ sudo apt-get update
+ sudo apt-get install -y wget apt-transport-https software-properties-common
+ wget -q https://packages.microsoft.com/config/ubuntu/22.04/packages-microsoft-prod.deb
+ sudo dpkg -i packages-microsoft-prod.deb
+ sudo apt-get update
+ sudo apt-get install -y powershell
 
-      - name: Validate and fix script naming
-        id: renaming
-        shell: pwsh
-        run: |
-          $changedScripts = '${{ needs.detect-changes.outputs.changed-scripts }}' | ConvertFrom-Json
-          $renamedFiles = @()
+ - name: Validate and fix script naming
+ id: renaming
+ shell: pwsh
+ run: |
+ $changedScripts = '${{ needs.detect-changes.outputs.changed-scripts }}' | ConvertFrom-Json
+ $renamedFiles = @()
 
-          foreach ($scriptPath in $changedScripts) {
-            if (Test-Path $scriptPath) {
-              Write-Host "Checking naming convention for: $scriptPath" -ForegroundColor Cyan
+ foreach ($scriptPath in $changedScripts) {
+ if (Test-Path $scriptPath) {
+ Write-Host "Checking naming convention for: $scriptPath" -ForegroundColor Cyan
 
-              # Load the test generator helper
-              . ./tests/helpers/New-AutoTestGenerator.ps1
+ # Load the test generator helper
+ . ./tests/helpers/New-AutoTestGenerator.ps1
 
-              $currentName = Split-Path $scriptPath -Leaf
-              $expectedName = Format-ScriptName $currentName
+ $currentName = Split-Path $scriptPath -Leaf
+ $expectedName = Format-ScriptName $currentName
 
-              if ($expectedName -ne $currentName) {
-                $directory = Split-Path $scriptPath -Parent
-                $newPath = Join-Path $directory $expectedName
+ if ($expectedName -ne $currentName) {
+ $directory = Split-Path $scriptPath -Parent
+ $newPath = Join-Path $directory $expectedName
 
-                Write-Host "Renaming: $currentName -> $expectedName" -ForegroundColor Yellow
+ Write-Host "Renaming: $currentName -> $expectedName" -ForegroundColor Yellow
 
-                if (Test-Path $newPath) {
-                  Write-Warning "Target file already exists: $newPath"
-                  continue
-                }
+ if (Test-Path $newPath) {
+ Write-Warning "Target file already exists: $newPath"
+ continue
+ }
 
-                Move-Item $scriptPath $newPath
-                $renamedFiles += @{
-                  Original = $scriptPath
-                  New = $newPath
-                  OldName = $currentName
-                  NewName = $expectedName
-                }
-              } else {
-                Write-Host "✓ Naming convention correct: $currentName" -ForegroundColor Green
-              }
-            }
-          }
+ Move-Item $scriptPath $newPath
+ $renamedFiles += @{
+ Original = $scriptPath
+ New = $newPath
+ OldName = $currentName
+ NewName = $expectedName
+ }
+ } else {
+ Write-Host " Naming convention correct: $currentName" -ForegroundColor Green
+ }
+ }
+ }
 
-          $outputJson = $renamedFiles | ConvertTo-Json -Depth 2
-          echo "renamed-files-json=$outputJson" >> $GITHUB_OUTPUT
+ $outputJson = $renamedFiles | ConvertTo-Json -Depth 2
+ echo "renamed-files-json=$outputJson" >> $GITHUB_OUTPUT
 
-          if ($renamedFiles.Count -gt 0) {
-            Write-Host "Renamed $($renamedFiles.Count) files"
-          } else {
-            Write-Host "No files needed renaming"
-          }
+ if ($renamedFiles.Count -gt 0) {
+ Write-Host "Renamed $($renamedFiles.Count) files"
+ } else {
+ Write-Host "No files needed renaming"
+ }
 
-      - name: Upload renamed files info
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: renamed-files-info
-          path: renamed-files.json
-          retention-days: 1
+ - name: Upload renamed files info
+ if: always()
+ uses: actions/upload-artifact@v4
+ with:
+ name: renamed-files-info
+ path: renamed-files.json
+ retention-days: 1

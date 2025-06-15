@@ -1,6 +1,6 @@
 # GitHub Copilot Instructions for OpenTofu Lab Automation
 
-## 📋 Project Context (Auto-Updated: 2025-06-14)
+## Project Context (Auto-Updated: 2025-06-14)
 
 This is a cross-platform OpenTofu (Terraform alternative) lab automation project with:
 - **1 PowerShell modules** for infrastructure automation
@@ -8,11 +8,12 @@ This is a cross-platform OpenTofu (Terraform alternative) lab automation project
 - ** test files** for validation
 - **Cross-platform deployment** via Python scripts
 
-## 🏗️ Current Architecture
+## Current Architecture
 
 ### Module Locations (CRITICAL - Always Use These Paths)
 - **CodeFixer**: /pwsh/modules/CodeFixer/
 - **LabRunner**: /pwsh/modules/LabRunner/
+- **BackupManager**: /pwsh/modules/BackupManager/
 
 ### Key Functions Available
 #### CodeFixer
@@ -43,17 +44,24 @@ Watch-ScriptDirectory
 Import-Module "/pwsh/modules/LabRunner/"
 Invoke-ParallelLabRunner
 Test-RunnerScriptSafety-Fixed
-Test-RunnerScriptSafety
+````n
+#### BackupManager
+``powershell
+Import-Module "/pwsh/modules/BackupManager/"
+Invoke-BackupMaintenance
+Invoke-BackupConsolidation
+Invoke-PermanentCleanup
+Get-BackupStatistics
 ````n
 
 
-## 🔧 Development Guidelines
+## Development Guidelines
 
 ### Always Use Project Manifest First
 `powershell
 # Check current state before making changes
 $manifest = Get-Content "./PROJECT-MANIFEST.json" | ConvertFrom-Json
-$manifest.core.modules  # View all modules
+$manifest.core.modules # View all modules
 `
 
 ### Maintenance Commands (Use These for Fixes)
@@ -87,10 +95,10 @@ $manifest.core.modules  # View all modules
 - **Cross-Platform**: Windows, Linux, macOS deployment
 - **Real-time**: Live validation and error correction
 
-## 🚨 Critical Guidelines
+## Critical Guidelines
 
 ### Never Do These:
-- Don't use legacy `pwsh/lab_utils/` paths (migrated to modules)
+- Don't use legacy `pwsh/modules/` paths (migrated to modules)
 - Don't create files in project root without using report utility
 - Don't modify workflows without YAML validation
 - Don't use deprecated import patterns
@@ -107,7 +115,7 @@ $manifest.core.modules  # View all modules
 ./scripts/utilities/new-report.ps1 -Type "test-analysis" -Title "My Report"
 `
 
-## 🎯 Integration Points
+## Integration Points
 
 ### GitHub Actions Integration
 - All workflows validated with yamllint
@@ -124,4 +132,4 @@ $manifest.core.modules  # View all modules
 ---
 *Auto-generated from PROJECT-MANIFEST.json*
 *Project health: < 1 minute*
-*Last update: 2025-06-14 03:59:27*
+*Last update: 2025-06-14 16:45:01*

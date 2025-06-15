@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<test-results xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="nunit_schema_2.5.xsd" name="Pester" total="3" errors="0" failures="3" not-run="0" inconclusive="0" ignored="0" skipped="0" invalid="0" date="2025-06-14" time="09:26:28">
+  <environment machine-name="WZNS" nunit-version="2.5.8.0" clr-version="9.0.4" os-version="10.0.26100" user="alexa" user-domain="WZNS" platform="Microsoft Windows 11 Pro|C:\WINDOWS|\Device\Harddisk1\Partition3" cwd="C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation" />
+  <culture-info current-culture="en-US" current-uiculture="en-US" />
+  <test-suite type="TestFixture" name="Pester" executed="True" result="Failure" success="False" time="0.6762" asserts="0" description="Pester">
+    <results>
+      <test-suite type="TestFixture" name="C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\tests\Get-SystemInfo.Tests.ps1" executed="True" result="Failure" success="False" time="0.6762" asserts="0" description="C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\tests\Get-SystemInfo.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="0200_Get-SystemInfo" executed="True" result="Failure" success="False" time="0.0592" asserts="0" description="0200_Get-SystemInfo">
+            <results>
+              <test-case description="runs without throwing and returns expected keys" name="0200_Get-SystemInfo.runs without throwing and returns expected keys" time="0" asserts="0" success="False" result="Failure" executed="True">
+                <failure>
+                  <message>This test should run but it did not. Most likely a setup in some parent block failed.</message>
+                  <stack-trace />
+                </failure>
+              </test-case>
+              <test-case description="returns exit code 1 for unsupported platform" name="0200_Get-SystemInfo.returns exit code 1 for unsupported platform" time="0" asserts="0" success="False" result="Failure" executed="True">
+                <failure>
+                  <message>This test should run but it did not. Most likely a setup in some parent block failed.</message>
+                  <stack-trace />
+                </failure>
+              </test-case>
+            </results>
+          </test-suite>
+          <test-suite type="TestFixture" name="runner.ps1 executing 0200_Get-SystemInfo" executed="True" result="Failure" success="False" time="0.2254" asserts="0" description="runner.ps1 executing 0200_Get-SystemInfo">
+            <results>
+              <test-case description="outputs system info when run via runner" name="runner.ps1 executing 0200_Get-SystemInfo.outputs system info when run via runner" time="0.1609" asserts="0" success="False" result="Failure" executed="True">
+                <failure>
+                  <message>ParameterBindingValidationException: Cannot bind argument to parameter 'Path' because it is null.</message>
+                  <stack-trace>at &lt;ScriptBlock&gt;, C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\tests\Get-SystemInfo.Tests.ps1:57</stack-trace>
+                </failure>
+              </test-case>
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+    </results>
+  </test-suite>
+</test-results>

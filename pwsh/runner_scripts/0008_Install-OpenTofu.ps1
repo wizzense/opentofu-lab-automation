@@ -7,9 +7,7 @@ Param([object]$Config)
 
 
 
-Import-Module "$PSScriptRoot/../modules/LabRunner/LabRunner.psd1" -Force
-
-# Param([pscustomobject]$Config)
+Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation//pwsh/modules/LabRunner/" -Force -Force -Force -Force -Force -Force -Force# Param([pscustomobject]$Config)
 
 
 
@@ -17,7 +15,7 @@ Import-Module "$PSScriptRoot/../modules/LabRunner/LabRunner.psd1" -Force
 
 
 
-# Import-Module "$ProjectRoot/pwsh/modules/LabRunner".psd1')
+# Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation//pwsh/modules/LabRunner/" -Force -Force -Force -Force -Force -Force -Force-Force.psd1')
 
 Write-CustomLog "Starting $MyInvocation.MyCommand"
 
@@ -46,6 +44,18 @@ Invoke-LabStep -Config $Config -Body {
 
 if ($MyInvocation.InvocationName -ne '.') { Install-OpenTofu @PSBoundParameters }
 Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

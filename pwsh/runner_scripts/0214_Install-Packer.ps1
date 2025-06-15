@@ -6,9 +6,7 @@ Param([object]$Config)
 
 
 
-Import-Module "$PSScriptRoot/../modules/LabRunner/LabRunner.psd1" -Force
-
-Write-CustomLog "Starting $MyInvocation.MyCommand"
+Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation//pwsh/modules/LabRunner/" -Force -Force -Force -Force -Force -Force -ForceWrite-CustomLog "Starting $MyInvocation.MyCommand"
 function Install-Packer {
     [CmdletBinding(SupportsShouldProcess = $true)]
     param([object]$Config)
@@ -49,6 +47,18 @@ if (-not (Test-Path $dest)) { New-Item -ItemType Directory -Path $dest -Force | 
 }
 if ($MyInvocation.InvocationName -ne '.') { Install-Packer @PSBoundParameters }
 Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

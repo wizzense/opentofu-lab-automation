@@ -1,26 +1,25 @@
 # Archived Workflows
 
-These workflows have been consolidated into newer, more maintainable workflows.
+These workflows have been consolidated into the mega-consolidated workflow.
 They are kept here for reference purposes only.
 
-See the main [workflows README](./../workflows/README.md) for details on the current workflow structure.
-
-## Archived Workflows
+## Archived on: 2025-06-14 08:50:43
 
 | Original Workflow | Consolidated Into |
 |------------------|-------------------|
-| pester-windows.yml | unified-testing.yml |
-| pester-linux.yml | unified-testing.yml |
-| pester-macos.yml | unified-testing.yml |
-| auto-test-generation.yml | auto-test-generation-consolidated.yml |
-| auto-test-generation-setup.yml | auto-test-generation-consolidated.yml |
-| auto-test-generation-execution.yml | auto-test-generation-consolidated.yml |
-| auto-test-generation-reporting.yml | auto-test-generation-consolidated.yml |
-| workflow-health-monitor.yml | system-health-monitor.yml |
-| comprehensive-health-monitor.yml | system-health-monitor.yml |
-| update-dashboard.yml | unified-utilities.yml |
-| update-path-index.yml | unified-utilities.yml |
-| update-pester-failures-doc.yml | unified-utilities.yml |
-| workflow-lint.yml | unified-ci.yml |
-| pytest.yml | unified-testing.yml |
-| setup-environment.yml | unified-ci.yml |
+| auto-test-generation.yml | mega-consolidated.yml |
+| auto-test-generation-consolidated.yml | mega-consolidated.yml |
+| unified-ci.yml | mega-consolidated.yml |
+| unified-testing.yml | mega-consolidated.yml |
+| unified-utilities.yml | mega-consolidated.yml |
+| system-health-monitor.yml | mega-consolidated.yml |
+
+The new mega-consolidated workflow provides:
+- All testing functionality
+- Linting and validation
+- Utilities and maintenance
+- Health monitoring
+- Issue creation
+- Auto-merging
+
+To restore any of these workflows, copy them back to .github/workflows/

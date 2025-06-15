@@ -1,13 +1,13 @@
 # Git Chaos Prevention Strategy
 
-## 🚨 What Happened
+## What Happened
 The recent Git chaos was caused by:
 1. **Archive Directory Issues**: Windows file deletion failures during rebase operations
 2. **Corrupted Rebase State**: Git rebase operations getting stuck due to directory locks
 3. **File Permission Problems**: Archive directories with locked/protected files
 4. **Divergent Branch State**: Local and remote branches getting out of sync
 
-## 🛡️ Prevention Measures
+## Prevention Measures
 
 ### 1. Git Hooks Implementation
 
@@ -38,17 +38,17 @@ Remove-Item -Path "archive/*temp*" -Recurse -Force -ErrorAction SilentlyContinue
 ```powershell
 # Add to unified-maintenance.ps1
 function Remove-ProblematicArchives {
-    $archivePatterns = @(
-        "archive/*cleanup*",
-        "archive/*temp*", 
-        "archive/*misc*",
-        "reports/archive-*"
-    )
-    
-    foreach ($pattern in $archivePatterns) {
-        Get-ChildItem -Path $pattern -ErrorAction SilentlyContinue | 
-            Remove-Item -Recurse -Force -ErrorAction SilentlyContinue
-    }
+ $archivePatterns = @(
+ "archive/*cleanup*",
+ "archive/*temp*", 
+ "archive/*misc*",
+ "reports/archive-*"
+ )
+ 
+ foreach ($pattern in $archivePatterns) {
+ Get-ChildItem -Path $pattern -ErrorAction SilentlyContinue | 
+ Remove-Item -Recurse -Force -ErrorAction SilentlyContinue
+ }
 }
 ```
 
@@ -85,22 +85,22 @@ git reset --hard origin/main
 ```powershell
 # scripts/git-safe.ps1
 function Invoke-SafeGitPull {
-    # Clean problematic directories first
-    Remove-ProblematicArchives
-    
-    # Check for divergent state
-    $status = git status --porcelain
-    if ($status) {
-        Write-Warning "Uncommitted changes detected. Commit or stash first."
-        return
-    }
-    
-    # Safe pull with conflict resolution
-    git fetch origin
-    $behind = git rev-list HEAD..origin/main --count
-    if ($behind -gt 0) {
-        git merge origin/main --no-ff
-    }
+ # Clean problematic directories first
+ Remove-ProblematicArchives
+ 
+ # Check for divergent state
+ $status = git status --porcelain
+ if ($status) {
+ Write-Warning "Uncommitted changes detected. Commit or stash first."
+ return
+ }
+ 
+ # Safe pull with conflict resolution
+ git fetch origin
+ $behind = git rev-list HEAD..origin/main --count
+ if ($behind -gt 0) {
+ git merge origin/main --no-ff
+ }
 }
 ```
 
@@ -115,16 +115,16 @@ function Invoke-SafeGitPull {
 #### Archive Size Monitoring
 ```powershell
 function Test-ArchiveSize {
-    $archiveSize = (Get-ChildItem -Path "archive" -Recurse | 
-                   Measure-Object -Property Length -Sum).Sum / 1MB
-    
-    if ($archiveSize -gt 100) {
-        Write-Warning "Archive directory > 100MB. Consider cleanup."
-        # Auto-cleanup old archives
-        Get-ChildItem -Path "archive" -Directory | 
-            Where-Object { $_.CreationTime -lt (Get-Date).AddDays(-30) } |
-            Remove-Item -Recurse -Force
-    }
+ $archiveSize = (Get-ChildItem -Path "archive" -Recurse | 
+ Measure-Object -Property Length -Sum).Sum / 1MB
+ 
+ if ($archiveSize -gt 100) {
+ Write-Warning "Archive directory > 100MB. Consider cleanup."
+ # Auto-cleanup old archives
+ Get-ChildItem -Path "archive" -Directory | 
+ Where-Object { $_.CreationTime -lt (Get-Date).AddDays(-30) } |
+ Remove-Item -Recurse -Force
+ }
 }
 ```
 
@@ -134,12 +134,12 @@ function Test-ArchiveSize {
 ```yaml
 # .github/branch-protection.yml
 protection_rules:
-  main:
-    required_status_checks:
-      - "Pre-commit validation"
-      - "Archive cleanup check"
-    required_pull_request_reviews: true
-    dismiss_stale_reviews: true
+ main:
+ required_status_checks:
+ - "Pre-commit validation"
+ - "Archive cleanup check"
+ required_pull_request_reviews: true
+ dismiss_stale_reviews: true
 ```
 
 #### Auto-cleanup Workflow
@@ -147,19 +147,19 @@ protection_rules:
 # .github/workflows/cleanup-archives.yml
 name: Archive Cleanup
 on:
-  schedule:
-    - cron: '0 2 * * *'  # Daily at 2 AM
-  workflow_dispatch:
+ schedule:
+ - cron: '0 2 * * *' # Daily at 2 AM
+ workflow_dispatch:
 
 jobs:
-  cleanup:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Clean Archive Directories
-        run: |
-          find archive -name "*cleanup*" -type d -exec rm -rf {} +
-          find archive -name "*temp*" -type d -exec rm -rf {} +
+ cleanup:
+ runs-on: ubuntu-latest
+ steps:
+ - uses: actions/checkout@v4
+ - name: Clean Archive Directories
+ run: |
+ find archive -name "*cleanup*" -type d -exec rm -rf {} +
+ find archive -name "*temp*" -type d -exec rm -rf {} +
 ```
 
 ### 6. Emergency Recovery Procedures
@@ -169,7 +169,7 @@ jobs:
 # scripts/emergency-git-recovery.ps1
 param([switch]$Force)
 
-Write-Host "🚨 Emergency Git Recovery" -ForegroundColor Red
+Write-Host " Emergency Git Recovery" -ForegroundColor Red
 
 # 1. Abort any ongoing operations
 git rebase --abort 2>$null
@@ -181,15 +181,15 @@ Remove-Item -Path "archive/*cleanup*" -Recurse -Force -ErrorAction SilentlyConti
 
 # 3. Clean working directory
 if ($Force) {
-    git clean -fd
-    git reset --hard HEAD
+ git clean -fd
+ git reset --hard HEAD
 }
 
 # 4. Sync with remote
 git fetch origin
 git reset --hard origin/main
 
-Write-Host "✅ Recovery complete" -ForegroundColor Green
+Write-Host "[PASS] Recovery complete" -ForegroundColor Green
 ```
 
 ### 7. Training and Documentation
@@ -216,7 +216,7 @@ git push
 ./scripts/git-safe.ps1 -Action "Pull"
 ```
 
-## 🔧 Implementation Checklist
+## Implementation Checklist
 
 - [ ] Install pre-commit hooks
 - [ ] Create git-safe.ps1 wrapper script
@@ -227,7 +227,7 @@ git push
 - [ ] Document safe Git workflows
 - [ ] Train team on new procedures
 
-## 🚦 Red Flags to Watch For
+## � Red Flags to Watch For
 
 - Archive directories > 100MB
 - Multiple `cleanup-*` directories
@@ -235,7 +235,7 @@ git push
 - Rebase operations with directory deletion prompts
 - Divergent branch states lasting > 1 day
 
-## ✅ Success Metrics
+## [PASS] Success Metrics
 
 - Zero Git rebase failures
 - Archive directories < 50MB

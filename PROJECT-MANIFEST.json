@@ -1,20 +1,13 @@
 {
   "project": {
+    "description": "Comprehensive automation framework for OpenTofu lab environments with unified maintenance and validation systems",
     "version": "1.0.0",
     "name": "OpenTofu Lab Automation",
-    "description": "Comprehensive automation framework for OpenTofu lab environments with unified maintenance and validation systems",
-    "lastUpdated": "2025-06-14 04:00:31"
+    "lastUpdated": "2025-06-14 17:14:04"
   },
   "core": {
     "modules": {
       "CodeFixer": {
-        "entryPoint": "CodeFixer.psd1",
-        "type": "PowerShell Module",
-        "path": "/pwsh/modules/CodeFixer/",
-        "dependencies": [
-          "PSScriptAnalyzer"
-        ],
-        "purpose": "Automated code analysis, fixing, and validation",
         "keyFunctions": [
           "Invoke-AutoFix",
           "Invoke-AutoFixCapture",
@@ -36,25 +29,77 @@
           "Test-YamlConfig",
           "Watch-ScriptDirectory"
         ],
+        "version": "0.1.0",
+        "dependencies": [
+          "PSScriptAnalyzer"
+        ],
+        "path": "/pwsh/modules/CodeFixer/",
+        "entryPoint": "CodeFixer.psd1",
         "lastUpdated": "2025-06-14",
-        "version": "0.1.0"
+        "type": "PowerShell Module",
+        "purpose": "Automated code analysis, fixing, and validation"
       },
       "LabRunner": {
-        "entryPoint": "LabRunner.psd1",
-        "type": "PowerShell Module",
-        "path": "/pwsh/modules/LabRunner/",
-        "dependencies": [],
-        "purpose": "Lab environment automation and management",
         "keyFunctions": [
           "Invoke-ParallelLabRunner",
-          "Test-RunnerScriptSafety-Fixed",
-          "Test-RunnerScriptSafety"
+          "Test-RunnerScriptSafety-Fixed"
         ],
+        "version": "0.1.0",
+        "dependencies": [],
+        "path": "/pwsh/modules/LabRunner/",
+        "entryPoint": "LabRunner.psd1",
         "lastUpdated": "2025-06-14",
-        "version": "0.1.0"
+        "type": "PowerShell Module",
+        "purpose": "Lab environment automation and management"
+      },
+      "BackupManager": {
+        "keyFunctions": [
+          "Invoke-BackupMaintenance",
+          "Invoke-BackupConsolidation",
+          "Invoke-PermanentCleanup",
+          "Get-BackupStatistics"
+        ],
+        "path": "/pwsh/modules/BackupManager/",
+        "version": "1.0.0",
+        "lastUpdated": "2025-06-14",
+        "description": "Comprehensive backup management module"
       }
     },
     "maintenanceSystem": {
+      "unifiedHealthCheck": {
+        "path": "/scripts/maintenance/Invoke-UnifiedHealthCheck.ps1",
+        "purpose": "Single entry point for all health and maintenance operations",
+        "modes": [
+          "Quick",
+          "Full",
+          "Infrastructure",
+          "Workflow",
+          "All"
+        ],
+        "features": [
+          "Unified infrastructure and workflow analysis",
+          "Automated issue tracking",
+          "Cross-platform validation",
+          "Auto-fix capabilities",
+          "GitHub Actions integration",
+          "Comprehensive reporting"
+        ],
+        "components": {
+          "infrastructureAnalysis": {
+            "path": "/scripts/maintenance/Analyze-InfrastructureHealth.ps1",
+            "purpose": "Deep infrastructure analysis"
+          },
+          "workflowAnalysis": {
+            "path": "/scripts/maintenance/Analyze-WorkflowHealth.ps1",
+            "purpose": "GitHub Actions workflow analysis"
+          }
+        },
+        "reports": {
+          "unified": "/reports/unified-health/",
+          "infrastructure": "/reports/infrastructure-health/",
+          "workflow": "/reports/workflow-health/"
+        }
+      },
       "unifiedMaintenance": {
         "path": "/scripts/maintenance/unified-maintenance.ps1",
         "purpose": "Single entry point for all maintenance operations",
@@ -286,18 +331,35 @@
   },
   "metrics": {
     "codebase": {
-      "validationScripts": 0,
-      "activeModules": 2,
+      "testFiles": 100,
       "maintenanceScripts": 0,
-      "powerShellFiles": 291,
-      "testFiles": 99
+      "validationScripts": 0,
+      "activeModules": 5,
+      "powerShellFiles": 340
     },
     "performance": {
-      "lastHealthCheck": "2025-06-14 04:00:27",
       "healthCheckTime": "< 1 minute",
-      "batchProcessingOptimization": "Dynamic CPU scaling",
-      "fullMaintenanceTime": "2-5 minutes"
+      "lastHealthCheck": "2025-06-14 12:21:12",
+      "fullMaintenanceTime": "2-5 minutes",
+      "batchProcessingOptimization": "Dynamic CPU scaling"
     },
-    "lastCalculated": "2025-06-14 04:00:32"
+    "lastCalculated": "2025-06-14 17:14:05"
+  },
+  "scripts": {
+    "maintenance": {
+      "path": "/scripts/maintenance/",
+      "keyScripts": [
+        {
+          "name": "consolidate-all-backups.ps1",
+          "description": "Consolidates all backup files into a centralized location",
+          "lastUpdated": "2025-06-14 11:13:41"
+        },
+        {
+          "name": "update-backup-exclusions.ps1",
+          "description": "Updates configurations to exclude backup files from tests and checks",
+          "lastUpdated": "2025-06-14 11:13:41"
+        }
+      ]
+    }
   }
 }

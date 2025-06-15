@@ -1,6 +1,6 @@
-# 🌳 Branching Strategy & Workflow Guidelines
+# � Branching Strategy & Workflow Guidelines
 
-## 🎯 Branch Strategy
+## Branch Strategy
 
 ### Main Branches
 - **main**: Production-ready code, protected branch
@@ -12,7 +12,7 @@
 - **hotfix/description**: Critical production fixes
 - **docs/description**: Documentation updates
 
-## 🔄 Workflow Process
+## Workflow Process
 
 ### 1. Creating Feature Branches
 \\\ash
@@ -53,24 +53,24 @@ git push origin hotfix/critical-issue
 # Create PR for immediate review
 \\\
 
-## 🛡️ Protection Rules
+## Protection Rules
 
 ### Main Branch Protection
-- ✅ Require PR reviews (1+ approvals)
-- ✅ Require status checks (CI/CD must pass)
-- ✅ Require up-to-date branches
-- ✅ Auto-delete head branches after merge
-- ✅ Restrict force pushes
-- ✅ Restrict deletions
+- [PASS] Require PR reviews (1+ approvals)
+- [PASS] Require status checks (CI/CD must pass)
+- [PASS] Require up-to-date branches
+- [PASS] Auto-delete head branches after merge
+- [PASS] Restrict force pushes
+- [PASS] Restrict deletions
 
 ### Auto-Validation Requirements
-- ✅ PowerShell syntax validation
-- ✅ YAML lint checks
-- ✅ Pester test execution
-- ✅ Auto-fix application
-- ✅ Security scanning
+- [PASS] PowerShell syntax validation
+- [PASS] YAML lint checks
+- [PASS] Pester test execution
+- [PASS] Auto-fix application
+- [PASS] Security scanning
 
-## 🔧 Auto-Fix Integration
+## Auto-Fix Integration
 
 ### Pre-commit Hooks
 - Syntax validation
@@ -84,7 +84,7 @@ git push origin hotfix/critical-issue
 - Merge conflict prevention
 - Dependency updates
 
-## 📋 Commit Message Convention
+## Commit Message Convention
 
 \\\
 <type>(<scope>): <description>
@@ -96,7 +96,7 @@ git push origin hotfix/critical-issue
 
 ### Types
 - **feat**: New feature
-- **fix**: Bug fix  
+- **fix**: Bug fix 
 - **docs**: Documentation changes
 - **style**: Code style changes
 - **refactor**: Code refactoring
@@ -111,7 +111,7 @@ docs(readme): simplify deployment instructions for Server Core
 chore(deps): update PowerShell modules to latest versions
 \\\
 
-## 🚨 Merge Conflict Prevention
+## Merge Conflict Prevention
 
 ### Before Creating PR
 1. **Sync with main**: \git pull origin main\
@@ -125,7 +125,7 @@ chore(deps): update PowerShell modules to latest versions
 4. **Re-validate**: Run tests and auto-fixes
 5. **Force push**: \git push --force-with-lease\
 
-## 🔄 Regular Maintenance
+## Regular Maintenance
 
 ### Daily (Automated)
 - Dependency updates

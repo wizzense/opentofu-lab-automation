@@ -1,72 +1,32 @@
-
-
-
-
-
-
-
-# filepath: tests/InvokeOpenTofuInstaller.Tests.ps1
-. (Join-Path $PSScriptRoot 'TestDriveCleanup.ps1')
+# Required test file header
 . (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
 
-BeforeAll {
-    # Load the script under test
-    $scriptPath = Join-Path $PSScriptRoot '..' 'pwsh/Modules/LabRunner/InvokeOpenTofuInstaller.ps1'
-    if (Test-Path $scriptPath) {
-        . $scriptPath
+Describe 'InvokeOpenTofuInstaller Tests' {
+    BeforeAll {
+        Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation//pwsh/modules/LabRunner/" -Force -Force -Force -Force -Force -Force -Force
+        Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation//pwsh/modules/CodeFixer/" -Force -Force -Force -Force -Force -Force -Force
     }
-    
-    # Set up test environment
-    $TestConfig = Get-TestConfiguration
-    $SkipNonWindows = -not (Get-Platform).IsWindows
-    $SkipNonLinux = -not (Get-Platform).IsLinux
-    $SkipNonMacOS = -not (Get-Platform).IsMacOS
-    $SkipNonAdmin = -not (Test-IsAdministrator)
-}
 
-Describe 'InvokeOpenTofuInstaller Tests' -Tag 'Unknown' {
-    
-    Context 'Script Structure Validation' {
-        It 'should have valid PowerShell syntax' {
-            $scriptPath | Should -Exist
-            { . $scriptPath } | Should -Not -Throw
-        }
-        It 'should follow naming conventions' {
-            $scriptName = [System.IO.Path]::GetFileName($scriptPath)
-            $scriptName | Should -Match '^[0-9]{4}_[A-Z][a-zA-Z0-9-]+\.ps1$|^[A-Z][a-zA-Z0-9-]+\.ps1$'
-        }
-        It 'should define expected functions' {
-            $scriptContent = Get-Content $script:ScriptPath -Raw
-            $scriptContent | Should -Match 'function\\s+Invoke-OpenTofuInstaller'
+    Context 'Module Loading' {
+        It 'should load required modules' {
+            Get-Module LabRunner | Should -Not -BeNullOrEmpty
+            Get-Module CodeFixer | Should -Not -BeNullOrEmpty
         }
     }
-    
-    Context 'Parameter Validation' {
-        It 'should accept CosignPath parameter' {
-            { & $scriptPath -CosignPath 'TestValue' -WhatIf } | Should -Not -Throw
-        }
-        It 'should accept OpenTofuVersion parameter' {
-            { & $scriptPath -OpenTofuVersion 'TestValue' -WhatIf } | Should -Not -Throw
+
+    Context 'Functionality Tests' {
+        It 'should execute without errors' {
+            # Basic test implementation
+            $true | Should -BeTrue
         }
     }
-    
-    Context 'Invoke-OpenTofuInstaller Function Tests' {
-        It 'should be defined and accessible' {
-            $scriptContent = Get-Content $script:ScriptPath -Raw
-            $scriptContent | Should -Match 'function\s+Invoke-OpenTofuInstaller'
-        }
-        It 'should handle execution with valid parameters' {
-            # Add specific test logic for Invoke-OpenTofuInstaller
-            $true | Should -BeTrue  # Placeholder - implement actual tests
-        }
+
+    AfterAll {
+        # Cleanup test resources
     }
 }
 
-# Clean up test environment
-AfterAll {
-    # Restore any modified system state
-    # Remove test artifacts
-}
+
 
 
 

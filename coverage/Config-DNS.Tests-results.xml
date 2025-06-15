@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<test-results xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="nunit_schema_2.5.xsd" name="Pester" total="1" errors="0" failures="1" not-run="0" inconclusive="0" ignored="0" skipped="0" invalid="0" date="2025-06-14" time="09:26:27">
+  <environment machine-name="WZNS" nunit-version="2.5.8.0" clr-version="9.0.4" os-version="10.0.26100" user="alexa" user-domain="WZNS" platform="Microsoft Windows 11 Pro|C:\WINDOWS|\Device\Harddisk1\Partition3" cwd="C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation" />
+  <culture-info current-culture="en-US" current-uiculture="en-US" />
+  <test-suite type="TestFixture" name="Pester" executed="True" result="Failure" success="False" time="1.8381" asserts="0" description="Pester">
+    <results>
+      <test-suite type="TestFixture" name="C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\tests\Config-DNS.Tests.ps1" executed="True" result="Failure" success="False" time="1.8381" asserts="0" description="C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\tests\Config-DNS.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="0113_Config-DNS" executed="True" result="Failure" success="False" time="1.4919" asserts="0" description="0113_Config-DNS">
+            <results>
+              <test-case description="calls Set-DnsClientServerAddress with value from config" name="0113_Config-DNS.calls Set-DnsClientServerAddress with value from config" time="0.0479" asserts="0" success="False" result="Failure" executed="True">
+                <failure>
+                  <message>CommandNotFoundException: The term 'Resolve-ProjectPath' is not recognized as a name of a cmdlet, function, script file, or executable program.
+Check the spelling of the name, or if a path was included, verify that the path is correct and try again.</message>
+                  <stack-trace>at global:Get-RunnerScriptPath, C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\tests\helpers\TestHelpers.ps1:59
+at &lt;ScriptBlock&gt;, C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\tests\Config-DNS.Tests.ps1:15</stack-trace>
+                </failure>
+              </test-case>
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+    </results>
+  </test-suite>
+</test-results>

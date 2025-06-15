@@ -2,36 +2,36 @@
 name: Update Path Index
 
 on:
-  push:
-    branches: [main]
-  workflow_dispatch:
+ push:
+ branches: [main]
+ workflow_dispatch:
 
 jobs:
-  update:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v4
-        with:
-          python-version: '3.x'
-      - name: Install dependencies
-        run: pip install pyyaml
-      - name: Regenerate index
-        run: python scripts/update_index.py
-      - name: Check for changes
-        id: check_changes
-        run: |
-          git diff --quiet path-index.yaml || echo "changes_detected=true" >> $GITHUB_ENV
+ update:
+ runs-on: ubuntu-latest
+ steps:
+ - uses: actions/checkout@v4
+ - uses: actions/setup-python@v4
+ with:
+ python-version: '3.x'
+ - name: Install dependencies
+ run: pip install pyyaml
+ - name: Regenerate index
+ run: python scripts/update_index.py
+ - name: Check for changes
+ id: check_changes
+ run: |
+ git diff --quiet path-index.yaml || echo "changes_detected=true" >> $GITHUB_ENV
 
-      - name: Commit and push changes
-        if: env.changes_detected == 'true'
-        run: |
-          git config user.name 'github-actions[bot]'
-          git config user.email 'github-actions[bot]@users.noreply.github.com'
-          git add path-index.yaml
-          git commit -m 'chore: update path-index'
-          git push
+ - name: Commit and push changes
+ if: env.changes_detected == 'true'
+ run: |
+ git config user.name 'github-actions[bot]'
+ git config user.email 'github-actions[bot]@users.noreply.github.com'
+ git add path-index.yaml
+ git commit -m 'chore: update path-index'
+ git push
 
-      - name: Log no changes
-        if: env.changes_detected != 'true'
-        run: echo "No changes detected in path-index.yaml."
+ - name: Log no changes
+ if: env.changes_detected != 'true'
+ run: echo "No changes detected in path-index.yaml."

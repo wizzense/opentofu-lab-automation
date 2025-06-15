@@ -6,9 +6,7 @@ Param([object]$Config)
 
 
 
-Import-Module "$PSScriptRoot/../modules/LabRunner/LabRunner.psd1" -Force
-
-Write-CustomLog "Starting $MyInvocation.MyCommand"
+Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation//pwsh/modules/LabRunner/" -Force -Force -Force -Force -Force -Force -ForceWrite-CustomLog "Starting $MyInvocation.MyCommand"
 
 function Get-WacRegistryInstallation {
     param(
@@ -87,6 +85,18 @@ Write-CustomLog "Installing WAC silently on port $installPort"
     Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
 }
 Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

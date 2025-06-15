@@ -1,7 +1,7 @@
 [CmdletBinding()]
 param(
     [string]$Target = '.',
-    [string]$SettingsPath = (Join-Path $PSScriptRoot '..' '..' 'pwsh' 'PSScriptAnalyzerSettings.psd1')
+    [string]$SettingsPath = $null
 )
 
 # Simple PSScriptAnalyzer import
@@ -9,22 +9,51 @@ Import-Module PSScriptAnalyzer -Force
 
 $ErrorActionPreference = 'Stop'
 
+# Dynamically find the settings file if not provided
+if (-not $SettingsPath) {
+    $possiblePaths = @(
+        (Join-Path $PSScriptRoot '..' '..' 'pwsh' 'PSScriptAnalyzerSettings.psd1'),
+        (Join-Path $PSScriptRoot '..' 'pwsh' 'PSScriptAnalyzerSettings.psd1'),
+        (Join-Path (Get-Location) 'pwsh' 'PSScriptAnalyzerSettings.psd1')
+    )
+    
+    foreach ($path in $possiblePaths) {
+        if (Test-Path $path) {
+            $SettingsPath = $path
+            break
+        }
+    }
+}
 
-if (-not (Test-Path $SettingsPath)) {
-    throw "Settings file not found: $SettingsPath"
+if (-not $SettingsPath -or -not (Test-Path $SettingsPath)) {
+    Write-Warning "Settings file not found, using default PSScriptAnalyzer rules"
+    $SettingsPath = $null
 }
 
 # Load analyzer settings from the specified file
-$settings = Import-PowerShellDataFile -Path $SettingsPath
-$include = $settings.Rules.IncludeRules
-$exclude = $settings.Rules.ExcludeRules
+$include = $null
+$exclude = $null
+
+if ($SettingsPath) {
+    $settings = Import-PowerShellDataFile -Path $SettingsPath
+    $include = $settings.Rules.IncludeRules
+    $exclude = $settings.Rules.ExcludeRules
+}
 
 # Discover all PowerShell files to analyze
 $files = Get-ChildItem -Path $Target -Recurse -Include *.ps1,*.psm1,*.psd1 -File |
     Select-Object -ExpandProperty FullName
 
 # Run Script Analyzer against the collected files
-$results = $files | Invoke-ScriptAnalyzer -Severity Error,Warning -IncludeRule $include -ExcludeRule $exclude
+if ($include -and $exclude) {
+    $results = $files | Invoke-ScriptAnalyzer -Severity Error,Warning -IncludeRule $include -ExcludeRule $exclude
+} elseif ($include) {
+    $results = $files | Invoke-ScriptAnalyzer -Severity Error,Warning -IncludeRule $include
+} elseif ($exclude) {
+    $results = $files | Invoke-ScriptAnalyzer -Severity Error,Warning -ExcludeRule $exclude
+} else {
+    $results = $files | Invoke-ScriptAnalyzer -Severity Error,Warning
+}
 # Use Write-Output so callers can capture or redirect the formatted results
 $results | Format-Table | Out-String | Write-Output
 

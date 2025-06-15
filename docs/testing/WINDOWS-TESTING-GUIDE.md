@@ -7,10 +7,10 @@
 
 **Solution**: Use proper PowerShell syntax:
 ```powershell
-# ❌ DON'T USE (bash syntax)
+# [FAIL] DON'T USE (bash syntax)
 curl -sL https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/HEAD/deploy.py | python
 
-# ✅ USE (PowerShell syntax)
+# [PASS] USE (PowerShell syntax)
 Invoke-WebRequest -Uri "https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/HEAD/deploy.py" | Select-Object -ExpandProperty Content | python
 ```
 
@@ -60,7 +60,7 @@ winget install Python.Python.3.12
 # Test CLI deployment
 python deploy.py --help
 
-# Test GUI launcher  
+# Test GUI launcher 
 python gui.py
 
 # Test Windows batch files
@@ -128,10 +128,10 @@ python gui.py
 OpenTofu Lab Automation - Cross-Platform Deployment
 
 Usage: deploy.py [options]
-  -h, --help     Show this help message
-  -c, --config   Specify config file
-  -g, --gui      Launch GUI mode
-  -v, --verbose  Enable verbose output
+ -h, --help Show this help message
+ -c, --config Specify config file
+ -g, --gui Launch GUI mode
+ -v, --verbose Enable verbose output
 ```
 
 ### Successful GUI Test
@@ -175,17 +175,17 @@ If you encounter issues not covered here:
 
 ## Recent Fixes (June 13, 2025)
 
-### ✅ FIXED: Prerequisites Check Error
+### [PASS] FIXED: Prerequisites Check Error
 **Problem**: GUI shows "can't open file 'C:\\temp\\deploy.py': No such file or directory"
 
 **Solution Applied**: 
 - Enhanced path detection with multiple fallback locations
-- Automatic download of deploy.py if not found locally  
+- Automatic download of deploy.py if not found locally 
 - Improved working directory handling
 
 **Now Works**: Prerequisites check automatically finds or downloads deploy.py
 
-### ✅ FIXED: Windows Performance Issues
+### [PASS] FIXED: Windows Performance Issues
 **Problem**: GUI caused severe system performance impact and multiple console windows
 
 **Solutions Applied**:
@@ -196,7 +196,7 @@ If you encounter issues not covered here:
 
 **Now Works**: GUI runs smoothly without impacting system performance
 
-### ✅ FIXED: Windows File Association Issues  
+### [PASS] FIXED: Windows File Association Issues 
 **Problem**: Windows prompting to choose application for .py files
 
 **Solutions Applied**:
@@ -206,7 +206,7 @@ If you encounter issues not covered here:
 
 **Now Works**: Clean GUI launch without extra windows or prompts
 
-> **🚀 Quick Copy-Paste Commands for Windows:**
+> ** Quick Copy-Paste Commands for Windows:**
 > 
 > **One-liner download and launch (copy this entire line):**
 > ```powershell
@@ -215,7 +215,7 @@ If you encounter issues not covered here:
 > 
 > **Or with error handling:**
 > ```powershell
-> try { Invoke-WebRequest -Uri "https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/feature/deployment-wrapper-gui/gui.py" -OutFile "gui.py" -UseBasicParsing; Write-Host "✅ Downloaded successfully"; python gui.py } catch { Write-Host "❌ Error: $($_.Exception.Message)" }
+> try { Invoke-WebRequest -Uri "https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/feature/deployment-wrapper-gui/gui.py" -OutFile "gui.py" -UseBasicParsing; Write-Host "[PASS] Downloaded successfully"; python gui.py } catch { Write-Host "[FAIL] Error: $($_.Exception.Message)" }
 > ```
 > 
 > **Multi-step (run each line separately):**

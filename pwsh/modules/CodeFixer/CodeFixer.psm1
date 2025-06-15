@@ -17,6 +17,21 @@ Foreach($import in @($Public + $Private)) {
     }
 }
 
+# Ensure proper dot-sourcing of public functions
+foreach ($import in $Public) {
+    try {
+        . $import.FullName
+        Write-Verbose "Successfully imported: $($import.BaseName)"
+    } catch {
+        Write-Error "Failed to import: $($import.FullName) - $_"
+    }
+}
+
+# Verify function accessibility
+if (-not (Get-Command Invoke-ComprehensiveValidation -ErrorAction SilentlyContinue)) {
+    Write-Error "Invoke-ComprehensiveValidation is not accessible after import. Check the function definition."
+}
+
 # Import TestAutoFixer functions (disabled temporarily due to auto-execution issues)
 # $TestAutoFixerPath = Join-Path (Split-Path $PSScriptRoot -Parent) "../../tools/TestAutoFixer"
 # if (Test-Path $TestAutoFixerPath) {

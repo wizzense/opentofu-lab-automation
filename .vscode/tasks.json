@@ -2,29 +2,62 @@
 	"version": "2.0.0",
 	"tasks": [
 		{
-			"label": "Run All Tests",
+			"label": "Quick Health Check",
 			"type": "shell",
 			"command": "pwsh",
 			"args": [
 				"-File",
-				"run-comprehensive-tests.ps1"
+				"./scripts/maintenance/Invoke-UnifiedHealthCheck.ps1",
+				"-Mode",
+				"Quick"
+			],
+			"group": {
+				"kind": "test",
+				"isDefault": true
+			},
+			"problemMatcher": [],
+			"isBackground": false
+		},
+		{
+			"label": "Full Health Analysis",
+			"type": "shell",
+			"command": "pwsh",
+			"args": [
+				"-File",
+				"./scripts/maintenance/Invoke-UnifiedHealthCheck.ps1",
+				"-Mode",
+				"All",
+				"-AutoFix"
 			],
 			"group": "test",
 			"problemMatcher": [],
 			"isBackground": false
 		},
 		{
-			"label": "Run Final Validation",
+			"label": "Run Infrastructure Health",
 			"type": "shell",
 			"command": "pwsh",
 			"args": [
 				"-File",
-				"run-final-validation.ps1"
+				"./scripts/maintenance/Invoke-UnifiedHealthCheck.ps1",
+				"-Mode",
+				"Infrastructure"
 			],
-			"group": {
-				"kind": "test",
-				"isDefault": true
-			},
+			"group": "test",
+			"problemMatcher": [],
+			"isBackground": false
+		},
+		{
+			"label": "Run Workflow Health",
+			"type": "shell",
+			"command": "pwsh",
+			"args": [
+				"-File",
+				"./scripts/maintenance/Invoke-UnifiedHealthCheck.ps1",
+				"-Mode",
+				"Workflow"
+			],
+			"group": "test",
 			"problemMatcher": [],
 			"isBackground": false
 		}

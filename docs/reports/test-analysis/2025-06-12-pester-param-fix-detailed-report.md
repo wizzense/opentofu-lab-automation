@@ -1,7 +1,7 @@
 # Pester Test "Param is not recognized" Error Fix Report
 
-**Date:** June 12, 2025  
-**Project:** opentofu-lab-automation  
+**Date:** June 12, 2025 
+**Project:** opentofu-lab-automation 
 **Issue:** Widespread Pester test failures due to "Param is not recognized" errors
 
 ## Executive Summary
@@ -9,10 +9,10 @@
 Successfully resolved systemic Pester test failures affecting 36+ numbered test files in the opentofu-lab-automation repository. The core issue was PowerShell scripts with `Param()` blocks failing when executed via direct script invocation (`&` operator) or dot-sourcing within Pester test contexts.
 
 ### Key Results:
-- **✅ 100% Discovery Success**: All 86 test files now parse successfully (previously 36 failed)
-- **✅ Eliminated "Param is not recognized" Errors**: Core systemic issue resolved
-- **✅ Improved Test Pass Rate**: 285 tests passing (up from much lower numbers)
-- **✅ 681 Total Tests Discovered**: Complete test suite now functional
+- **[PASS] 100% Discovery Success**: All 86 test files now parse successfully (previously 36 failed)
+- **[PASS] Eliminated "Param is not recognized" Errors**: Core systemic issue resolved
+- **[PASS] Improved Test Pass Rate**: 285 tests passing (up from much lower numbers)
+- **[PASS] 681 Total Tests Discovered**: Complete test suite now functional
 
 ## Root Cause Analysis
 
@@ -43,10 +43,10 @@ $configJson = $config | ConvertTo-Json -Depth 5
 $tempConfig = Join-Path ([System.IO.Path]::GetTempPath()) "$([System.Guid]::NewGuid()).json"
 $configJson | Set-Content -Path $tempConfig
 try {
-    $pwsh = (Get-Command pwsh).Source
-    { & $pwsh -NoLogo -NoProfile -File $script:ScriptPath -Config $tempConfig } | Should -Not -Throw
+ $pwsh = (Get-Command pwsh).Source
+ { & $pwsh -NoLogo -NoProfile -File $script:ScriptPath -Config $tempConfig } | Should -Not -Throw
 } finally {
-    Remove-Item $tempConfig -Force -ErrorAction SilentlyContinue
+ Remove-Item $tempConfig -Force -ErrorAction SilentlyContinue
 }
 ```
 
@@ -57,13 +57,13 @@ try {
 - **Action:** Added dot-sourcing of `Format-Config.ps1`
 - **Purpose:** Resolved `CommandNotFoundException` for `Format-Config` function
 
-### 2. Runner Scripts Standardization  
+### 2. Runner Scripts Standardization 
 **Files:** All 37 scripts in `pwsh/runner_scripts/`
 - **Action:** Added consistent headers:
-  ```powershell
-  Import-Module "$PSScriptRoot/../lab_utils/LabRunner/LabRunner.psd1" -Force
-  Param([object]$Config)
-  ```
+ ```powershell
+ Import-Module "$PSScriptRoot/../lab_utils/LabRunner/LabRunner.psd1" -Force
+ Param([object]$Config)
+ ```
 - **Purpose:** Ensured all runner scripts follow standard pattern
 
 ### 3. Test Framework Fixes

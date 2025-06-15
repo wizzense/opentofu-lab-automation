@@ -1,8 +1,8 @@
-# 🛠️ Project Organization & Management Tools
+# Project Organization & Management Tools
 
 This directory contains tools for managing, organizing, and maintaining the OpenTofu Lab Automation project.
 
-## 🗂️ Organization Tools
+## Organization Tools
 
 ### [`Cleanup-Project.ps1`](./Cleanup-Project.ps1)
 **Comprehensive project cleanup with smart file organization**
@@ -19,11 +19,11 @@ This directory contains tools for managing, organizing, and maintaining the Open
 ```
 
 **Features:**
-- ✅ Analyzes root directory clutter
-- ✅ Proposes logical organization structure
-- ✅ Creates backup before changes
-- ✅ Automatic file tagging
-- ✅ Smart categorization
+- [PASS] Analyzes root directory clutter
+- [PASS] Proposes logical organization structure
+- [PASS] Creates backup before changes
+- [PASS] Automatic file tagging
+- [PASS] Smart categorization
 
 ### [`Organize-ProjectFiles.ps1`](./Organize-ProjectFiles.ps1)
 **Smart file organization with pattern-based rules**
@@ -63,25 +63,25 @@ This directory contains tools for managing, organizing, and maintaining the Open
 - `fix_*.ps1` → `legacy`, `fix-script`
 - `*report*.json` → `report`, `generated`
 
-## 🧪 Testing Tools
+## Testing Tools
 
 ### [`New-RunnerScriptTest.ps1`](./New-RunnerScriptTest.ps1)
 **Generate comprehensive test files for runner scripts**
 
 ```powershell
 $testCases = @(
-    @{
-        Name = 'installs when enabled'
-        Config = @{InstallTool = $true}
-        Mocks = @{'Start-Process' = {}}
-        ExpectedInvocations = @{'Start-Process' = 1}
-    }
+ @{
+ Name = 'installs when enabled'
+ Config = @{InstallTool = $true}
+ Mocks = @{'Start-Process' = {}}
+ ExpectedInvocations = @{'Start-Process' = 1}
+ }
 )
 
 ./tools/New-RunnerScriptTest.ps1 -ScriptName "0217_Install-MyTool.ps1" -TestCases $testCases
 ```
 
-## 🎯 Usage Examples
+## Usage Examples
 
 ### Complete Project Organization
 ```powershell
@@ -121,29 +121,29 @@ $testCases = @(
 ./tools/Cleanup-Project.ps1 -Force
 ```
 
-## 📁 Recommended Project Structure
+## � Recommended Project Structure
 
 After running the organization tools:
 
 ```
-📁 ROOT/
-├── 📄 README.md (main documentation)
-├── 📁 archive/
-│   └── 📁 legacy/ (historical fix scripts, old tests)
-├── 📁 configs/
-│   ├── 📁 config_files/ (lab configurations)
-│   └── 📁 project/ (project-level configs: YAML, TOML)
-├── 📁 docs/ (all documentation and guides)
-├── 📁 infrastructure/ (Terraform files)
-├── 📁 pwsh/ (PowerShell modules and scripts)
-├── 📁 py/ (Python tools and modules)
-├── 📁 reports/ (test results, generated reports)
-├── 📁 scripts/ (build and maintenance scripts)
-├── 📁 tests/ (test framework and test files)
-└── 📁 tools/ (project management utilities)
+� ROOT/
+├── README.md (main documentation)
+├── � archive/
+│ └── � legacy/ (historical fix scripts, old tests)
+├── � configs/
+│ ├── � config_files/ (lab configurations)
+│ └── � project/ (project-level configs: YAML, TOML)
+├── � docs/ (all documentation and guides)
+├── � infrastructure/ (Terraform files)
+├── � pwsh/ (PowerShell modules and scripts)
+├── � py/ (Python tools and modules)
+├── � reports/ (test results, generated reports)
+├── � scripts/ (build and maintenance scripts)
+├── � tests/ (test framework and test files)
+└── � tools/ (project management utilities)
 ```
 
-## 🔧 Maintenance
+## Maintenance
 
 ### Regular Cleanup Tasks
 ```powershell
@@ -164,21 +164,21 @@ Edit the rules in the scripts to customize organization:
 ```powershell
 # In Organize-ProjectFiles.ps1
 $organizationRules = @{
-    "custom_category" = @{
-        patterns = @("*custom*.ps1")
-        description = "Custom scripts"
-    }
+ "custom_category" = @{
+ patterns = @("*custom*.ps1")
+ description = "Custom scripts"
+ }
 }
 ```
 
-## 🎉 Benefits
+## Benefits
 
-- ✅ **Clean Root Directory**: Essential files only in root
-- ✅ **Logical Organization**: Related files grouped together  
-- ✅ **Automatic Maintenance**: Smart tagging and categorization
-- ✅ **Easy Navigation**: Clear directory structure
-- ✅ **Future-Proof**: Extensible rules and patterns
-- ✅ **Developer Friendly**: Better development experience
+- [PASS] **Clean Root Directory**: Essential files only in root
+- [PASS] **Logical Organization**: Related files grouped together 
+- [PASS] **Automatic Maintenance**: Smart tagging and categorization
+- [PASS] **Easy Navigation**: Clear directory structure
+- [PASS] **Future-Proof**: Extensible rules and patterns
+- [PASS] **Developer Friendly**: Better development experience
 
 ---
 

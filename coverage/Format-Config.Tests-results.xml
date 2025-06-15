@@ -1,0 +1,73 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<test-results xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="nunit_schema_2.5.xsd" name="Pester" total="8" errors="0" failures="8" not-run="0" inconclusive="0" ignored="0" skipped="0" invalid="0" date="2025-06-14" time="09:26:29">
+  <environment machine-name="WZNS" nunit-version="2.5.8.0" clr-version="9.0.4" os-version="10.0.26100" user="alexa" user-domain="WZNS" platform="Microsoft Windows 11 Pro|C:\WINDOWS|\Device\Harddisk1\Partition3" cwd="C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation" />
+  <culture-info current-culture="en-US" current-uiculture="en-US" />
+  <test-suite type="TestFixture" name="Pester" executed="True" result="Failure" success="False" time="0.7488" asserts="0" description="Pester">
+    <results>
+      <test-suite type="TestFixture" name="C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\tests\Format-Config.Tests.ps1" executed="True" result="Failure" success="False" time="0.7488" asserts="0" description="C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\tests\Format-Config.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="Format-Config" executed="True" result="Failure" success="False" time="0.281" asserts="0" description="Format-Config">
+            <results>
+              <test-case description="formats config as indented JSON" name="Format-Config.formats config as indented JSON" time="0.0436" asserts="0" success="False" result="Failure" executed="True">
+                <failure>
+                  <message>Expected regular expression '"Foo"\s*:\s*"bar"' to match $true, but it did not match.</message>
+                  <stack-trace>at $result | Should -Match '"Foo"\s*:\s*"bar"', C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\tests\Format-Config.Tests.ps1:17
+at &lt;ScriptBlock&gt;, C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\tests\Format-Config.Tests.ps1:17</stack-trace>
+                </failure>
+              </test-case>
+              <test-case description="accepts pipeline input" name="Format-Config.accepts pipeline input" time="0.0436" asserts="0" success="False" result="Failure" executed="True">
+                <failure>
+                  <message>Expected regular expression '"Foo"\s*:\s*"pipe"' to match $true, but it did not match.</message>
+                  <stack-trace>at $result | Should -Match '"Foo"\s*:\s*"pipe"', C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\tests\Format-Config.Tests.ps1:23
+at &lt;ScriptBlock&gt;, C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\tests\Format-Config.Tests.ps1:23</stack-trace>
+                </failure>
+              </test-case>
+              <test-case description="accepts pipeline input by property name" name="Format-Config.accepts pipeline input by property name" time="0.0149" asserts="0" success="False" result="Failure" executed="True">
+                <failure>
+                  <message>Expected regular expression '"Foo"\s*:\s*"prop"' to match $true, but it did not match.</message>
+                  <stack-trace>at $result | Should -Match '"Foo"\s*:\s*"prop"', C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\tests\Format-Config.Tests.ps1:29
+at &lt;ScriptBlock&gt;, C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\tests\Format-Config.Tests.ps1:29</stack-trace>
+                </failure>
+              </test-case>
+              <test-case description="throws when no Config is provided" name="Format-Config.throws when no Config is provided" time="0.0586" asserts="0" success="False" result="Failure" executed="True">
+                <failure>
+                  <message>Expected the value to have type [System.ArgumentException] or any of its subtypes, but got System.Exception: Expected $true, but got $false. with type [System.Exception].</message>
+                  <stack-trace>at $_.Exception | Should -BeOfType [System.ArgumentException], C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\tests\Format-Config.Tests.ps1:36
+at &lt;ScriptBlock&gt;, C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\tests\Format-Config.Tests.ps1:36</stack-trace>
+                </failure>
+              </test-case>
+              <test-case description="throws when pipeline is empty" name="Format-Config.throws when pipeline is empty" time="0.0163" asserts="0" success="False" result="Failure" executed="True">
+                <failure>
+                  <message>Expected the value to have type [System.ArgumentException] or any of its subtypes, but got System.Exception: Expected $true, but got $false. with type [System.Exception].</message>
+                  <stack-trace>at $_.Exception | Should -BeOfType [System.ArgumentException], C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\tests\Format-Config.Tests.ps1:44
+at &lt;ScriptBlock&gt;, C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\tests\Format-Config.Tests.ps1:44</stack-trace>
+                </failure>
+              </test-case>
+              <test-case description="throws when Config is null" name="Format-Config.throws when Config is null" time="0.0387" asserts="0" success="False" result="Failure" executed="True">
+                <failure>
+                  <message>Expected the value to have type [System.ArgumentException] or any of its subtypes, but got System.Exception: Expected $true, but got $false. with type [System.Exception].</message>
+                  <stack-trace>at $_.Exception | Should -BeOfType [System.ArgumentException], C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\tests\Format-Config.Tests.ps1:52
+at &lt;ScriptBlock&gt;, C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\tests\Format-Config.Tests.ps1:52</stack-trace>
+                </failure>
+              </test-case>
+              <test-case description="is a terminating error when Config is null" name="Format-Config.is a terminating error when Config is null" time="0.0118" asserts="0" success="False" result="Failure" executed="True">
+                <failure>
+                  <message>Expected the value to have type [System.ArgumentException] or any of its subtypes, but got System.Exception: Expected $true, but got $false. with type [System.Exception].</message>
+                  <stack-trace>at $_.Exception | Should -BeOfType [System.ArgumentException], C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\tests\Format-Config.Tests.ps1:60
+at &lt;ScriptBlock&gt;, C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\tests\Format-Config.Tests.ps1:60</stack-trace>
+                </failure>
+              </test-case>
+              <test-case description="is a terminating error when piped null" name="Format-Config.is a terminating error when piped null" time="0.0182" asserts="0" success="False" result="Failure" executed="True">
+                <failure>
+                  <message>Expected the value to have type [System.ArgumentException] or any of its subtypes, but got System.Exception: Expected $true, but got $false. with type [System.Exception].</message>
+                  <stack-trace>at $_.Exception | Should -BeOfType [System.ArgumentException], C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\tests\Format-Config.Tests.ps1:68
+at &lt;ScriptBlock&gt;, C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\tests\Format-Config.Tests.ps1:68</stack-trace>
+                </failure>
+              </test-case>
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+    </results>
+  </test-suite>
+</test-results>

@@ -69,7 +69,7 @@ if (-not (Test-Path $ScriptPath)) {
     Backup-File -FilePath $ScriptPath
 
     $content = Get-Content -Path $ScriptPath -Raw
-    $moduleImport = 'Import-Module (Join-Path $PSScriptRoot "pwsh/modules/CodeFixer/CodeFixer.psd1") -Force'
+    $moduleImport = 'Import-Module (Join-Path $PSScriptRoot "/pwsh/modules/CodeFixer/CodeFixer.psd1") -Force'
 
     # Check if the module import is already present
     if ($content -notmatch 'Import-Module.*CodeFixer') {
@@ -129,7 +129,7 @@ if (-not (Test-Path $FilePath)) {
 shell: pwsh
         run: |
           # Import the CodeFixer module
-          Import-Module ./pwsh/modules/CodeFixer/CodeFixer.psd1 -Force
+          Import-Module .//pwsh/modules/CodeFixer/CodeFixer.psd1 -Force
           
           # Run any necessary fixes before tests
           Invoke-AutoFix -ApplyFixes -Quiet
@@ -143,7 +143,7 @@ name: Run comprehensive linting
         shell: pwsh
         run: |
           # Import the CodeFixer module
-          Import-Module ./pwsh/modules/CodeFixer/CodeFixer.psd1 -Force
+          Import-Module .//pwsh/modules/CodeFixer/CodeFixer.psd1 -Force
           
           # Run PowerShell linting using the module
           Invoke-PowerShellLint -OutputFormat CI -FixErrors
@@ -157,7 +157,7 @@ name: Generate Tests
         shell: pwsh
         run: |
           # Import the CodeFixer module
-          Import-Module ./pwsh/modules/CodeFixer/CodeFixer.psd1 -Force
+          Import-Module .//pwsh/modules/CodeFixer/CodeFixer.psd1 -Force
 "@
 
             # Add the new test generator call
@@ -212,7 +212,7 @@ $ErrorActionPreference = 'Stop'
 
 # Import the CodeFixer module
 try {
-    $modulePath = Join-Path $PSScriptRoot "pwsh/modules/CodeFixer/CodeFixer.psd1"
+    $modulePath = Join-Path $PSScriptRoot "/pwsh/modules/CodeFixer/CodeFixer.psd1"
     if (Test-Path $modulePath) {
         Import-Module $modulePath -Force
     } else {
@@ -280,7 +280,7 @@ $ErrorActionPreference = 'Stop'
 
 # Import the CodeFixer module
 try {
-    $modulePath = Join-Path $PSScriptRoot "pwsh/modules/CodeFixer/CodeFixer.psd1"
+    $modulePath = Join-Path $PSScriptRoot "/pwsh/modules/CodeFixer/CodeFixer.psd1"
     if (Test-Path $modulePath) {
         Import-Module $modulePath -Force
     } else {
@@ -347,7 +347,7 @@ $ErrorActionPreference = 'Stop'
 
 # Import the CodeFixer module
 try {
-    $modulePath = Join-Path $PSScriptRoot "pwsh/modules/CodeFixer/CodeFixer.psd1"
+    $modulePath = Join-Path $PSScriptRoot "/pwsh/modules/CodeFixer/CodeFixer.psd1"
     if (Test-Path $modulePath) {
         Import-Module $modulePath -Force
     } else {
@@ -451,7 +451,7 @@ $ErrorActionPreference = 'Stop'
 
 # Import the CodeFixer module
 try {
-    $modulePath = Join-Path $PSScriptRoot "pwsh/modules/CodeFixer/CodeFixer.psd1"
+    $modulePath = Join-Path $PSScriptRoot "/pwsh/modules/CodeFixer/CodeFixer.psd1"
     if (Test-Path $modulePath) {
         Import-Module $modulePath -Force
     } else {
@@ -519,7 +519,7 @@ The OpenTofu Lab Automation project uses a comprehensive testing and validation 
 
 ## CodeFixer Module
 
-The CodeFixer module (`pwsh/modules/CodeFixer/`) provides automated tools for:
+The CodeFixer module (`/pwsh/modules/CodeFixer/`) provides automated tools for:
 
 - Fixing common syntax errors in PowerShell scripts
 - Auto-generating Pester tests for PowerShell scripts
