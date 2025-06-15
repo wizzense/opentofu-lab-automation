@@ -11,7 +11,10 @@ param(
     [switch]$AutoFix,
     
     [Parameter()]
-    [switch]$CleanupBackups
+    [switch]$CleanupBackups,
+    
+    [Parameter()]
+    [switch]$IgnoreArchive
 )
 
 $ErrorActionPreference = 'Stop'
@@ -48,6 +51,7 @@ $report = @{
         Configuration = @()
         ProjectStructure = @()
         DeprecatedFeatures = @()
+        Workflows = @()
     }
     RecommendedFixes = @()
     AutoFixResults = @()
@@ -55,6 +59,14 @@ $report = @{
 
 function Test-PowerShellSyntax {
     param([string]$FilePath)
+    
+    # Skip archived files
+    if ($IgnoreArchive -and $FilePath -match '\\(archive|backups|deprecated)\\') {
+        return @{
+            HasErrors = $false
+            Errors = @()
+        }
+    }
     
     try {
         $errors = @()
@@ -78,6 +90,14 @@ function Test-PowerShellSyntax {
 
 function Test-ImportPaths {
     param([string]$FilePath)
+    
+    # Skip archived files
+    if ($IgnoreArchive -and $FilePath -match '\\(archive|backups|deprecated)\\') {
+        return @{
+            HasIssues = $false
+            Issues = @()
+        }
+    }
     
     $content = Get-Content $FilePath -Raw
     $issues = @()
@@ -320,6 +340,13 @@ $(
     }
 )
 
+### Workflow Issues
+$(
+    foreach ($issue in $ReportData.Categories.Workflows) {
+        "- **$($issue.File)**:`n  - $($issue.Issue)`n"
+    }
+)
+
 ## Recommended Fixes
 $(
     foreach ($fix in $ReportData.RecommendedFixes) {
@@ -557,6 +584,101 @@ switch ($OutputFormat) {
                 Write-Host "- $($_.File): $($_.Issue)"
             }
         }
+        
+        if ($report.Categories.Workflows.Count -gt 0) {
+            Write-Host "`nWorkflow Issues:" -ForegroundColor Cyan
+            $report.Categories.Workflows | ForEach-Object {
+                Write-Host "- $($_.File): $($_.Issue)"
+            }
+        }
+    }
+}
+
+function Test-WorkflowHealth {
+    param([string]$WorkflowPath = ".github/workflows")
+    
+    $issues = @()
+    
+    # Check workflow files exist
+    $workflowFiles = Get-ChildItem -Path $WorkflowPath -Filter "*.yml" -ErrorAction SilentlyContinue
+    
+    if ($workflowFiles.Count -eq 0) {
+        $issues += @{
+            Category = "Missing Workflows"
+            Issue = "No workflow files found in $WorkflowPath"
+            IsCritical = $true
+        }
+        return $issues
+    }
+    
+    foreach ($file in $workflowFiles) {
+        try {
+            # YAML syntax validation
+            $content = Get-Content $file.FullName -Raw
+            $null = ConvertFrom-Yaml $content
+            
+            # Check for required sections
+            $yaml = ConvertFrom-Yaml $content
+            if (-not $yaml.name) {
+                $issues += @{
+                    File = $file.Name
+                    Category = "Workflow Structure"
+                    Issue = "Missing workflow name"
+                    IsCritical = $false
+                }
+            }
+            
+            if (-not $yaml.on) {
+                $issues += @{
+                    File = $file.Name
+                    Category = "Workflow Structure"
+                    Issue = "Missing trigger configuration"
+                    IsCritical = $true
+                }
+            }
+            
+            if (-not $yaml.jobs) {
+                $issues += @{
+                    File = $file.Name
+                    Category = "Workflow Structure"
+                    Issue = "Missing jobs configuration"
+                    IsCritical = $true
+                }
+            }
+            
+            # Check for common issues
+            if ($content -match "uses:\s+actions/checkout@v1") {
+                $issues += @{
+                    File = $file.Name
+                    Category = "Outdated Actions"
+                    Issue = "Using outdated checkout action (v1)"
+                    IsCritical = $false
+                }
+            }
+            
+        } catch {
+            $issues += @{
+                File = $file.Name
+                Category = "YAML Syntax"
+                Issue = $_.Exception.Message
+                IsCritical = $true
+            }
+        }
+    }
+    
+    return $issues
+}
+
+# Update the checking workflow when analyzing infrastructure
+$workflowIssues = Test-WorkflowHealth
+if ($workflowIssues.Count -gt 0) {
+    $report.Categories.Workflows = $workflowIssues
+    
+    # Add workflow-related fixes
+    $report.RecommendedFixes += @{
+        Category = "GitHub Actions"
+        Description = "Workflow issues detected"
+        Command = "./scripts/maintenance/unified-maintenance.ps1 -Mode 'All' -AutoFix"
     }
 }
 

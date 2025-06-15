@@ -64,7 +64,10 @@ param(
  [switch]$UpdateChangelog,
  
  [Parameter()]
- [switch]$SkipTests
+ [switch]$SkipTests,
+ 
+ [Parameter()]
+ [switch]$IgnoreArchive
 )
 
 $ErrorActionPreference = "Stop"
