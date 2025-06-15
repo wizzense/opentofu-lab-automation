@@ -87,7 +87,7 @@ jobs:
 
  # Remove trailing comma if needed
  if [[ "$RENAMED_JSON" != "[" ]]; then
- RENAMED_JSON="${RENAMED_JSon:0:-1}"
+ RENAMED_JSON="${RENAMED_JSON:0:-1}"
  fi
  RENAMED_JSON="${RENAMED_JSON}]"
  fi
