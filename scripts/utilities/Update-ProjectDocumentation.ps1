@@ -118,8 +118,7 @@ $functionsText
 ./scripts/validation/Invoke-YamlValidation.ps1 -Mode "Fix"
 
 # Comprehensive validation
-Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation//pwsh/modules/CodeFixer/" -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force
-Invoke-ComprehensiveValidation
+Import-Module "/pwsh/modules/CodeFixer/"  -ForceInvoke-ComprehensiveValidation
 ```
 
 ## Architecture

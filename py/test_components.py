@@ -12,7 +12,7 @@ from pathlib import Path
 sys.path.append(str(Path(__file__).parent))
 
 try:
-    from config_schema import ConfigSchema, ConfigField
+    from config_schema import ConfigSchema
     from enhanced_powershell_executor import EnhancedPowerShellExecutor
     
     print("✓ Successfully imported configuration schema and PowerShell executor")
@@ -74,7 +74,7 @@ try:
     print(f"\n✓ All component tests completed successfully!")
     
 except ImportError as e:
-    print(f"✗ Import error: {e}")
+    print(f"Error importing modules: {e}")
     sys.exit(1)
 except Exception as e:
     print(f"✗ Test error: {e}")

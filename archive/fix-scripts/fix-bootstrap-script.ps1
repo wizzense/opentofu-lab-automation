@@ -3,7 +3,7 @@
 
 [CmdletBinding()]
 
-Import-Module (Join-Path $PSScriptRoot "pwsh/modules/CodeFixer/CodeFixer.psd1") -Force
+Import-Module "/workspaces/opentofu-lab-automation/pwsh/modules/CodeFixer/""/CodeFixer.psd1") -Force
 param(
     [Parameter(Mandatory = $false)
 

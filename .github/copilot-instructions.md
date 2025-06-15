@@ -11,11 +11,30 @@ This is a cross-platform OpenTofu (Terraform alternative) lab automation project
 ## Current Architecture
 
 ### Module Locations (CRITICAL - Always Use These Paths)
+- **PatchManager**: /pwsh/modules/PatchManager/ (PRIMARY - Use for ALL maintenance/patching)
 - **CodeFixer**: /pwsh/modules/CodeFixer/
 - **LabRunner**: /pwsh/modules/LabRunner/
 - **BackupManager**: /pwsh/modules/BackupManager/
 
 ### Key Functions Available
+
+#### PatchManager (PRIMARY MAINTENANCE SYSTEM)
+```powershell
+# ALWAYS use PatchManager for ALL patching, fixes, and maintenance
+Import-Module "/pwsh/modules/PatchManager/" -Force
+
+# Main maintenance functions
+Invoke-UnifiedMaintenance
+Invoke-TestFileFix
+Invoke-InfrastructureFix  
+Invoke-YamlValidation
+Invoke-PatchCleanup
+Invoke-HealthCheck
+Invoke-RecurringIssueCheck
+Show-MaintenanceReport
+Test-PatchingRequirements
+```
+
 #### CodeFixer
 ``powershell
 Import-Module "/pwsh/modules/CodeFixer/"
@@ -84,7 +103,7 @@ $manifest.core.modules # View all modules
 
 ### File Organization
 - **Scripts**: `/scripts/` (maintenance, validation, utilities)
-- **Modules**: `/pwsh/modules/` (LabRunner, CodeFixer)
+- **Modules**: `/pwsh/modules/CodeFixer` (LabRunner, CodeFixer)
 - **Tests**: `/tests/` (Pester test files)
 - **Workflows**: `/.github/workflows/` (GitHub Actions)
 - **Documentation**: `/docs/` (project documentation)
@@ -98,7 +117,7 @@ $manifest.core.modules # View all modules
 ## Critical Guidelines
 
 ### Never Do These:
-- Don't use legacy `pwsh/modules/` paths (migrated to modules)
+- Don't use legacy `pwsh/modules/CodeFixer` paths (migrated to modules)
 - Don't create files in project root without using report utility
 - Don't modify workflows without YAML validation
 - Don't use deprecated import patterns
@@ -115,21 +134,37 @@ $manifest.core.modules # View all modules
 ./scripts/utilities/new-report.ps1 -Type "test-analysis" -Title "My Report"
 `
 
-## Integration Points
+## CRITICAL MAINTENANCE REQUIREMENTS
 
-### GitHub Actions Integration
-- All workflows validated with yamllint
-- PowerShell scripts syntax-checked
-- Cross-platform testing enabled
-- Automated deployment workflows
+> **⚠️ MANDATORY**: PatchManager is the ONLY approved system for all maintenance, patching, and fixing
 
-### Module System
-- Modern PowerShell module structure
-- Automated import path updates
-- Dependency validation
-- Performance optimized batch processing
+### Rules for ALL Code Generation and Maintenance
+1. **NEVER create standalone fix scripts** in project root or anywhere else
+2. **ALWAYS use PatchManager module functions** for all fixes and patches  
+3. **ALWAYS update changelogs** when applying fixes using `-UpdateChangelog` parameter
+4. **ALWAYS run health checks** before and after fixing using `Invoke-HealthCheck`
+5. **ALWAYS consolidate scattered fixes** using `Invoke-PatchCleanup`
 
----
-*Auto-generated from PROJECT-MANIFEST.json*
-*Project health: < 1 minute*
-*Last update: 2025-06-14 16:45:01*
+### Standard Troubleshooting Workflow
+```powershell
+# Step 1: Import PatchManager (REQUIRED)
+Import-Module "/pwsh/modules/PatchManager" -Force
+
+# Step 2: Run health check to identify issues
+$issues = Invoke-HealthCheck -Mode "Comprehensive" -OutputFormat "Object"
+
+# Step 3: Apply targeted fixes based on issue type
+foreach ($issue in $issues.Where{$_.Severity -eq "High"}) {
+    switch ($issue.Category) {
+        "TestSyntax" { Invoke-TestFileFix -Path $issue.FilePath -UpdateChangelog }
+        "ImportPaths" { Invoke-InfrastructureFix -Fix "ImportPaths" -AutoFix }
+        "YamlSyntax" { Invoke-YamlValidation -Path $issue.FilePath -Mode "Fix" }
+    }
+}
+
+# Step 4: Clean up any scattered fixes
+Invoke-PatchCleanup -Mode "Full" -UpdateChangelog
+
+# Step 5: Verify fixes worked
+Invoke-HealthCheck -Mode "Quick"
+```

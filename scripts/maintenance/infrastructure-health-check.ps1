@@ -112,11 +112,10 @@ function Test-ModuleHealth {
         Issues = @()
         Details = @{}
     }
-    
-    $modulesDirs = @(
+      $modulesDirs = @(
         "pwsh/modules/LabRunner",
         "pwsh/modules/CodeFixer",
-        "pwsh/modules/CodeFixerBackupManager"
+        "pwsh/modules/BackupManager"
     )
     
     foreach ($moduleDir in $modulesDirs) {
@@ -180,7 +179,8 @@ function Test-GitHubWorkflows {
     $workflowDir = Join-Path $projectRoot ".github/workflows"
     
     if (Test-Path $workflowDir) {
-        $workflows = Get-ChildItem -Path $workflowDir -Include "*.yml", "*.yaml" -ErrorAction SilentlyContinue
+        $workflows = Get-ChildItem -Path $workflowDir -Filter "*.yml" -ErrorAction SilentlyContinue
+        $workflows += Get-ChildItem -Path $workflowDir -Filter "*.yaml" -ErrorAction SilentlyContinue
         
         $workflowCheck.Details.TotalWorkflows = $workflows.Count
         $workflowCheck.Details.ValidWorkflows = 0
@@ -228,9 +228,9 @@ function Test-PowerShellSyntax {
             ErrorScripts = 0
         }
     }
-    
-    # Find PowerShell files
-    $scriptPaths = Get-ChildItem -Path $projectRoot -Include "*.ps1" -Recurse -ErrorAction SilentlyContinue
+      # Find PowerShell files (excluding archive directories)
+    $scriptPaths = Get-ChildItem -Path $projectRoot -Include "*.ps1" -Recurse -ErrorAction SilentlyContinue | 
+        Where-Object { $_.FullName -notmatch "\\(archive|backups|deprecated|coverage|build)\\|\\archive$|\\backups$" }
     
     Write-HealthLog "Found $($scriptPaths.Count) PowerShell files to validate" "INFO"
     
@@ -249,6 +249,323 @@ function Test-PowerShellSyntax {
     Write-HealthLog "Syntax validation completed. Valid: $($syntaxCheck.Details.ValidScripts), Errors: $($syntaxCheck.Details.ErrorScripts)" "INFO"
     
     return $syntaxCheck
+}
+
+function Test-GitHubActionsStatus {
+    Write-HealthLog "Checking GitHub Actions status..." "INFO"
+
+    $actionsCheck = @{
+        Name = "GitHubActionsStatus"
+        Passed = $true
+        Issues = @()
+        Details = @{
+            TotalRuns = 0
+            SuccessfulRuns = 0
+            FailedRuns = 0
+            RecentFailures = @()
+            WorkflowStatuses = @{}
+            LastChecked = (Get-Date -Format "yyyy-MM-dd HH:mm:ss")
+        }
+    }
+
+    try {
+        # Check if GitHub CLI is available and authenticated
+        $ghAuth = $null
+        try {
+            $ghAuth = & gh auth status 2>&1 | Out-String
+            if ($ghAuth -notmatch "Logged in to github.com") {
+                Write-HealthLog "GitHub CLI not authenticated - skipping Actions status check" "WARNING"
+                $actionsCheck.Issues += "GitHub CLI not authenticated"
+                $actionsCheck.Passed = $false
+                return $actionsCheck
+            }
+        } catch {
+            Write-HealthLog "GitHub CLI not available - skipping Actions status check" "WARNING"
+            $actionsCheck.Issues += "GitHub CLI not available"
+            $actionsCheck.Passed = $false
+            return $actionsCheck
+        }
+
+        # Get recent workflow runs (last 10)
+        $runsJson = & gh run list --limit 10 --json "id,conclusion,status,workflowName,createdAt,headBranch" 2>&1
+        if ($runsJson) {
+            $runs = $runsJson | ConvertFrom-Json
+            $actionsCheck.Details.TotalRuns = $runs.Count
+
+            foreach ($run in $runs) {
+                $workflowName = $run.workflowName
+                if (-not $actionsCheck.Details.WorkflowStatuses.ContainsKey($workflowName)) {
+                    $actionsCheck.Details.WorkflowStatuses[$workflowName] = @{
+                        LastStatus = $run.conclusion
+                        LastRun = $run.createdAt
+                        RunId = $run.id
+                    }
+                }
+
+                if ($run.conclusion -eq "success") {
+                    $actionsCheck.Details.SuccessfulRuns++
+                } elseif ($run.conclusion -eq "failure") {
+                    $actionsCheck.Details.FailedRuns++
+                    $actionsCheck.Details.RecentFailures += @{
+                        Workflow = $run.workflowName
+                        RunId = $run.id
+                        CreatedAt = $run.createdAt
+                        Branch = $run.headBranch
+                    }
+                }
+            }
+
+            # Check failure rate
+            $failureRate = if ($actionsCheck.Details.TotalRuns -gt 0) {
+                [math]::Round(($actionsCheck.Details.FailedRuns / $actionsCheck.Details.TotalRuns) * 100, 1)
+            } else { 0 }
+
+            Write-HealthLog "GitHub Actions status: Total Runs=$($actionsCheck.Details.TotalRuns), Success=$($actionsCheck.Details.SuccessfulRuns), Failures=$($actionsCheck.Details.FailedRuns), Failure Rate=$failureRate%" "INFO"
+
+            if ($failureRate -gt 50) {
+                $actionsCheck.Passed = $false
+                $actionsCheck.Issues += "High failure rate detected: $failureRate%"
+            }
+        } else {
+            Write-HealthLog "Failed to retrieve GitHub Actions runs" "ERROR"
+            $actionsCheck.Passed = $false
+            $actionsCheck.Issues += "Failed to retrieve GitHub Actions runs"
+        }
+    } catch {
+        Write-HealthLog "Error while checking GitHub Actions status: $($_.Exception.Message)" "ERROR"
+        $actionsCheck.Passed = $false
+        $actionsCheck.Issues += "Error while checking GitHub Actions status: $($_.Exception.Message)"
+    }
+
+    return $actionsCheck
+}
+
+function Save-WorkflowReports {
+    param(
+        [array]$Runs,
+        [string]$ProjectRoot
+    )
+    
+    Write-HealthLog "Saving automated workflow reports..." "INFO"
+    
+    try {
+        # Create reports directory if it doesn't exist
+        $reportsDir = Join-Path $ProjectRoot "docs/reports/workflow-runs"
+        if (-not (Test-Path $reportsDir)) {
+            New-Item -ItemType Directory -Path $reportsDir -Force | Out-Null
+        }
+        
+        # Generate summary report
+        $timestamp = Get-Date -Format "yyyy-MM-dd-HHmmss"
+        $summaryPath = Join-Path $reportsDir "workflow-summary-$timestamp.md"
+        
+        $summaryContent = @"
+# GitHub Actions Workflow Summary Report
+**Generated**: $(Get-Date -Format "yyyy-MM-dd HH:mm:ss UTC")
+**Total Runs Analyzed**: $($Runs.Count)
+
+## Workflow Status Overview
+
+| Workflow | Last Status | Last Run | Run ID |
+|----------|-------------|----------|---------|
+"@
+        
+        $workflowSummary = @{}
+        foreach ($run in $Runs) {
+            if (-not $workflowSummary.ContainsKey($run.workflowName)) {
+                $status = switch ($run.conclusion) {
+                    "success" { "✅ Success" }
+                    "failure" { "❌ Failed" }
+                    "cancelled" { "⏹️ Cancelled" }
+                    default { "⏳ $($run.status)" }
+                }
+                
+                $summaryContent += "| $($run.workflowName) | $status | $($run.createdAt) | [$($run.id)](https://github.com/$((gh repo view --json nameWithOwner | ConvertFrom-Json).nameWithOwner)/actions/runs/$($run.id)) |`n"
+                $workflowSummary[$run.workflowName] = $true
+            }
+        }
+        
+        # Add failure analysis if there are failures
+        $failures = $Runs | Where-Object { $_.conclusion -eq "failure" }
+        if ($failures.Count -gt 0) {
+            $summaryContent += @"
+
+## Recent Failures Analysis
+
+**Total Failures**: $($failures.Count) out of $($Runs.Count) runs
+
+### Failed Runs:
+"@
+            foreach ($failure in $failures) {
+                $summaryContent += @"
+
+- **$($failure.workflowName)** (Run [$($failure.id)](https://github.com/$((gh repo view --json nameWithOwner | ConvertFrom-Json).nameWithOwner)/actions/runs/$($failure.id)))
+  - Branch: $($failure.headBranch)
+  - Time: $($failure.createdAt)
+"@
+            }
+        }
+        
+        # Add recommendations
+        $summaryContent += @"
+
+## Recommendations
+
+### Immediate Actions:
+- Review failed workflow runs for common patterns
+- Check if infrastructure changes are needed
+- Verify all required secrets and variables are configured
+
+### Monitoring:
+- Set up notifications for workflow failures
+- Regular review of workflow performance trends
+- Update workflows based on failure patterns
+
+---
+*This report was automatically generated by the infrastructure health check system.*
+"@
+        
+        # Save the summary report
+        Set-Content -Path $summaryPath -Value $summaryContent -Encoding UTF8
+        Write-HealthLog "✓ Workflow summary saved: $summaryPath" "SUCCESS"
+        
+        # Download artifacts from recent failed runs for analysis
+        $failedRuns = $Runs | Where-Object { $_.conclusion -eq "failure" } | Select-Object -First 3
+        foreach ($failedRun in $failedRuns) {
+            try {
+                $artifactDir = Join-Path $reportsDir "artifacts-$($failedRun.id)"
+                if (-not (Test-Path $artifactDir)) {
+                    New-Item -ItemType Directory -Path $artifactDir -Force | Out-Null
+                }
+                
+                # Download artifacts (if any)
+                $artifactResult = & gh run download $failedRun.id --dir $artifactDir 2>&1
+                if ($artifactResult -notmatch "no artifacts") {
+                    Write-HealthLog "✓ Downloaded artifacts for failed run $($failedRun.id)" "INFO"
+                    
+                    # Create a summary for this specific run
+                    $runSummaryPath = Join-Path $artifactDir "run-analysis.md"
+                    $runSummary = @"
+# Failed Run Analysis: $($failedRun.workflowName)
+
+**Run ID**: $($failedRun.id)
+**Branch**: $($failedRun.headBranch)
+**Date**: $($failedRun.createdAt)
+**Status**: $($failedRun.conclusion)
+
+## Artifacts Downloaded
+$(if (Test-Path $artifactDir) { (Get-ChildItem $artifactDir -Exclude "run-analysis.md" | ForEach-Object { "- $($_.Name)" }) -join "`n" } else { "No artifacts available" })
+
+## Analysis Notes
+- Check logs for error patterns
+- Review test failures if present
+- Verify environment configuration
+
+## Next Steps
+1. Review downloaded artifacts
+2. Identify root cause
+3. Apply fixes
+4. Re-run workflow if needed
+
+---
+*Generated automatically on $(Get-Date)*
+"@
+                    Set-Content -Path $runSummaryPath -Value $runSummary -Encoding UTF8
+                }
+            } catch {
+                Write-HealthLog "Could not download artifacts for run $($failedRun.id): $($_.Exception.Message)" "WARNING"
+            }
+        }
+        
+        # Create or update the main workflow dashboard
+        Update-WorkflowDashboard -ProjectRoot $ProjectRoot -Runs $Runs
+        
+    } catch {
+        Write-HealthLog "Error saving workflow reports: $($_.Exception.Message)" "ERROR"
+    }
+}
+
+function Update-WorkflowDashboard {
+    param(
+        [string]$ProjectRoot,
+        [array]$Runs
+    )
+    
+    try {
+        $dashboardPath = Join-Path $ProjectRoot "docs/reports/workflow-dashboard.md"
+        
+        # Calculate statistics
+        $totalRuns = $Runs.Count
+        $successRate = if ($totalRuns -gt 0) { 
+            [math]::Round((($Runs | Where-Object { $_.conclusion -eq "success" }).Count / $totalRuns) * 100, 1) 
+        } else { 0 }
+        
+        $dashboardContent = @"
+# GitHub Actions Workflow Dashboard
+**Last Updated**: $(Get-Date -Format "yyyy-MM-dd HH:mm:ss UTC")
+
+## Overall Health Status
+- **Success Rate**: $successRate% (last $totalRuns runs)
+- **Total Workflows**: $(($Runs | Group-Object workflowName).Count)
+- **Last Check**: $(Get-Date -Format "yyyy-MM-dd HH:mm:ss")
+
+## Status Badge
+$(if ($successRate -ge 90) { "🟢 **HEALTHY** - Workflows performing well" } 
+  elseif ($successRate -ge 70) { "🟡 **WARNING** - Some issues detected" } 
+  else { "🔴 **CRITICAL** - Multiple workflow failures" })
+
+## Recent Activity
+| Workflow | Status | Branch | Time | Run Link |
+|----------|--------|--------|------|----------|
+"@
+        
+        foreach ($run in $Runs | Select-Object -First 10) {
+            $status = switch ($run.conclusion) {
+                "success" { "✅" }
+                "failure" { "❌" }
+                "cancelled" { "⏹️" }
+                default { "⏳" }
+            }
+            
+            $runLink = "https://github.com/$((gh repo view --json nameWithOwner | ConvertFrom-Json).nameWithOwner)/actions/runs/$($run.id)"
+            $dashboardContent += "| $($run.workflowName) | $status $($run.conclusion) | $($run.headBranch) | $($run.createdAt) | [View]($runLink) |`n"
+        }
+        
+        # Add trends and recommendations
+        $failures = $Runs | Where-Object { $_.conclusion -eq "failure" }
+        if ($failures.Count -gt 0) {
+            $dashboardContent += @"
+
+## Failure Analysis
+**Recent Failures**: $($failures.Count) out of $totalRuns runs
+
+### Common Issues:
+"@
+            $failureGroups = $failures | Group-Object workflowName
+            foreach ($group in $failureGroups) {
+                $dashboardContent += "- **$($group.Name)**: $($group.Count) failure(s)`n"
+            }
+        }
+        
+        $dashboardContent += @"
+
+## Maintenance Actions
+- [ ] Review failed workflow logs
+- [ ] Update workflow configurations if needed
+- [ ] Check infrastructure dependencies
+- [ ] Verify secrets and environment variables
+
+---
+*This dashboard is automatically updated by the infrastructure health check system.*
+*For detailed reports, see the [workflow-runs](./workflow-runs/) directory.*
+"@
+        
+        Set-Content -Path $dashboardPath -Value $dashboardContent -Encoding UTF8
+        Write-HealthLog "✓ Workflow dashboard updated: $dashboardPath" "SUCCESS"
+        
+    } catch {
+        Write-HealthLog "Error updating workflow dashboard: $($_.Exception.Message)" "ERROR"
+    }
 }
 
 # Main execution
@@ -270,23 +587,23 @@ $healthResults = @{
 switch ($Mode) {
     'Quick' {
         Write-HealthLog "Running quick health checks..." "INFO"
-        $healthResults.Checks.ProjectStructure = Test-ProjectStructure
-        $healthResults.Checks.ModuleHealth = Test-ModuleHealth
+        $healthResults.Checks["ProjectStructure"] = Test-ProjectStructure
+        $healthResults.Checks["ModuleHealth"] = Test-ModuleHealth
     }
     'Full' {
         Write-HealthLog "Running full health checks..." "INFO"
-        $healthResults.Checks.ProjectStructure = Test-ProjectStructure
-        $healthResults.Checks.ModuleHealth = Test-ModuleHealth
-        $healthResults.Checks.ConfigurationFiles = Test-ConfigurationFiles
-        $healthResults.Checks.GitHubWorkflows = Test-GitHubWorkflows
+        $healthResults.Checks["ProjectStructure"] = Test-ProjectStructure
+        $healthResults.Checks["ModuleHealth"] = Test-ModuleHealth
+        $healthResults.Checks["ConfigurationFiles"] = Test-ConfigurationFiles
+        $healthResults.Checks["GitHubWorkflows"] = Test-GitHubWorkflows
     }
     'All' {
         Write-HealthLog "Running comprehensive health checks..." "INFO"
-        $healthResults.Checks.ProjectStructure = Test-ProjectStructure
-        $healthResults.Checks.ModuleHealth = Test-ModuleHealth
-        $healthResults.Checks.ConfigurationFiles = Test-ConfigurationFiles
-        $healthResults.Checks.GitHubWorkflows = Test-GitHubWorkflows
-        $healthResults.Checks.PowerShellSyntax = Test-PowerShellSyntax
+        $healthResults.Checks["ProjectStructure"] = Test-ProjectStructure
+        $healthResults.Checks["ModuleHealth"] = Test-ModuleHealth
+        $healthResults.Checks["ConfigurationFiles"] = Test-ConfigurationFiles
+        $healthResults.Checks["GitHubWorkflows"] = Test-GitHubWorkflows
+        $healthResults.Checks["PowerShellSyntax"] = Test-PowerShellSyntax
     }
     'Report' {
         Write-HealthLog "Generating report only..." "INFO"

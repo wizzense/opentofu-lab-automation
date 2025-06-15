@@ -75,7 +75,7 @@ param(
 )
 
 # Import CodeFixer module
-Import-Module (Join-Path $PSScriptRoot "pwsh/modules/CodeFixer") -Force
+Import-Module "/workspaces/opentofu-lab-automation/pwsh/modules/CodeFixer/"") -Force
 
 # Run comprehensive auto-fix
 Invoke-ComprehensiveAutoFix -Path $Path -WhatIf:$WhatIf -SkipValidation:$SkipValidation

@@ -7,8 +7,7 @@ Write-Host "=======================================" -ForegroundColor Cyan
 $tests = @{
  "CodeFixer Module" = {
  try {
- Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation//pwsh/modules/CodeFixer/" -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force
- $result = Get-Module CodeFixer
+ Import-Module "/pwsh/modules/CodeFixer/"  -Force$result = Get-Module CodeFixer
  return $result -ne $null
  } catch {
  return $false
@@ -17,8 +16,7 @@ $tests = @{
  
  "LabRunner Module" = {
  try {
- Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation//pwsh/modules/LabRunner/" -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force
- $result = Get-Module LabRunner
+ Import-Module "/pwsh/modules/LabRunner/"  -Force$result = Get-Module LabRunner
  return $result -ne $null
  } catch {
  return $false

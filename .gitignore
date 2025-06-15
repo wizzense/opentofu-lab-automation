@@ -69,3 +69,10 @@ coverage/lcov.info
 desktop.ini
 TestResults*.xml
 Thumbs.db
+
+# Ignore logs directory
+logs/
+
+# Ignore temp and tmp folders
+temp/
+tmp/

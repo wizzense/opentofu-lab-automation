@@ -6,6 +6,30 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ## [Unreleased]
 
+
+
+
+
+### Recurring Issues Tracking (2025-06-14)
+- **Test Success Rate**: 0% (0/174 tests passing)
+- **Top Issue**: Other: This test should run but it did not (174 occurrences)
+- **Detailed Analysis**: [Recurring Issues Summary](C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation/docs/reports/issue-tracking/2025-06-14-recurring-issues-summary.md)
+- **Prevention Status**: [WARN] Needs Attention
+### Recurring Issues Tracking (2025-06-14)
+- **Test Success Rate**: 0% (0/174 tests passing)
+- **Top Issue**: Other: This test should run but it did not (174 occurrences)
+- **Detailed Analysis**: [Recurring Issues Summary](C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation/docs/reports/issue-tracking/2025-06-14-recurring-issues-summary.md)
+- **Prevention Status**: [WARN] Needs Attention
+### Recurring Issues Tracking (2025-06-14)
+- **Test Success Rate**: 0% (0/174 tests passing)
+- **Top Issue**: Other: This test should run but it did not (174 occurrences)
+- **Detailed Analysis**: [Recurring Issues Summary](C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation/docs/reports/issue-tracking/2025-06-14-recurring-issues-summary.md)
+- **Prevention Status**: [WARN] Needs Attention
+### Recurring Issues Tracking (2025-06-14)
+- **Test Success Rate**: 0% (0/174 tests passing)
+- **Top Issue**: Other: This test should run but it did not (174 occurrences)
+- **Detailed Analysis**: [Recurring Issues Summary](C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation/docs/reports/issue-tracking/2025-06-14-recurring-issues-summary.md)
+- **Prevention Status**: [WARN] Needs Attention
 ### Unified Maintenance System (2025-06-13)
 - ** Major Achievement**: Implemented comprehensive automated maintenance and issue tracking system
 - ** Infrastructure Health**: Real-time monitoring without test dependency (350+ files analyzed)
@@ -141,4 +165,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ### Known Issues
 - Pester tests failing due to structural changes
+
+
+
+
 

@@ -2,83 +2,182 @@
 
 This document describes the comprehensive GitHub Copilot configuration for the OpenTofu Lab Automation project, including custom instructions, prompts, and project management integration.
 
+## CRITICAL WORKFLOW CHANGE - EFFECTIVE 2025-06-15
+
+### MANDATORY GIT-BASED CHANGE CONTROL FOR ALL FIXES
+
+**ALL automated fixes, patches, and maintenance operations MUST now use Git-based change control with mandatory human validation.**
+
+## CRITICAL: NO EMOJI USAGE ALLOWED
+
+**NEVER USE EMOJIS IN ANY CODE, SCRIPTS, WORKFLOWS, OR OUTPUT**
+- Emojis break GitHub Actions workflows
+- Emojis cause encoding issues across platforms
+- Emojis break PowerShell execution
+- Use plain text only for all output
+
+#### New Copilot Behavior Requirements
+
+1. **NO DIRECT COMMITS TO MAIN**: All changes must go through patch branches and PR review
+2. **MANDATORY BRANCH CREATION**: Every fix must create a dedicated `patch/YYYYMMDD-HHMMSS-description` branch
+3. **PULL REQUEST WORKFLOW**: All changes require PR creation and manual approval
+4. **HUMAN VALIDATION GATES**: No automated merging - human review required for ALL changes
+5. **NO EMOJIS**: Never use emojis in any generated code or output
+
+#### Required Code Patterns for Copilot
+
+```powershell
+# CORRECT: Git-controlled patching (MANDATORY)
+Import-Module "/pwsh/modules/PatchManager" -Force
+
+$patchResult = Invoke-GitControlledPatch -PatchDescription "Fix identified issues" -PatchOperation {
+    # Your fix operations here
+    Invoke-PowerShellLint -Path "./target/files/" -AutoFix
+    Invoke-TestFileFix -Path "./tests/" -AutoFix
+} -AffectedFiles @("./target/files/", "./tests/") -CreatePullRequest
+
+if ($patchResult.Success) {
+    Write-Host "Patch created successfully. PR: $($patchResult.PullRequest.Url)"
+    Write-Host "Manual review required before merge"
+} else {
+    Write-Error "Patch failed: $($patchResult.Message)"
+}
+```
+
+```powershell
+# PROHIBITED: Direct fixes without change control
+Invoke-PowerShellLint -Path "./scripts/" -AutoFix  # NEVER DO THIS
+Invoke-TestFileFix -Path "./tests/" -AutoFix       # NEVER DO THIS
+```
+
+#### Emergency Fix Protocol (Critical Issues Only)
+
+```powershell
+# Only for system-breaking critical issues
+Invoke-EmergencyPatch -PatchDescription "Critical system failure fix" -PatchOperation {
+    # Emergency operations
+} -Justification "System completely broken, blocking all development" -AffectedFiles @("critical/files")
+```
+
 ## Overview
 
 The project includes extensive Copilot customization for:
+- **Git-based change control** with mandatory PR workflow
 - **Project-specific code generation** following strict standards
 - **Automated validation and health checking** integration
+- **Branch-based patching system** with human oversight
 - **Comprehensive testing and security** workflows
 - **Documentation generation** with live validation
-- **Continuous project maintenance** and file synchronization
-- **GitHub collaboration** with branch management and CI/CD
-- **Issue tracking** and performance monitoring
+- **Continuous project maintenance** with change control
+- **GitHub collaboration** with mandatory review process
 
 ## File Structure
 
 ### Main Configuration
-- **`.github/copilot-instructions.md`**: Primary Copilot instructions with project context
-- **`.vscode/settings.json`**: VS Code Copilot configuration and instruction file references
+- **`.github/copilot-instructions.md`**: Primary Copilot instructions with Git workflow requirements
+- **`.vscode/settings.json`**: VS Code Copilot configuration with change control enforcement
 
 ### Instruction Files (`.github/instructions/`)
-- **`powershell-standards.instructions.md`**: PowerShell coding standards and patterns
-- **`testing-standards.instructions.md`**: Pester testing framework and validation
-- **`yaml-standards.instructions.md`**: YAML/workflow standards and validation
-- **`configuration-standards.instructions.md`**: Configuration file and JSON standards
-- **`documentation-standards.instructions.md`**: Documentation generation with maintenance integration
-- **`maintenance-standards.instructions.md`**: Project health checking and continuous validation
-- **`git-collaboration.instructions.md`**: GitHub workflow and branch management
+- **`powershell-standards.instructions.md`**: PowerShell coding standards with Git workflow
+- **`testing-standards.instructions.md`**: Pester testing with patch branch requirements
+- **`yaml-standards.instructions.md`**: YAML/workflow standards with validation gates
+- **`configuration-standards.instructions.md`**: Configuration with change control
+- **`documentation-standards.instructions.md`**: Documentation with Git-based updates
+- **`maintenance-standards.instructions.md`**: **UPDATED** - Mandatory Git workflow for all maintenance
+- **`git-collaboration.instructions.md`**: **ENHANCED** - Mandatory branch/PR workflow
 
 ### Prompt Files (`.github/prompts/`)
-- **`generate-powershell-script.prompt.md`**: PowerShell script generation with health checks
-- **`generate-pester-tests.prompt.md`**: Comprehensive test generation
-- **`security-review.prompt.md`**: Security validation and review
-- **`generate-workflow.prompt.md`**: GitHub Actions workflow generation
-- **`analyze-and-fix-code.prompt.md`**: Code analysis and automated fixing
-- **`project-maintenance.prompt.md`**: Project health checking and maintenance
-- **`create-feature-branch.prompt.md`**: Feature branch creation with validation
-- **`generate-documentation.prompt.md`**: Documentation generation with validation
+- **`generate-powershell-script.prompt.md`**: PowerShell generation with Git workflow integration
+- **`generate-pester-tests.prompt.md`**: Test generation with patch branch workflow
+- **`security-review.prompt.md`**: Security validation with Git audit trail
+- **`generate-workflow.prompt.md`**: GitHub Actions with validation gates
+- **`analyze-and-fix-code.prompt.md`**: **UPDATED** - Code analysis with mandatory Git workflow
+- **`project-maintenance.prompt.md`**: **UPDATED** - Maintenance with Git-based change control
+- **`create-feature-branch.prompt.md`**: Feature branches with validation requirements
+- **`generate-documentation.prompt.md`**: Documentation with Git-tracked changes
 
 ## Key Features
 
-### Automatic Project Maintenance
-- **Health Checking**: Continuous validation with `unified-maintenance.ps1`
-- **File Synchronization**: Automatic PROJECT-MANIFEST.json and index updates
-- **Issue Tracking**: Automated issue creation and resolution tracking
-- **Performance Monitoring**: Health metrics and performance benchmarking
+### Git-Based Change Control (NEW)
+- **Branch-Based Patches**: All fixes create dedicated patch branches
+- **PR-Based Review**: Mandatory pull request workflow with human approval
+- **Validation Gates**: Comprehensive validation before PR creation
+- **Audit Trail**: Complete Git history with justification for all changes
+- **Backup Integration**: Automatic backup before applying any changes
+- **Rollback Capability**: Built-in rollback for failed patches
 
-### GitHub Workflow Integration
-- **Branch Management**: Enforced feature branch workflow with semantic commits
-- **Pre-commit Validation**: Comprehensive validation before any commit
-- **CI/CD Integration**: Automated validation in GitHub Actions
-- **Pull Request Standards**: Structured PR templates with validation requirements
+### PatchManager Integration - ENHANCED
 
-### Continuous Validation
-- **Real-time Health Checks**: < 1 minute project health validation
-- **Self-Validation**: All maintenance scripts validate their own requirements
-- **Cross-platform Testing**: Windows, Linux, macOS compatibility validation
-- **Security Scanning**: Automated security validation and review
+> **CRITICAL**: PatchManager now enforces Git-based change control for ALL operations
+
+#### Core PatchManager Functions - UPDATED
+- **Git-Controlled Maintenance**: `Invoke-GitControlledPatch` for ALL patches and fixes
+- **Validation Integration**: `Invoke-PatchValidation` for comprehensive pre-merge validation
+- **PR Creation**: `New-PatchPullRequest` for standardized pull request workflow
+- **Emergency Protocol**: `Invoke-EmergencyPatch` for critical system-breaking issues only
+
+#### Legacy Functions (Still Available but Must Use Git Workflow)
+- **Centralized Maintenance**: `Invoke-UnifiedMaintenance` - now creates patch branches
+- **Test File Fixes**: `Invoke-TestFileFix` - now requires Git workflow
+- **Infrastructure Fixes**: `Invoke-InfrastructureFix` - now creates PRs
+- **YAML Validation**: `Invoke-YamlValidation` - now uses branch-based validation
+
+#### Mandatory Usage Guidelines
+1. **NEVER create standalone fix scripts** anywhere in the project
+2. **ALWAYS use `Invoke-GitControlledPatch`** for all fixes and patches
+3. **ALWAYS create pull requests** for human review and approval
+4. **ALWAYS validate changes** before PR creation using `Invoke-PatchValidation`
+5. **ALWAYS provide clear justification** for all patches and changes
+6. **NEVER merge automatically** - human approval required for ALL changes
+
+### GitHub Workflow Integration - ENHANCED
+- **Mandatory Branch Management**: All changes go through feature/patch branches
+- **PR-Based Development**: No direct commits to main branch allowed
+- **Validation Gates**: Pre-commit and pre-merge validation requirements
+- **Human Review Process**: Mandatory manual approval for all automated fixes
+- **CI/CD Integration**: Enhanced validation with change control enforcement
+
+### Continuous Validation with Change Control
+- **Real-time Health Checks**: < 1 minute project health validation with Git integration
+- **Branch-Based Validation**: All validation operations create patch branches
+- **Cross-platform Testing**: Validation across Windows, Linux, macOS with Git workflow
+- **Security Scanning**: Automated security validation with audit trail through Git
 
 ## Usage Examples
 
-### Code Generation
+### Code Generation with Git Workflow
 ```powershell
-# Copilot automatically includes proper patterns
+# Copilot now automatically uses Git-controlled patching
+Import-Module "/pwsh/modules/PatchManager" -Force
+
+$result = Invoke-GitControlledPatch -PatchDescription "Generate new lab configuration script" -PatchOperation {
+    # Generated code follows project standards AND Git workflow
+    $newScript = @"
+#Requires -Version 7.0
+[CmdletBinding()]
+param([object]$Config)
+
 Import-Module "/pwsh/modules/LabRunner/" -Force
 
 Invoke-LabStep -Config $Config -Body {
-    Write-CustomLog "Starting operation..." "INFO"
-    # Generated code follows project standards
+    Write-CustomLog "Starting lab configuration..." "INFO"
+    # Generated code with proper patterns
 }
+"@
+    Set-Content -Path "./scripts/new-lab-config.ps1" -Value $newScript
+} -AffectedFiles @("./scripts/new-lab-config.ps1") -CreatePullRequest
+
+Write-Host "📋 New script generated with Git workflow: $($result.PullRequest.Url)"
 ```
 
-### Project Maintenance
+### Project Maintenance with Git Control
 ```powershell
 # Before any development work
 ./scripts/maintenance/unified-maintenance.ps1 -Mode "Quick"
 
-# Comprehensive validation
+# Comprehensive validation with Git-based change control
 Import-Module "/pwsh/modules/CodeFixer/" -Force
-Invoke-ComprehensiveValidation -OutputFormat "Detailed" -AutoFix
+Invoke-ComprehensiveValidation -OutputFormat "Detailed" -AutoFix -CreatePullRequest
 ```
 
 ### GitHub Workflow
@@ -91,6 +190,47 @@ pwsh -Command "Invoke-PreCommitChecklist"
 
 # Semantic commits (guided by instructions)
 git commit -m "feat(modules): Add health checking integration"
+```
+
+### Maintenance and Patching
+
+```powershell
+# PREFERRED: Always use PatchManager for maintenance and patching
+Import-Module "/pwsh/modules/PatchManager" -Force
+
+# Fix test files with automated changelog updates
+Invoke-TestFileFix -Mode "Comprehensive" -Path "./tests/" -UpdateChangelog
+
+# Run infrastructure fixes with automatic application
+Invoke-InfrastructureFix -Fix "ImportPaths" -AutoFix -UpdateChangelog
+
+# Clean up scattered fix scripts
+Invoke-PatchCleanup -Mode "Full" -UpdateChangelog
+
+# Run health checks and generate reports
+$healthReport = Invoke-HealthCheck -Mode "Comprehensive" 
+Show-MaintenanceReport -HealthData $healthReport -OutputPath "./reports/maintenance.md"
+
+# YAML validation and fixes
+Invoke-YamlValidation -Path "./.github/workflows/" -Mode "Fix"
+```
+
+### Troubleshooting Process
+
+```powershell
+# Step 1: Import the module
+Import-Module "/pwsh/modules/PatchManager" -Force
+
+# Step 2: Run health check to identify issues
+$issues = Invoke-HealthCheck -Mode "Comprehensive" -OutputFormat "Object"
+
+# Step 3: Apply targeted fixes based on issue type
+foreach ($issue in $issues.Where{$_.Category -eq "TestSyntax"}) {
+    Invoke-TestFileFix -Path $issue.FilePath -FixType "Comprehensive" -UpdateChangelog
+}
+
+# Step 4: Verify fixes worked
+Invoke-HealthCheck -Mode "Quick"
 ```
 
 ## VS Code Settings Integration
