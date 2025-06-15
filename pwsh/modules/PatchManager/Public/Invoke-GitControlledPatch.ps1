@@ -12,23 +12,26 @@
     
     NO EMOJIS ARE ALLOWED - they break workflows and must be prevented
     
-.PARAMETER PatchType
-    The type of patch to apply: Syntax, Import, Infrastructure, YAML, or All
+.PARAMETER PatchDescription
+    Description of the patch being applied
     
-.PARAMETER BranchName
-    Custom branch name (optional - will auto-generate if not provided)
+.PARAMETER PatchOperation
+    The script block containing the patch operation
     
-.PARAMETER CreatePR
+.PARAMETER AffectedFiles
+    Array of files that will be affected by the patch
+    
+.PARAMETER BaseBranch
+    The base branch to create the patch branch from
+    
+.PARAMETER CreatePullRequest
     Automatically create a pull request after applying patches
     
-.PARAMETER ProjectRoot
-    Root directory of the project
+.PARAMETER Force
+    Force the operation even if working tree is not clean
     
 .EXAMPLE
-    Invoke-GitControlledPatch -PatchType "Syntax" -CreatePR
-    
-.EXAMPLE
-    Invoke-GitControlledPatch -PatchType "All" -BranchName "fix-critical-issues" -CreatePR
+    Invoke-GitControlledPatch -PatchDescription "Fix syntax errors" -PatchOperation { Write-Host "Fixing syntax" } -CreatePullRequest
     
 .NOTES
     - All patches require human validation via PR review
@@ -41,18 +44,23 @@
 function Invoke-GitControlledPatch {
     [CmdletBinding(SupportsShouldProcess)]
     param(
-        [Parameter(Mandatory=$true)]
-        [ValidateSet("Syntax", "Import", "Infrastructure", "YAML", "All")]
-        [string]$PatchType,
+        [Parameter(Mandatory = $true)]
+        [string]$PatchDescription,
         
-        [Parameter(Mandatory=$false)]
-        [string]$BranchName,
+        [Parameter(Mandatory = $true)]
+        [scriptblock]$PatchOperation,
         
-        [Parameter(Mandatory=$false)]
-        [switch]$CreatePR,
+        [Parameter(Mandatory = $false)]
+        [string[]]$AffectedFiles = @(),
         
-        [Parameter(Mandatory=$false)]
-        [string]$ProjectRoot = $PWD
+        [Parameter(Mandatory = $false)]
+        [string]$BaseBranch = "main",
+        
+        [Parameter(Mandatory = $false)]
+        [switch]$CreatePullRequest,
+        
+        [Parameter(Mandatory = $false)]
+        [switch]$Force
     )
     
     $ErrorActionPreference = "Stop"
