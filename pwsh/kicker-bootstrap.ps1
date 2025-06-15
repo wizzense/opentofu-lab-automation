@@ -252,7 +252,7 @@ if (-not (Test-Path $formatScript)) {
     if (-not (Test-Path $labUtilsDir)) {
         New-Item -ItemType Directory -Path $labUtilsDir -Force | Out-Null
     }
-    $formatUrl = 'https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/main/pwsh/modules/Format-Config.ps1'
+    $formatUrl = 'https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/main/pwsh/modules/CodeFixerFormat-Config.ps1'
     Invoke-WebRequest -Uri $formatUrl -OutFile $formatScript
 }
 . "$labConfigScript"
@@ -769,6 +769,7 @@ if ($exitCode -ne 0) {
 
 Write-CustomLog "`n=== Kicker script finished successfully! ==="
 exit 0
+
 
 
 

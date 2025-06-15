@@ -466,7 +466,7 @@ This PowerShell module provides comprehensive tools for code fixing, validation,
 
 Import the module:
 ```powershell
-Import-Module ./pwsh/modules/CodeFixer/CodeFixer.psd1 -Force
+Import-Module .//pwsh/modules/CodeFixer/CodeFixer.psd1 -Force
 ```
 
 For detailed documentation, see [CODEFIXER-GUIDE.md](../../../docs/CODEFIXER-GUIDE.md).

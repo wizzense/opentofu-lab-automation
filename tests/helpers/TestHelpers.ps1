@@ -65,7 +65,7 @@ function Resolve-ProjectPath {
     
     # Common path mappings within the project
     $pathMappings = @{
-        'runner_scripts' = 'pwsh/modules/runner_scripts'
+        'runner_scripts' = 'pwsh/modules/CodeFixerrunner_scripts'
         'LabRunner' = 'pwsh/modules/LabRunner'
         'CodeFixer' = 'pwsh/modules/CodeFixer'
         'pwsh' = 'pwsh'
@@ -91,7 +91,7 @@ function Resolve-ProjectPath {
     # Try common script locations
     $commonPaths = @(
         "pwsh/runner_scripts/$Name",
-        "pwsh/modules/runner_scripts/$Name", 
+        "pwsh/modules/CodeFixerrunner_scripts/$Name", 
         "pwsh/modules/LabRunner/$Name",
         "scripts/$Name",
         "tests/$Name"
@@ -1197,6 +1197,7 @@ function Test-RunnerScriptDeployment {
 # ==============================================================================
 # End of Additional Test Helper Functions
 # ==============================================================================
+
 
 
 

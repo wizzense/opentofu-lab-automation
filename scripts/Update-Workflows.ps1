@@ -81,7 +81,7 @@ name: Run comprehensive linting
         shell: pwsh
         run: |
           # Import the CodeFixer module
-          Import-Module ./pwsh/modules/CodeFixer/CodeFixer.psd1 -Force
+          Import-Module .//pwsh/modules/CodeFixer/CodeFixer.psd1 -Force
           
           # Run PowerShell linting using the module
           ./comprehensive-lint.ps1 -FixErrors -OutputFormat CI
@@ -95,7 +95,7 @@ name: Run Pester Tests
         shell: pwsh
         run: |
           # Import the CodeFixer module
-          Import-Module ./pwsh/modules/CodeFixer/CodeFixer.psd1 -Force
+          Import-Module .//pwsh/modules/CodeFixer/CodeFixer.psd1 -Force
           
           # Run any necessary fixes before tests
           ./auto-fix.ps1 -Apply -Quiet
@@ -172,7 +172,7 @@ name: Generate Tests
         shell: pwsh
         run: |
           # Import the CodeFixer module
-          Import-Module ./pwsh/modules/CodeFixer/CodeFixer.psd1 -Force
+          Import-Module .//pwsh/modules/CodeFixer/CodeFixer.psd1 -Force
 "@
 
             # Add the new test generator call

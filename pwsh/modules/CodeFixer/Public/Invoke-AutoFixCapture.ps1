@@ -52,7 +52,7 @@ function Invoke-AutoFixCapture {
  
  'ModuleImportPaths' = @{
  Pattern = 'Import-Module.*?lab_utils'
- Replacement = 'Import-Module "C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation/pwsh/modules/LabRunner/" -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force'
+ Replacement = 'Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation//pwsh/modules/LabRunner/" -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force'
  Description = 'Update module import paths to new LabRunner location'
  }
  
@@ -214,7 +214,7 @@ function Export-FixPatterns {
  }
  ModuleImportPaths = @{
  Pattern = 'Import-Module.*?lab_utils'
- Replacement = 'Import-Module "C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation/pwsh/modules/LabRunner/" -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force'
+ Replacement = 'Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation//pwsh/modules/LabRunner/" -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force'
  Description = 'Update module import paths to new LabRunner location'
  Category = 'Refactoring'
  Severity = 'High'

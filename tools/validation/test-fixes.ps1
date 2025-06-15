@@ -21,9 +21,9 @@ Write-Host "`n2. Testing CodeFixer linting..." -ForegroundColor Yellow
 Write-Host "Running PowerShell linting with parallel processing..." -ForegroundColor Cyan
 try {
  # Load the new parallel functions
- . "/workspaces/opentofu-lab-automation/pwsh/modules/CodeFixer/Public/Invoke-ParallelScriptAnalyzer.ps1"
- . "/workspaces/opentofu-lab-automation/pwsh/modules/CodeFixer/Public/Invoke-PowerShellLint.ps1"
- . "/workspaces/opentofu-lab-automation/pwsh/modules/CodeFixer/Private/Get-SyntaxFixSuggestion.ps1"
+ . "/workspaces/opentofu-lab-automation//pwsh/modules/CodeFixer/Public/Invoke-ParallelScriptAnalyzer.ps1"
+ . "/workspaces/opentofu-lab-automation//pwsh/modules/CodeFixer/Public/Invoke-PowerShellLint.ps1"
+ . "/workspaces/opentofu-lab-automation//pwsh/modules/CodeFixer/Private/Get-SyntaxFixSuggestion.ps1"
  
  # Test parallel analysis on the entire project
  $result = Invoke-PowerShellLint -Path "/workspaces/opentofu-lab-automation/pwsh" -Parallel -PassThru
@@ -40,7 +40,7 @@ try {
 # Test 3: LabRunner Module Loading
 Write-Host "`n3. Testing LabRunner module..." -ForegroundColor Yellow
 try {
- Import-Module "C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation/pwsh/modules/LabRunner/" -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force
+ Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation//pwsh/modules/LabRunner/" -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force
  $labRunnerModule = Get-Module LabRunner
  if ($labRunnerModule) {
  Write-Host "[PASS] LabRunner module loaded successfully" -ForegroundColor Green
@@ -73,7 +73,7 @@ try {
  $pesterTest = @"
 Describe 'LabRunner Integration' {
  It 'should load LabRunner module' {
- Import-Module "C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation/pwsh/modules/LabRunner/" -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force
+ Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation//pwsh/modules/LabRunner/" -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force
  Get-Module LabRunner | Should -Not -BeNullOrEmpty
  }
 }

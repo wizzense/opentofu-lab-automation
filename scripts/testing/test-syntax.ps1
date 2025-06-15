@@ -37,7 +37,7 @@ if ($errorCount -eq 0) {
 } else {
  Write-Host "[WARN] Some scripts still have syntax errors" -ForegroundColor Yellow
 }
-Import-Module (Join-Path $PSScriptRoot "pwsh/modules/CodeFixer/CodeFixer.psd1") -Force
+Import-Module (Join-Path $PSScriptRoot "/pwsh/modules/CodeFixer/CodeFixer.psd1") -Force
 
 
 

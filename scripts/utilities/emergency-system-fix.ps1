@@ -247,8 +247,8 @@ function Validate-SystemHealth {
  # Check critical files
  $criticalFiles = @(
  ".github/workflows/unified-ci.yml",
- "pwsh/modules/CodeFixer/CodeFixer.psm1",
- "pwsh/modules/LabRunner/LabRunner.psm1",
+ "/pwsh/modules/CodeFixer/CodeFixer.psm1",
+ "/pwsh/modules/LabRunner/LabRunner.psm1",
  "scripts/maintenance/unified-maintenance.ps1"
  )
  
@@ -271,7 +271,7 @@ function Validate-SystemHealth {
  
  # Test PowerShell modules
  try {
- Import-Module "C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation/pwsh/modules/CodeFixer/" -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -ErrorAction Stop
+ Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation//pwsh/modules/CodeFixer/" -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -ErrorAction Stop
  Write-Host " [PASS] CodeFixer module loads" -ForegroundColor Green
  }
  catch {
@@ -280,7 +280,7 @@ function Validate-SystemHealth {
  }
  
  try {
- Import-Module "C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation/pwsh/modules/LabRunner/" -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -ErrorAction Stop 
+ Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation//pwsh/modules/LabRunner/" -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -ErrorAction Stop 
  Write-Host " [PASS] LabRunner module loads" -ForegroundColor Green
  }
  catch {

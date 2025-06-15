@@ -49,7 +49,7 @@ function Invoke-PermanentCleanup {
         }
         
         # Import Logging module for enhanced logging capabilities
-        Import-Module "/pwsh/modules/Logging/" -Force
+        Import-Module "//pwsh/modules/CodeFixerLogging/" -Force
         
         # Fallback definition for Write-CustomLog if not available
         if (-not (Get-Command "Write-CustomLog" -ErrorAction SilentlyContinue)) {
@@ -212,3 +212,4 @@ function Invoke-PermanentCleanup {
         throw
     }
 }
+

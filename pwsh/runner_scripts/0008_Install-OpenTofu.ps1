@@ -7,7 +7,7 @@ Param([object]$Config)
 
 
 
-Import-Module "C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation/pwsh/modules/LabRunner/" -Force -Force -Force -Force -Force -Force -Force# Param([pscustomobject]$Config)
+Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation//pwsh/modules/LabRunner/" -Force -Force -Force -Force -Force -Force -Force# Param([pscustomobject]$Config)
 
 
 
@@ -15,7 +15,7 @@ Import-Module "C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automa
 
 
 
-# Import-Module "C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation/pwsh/modules/LabRunner/" -Force -Force -Force -Force -Force -Force -Force-Force.psd1')
+# Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation//pwsh/modules/LabRunner/" -Force -Force -Force -Force -Force -Force -Force-Force.psd1')
 
 Write-CustomLog "Starting $MyInvocation.MyCommand"
 

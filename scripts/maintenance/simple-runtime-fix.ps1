@@ -14,7 +14,7 @@ param(
  [switch]$WhatIf
 )
 
-Import-Module (Join-Path $PSScriptRoot "pwsh/modules/CodeFixer/CodeFixer.psd1") -Force
+Import-Module (Join-Path $PSScriptRoot "/pwsh/modules/CodeFixer/CodeFixer.psd1") -Force
 
 $ErrorActionPreference = "Stop"
 

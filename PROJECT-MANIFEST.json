@@ -3,7 +3,7 @@
     "description": "Comprehensive automation framework for OpenTofu lab environments with unified maintenance and validation systems",
     "version": "1.0.0",
     "name": "OpenTofu Lab Automation",
-    "lastUpdated": "2025-06-14 16:45:01"
+    "lastUpdated": "2025-06-14 17:14:04"
   },
   "core": {
     "modules": {
@@ -66,6 +66,40 @@
       }
     },
     "maintenanceSystem": {
+      "unifiedHealthCheck": {
+        "path": "/scripts/maintenance/Invoke-UnifiedHealthCheck.ps1",
+        "purpose": "Single entry point for all health and maintenance operations",
+        "modes": [
+          "Quick",
+          "Full",
+          "Infrastructure",
+          "Workflow",
+          "All"
+        ],
+        "features": [
+          "Unified infrastructure and workflow analysis",
+          "Automated issue tracking",
+          "Cross-platform validation",
+          "Auto-fix capabilities",
+          "GitHub Actions integration",
+          "Comprehensive reporting"
+        ],
+        "components": {
+          "infrastructureAnalysis": {
+            "path": "/scripts/maintenance/Analyze-InfrastructureHealth.ps1",
+            "purpose": "Deep infrastructure analysis"
+          },
+          "workflowAnalysis": {
+            "path": "/scripts/maintenance/Analyze-WorkflowHealth.ps1",
+            "purpose": "GitHub Actions workflow analysis"
+          }
+        },
+        "reports": {
+          "unified": "/reports/unified-health/",
+          "infrastructure": "/reports/infrastructure-health/",
+          "workflow": "/reports/workflow-health/"
+        }
+      },
       "unifiedMaintenance": {
         "path": "/scripts/maintenance/unified-maintenance.ps1",
         "purpose": "Single entry point for all maintenance operations",
@@ -301,7 +335,7 @@
       "maintenanceScripts": 0,
       "validationScripts": 0,
       "activeModules": 5,
-      "powerShellFiles": 337
+      "powerShellFiles": 340
     },
     "performance": {
       "healthCheckTime": "< 1 minute",
@@ -309,7 +343,7 @@
       "fullMaintenanceTime": "2-5 minutes",
       "batchProcessingOptimization": "Dynamic CPU scaling"
     },
-    "lastCalculated": "2025-06-14 16:45:02"
+    "lastCalculated": "2025-06-14 17:14:05"
   },
   "scripts": {
     "maintenance": {

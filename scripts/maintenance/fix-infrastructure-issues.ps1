@@ -31,8 +31,12 @@ param(
     [Parameter(Mandatory=$true)]
     [ValidateSet('All','CodeFixer','MissingCommands','TestContainers','ImportPaths','GitHubActions','TestSyntax')]
     [string]$Fix,
+    
     [Parameter()]
-    [switch]$DryRun
+    [switch]$DryRun,
+    
+    [Parameter()]
+    [switch]$AutoFix
 )
 
 $ErrorActionPreference = "Stop"
@@ -208,43 +212,48 @@ function Fix-TestContainers {
 }
 
 function Fix-ImportPaths {
-    Write-FixLog "Updating module import paths..." "FIX"
+    param([bool]$DryRun, [bool]$AutoFix)
     
-    # Define module path mappings
-    $modules = @{
-        "CodeFixer"     = "$ProjectRoot/pwsh/modules/CodeFixer/"
-        "LabRunner"     = "$ProjectRoot/pwsh/modules/LabRunner/"
-        "BackupManager" = "$ProjectRoot/pwsh/modules/BackupManager/"
-    }
+    Write-FixLog "Scanning for import path issues..." -Level "INFO"
     
-    # Build regex patterns and replacements
-    $patterns = @()
-    foreach ($name in $modules.Keys) {
-        $escaped = [regex]::Escape("pwsh/modules/$name")
-        $replacement = "Import-Module `"$($modules[$name])`" -Force"
-        $pattern = 'Import-Module\s+[""''].*?' + $escaped + '.*?[""'']'
-        $patterns += @{ Pattern = $pattern; Replacement = $replacement }
-    }
-    $updatedCount = 0
-    # Scan all PS1 and PSM1 files under project
-    $filesToUpdate = Get-ChildItem -Path $ProjectRoot -Recurse -Include "*.ps1","*.psm1" -File -ErrorAction SilentlyContinue
-    foreach ($file in $filesToUpdate) {
+    $files = Get-ChildItem -Path $ProjectRoot -Recurse -Filter "*.ps1" |
+        Where-Object { $_.FullName -notmatch '\\(archive|backups|deprecated)\\' }
+        
+    $fixCount = 0
+    foreach ($file in $files) {
         $content = Get-Content $file.FullName -Raw
-        $newContent = $content
-        foreach ($p in $patterns) {
-            $newContent = $newContent -replace $p.Pattern, $p.Replacement
+        $modified = $false
+        
+        # Check for non-absolute imports
+        if ($content -match 'Import-Module\s+"(?!/)') {
+            Write-FixLog "Found non-absolute import in $($file.Name)" -Level "WARNING"
+            if (-not $DryRun -and $AutoFix) {
+                $content = $content -replace 'Import-Module\s+"(?!/)(.+?)"', 'Import-Module "/$1"'
+                $modified = $true
+            }
         }
-        if ($newContent -ne $content) {
-            Set-Content $file.FullName $newContent
-            Write-FixLog "Updated import paths in: $($file.FullName)" "SUCCESS"
-            $updatedCount++
+        
+        # Check for deprecated module locations
+        if ($content -match 'Import-Module.*?pwsh/modules') {
+            Write-FixLog "Found deprecated module path in $($file.Name)" -Level "WARNING"
+            if (-not $DryRun -and $AutoFix) {
+                $content = $content -replace 'pwsh/modules/CodeFixer(\w+)/', '/pwsh/modules/CodeFixer$1/'
+                $modified = $true
+            }
+        }
+        
+        if ($modified) {
+            try {
+                Set-Content -Path $file.FullName -Value $content -NoNewline
+                $fixCount++
+                Write-FixLog "Fixed import paths in $($file.Name)" -Level "SUCCESS"
+            } catch {
+                Write-FixLog "Failed to fix $($file.Name): $_" -Level "ERROR"
+            }
         }
     }
-    if ($updatedCount -eq 0) {
-        Write-FixLog "No files were updated with import path fixes" "WARNING"
-    } else {
-        Write-FixLog "Successfully fixed import paths in $updatedCount files" "SUCCESS"
-    }
+    
+    Write-FixLog "Fixed import paths in $fixCount files" -Level "SUCCESS"
 }
 
 function Fix-GitHubActions {
@@ -285,7 +294,7 @@ try {    switch ($Fix) {
         'CodeFixer' { Fix-CodeFixerSyntax }
         'MissingCommands' { Fix-MissingCommands }
         'TestContainers' { Fix-TestContainers }
-        'ImportPaths' { Fix-ImportPaths }
+        'ImportPaths' { Fix-ImportPaths -DryRun $DryRun -AutoFix $AutoFix }
         'GitHubActions' { Fix-GitHubActions }
         'TestSyntax' { Fix-TestContainers } # TestSyntax uses the same function as TestContainers for now
         'All' {
@@ -293,7 +302,7 @@ try {    switch ($Fix) {
             Fix-CodeFixerSyntax
             Fix-MissingCommands
             Fix-TestContainers
-            Fix-ImportPaths
+            Fix-ImportPaths -DryRun $DryRun -AutoFix $AutoFix
             Fix-GitHubActions
         }
     }
@@ -310,6 +319,7 @@ catch {
     Write-FixLog "Infrastructure fixes failed: $($_.Exception.Message)" "ERROR"
     exit 1
 }
+
 
 
 

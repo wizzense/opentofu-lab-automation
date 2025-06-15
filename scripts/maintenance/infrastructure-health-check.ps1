@@ -116,7 +116,7 @@ function Test-ModuleHealth {
     $modulesDirs = @(
         "pwsh/modules/LabRunner",
         "pwsh/modules/CodeFixer",
-        "pwsh/modules/BackupManager"
+        "pwsh/modules/CodeFixerBackupManager"
     )
     
     foreach ($moduleDir in $modulesDirs) {
@@ -331,3 +331,4 @@ if ($healthResults.Summary.FailedChecks -gt 0) {
 } else {
     exit 0
 }
+

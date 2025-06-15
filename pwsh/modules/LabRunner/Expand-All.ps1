@@ -1,4 +1,4 @@
-# ...existing code from /pwsh/modules/Expand-All.ps1...
+# ...existing code from /pwsh/modules/CodeFixerExpand-All.ps1...
 function Expand-All {
     # Expand-All -ZipFile "C:\path\to\your\archive.zip"
     param(
@@ -60,6 +60,7 @@ Read-Host $Prompt }
         Write-CustomLog "All archives expanded."
     }
 }
+
 
 
 

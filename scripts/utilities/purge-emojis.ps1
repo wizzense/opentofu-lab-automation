@@ -25,14 +25,31 @@ Write-Host "Removing all emojis from codebase to prevent parsing issues" -Foregr
 
 # Define common emoji patterns (comprehensive list)
 $emojiPatterns = @(
- # Common emojis used in this project
- "", "", "", "[PASS]", "[FAIL]", "[WARN]", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",
- # Three-letter words that look like emojis
- "", "", "[INFO]", "", "", "", ""
+ # Status indicators
+ "[PASS]", "[FAIL]", "[WARN]", "[INFO]",
+ 
+ # Common technical emojis
+ "✅", "❌", "⚠️", "ℹ️", "🔧", "🔨", "🛠️",
+ "📦", "🚀", "💻", "🖥️", "🌐", "🔒", "🔓",
+ 
+ # Common feedback emojis
+ "👍", "👎", "🎉", "🎯", "✨", "💡", "⭐",
+ 
+ # Error/warning indicators
+ "🔴", "🟡", "🟢", "⚡", "🔥", "❗", "❓",
+ 
+ # File/folder indicators
+ "📁", "📂", "📄", "📝", "🗂️", "📊", "📈",
+ 
+ # Process indicators
+ "⏳", "⌛", "🔄", "♻️", "⚙️", "🔌", "🔍",
+ 
+ # Cloud/network
+ "☁️", "🌍", "🌐", "🔗", "🌩️", "📡", "🔌"
 )
 
 # Build regex pattern for all emojis
-$emojiRegex = "[$($emojiPatterns -join '')]"
+$emojiRegex = "(?:$($emojiPatterns -join '|'))"
 
 # Get the project root
 $projectRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)

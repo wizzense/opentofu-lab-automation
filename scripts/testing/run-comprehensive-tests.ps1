@@ -25,7 +25,7 @@ Write-Host "=============================================" -ForegroundColor Cyan
 # Import TestAutoFixer module and run syntax fixes
 Write-Host "Fixing syntax issues in test files..." -ForegroundColor Green
 try {
- Import-Module "$rootDir/../../tools/TestAutoFixer" -Force
+ Import-Module "/$rootDir/../../tools/TestAutoFixer" -Force
  Invoke-SyntaxFix -AutoFix
  Write-Host "[PASS] Syntax fixes completed" -ForegroundColor Green
 } catch {

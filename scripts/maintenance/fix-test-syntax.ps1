@@ -161,14 +161,14 @@ $content = Get-Content $FilePath -Raw
         # Fix import paths for LabRunner module
         @{
             Pattern = "Import-Module.*'pwsh/modules/LabRunner\.psd1'"
-            Replacement = "Import-Module (Join-Path `$PSScriptRoot '..' 'pwsh/modules/LabRunner/LabRunner.psd1')"
+            Replacement = "Import-Module (Join-Path `$PSScriptRoot '..' '/pwsh/modules/LabRunner/LabRunner.psd1')"
             Description = "Fix LabRunner module import path"
         },
         
         # Fix deprecated lab_utils paths
         @{
-            Pattern = "'pwsh/modules/"
-            Replacement = "'pwsh/modules/LabRunner/"
+            Pattern = "'pwsh/modules/CodeFixer"
+            Replacement = "'/pwsh/modules/LabRunner/"
             Description = "Update deprecated lab_utils paths"
         }
     )
@@ -254,6 +254,7 @@ if ($fixedCount -gt 0 -and -not $DryRun) {
 }
 
 Write-SyntaxLog "Test syntax fixes completed!" "SUCCESS"
+
 
 
 

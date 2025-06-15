@@ -118,7 +118,7 @@ $functionsText
 ./scripts/validation/Invoke-YamlValidation.ps1 -Mode "Fix"
 
 # Comprehensive validation
-Import-Module "C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation/pwsh/modules/CodeFixer/" -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force
+Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation//pwsh/modules/CodeFixer/" -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force
 Invoke-ComprehensiveValidation
 ```
 
@@ -126,7 +126,7 @@ Invoke-ComprehensiveValidation
 
 ### Module Structure
 ```
-pwsh/modules/
+pwsh/modules/CodeFixer
 ├── LabRunner/ # Core lab automation
 ├── CodeFixer/ # Code analysis and repair
 └── [Dynamic modules] # Additional capabilities
@@ -229,7 +229,7 @@ $copilotFunctionsText
 
 ### File Organization
 - **Scripts**: ``/scripts/`` (maintenance, validation, utilities)
-- **Modules**: ``/pwsh/modules/`` (LabRunner, CodeFixer)
+- **Modules**: ``/pwsh/modules/CodeFixer`` (LabRunner, CodeFixer)
 - **Tests**: ``/tests/`` (Pester test files)
 - **Workflows**: ``/.github/workflows/`` (GitHub Actions)
 - **Documentation**: ``/docs/`` (project documentation)
@@ -243,7 +243,7 @@ $copilotFunctionsText
 ## Critical Guidelines
 
 ### Never Do These:
-- Don't use legacy ``pwsh/modules/`` paths (migrated to modules)
+- Don't use legacy ``pwsh/modules/CodeFixer`` paths (migrated to modules)
 - Don't create files in project root without using report utility
 - Don't modify workflows without YAML validation
 - Don't use deprecated import patterns
@@ -287,6 +287,7 @@ Write-Host " Documentation update completed!" -ForegroundColor Green
 Write-Host " - Updated AGENTS.md with current project state" -ForegroundColor White
 Write-Host " - Updated .github/copilot-instructions.md with architecture" -ForegroundColor White
 Write-Host " - Integrated manifest data and performance metrics" -ForegroundColor White
+
 
 
 

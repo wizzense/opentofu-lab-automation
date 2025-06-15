@@ -38,7 +38,7 @@ param(
 )
 
 # Import the shared logging module
-Import-Module "/pwsh/modules/Logging/" -Force
+Import-Module "//pwsh/modules/CodeFixerLogging/" -Force
 
 # Initialize results tracking
 $script:Results = @{
@@ -132,7 +132,7 @@ try {
         
         # Find Param block and Import-Module statements
         $paramMatch = [regex]::Match($content, '(?m)^\s*Param\s*\(', [System.Text.RegularExpressions.RegexOptions]::Multiline)
-        $importMatches = [regex]::Matches($content, '(?m)^\s*Import-Module\s+"/pwsh/modules/(LabRunner|CodeFixer|BackupManager)/"', [System.Text.RegularExpressions.RegexOptions]::Multiline)
+        $importMatches = [regex]::Matches($content, '(?m)^\s*Import-Module\s+"/pwsh/modules/CodeFixer(LabRunner|CodeFixer|BackupManager)/"', [System.Text.RegularExpressions.RegexOptions]::Multiline)
         
         $issues = @()
     } catch {
@@ -568,6 +568,7 @@ $content = Get-Content $FilePath -Raw
     
     return $false
 }
+
 
 
 
