@@ -4,10 +4,8 @@ This directory contains various automation and integration scripts for the OpenT
 
 ## Integration Scripts
 
-- **Install-CodeFixerIntegration.ps1** - Integrates the CodeFixer module with runner scripts
-- **Update-Workflows.ps1** - Updates GitHub Actions workflows to use the CodeFixer module
+- **Update-Workflows.ps1** - Updates GitHub Actions workflows
 - **Cleanup-DeprecatedFiles.ps1** - Cleans up deprecated files and moves them to archive
-- **Deploy-CodeFixerModule.ps1** - Master deployment script for the CodeFixer module
 - **Organize-ProjectFiles.ps1** - Organizes and cleans up project files
 
 ## Archive Directories

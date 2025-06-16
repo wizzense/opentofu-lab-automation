@@ -48,7 +48,8 @@ function Invoke-GitHubIssueIntegration {
         [Parameter(Mandatory = $false)]
         [string[]]$AffectedFiles = @(),
         
-        [Parameter(Mandatory = $false)]        [string[]]$Labels = @("bug", "automated-fix"),
+        [Parameter(Mandatory = $false)]
+        [string[]]$Labels = @("bug"),
         
         [Parameter(Mandatory = $false)]
         [ValidateSet("Low", "Medium", "High", "Critical")]
