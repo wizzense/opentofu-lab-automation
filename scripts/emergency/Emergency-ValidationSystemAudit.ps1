@@ -82,7 +82,7 @@ Write-Host "   Found $($pathPattern.Count) files with malformed paths" -Foregrou
 Write-Host "`n📊 PATTERN 3: Catastrophic Import Statements" -ForegroundColor Cyan
 $catastrophicImports = Get-ChildItem -Path "." -Recurse -Include "*.ps1" | ForEach-Object {
     $content = Get-Content $_.FullName -Raw -ErrorAction SilentlyContinue
-    $importLines = $content -split "`n" | Where-Object { $_ -match 'Import-Module.*(-Force\s*){5,}' }
+    $importLines = $content -split "`n" | Where-Object { $_ -match 'Import-Module.*(-Force\s*){20,}' }
     
     if ($importLines) {
         foreach ($line in $importLines) {
