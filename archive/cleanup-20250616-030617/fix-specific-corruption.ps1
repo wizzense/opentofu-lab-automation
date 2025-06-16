@@ -48,15 +48,15 @@ foreach ($testFile in $testFiles) {
         $corruptedFiles += $testFile
         
         # Fix the pattern by separating the imports onto separate lines
-        $fixed = $content -replace 'Import-Module\s+"(^"*pwsh/modules/LabRunner^"*?)"\s+-Force\s+Import-Module\s+"(^"*pwsh/modules/CodeFixer^"*?)"\s+-Force', 
-            "Import-Module `"../pwsh/modules/LabRunner/`" -Force`n        Import-Module `"../pwsh/modules/CodeFixer/`" -Force"
+        $fixed = $content -replace 'Import-Module\s+"([^"]+)"\s+-Force\s+Import-Module\s+"([^"]+)"\s+-Force', 
+            "Import-Module `"$1`" -Force`n        Import-Module `"$2`" -Force"
         
         # Also handle any other similar patterns
-        $fixed = $fixed -replace 'Import-Module\s+"(^"*?)"\s+-Force\s+Import-Module\s+"(^"*?)"\s+-Force', 
-            "Import-Module `"`$1`" -Force`n        Import-Module `"`$2`" -Force"
+        $fixed = $fixed -replace 'Import-Module\s+"([^"]+)"\s+-Force\s+Import-Module\s+"([^"]+)"\s+-Force', 
+            "Import-Module `"$1`" -Force`n        Import-Module `"$2`" -Force"
         
         # Fix absolute paths to relative paths
-        $fixed = $fixed -replace 'Import-Module\s+"/pwsh/modules/(^/+)/"', '
+        $fixed = $fixed -replace 'Import-Module\s+"/pwsh/modules/([^/]+)/"', '
 
 Import-Module "../pwsh/modules/$1/"'
         
