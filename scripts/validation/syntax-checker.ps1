@@ -2,9 +2,9 @@
 # A comprehensive script to validate PowerShell and JSON files for syntax errors
 
 param(
-    [string]$RootPath = ".",
-    [switch]$FixIssues,
-    [switch]$Detailed
+    string$RootPath = ".",
+    switch$FixIssues,
+    switch$Detailed
 )
 
 
@@ -25,7 +25,7 @@ $issuesFound = @()
 
 # Function to test PowerShell file syntax
 function Test-PowerShellSyntax {
-    param([string]$FilePath)
+    param(string$FilePath)
     
     
 
@@ -39,11 +39,11 @@ $issues = @()
     try {
         # Method 1: AST Parser
         $errors = $null
-        $ast = [System.Management.Automation.Language.Parser]::ParseFile($FilePath, [ref]$null, [ref]$errors)
+        $ast = System.Management.Automation.Language.Parser::ParseFile($FilePath, ref$null, ref$errors)
         
         if ($errors -and $errors.Count -gt 0) {
             foreach ($error in $errors) {
-                $issues += [PSCustomObject]@{
+                $issues += PSCustomObject@{
                     File = $FilePath
                     Type = "PowerShell Syntax Error"
                     Line = $error.Extent.StartLineNumber
@@ -58,11 +58,11 @@ $issues = @()
         $content = Get-Content -Path $FilePath -Raw
         
         # Check for unmatched quotes
-        $singleQuotes = ($content -split "'" | Measure-Object).Count - 1
-        $doubleQuotes = ($content -split '"' | Measure-Object).Count - 1
+        $singleQuotes = ($content -split "'"  Measure-Object).Count - 1
+        $doubleQuotes = ($content -split '"'  Measure-Object).Count - 1
         
         if ($singleQuotes % 2 -ne 0) {
-            $issues += [PSCustomObject]@{
+            $issues += PSCustomObject@{
                 File = $FilePath
                 Type = "Unmatched Quotes"
                 Line = "Unknown"
@@ -75,12 +75,12 @@ $issues = @()
         # Check for common syntax patterns that cause issues
         $lines = Get-Content -Path $FilePath
         for ($i = 0; $i -lt $lines.Count; $i++) {
-            $line = $lines[$i]
+            $line = $lines$i
             $lineNum = $i + 1
             
             # Check for problematic string patterns
-            if ($line -match 'Read-LoggedInput\s+"[^"]*\$[^"]*"' -and $line -notmatch 'Read-LoggedInput\s+"[^"]*\$\{[^}]*\}[^"]*"') {
-                $issues += [PSCustomObject]@{
+            if ($line -match 'Read-LoggedInput\s+"^"*\$^"*"' -and $line -notmatch 'Read-LoggedInput\s+"^"*\$\{^}*\}^"*"') {
+                $issues += PSCustomObject@{
                     File = $FilePath
                     Type = "Variable in String"
                     Line = $lineNum
@@ -91,13 +91,13 @@ $issues = @()
             }
             
             # Check for missing closing braces
-            $openBraces = ($line -split '\{' | Measure-Object).Count - 1
-            $closeBraces = ($line -split '\}' | Measure-Object).Count - 1
+            $openBraces = ($line -split '\{'  Measure-Object).Count - 1
+            $closeBraces = ($line -split '\}'  Measure-Object).Count - 1
             
             if ($openBraces -ne $closeBraces -and ($openBraces -gt 0 -or $closeBraces -gt 0)) {
                 # This is a simplistic check - a more sophisticated version would track across lines
                 if ($Detailed) {
-                    $issues += [PSCustomObject]@{
+                    $issues += PSCustomObject@{
                         File = $FilePath
                         Type = "Brace Mismatch"
                         Line = $lineNum
@@ -110,7 +110,7 @@ $issues = @()
         }
         
     } catch {
-        $issues += [PSCustomObject]@{
+        $issues += PSCustomObject@{
             File = $FilePath
             Type = "Parse Exception"
             Line = "Unknown"
@@ -125,7 +125,7 @@ $issues = @()
 
 # Function to test JSON file syntax
 function Test-JsonSyntax {
-    param([string]$FilePath)
+    param(string$FilePath)
     
     
 
@@ -140,7 +140,7 @@ $issues = @()
         $content = Get-Content -Path $FilePath -Raw
         $null = ConvertFrom-Json $content -ErrorAction Stop
     } catch {
-        $issues += [PSCustomObject]@{
+        $issues += PSCustomObject@{
             File = $FilePath
             Type = "JSON Syntax Error"
             Line = "Unknown"
@@ -155,7 +155,7 @@ $issues = @()
 
 # Function to fix common issues
 function Fix-CommonIssues {
-    param([PSCustomObject]$Issue)
+    param(PSCustomObject$Issue)
     
     
 
@@ -169,7 +169,7 @@ if ($Issue.Type -eq "Variable in String" -and $Issue.File -match '\.ps1$') {
         
         $content = Get-Content -Path $Issue.File -Raw
         # Fix variable interpolation by using $() syntax
-        $fixedContent = $content -replace 'Read-LoggedInput\s+"([^"]*)\$([a-zA-Z_][a-zA-Z0-9_]*)([^"]*)"', 'Read-LoggedInput "$$1$$$($2)$$3"'
+        $fixedContent = $content -replace 'Read-LoggedInput\s+"(^"*)\$(a-zA-Z_a-zA-Z0-9_*)(^"*)"', 'Read-LoggedInput "$$1$$$($2)$$3"'
         
         if ($fixedContent -ne $content) {
             Set-Content -Path $Issue.File -Value $fixedContent -Encoding UTF8
@@ -183,7 +183,7 @@ if ($Issue.Type -eq "Variable in String" -and $Issue.File -match '\.ps1$') {
 
 # Scan PowerShell files
 Write-Host "Scanning PowerShell files..." -ForegroundColor Yellow
-$psFiles = Get-ChildItem -Path $RootPath -Recurse -Include "*.ps1", "*.psm1", "*.psd1" |
+$psFiles = Get-ChildItem -Path $RootPath -Recurse -Include "*.ps1", "*.psm1", "*.psd1" 
     Where-Object { 
         $_.FullName -notlike "*backup*" -and 
         $_.FullName -notlike "*archive*" -and
@@ -207,7 +207,7 @@ foreach ($file in $psFiles) {
 
 # Scan JSON files
 Write-Host "Scanning JSON files..." -ForegroundColor Yellow
-$jsonFiles = Get-ChildItem -Path $RootPath -Recurse -Include "*.json" |
+$jsonFiles = Get-ChildItem -Path $RootPath -Recurse -Include "*.json" 
     Where-Object { 
         $_.FullName -notlike "*backup*" -and 
         $_.FullName -notlike "*archive*" -and
@@ -225,11 +225,11 @@ Write-Host ""
 Write-Host "=== RESULTS ===" -ForegroundColor Cyan
 
 if ($issuesFound.Count -eq 0) {
-    Write-Host "✓ No syntax issues found!" -ForegroundColor Green
+    Write-Host " No syntax issues found!" -ForegroundColor Green
 } else {
     Write-Host "Found $($issuesFound.Count) issues:" -ForegroundColor Red
     
-    $grouped = $issuesFound | Group-Object Severity
+    $grouped = issuesFound | Group-Object Severity
     foreach ($group in $grouped) {
         Write-Host ""
         Write-Host "$($group.Name) Issues ($($group.Count)):" -ForegroundColor $(
@@ -242,7 +242,7 @@ if ($issuesFound.Count -eq 0) {
         )
         
         foreach ($issue in $group.Group) {
-            Write-Host "  [$($issue.Type)] $($issue.File):$($issue.Line)" -ForegroundColor Gray
+            Write-Host "  $($issue.Type) $($issue.File):$($issue.Line)" -ForegroundColor Gray
             Write-Host "    $($issue.Message)" -ForegroundColor Gray
             if ($issue.Text -and $issue.Text.Trim()) {
                 Write-Host "    Text: $($issue.Text)" -ForegroundColor DarkGray
@@ -264,6 +264,7 @@ Write-Host "JSON files: $($jsonFiles.Count)" -ForegroundColor White
 Write-Host "Issues found: $($issuesFound.Count)" -ForegroundColor White
 
 return $issuesFound.Count
+
 
 
 

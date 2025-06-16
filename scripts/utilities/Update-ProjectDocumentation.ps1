@@ -18,7 +18,7 @@
 #>
 
 param(
- [switch]$Force
+ switch$Force
 )
 
 $ErrorActionPreference = "Stop"
@@ -40,7 +40,7 @@ if (-not (Test-Path $manifestPath)) {
  }
 }
 
-$manifest = Get-Content $manifestPath | ConvertFrom-Json
+$manifest = Get-Content $manifestPath  ConvertFrom-Json
 
 # Update AGENTS.md
 $agentsPath = "$ProjectRoot/AGENTS.md"
@@ -69,7 +69,7 @@ $agentsContent = @"
 ## Current Capabilities
 
 ### Core Modules
-$( ($manifest.core.modules.PSObject.Properties | ForEach-Object {
+$( ($manifest.core.modules.PSObject.Properties  ForEach-Object {
  "- **$($_.Name)**: $($_.Value.description)"
 }) -join "`n" )
 
@@ -118,8 +118,7 @@ $functionsText
 ./scripts/validation/Invoke-YamlValidation.ps1 -Mode "Fix"
 
 # Comprehensive validation
-Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation//pwsh/modules/CodeFixer/" -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force
-Invoke-ComprehensiveValidation
+Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\pwsh/modules/CodeFixer/" -ForceInvoke-ComprehensiveValidation
 ```
 
 ## Architecture
@@ -129,7 +128,7 @@ Invoke-ComprehensiveValidation
 pwsh/modules/CodeFixer
 ├── LabRunner/ # Core lab automation
 ├── CodeFixer/ # Code analysis and repair
-└── [Dynamic modules] # Additional capabilities
+└── Dynamic modules # Additional capabilities
 ```
 
 ### Validation Pipeline
@@ -158,7 +157,7 @@ pwsh/modules/CodeFixer
 "@
 
 Set-Content $agentsPath $agentsContent -Encoding UTF8
-Write-Host "[PASS] Updated AGENTS.md" -ForegroundColor Green
+Write-Host "PASS Updated AGENTS.md" -ForegroundColor Green
 
 # Update .github/copilot-instructions.md
 $copilotPath = "$ProjectRoot/.github/copilot-instructions.md"
@@ -193,7 +192,7 @@ This is a cross-platform OpenTofu (Terraform alternative) lab automation project
 ## Current Architecture
 
 ### Module Locations (CRITICAL - Always Use These Paths)
-$( ($manifest.core.modules.PSObject.Properties | ForEach-Object {
+$( ($manifest.core.modules.PSObject.Properties  ForEach-Object {
  "- **$($_.Name)**: $($_.Value.path)"
 }) -join "`n" )
 
@@ -205,7 +204,7 @@ $copilotFunctionsText
 ### Always Use Project Manifest First
 ```powershell
 # Check current state before making changes
-`$manifest = Get-Content "./PROJECT-MANIFEST.json" | ConvertFrom-Json
+`$manifest = Get-Content "./PROJECT-MANIFEST.json"  ConvertFrom-Json
 `$manifest.core.modules # View all modules
 ```
 
@@ -281,12 +280,13 @@ $copilotFunctionsText
 "@
 
 Set-Content $copilotPath $copilotContent -Encoding UTF8
-Write-Host "[PASS] Updated copilot instructions" -ForegroundColor Green
+Write-Host "PASS Updated copilot instructions" -ForegroundColor Green
 
 Write-Host " Documentation update completed!" -ForegroundColor Green
 Write-Host " - Updated AGENTS.md with current project state" -ForegroundColor White
 Write-Host " - Updated .github/copilot-instructions.md with architecture" -ForegroundColor White
 Write-Host " - Integrated manifest data and performance metrics" -ForegroundColor White
+
 
 
 

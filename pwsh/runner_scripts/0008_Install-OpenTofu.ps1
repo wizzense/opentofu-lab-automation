@@ -1,4 +1,4 @@
-Param([object]$Config)
+Param(object$Config)
 
 
 
@@ -7,7 +7,7 @@ Param([object]$Config)
 
 
 
-Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation//pwsh/modules/LabRunner/" -Force -Force -Force -Force -Force -Force -Force# Param([pscustomobject]$Config)
+Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\pwsh/modules/LabRunner/" -Force# Param(pscustomobject$Config)
 
 
 
@@ -15,13 +15,13 @@ Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-autom
 
 
 
-# Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation//pwsh/modules/LabRunner/" -Force -Force -Force -Force -Force -Force -Force-Force.psd1')
+# Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\pwsh/modules/LabRunner/" -Force.psd1')
 
 Write-CustomLog "Starting $MyInvocation.MyCommand"
 
 function Install-OpenTofu {
-    [CmdletBinding()]
-    param([object]$Config)
+    CmdletBinding()
+    param(object$Config)
 
     
 
@@ -44,6 +44,7 @@ Invoke-LabStep -Config $Config -Body {
 
 if ($MyInvocation.InvocationName -ne '.') { Install-OpenTofu @PSBoundParameters }
 Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
+
 
 
 

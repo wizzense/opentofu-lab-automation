@@ -1,4 +1,4 @@
-Param([object]$Config)
+Param(object$Config)
 
 
 
@@ -6,7 +6,7 @@ Param([object]$Config)
 
 
 
-Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation//pwsh/modules/LabRunner/" -Force -Force -Force -Force -Force -Force -ForceWrite-CustomLog "Starting $MyInvocation.MyCommand"
+Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\pwsh/modules/LabRunner/" -ForceWrite-CustomLog "Starting $MyInvocation.MyCommand"
 
 Invoke-LabStep -Config $Config -Body {
     Write-CustomLog "Running $($MyInvocation.MyCommand.Name)"
@@ -18,7 +18,7 @@ Invoke-LabStep -Config $Config -Body {
     Write-CustomLog "Ensuring local path '$InfraPath' exists..."
     if (-not (Test-Path $InfraPath)) {
         Write-CustomLog "Path not found. Creating directory..."
-        New-Item -ItemType Directory -Path $InfraPath -Force | Out-Null
+        New-Item -ItemType Directory -Path $InfraPath -Force  Out-Null
     }
 
     # Clone or update repo
@@ -59,6 +59,7 @@ Invoke-LabStep -Config $Config -Body {
 }
 
 Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
+
 
 
 

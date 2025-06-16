@@ -29,7 +29,7 @@ High-level project status and milestone reports, including:
 
 Reports should follow this naming pattern:
 ```
-YYYY-MM-DD-[type]-[brief-description].md
+YYYY-MM-DD-type-brief-description.md
 ```
 
 Examples:

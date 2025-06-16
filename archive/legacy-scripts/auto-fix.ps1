@@ -7,25 +7,25 @@ Unified auto-fix script using CodeFixer module
 Simple wrapper around the CodeFixer module for comprehensive auto-fixing
 #>
 
-[CmdletBinding()]
+CmdletBinding()
 param(
-    [Parameter(Mandatory = $false)
+    Parameter(Mandatory = $false)
 
 
 
 
 
-]
-    [string]$Path = ".",
+
+    string$Path = ".",
     
-    [switch]$AutoFix,
-    [switch]$WhatIf,
-    [switch]$SkipValidation,
-    [switch]$CleanupRoot
+    switch$AutoFix,
+    switch$WhatIf,
+    switch$SkipValidation,
+    switch$CleanupRoot
 )
 
 # Display header
-Write-Host "🚀 Running OpenTofu Lab Automation Auto-Fix" -ForegroundColor Cyan
+Write-Host " Running OpenTofu Lab Automation Auto-Fix" -ForegroundColor Cyan
 Write-Host "=================================================" -ForegroundColor Cyan
 
 # Import CodeFixer module
@@ -80,7 +80,7 @@ try {
     Write-Warning "Comprehensive auto-fix error: $_"
 }
 
-Write-Host "✅ Auto-fix operations completed" -ForegroundColor Green
+Write-Host "PASS Auto-fix operations completed" -ForegroundColor Green
 
 
 

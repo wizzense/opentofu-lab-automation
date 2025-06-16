@@ -15,38 +15,38 @@
       "documentation": "docs"
     },
     "auto_tags": {
-      "*Test*.ps1": [
+      "*Test*.ps1": 
         "test",
         "powershell"
-      ],
-      "*.ps1": [
+      ,
+      "*.ps1": 
         "powershell",
         "script"
-      ],
-      "*report*.json": [
+      ,
+      "*report*.json": 
         "report",
         "generated"
-      ],
-      "*.json": [
+      ,
+      "*.json": 
         "json",
         "config"
-      ],
-      "*.md": [
+      ,
+      "*.md": 
         "documentation",
         "markdown"
-      ],
-      "*fix_*.ps1": [
+      ,
+      "*fix_*.ps1": 
         "legacy",
         "fix-script"
-      ],
-      "*.yml": [
+      ,
+      "*.yml": 
         "yaml",
         "config"
-      ],
-      "*.py": [
+      ,
+      "*.py": 
         "python",
         "script"
-      ]
+      
     }
   }
 }

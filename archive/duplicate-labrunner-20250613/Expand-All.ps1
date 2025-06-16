@@ -2,7 +2,7 @@
 function Expand-All {
     # Expand-All -ZipFile "C:\path\to\your\archive.zip"
     param(
-        [string]$ZipFile
+        string$ZipFile
     )
     
 
@@ -52,7 +52,7 @@ Read-Host $Prompt }
             Write-CustomLog "Operation canceled."
             return
         }
-        Get-ChildItem -Path $currentDir -Recurse -Filter *.zip | ForEach-Object {
+        Get-ChildItem -Path $currentDir -Recurse -Filter *.zip  ForEach-Object {
             $destination = Join-Path -Path $_.DirectoryName -ChildPath $_.BaseName
             Write-CustomLog "Expanding archive: $($_.FullName) to $destination"
             Expand-Archive -Path $_.FullName -DestinationPath $destination -Force

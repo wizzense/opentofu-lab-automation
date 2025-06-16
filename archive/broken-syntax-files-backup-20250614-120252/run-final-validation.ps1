@@ -24,11 +24,11 @@ Run comprehensive validation in CI mode
 Run quick validation checks only
 #>
 
-[CmdletBinding()]
+CmdletBinding()
 param(
-    [switch]$CI,
-    [switch]$Quick,
-    [switch]$Detailed
+    switch$CI,
+    switch$Quick,
+    switch$Detailed
 )
 
 # Define the base path
@@ -37,7 +37,7 @@ if (-not $basePath) {
     $basePath = Get-Location
 }
 
-Write-Host "🔍 Starting Final Validation..." -ForegroundColor Cyan
+Write-Host "� Starting Final Validation..." -ForegroundColor Cyan
 Write-Host "Base Path: $basePath" -ForegroundColor Gray
 
 # Initialize results
@@ -58,10 +58,10 @@ $results = @{
 # Function to add check result
 function Add-CheckResult {
     param(
-        [string]$Name,
-        [string]$Status,
-        [string]$Message = "",
-        [string[]]$Details = @()
+        string$Name,
+        string$Status,
+        string$Message = "",
+        string$Details = @()
     )
     
     $check = @{
@@ -78,16 +78,16 @@ function Add-CheckResult {
     switch ($Status) {
         "Passed" { 
             $results.Summary.Passed++
-            Write-Host "  ✅ $Name" -ForegroundColor Green
+            Write-Host "  PASS $Name" -ForegroundColor Green
         }        "Failed" { 
             $results.Summary.Failed++
             $results.Errors += "${Name}: ${Message}"
-            Write-Host "  ❌ $Name - $Message" -ForegroundColor Red
+            Write-Host "  FAIL $Name - $Message" -ForegroundColor Red
         }
         "Warning" { 
             $results.Summary.Warnings++
             $results.Warnings += "${Name}: ${Message}"
-            Write-Host "  ⚠️  $Name - $Message" -ForegroundColor Yellow
+            Write-Host "  WARN  $Name - $Message" -ForegroundColor Yellow
         }
     }
     
@@ -99,7 +99,7 @@ function Add-CheckResult {
 }
 
 # Check 1: Project Structure
-Write-Host "📁 Checking Project Structure..." -ForegroundColor Blue
+Write-Host "� Checking Project Structure..." -ForegroundColor Blue
 try {
     $requiredPaths = @(
         "pwsh/modules/CodeFixer",
@@ -128,7 +128,7 @@ try {
 }
 
 # Check 2: PowerShell Modules
-Write-Host "🔧 Checking PowerShell Modules..." -ForegroundColor Blue
+Write-Host " Checking PowerShell Modules..." -ForegroundColor Blue
 try {
     $moduleChecks = @()
     
@@ -158,7 +158,7 @@ try {
 }
 
 # Check 3: Python Setup
-Write-Host "🐍 Checking Python Setup..." -ForegroundColor Blue
+Write-Host "� Checking Python Setup..." -ForegroundColor Blue
 try {
     $pythonChecks = @()
     
@@ -191,11 +191,11 @@ try {
 }
 
 # Check 4: Workflow Health (Quick check)
-Write-Host "⚡ Checking Workflow Health..." -ForegroundColor Blue
+Write-Host " Checking Workflow Health..." -ForegroundColor Blue
 try {
     $workflowPath = Join-Path $basePath ".github/workflows"
     if (Test-Path $workflowPath) {
-        $workflowFiles = Get-ChildItem $workflowPath -Filter "*.yml" | Measure-Object
+        $workflowFiles = Get-ChildItem $workflowPath -Filter "*.yml"  Measure-Object
         $details = @("Found $($workflowFiles.Count) workflow files")
         
         # Quick YAML syntax check on a few key files
@@ -221,7 +221,7 @@ try {
 }
 
 # Check 5: Configuration Files
-Write-Host "⚙️  Checking Configuration..." -ForegroundColor Blue
+Write-Host "  Checking Configuration..." -ForegroundColor Blue
 try {
     $configChecks = @()
     
@@ -247,13 +247,13 @@ try {
 # Quick vs Detailed mode handling
 if (-not $Quick) {
     # Check 6: Test Framework (Detailed only)
-    Write-Host "🧪 Checking Test Framework..." -ForegroundColor Blue
+    Write-Host "� Checking Test Framework..." -ForegroundColor Blue
     try {
         $testChecks = @()
         
         $testPath = Join-Path $basePath "tests"
         if (Test-Path $testPath) {
-            $testFiles = Get-ChildItem $testPath -Filter "*.Tests.ps1" -Recurse | Measure-Object
+            $testFiles = Get-ChildItem $testPath -Filter "*.Tests.ps1" -Recurse  Measure-Object
             $testChecks += "Found $($testFiles.Count) test files"
             
             $helperPath = Join-Path $testPath "helpers"
@@ -280,7 +280,7 @@ if ($results.Summary.Failed -gt 0) {
 }
 
 # Final summary
-Write-Host "`n📊 Validation Summary:" -ForegroundColor Cyan
+Write-Host "`n Validation Summary:" -ForegroundColor Cyan
 Write-Host "  Total Checks: $($results.Summary.Total)" -ForegroundColor White
 Write-Host "  Passed: $($results.Summary.Passed)" -ForegroundColor Green
 Write-Host "  Failed: $($results.Summary.Failed)" -ForegroundColor Red
@@ -296,7 +296,7 @@ Write-Host "  Overall Status: $($results.Status)" -ForegroundColor $(
 
 # CI mode output
 if ($CI) {
-    $results | ConvertTo-Json -Depth 10
+    results | ConvertTo-Json -Depth 10
     
     # Exit with appropriate code for CI
     switch ($results.Status) {
@@ -306,17 +306,18 @@ if ($CI) {
         default { exit 1 }
     }
 } else {
-    Write-Host "`n✅ Final validation completed!" -ForegroundColor Green
+    Write-Host "`nPASS Final validation completed!" -ForegroundColor Green
     if ($results.Errors.Count -gt 0) {
-        Write-Host "`n❌ Errors found:" -ForegroundColor Red
+        Write-Host "`nFAIL Errors found:" -ForegroundColor Red
         foreach ($error in $results.Errors) {
             Write-Host "  - $error" -ForegroundColor Red
         }
     }
     if ($results.Warnings.Count -gt 0) {
-        Write-Host "`n⚠️  Warnings:" -ForegroundColor Yellow
+        Write-Host "`nWARN  Warnings:" -ForegroundColor Yellow
         foreach ($warning in $results.Warnings) {
             Write-Host "  - $warning" -ForegroundColor Yellow
         }
     }
 }
+

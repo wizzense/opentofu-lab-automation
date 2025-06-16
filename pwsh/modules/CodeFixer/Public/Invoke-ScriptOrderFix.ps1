@@ -26,22 +26,22 @@ Invoke-ScriptOrderFix -Path "pwsh/runner_scripts/"
 Invoke-ScriptOrderFix -Path "pwsh/runner_scripts/0001_Reset-Git.ps1" -WhatIf
 #>
 function Invoke-ScriptOrderFix {
- [CmdletBinding(SupportsShouldProcess)]
+ CmdletBinding(SupportsShouldProcess)
  param(
- [Parameter(Mandatory=$true, Position=0)
+ Parameter(Mandatory=$true, Position=0)
 
 
 
 
 
 
-]
- [string]$Path,
+
+ string$Path,
  
- [Parameter(Mandatory=$false)]
- [string]$Filter = "*.ps1",
+ Parameter(Mandatory=$false)
+ string$Filter = "*.ps1",
  
- [switch]$PassThru
+ switch$PassThru
  )
  
  $ErrorActionPreference = "Stop"
@@ -79,13 +79,13 @@ function Invoke-ScriptOrderFix {
  
  # Check if this script has the problematic pattern (Import-Module before Param)
  if ($lines.Count -ge 2 -and 
- $lines[0] -match "^Import-Module.*" -and 
- $lines[1] -match "^Param\(") {
+ $lines0 -match "^Import-Module.*" -and 
+ $lines1 -match "^Param\(") {
  
  Write-Verbose " Found Import-Module before Param block in $($file.Name)"
  
  # Extract the Import-Module line and Param block
- $importLine = $lines[0]
+ $importLine = $lines0
  
  # Find the end of the Param block
  $paramStart = 1
@@ -94,7 +94,7 @@ function Invoke-ScriptOrderFix {
  $inParam = $false
  
  for ($i = $paramStart; $i -lt $lines.Count; $i++) {
- $line = $lines[$i]
+ $line = $lines$i
  if ($line -match "^Param\(") {
  $inParam = $true
  }
@@ -109,18 +109,18 @@ function Invoke-ScriptOrderFix {
  }
  
  # Extract the Param block
- $paramBlock = $lines[$paramStart..$paramEnd] -join "`n"
+ $paramBlock = $lines$paramStart..$paramEnd -join "`n"
  
  # Reconstruct the content with Param block first
  $newContent = @()
  $newContent += $paramBlock
  $newContent += $importLine
- $newContent += $lines[($paramEnd + 1)..($lines.Count - 1)]
+ $newContent += $lines($paramEnd + 1)..($lines.Count - 1)
  
  # Apply fix
  if ($PSCmdlet.ShouldProcess($file.FullName, "Fix Import-Module/Param order")) {
- $newContent | Set-Content $file.FullName
- Write-Verbose " [PASS] Fixed: $($file.Name)"
+ newContent | Set-Content $file.FullName
+ Write-Verbose " PASS Fixed: $($file.Name)"
  $fixedFiles += $file.FullName
  } else {
  Write-Verbose " Would fix: $($file.Name) (WhatIf mode)"
@@ -136,6 +136,7 @@ function Invoke-ScriptOrderFix {
  return $fixedFiles
  }
 }
+
 
 
 

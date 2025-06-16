@@ -12,10 +12,10 @@ function Get-TestFailures {
     .SYNOPSIS
     Extracts test failures from a Pester test results file
     #>
-    [CmdletBinding()]
+    CmdletBinding()
     param(
-        [Parameter(Mandatory=$true)]
-        [string]$ResultsPath
+        Parameter(Mandatory=$true)
+        string$ResultsPath
     )
     
     if (-not (Test-Path $ResultsPath)) {
@@ -25,22 +25,22 @@ function Get-TestFailures {
     
     try {
         # Load the XML file
-        $testResults = [xml](Get-Content $ResultsPath)
+        $testResults = xml(Get-Content $ResultsPath)
         $failedTests = @()
         
         # Find all failed test cases
-        $testSuites = $testResults.SelectNodes("//test-case[@result='Failed' or @result='Error']")
+        $testSuites = $testResults.SelectNodes("//test-case@result='Failed' or @result='Error'")
         
         foreach ($test in $testSuites) {
-            $sourceFile = $test.SelectSingleNode("ancestor::test-suite[@type='TestFixture']/@name").Value
+            $sourceFile = $test.SelectSingleNode("ancestor::test-suite@type='TestFixture'/@name").Value
             $sourceScript = $null
             
             # Try to extract the source script from test content
             if ($sourceFile -match "\.Tests\.ps1$") {
                 try {
                     $testFileContent = Get-Content $sourceFile -Raw -ErrorAction SilentlyContinue
-                    if ($testFileContent -match "Get-RunnerScriptPath\s+['\""]([^'\""]+)['\""]\s*\)") {
-                        $sourceScript = $matches[1]
+                    if ($testFileContent -match "Get-RunnerScriptPath\s+'\""(^'\""+)'\""\s*\)") {
+                        $sourceScript = $matches1
                         $sourceScript = Get-RunnerScriptPath $sourceScript -ErrorAction SilentlyContinue
                     }
                 } catch {
@@ -49,12 +49,12 @@ function Get-TestFailures {
             }
             
             $stackTrace = $test.failure.message
-            $failedTests += [PSCustomObject]@{
+            $failedTests += PSCustomObject@{
                 SourceFile = $sourceFile
                 SourceScript = $sourceScript
                 TestName = $test.name
                 FailureMessage = $test.failure.message
-                ErrorLine = if ($stackTrace -match ":(\d+)") { $matches[1] } else { $null }
+                ErrorLine = if ($stackTrace -match ":(\d+)") { $matches1 } else { $null }
             }
         }
         
@@ -71,10 +71,10 @@ function Get-LintIssues {
     .SYNOPSIS
     Extracts lint issues from a PSScriptAnalyzer results file
     #>
-    [CmdletBinding()]
+    CmdletBinding()
     param(
-        [Parameter(Mandatory=$true)]
-        [string]$ResultsPath
+        Parameter(Mandatory=$true)
+        string$ResultsPath
     )
     
     if (-not (Test-Path $ResultsPath)) {
@@ -85,15 +85,15 @@ function Get-LintIssues {
     try {
         # Load the JSON file if available
         if ($ResultsPath -match "\.json$") {
-            $lintResults = Get-Content $ResultsPath -Raw | ConvertFrom-Json
+            $lintResults = Get-Content $ResultsPath -Raw  ConvertFrom-Json
         }
         # Or the XML file if that's what's available
         elseif ($ResultsPath -match "\.xml$") {
-            $lintResults = [xml](Get-Content $ResultsPath)
+            $lintResults = xml(Get-Content $ResultsPath)
             # Convert XML structure to objects
             $issues = @()
             foreach ($issue in $lintResults.SelectNodes("//Issue")) {
-                $issues += [PSCustomObject]@{
+                $issues += PSCustomObject@{
                     ScriptName = $issue.ScriptName
                     Line = $issue.Line
                     Column = $issue.Column
@@ -128,19 +128,19 @@ function Invoke-ValidationChecks {
     .SYNOPSIS
     Runs comprehensive validation checks on PowerShell scripts
     #>
-    [CmdletBinding()]
+    CmdletBinding()
     param(
-        [Parameter(Mandatory=$true)]
-        [string]$Path,
+        Parameter(Mandatory=$true)
+        string$Path,
         
-        [Parameter()]
-        [switch]$IncludeLint,
+        Parameter()
+        switch$IncludeLint,
         
-        [Parameter()]
-        [switch]$IncludeTests,
+        Parameter()
+        switch$IncludeTests,
         
-        [Parameter()]
-        [string]$OutputPath
+        Parameter()
+        string$OutputPath
     )
     
     $validationResults = @{
@@ -153,7 +153,7 @@ function Invoke-ValidationChecks {
     # Check for syntax errors
     Write-Verbose "Checking syntax for: $Path"
     try {
-        $null = [System.Management.Automation.PSParser]::Tokenize((Get-Content $Path -Raw), [ref]@())
+        $null = System.Management.Automation.PSParser::Tokenize((Get-Content $Path -Raw), ref@())
         Write-Verbose "Syntax check passed"
     }
     catch {
@@ -191,7 +191,7 @@ function Invoke-ValidationChecks {
     
     # Output to file if requested
     if ($OutputPath) {
-        $validationResults | ConvertTo-Json -Depth 5 | Set-Content $OutputPath
+        validationResults | ConvertTo-Json -Depth 5  Set-Content $OutputPath
     }
     
     return $validationResults
@@ -202,10 +202,10 @@ function Show-ValidationSummary {
     .SYNOPSIS
     Displays a formatted summary of validation results
     #>
-    [CmdletBinding()]
+    CmdletBinding()
     param(
-        [Parameter(Mandatory=$true)]
-        [object]$ValidationResults
+        Parameter(Mandatory=$true)
+        object$ValidationResults
     )
     
     Write-Host "`n=== Validation Summary ===" -ForegroundColor Yellow
@@ -229,7 +229,7 @@ function Show-ValidationSummary {
     
     # Show details for high-priority lint issues
     if ($ValidationResults.LintIssues.Count -gt 0) {
-        $criticalIssues = $ValidationResults.LintIssues | Where-Object { $_.Severity -eq 'Error' }
+        $criticalIssues = $ValidationResults.LintIssues  Where-Object { $_.Severity -eq 'Error' }
         if ($criticalIssues.Count -gt 0) {
             Write-Host "`n--- Critical Lint Issues ---" -ForegroundColor Red
             foreach ($issue in $criticalIssues) {
@@ -244,10 +244,10 @@ function Get-RunnerScriptPath {
     .SYNOPSIS
     Resolves the path to a runner script
     #>
-    [CmdletBinding()]
+    CmdletBinding()
     param(
-        [Parameter(Mandatory=$true)]
-        [string]$ScriptName
+        Parameter(Mandatory=$true)
+        string$ScriptName
     )
     
     # This is a placeholder function that would resolve script paths
@@ -266,3 +266,4 @@ function Get-RunnerScriptPath {
     
     return $ScriptName
 }
+

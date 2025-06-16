@@ -2,31 +2,31 @@
 # Enhanced Parallel Pester Test Runner
 # Provides faster test execution with parallel processing
 
-[CmdletBinding()]
+CmdletBinding()
 param(
- [Parameter()]
- [string]$TestPath = "./tests",
+ Parameter()
+ string$TestPath = "./tests",
  
- [Parameter()]
- [int]$MaxConcurrency = [Environment]::ProcessorCount,
+ Parameter()
+ int$MaxConcurrency = Environment::ProcessorCount,
  
- [Parameter()]
- [switch]$CI,
+ Parameter()
+ switch$CI,
  
- [Parameter()]
- [string]$OutputPath = "./coverage",
+ Parameter()
+ string$OutputPath = "./coverage",
  
- [Parameter()]
- [switch]$EnableCodeCoverage,
+ Parameter()
+ switch$EnableCodeCoverage,
  
- [Parameter()]
- [ValidateSet('Normal', 'Detailed', 'Minimal')]
- [string]$Verbosity = 'Normal'
+ Parameter()
+ ValidateSet('Normal', 'Detailed', 'Minimal')
+ string$Verbosity = 'Normal'
 )
 
 # Ensure output directory exists
 if (-not (Test-Path $OutputPath)) {
- New-Item -ItemType Directory -Path $OutputPath -Force | Out-Null
+ New-Item -ItemType Directory -Path $OutputPath -Force  Out-Null
 }
 
 Write-Host " Enhanced Parallel Pester Test Runner" -ForegroundColor Cyan
@@ -48,7 +48,7 @@ if (-not (Get-Command Start-ThreadJob -ErrorAction SilentlyContinue)) {
 
 # Discover test files
 Write-Host " Discovering test files in: $TestPath" -ForegroundColor Blue
-$testFiles = Get-ChildItem -Path $TestPath -Recurse -Filter "*.Tests.ps1" | Where-Object { $_.Name -notmatch '(integration|e2e)' }
+$testFiles = Get-ChildItem -Path $TestPath -Recurse -Filter "*.Tests.ps1"  Where-Object { $_.Name -notmatch '(integratione2e)' }
 
 if ($testFiles.Count -eq 0) {
  Write-Warning "No test files found in $TestPath"
@@ -62,10 +62,10 @@ foreach ($file in $testFiles) {
 
 # Group tests for parallel execution
 $testGroups = @()
-$groupSize = [math]::Max(1, [math]::Ceiling($testFiles.Count / $MaxConcurrency))
+$groupSize = math::Max(1, math::Ceiling($testFiles.Count / $MaxConcurrency))
 
 for ($i = 0; $i -lt $testFiles.Count; $i += $groupSize) {
- $group = $testFiles[$i..([math]::Min($i + $groupSize - 1, $testFiles.Count - 1))]
+ $group = $testFiles$i..(math::Min($i + $groupSize - 1, $testFiles.Count - 1))
  $testGroups += ,@($group)
 }
 
@@ -119,7 +119,7 @@ $testScriptBlock = {
  } catch {
  return @{
  Error = $_.Exception.Message
- TestFile = $TestGroup[0].Name
+ TestFile = $TestGroup0.Name
  Success = $false
  }
  }
@@ -139,7 +139,7 @@ $totalResults = @()
 $completed = 0
 
 while ($jobs.Count -gt 0) {
- $finishedJobs = $jobs | Where-Object { $_.State -eq 'Completed' -or $_.State -eq 'Failed' }
+ $finishedJobs = jobs | Where-Object { $_.State -eq 'Completed' -or $_.State -eq 'Failed' }
  
  foreach ($job in $finishedJobs) {
  $jobResults = Receive-Job $job -ErrorAction SilentlyContinue
@@ -148,10 +148,10 @@ while ($jobs.Count -gt 0) {
  }
  
  Remove-Job $job
- $jobs = $jobs | Where-Object { $_.Id -ne $job.Id }
+ $jobs = jobs | Where-Object { $_.Id -ne $job.Id }
  $completed++
  
- $percentComplete = [math]::Round(($completed / $testGroups.Count) * 100, 1)
+ $percentComplete = math::Round(($completed / $testGroups.Count) * 100, 1)
  Write-Progress -Activity "Running Parallel Tests" -Status "$completed of $($testGroups.Count) groups completed" -PercentComplete $percentComplete
  }
  
@@ -163,30 +163,30 @@ while ($jobs.Count -gt 0) {
 Write-Progress -Activity "Running Parallel Tests" -Completed
 
 # Calculate summary statistics
-$totalPassed = ($totalResults | Measure-Object -Property Passed -Sum).Sum
-$totalFailed = ($totalResults | Measure-Object -Property Failed -Sum).Sum
-$totalSkipped = ($totalResults | Measure-Object -Property Skipped -Sum).Sum
-$totalDuration = ($totalResults | Measure-Object -Property Duration -Sum).Sum
-$successfulTests = ($totalResults | Where-Object { $_.Success -eq $true }).Count
-$failedTests = ($totalResults | Where-Object { $_.Success -eq $false }).Count
+$totalPassed = (totalResults | Measure-Object -Property Passed -Sum).Sum
+$totalFailed = (totalResults | Measure-Object -Property Failed -Sum).Sum
+$totalSkipped = (totalResults | Measure-Object -Property Skipped -Sum).Sum
+$totalDuration = (totalResults | Measure-Object -Property Duration -Sum).Sum
+$successfulTests = (totalResults | Where-Object { $_.Success -eq $true }).Count
+$failedTests = (totalResults | Where-Object { $_.Success -eq $false }).Count
 
 # Display results
 Write-Host "`n Parallel Test Execution Results" -ForegroundColor Cyan
 Write-Host "===================================" -ForegroundColor Cyan
-Write-Host "[PASS] Passed: $totalPassed" -ForegroundColor Green
-Write-Host "[FAIL] Failed: $totalFailed" -ForegroundColor Red
+Write-Host "PASS Passed: $totalPassed" -ForegroundColor Green
+Write-Host "FAIL Failed: $totalFailed" -ForegroundColor Red
 Write-Host "⏭ Skipped: $totalSkipped" -ForegroundColor Yellow
-Write-Host " Duration: $([math]::Round($totalDuration, 2)) seconds" -ForegroundColor Blue
+Write-Host " Duration: $(math::Round($totalDuration, 2)) seconds" -ForegroundColor Blue
 Write-Host "� Test Files: $successfulTests successful, $failedTests failed" -ForegroundColor Cyan
 
 # Performance comparison
-$estimatedSequentialTime = ($totalResults | Measure-Object -Property Duration -Sum).Sum
+$estimatedSequentialTime = (totalResults | Measure-Object -Property Duration -Sum).Sum
 $actualParallelTime = $totalDuration
-$speedupRatio = if ($actualParallelTime -gt 0) { [math]::Round($estimatedSequentialTime / $actualParallelTime, 2) } else { 1 }
+$speedupRatio = if ($actualParallelTime -gt 0) { math::Round($estimatedSequentialTime / $actualParallelTime, 2) } else { 1 }
 
 Write-Host "`n Performance Improvement" -ForegroundColor Magenta
-Write-Host "Estimated Sequential Time: $([math]::Round($estimatedSequentialTime, 2)) seconds" -ForegroundColor Gray
-Write-Host "Actual Parallel Time: $([math]::Round($actualParallelTime, 2)) seconds" -ForegroundColor Gray
+Write-Host "Estimated Sequential Time: $(math::Round($estimatedSequentialTime, 2)) seconds" -ForegroundColor Gray
+Write-Host "Actual Parallel Time: $(math::Round($actualParallelTime, 2)) seconds" -ForegroundColor Gray
 Write-Host "Speedup Ratio: ${speedupRatio}x faster" -ForegroundColor Green
 
 # Output detailed results if requested
@@ -194,9 +194,9 @@ if ($Verbosity -eq 'Detailed') {
  Write-Host "`n Detailed Test Results" -ForegroundColor Blue
  foreach ($result in $totalResults) {
  if ($result.Success) {
- Write-Host "[PASS] $($result.TestFile): $($result.Passed) passed, $($result.Failed) failed ($([math]::Round($result.Duration, 2))s)" -ForegroundColor Green
+ Write-Host "PASS $($result.TestFile): $($result.Passed) passed, $($result.Failed) failed ($(math::Round($result.Duration, 2))s)" -ForegroundColor Green
  } else {
- Write-Host "[FAIL] $($result.TestFile): ERROR - $($result.Error)" -ForegroundColor Red
+ Write-Host "FAIL $($result.TestFile): ERROR - $($result.Error)" -ForegroundColor Red
  }
  }
 }
@@ -214,7 +214,7 @@ if ($resultFiles.Count -gt 0) {
  foreach ($file in $resultFiles) {
  $content = Get-Content $file.FullName -Raw
  if ($content -match '<test-suite.*?</test-suite>') {
- $combinedXml += $matches[0]
+ $combinedXml += $matches0
  }
  }
  
@@ -230,3 +230,4 @@ if ($totalFailed -gt 0) {
  Write-Host "`n All tests passed!" -ForegroundColor Green
  exit 0
 }
+

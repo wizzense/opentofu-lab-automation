@@ -10,7 +10,7 @@
 #>
 
 param(
-    [switch]$Force
+    switch$Force
 )
 
 Set-StrictMode -Version Latest
@@ -39,7 +39,7 @@ if ($loadedPester) {
 $availablePester = Get-Module -ListAvailable Pester
 Write-Host "`nAvailable Pester versions:" -ForegroundColor Cyan
 foreach ($version in $availablePester) {
-    $status = if ($version.Version -eq "5.7.1") { "[PREFERRED]" } else { "[OLD]" }
+    $status = if ($version.Version -eq "5.7.1") { "PREFERRED" } else { "OLD" }
     Write-Host "  $($version.Version) - $($version.Path) $status" -ForegroundColor $(if ($version.Version -eq "5.7.1") { "Green" } else { "Yellow" })
 }
 
@@ -53,9 +53,9 @@ try {
     $testFunctions = @('Invoke-Pester', 'Describe', 'It', 'Should')
     foreach ($func in $testFunctions) {
         if (Get-Command $func -ErrorAction SilentlyContinue) {
-            Write-Host "  ✓ $func available" -ForegroundColor Green
+            Write-Host "   $func available" -ForegroundColor Green
         } else {
-            Write-Warning "  ✗ $func not available"
+            Write-Warning "   $func not available"
         }
     }
     

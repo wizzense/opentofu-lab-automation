@@ -24,7 +24,7 @@
 
 ### 4. PowerShell Script Issues
 - **Fixed**: Corrected `0201_Install-NodeCore.ps1` script structure:
- - Moved `Param([object]$Config)` block to the top of the script
+ - Moved `Param(object$Config)` block to the top of the script
  - Ensured proper script-level parameter handling
 
 ### 5. Pester Installation Consistency
@@ -39,11 +39,11 @@
 
 ## Validation Results
 
-[PASS] **All workflow files now have valid YAML syntax**
-[PASS] **All PowerShell scripts can be loaded without errors** 
-[PASS] **Pester configuration loads successfully**
-[PASS] **Test helpers load and function correctly**
-[PASS] **Required directories exist**
+PASS **All workflow files now have valid YAML syntax**
+PASS **All PowerShell scripts can be loaded without errors** 
+PASS **Pester configuration loads successfully**
+PASS **Test helpers load and function correctly**
+PASS **Required directories exist**
 
 ## Next Steps
 

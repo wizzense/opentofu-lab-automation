@@ -29,13 +29,13 @@ foreach ($script in $scripts) {
     
     # Check if this script has the problematic pattern
     if ($lines.Count -ge 2 -and 
-        $lines[0] -match "^Import-Module.*LabRunner.*-Force" -and 
-        $lines[1] -match "^Param\(") {
+        $lines0 -match "^Import-Module.*LabRunner.*-Force" -and 
+        $lines1 -match "^Param\(") {
         
-        Write-Host "  🔧 FIXING: Moving Import-Module after Param block" -ForegroundColor Yellow
+        Write-Host "   FIXING: Moving Import-Module after Param block" -ForegroundColor Yellow
         
         # Extract the Import-Module line and Param block
-        $importLine = $lines[0]
+        $importLine = $lines0
         
         # Find the end of the Param block
         $paramStart = 1
@@ -44,7 +44,7 @@ foreach ($script in $scripts) {
         $inParam = $false
         
         for ($i = $paramStart; $i -lt $lines.Count; $i++) {
-            $line = $lines[$i]
+            $line = $lines$i
             if ($line -match "^Param\(") {
                 $inParam = $true
             }
@@ -63,7 +63,7 @@ foreach ($script in $scripts) {
         
         # Add Param block first
         for ($i = $paramStart; $i -le $paramEnd; $i++) {
-            $newLines += $lines[$i]
+            $newLines += $lines$i
         }
         
         # Add Import-Module after Param block
@@ -71,26 +71,26 @@ foreach ($script in $scripts) {
         
         # Add the rest of the file (skip original import and param)
         for ($i = $paramEnd + 1; $i -lt $lines.Count; $i++) {
-            $newLines += $lines[$i]
+            $newLines += $lines$i
         }
         
         # Write the fixed content
         $newContent = $newLines -join "`n"
         Set-Content -Path $script.FullName -Value $newContent -NoNewline
         
-        Write-Host "  ✅ FIXED: $($script.Name)" -ForegroundColor Green
+        Write-Host "  PASS FIXED: $($script.Name)" -ForegroundColor Green
         $fixedCount++
         
     } else {
-        Write-Host "  ⏭️  SKIPPED: No fix needed for $($script.Name)" -ForegroundColor Gray
+        Write-Host "  ⏭  SKIPPED: No fix needed for $($script.Name)" -ForegroundColor Gray
         $skippedCount++
     }
 }
 
 Write-Host "`n=== Fix Complete ===" -ForegroundColor Cyan
-Write-Host "✅ Fixed: $fixedCount scripts" -ForegroundColor Green
-Write-Host "⏭️  Skipped: $skippedCount scripts" -ForegroundColor Gray
-Write-Host "🎯 All PowerShell syntax errors should now be resolved!" -ForegroundColor Green -BackgroundColor Black
+Write-Host "PASS Fixed: $fixedCount scripts" -ForegroundColor Green
+Write-Host "⏭  Skipped: $skippedCount scripts" -ForegroundColor Gray
+Write-Host " All PowerShell syntax errors should now be resolved!" -ForegroundColor Green -BackgroundColor Black
 Import-Module (Join-Path $PSScriptRoot "pwsh/modules/CodeFixer/CodeFixer.psd1") -Force
 
 

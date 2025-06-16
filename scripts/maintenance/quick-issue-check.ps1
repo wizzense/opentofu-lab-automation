@@ -19,14 +19,14 @@ Attempt to automatically fix found issues
 ./scripts/maintenance/quick-issue-check.ps1 -Target "KnownIssues"
 #>
 
-[CmdletBinding()]
+CmdletBinding()
 param(
- [Parameter()]
- [ValidateSet('KnownIssues', 'RecentFailures', 'CriticalComponents', 'All')]
- [string]$Target = "KnownIssues",
+ Parameter()
+ ValidateSet('KnownIssues', 'RecentFailures', 'CriticalComponents', 'All')
+ string$Target = "KnownIssues",
  
- [Parameter()]
- [switch]$AutoFix
+ Parameter()
+ switch$AutoFix
 )
 
 $ErrorActionPreference = "Stop"
@@ -38,7 +38,7 @@ if ($IsWindows -or $env:OS -eq "Windows_NT") {
 }
 
 function Write-QuickLog {
- param([string]$Message, [string]$Level = "INFO")
+ param(string$Message, string$Level = "INFO")
  $timestamp = Get-Date -Format "HH:mm:ss"
  $color = switch ($Level) {
  "INFO" { "Cyan" }
@@ -48,7 +48,7 @@ function Write-QuickLog {
  "FIX" { "Magenta" }
  default { "White" }
  }
- Write-Host "[$timestamp] [$Level] $Message" -ForegroundColor $color
+ Write-Host "$timestamp $Level $Message" -ForegroundColor $color
 }
 
 # Known problematic components from previous analyses
@@ -77,22 +77,22 @@ function Test-KnownCommands {
  if (Test-Path $testHelpersPath) {
  try {
  . $testHelpersPath
- Write-QuickLog "✓ TestHelpers.ps1 sourced for mock functions" "SUCCESS"
+ Write-QuickLog " TestHelpers.ps1 sourced for mock functions" "SUCCESS"
  }
  catch {
- Write-QuickLog "[WARN] Failed to source TestHelpers.ps1: $($_.Exception.Message)" "WARNING"
+ Write-QuickLog "WARN Failed to source TestHelpers.ps1: $($_.Exception.Message)" "WARNING"
  }
  }
  
  $issues = @()
  foreach ($cmd in $KnownIssues.MissingCommands) {
  try {
- Get-Command $cmd -ErrorAction Stop | Out-Null
- Write-QuickLog "✓ Command '$cmd' is available" "SUCCESS"
+ Get-Command $cmd -ErrorAction Stop  Out-Null
+ Write-QuickLog " Command '$cmd' is available" "SUCCESS"
  }
  catch {
  $issues += "Missing command: $cmd"
- Write-QuickLog "✗ Command '$cmd' is missing" "ERROR"
+ Write-QuickLog " Command '$cmd' is missing" "ERROR"
  }
  }
  
@@ -106,12 +106,12 @@ function Test-SyntaxErrors {
  foreach ($file in $KnownIssues.SyntaxErrors) {
  if (Test-Path $file) {
  try {
- $null = [System.Management.Automation.PSParser]::Tokenize((Get-Content $file -Raw), [ref]$null)
- Write-QuickLog "✓ Syntax OK: $(Split-Path $file -Leaf)" "SUCCESS"
+ $null = System.Management.Automation.PSParser::Tokenize((Get-Content $file -Raw), ref$null)
+ Write-QuickLog " Syntax OK: $(Split-Path $file -Leaf)" "SUCCESS"
  }
  catch {
  $issues += "Syntax error in: $file"
- Write-QuickLog "✗ Syntax error: $(Split-Path $file -Leaf)" "ERROR"
+ Write-QuickLog " Syntax error: $(Split-Path $file -Leaf)" "ERROR"
  }
  }
  }
@@ -129,10 +129,10 @@ function Test-ImportPaths {
  $content = Get-Content $file.FullName -Raw
  if ($content -match 'Import-Module.*lab_utils') {
  $issues += "Outdated import path in: $($file.Name)"
- Write-QuickLog "✗ Outdated import: $($file.Name)" "ERROR"
+ Write-QuickLog " Outdated import: $($file.Name)" "ERROR"
  }
  else {
- Write-QuickLog "✓ Import paths OK: $($file.Name)" "SUCCESS"
+ Write-QuickLog " Import paths OK: $($file.Name)" "SUCCESS"
  }
  }
  
@@ -152,10 +152,10 @@ function Test-CriticalComponents {
  foreach ($file in $criticalFiles) {
  if (-not (Test-Path $file)) {
  $issues += "Missing critical file: $file"
- Write-QuickLog "✗ Missing: $(Split-Path $file -Leaf)" "ERROR"
+ Write-QuickLog " Missing: $(Split-Path $file -Leaf)" "ERROR"
  }
  else {
- Write-QuickLog "✓ Present: $(Split-Path $file -Leaf)" "SUCCESS"
+ Write-QuickLog " Present: $(Split-Path $file -Leaf)" "SUCCESS"
  }
  }
  
@@ -163,7 +163,7 @@ function Test-CriticalComponents {
 }
 
 function Invoke-AutoFix {
- param([array]$Issues)
+ param(array$Issues)
  
  if (-not $AutoFix -or $Issues.Count -eq 0) { return }
  
@@ -175,19 +175,19 @@ function Invoke-AutoFix {
  
  switch -Regex ($issue) {
  "Missing command: (.+)" {
- $cmd = $Matches[1]
+ $cmd = $Matches1
  Write-QuickLog "Adding mock for command: $cmd" "FIX"
  Add-MissingCommandMock $cmd
  $fixedCount++
  }
  "Syntax error in: (.+)" {
- $file = $Matches[1]
+ $file = $Matches1
  Write-QuickLog "Running syntax fix on: $(Split-Path $file -Leaf)" "FIX"
  Fix-SyntaxError $file
  $fixedCount++
  }
  "Outdated import path in: (.+)" {
- $file = $Matches[1]
+ $file = $Matches1
  Write-QuickLog "Fixing import path in: $file" "FIX"
  Fix-ImportPath $file
  $fixedCount++
@@ -199,12 +199,12 @@ function Invoke-AutoFix {
  }
  
  if ($fixedCount -gt 0) {
- Write-QuickLog "[PASS] Auto-fixed $fixedCount out of $($Issues.Count) issues" "SUCCESS"
+ Write-QuickLog "PASS Auto-fixed $fixedCount out of $($Issues.Count) issues" "SUCCESS"
  }
 }
 
 function Add-MissingCommandMock {
- param([string]$CommandName)
+ param(string$CommandName)
  
  $testHelpersPath = "$ProjectRoot/tests/helpers/TestHelpers.ps1"
  if (-not (Test-Path $testHelpersPath)) { return }
@@ -215,39 +215,39 @@ function Add-MissingCommandMock {
 
 # Auto-generated mock for missing command: $CommandName
 function global:$CommandName {
- param([Parameter(ValueFromRemainingArguments)][string[]]`$Arguments)
+ param(Parameter(ValueFromRemainingArguments)string`$Arguments)
  Write-Host "Mock $CommandName called with: `$Arguments" -ForegroundColor Yellow
  return `$true
 }
 "@
  $content += $mockFunction
- $content | Out-File $testHelpersPath -Encoding UTF8
- Write-QuickLog "[PASS] Added mock function for '$CommandName'" "SUCCESS"
+ content | Out-File $testHelpersPath -Encoding UTF8
+ Write-QuickLog "PASS Added mock function for '$CommandName'" "SUCCESS"
  }
 }
 
 function Fix-SyntaxError {
- param([string]$FilePath)
+ param(string$FilePath)
  
  try {
  pwsh -File "$ProjectRoot/scripts/fix-test-syntax.ps1" -FilePath $FilePath -ErrorAction SilentlyContinue
- Write-QuickLog "[PASS] Syntax fix applied to $(Split-Path $FilePath -Leaf)" "SUCCESS"
+ Write-QuickLog "PASS Syntax fix applied to $(Split-Path $FilePath -Leaf)" "SUCCESS"
  } catch {
- Write-QuickLog "[FAIL] Failed to fix syntax in $(Split-Path $FilePath -Leaf)`: $($_.Exception.Message)" "ERROR"
+ Write-QuickLog "FAIL Failed to fix syntax in $(Split-Path $FilePath -Leaf)`: $($_.Exception.Message)" "ERROR"
  }
 }
 
 function Fix-ImportPath {
- param([string]$FileName)
+ param(string$FileName)
  
- $filePath = Get-ChildItem "$ProjectRoot/tests" -Name $FileName -Recurse | Select-Object -First 1
+ $filePath = Get-ChildItem "$ProjectRoot/tests" -Name $FileName -Recurse  Select-Object -First 1
  if ($filePath) {
  try {
  pwsh -File "$ProjectRoot/fix-import-issues.ps1" -TargetFile $filePath.FullName -ErrorAction SilentlyContinue
- Write-QuickLog "[PASS] Import path fixed in $FileName" "SUCCESS"
+ Write-QuickLog "PASS Import path fixed in $FileName" "SUCCESS"
  }
  catch {
- Write-QuickLog "[FAIL] Failed to fix imports in $FileName`: $($_.Exception.Message)" "ERROR"
+ Write-QuickLog "FAIL Failed to fix imports in $FileName`: $($_.Exception.Message)" "ERROR"
  }
  }
 }
@@ -278,11 +278,11 @@ try {
  }
  
  if ($allIssues.Count -eq 0) {
- Write-QuickLog "✓ No issues found in $Target check!" "SUCCESS"
+ Write-QuickLog " No issues found in $Target check!" "SUCCESS"
  }
  else {
  Write-QuickLog "Found $($allIssues.Count) issues:" "WARNING"
- $allIssues | ForEach-Object { Write-QuickLog " - $_" "ERROR" }
+ allIssues | ForEach-Object { Write-QuickLog " - $_" "ERROR" }
  
  Invoke-AutoFix $allIssues
  }
@@ -297,13 +297,14 @@ try {
  
  $cacheDir = "$ProjectRoot/docs/reports/issue-tracking"
  if (-not (Test-Path $cacheDir)) {
- New-Item -Path $cacheDir -ItemType Directory -Force | Out-Null
+ New-Item -Path $cacheDir -ItemType Directory -Force  Out-Null
  }
  
- $results | ConvertTo-Json -Depth 3 | Out-File "$cacheDir/last-quick-check.json" -Encoding UTF8
+ results | ConvertTo-Json -Depth 3  Out-File "$cacheDir/last-quick-check.json" -Encoding UTF8
  Write-QuickLog "Results cached for future reference" "INFO"
 }
 catch {
  Write-QuickLog "Quick check failed: $($_.Exception.Message)" "ERROR"
  exit 1
 }
+

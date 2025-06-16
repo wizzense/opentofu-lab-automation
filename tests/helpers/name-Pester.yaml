@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   pull_request:
   push:
-    branches: [ main ]
+    branches:  main 
 
 jobs:
   pester:
@@ -12,7 +12,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-latest, ubuntu-latest, macos-latest]
+        os: windows-latest, ubuntu-latest, macos-latest
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
@@ -22,16 +22,16 @@ jobs:
       - name: Install PowerShell
         if: runner.os != 'Windows'
         shell: bash
-        run: |
+        run: 
           if ! command -v pwsh >/dev/null 2>&1; then
-            if [[ "$RUNNER_OS" == "Linux" ]]; then
+            if  "$RUNNER_OS" == "Linux" ; then
               sudo apt-get update
               sudo apt-get install -y wget apt-transport-https software-properties-common
               wget -q https://packages.microsoft.com/config/ubuntu/22.04/packages-microsoft-prod.deb
               sudo dpkg -i packages-microsoft-prod.deb
               sudo apt-get update
               sudo apt-get install -y powershell
-            elif [[ "$RUNNER_OS" == "macOS" ]]; then
+            elif  "$RUNNER_OS" == "macOS" ; then
               brew install --cask powershell
             fi
           fi
@@ -39,7 +39,7 @@ jobs:
         if: runner.os == 'Windows'
         uses: actions/cache@v4
         with:
-          path: |
+          path: 
             C:\\Users\\runneradmin\\Documents\\WindowsPowerShell\\Modules
             C:\\Users\\runneradmin\\Documents\\PowerShell\\Modules
           key: windows-pwsh-modules-${{ hashFiles('.github/actions/lint/requirements.txt') }}
@@ -54,7 +54,7 @@ jobs:
       - name: Remove old Pester (Windows)
         if: runner.os == 'Windows'
         shell: pwsh
-        run: |
+        run: 
           # Remove all Pester modules from all possible locations
           $pesterPaths = @(
             "$env:USERPROFILE\Documents\WindowsPowerShell\Modules\Pester",
@@ -64,7 +64,7 @@ jobs:
           )
           
           # Unload any loaded Pester modules
-          Get-Module Pester | Remove-Module -Force -ErrorAction SilentlyContinue
+          Get-Module Pester  Remove-Module -Force -ErrorAction SilentlyContinue
           
           # Remove module directories
           foreach ($path in $pesterPaths) {
@@ -75,7 +75,7 @@ jobs:
           }
           
           # Also remove from PSModulePath locations
-          $env:PSModulePath -split ';' | ForEach-Object {
+          $env:PSModulePath -split ';'  ForEach-Object {
             $pesterPath = Join-Path $_ 'Pester'
             if (Test-Path $pesterPath) {
               Write-Host "Removing Pester from PSModulePath: $pesterPath"
@@ -84,16 +84,16 @@ jobs:
           }
       - name: Install Pester
         shell: pwsh
-        run: |
+        run: 
           # Force a fresh PowerShell session by using pwsh -Command
           pwsh -Command "Install-Module -Name Pester -RequiredVersion 5.7.1 -Force -Scope CurrentUser -AllowClobber"
       - name: Install powershell-yaml
         shell: pwsh
-        run: |
+        run: 
           Install-Module -Name powershell-yaml -Force -Scope CurrentUser
       - name: Verify test helpers
         shell: pwsh
-        run: |
+        run: 
           . ./tests/helpers/Get-ScriptAst.ps1
           if (-not (Get-Command Get-ScriptAst -ErrorAction SilentlyContinue)) {
               Write-Error 'Get-ScriptAst helper not loaded'
@@ -101,29 +101,29 @@ jobs:
           }
       - name: Ensure coverage directory
         shell: pwsh
-        run: |
+        run: 
           if (-not (Test-Path coverage)) {
-              New-Item -ItemType Directory -Path coverage | Out-Null
+              New-Item -ItemType Directory -Path coverage  Out-Null
           }
       - name: Run Pester
         id: pester
         continue-on-error: true
         shell: pwsh
-        run: |
+        run: 
           $cfg = New-PesterConfiguration -Hashtable (Import-PowerShellDataFile 'tests/PesterConfiguration.psd1')
 
           $coveragePaths = @($cfg.CodeCoverage.Path.Value)
           $coveragePaths += 'tools/iso'
-          $cfg.CodeCoverage.Path = [Pester.StringArrayOption]::new($coveragePaths)
+          $cfg.CodeCoverage.Path = Pester.StringArrayOption::new($coveragePaths)
 
           $repoRoot = $env:GITHUB_WORKSPACE
           $cfg.TestResult.OutputPath   = Join-Path $repoRoot 'coverage/testResults.xml'
           $cfg.CodeCoverage.OutputPath = Join-Path $repoRoot 'coverage/coverage.xml'
           $logPath = Join-Path $repoRoot 'coverage/pester.log'
 
-          Invoke-Pester -Configuration $cfg -ErrorAction Stop 2>&1 | Tee-Object -FilePath $logPath
+          Invoke-Pester -Configuration $cfg -ErrorAction Stop 2>&1  Tee-Object -FilePath $logPath
 
-          "pester_exit_code=$LASTEXITCODE" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+          "pester_exit_code=$LASTEXITCODE"  Out-File -FilePath $env:GITHUB_OUTPUT -Append
       - name: Upload Pester log
         if: always()
         uses: actions/upload-artifact@v4
@@ -152,34 +152,34 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-latest]
+        os: windows-latest
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
       - name: Configure Node flags
         shell: pwsh
-        run: |
+        run: 
           $cfgPath = 'configs/config_files/default-config.json'
-          $cfg = Get-Content $cfgPath | ConvertFrom-Json
+          $cfg = Get-Content $cfgPath  ConvertFrom-Json
           $cfg.Node_Dependencies.InstallNode = $true
           $cfg.Node_Dependencies.InstallNpm  = $true
-          $cfg | ConvertTo-Json -Depth 10 | Set-Content $cfgPath
+          $cfg  ConvertTo-Json -Depth 10  Set-Content $cfgPath
       - name: Install Node core
         shell: pwsh
-        run: |
-          $cfg = Get-Content 'configs/config_files/default-config.json' | ConvertFrom-Json
+        run: 
+          $cfg = Get-Content 'configs/config_files/default-config.json'  ConvertFrom-Json
           . ./pwsh/runner_scripts/0201_Install-NodeCore.ps1
           Install-NodeCore -Config $cfg
       - name: Install global packages
         shell: pwsh
-        run: |
-          $cfg = Get-Content 'configs/config_files/default-config.json' | ConvertFrom-Json
+        run: 
+          $cfg = Get-Content 'configs/config_files/default-config.json'  ConvertFrom-Json
           . ./pwsh/runner_scripts/0202_Install-NodeGlobalPackages.ps1
           Install-NodeGlobalPackages -Config $cfg
       - name: Verify Node and packages
         shell: pwsh
-        run: |
-          $cfg = Get-Content 'configs/config_files/default-config.json' | ConvertFrom-Json
+        run: 
+          $cfg = Get-Content 'configs/config_files/default-config.json'  ConvertFrom-Json
           node --version
           $packages = $cfg.Node_Dependencies.GlobalPackages
           foreach ($pkg in $packages) {

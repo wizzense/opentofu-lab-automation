@@ -5,7 +5,7 @@ This script automates the installation of Visual Studio Code on a Windows system
 ## Usage
 
 ```powershell
-Param([object]$Config)
+Param(object$Config)
 Import-Module "$PSScriptRoot/../lab_utils/LabRunner/LabRunner.psd1"
 ```
 - The script expects a configuration object (`$Config`) as input.
@@ -32,4 +32,4 @@ $Config = @{ InstallVSCode = $true }
 
 ## Related
 - See other runner scripts in `/pwsh/runner_scripts/` for similar automation tasks.
-- See the [testing documentation](../docs/testing.md) for how this script is tested with Pester.
+- See the testing documentation(../docs/testing.md) for how this script is tested with Pester.

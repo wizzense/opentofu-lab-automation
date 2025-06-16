@@ -26,24 +26,24 @@ New-AutoTest -ScriptPath "pwsh/runner_scripts/0201_Install-Docker.ps1"
 New-AutoTest -ScriptPath "pwsh/runner_scripts/0300_Enable-Service.ps1" -Force
 #>
 function New-AutoTest {
- [CmdletBinding(SupportsShouldProcess)]
+ CmdletBinding(SupportsShouldProcess)
  param(
- [Parameter(Mandatory=$true, Position=0)
+ Parameter(Mandatory=$true, Position=0)
 
 
 
 
 
 
-]
- [string]$ScriptPath,
+
+ string$ScriptPath,
  
- [Parameter(Mandatory=$false)]
- [string]$OutputDirectory = "tests",
+ Parameter(Mandatory=$false)
+ string$OutputDirectory = "tests",
  
- [switch]$Force,
+ switch$Force,
  
- [switch]$PassThru
+ switch$PassThru
  )
  
  $ErrorActionPreference = "Stop"
@@ -57,7 +57,7 @@ function New-AutoTest {
  if (-not $fullOutputDir) {
  if (-not (Test-Path $OutputDirectory)) {
  if ($PSCmdlet.ShouldProcess($OutputDirectory, "Create directory")) {
- New-Item -ItemType Directory -Path $OutputDirectory -Force | Out-Null
+ New-Item -ItemType Directory -Path $OutputDirectory -Force  Out-Null
  }
  }
  $fullOutputDir = Resolve-Path $OutputDirectory
@@ -77,8 +77,8 @@ function New-AutoTest {
  }
  
  # Use the existing auto test generator
- $scriptName = [System.IO.Path]::GetFileName($fullScriptPath)
- $scriptDir = [System.IO.Path]::GetDirectoryName($fullScriptPath)
+ $scriptName = System.IO.Path::GetFileName($fullScriptPath)
+ $scriptDir = System.IO.Path::GetDirectoryName($fullScriptPath)
  $testName = $scriptName -replace '\.ps1$', '.Tests.ps1'
  $testPath = Join-Path $fullOutputDir $testName
  
@@ -99,7 +99,7 @@ function New-AutoTest {
  # Invoke the generator directly
  New-TestForScript -ScriptPath $fullScriptPath -OutputPath $testPath
  
- Write-Verbose "[PASS] Generated test file: $testPath"
+ Write-Verbose "PASS Generated test file: $testPath"
  
  if ($PassThru) {
  return $testPath

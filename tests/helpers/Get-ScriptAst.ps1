@@ -1,5 +1,5 @@
 function Get-ScriptAst {
-    param([string]$Path)
+    param(string$Path)
     if (-not (Test-Path $Path)) {
         throw "Get-ScriptAst: File not found: $Path"
     }
@@ -8,11 +8,11 @@ function Get-ScriptAst {
     } catch {
         throw "Get-ScriptAst: Failed to read file: $Path. $_"
     }
-    if ($text.Length -gt 0 -and $text[0] -eq [char]0xFEFF) {
+    if ($text.Length -gt 0 -and $text0 -eq char0xFEFF) {
         $text = $text.Substring(1)
     }
     try {
-        return [System.Management.Automation.Language.Parser]::ParseInput($text, [ref]$null, [ref]$null)
+        return System.Management.Automation.Language.Parser::ParseInput($text, ref$null, ref$null)
     } catch {
         throw "Get-ScriptAst: Failed to parse file: $Path. $_"
     }

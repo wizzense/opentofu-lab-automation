@@ -8,14 +8,14 @@
   "DisableTCPIP6": true,
   "AllowRemoteDesktop": true,
   "ConfigureFirewall": true,
-  "FirewallPorts": [
+  "FirewallPorts": 
     3389,
     5985,
     5986,
     445,
     135,
     "49152-65535"
-  ],
+  ,
   "ConfigPXE": true,
   "InstallGit": true,
   "InstallGitHubCLI": true,
@@ -91,11 +91,11 @@
     "InstallVite": true,
     "InstallNodemon": true,
     "InstallNpm": true,
-    "GlobalPackages": [
+    "GlobalPackages": 
       "yarn",
       "vite",
       "nodemon"
-    ],
+    ,
     "NpmPath": "C:\\Projects\\vde-mvp\\frontend",
     "CreateNpmPath": true,
     "Node": {

@@ -2,8 +2,8 @@
 # This script addresses both issues: CodeFixer PSScriptAnalyzer installation and test file LabRunner imports
 
 param(
-    [switch]$WhatIf,
-    [switch]$Verbose
+    switch$WhatIf,
+    switch$Verbose
 )
 
 
@@ -16,7 +16,7 @@ $ErrorActionPreference = "Continue"
 
 # Function to log progress
 function Write-Progress {
-    param([string]$Message, [string]$Color = "Cyan")
+    param(string$Message, string$Color = "Cyan")
     
 
 
@@ -26,34 +26,34 @@ function Write-Progress {
 Write-Host $Message -ForegroundColor $Color
 }
 
-Write-Progress "🔧 Starting comprehensive fixes for CodeFixer and LabRunner tests"
+Write-Progress " Starting comprehensive fixes for CodeFixer and LabRunner tests"
 
 # 1. First, fix CodeFixer PSScriptAnalyzer installation
-Write-Progress "📦 Installing PSScriptAnalyzer for CodeFixer..."
+Write-Progress "� Installing PSScriptAnalyzer for CodeFixer..."
 
 try {
     # Install PSScriptAnalyzer
     $result = pwsh -c "Install-Module PSScriptAnalyzer -Force -Scope CurrentUser -Repository PSGallery -ErrorAction Stop; Import-Module PSScriptAnalyzer -Force; Get-Module PSScriptAnalyzer"
-    Write-Progress "✅ PSScriptAnalyzer installed successfully" "Green"
+    Write-Progress "PASS PSScriptAnalyzer installed successfully" "Green"
 } catch {
     Write-Warning "Failed to install PSScriptAnalyzer: $($_.Exception.Message)"
 }
 
 # 2. Test CodeFixer functionality
-Write-Progress "🧪 Testing CodeFixer linting functionality..."
+Write-Progress "� Testing CodeFixer linting functionality..."
 
 try {
     $testResult = pwsh -c "
         Import-Module /workspaces/opentofu-lab-automation/pwsh/modules/CodeFixer -Force
         Invoke-PowerShellLint -Path /workspaces/opentofu-lab-automation/pwsh/runner.ps1 -OutputFormat Text
     "
-    Write-Progress "✅ CodeFixer linting test completed" "Green"
+    Write-Progress "PASS CodeFixer linting test completed" "Green"
 } catch {
     Write-Warning "CodeFixer test failed: $($_.Exception.Message)"
 }
 
 # 3. Find all test files that need LabRunner path updates
-Write-Progress "🔍 Finding test files with old LabRunner paths..."
+Write-Progress "� Finding test files with old LabRunner paths..."
 
 $testFiles = Get-ChildItem -Path "/workspaces/opentofu-lab-automation/tests" -Recurse -Include "*.ps1" -File
 $filesToUpdate = @()
@@ -65,7 +65,7 @@ foreach ($file in $testFiles) {
     }
 }
 
-Write-Progress "📄 Found $($filesToUpdate.Count) test files to update"
+Write-Progress "� Found $($filesToUpdate.Count) test files to update"
 
 # 4. Update test files with new LabRunner paths
 $updatedCount = 0
@@ -83,7 +83,7 @@ $patterns = @{
 }
 
 foreach ($file in $filesToUpdate) {
-    Write-Progress "  📝 Updating: $($file.Name)" "Gray"
+    Write-Progress "  � Updating: $($file.Name)" "Gray"
     
     try {
         $content = Get-Content -Path $file.FullName -Raw
@@ -91,7 +91,7 @@ foreach ($file in $filesToUpdate) {
         
         # Apply all pattern replacements
         foreach ($pattern in $patterns.Keys) {
-            $replacement = $patterns[$pattern]
+            $replacement = $patterns$pattern
             $content = $content -replace $pattern, $replacement
         }
         
@@ -106,12 +106,12 @@ foreach ($file in $filesToUpdate) {
             if (-not $WhatIf) {
                 Set-Content -Path $file.FullName -Value $content -Encoding UTF8
                 $updatedCount++
-                Write-Progress "    ✅ Updated" "Green"
+                Write-Progress "    PASS Updated" "Green"
             } else {
-                Write-Progress "    📋 Would update" "Yellow"
+                Write-Progress "     Would update" "Yellow"
             }
         } else {
-            Write-Progress "    ⏭️ No changes needed" "Gray"
+            Write-Progress "    ⏭ No changes needed" "Gray"
         }
         
     } catch {
@@ -120,14 +120,14 @@ foreach ($file in $filesToUpdate) {
 }
 
 # 5. Verify test files can now load LabRunner
-Write-Progress "🧪 Testing updated test files..."
+Write-Progress "� Testing updated test files..."
 
 $testHelperPath = "/workspaces/opentofu-lab-automation/tests/helpers/TestHelpers.ps1"
 if (Test-Path $testHelperPath) {
     try {
         $testResult = pwsh -c ". '$testHelperPath'; Get-Module LabRunner"
         if ($testResult) {
-            Write-Progress "✅ TestHelpers can now load LabRunner from new path" "Green"
+            Write-Progress "PASS TestHelpers can now load LabRunner from new path" "Green"
         } else {
             Write-Warning "TestHelpers may still have issues loading LabRunner"
         }
@@ -137,7 +137,7 @@ if (Test-Path $testHelperPath) {
 }
 
 # 6. Run a quick Pester test to verify functionality
-Write-Progress "🎯 Running quick Pester test to verify LabRunner functionality..."
+Write-Progress " Running quick Pester test to verify LabRunner functionality..."
 
 try {
     # Create a simple test to verify LabRunner loads correctly
@@ -146,7 +146,7 @@ Describe 'LabRunner Module Loading' {
     It 'should load LabRunner module successfully' {
         `$modulePath = Join-Path `$PSScriptRoot '..' 'pwsh' 'modules' 'LabRunner'
         Import-Module `$modulePath -Force
-        Get-Module LabRunner | Should -Not -BeNullOrEmpty
+        Get-Module LabRunner  Should -Not -BeNullOrEmpty
     }
 }
 "@
@@ -160,26 +160,26 @@ Describe 'LabRunner Module Loading' {
     "
     
     Remove-Item $tempTestFile -ErrorAction SilentlyContinue
-    Write-Progress "✅ Pester test completed" "Green"
+    Write-Progress "PASS Pester test completed" "Green"
     
 } catch {
     Write-Warning "Pester test failed: $($_.Exception.Message)"
 }
 
 # 7. Summary
-Write-Progress "`n📊 Summary:" "Cyan"
+Write-Progress "`n Summary:" "Cyan"
 Write-Progress "============" "Cyan"
 if (-not $WhatIf) {
-    Write-Progress "✅ PSScriptAnalyzer installation: Attempted" "Green"
-    Write-Progress "✅ CodeFixer functionality: Tested" "Green"
-    Write-Progress "✅ Test files updated: $updatedCount" "Green"
-    Write-Progress "✅ LabRunner path fixes: Applied" "Green"
+    Write-Progress "PASS PSScriptAnalyzer installation: Attempted" "Green"
+    Write-Progress "PASS CodeFixer functionality: Tested" "Green"
+    Write-Progress "PASS Test files updated: $updatedCount" "Green"
+    Write-Progress "PASS LabRunner path fixes: Applied" "Green"
 } else {
-    Write-Progress "📋 WhatIf mode - no changes applied" "Yellow"
-    Write-Progress "📄 Test files that would be updated: $($filesToUpdate.Count)" "Yellow"
+    Write-Progress " WhatIf mode - no changes applied" "Yellow"
+    Write-Progress "� Test files that would be updated: $($filesToUpdate.Count)" "Yellow"
 }
 
-Write-Progress "`n🎉 Comprehensive fixes completed!" "Green"
+Write-Progress "`n Comprehensive fixes completed!" "Green"
 Write-Progress "`nNext steps:" "Cyan"
 Write-Progress "1. Run 'Invoke-Pester tests/' to verify all tests work" "White"
 Write-Progress "2. Test CodeFixer: 'Import-Module pwsh/modules/CodeFixer; Invoke-PowerShellLint'" "White"

@@ -1,8 +1,6 @@
-Param([object]$Config)
+Param(object$Config)
 
-Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation//pwsh/modules/LabRunner/" -Force -Force -Force -Force -Force -Force -Force
-
-Write-CustomLog "Starting $MyInvocation.MyCommand"
+Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\pwsh/modules/LabRunner/" -ForceWrite-CustomLog "Starting $MyInvocation.MyCommand"
 Invoke-LabStep -Config $Config -Body {
     Write-CustomLog "Running $($MyInvocation.MyCommand.Name)"
     if ($Config.InstallGo -eq $true) {
@@ -13,9 +11,9 @@ Invoke-LabStep -Config $Config -Body {
         }
         if ($GoConfig.InstallerUrl) {
             $installerUrl = $GoConfig.InstallerUrl
-            if ($installerUrl -match "go([\d\.]+)\.windows-([a-z0-9]+)\.msi") {
-                $goVersion = $matches[1]
-                $goArch = $matches[2]
+            if ($installerUrl -match "go(\d\.+)\.windows-(a-z0-9+)\.msi") {
+                $goVersion = $matches1
+                $goArch = $matches2
             } else {
                 Write-CustomLog "Unable to extract Go version and architecture from InstallerUrl."
                 return
@@ -54,6 +52,7 @@ Write-CustomLog "Installing Go silently..."
     Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
 }
 Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
+
 
 
 

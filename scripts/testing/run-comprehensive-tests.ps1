@@ -3,10 +3,10 @@
 # This script runs the full suite of tests for the OpenTofu Lab Automation project
 
 param(
- [switch]$SkipLint,
- [switch]$SkipPester,
- [switch]$SkipPyTest,
- [switch]$SkipHealthCheck
+ switch$SkipLint,
+ switch$SkipPester,
+ switch$SkipPyTest,
+ switch$SkipHealthCheck
 )
 
 
@@ -27,7 +27,7 @@ Write-Host "Fixing syntax issues in test files..." -ForegroundColor Green
 try {
  Import-Module "/$rootDir/../../tools/TestAutoFixer" -Force
  Invoke-SyntaxFix -AutoFix
- Write-Host "[PASS] Syntax fixes completed" -ForegroundColor Green
+ Write-Host "PASS Syntax fixes completed" -ForegroundColor Green
 } catch {
  Write-Warning "Syntax fixer completed with warnings: $_"
 }
@@ -46,10 +46,10 @@ if (-not $SkipLint) {
  try {
  # Use TestAutoFixer module for linting
  Get-LintIssues -Path "$rootDir/../../" -Fix -Detailed
- Write-Host "[PASS] Linting completed successfully" -ForegroundColor Green
+ Write-Host "PASS Linting completed successfully" -ForegroundColor Green
  $results.Lint = "PASSED"
  } catch {
- Write-Host "[FAIL] Linting failed: $_" -ForegroundColor Red
+ Write-Host "FAIL Linting failed: $_" -ForegroundColor Red
  $results.Lint = "ERROR"
  $results.TotalErrors++
  }
@@ -70,15 +70,15 @@ if (-not $SkipPester) {
  $pesterResults = Invoke-Pester -Configuration $config
  
  if ($pesterResults.FailedCount -eq 0) {
- Write-Host "[PASS] Pester tests completed successfully ($($pesterResults.PassedCount) passed, $($pesterResults.SkippedCount) skipped)" -ForegroundColor Green
+ Write-Host "PASS Pester tests completed successfully ($($pesterResults.PassedCount) passed, $($pesterResults.SkippedCount) skipped)" -ForegroundColor Green
  $results.Pester = "PASSED"
  } else {
- Write-Host "[FAIL] Pester tests completed with $($pesterResults.FailedCount) failures" -ForegroundColor Red
+ Write-Host "FAIL Pester tests completed with $($pesterResults.FailedCount) failures" -ForegroundColor Red
  $results.Pester = "FAILED"
  $results.TotalErrors++
  }
  } catch {
- Write-Host "[FAIL] Pester tests failed: $_" -ForegroundColor Red
+ Write-Host "FAIL Pester tests failed: $_" -ForegroundColor Red
  $results.Pester = "ERROR"
  $results.TotalErrors++
  }
@@ -103,15 +103,15 @@ if (-not $SkipPyTest) {
  & $pythonCmd -m pytest "$rootDir/../../py/tests" -v
  
  if ($LASTEXITCODE -eq 0) {
- Write-Host "[PASS] Python tests completed successfully" -ForegroundColor Green
+ Write-Host "PASS Python tests completed successfully" -ForegroundColor Green
  $results.PyTest = "PASSED"
  } else {
- Write-Host "[FAIL] Python tests completed with errors (code: $LASTEXITCODE)" -ForegroundColor Red
+ Write-Host "FAIL Python tests completed with errors (code: $LASTEXITCODE)" -ForegroundColor Red
  $results.PyTest = "FAILED"
  $results.TotalErrors++
  }
  } catch {
- Write-Host "[FAIL] Python tests failed: $_" -ForegroundColor Red
+ Write-Host "FAIL Python tests failed: $_" -ForegroundColor Red
  $results.PyTest = "ERROR"
  $results.TotalErrors++
  }
@@ -123,10 +123,10 @@ if (-not $SkipHealthCheck) {
  try {
  # Use TestAutoFixer module for validation
  $healthReport = Invoke-ValidationChecks -OutputFormat JSON
- Write-Host "[PASS] Health check completed successfully" -ForegroundColor Green
+ Write-Host "PASS Health check completed successfully" -ForegroundColor Green
  $results.HealthCheck = "PASSED"
  } catch {
- Write-Host "[FAIL] Health check failed: $_" -ForegroundColor Red
+ Write-Host "FAIL Health check failed: $_" -ForegroundColor Red
  $results.HealthCheck = "ERROR"
  $results.TotalErrors++
  }
@@ -151,10 +151,10 @@ Write-Host "Total Errors: $($results.TotalErrors)"
 Write-Host "============================================="
 
 if ($results.TotalErrors -gt 0) {
- Write-Host "[FAIL] Some tests failed - please check the logs above for details" -ForegroundColor Red
+ Write-Host "FAIL Some tests failed - please check the logs above for details" -ForegroundColor Red
  exit 1
 } else {
- Write-Host "[PASS] All tests completed successfully" -ForegroundColor Green
+ Write-Host "PASS All tests completed successfully" -ForegroundColor Green
  exit 0
 }
 

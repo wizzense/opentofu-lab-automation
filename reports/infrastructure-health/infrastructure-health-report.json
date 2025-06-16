@@ -1,6 +1,6 @@
 {
   "GeneratedAt": "2025-06-14 17:13:41",
-  "RecommendedFixes": [
+  "RecommendedFixes": 
     {
       "Command": "./scripts/maintenance/fix-infrastructure-issues.ps1 -Fix ImportPaths -AutoFix",
       "Category": "Import Path Fixes",
@@ -11,7 +11,7 @@
       "Category": "Syntax Fixes",
       "Description": "Fix PowerShell syntax errors"
     }
-  ],
+  ,
   "Summary": {
     "AutoFixAttempted": false,
     "CriticalErrors": 0,
@@ -23,7 +23,7 @@
     "AutoFixSuccess": 0
   },
   "Categories": {
-    "Syntax": [
+    "Syntax": 
       {
         "Line": 396,
         "File": "C:\\Users\\alexa\\OneDrive\\Documents\\0. wizzense\\opentofu-lab-automation\\LabRunner\\Public\\Test-RunnerScriptSafety.ps1",
@@ -239,8 +239,8 @@
         "File": "C:\\Users\\alexa\\OneDrive\\Documents\\0. wizzense\\opentofu-lab-automation\\scripts\\utilities\\purge-emojis.ps1",
         "Error": "Duplicate keys '' are not allowed in hash literals."
       }
-    ],
-    "DeprecatedFeatures": [
+    ,
+    "DeprecatedFeatures": 
       {
         "Issue": "Referenced deprecated module path",
         "File": "C:\\Users\\alexa\\OneDrive\\Documents\\0. wizzense\\opentofu-lab-automation\\LabRunner\\Download-Archive.ps1"
@@ -785,8 +785,8 @@
         "Issue": "Referenced deprecated module path",
         "File": "C:\\Users\\alexa\\OneDrive\\Documents\\0. wizzense\\opentofu-lab-automation\\tools\\validation\\test-fixes.ps1"
       }
-    ],
-    "ImportPaths": [
+    ,
+    "ImportPaths": 
       {
         "Issue": "Deprecated module location reference found",
         "File": "C:\\Users\\alexa\\OneDrive\\Documents\\0. wizzense\\opentofu-lab-automation\\LabRunner\\Public\\Test-RunnerScriptSafety.ps1"
@@ -1403,8 +1403,8 @@
         "Issue": "Deprecated module location reference found",
         "File": "C:\\Users\\alexa\\OneDrive\\Documents\\0. wizzense\\opentofu-lab-automation\\tools\\validation\\test-fixes.ps1"
       }
-    ],
-    "ModuleLoading": [
+    ,
+    "ModuleLoading": 
       {
         "Issue": "Module not found: /pwsh/modules/LabRunner/",
         "File": "C:\\Users\\alexa\\OneDrive\\Documents\\0. wizzense\\opentofu-lab-automation\\LabRunner\\Public\\Test-RunnerScriptSafety.ps1"
@@ -2429,9 +2429,9 @@
         "Issue": "Module not found: /C:\\Users\\alexa\\OneDrive\\Documents\\0. wizzense\\opentofu-lab-automation//pwsh/modules/LabRunner/",
         "File": "C:\\Users\\alexa\\OneDrive\\Documents\\0. wizzense\\opentofu-lab-automation\\tools\\validation\\test-fixes.ps1"
       }
-    ],
+    ,
     "Configuration": null,
     "ProjectStructure": null
   },
-  "AutoFixResults": []
+  "AutoFixResults": 
 }

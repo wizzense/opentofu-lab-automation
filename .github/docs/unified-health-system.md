@@ -28,13 +28,13 @@ The `unified-health-monitor.yml` workflow automatically runs health checks:
 
 ## Health Check Modes
 
-| Mode | Description |
-|------|-------------|
-| Quick | Basic validation of critical components |
-| Full | Comprehensive check of infrastructure and workflows |
-| Infrastructure | Focus on codebase and module health |
-| Workflow | Focus on GitHub Actions workflows |
-| All | Complete analysis with detailed reporting |
+ Mode  Description 
+-------------------
+ Quick  Basic validation of critical components 
+ Full  Comprehensive check of infrastructure and workflows 
+ Infrastructure  Focus on codebase and module health 
+ Workflow  Focus on GitHub Actions workflows 
+ All  Complete analysis with detailed reporting 
 
 ## AutoFix Capabilities
 

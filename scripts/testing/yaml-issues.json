@@ -9,7 +9,7 @@
       "Count": 154,
       "Category": "YAML Validation: Trailing Spaces",
       "AutoFixable": true,
-      "Files": [
+      "Files": 
         ".github/workflows/system-health-monitor.yml",
         ".github/workflows/unified-ci.yml",
         ".github/workflows/auto-test-generation-consolidated.yml",
@@ -19,7 +19,7 @@
         ".github/workflows/unified-testing.yml",
         ".github/workflows/validate-workflows.yml",
         ".github/workflows/copilot-auto-fix.yml"
-      ],
+      ,
       "FirstSeen": "2025-06-13 22:29:54",
       "LastSeen": "2025-06-13 22:29:54",
       "Status": "FIXED",
@@ -32,9 +32,9 @@
       "Count": 1,
       "Category": "YAML Validation: Truthy Values",
       "AutoFixable": false,
-      "Files": [
+      "Files": 
         ".github/workflows/release.yml"
-      ],
+      ,
       "FirstSeen": "2025-06-13 22:29:54",
       "LastSeen": "2025-06-13 22:29:54",
       "Status": "WONTFIX",
@@ -47,9 +47,9 @@
       "Count": 1,
       "Category": "YAML Validation: Document Start",
       "AutoFixable": true,
-      "Files": [
+      "Files": 
         ".github/workflows/release.yml"
-      ],
+      ,
       "FirstSeen": "2025-06-13 22:29:54",
       "LastSeen": "2025-06-13 22:29:54",
       "Status": "FIXED",
@@ -62,9 +62,9 @@
       "Count": 1,
       "Category": "YAML Validation: Indentation",
       "AutoFixable": true,
-      "Files": [
+      "Files": 
         ".github/workflows/release.yml"
-      ],
+      ,
       "FirstSeen": "2025-06-13 22:29:54",
       "LastSeen": "2025-06-13 22:29:54",
       "Status": "FIXED",

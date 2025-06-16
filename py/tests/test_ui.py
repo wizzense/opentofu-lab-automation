@@ -2,7 +2,7 @@ from pathlib import Path
 import importlib
 import sys
 
-sys.path.append(str(Path(__file__).resolve().parents[1]))
+sys.path.append(str(Path(__file__).resolve().parents1))
 
 from labctl import path_index
 import labctl.ui as ui
@@ -41,15 +41,15 @@ def test_run_ui_with_repo_root(tmp_path, monkeypatch):
     captured = {}
 
     def fake_run(self):
-        captured["scripts"] = self.scripts
-        captured["log"] = self.log_path
-        captured["default"] = self.default_config
-        captured["recommended"] = self.recommended_config
+        captured"scripts" = self.scripts
+        captured"log" = self.log_path
+        captured"default" = self.default_config
+        captured"recommended" = self.recommended_config
 
     monkeypatch.setattr(ui.LabUI, "run", fake_run)
 
     ui.run_ui()
 
-    assert captured["default"] == default_cfg
-    assert captured["recommended"] == recommended_cfg
-    assert script.name in captured["scripts"]
+    assert captured"default" == default_cfg
+    assert captured"recommended" == recommended_cfg
+    assert script.name in captured"scripts"

@@ -1,4 +1,4 @@
-Param([object]$Config)
+Param(object$Config)
 
 
 
@@ -6,10 +6,10 @@ Param([object]$Config)
 
 
 
-Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation//pwsh/modules/LabRunner/" -Force -Force -Force -Force -Force -Force -ForceWrite-CustomLog "Starting $MyInvocation.MyCommand"
+Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\pwsh/modules/LabRunner/" -ForceWrite-CustomLog "Starting $MyInvocation.MyCommand"
 function Install-Python {
-    [CmdletBinding(SupportsShouldProcess = $true)]
-    param([object]$Config)
+    CmdletBinding(SupportsShouldProcess = $true)
+    param(object$Config)
 
     
 
@@ -34,8 +34,8 @@ Invoke-LabStep -Config $Config -Body {
 
 Start-Process -FilePath $installer -ArgumentList '/quiet InstallAllUsers=1 PrependPath=1' -Wait
                     # Refresh PATH for the current session so subsequent scripts can find python
-                    $userPath = [Environment]::GetEnvironmentVariable('PATH', 'User')
-                    $machinePath = [Environment]::GetEnvironmentVariable('PATH', 'Machine')
+                    $userPath = Environment::GetEnvironmentVariable('PATH', 'User')
+                    $machinePath = Environment::GetEnvironmentVariable('PATH', 'Machine')
                     $env:PATH = (($userPath, $machinePath) -join ';')
                     Write-CustomLog 'PATH refreshed with new Python location.'
                 }
@@ -50,6 +50,7 @@ Start-Process -FilePath $installer -ArgumentList '/quiet InstallAllUsers=1 Prepe
 }
 if ($MyInvocation.InvocationName -ne '.') { Install-Python @PSBoundParameters }
 Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
+
 
 
 

@@ -14,19 +14,19 @@ This func if ($Parallel -and $psaAvailable -and $powerShellFiles.Count -gt 5) {
  Import-Module ThreadJob -Force -ErrorAction SilentlyContinue
  
  $jobs = @()
- $maxConcurrency = [Math]::Min([Environment]::ProcessorCount, 4)
+ $maxConcurrency = Math::Min(Environment::ProcessorCount, 4)
  
  # Process files in parallel
  foreach ($file in $powerShellFiles) {
  # Wait if we've hit max concurrency
  while ($jobs.Count -ge $maxConcurrency) {
- $completedJobs = $jobs | Where-Object { $_.State -eq 'Completed' -or $_.State -eq 'Failed' }
+ $completedJobs = jobs | Where-Object { $_.State -eq 'Completed' -or $_.State -eq 'Failed' }
  foreach ($job in $completedJobs) {
  $result = Receive-Job $job -ErrorAction SilentlyContinue
  if ($result) { $allIssues += $result }
  Remove-Job $job
  }
- $jobs = $jobs | Where-Object { $_.Id -notin $completedJobs.Id }
+ $jobs = jobs | Where-Object { $_.Id -notin $completedJobs.Id }
  Start-Sleep -Milliseconds 100
  }
  
@@ -48,7 +48,7 @@ try {
  }
  
  # Wait for remaining jobs
- $jobs | Wait-Job | ForEach-Object {
+ $jobs  Wait-Job  ForEach-Object {
  $result = Receive-Job $_ -ErrorAction SilentlyContinue
  if ($result) { $allIssues += $result }
  Remove-Job $_
@@ -57,7 +57,7 @@ try {
  Write-Host " Parallel analysis complete: $($allIssues.Count) issues found" -ForegroundColor Blue
  
  } catch {
- Write-Host "[WARN] Parallel processing failed, falling back to sequential: $($_.Exception.Message)" -ForegroundColor Yellow
+ Write-Host "WARN Parallel processing failed, falling back to sequential: $($_.Exception.Message)" -ForegroundColor Yellow
  $Parallel = $false
  }
  }
@@ -81,16 +81,16 @@ Invoke-PowerShellLint
 Invoke-PowerShellLint -Path "/scripts" -OutputFormat JSON
 #>
 function Invoke-PowerShellLint {
- [CmdletBinding()]
+ CmdletBinding()
  param(
- [string]$Path = ".",
- [ValidateSet('Text', 'JSON', 'CI')
+ string$Path = ".",
+ ValidateSet('Text', 'JSON', 'CI')
 
 
-]
- [string]$OutputFormat = 'Text',
- [switch]$PassThru,
- [switch]$Parallel
+
+ string$OutputFormat = 'Text',
+ switch$PassThru,
+ switch$Parallel
  )
  
  $ErrorActionPreference = "Continue"
@@ -106,10 +106,10 @@ function Invoke-PowerShellLint {
  # Test it works
  $null = Invoke-ScriptAnalyzer -ScriptDefinition "Write-Host 'test'" -ErrorAction Stop
  
- Write-Host "[PASS] PSScriptAnalyzer ready" -ForegroundColor Green
+ Write-Host "PASS PSScriptAnalyzer ready" -ForegroundColor Green
  return $true
  } catch {
- Write-Host "[WARN] PSScriptAnalyzer not available, using fallback methods" -ForegroundColor Yellow
+ Write-Host "WARN PSScriptAnalyzer not available, using fallback methods" -ForegroundColor Yellow
  
  # Install using the proven method
  try {
@@ -117,10 +117,10 @@ function Invoke-PowerShellLint {
  Install-Module PSScriptAnalyzer -Force -Scope CurrentUser -Repository PSGallery -AllowClobber -SkipPublisherCheck -ErrorAction SilentlyContinue
  Import-Module PSScriptAnalyzer -Force
  
- Write-Host "[PASS] PSScriptAnalyzer installed and ready" -ForegroundColor Green
+ Write-Host "PASS PSScriptAnalyzer installed and ready" -ForegroundColor Green
  return $true
  } catch {
- Write-Host "[FAIL] PSScriptAnalyzer initialization failed, using AST-only analysis" -ForegroundColor Red
+ Write-Host "FAIL PSScriptAnalyzer initialization failed, using AST-only analysis" -ForegroundColor Red
  return $false
  }
  }
@@ -151,17 +151,17 @@ function Invoke-PowerShellLint {
  $issues = Invoke-ScriptAnalyzer -Path $file.FullName -Severity Error,Warning
  $allIssues += $issues
  } catch {
- Write-Host " [WARN] Analysis failed: $($_.Exception.Message)" -ForegroundColor Yellow
+ Write-Host " WARN Analysis failed: $($_.Exception.Message)" -ForegroundColor Yellow
  }
  } else {
  # Fallback to basic syntax checking
  try {
  $content = Get-Content $file.FullName -Raw
- $null = [System.Management.Automation.PSParser]::Tokenize($content, [ref]$null)
- Write-Host " [PASS] Syntax OK" -ForegroundColor Green
+ $null = System.Management.Automation.PSParser::Tokenize($content, ref$null)
+ Write-Host " PASS Syntax OK" -ForegroundColor Green
  } catch {
- Write-Host " [FAIL] Syntax Error: $($_.Exception.Message)" -ForegroundColor Red
- $allIssues += [PSCustomObject]@{
+ Write-Host " FAIL Syntax Error: $($_.Exception.Message)" -ForegroundColor Red
+ $allIssues += PSCustomObject@{
  RuleName = "SyntaxError"
  Severity = "Error"
  ScriptName = $file.Name
@@ -181,7 +181,7 @@ function Invoke-PowerShellLint {
  # Use parallel processing for faster analysis
  if ($Parallel -and $powerShellFiles.Count -gt 1) {
  Write-Host " Using parallel analysis for faster processing..." -ForegroundColor Green
- $allResults = Invoke-ParallelScriptAnalyzer -Path $Path -MaxConcurrency ([Environment]::ProcessorCount) -Severity 'Information'
+ $allResults = Invoke-ParallelScriptAnalyzer -Path $Path -MaxConcurrency (Environment::ProcessorCount) -Severity 'Information'
  } else {
  # Sequential processing (original logic)
  $allResults = @()
@@ -193,15 +193,15 @@ function Invoke-PowerShellLint {
  # First check for syntax errors using AST parsing
  $tokens = $null
  $parseErrors = $null
- $ast = [System.Management.Automation.Language.Parser]::ParseFile(
+ $ast = System.Management.Automation.Language.Parser::ParseFile(
  $file.FullName, 
- [ref]$tokens, 
- [ref]$parseErrors
+ ref$tokens, 
+ ref$parseErrors
  )
  
  # Add parse errors to results
  foreach ($error in $parseErrors) {
- $allResults += [PSCustomObject]@{
+ $allResults += PSCustomObject@{
  File = $file.FullName
  Line = $error.Extent.StartLineNumber
  Column = $error.Extent.StartColumnNumber
@@ -220,7 +220,7 @@ function Invoke-PowerShellLint {
  $scriptAnalyzerResults = Invoke-ScriptAnalyzer -Path $file.FullName -ErrorAction SilentlyContinue
  
  foreach ($result in $scriptAnalyzerResults) {
- $allResults += [PSCustomObject]@{
+ $allResults += PSCustomObject@{
  File = $file.FullName
  Line = $result.Line
  Column = $result.Column
@@ -234,7 +234,7 @@ function Invoke-PowerShellLint {
  }
  } catch {
  # PSScriptAnalyzer failed, add note about it
- $allResults += [PSCustomObject]@{
+ $allResults += PSCustomObject@{
  File = $file.FullName
  Line = 1
  Column = 1
@@ -248,7 +248,7 @@ function Invoke-PowerShellLint {
  }
  } elseif ($parseErrors.Count -eq 0 -and -not $psAnalyzerAvailable) {
  # Note that PSScriptAnalyzer analysis was skipped
- $allResults += [PSCustomObject]@{
+ $allResults += PSCustomObject@{
  File = $file.FullName
  Line = 1
  Column = 1
@@ -262,7 +262,7 @@ function Invoke-PowerShellLint {
  }
  
  } catch {
- $allResults += [PSCustomObject]@{
+ $allResults += PSCustomObject@{
  File = $file.FullName
  Line = 1
  Column = 1
@@ -277,8 +277,8 @@ function Invoke-PowerShellLint {
  }
  
  # Output results based on format
- $errorCount = ($allIssues | Where-Object { $_.Severity -eq 'Error' }).Count
- $warningCount = ($allIssues | Where-Object { $_.Severity -eq 'Warning' }).Count
+ $errorCount = (allIssues | Where-Object { $_.Severity -eq 'Error' }).Count
+ $warningCount = (allIssues | Where-Object { $_.Severity -eq 'Warning' }).Count
  $totalIssues = $allIssues.Count
  
  switch ($OutputFormat) {
@@ -291,7 +291,7 @@ function Invoke-PowerShellLint {
  Issues = $allIssues
  Timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
  }
- $result | ConvertTo-Json -Depth 10
+ result | ConvertTo-Json -Depth 10
  }
  'CI' {
  Write-Host "::group::PowerShell Linting Results"
@@ -313,15 +313,15 @@ function Invoke-PowerShellLint {
  
  if ($allIssues.Count -gt 0) {
  Write-Host "`n Issues Details:" -ForegroundColor Yellow
- $allIssues | Group-Object Severity | ForEach-Object {
+ allIssues | Group-Object Severity  ForEach-Object {
  $severityColor = if ($_.Name -eq 'Error') { 'Red' } else { 'Yellow' }
  Write-Host "`n $($_.Name) ($($_.Count)):" -ForegroundColor $severityColor
- $_.Group | ForEach-Object {
+ $_.Group  ForEach-Object {
  Write-Host " $($_.ScriptName):$($_.Line) - $($_.RuleName): $($_.Message)" -ForegroundColor Gray
  }
  }
  } else {
- Write-Host "`n[PASS] No issues found!" -ForegroundColor Green
+ Write-Host "`nPASS No issues found!" -ForegroundColor Green
  }
  }
  }
@@ -336,6 +336,7 @@ function Invoke-PowerShellLint {
  }
  }
 }
+
 
 
 

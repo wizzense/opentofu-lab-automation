@@ -1,7 +1,7 @@
 ---
 description: Generate a comprehensive PowerShell script following OpenTofu Lab Automation standards
 mode: agent
-tools: ["filesystem", "semantic_search", "codebase"]
+tools: "filesystem", "semantic_search", "codebase"
 ---
 
 # Generate PowerShell Script
@@ -15,7 +15,7 @@ Start by understanding the project context using #codebase to find similar patte
 ### Primary Requirements
 
 1. **Standard Template Structure** - Use the established project template:
-   - Parameter block with `[pscustomobject]$Config`
+   - Parameter block with `pscustomobject$Config`
    - Error handling with `$ErrorActionPreference = "Stop"`
    - Import LabRunner module: `Import-Module "/pwsh/modules/LabRunner/" -Force`
    - Main execution using `Invoke-LabStep` pattern
@@ -85,26 +85,26 @@ Use this exact template structure:
 ```powershell
 <#
 .SYNOPSIS
-[Brief description of script purpose]
+Brief description of script purpose
 
 .DESCRIPTION
-[Detailed description of what the script does and how it works]
+Detailed description of what the script does and how it works
 
 .PARAMETER Config
 Configuration object containing script parameters and settings
 
 .EXAMPLE
-$config = [pscustomobject]@{
+$config = pscustomobject@{
     Property = "Value"
 }
 .\ScriptName.ps1 -Config $config
 
 .NOTES
-[Additional notes about requirements, dependencies, or usage]
+Additional notes about requirements, dependencies, or usage
 #>
 Param(
-    [Parameter(Mandatory=$true)]
-    [pscustomobject]$Config
+    Parameter(Mandatory=$true)
+    pscustomobject$Config
 )
 
 $ErrorActionPreference = "Stop"
@@ -142,5 +142,5 @@ Please specify:
 ## Reference Instructions
 
 Reference the following instruction files for detailed standards:
-- [PowerShell Standards](../instructions/powershell-standards.instructions.md)
-- [Testing Standards](../instructions/testing-standards.instructions.md)
+- PowerShell Standards(../instructions/powershell-standards.instructions.md)
+- Testing Standards(../instructions/testing-standards.instructions.md)

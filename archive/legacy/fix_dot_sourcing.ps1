@@ -29,11 +29,11 @@ foreach ($testFile in $testFiles) {
     $content = Get-Content $testFile -Raw
     
     # Replace the dot-sourcing pattern in the syntax validation test
-    $oldPattern = '\{ \. \$script:ScriptPath \} \| Should -Not -Throw'
+    $oldPattern = '\{ \. \$script:ScriptPath \} \ Should -Not -Throw'
     $newPattern = @'
 $errors = $null
-                [System.Management.Automation.Language.Parser]::ParseFile($script:ScriptPath, [ref]$null, [ref]$errors) | Out-Null
-                ($$(if (errors) { $errors.Count } else { 0) | Should -Be 0 })
+                System.Management.Automation.Language.Parser::ParseFile($script:ScriptPath, ref$null, ref$errors)  Out-Null
+                ($$(if (errors) { $errors.Count } else { 0)  Should -Be 0 })
 '@
     
     # Apply replacement

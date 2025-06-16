@@ -17,10 +17,10 @@ Brief description of the document's purpose and scope.
 
 ## Table of Contents
 <!-- Example Table of Contents for documentation templates:
-- [Section 1](#section-1)
-- [Section 2](#section-2)
-- [Examples](#examples)
-- [Reference](#reference)
+- Section 1(#section-1)
+- Section 2(#section-2)
+- Examples(#examples)
+- Reference(#reference)
 -->
 
 ## Section Content
@@ -86,7 +86,7 @@ Import-Module "/pwsh/modules/ModuleName/" -Force
 
 **Syntax**:
 ```powershell
-Function-Name -Parameter1 <Type> [-Parameter2 <Type>]
+Function-Name -Parameter1 <Type> -Parameter2 <Type>
 ```
 
 **Parameters**:
@@ -159,10 +159,10 @@ Brief description of what the function does.
 ### Syntax
 ```powershell
 Function-Name
-    [-Parameter1] <Type>
-    [[-Parameter2] <Type>]
-    [-Switch]
-    [<CommonParameters>]
+    -Parameter1 <Type>
+    -Parameter2 <Type>
+    -Switch
+    <CommonParameters>
 ```
 
 ### Description
@@ -200,7 +200,7 @@ Expected output description
 
 #### Example 2: Advanced Usage  
 ```powershell
-PS> Get-Something | Function-Name -Parameter2 "Value"
+PS> Get-Something  Function-Name -Parameter2 "Value"
 Expected output description
 ```
 
@@ -212,7 +212,7 @@ Additional information about:
 - Version history
 
 ### Related Links
-- [External Documentation](https://example.com)
+- External Documentation(https://example.com)
 ```
 
 ## Formatting Guidelines
@@ -237,21 +237,21 @@ Use consistent formatting for lists:
 - Item three
 
 ## Tables
-| Column 1 | Column 2 | Column 3 |
-|----------|----------|----------|
-| Value 1  | Value 2  | Value 3  |
-| Value A  | Value B  | Value C  |
+ Column 1  Column 2  Column 3 
+------------------------------
+ Value 1   Value 2   Value 3  
+ Value A   Value B   Value C  
 ```
 
 ### Links and References
 
 ```markdown
 ## Internal Links
-[Section Reference](#section-name)
-[Document Reference](./other-document.md)
+Section Reference(#section-name)
+Document Reference(./other-document.md)
 
 ## External Links
-[PowerShell Documentation](https://docs.microsoft.com/powershell)
+PowerShell Documentation(https://docs.microsoft.com/powershell)
 
 ## Code References
 Reference functions like `Invoke-LabStep` and modules like `LabRunner`.
@@ -279,24 +279,24 @@ if (Get-Command markdownlint -ErrorAction SilentlyContinue) {
 
 # Link validation
 $content = Get-Content $DocFile -Raw
-$links = [regex]::Matches($content, '\[.*?\]\((.*?)\)')
+$links = regex::Matches($content, '\.*?\\((.*?)\)')
 foreach ($link in $links) {
-    $path = $link.Groups[1].Value
+    $path = $link.Groups1.Value
     if ($path.StartsWith('./') -and -not (Test-Path $path)) {
         Write-Warning "Broken link: $path"
     }
 }
 
 # Code block syntax validation
-$codeBlocks = [regex]::Matches($content, '```(\w+)?\r?\n(.*?)\r?\n```', 'Singleline')
+$codeBlocks = regex::Matches($content, '```(\w+)?\r?\n(.*?)\r?\n```', 'Singleline')
 foreach ($block in $codeBlocks) {
-    $language = $block.Groups[1].Value
-    $code = $block.Groups[2].Value
+    $language = $block.Groups1.Value
+    $code = $block.Groups2.Value
     
     if ($language -eq 'powershell') {
         # Validate PowerShell syntax
         try {
-            $null = [System.Management.Automation.Language.Parser]::ParseInput($code, [ref]$null, [ref]$null)
+            $null = System.Management.Automation.Language.Parser::ParseInput($code, ref$null, ref$null)
         } catch {
             Write-Warning "Invalid PowerShell syntax in code block"
         }
@@ -332,13 +332,13 @@ Always maintain project synchronization:
 
 ```powershell
 # Update PROJECT-MANIFEST.json when adding new documentation
-$manifest = Get-Content "./PROJECT-MANIFEST.json" | ConvertFrom-Json
+$manifest = Get-Content "./PROJECT-MANIFEST.json"  ConvertFrom-Json
 $manifest.documentation += @{
     file = "docs/new-guide.md"
     type = "user-guide"
     category = "operational"
 }
-$manifest | ConvertTo-Json -Depth 10 | Set-Content "./PROJECT-MANIFEST.json"
+$manifest  ConvertTo-Json -Depth 10  Set-Content "./PROJECT-MANIFEST.json"
 
 # Regenerate project index with new documentation references
 ./scripts/utilities/update-project-index.ps1
@@ -407,12 +407,12 @@ Documentation PRs must include:
 
 ```markdown
 ## Documentation Changes
-- [ ] All examples tested and validated
-- [ ] Links checked and functional
-- [ ] Project health check passed
-- [ ] PROJECT-MANIFEST.json updated
-- [ ] Cross-platform compatibility verified
-- [ ] Accessibility standards met
+-   All examples tested and validated
+-   Links checked and functional
+-   Project health check passed
+-   PROJECT-MANIFEST.json updated
+-   Cross-platform compatibility verified
+-   Accessibility standards met
 
 ## Validation Results
 ```powershell

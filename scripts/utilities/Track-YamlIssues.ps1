@@ -2,7 +2,7 @@
 # Track YAML validation errors in the issue tracker
 
 param(
- [string]$Mode = "Track"
+ string$Mode = "Track"
 )
 
 $ErrorActionPreference = "Continue"
@@ -85,10 +85,10 @@ $issueOutput = @{
 
 # Output to issue tracker file
 $outputPath = "/workspaces/opentofu-lab-automation/scripts/testing/yaml-issues.json"
-$issueOutput | ConvertTo-Json -Depth 5 | Out-File -FilePath $outputPath -Encoding UTF8
+issueOutput | ConvertTo-Json -Depth 5  Out-File -FilePath $outputPath -Encoding UTF8
 
-Write-Host "=[${timestamp}] [YAML-TRACKER] Tracked $($yamlIssues.Count) YAML validation issues" -ForegroundColor Green
-Write-Host "=[${timestamp}] [YAML-TRACKER] Output written to: $outputPath" -ForegroundColor Green
+Write-Host "=${timestamp} YAML-TRACKER Tracked $($yamlIssues.Count) YAML validation issues" -ForegroundColor Green
+Write-Host "=${timestamp} YAML-TRACKER Output written to: $outputPath" -ForegroundColor Green
 
 # Also create a summary report
 $summaryPath = "/workspaces/opentofu-lab-automation/scripts/testing/yaml-issues-summary.md"
@@ -107,7 +107,7 @@ Generated: $timestamp
 "@
 
 foreach ($issueId in $yamlIssues.Keys) {
- $issue = $yamlIssues[$issueId]
+ $issue = $yamlIssues$issueId
  $summary += @"
 
 ### $issueId - $($issue.Category)
@@ -126,7 +126,7 @@ $summary += @"
 ## Recommended Actions
 
 1. **Immediate**: Run YAML auto-fix via \`scripts/validation/Invoke-YamlValidation.ps1 -Mode Fix\`
-2. **Integration**: Add yamllint validation to unified-maintenance.ps1 ([PASS] Already done)
+2. **Integration**: Add yamllint validation to unified-maintenance.ps1 (PASS Already done)
 3. **Prevention**: Add pre-commit hooks for YAML validation
 4. **Monitoring**: Include YAML validation in CI pipeline health checks
 
@@ -137,6 +137,7 @@ pwsh -Command "./scripts/validation/Invoke-YamlValidation.ps1 -Mode Fix"
 
 "@
 
-$summary | Out-File -FilePath $summaryPath -Encoding UTF8
+summary | Out-File -FilePath $summaryPath -Encoding UTF8
 
-Write-Host "=[${timestamp}] [YAML-TRACKER] Summary report written to: $summaryPath" -ForegroundColor Green
+Write-Host "=${timestamp} YAML-TRACKER Summary report written to: $summaryPath" -ForegroundColor Green
+

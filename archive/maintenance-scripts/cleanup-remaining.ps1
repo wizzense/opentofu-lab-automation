@@ -2,9 +2,9 @@
 # Handle remaining files that need organization
 # This is a follow-up script to organize-project.ps1
 
-[CmdletBinding()]
+CmdletBinding()
 param(
-    [switch]$WhatIf
+    switch$WhatIf
 )
 
 
@@ -18,8 +18,8 @@ $ErrorActionPreference = "Stop"
 
 function Move-FileToDestination {
     param(
-        [string]$SourceFile,
-        [string]$DestinationPath
+        string$SourceFile,
+        string$DestinationPath
     )
     
     
@@ -39,7 +39,7 @@ if (-not (Test-Path $SourceFile)) {
         if ($WhatIf) {
             Write-Host "  Would create directory: $destDir" -ForegroundColor Yellow
         } else {
-            New-Item -Path $destDir -ItemType Directory -Force | Out-Null
+            New-Item -Path $destDir -ItemType Directory -Force  Out-Null
             Write-Host "  Created directory: $destDir" -ForegroundColor Gray
         }
     }
@@ -53,7 +53,7 @@ if (-not (Test-Path $SourceFile)) {
 }
 
 $rootDir = $PSScriptRoot
-Write-Host "🧹 Handling remaining files in OpenTofu Lab Automation project" -ForegroundColor Cyan
+Write-Host "� Handling remaining files in OpenTofu Lab Automation project" -ForegroundColor Cyan
 
 # 1. Move workflow scripts to maintenance
 $cleanWorkflows = Join-Path $rootDir "clean-workflows.ps1"
@@ -107,7 +107,7 @@ foreach ($testFile in $testDataFiles) {
     }
 }
 
-Write-Host "`n✅ Remaining files organized!" -ForegroundColor Green
+Write-Host "`nPASS Remaining files organized!" -ForegroundColor Green
 
 
 

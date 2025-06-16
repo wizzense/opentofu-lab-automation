@@ -6,17 +6,17 @@ MetaSocialImage: ../images/shared/github-copilot-social.png
 ---
 # Edit Jupyter notebooks with AI in VS Code
 
-Visual Studio Code supports working with [Jupyter notebooks](/docs/datascience/jupyter-notebooks.md) natively, and through [Python code files](/docs/python/jupyter-support-py.md). The AI features in VS Code can help you in creating and editing notebooks, as well as analyzing and visualizing data. In this article, you learn how to use the AI features in VS Code to work with Jupyter notebooks.
+Visual Studio Code supports working with Jupyter notebooks(/docs/datascience/jupyter-notebooks.md) natively, and through Python code files(/docs/python/jupyter-support-py.md). The AI features in VS Code can help you in creating and editing notebooks, as well as analyzing and visualizing data. In this article, you learn how to use the AI features in VS Code to work with Jupyter notebooks.
 
 ## Scaffold a new notebook
 
 To accelerate getting started with a new notebook, you can use the AI features in VS Code to scaffold a new notebook. You can provide details about what functionality you want to add and which libraries you want to use.
 
-To create a new notebook with AI, choose the [chat mode](/docs/copilot/chat/copilot-chat.md#chat-mode) and enter a prompt in the Chat view.
+To create a new notebook with AI, choose the chat mode(/docs/copilot/chat/copilot-chat.md#chat-mode) and enter a prompt in the Chat view.
 
-With [ask mode](vscode://GitHub.Copilot-Chat/chat?mode=ask) in chat, use the `/newNotebook` command in the chat input field to indicate that you want to scaffold a new notebook.
+With ask mode(vscode://GitHub.Copilot-Chat/chat?mode=ask) in chat, use the `/newNotebook` command in the chat input field to indicate that you want to scaffold a new notebook.
 
-[Agent mode](vscode://GitHub.Copilot-Chat/chat?mode=agent) provides a more autonomous experience, where it can make changes to the notebook, run the cells, and monitor and resolve potential run-time issues.
+Agent mode(vscode://GitHub.Copilot-Chat/chat?mode=agent) provides a more autonomous experience, where it can make changes to the notebook, run the cells, and monitor and resolve potential run-time issues.
 
 Example prompts:
 
@@ -26,9 +26,9 @@ Example prompts:
 - */newNotebook using pandas and seaborn to read and visualize the titanic dataset. Show key information from the dataset.* (ask mode)
 - *Create a Jupyter notebook to read data from #housing.csv. Run all cells.* (agent mode)
 
-The following screenshot shows how the output from agent mode to the prompt *Create a Jupyter notebook to read data from #housing.csv* (you can get this dataset from [Kaggle](https://www.kaggle.com/search?q=housing+dataset+in%3Adatasets)):
+The following screenshot shows how the output from agent mode to the prompt *Create a Jupyter notebook to read data from #housing.csv* (you can get this dataset from Kaggle(https://www.kaggle.com/search?q=housing+dataset+in%3Adatasets)):
 
-![Screenshot that shows a new notebook created by agent mode that reads the 'housing.csv' file in the workspace.](images/notebooks-with-ai/agent-mode-create-new-notebook.png)
+!Screenshot that shows a new notebook created by agent mode that reads the 'housing.csv' file in the workspace.(images/notebooks-with-ai/agent-mode-create-new-notebook.png)
 
 Notice that a new `.ipynb` file is created in the workspace, which contains Markdown and code cells for reading the CSV file and displaying the first few rows of the data.
 
@@ -40,10 +40,10 @@ If you already have a notebook and want to make some inline changes in a cell, y
 
 To make inline edits in a cell, press `kb(notebook.cell.chat.start)` or right-click in the cell and select **Copilot** > **Editor Inline Chat**. This opens the inline chat view, where you can enter your prompt.
 
-> [!TIP]
+> !TIP
 > You can reference kernel variables in your chat prompt. Type `#` followed by the variable name to reference it. For example, if you have a variable named `df`, you can type `#df` in your chat prompt to reference it.
 
-![Screenshot that shows the inline chat view in a notebook cell.](images/notebooks-with-ai/notebook-inline-chat.png)
+!Screenshot that shows the inline chat view in a notebook cell.(images/notebooks-with-ai/notebook-inline-chat.png)
 
 When the response is generated, notice that the code is updated in the notebook cell. You can **Accept** the changes and decide to **Accept and Run** the cell changes.
 
@@ -51,7 +51,7 @@ To generate a new cell with AI, select the **Generate** button in the notebook v
 
 ## Make edits across multiple cells
 
-To make larger edits, across multiple cells, you can use the chat interface in [edit mode](vscode://GitHub.Copilot-Chat/chat?mode=edit) or [agent mode](vscode://GitHub.Copilot-Chat/chat?mode=agent).
+To make larger edits, across multiple cells, you can use the chat interface in edit mode(vscode://GitHub.Copilot-Chat/chat?mode=edit) or agent mode(vscode://GitHub.Copilot-Chat/chat?mode=agent).
 
 Example prompts:
 
@@ -61,7 +61,7 @@ Example prompts:
 - *Use matplotlib instead of seaborn to plot the data*
 - *Remove the display of dataset information*
 
-![Screenshot that shows the response from edit mode to the prompt 'Plot a graph of the price distribution'.](images/notebooks-with-ai/notebook-edit-mode-plot-prices.png)
+!Screenshot that shows the response from edit mode to the prompt 'Plot a graph of the price distribution'.(images/notebooks-with-ai/notebook-edit-mode-plot-prices.png)
 
 Notice that you can use the overlay controls to navigate between the different edit suggestions, and to keep or undo the changes.
 
@@ -71,17 +71,17 @@ You can use the chat interface to ask questions about the content of your notebo
 
 The following example shows how to ask questions about a visualization in a notebook.
 
-1. Change to [ask mode](vscode://GitHub.Copilot-Chat/chat?mode=ask) in chat.
+1. Change to ask mode(vscode://GitHub.Copilot-Chat/chat?mode=ask) in chat.
 
 1. Select `...` next to the graph, and select **Add Cell Output to Chat** to add the chart as context to your chat request.
 
-    ![Screenshot that shows the context menu for a graph in a notebook cell.](images/notebooks-with-ai/notebook-ask-mode-add-cell-output.png)
+    !Screenshot that shows the context menu for a graph in a notebook cell.(images/notebooks-with-ai/notebook-ask-mode-add-cell-output.png)
 
 1. Enter the prompt *Explain this chart* in the chat input field.
 
     Notice that you get a detailed explanation of the chart.
 
-    ![Screenshot that shows the response from chat to the prompt 'Explain this chart'.](images/notebooks-with-ai/notebook-ask-mode-explain-chart.png)
+    !Screenshot that shows the response from chat to the prompt 'Explain this chart'.(images/notebooks-with-ai/notebook-ask-mode-explain-chart.png)
 
 ## Perform data analysis and visualization
 
@@ -89,7 +89,7 @@ You can do a full data analysis and visualization notebook of a dataset by using
 
 For example, to perform a data analysis of the housing dataset:
 
-1. Open [agent mode](vscode://GitHub.Copilot-Chat/chat?mode=agent) in chat.
+1. Open agent mode(vscode://GitHub.Copilot-Chat/chat?mode=agent) in chat.
 
 1. Enter the following prompt in the chat input field: *Perform data analysis of the data in #housing.csv*.
 
@@ -97,12 +97,12 @@ For example, to perform a data analysis of the housing dataset:
 
 1. The result is a new notebook with a complete data analysis of the dataset, including data cleaning, data visualization, and statistical analysis.
 
-    ![Screenshot that shows the response from agent mode to the prompt 'Perform data analysis of the data in housing.csv'.](images/notebooks-with-ai/notebook-agent-mode-data-analysis.png)
+    !Screenshot that shows the response from agent mode to the prompt 'Perform data analysis of the data in housing.csv'.(images/notebooks-with-ai/notebook-agent-mode-data-analysis.png)
 
 You can now further edit the notebook manually, or use AI to make inline edits or send follow-up chat requests to modify the notebook.
 
 ## Next steps
 
-- [Learn more about Jupyter notebooks in VS Code](/docs/datascience/jupyter-notebooks.md)
-- [Learn more about the AI features in VS Code](/docs/copilot/overview.md)
-- [Learn more about chat in VS Code](/docs/copilot/chat/copilot-chat.md)
+- Learn more about Jupyter notebooks in VS Code(/docs/datascience/jupyter-notebooks.md)
+- Learn more about the AI features in VS Code(/docs/copilot/overview.md)
+- Learn more about chat in VS Code(/docs/copilot/chat/copilot-chat.md)

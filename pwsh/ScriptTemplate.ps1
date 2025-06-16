@@ -26,24 +26,22 @@ block BEFORE Import-Module statements
 
 # CORRECT ORDER: Param block comes FIRST
 Param(
- [Parameter(Mandatory = $true)
+ Parameter(Mandatory = $true)
 
 
 
 
 
 
-]
- [object]$Config,
+
+ object$Config,
  
- [Parameter(Mandatory = $false)]
- [string]$ExampleParam = "DefaultValue"
+ Parameter(Mandatory = $false)
+ string$ExampleParam = "DefaultValue"
 )
 
 # Import-Module statements go AFTER Param block
-Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation//pwsh/modules/LabRunner/" -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force
-
-# Set error handling
+Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\pwsh/modules/LabRunner/" -Force# Set error handling
 $ErrorActionPreference = "Stop"
 
 try {
@@ -74,12 +72,13 @@ try {
 }
 
 # Best practices included in this template:
-# [PASS] Param block before Import-Module (prevents syntax errors)
-# [PASS] Comment-based help
-# [PASS] Error handling with try/catch
-# [PASS] Proper logging using lab utilities
-# [PASS] Configuration validation
-# [PASS] Consistent formatting and style
+# PASS Param block before Import-Module (prevents syntax errors)
+# PASS Comment-based help
+# PASS Error handling with try/catch
+# PASS Proper logging using lab utilities
+# PASS Configuration validation
+# PASS Consistent formatting and style
+
 
 
 

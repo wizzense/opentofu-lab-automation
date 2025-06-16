@@ -19,12 +19,12 @@ Get-BackupStatistics -ProjectRoot "." -IncludeDetails
 Follows OpenTofu Lab Automation maintenance standards
 #>
 function Get-BackupStatistics {
-    [CmdletBinding()]
+    CmdletBinding()
     param(
-        [Parameter(Mandatory = $true)]
-        [string]$ProjectRoot,
+        Parameter(Mandatory = $true)
+        string$ProjectRoot,
         
-        [switch]$IncludeDetails
+        switch$IncludeDetails
     )
     
     $ErrorActionPreference = "Stop"
@@ -34,7 +34,7 @@ function Get-BackupStatistics {
         if (Get-Module LabRunner -ErrorAction SilentlyContinue) {
             Write-CustomLog "Analyzing backup file statistics" "INFO"
         } else {
-            Write-Host "[INFO] Analyzing backup file statistics" -ForegroundColor Green
+            Write-Host "INFO Analyzing backup file statistics" -ForegroundColor Green
         }
         
         # Resolve project root
@@ -61,16 +61,16 @@ function Get-BackupStatistics {
             }
         } else {
             # Calculate statistics
-            $TotalSize = ($BackupFiles | Measure-Object -Property Length -Sum).Sum
-            $AverageSize = [math]::Round($TotalSize / $BackupFiles.Count, 2)
+            $TotalSize = (BackupFiles | Measure-Object -Property Length -Sum).Sum
+            $AverageSize = math::Round($TotalSize / $BackupFiles.Count, 2)
             
             # Find oldest and newest files
-            $OldestFile = $BackupFiles | Sort-Object LastWriteTime | Select-Object -First 1
-            $NewestFile = $BackupFiles | Sort-Object LastWriteTime -Descending | Select-Object -First 1
+            $OldestFile = BackupFiles | Sort-Object LastWriteTime  Select-Object -First 1
+            $NewestFile = BackupFiles | Sort-Object LastWriteTime -Descending  Select-Object -First 1
             
             # Group by file extension
-            $FileTypes = $BackupFiles | Group-Object Extension | ForEach-Object {
-                $percentage = [math]::Round(($_.Count / $BackupFiles.Count) * 100, 1)
+            $FileTypes = BackupFiles | Group-Object Extension  ForEach-Object {
+                $percentage = math::Round(($_.Count / $BackupFiles.Count) * 100, 1)
                 @{
                     Extension = if ($_.Name) { $_.Name } else { "(no extension)" }
                     Count = $_.Count
@@ -80,31 +80,31 @@ function Get-BackupStatistics {
             
             $result = @{
                 TotalFiles = $BackupFiles.Count
-                TotalSize = [math]::Round($TotalSize / 1MB, 2)
-                AverageSize = [math]::Round($AverageSize / 1KB, 2)
+                TotalSize = math::Round($TotalSize / 1MB, 2)
+                AverageSize = math::Round($AverageSize / 1KB, 2)
                 OldestFile = if ($OldestFile) { 
                     @{
                         Name = $OldestFile.Name
-                        Age = [math]::Round(((Get-Date) - $OldestFile.LastWriteTime).TotalDays, 1)
+                        Age = math::Round(((Get-Date) - $OldestFile.LastWriteTime).TotalDays, 1)
                     }
                 } else { $null }
                 NewestFile = if ($NewestFile) { 
                     @{
                         Name = $NewestFile.Name
-                        Age = [math]::Round(((Get-Date) - $NewestFile.LastWriteTime).TotalDays, 1)
+                        Age = math::Round(((Get-Date) - $NewestFile.LastWriteTime).TotalDays, 1)
                     }
                 } else { $null }
                 FileTypes = $FileTypes
             }
             
             if ($IncludeDetails) {
-                $result.Details = $BackupFiles | ForEach-Object {
+                $result.Details = BackupFiles | ForEach-Object {
                     @{
                         Name = $_.Name
                         Path = $_.FullName.Replace($ProjectRoot, "").TrimStart('\', '/')
-                        Size = [math]::Round($_.Length / 1KB, 2)
+                        Size = math::Round($_.Length / 1KB, 2)
                         LastModified = $_.LastWriteTime
-                        Age = [math]::Round(((Get-Date) - $_.LastWriteTime).TotalDays, 1)
+                        Age = math::Round(((Get-Date) - $_.LastWriteTime).TotalDays, 1)
                     }
                 }
             }
@@ -115,7 +115,7 @@ function Get-BackupStatistics {
         if (Get-Module LabRunner -ErrorAction SilentlyContinue) {
             Write-CustomLog $summaryMessage "INFO"
         } else {
-            Write-Host "[INFO] $summaryMessage" -ForegroundColor Green
+            Write-Host "INFO $summaryMessage" -ForegroundColor Green
         }
         
         return $result
@@ -125,8 +125,9 @@ function Get-BackupStatistics {
         if (Get-Module LabRunner -ErrorAction SilentlyContinue) {
             Write-CustomLog $ErrorMessage "ERROR"
         } else {
-            Write-Host "[ERROR] $ErrorMessage" -ForegroundColor Red
+            Write-Host "ERROR $ErrorMessage" -ForegroundColor Red
         }
         throw $_
     }
 }
+

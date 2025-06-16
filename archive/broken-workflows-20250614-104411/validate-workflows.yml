@@ -16,18 +16,18 @@ jobs:
   uses: actions/checkout@v4
 
       - name: " Install Dependencies"
-  run: |
+  run: 
  python -m pip install --upgrade pip
  pip install -r scripts/requirements.txt
 
       - name: " Validate All Workflows"
-  run: |
+  run: 
  python scripts/validate-workflows.py .github/workflows/*.yml
 
       - name: " Generate Summary Report"
-  run: |
+  run: 
  echo "# Workflow Validation Results" >> $GITHUB_STEP_SUMMARY
  echo "" >> $GITHUB_STEP_SUMMARY
  echo " All workflows validated successfully!" >> $GITHUB_STEP_SUMMARY
  echo "" >> $GITHUB_STEP_SUMMARY
- echo "Total workflows validated: $(ls -1 .github/workflows/*.yml | wc -l)" >> $GITHUB_STEP_SUMMARY
+ echo "Total workflows validated: $(ls -1 .github/workflows/*.yml  wc -l)" >> $GITHUB_STEP_SUMMARY

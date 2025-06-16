@@ -1,10 +1,10 @@
 {
-  "config_files": [
+  "config_files": 
     "configs/config_files/default-config.json",
     "configs/config_files/full-config.json",
     "configs/config_files/recommended-config.json"
-  ],
-  "runner_scripts": [
+  ,
+  "runner_scripts": 
     "pwsh/runner_scripts/0000_Cleanup-Files.ps1",
     "pwsh/runner_scripts/0001_Reset-Git.ps1",
     "pwsh/runner_scripts/0002_Setup-Directories.ps1",
@@ -42,5 +42,5 @@
     "pwsh/runner_scripts/0215_Install-Chocolatey.ps1",
     "pwsh/runner_scripts/0216_Set-LabProfile.ps1",
     "pwsh/runner_scripts/9999_Reset-Machine.ps1"
-  ]
+  
 }

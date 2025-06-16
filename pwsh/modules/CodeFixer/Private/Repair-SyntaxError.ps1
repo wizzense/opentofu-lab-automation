@@ -16,20 +16,20 @@ The parse error object
 Repair-SyntaxError -Content $fileContent -Error $parseError
 #>
 function Repair-SyntaxError {
-    [CmdletBinding()]
+    CmdletBinding()
     param(
-        [Parameter(Mandatory)
+        Parameter(Mandatory)
 
 
 
 
 
 
-]
-        [string]$Content,
+
+        string$Content,
         
-        [Parameter(Mandatory)]
-        [System.Management.Automation.Language.ParseError]$Error
+        Parameter(Mandatory)
+        System.Management.Automation.Language.ParseError$Error
     )
     
     $result = @{
@@ -49,17 +49,17 @@ function Repair-SyntaxError {
             return $result
         }
         
-        $currentLine = $lines[$errorLine]
+        $currentLine = $lines$errorLine
         
         switch -Regex ($errorMessage) {
             # Missing closing quote
-            "missing closing.*quote|unclosed.*quote" {
-                if ($currentLine -match '^(.*"[^"]*)"?$' -and -not ($currentLine -match '^.*"[^"]*".*$')) {
-                    $lines[$errorLine] = $currentLine + '"'
+            "missing closing.*quoteunclosed.*quote" {
+                if ($currentLine -match '^(.*"^"*)"?$' -and -not ($currentLine -match '^.*"^"*".*$')) {
+                    $lines$errorLine = $currentLine + '"'
                     $result.Fixed = $true
                     $result.Description = "Added missing closing double quote"
-                } elseif ($currentLine -match "^(.*'[^']*)'?$" -and -not ($currentLine -match "^.*'[^']*'.*$")) {
-                    $lines[$errorLine] = $currentLine + "'"
+                } elseif ($currentLine -match "^(.*'^'*)'?$" -and -not ($currentLine -match "^.*'^'*'.*$")) {
+                    $lines$errorLine = $currentLine + "'"
                     $result.Fixed = $true
                     $result.Description = "Added missing closing single quote"
                 }
@@ -67,23 +67,23 @@ function Repair-SyntaxError {
             }
             
             # Missing closing brace
-            "missing closing.*brace|expected.*}" {
+            "missing closing.*braceexpected.*}" {
                 # Look for the corresponding opening brace
                 $braceCount = 0
                 for ($i = $errorLine; $i -ge 0; $i--) {
-                    $lineText = $lines[$i]
-                    $openBraces = ($lineText.ToCharArray() | Where-Object { $_ -eq '{' }).Count
-                    $closeBraces = ($lineText.ToCharArray() | Where-Object { $_ -eq '}' }).Count
+                    $lineText = $lines$i
+                    $openBraces = ($lineText.ToCharArray()  Where-Object { $_ -eq '{' }).Count
+                    $closeBraces = ($lineText.ToCharArray()  Where-Object { $_ -eq '}' }).Count
                     $braceCount += ($openBraces - $closeBraces)
                     
                     if ($braceCount -gt 0) {
                         # Add closing brace at the end of the file or after the last line with content
                         $lastContentLine = $lines.Count - 1
-                        while ($lastContentLine -gt $errorLine -and [string]::IsNullOrWhiteSpace($lines[$lastContentLine])) {
+                        while ($lastContentLine -gt $errorLine -and string::IsNullOrWhiteSpace($lines$lastContentLine)) {
                             $lastContentLine--
                         }
                         if ($lastContentLine -ge $errorLine) {
-                            $lines[$lastContentLine] += "`n}"
+                            $lines$lastContentLine += "`n}"
                             $result.Fixed = $true
                             $result.Description = "Added missing closing brace"
                         }
@@ -94,9 +94,9 @@ function Repair-SyntaxError {
             }
             
             # Missing closing parenthesis
-            "missing closing.*parenthesis|expected.*\)" {
-                if ($currentLine -match '^(.*\([^)]*)\)?$' -and -not ($currentLine -match '^.*\([^)]*\).*$')) {
-                    $lines[$errorLine] = $currentLine + ')'
+            "missing closing.*parenthesisexpected.*\)" {
+                if ($currentLine -match '^(.*\(^)*)\)?$' -and -not ($currentLine -match '^.*\(^)*\).*$')) {
+                    $lines$errorLine = $currentLine + ')'
                     $result.Fixed = $true
                     $result.Description = "Added missing closing parenthesis"
                 }
@@ -104,16 +104,16 @@ function Repair-SyntaxError {
             }
             
             # Missing comma
-            "expected.*comma|missing.*comma" {
+            "expected.*commamissing.*comma" {
                 # This is tricky - we need to analyze the context
-                if ($currentLine -match '(\s*\[.*?\])\s*(\[.*?\])') {
+                if ($currentLine -match '(\s*\.*?\)\s*(\.*?\)') {
                     # Between parameter attributes
-                    $lines[$errorLine] = $currentLine -replace '(\s*\[.*?\])\s*(\[.*?\])', '$1,`n    $2'
+                    $lines$errorLine = $currentLine -replace '(\s*\.*?\)\s*(\.*?\)', '$1,`n    $2'
                     $result.Fixed = $true
                     $result.Description = "Added missing comma between parameters"
-                } elseif ($currentLine -match '("[^"]*")\s*("[^"]*")') {
+                } elseif ($currentLine -match '("^"*")\s*("^"*")') {
                     # Between string literals
-                    $lines[$errorLine] = $currentLine -replace '("[^"]*")\s*("[^"]*")', '$1, $2'
+                    $lines$errorLine = $currentLine -replace '("^"*")\s*("^"*")', '$1, $2'
                     $result.Fixed = $true
                     $result.Description = "Added missing comma between string literals"
                 }
@@ -121,9 +121,9 @@ function Repair-SyntaxError {
             }
             
             # Missing closing bracket
-            "missing closing.*bracket|expected.*\]" {
-                if ($currentLine -match '^(.*\[[^\]]*)\]?$' -and -not ($currentLine -match '^.*\[[^\]]*\].*$')) {
-                    $lines[$errorLine] = $currentLine + ']'
+            "missing closing.*bracketexpected.*\" {
+                if ($currentLine -match '^(.*\^\*)\?$' -and -not ($currentLine -match '^.*\^\*\.*$')) {
+                    $lines$errorLine = $currentLine + ''
                     $result.Fixed = $true
                     $result.Description = "Added missing closing bracket"
                 }

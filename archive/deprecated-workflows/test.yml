@@ -16,19 +16,19 @@ jobs:
         with:
           path: opentofu/examples/hyperv/.terraform/providers
           key: ${{ runner.os }}-tofu-providers-${{ hashFiles('opentofu/examples/hyperv/.terraform.lock.hcl') }}
-          restore-keys: |
+          restore-keys: 
             ${{ runner.os }}-tofu-providers-
       - name: Init and validate
         working-directory: opentofu/examples/hyperv
-        run: |
-          tofu init -input=false 2>&1 | tee init.log
-          tofu validate 2>&1 | tee validate.log
+        run: 
+          tofu init -input=false 2>&1  tee init.log
+          tofu validate 2>&1  tee validate.log
       - name: Upload logs
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: linux-validate-logs
-          path: |
+          path: 
             opentofu/examples/hyperv/init.log
             opentofu/examples/hyperv/validate.log
       - name: Upload artifacts
@@ -50,16 +50,16 @@ jobs:
         with:
           path: opentofu/examples/hyperv/.terraform/providers
           key: ${{ runner.os }}-tofu-providers-${{ hashFiles('opentofu/examples/hyperv/.terraform.lock.hcl') }}
-          restore-keys: |
+          restore-keys: 
             ${{ runner.os }}-tofu-providers-
       - name: Init and validate
         shell: pwsh
         working-directory: opentofu/examples/hyperv
-        run: |
+        run: 
           $ErrorActionPreference = 'Stop'
           try {
-            tofu init -input=false | Tee-Object -FilePath init.log
-            tofu validate | Tee-Object -FilePath validate.log
+            tofu init -input=false  Tee-Object -FilePath init.log
+            tofu validate  Tee-Object -FilePath validate.log
             Write-Host "OpenTofu validation completed successfully" -ForegroundColor Green
           } catch {
             Write-Error "OpenTofu validation failed: $_"
@@ -70,7 +70,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: windows-validate-logs
-          path: |
+          path: 
             opentofu/examples/hyperv/init.log
             opentofu/examples/hyperv/validate.log
       - name: Upload artifacts

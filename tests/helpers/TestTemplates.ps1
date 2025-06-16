@@ -15,34 +15,34 @@ function New-InstallerScriptTest {
     Creates a standardized test for installer scripts
     #>
     param(
-        [Parameter(Mandatory)
+        Parameter(Mandatory)
 
 
 
 
 
 
-]
-        [string]$ScriptName,
-        
-        [Parameter(Mandatory)]
-        [string]$EnabledProperty,
-        
-        [Parameter(Mandatory)]
-        [string]$InstallerCommand, # e.g., Start-Process, Invoke-MSI, etc.
 
-        [Parameter(Mandatory)]
-        [string]$SoftwareCommandName, # e.g., 'go', 'terraform', 'code'
+        string$ScriptName,
         
-        [hashtable]$EnabledConfig = @{},
+        Parameter(Mandatory)
+        string$EnabledProperty,
         
-        [hashtable]$DisabledConfig = @{},
+        Parameter(Mandatory)
+        string$InstallerCommand, # e.g., Start-Process, Invoke-MSI, etc.
+
+        Parameter(Mandatory)
+        string$SoftwareCommandName, # e.g., 'go', 'terraform', 'code'
         
-        [string[]]$RequiredPlatforms = @(),
+        hashtable$EnabledConfig = @{},
         
-        [string[]]$ExcludedPlatforms = @(),
+        hashtable$DisabledConfig = @{},
         
-        [hashtable]$AdditionalMocks = @{}
+        string$RequiredPlatforms = @(),
+        
+        string$ExcludedPlatforms = @(),
+        
+        hashtable$AdditionalMocks = @{}
     )
     
     # Build default configurations
@@ -72,7 +72,7 @@ function New-InstallerScriptTest {
 if ($Name -eq $SoftwareCommandName) { return $null } 
             # If AdditionalMocks has a Get-Command, use it for other names
             if ($AdditionalMocks.ContainsKey('Get-Command')) {
-                return (& $AdditionalMocks['Get-Command'] $Name)
+                return (& $AdditionalMocks'Get-Command' $Name)
             }
             return $null # Default behavior for other commands
         }
@@ -80,9 +80,9 @@ if ($Name -eq $SoftwareCommandName) { return $null }
         $InstallerCommand = {} # Mock the specific installer command used by the script
     }
     # Merge other additional mocks, giving precedence to AdditionalMocks
-    $AdditionalMocks.GetEnumerator() | ForEach-Object {
+    $AdditionalMocks.GetEnumerator()  ForEach-Object {
         if ($_.Name -ne 'Get-Command') { # Get-Command is handled specially above
-            $enabledScenarioMocks[$_.Name] = $_.Value
+            $enabledScenarioMocks$_.Name = $_.Value
         }
     }
     
@@ -103,16 +103,16 @@ if ($Name -eq $SoftwareCommandName) { return $null }
 
 # If AdditionalMocks has a Get-Command, use it
             if ($AdditionalMocks.ContainsKey('Get-Command')) {
-                return (& $AdditionalMocks['Get-Command'] $Name)
+                return (& $AdditionalMocks'Get-Command' $Name)
             }
             return $null
         }
         'Invoke-LabDownload' = {}
         $InstallerCommand = {}
     }
-    $AdditionalMocks.GetEnumerator() | ForEach-Object {
+    $AdditionalMocks.GetEnumerator()  ForEach-Object {
         if ($_.Name -ne 'Get-Command') {
-            $disabledScenarioMocks[$_.Name] = $_.Value
+            $disabledScenarioMocks$_.Name = $_.Value
         }
     }
     
@@ -130,19 +130,19 @@ if ($Name -eq $SoftwareCommandName) { return $null }
 
 
 
-if ($Name -eq $SoftwareCommandName) { return [PSCustomObject]@{ Name = $SoftwareCommandName; Source = "/fake/path/to/$SoftwareCommandName" } } 
+if ($Name -eq $SoftwareCommandName) { return PSCustomObject@{ Name = $SoftwareCommandName; Source = "/fake/path/to/$SoftwareCommandName" } } 
             # If AdditionalMocks has a Get-Command, use it for other names
             if ($AdditionalMocks.ContainsKey('Get-Command')) {
-                return (& $AdditionalMocks['Get-Command'] $Name)
+                return (& $AdditionalMocks'Get-Command' $Name)
             }
             return $null # Default behavior for other commands
         }
         'Invoke-LabDownload' = {}
         $InstallerCommand = {}
     }
-    $AdditionalMocks.GetEnumerator() | ForEach-Object {
+    $AdditionalMocks.GetEnumerator()  ForEach-Object {
         if ($_.Name -ne 'Get-Command') {
-            $alreadyInstalledMocks[$_.Name] = $_.Value
+            $alreadyInstalledMocks$_.Name = $_.Value
         }
     }
     
@@ -157,29 +157,29 @@ function New-FeatureScriptTest {
     Creates a standardized test for feature enablement scripts
     #>
     param(
-        [Parameter(Mandatory)
+        Parameter(Mandatory)
 
 
 
 
 
 
-]
-        [string]$ScriptName,
+
+        string$ScriptName,
         
-        [Parameter(Mandatory)]
-        [string]$EnabledProperty,
+        Parameter(Mandatory)
+        string$EnabledProperty,
         
-        [Parameter(Mandatory)]
-        [string[]]$FeatureCommands,
+        Parameter(Mandatory)
+        string$FeatureCommands,
         
-        [hashtable]$EnabledConfig = @{},
+        hashtable$EnabledConfig = @{},
         
-        [hashtable]$DisabledConfig = @{},
+        hashtable$DisabledConfig = @{},
         
-        [string[]]$RequiredPlatforms = @('Windows'),
+        string$RequiredPlatforms = @('Windows'),
         
-        [hashtable]$AdditionalMocks = @{}
+        hashtable$AdditionalMocks = @{}
     )
     
     # Build configurations
@@ -193,8 +193,8 @@ function New-FeatureScriptTest {
     $expectedInvocations = @{}
     
     foreach ($command in $FeatureCommands) {
-        $enabledMocks[$command] = {}
-        $expectedInvocations[$command] = 1
+        $enabledMocks$command = {}
+        $expectedInvocations$command = 1
     }
     $enabledMocks += $AdditionalMocks
     
@@ -205,8 +205,8 @@ function New-FeatureScriptTest {
     $disabledInvocations = @{}
     
     foreach ($command in $FeatureCommands) {
-        $disabledMocks[$command] = {}
-        $disabledInvocations[$command] = 0
+        $disabledMocks$command = {}
+        $disabledInvocations$command = 0
     }
     $disabledMocks += $AdditionalMocks
     
@@ -221,33 +221,33 @@ function New-ServiceScriptTest {
     Creates a standardized test for service management scripts
     #>
     param(
-        [Parameter(Mandatory)
+        Parameter(Mandatory)
 
 
 
 
 
 
-]
-        [string]$ScriptName,
+
+        string$ScriptName,
         
-        [Parameter(Mandatory)]
-        [string]$ServiceName,
+        Parameter(Mandatory)
+        string$ServiceName,
         
-        [string]$EnabledProperty,
+        string$EnabledProperty,
         
-        [hashtable]$EnabledConfig = @{},
+        hashtable$EnabledConfig = @{},
         
-        [string[]]$RequiredPlatforms = @('Windows'),
+        string$RequiredPlatforms = @('Windows'),
         
-        [hashtable]$AdditionalMocks = @{}
+        hashtable$AdditionalMocks = @{}
     )
     
     $scenarios = @()
     
     # Service not running scenario
     $notRunningMocks = @{
-        'Get-Service' = { [PSCustomObject]@{ Name = $ServiceName; Status = 'Stopped' } }
+        'Get-Service' = { PSCustomObject@{ Name = $ServiceName; Status = 'Stopped' } }
         'Start-Service' = {}
         'Enable-PSRemoting' = {}
     } + $AdditionalMocks
@@ -256,7 +256,7 @@ function New-ServiceScriptTest {
     
     # Service already running scenario
     $runningMocks = @{
-        'Get-Service' = { [PSCustomObject]@{ Name = $ServiceName; Status = 'Running' } }
+        'Get-Service' = { PSCustomObject@{ Name = $ServiceName; Status = 'Running' } }
         'Start-Service' = {}
         'Enable-PSRemoting' = {}
     } + $AdditionalMocks
@@ -272,29 +272,29 @@ function New-ConfigurationScriptTest {
     Creates a standardized test for configuration scripts
     #>
     param(
-        [Parameter(Mandatory)
+        Parameter(Mandatory)
 
 
 
 
 
 
-]
-        [string]$ScriptName,
+
+        string$ScriptName,
         
-        [Parameter(Mandatory)]
-        [string]$EnabledProperty,
+        Parameter(Mandatory)
+        string$EnabledProperty,
         
-        [Parameter(Mandatory)]
-        [string[]]$ConfigurationCommands,
+        Parameter(Mandatory)
+        string$ConfigurationCommands,
         
-        [hashtable]$EnabledConfig = @{},
+        hashtable$EnabledConfig = @{},
         
-        [hashtable]$DisabledConfig = @{},
+        hashtable$DisabledConfig = @{},
         
-        [string[]]$RequiredPlatforms = @(),
+        string$RequiredPlatforms = @(),
         
-        [hashtable]$AdditionalMocks = @{}
+        hashtable$AdditionalMocks = @{}
     )
     
     $finalEnabledConfig = @{ $EnabledProperty = $true } + $EnabledConfig
@@ -307,8 +307,8 @@ function New-ConfigurationScriptTest {
     $expectedInvocations = @{}
     
     foreach ($command in $ConfigurationCommands) {
-        $enabledMocks[$command] = {}
-        $expectedInvocations[$command] = 1
+        $enabledMocks$command = {}
+        $expectedInvocations$command = 1
     }
     $enabledMocks += $AdditionalMocks
     
@@ -319,8 +319,8 @@ function New-ConfigurationScriptTest {
     $disabledInvocations = @{}
     
     foreach ($command in $ConfigurationCommands) {
-        $disabledMocks[$command] = {}
-        $disabledInvocations[$command] = 0
+        $disabledMocks$command = {}
+        $disabledInvocations$command = 0
     }
     $disabledMocks += $AdditionalMocks
     
@@ -335,23 +335,23 @@ function New-CrossPlatformScriptTest {
     Creates tests that validate cross-platform compatibility
     #>
     param(
-        [Parameter(Mandatory)
+        Parameter(Mandatory)
 
 
 
 
 
 
-]
-        [string]$ScriptName,
+
+        string$ScriptName,
         
-        [hashtable]$WindowsConfig = @{},
+        hashtable$WindowsConfig = @{},
         
-        [hashtable]$LinuxConfig = @{},
+        hashtable$LinuxConfig = @{},
         
-        [hashtable]$MacOSConfig = @{},
+        hashtable$MacOSConfig = @{},
         
-        [hashtable]$CommonMocks = @{}
+        hashtable$CommonMocks = @{}
     )
     
     $scenarios = @()
@@ -380,27 +380,27 @@ function New-IntegrationTest {
     Creates integration tests that validate end-to-end functionality
     #>
     param(
-        [Parameter(Mandatory)
+        Parameter(Mandatory)
 
 
 
 
 
 
-]
-        [string]$TestName,
+
+        string$TestName,
         
-        [Parameter(Mandatory)]
-        [string[]]$ScriptSequence,
+        Parameter(Mandatory)
+        string$ScriptSequence,
         
-        [Parameter(Mandatory)]
-        [object]$Config,
+        Parameter(Mandatory)
+        object$Config,
         
-        [hashtable]$Mocks = @{},
+        hashtable$Mocks = @{},
         
-        [scriptblock]$Validation,
+        scriptblock$Validation,
         
-        [string[]]$RequiredPlatforms = @()
+        string$RequiredPlatforms = @()
     )
     
     Describe "Integration Test: $TestName" {
@@ -421,7 +421,7 @@ function New-IntegrationTest {
                 New-StandardTestMocks -ModuleName 'LabRunner'
                 
                 foreach ($mockName in $Mocks.Keys) {
-                    Mock $mockName $Mocks[$mockName] -ModuleName 'LabRunner'
+                    Mock $mockName $Mocks$mockName -ModuleName 'LabRunner'
                 }
                 
                 # Execute scripts in sequence

@@ -16,12 +16,12 @@ try {
  
  if (Test-Path $testFile) {
  $results = Invoke-ScriptAnalyzer -Path $testFile -Severity Error,Warning -Settings $settings
- Write-Host " [PASS] PSScriptAnalyzer working correctly ($($results.Count) issues found)" -ForegroundColor Green
+ Write-Host " PASS PSScriptAnalyzer working correctly ($($results.Count) issues found)" -ForegroundColor Green
  } else {
- Write-Host " [WARN] Test file not found, but PSScriptAnalyzer module loads" -ForegroundColor Yellow
+ Write-Host " WARN Test file not found, but PSScriptAnalyzer module loads" -ForegroundColor Yellow
  }
 } catch {
- Write-Host " [FAIL] PSScriptAnalyzer test failed: $_" -ForegroundColor Red
+ Write-Host " FAIL PSScriptAnalyzer test failed: $_" -ForegroundColor Red
 }
 
 # Test 2: Pester functionality
@@ -35,17 +35,17 @@ try {
  # Run just a quick discovery to verify Pester works
  $cfg.Run.DryRun = $true
  $result = Invoke-Pester -Configuration $cfg
- Write-Host " [PASS] Pester working correctly ($($result.TotalCount) tests discovered)" -ForegroundColor Green
+ Write-Host " PASS Pester working correctly ($($result.TotalCount) tests discovered)" -ForegroundColor Green
 } catch {
- Write-Host " [FAIL] Pester test failed: $_" -ForegroundColor Red
+ Write-Host " FAIL Pester test failed: $_" -ForegroundColor Red
 }
 
 # Test 3: Python labctl modules
 Write-Host "`n3. Testing Python labctl modules..." -ForegroundColor Yellow
 try {
- python -c "import py.labctl.pester_failures; import py.labctl.lint_failures; print(' [PASS] All labctl modules import successfully')"
+ python -c "import py.labctl.pester_failures; import py.labctl.lint_failures; print(' PASS All labctl modules import successfully')"
 } catch {
- Write-Host " [FAIL] Python module test failed: $_" -ForegroundColor Red
+ Write-Host " FAIL Python module test failed: $_" -ForegroundColor Red
 }
 
 # Test 4: Workflow files syntax
@@ -61,12 +61,12 @@ try {
  $parsed = ConvertFrom-Yaml $content
  $validCount++
  } catch {
- Write-Host " [FAIL] YAML syntax error in $($file.Name): $_" -ForegroundColor Red
+ Write-Host " FAIL YAML syntax error in $($file.Name): $_" -ForegroundColor Red
  }
  }
- Write-Host " [PASS] $validCount/$($yamlFiles.Count) workflow files have valid YAML syntax" -ForegroundColor Green
+ Write-Host " PASS $validCount/$($yamlFiles.Count) workflow files have valid YAML syntax" -ForegroundColor Green
 } catch {
- Write-Host " [WARN] Could not test YAML syntax (powershell-yaml not available)" -ForegroundColor Yellow
+ Write-Host " WARN Could not test YAML syntax (powershell-yaml not available)" -ForegroundColor Yellow
 }
 
 # Test 5: Project structure
@@ -87,17 +87,17 @@ foreach ($path in $requiredPaths) {
 }
 
 if ($missingPaths.Count -eq 0) {
- Write-Host " [PASS] All required project files present" -ForegroundColor Green
+ Write-Host " PASS All required project files present" -ForegroundColor Green
 } else {
- Write-Host " [FAIL] Missing files: $($missingPaths -join ', ')" -ForegroundColor Red
+ Write-Host " FAIL Missing files: $($missingPaths -join ', ')" -ForegroundColor Red
 }
 
 Write-Host "`n=== Verification Complete ===" -ForegroundColor Cyan
-Write-Host "[PASS] PSScriptAnalyzer: Fixed version compatibility (1.22.0)" -ForegroundColor Green
-Write-Host "[PASS] YAML Workflows: Fixed escaped quote syntax errors" -ForegroundColor Green
-Write-Host "[PASS] Issue Creation: Fixed multiline output handling" -ForegroundColor Green
-Write-Host "[PASS] Linting Rules: Optimized for test environment" -ForegroundColor Green
-Write-Host "[PASS] Pester Tests: All 3 tests passing" -ForegroundColor Green
+Write-Host "PASS PSScriptAnalyzer: Fixed version compatibility (1.22.0)" -ForegroundColor Green
+Write-Host "PASS YAML Workflows: Fixed escaped quote syntax errors" -ForegroundColor Green
+Write-Host "PASS Issue Creation: Fixed multiline output handling" -ForegroundColor Green
+Write-Host "PASS Linting Rules: Optimized for test environment" -ForegroundColor Green
+Write-Host "PASS Pester Tests: All 3 tests passing" -ForegroundColor Green
 
 Write-Host "`n All workflow issues have been resolved!" -ForegroundColor Green -BackgroundColor Black
 

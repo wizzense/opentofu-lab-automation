@@ -25,22 +25,22 @@ Invoke-TernarySyntaxFix -Path "pwsh/runner_scripts/"
 Invoke-TernarySyntaxFix -Path "pwsh/runner.ps1" -WhatIf
 #>
 function Invoke-TernarySyntaxFix {
- [CmdletBinding(SupportsShouldProcess)]
+ CmdletBinding(SupportsShouldProcess)
  param(
- [Parameter(Mandatory=$true, Position=0)
+ Parameter(Mandatory=$true, Position=0)
 
 
 
 
 
 
-]
- [string]$Path,
+
+ string$Path,
  
- [Parameter(Mandatory=$false)]
- [string]$Filter = "*.ps1",
+ Parameter(Mandatory=$false)
+ string$Filter = "*.ps1",
  
- [switch]$PassThru
+ switch$PassThru
  )
  
  $ErrorActionPreference = "Stop"
@@ -79,7 +79,7 @@ function Invoke-TernarySyntaxFix {
  $modified = $false
  
  # Fix 1: Simple ternary operator conversion
- $pattern1 = '\$([a-zA-Z0-9_]+)\s+\?\s+([^:]+)\s+:\s+([^;\r\n]+)'
+ $pattern1 = '\$(a-zA-Z0-9_+)\s+\?\s+(^:+)\s+:\s+(^;\r\n+)'
  $replacement1 = '$$$(if (1) { $2 } else { $3 })'
  if ($content -match $pattern1) {
  Write-Verbose " Fixing simple ternary operator expressions"
@@ -88,7 +88,7 @@ function Invoke-TernarySyntaxFix {
  }
  
  # Fix 2: Fix broken conditional expressions
- $pattern2 = '\(if \(\$([^)]+)\) \{ ([^}]+) \} else \{ ([^}]+) \}\)'
+ $pattern2 = '\(if \(\$(^)+)\) \{ (^}+) \} else \{ (^}+) \}\)'
  $replacement2 = '$$(if (1) { $2 } else { $3 })'
  if ($content -match $pattern2) {
  Write-Verbose " Fixing broken conditional expressions"
@@ -97,7 +97,7 @@ function Invoke-TernarySyntaxFix {
  }
  
  # Fix 3: Fix improper conditional variable assignments
- $pattern3 = '\$([a-zA-Z0-9_]+)\s*=\s*if\s*\(\$([^)]+)\)\s*\{\s*([^}]+)\s*\}\s*else\s*\{\s*([^}]+)\s*\}'
+ $pattern3 = '\$(a-zA-Z0-9_+)\s*=\s*if\s*\(\$(^)+)\)\s*\{\s*(^}+)\s*\}\s*else\s*\{\s*(^}+)\s*\}'
  $replacement3 = '$$$1 = if ($$$2) { $3 } else { $4 }'
  if ($content -match $pattern3) {
  Write-Verbose " Fixing improper conditional variable assignments"
@@ -109,7 +109,7 @@ function Invoke-TernarySyntaxFix {
  if ($modified) {
  if ($PSCmdlet.ShouldProcess($file.FullName, "Apply ternary syntax fixes")) {
  Set-Content -Path $file.FullName -Value $content -NoNewline
- Write-Verbose " [PASS] Fixed: $($file.Name)"
+ Write-Verbose " PASS Fixed: $($file.Name)"
  $fixedFiles += $file.FullName
  } else {
  Write-Verbose " Would fix: $($file.Name) (WhatIf mode)"

@@ -16,7 +16,7 @@ function Get-CrossPlatformTempPath {
     if ($env:TEMP) { 
         return $env:TEMP 
     } else { 
-        return [System.IO.Path]::GetTempPath() 
+        return System.IO.Path::GetTempPath() 
     }
 }
 
@@ -42,21 +42,21 @@ function Invoke-CrossPlatformCommand {
     If true, silently skip execution when cmdlet is unavailable instead of throwing
     #>
     param(
-        [Parameter(Mandatory)
+        Parameter(Mandatory)
 
 
 
 
 
 
-]
-        [string]$CommandName,
+
+        string$CommandName,
         
-        [hashtable]$Parameters = @{},
+        hashtable$Parameters = @{},
         
-        [object]$MockResult = $null,
+        object$MockResult = $null,
         
-        [switch]$SkipOnUnavailable
+        switch$SkipOnUnavailable
     )
     
     if (Get-Command $CommandName -ErrorAction SilentlyContinue) {
@@ -79,8 +79,8 @@ function Invoke-CrossPlatformCommand {
 
 function Invoke-LabStep {
     param(
-        [scriptblock]$Body,
-        [object]$Config
+        scriptblock$Body,
+        object$Config
     )
 
     
@@ -90,11 +90,11 @@ function Invoke-LabStep {
 
 
 
-if ($Config -is [string]) {
+if ($Config -is string) {
         if (Test-Path $Config) {
-            $Config = Get-Content -Raw -Path $Config | ConvertFrom-Json
+            $Config = Get-Content -Raw -Path $Config  ConvertFrom-Json
         } else {
-            try { $Config = $Config | ConvertFrom-Json } catch {}
+            try { $Config = $Config  ConvertFrom-Json } catch {}
         }
     }
 
@@ -127,27 +127,27 @@ if ($Config -is [string]) {
 }
 
 function Invoke-LabDownload {
-    [CmdletBinding()]
+    CmdletBinding()
     param(
-        [Parameter(Mandatory)
+        Parameter(Mandatory)
 
 
 
 
 
 
-][string]$Uri,
-        [Parameter(Mandatory)][scriptblock]$Action,
-        [string]$Prefix = 'download',
-        [string]$Extension
+string$Uri,
+        Parameter(Mandatory)scriptblock$Action,
+        string$Prefix = 'download',
+        string$Extension
     )
 
     $ext = if ($Extension) {
         if ($Extension.StartsWith('.')) { $Extension } else { ".$Extension" }
     } else {
-        try { [System.IO.Path]::GetExtension($Uri).Split('?')[0] } catch { '' }
+        try { System.IO.Path::GetExtension($Uri).Split('?')0 } catch { '' }
     }    $tempDir = Get-CrossPlatformTempPath
-    $path = Join-Path $tempDir ("{0}_{1}{2}" -f $Prefix, [guid]::NewGuid(), $ext)
+    $path = Join-Path $tempDir ("{0}_{1}{2}" -f $Prefix, guid::NewGuid(), $ext)
     Write-CustomLog "Downloading $Uri to $path"
     try {
         Invoke-LabWebRequest -Uri $Uri -OutFile $path -UseBasicParsing

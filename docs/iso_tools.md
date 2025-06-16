@@ -13,4 +13,4 @@ These resources can be adapted to streamline automated lab setups.
 
 ---
 
-See [pester-test-failures.md](pester-test-failures.md) for a tracked list of current test failures.
+See pester-test-failures.md(pester-test-failures.md) for a tracked list of current test failures.

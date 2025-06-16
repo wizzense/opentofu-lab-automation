@@ -23,16 +23,16 @@ Describe '{SCRIPT_NAME} Tests' -Tag '{TAG}' {
     
     Context 'Script Structure Validation' {
         It 'should have a defined script path' {
-            $script:ScriptPath | Should -Not -BeNullOrEmpty
+            $script:ScriptPath  Should -Not -BeNullOrEmpty
         }
         
         It 'should follow naming conventions' {
-            $script:ScriptPath | Should -Match '^.*[0-9]{4}_[A-Z][a-zA-Z0-9-]+\.ps1$|^[A-Z][a-zA-Z0-9-]+\.ps1$'
+            $script:ScriptPath  Should -Match '^.*0-9{4}_A-Za-zA-Z0-9-+\.ps1$^A-Za-zA-Z0-9-+\.ps1$'
         }
         
         It 'should have valid script name' {
-            $script:ScriptName | Should -Not -BeNullOrEmpty
-            $script:ScriptName | Should -Match '^[0-9]{4}_[A-Z][a-zA-Z0-9-]+$|^[A-Z][a-zA-Z0-9-]+$'
+            $script:ScriptName  Should -Not -BeNullOrEmpty
+            $script:ScriptName  Should -Match '^0-9{4}_A-Za-zA-Z0-9-+$^A-Za-zA-Z0-9-+$'
         }
     }
     
@@ -45,7 +45,7 @@ Describe '{SCRIPT_NAME} Tests' -Tag '{TAG}' {
         It 'should handle script validation if file exists' {
             if (Test-Path (Join-Path "LabRunner" "$($script:ScriptName).ps1")) {
                 # Script exists - basic syntax validation
-                { Get-Content (Join-Path "LabRunner" "$($script:ScriptName).ps1") } | Should -Not -Throw
+                { Get-Content (Join-Path "LabRunner" "$($script:ScriptName).ps1") }  Should -Not -Throw
             } else {
                 # Script doesn't exist yet - that's OK for template
                 $true | Should -Be $true
@@ -67,3 +67,4 @@ Describe '{SCRIPT_NAME} Tests' -Tag '{TAG}' {
 # {SCRIPT_NAME} - The script name (e.g., "0205_Install-Sysinternals")
 # {TAG} - The tag category (e.g., "Installer", "Configuration", "SystemInfo")
 # {CONTEXT_NAME} - Context based on script type (e.g., "Installation", "Configuration", "System Information")
+

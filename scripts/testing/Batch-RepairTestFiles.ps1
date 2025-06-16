@@ -2,18 +2,15 @@
 # Batch repair test files to fix module import issues and remove unused variables
 
 param(
-    [string]$TestDirectory = "tests",
-    [switch]$WhatIf,
-    [switch]$Force
+    string$TestDirectory = "tests",
+    switch$WhatIf,
+    switch$Force
 )
 
 $ErrorActionPreference = "Stop"
 
 # Import required modules
-Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation//pwsh/modules/LabRunner/" -Force -Force -Force -Force -Force -Force -Force
-Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation//pwsh/modules/CodeFixer/" -Force -Force -Force -Force -Force -Force -Force
-
-# Ensure PSScriptAnalyzer is imported correctly
+Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\pwsh/modules/LabRunner/" -ForceImport-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\pwsh/modules/CodeFixer/" -Force# Ensure PSScriptAnalyzer is imported correctly
 if (-not (Get-Module -ListAvailable PSScriptAnalyzer -ErrorAction SilentlyContinue)) {
     Install-Module PSScriptAnalyzer -Force -Scope CurrentUser
 }
@@ -21,8 +18,8 @@ Import-Module PSScriptAnalyzer -Force
 
 function Repair-TestFile {
     param(
-        [string]$FilePath,
-        [switch]$WhatIf
+        string$FilePath,
+        switch$WhatIf
     )
     
     Write-CustomLog "Repairing test file: $FilePath" "INFO"
@@ -31,7 +28,7 @@ function Repair-TestFile {
         Write-CustomLog "File not found: $FilePath" "WARN"
         return
     }
-      $fileName = [System.IO.Path]::GetFileName($FilePath)
+      $fileName = System.IO.Path::GetFileName($FilePath)
     
     # Create standardized test file content
     $standardHeader = @"
@@ -40,21 +37,19 @@ function Repair-TestFile {
 
 Describe '$($fileName -replace '\.Tests\.ps1$', '') Tests' {
     BeforeAll {
-        Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation//pwsh/modules/LabRunner/" -Force -Force -Force -Force -Force -Force -Force
-        Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation//pwsh/modules/CodeFixer/" -Force -Force -Force -Force -Force -Force -Force
-    }
+        Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\pwsh/modules/LabRunner/" -ForceImport-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\pwsh/modules/CodeFixer/" -Force}
 
     Context 'Module Loading' {
         It 'should load required modules' {
-            Get-Module LabRunner | Should -Not -BeNullOrEmpty
-            Get-Module CodeFixer | Should -Not -BeNullOrEmpty
+            Get-Module LabRunner  Should -Not -BeNullOrEmpty
+            Get-Module CodeFixer  Should -Not -BeNullOrEmpty
         }
     }
 
     Context 'Functionality Tests' {
         It 'should execute without errors' {
             # Basic test implementation
-            `$true | Should -BeTrue
+            `$true  Should -BeTrue
         }
     }
 
@@ -84,10 +79,10 @@ Describe '$($fileName -replace '\.Tests\.ps1$', '') Tests' {
 }
 
 function Get-TestFiles {
-    param([string]$Directory)
+    param(string$Directory)
     
-    $testFiles = Get-ChildItem -Path $Directory -Filter "*.Tests.ps1" -Recurse | 
-        Where-Object { $_.Name -ne "TestHelpers.Tests.ps1" -and $_.Name -ne "TestFramework.Tests.ps1" } |
+    $testFiles = Get-ChildItem -Path $Directory -Filter "*.Tests.ps1" -Recurse  
+        Where-Object { $_.Name -ne "TestHelpers.Tests.ps1" -and $_.Name -ne "TestFramework.Tests.ps1" } 
         Sort-Object Name
     
     return $testFiles
@@ -126,15 +121,16 @@ if (-not $WhatIf) {
         try {
             $errors = @(Get-ScriptAnalyzerResult -Path $testFile.FullName -Severity Error)
             if ($errors.Count -eq 0) {
-                Write-CustomLog "✓ $($testFile.Name) - No errors" "INFO"
+                Write-CustomLog " $($testFile.Name) - No errors" "INFO"
             } else {
-                Write-CustomLog "✗ $($testFile.Name) - $($errors.Count) errors" "WARN"
+                Write-CustomLog " $($testFile.Name) - $($errors.Count) errors" "WARN"
             }
         } catch {
             Write-CustomLog "Validation failed for $($testFile.Name): $($_.Exception.Message)" "ERROR"
         }
     }
 }
+
 
 
 

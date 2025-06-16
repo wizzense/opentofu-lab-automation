@@ -17,7 +17,7 @@ Write-Host " Found $initialCount remaining Get-Command patterns to fix" -Foregro
 # Fix ScriptTemplate.Tests.ps1
 Write-Host " Fixing ScriptTemplate.Tests.ps1..." -ForegroundColor Green
 $content = Get-Content "tests/ScriptTemplate.Tests.ps1" -Raw
-$content = $content -replace "Get-Command 'Invoke-LabStep' \| Should -Not -BeNullOrEmpty", "`$scriptContent = Get-Content `$script:ScriptPath -Raw`n `$scriptContent | Should -Match 'function\s+Invoke-LabStep'"
+$content = $content -replace "Get-Command 'Invoke-LabStep' \ Should -Not -BeNullOrEmpty", "`$scriptContent = Get-Content `$script:ScriptPath -Raw`n `$scriptContent  Should -Match 'function\s+Invoke-LabStep'"
 Set-Content -Path "tests/ScriptTemplate.Tests.ps1" -Value $content
 
 # Fix kicker-bootstrap.Tests.ps1 - multiple functions
@@ -32,9 +32,9 @@ $functionMappings = @{
 }
 
 foreach ($func in $functionMappings.Keys) {
- $pattern = "Get-Command '$func' \| Should -Not -BeNullOrEmpty"
- $replacement = "`$scriptContent = Get-Content `$script:ScriptPath -Raw`n `$scriptContent | Should -Match 'function\s+$func'"
- $content = $content -replace [regex]::Escape($pattern), $replacement
+ $pattern = "Get-Command '$func' \ Should -Not -BeNullOrEmpty"
+ $replacement = "`$scriptContent = Get-Content `$script:ScriptPath -Raw`n `$scriptContent  Should -Match 'function\s+$func'"
+ $content = $content -replace regex::Escape($pattern), $replacement
 }
 Set-Content -Path "tests/kicker-bootstrap.Tests.ps1" -Value $content
 
@@ -49,9 +49,9 @@ $runnerFunctions = @(
 )
 
 foreach ($func in $runnerFunctions) {
- $pattern = "Get-Command '$func' \| Should -Not -BeNullOrEmpty"
- $replacement = "`$scriptContent = Get-Content `$script:ScriptPath -Raw`n `$scriptContent | Should -Match 'function\s+$func'"
- $content = $content -replace [regex]::Escape($pattern), $replacement
+ $pattern = "Get-Command '$func' \ Should -Not -BeNullOrEmpty"
+ $replacement = "`$scriptContent = Get-Content `$script:ScriptPath -Raw`n `$scriptContent  Should -Match 'function\s+$func'"
+ $content = $content -replace regex::Escape($pattern), $replacement
 }
 Set-Content -Path "tests/runner.Tests.ps1" -Value $content
 
@@ -61,9 +61,9 @@ $content = Get-Content "tests/setup-test-env.Tests.ps1" -Raw
 $setupFunctions = @('Ensure-Pester', 'Ensure-Python', 'Ensure-Poetry')
 
 foreach ($func in $setupFunctions) {
- $pattern = "Get-Command '$func' \| Should -Not -BeNullOrEmpty"
- $replacement = "`$scriptContent = Get-Content `$script:ScriptPath -Raw`n `$scriptContent | Should -Match 'function\s+$func'"
- $content = $content -replace [regex]::Escape($pattern), $replacement
+ $pattern = "Get-Command '$func' \ Should -Not -BeNullOrEmpty"
+ $replacement = "`$scriptContent = Get-Content `$script:ScriptPath -Raw`n `$scriptContent  Should -Match 'function\s+$func'"
+ $content = $content -replace regex::Escape($pattern), $replacement
 }
 Set-Content -Path "tests/setup-test-env.Tests.ps1" -Value $content
 
@@ -75,10 +75,10 @@ Write-Host "`n Batch fix completed!" -ForegroundColor Green
 Write-Host " Fixed $fixedCount patterns, $finalCount remaining" -ForegroundColor Cyan
 
 if ($finalCount -eq 0) {
- Write-Host "[PASS] ALL Get-Command patterns have been fixed!" -ForegroundColor Green
+ Write-Host "PASS ALL Get-Command patterns have been fixed!" -ForegroundColor Green
 } else {
- Write-Host "[INFO] Remaining patterns:" -ForegroundColor Yellow
- Select-String -Path "tests/*.Tests.ps1" -Pattern "Get-Command.*Should.*Not.*BeNullOrEmpty" | ForEach-Object { 
+ Write-Host "INFO Remaining patterns:" -ForegroundColor Yellow
+ Select-String -Path "tests/*.Tests.ps1" -Pattern "Get-Command.*Should.*Not.*BeNullOrEmpty"  ForEach-Object { 
  Write-Host " - $($_.Filename):$($_.LineNumber)" -ForegroundColor Gray 
  }
 }
@@ -93,19 +93,19 @@ foreach ($testFile in $testFiles) {
  $result = Invoke-Pester "tests/$testFile" -PassThru -Output None
  if ($result.FailedCount -eq 0) {
  if ($result.PassedCount -gt 0) {
- Write-Host " [PASS] $($result.PassedCount) passed, $($result.SkippedCount) skipped" -ForegroundColor Green
+ Write-Host " PASS $($result.PassedCount) passed, $($result.SkippedCount) skipped" -ForegroundColor Green
  } else {
  Write-Host " ⏭ $($result.SkippedCount) skipped (platform-specific)" -ForegroundColor Yellow
  }
  } else {
- Write-Host " [WARN] $($result.FailedCount) failed, $($result.PassedCount) passed" -ForegroundColor Yellow
+ Write-Host " WARN $($result.FailedCount) failed, $($result.PassedCount) passed" -ForegroundColor Yellow
  }
  } catch {
- Write-Host " [FAIL] Error: $_" -ForegroundColor Red
+ Write-Host " FAIL Error: $_" -ForegroundColor Red
  }
 }
 
-Write-Host "`n✨ Pester test fixes are complete!" -ForegroundColor Green
+Write-Host "`n Pester test fixes are complete!" -ForegroundColor Green
 
 
 

@@ -3,8 +3,8 @@
 # This script replaces all previous deploy/launch scripts
 
 param(
-    [Parameter(ValueFromRemainingArguments = $true)]
-    [string[]]$Arguments
+    Parameter(ValueFromRemainingArguments = $true)
+    string$Arguments
 )
 
 $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path

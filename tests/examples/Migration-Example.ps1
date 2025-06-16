@@ -27,7 +27,7 @@ Describe '0007_Install-Go' {
         }
 
         It 'installs Go when enabled' {
-            $cfg = [pscustomobject]@{ 
+            $cfg = pscustomobject@{ 
                 InstallGo = $true
                 Go = @{ InstallerUrl = 'http://example.com/go1.21.0.windows-amd64.msi' }
             }
@@ -43,7 +43,7 @@ Describe '0007_Install-Go' {
         }
 
         It 'skips when InstallGo is false' {
-            $cfg = [pscustomobject]@{ 
+            $cfg = pscustomobject@{ 
                 InstallGo = $false
                 Go = @{ InstallerUrl = 'http://example.com/go1.21.0.windows-amd64.msi' }
             }
@@ -56,11 +56,11 @@ Describe '0007_Install-Go' {
         }
 
         It 'does nothing when Go is already installed' {
-            $cfg = [pscustomobject]@{ 
+            $cfg = pscustomobject@{ 
                 InstallGo = $true
                 Go = @{ InstallerUrl = 'http://example.com/go1.21.0.windows-amd64.msi' }
             }
-            Mock Get-Command { [PSCustomObject]@{ Name = 'go'; Source = 'C:\Go\bin\go.exe' } } -ParameterFilter { $Name -eq 'go' }
+            Mock Get-Command { PSCustomObject@{ Name = 'go'; Source = 'C:\Go\bin\go.exe' } } -ParameterFilter { $Name -eq 'go' }
             Mock Invoke-LabDownload {}
             Mock Start-Process {}
             
@@ -71,7 +71,7 @@ Describe '0007_Install-Go' {
     }
     
     AfterAll {
-        Get-Module LabRunner | Remove-Module -Force -ErrorAction SilentlyContinue
+        Get-Module LabRunner  Remove-Module -Force -ErrorAction SilentlyContinue
     }
 }
 #>
@@ -112,7 +112,7 @@ New-InstallerScriptTest -ScriptName '0007_Install-Go.ps1' -EnabledProperty 'Inst
 if ($Name -eq 'go') { 
             return $null  # Simulate Go not installed
         } 
-        return [PSCustomObject]@{ Name = $Name; Source = "/usr/bin/$Name" }
+        return PSCustomObject@{ Name = $Name; Source = "/usr/bin/$Name" }
     }
 }
 

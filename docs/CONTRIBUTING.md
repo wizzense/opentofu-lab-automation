@@ -1,6 +1,6 @@
 # Contributing
 
-This project uses [Pester](https://github.com/pester/Pester) for PowerShell testing.
+This project uses Pester(https://github.com/pester/Pester) for PowerShell testing.
 
 ## Continuous Integration
 
@@ -52,7 +52,7 @@ When adding Windows‑specific tests, guard them with
 
 ## Changelog entries
 
-This project uses [towncrier](https://github.com/twisted/towncrier) to manage the
+This project uses towncrier(https://github.com/twisted/towncrier) to manage the
 changelog. For each pull request, create a news fragment under `newsfragments/`
 describing your change. Run `towncrier create` and commit the generated file.
 The changelog is automatically updated on merges to `main`.

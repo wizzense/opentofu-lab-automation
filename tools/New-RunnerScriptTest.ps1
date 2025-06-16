@@ -51,24 +51,24 @@ Array of test case definitions. Each test case should have:
 #>
 
 param(
-    [Parameter(Mandatory)
+    Parameter(Mandatory)
 
 
 
 
 
 
-]
-    [string]$ScriptName,
+
+    string$ScriptName,
     
-    [Parameter(Mandatory)]
-    [array]$TestCases,
+    Parameter(Mandatory)
+    array$TestCases,
     
-    [string]$OutputPath
+    string$OutputPath
 )
 
 if (-not $OutputPath) {
-    $baseName = [System.IO.Path]::GetFileNameWithoutExtension($ScriptName)
+    $baseName = System.IO.Path::GetFileNameWithoutExtension($ScriptName)
     $OutputPath = Join-Path $PSScriptRoot '..' 'tests' "$baseName.Tests.ps1"
 }
 
@@ -91,14 +91,14 @@ Describe '$($ScriptName -replace '\.ps1$', '')' {
 foreach ($testCase in $TestCases) {
     $testContent += @"
         It '$($testCase.Name)' {
-            `$cfg = [pscustomobject]@{
+            `$cfg = pscustomobject@{
 "@
 
     foreach ($key in $testCase.Config.Keys) {
-        $value = $testCase.Config[$key]
-        if ($value -is [string]) {
+        $value = $testCase.Config$key
+        if ($value -is string) {
             $testContent += "`n                $key = '$value'"
-        } elseif ($value -is [bool]) {
+        } elseif ($value -is bool) {
             $testContent += "`n                $key = `$$($value.ToString().ToLower())"
         } else {
             $testContent += "`n                $key = $value"
@@ -112,7 +112,7 @@ foreach ($testCase in $TestCases) {
 
     if ($testCase.Mocks) {
         foreach ($mockName in $testCase.Mocks.Keys) {
-            $mockBody = $testCase.Mocks[$mockName].ToString()
+            $mockBody = $testCase.Mocks$mockName.ToString()
             $testContent += "`n            Mock $mockName { $mockBody }"
         }
     }
@@ -121,9 +121,9 @@ foreach ($testCase in $TestCases) {
 
     if ($testCase.ShouldThrow) {
         if ($testCase.ExpectedError) {
-            $testContent += "{ & `$script:ScriptPath -Config `$cfg } | Should -Throw '*$($testCase.ExpectedError)*'"
+            $testContent += "{ & `$script:ScriptPath -Config `$cfg }  Should -Throw '*$($testCase.ExpectedError)*'"
         } else {
-            $testContent += "{ & `$script:ScriptPath -Config `$cfg } | Should -Throw"
+            $testContent += "{ & `$script:ScriptPath -Config `$cfg }  Should -Throw"
         }
     } else {
         $testContent += "& `$script:ScriptPath -Config `$cfg"
@@ -131,7 +131,7 @@ foreach ($testCase in $TestCases) {
 
     if ($testCase.ExpectedInvocations) {
         foreach ($funcName in $testCase.ExpectedInvocations.Keys) {
-            $expectedCount = $testCase.ExpectedInvocations[$funcName]
+            $expectedCount = $testCase.ExpectedInvocations$funcName
             $testContent += "`n            Should -Invoke -CommandName $funcName -Times $expectedCount"
         }
     }
@@ -146,27 +146,28 @@ foreach ($testCase in $TestCases) {
 $testContent += @"
         AfterEach {
             # Cleanup test-specific functions
-            Get-ChildItem Function: | Where-Object { `$_.Name -match '^(python|go|npm|git|gh|tofu|msiexec)$' } | Remove-Item -ErrorAction SilentlyContinue
+            Get-ChildItem Function:  Where-Object { `$_.Name -match '^(pythongonpmgitghtofumsiexec)$' }  Remove-Item -ErrorAction SilentlyContinue
         }
     }
 
     AfterAll {
-        Get-Module LabRunner | Remove-Module -Force -ErrorAction SilentlyContinue
+        Get-Module LabRunner  Remove-Module -Force -ErrorAction SilentlyContinue
     }
 }
 "@
 
 # Write the test file
-$testContent | Out-File -FilePath $OutputPath -Encoding utf8
+testContent | Out-File -FilePath $OutputPath -Encoding utf8
 Write-Host "Generated test file: $OutputPath" -ForegroundColor Green
 
 # Validate the generated file by running a syntax check
 try {
-    $null = [System.Management.Automation.PSParser]::Tokenize($testContent, [ref]$null)
-    Write-Host "✓ Syntax validation passed" -ForegroundColor Green
+    $null = System.Management.Automation.PSParser::Tokenize($testContent, ref$null)
+    Write-Host " Syntax validation passed" -ForegroundColor Green
 } catch {
     Write-Warning "Syntax validation failed: $_"
 }
+
 
 
 

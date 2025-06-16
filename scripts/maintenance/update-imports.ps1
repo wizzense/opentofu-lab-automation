@@ -11,9 +11,9 @@ modules/LabRunner location to use the new pwsh/modules/LabRunner location.
 ./update-labrunner-imports.ps1
 #>
 
-[CmdletBinding()]
+CmdletBinding()
 param(
- [switch]$WhatIf
+ switch$WhatIf
 )
 
 
@@ -31,16 +31,16 @@ Write-Host " Updating LabRunner import paths..." -ForegroundColor Cyan
 $filesToUpdate = @()
 
 # Search for files with the old import pattern
-$files = Get-ChildItem -Path . -Recurse -Include "*.ps1", "*.psm1" -File | 
+$files = Get-ChildItem -Path . -Recurse -Include "*.ps1", "*.psm1" -File  
  Where-Object { $_.FullName -notlike "*backup*" -and $_.FullName -notlike "*archive*" }
 
 foreach ($file in $files) {
  try {
  $content = Get-Content -Path $file.FullName -Raw
  if ($content -match 'modules/LabRunner') {
- $filesToUpdate += [PSCustomObject]@{
+ $filesToUpdate += PSCustomObject@{
  Path = $file.FullName
- RelativePath = $file.FullName -replace [regex]::Escape($PWD), "."
+ RelativePath = $file.FullName -replace regex::Escape($PWD), "."
  Content = $content
  }
  }
@@ -52,7 +52,7 @@ foreach ($file in $files) {
 Write-Host "Found $($filesToUpdate.Count) files to update" -ForegroundColor Yellow
 
 if ($filesToUpdate.Count -eq 0) {
- Write-Host "[PASS] No files need updating" -ForegroundColor Green
+ Write-Host "PASS No files need updating" -ForegroundColor Green
  exit 0
 }
 
@@ -71,11 +71,11 @@ if ($WhatIf) {
  # Find all the old import lines
  $lines = $file.Content -split "`r?`n"
  for ($i = 0; $i -lt $lines.Count; $i++) {
- if ($lines[$i] -match 'modules/LabRunner') {
- Write-Host " Line $($i + 1): $($lines[$i])" -ForegroundColor Red
+ if ($lines$i -match 'modules/LabRunner') {
+ Write-Host " Line $($i + 1): $($lines$i)" -ForegroundColor Red
  
  # Show what it would become
- $newLine = $lines[$i] -replace 'modules/LabRunner', 'modules/LabRunner'
+ $newLine = $lines$i -replace 'modules/LabRunner', 'modules/LabRunner'
  Write-Host " Would become: $newLine" -ForegroundColor Green
  }
  }
@@ -101,20 +101,20 @@ foreach ($file in $filesToUpdate) {
  $newContent = $file.Content -replace 'modules/LabRunner', 'modules/LabRunner'
  
  # Write the updated content
- $newContent | Set-Content -Path $file.Path -Encoding UTF8
+ newContent | Set-Content -Path $file.Path -Encoding UTF8
  
  $updatedCount++
- Write-Host " [PASS] Updated (backup: $([System.IO.Path]::GetFileName($backupPath)))" -ForegroundColor Green
+ Write-Host " PASS Updated (backup: $(System.IO.Path::GetFileName($backupPath)))" -ForegroundColor Green
  
  } catch {
- Write-Host " [FAIL] Failed to update: $($_.Exception.Message)" -ForegroundColor Red
+ Write-Host " FAIL Failed to update: $($_.Exception.Message)" -ForegroundColor Red
  $errorCount++
  }
 }
 
 Write-Host "`n Update Summary:" -ForegroundColor Cyan
-Write-Host "[PASS] Updated: $updatedCount files" -ForegroundColor Green
-Write-Host "[FAIL] Errors: $errorCount files" -ForegroundColor $$(if (errorCount -gt 0) { "Red" } else { "Green" })
+Write-Host "PASS Updated: $updatedCount files" -ForegroundColor Green
+Write-Host "FAIL Errors: $errorCount files" -ForegroundColor $$(if (errorCount -gt 0) { "Red" } else { "Green" })
 
 # Also check if we need to update any dot-sourcing of Logger.ps1
 Write-Host "`n Checking for Logger.ps1 references..." -ForegroundColor Cyan
@@ -134,25 +134,26 @@ foreach ($file in $files) {
 if ($loggerFiles.Count -gt 0) {
  Write-Host "Found $($loggerFiles.Count) files with Logger.ps1 references" -ForegroundColor Yellow
  foreach ($file in $loggerFiles) {
- $relativePath = $file.FullName -replace [regex]::Escape($PWD), "."
+ $relativePath = $file.FullName -replace regex::Escape($PWD), "."
  Write-Host " • $relativePath" -ForegroundColor Gray
  
  # Update Logger.ps1 references too
  try {
  $content = Get-Content -Path $file.FullName -Raw
  $newContent = $content -replace 'modules/LabRunner/Logger\.ps1', 'modules/LabRunner/Logger.ps1'
- $newContent | Set-Content -Path $file.FullName -Encoding UTF8
- Write-Host " [PASS] Updated Logger.ps1 reference" -ForegroundColor Green
+ newContent | Set-Content -Path $file.FullName -Encoding UTF8
+ Write-Host " PASS Updated Logger.ps1 reference" -ForegroundColor Green
  } catch {
- Write-Host " [FAIL] Failed to update Logger.ps1 reference: $($_.Exception.Message)" -ForegroundColor Red
+ Write-Host " FAIL Failed to update Logger.ps1 reference: $($_.Exception.Message)" -ForegroundColor Red
  }
  }
 } else {
- Write-Host "[PASS] No Logger.ps1 references to update" -ForegroundColor Green
+ Write-Host "PASS No Logger.ps1 references to update" -ForegroundColor Green
 }
 
 Write-Host "`n LabRunner import path updates completed!" -ForegroundColor Green
 Write-Host "Now LabRunner can be safely used from the new modules location." -ForegroundColor Cyan
+
 
 
 

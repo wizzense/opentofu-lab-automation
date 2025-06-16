@@ -27,12 +27,12 @@ from typing import Dict, Optional, List
 
 # Console colors for cross-platform output
 class Colors:
- RED = '\033[0;31m'
- GREEN = '\033[0;32m'
- YELLOW = '\033[1;33m'
- BLUE = '\033[0;34m'
- BOLD = '\033[1m'
- NC = '\033[0m' # No Color
+ RED = '\0330;31m'
+ GREEN = '\0330;32m'
+ YELLOW = '\0331;33m'
+ BLUE = '\0330;34m'
+ BOLD = '\0331m'
+ NC = '\0330m' # No Color
  
  @classmethod
  def disable_on_windows(cls):
@@ -60,11 +60,11 @@ class UnifiedLauncher:
  
  def _detect_python(self) -> str:
  """Detect the best Python command to use"""
- candidates = ['python3', 'python']
+ candidates = 'python3', 'python'
  
  for cmd in candidates:
  try:
- result = subprocess.run([cmd, '--version'], 
+ result = subprocess.run(cmd, '--version', 
  capture_output=True, text=True, timeout=5)
  if result.returncode == 0 and 'Python 3.' in result.stdout:
  return cmd
@@ -83,19 +83,19 @@ class UnifiedLauncher:
  
  def _print_success(self, message: str):
  """Print success message"""
- print(f"{Colors.GREEN}[PASS] {message}{Colors.NC}")
+ print(f"{Colors.GREEN}PASS {message}{Colors.NC}")
  
  def _print_error(self, message: str):
  """Print error message"""
- print(f"{Colors.RED}[FAIL] {message}{Colors.NC}")
+ print(f"{Colors.RED}FAIL {message}{Colors.NC}")
  
  def _print_info(self, message: str):
  """Print info message"""
- print(f"{Colors.BLUE}[INFO] {message}{Colors.NC}")
+ print(f"{Colors.BLUE}INFO {message}{Colors.NC}")
  
  def _print_warning(self, message: str):
  """Print warning message"""
- print(f"{Colors.YELLOW}[WARN] {message}{Colors.NC}")
+ print(f"{Colors.YELLOW}WARN {message}{Colors.NC}")
  
  def check_prerequisites(self) -> bool:
  """Check if all prerequisites are met"""
@@ -108,7 +108,7 @@ class UnifiedLauncher:
  return False
  else:
  try:
- result = subprocess.run([self.python_cmd, '--version'], 
+ result = subprocess.run(self.python_cmd, '--version', 
  capture_output=True, text=True)
  self._print_success(f"Python found: {result.stdout.strip()}")
  except:
@@ -117,15 +117,15 @@ class UnifiedLauncher:
  
  # Check tkinter for GUI functionality
  try:
- subprocess.run([self.python_cmd, '-c', 'import tkinter'], 
+ subprocess.run(self.python_cmd, '-c', 'import tkinter', 
  capture_output=True, check=True)
  self._print_success("GUI support (tkinter) available")
  except subprocess.CalledProcessError:
  self._print_warning("GUI support (tkinter) not available - deploy mode only")
  
  # Check project structure
- required_files = ['deploy.py', 'gui.py', 'configs', 'pwsh', 'scripts']
- missing_files = []
+ required_files = 'deploy.py', 'gui.py', 'configs', 'pwsh', 'scripts'
+ missing_files = 
  
  for file_path in required_files:
  if not (self.project_root / file_path).exists():
@@ -158,14 +158,14 @@ class UnifiedLauncher:
  """Show interactive menu for user selection"""
  self._print_header("OpenTofu Lab Automation - Unified Launcher")
  
- options = [
+ options = 
  ("1", "Deploy Lab Environment", "deploy"),
  ("2", "Launch GUI Interface", "gui"),
  ("3", "Validate Setup", "validate"),
  ("4", "Run Health Check", "health"),
  ("5", "Show Help", "help"),
  ("q", "Quit", "quit")
- ]
+ 
  
  print("Select an option:")
  for key, description, _ in options:
@@ -181,11 +181,11 @@ class UnifiedLauncher:
  self._print_warning("Invalid choice, please try again")
  return None
  
- def run_deployment(self, args: List[str] = None):
+ def run_deployment(self, args: Liststr = None):
  """Run deployment using deploy.py"""
  self._print_header("Deploying Lab Environment")
  
- cmd = [self.python_cmd, str(self.project_root / "deploy.py")]
+ cmd = self.python_cmd, str(self.project_root / "deploy.py")
  if args:
  cmd.extend(args)
  
@@ -208,7 +208,7 @@ class UnifiedLauncher:
  
  # Check if tkinter is available
  try:
- subprocess.run([self.python_cmd, '-c', 'import tkinter'], 
+ subprocess.run(self.python_cmd, '-c', 'import tkinter', 
  capture_output=True, check=True)
  except subprocess.CalledProcessError:
  self._print_error("GUI not available - tkinter is required")
@@ -218,7 +218,7 @@ class UnifiedLauncher:
  print(" CentOS/RHEL: sudo yum install tkinter")
  return False
  
- cmd = [self.python_cmd, str(self.project_root / "gui.py")]
+ cmd = self.python_cmd, str(self.project_root / "gui.py")
  
  try:
  subprocess.run(cmd, cwd=self.project_root)
@@ -238,7 +238,7 @@ class UnifiedLauncher:
  if pwsh_cmd:
  validation_script = self.project_root / "scripts" / "maintenance" / "unified-maintenance.ps1"
  if validation_script.exists():
- cmd = [pwsh_cmd, "-File", str(validation_script), "-Mode", "Quick"]
+ cmd = pwsh_cmd, "-File", str(validation_script), "-Mode", "Quick"
  try:
  result = subprocess.run(cmd, cwd=self.project_root)
  if result.returncode == 0:
@@ -254,7 +254,7 @@ class UnifiedLauncher:
  
  # Run basic Python validation
  try:
- cmd = [self.python_cmd, "-c", "import json; print('Python JSON validation: OK')"]
+ cmd = self.python_cmd, "-c", "import json; print('Python JSON validation: OK')"
  subprocess.run(cmd, check=True)
  self._print_success("Python validation completed")
  except Exception as e:
@@ -311,13 +311,13 @@ class UnifiedLauncher:
  self._print_error("Multiple issues found - system may not work correctly")
  return False
  
- def _get_powershell_command(self) -> Optional[str]:
+ def _get_powershell_command(self) -> Optionalstr:
  """Detect PowerShell command"""
- candidates = ['pwsh', 'powershell']
+ candidates = 'pwsh', 'powershell'
  
  for cmd in candidates:
  try:
- result = subprocess.run([cmd, '-c', '$PSVersionTable.PSVersion'], 
+ result = subprocess.run(cmd, '-c', '$PSVersionTable.PSVersion', 
  capture_output=True, text=True, timeout=5)
  if result.returncode == 0:
  return cmd
@@ -364,7 +364,7 @@ def main():
  
  parser = argparse.ArgumentParser(description="OpenTofu Lab Automation - Unified Launcher")
  parser.add_argument('action', nargs='?', 
- choices=['deploy', 'gui', 'validate', 'health', 'help'],
+ choices='deploy', 'gui', 'validate', 'health', 'help',
  help='Action to perform')
  parser.add_argument('--quick', action='store_true',
  help='Quick mode with minimal prompts')
@@ -374,17 +374,17 @@ def main():
  args, unknown_args = parser.parse_known_args()
  
  # Always check prerequisites first
- if not launcher.check_prerequisites() and args.action not in ['help', None]:
+ if not launcher.check_prerequisites() and args.action not in 'help', None:
  launcher._print_error("Prerequisites not met. Please install required software.")
  return 1
  
  # Handle command line actions
  if args.action == 'deploy':
- deploy_args = []
+ deploy_args = 
  if args.quick:
  deploy_args.append('--quick')
  if args.config:
- deploy_args.extend(['--config', args.config])
+ deploy_args.extend('--config', args.config)
  deploy_args.extend(unknown_args)
  
  success = launcher.run_deployment(deploy_args)

@@ -33,40 +33,40 @@ jobs:
  - name: Install PowerShell
  if: runner.os != 'Windows'
  shell: bash
- run: |
- if [["${{ runner.os }}" == "Linux"]]; then
+ run: 
+ if "${{ runner.os }}" == "Linux"; then
  sudo apt-get update
  sudo apt-get install -y wget apt-transport-https software-properties-common
  wget -q https://packages.microsoft.com/config/ubuntu/22.04/packages-microsoft-prod.deb
  sudo dpkg -i packages-microsoft-prod.deb
  sudo apt-get update
  sudo apt-get install -y powershell
- elif [[""${{ runner.os }}" == "macOS"]]; then
+ elif ""${{ runner.os }}" == "macOS"; then
  brew install --cask powershell
  fi
 
  - name: Install Pester
  shell: pwsh
- run: |
+ run: 
  Install-Module -Name Pester -RequiredVersion 5.7.1 -Force -Scope CurrentUser
 
  - name: Generate tests for changed scripts
  shell: pwsh
- run: |
+ run: 
  $changedScriptsInput = '${{ inputs.changed-scripts }}'
  $renamedFilesInput = '${{ inputs.renamed-files-json }}'
 
- $changedScripts = $changedScriptsInput | ConvertFrom-Json
+ $changedScripts = $changedScriptsInput  ConvertFrom-Json
  $generatedTests = @()
 
  # Handle renamed files
  if ($renamedFilesInput) {
- $renamedFiles = $renamedFilesInput | ConvertFrom-Json
+ $renamedFiles = $renamedFilesInput  ConvertFrom-Json
  if ($null -ne $renamedFiles) {
  foreach ($renamed in $renamedFiles) {
  $oldIndex = $changedScripts.IndexOf($renamed.Original)
  if ($oldIndex -ge 0) {
- $changedScripts[$oldIndex] = $renamed.New
+ $changedScripts$oldIndex = $renamed.New
  }
  }
  }
@@ -80,7 +80,7 @@ jobs:
  . ./tests/helpers/New-AutoTestGenerator.ps1
  $result = New-AutoTestGenerator -ScriptPath $scriptPath -Force
 
- $testName = [System.IO.Path]::GetFileNameWithoutExtension($scriptPath) + \
+ $testName = System.IO.Path::GetFileNameWithoutExtension($scriptPath) + \
  '.Tests.ps1'
  # Assuming tests are in a top-level 'tests' folder
  $testPath = Join-Path 'tests' $testName
@@ -102,18 +102,18 @@ jobs:
  }
 
  Write-Host "Generated $($generatedTests.Count) test files" -ForegroundColor Green
- $generatedTests | ForEach-Object { Write-Host " - $_" }
+ $generatedTests  ForEach-Object { Write-Host " - $_" }
 
  @{
  Platform = "${{ runner.os }}"
  GeneratedTests = $generatedTests
  ProcessedScripts = $changedScripts
- } | ConvertTo-Json -Depth 3 | Out-File "test-generation-${{ runner.os }}.json" -Encoding UTF8
+ }  ConvertTo-Json -Depth 3  Out-File "test-generation-${{ runner.os }}.json" -Encoding UTF8
 
  - name: Validate generated tests
  shell: pwsh
- run: |
- $generationInfo = Get-Content "test-generation-${{ runner.os }}.json" | ConvertFrom-Json
+ run: 
+ $generationInfo = Get-Content "test-generation-${{ runner.os }}.json"  ConvertFrom-Json
  $allTestsValid = $true
 
  foreach ($testPath in $generationInfo.GeneratedTests) {
@@ -122,11 +122,11 @@ jobs:
 
  try {
  $content = Get-Content $testPath -Raw
- $ast = [System.Management.Automation.Language.Parser]::ParseInput($content, [ref]$null, [ref]$errors)
+ $ast = System.Management.Automation.Language.Parser::ParseInput($content, ref$null, ref$errors)
 
  if ($errors.Count -gt 0) {
  Write-Error "Syntax errors in $testPath: "
- $errors | ForEach-Object { Write-Error " $($_.Message)" }
+ $errors  ForEach-Object { Write-Error " $($_.Message)" }
  $allTestsValid = $false
  } else {
  Write-Host " Syntax valid: $testPath" -ForegroundColor Green
@@ -162,7 +162,7 @@ jobs:
  uses: actions/upload-artifact@v4
  with:
  name: test-generation-${{ inputs.os }}
- path: |
+ path: 
  test-generation-*.json
  tests/*.Tests.ps1 # Assuming tests are in a top-level 'tests' folder
  retention-days: 7

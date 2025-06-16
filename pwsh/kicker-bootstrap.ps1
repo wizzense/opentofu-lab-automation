@@ -2,7 +2,8 @@
 .SYNOPSIS
   Kicker script for a fresh Windows Server Core setup with robust error handling.
 
-  1) Loads configs/config_files/default-config.json by default (override with -ConfigFile).
+$targetBranch = 'main'
+$baseUrl = 'https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/refs/heads/'1) Loads configs/config_files/default-config.json by default (override with -ConfigFile).
   2) Checks if command-line Git is installed and in PATH.
      - Installs a minimal version if missing.
      - Updates PATH if installed but not found in PATH.
@@ -15,21 +16,21 @@
 #>
 
 param(
-    [string]$ConfigFile,
-    [switch]$Quiet,
-    [switch]$WhatIf,
-    [switch]$NonInteractive,
-    [ValidateSet('silent','normal','detailed')]
-    [string]$Verbosity = 'normal'
+    string$ConfigFile,
+    switch$Quiet,
+    switch$WhatIf,
+    switch$NonInteractive,
+    ValidateSet('silent','normal','detailed')
+    string$Verbosity = 'normal'
 )
 
 # Auto-detect non-interactive mode if not explicitly set
 if (-not $NonInteractive) {
     # Check if PowerShell was started with -NonInteractive
-    $commandLine = [Environment]::GetCommandLineArgs() -join ' '
+    $commandLine = Environment::GetCommandLineArgs() -join ' '
     if ($commandLine -match '-NonInteractive' -or 
         $Host.Name -eq 'Default Host' -or
-        ([Environment]::UserInteractive -eq $false)) {
+        (Environment::UserInteractive -eq $false)) {
         $NonInteractive = $true
         Write-Verbose "Auto-detected non-interactive mode"
     }
@@ -47,14 +48,14 @@ function Get-CrossPlatformTempPath {
     if ($env:TEMP) {
         return $env:TEMP
     } else {
-        return [System.IO.Path]::GetTempPath()
+        return System.IO.Path::GetTempPath()
     }
 }
 
 function Join-PathRobust {
     param(
-        [string]$Path,
-        [string[]]$ChildPaths
+        string$Path,
+        string$ChildPaths
     )
     try {
         return Join-Path -Path $Path -ChildPath $ChildPaths -ErrorAction Stop
@@ -67,26 +68,26 @@ function Join-PathRobust {
 }
 
 function Get-SafeLabConfig {
-    param([string]$Path)
+    param(string$Path)
     try {
         return Get-LabConfig -Path $Path
     } catch {
         if ($_.Exception.Message -match 'positional parameter') {
             Write-CustomLog 'Falling back to PowerShell 5.1 config loader.' 'WARN'
             $content = Get-Content -Raw -LiteralPath $Path
-            $cfg = $content | ConvertFrom-Json
+            $cfg = $content  ConvertFrom-Json
             $labDir = Split-Path -Parent $labConfigScript
             $repoRoot = Resolve-Path (Join-PathRobust $labDir '..')
             $dirs = @{}
-            if ($cfg.PSObject.Properties['Directories']) {
-                $cfg.Directories.PSObject.Properties | ForEach-Object { $dirs[$_.Name] = $_.Value }
+            if ($cfg.PSObject.Properties'Directories') {
+                $cfg.Directories.PSObject.Properties  ForEach-Object { $dirs$_.Name = $_.Value }
             }
-            $dirs['RepoRoot']       = $repoRoot.Path
-            $dirs['RunnerScripts']  = Join-PathRobust $repoRoot.Path @('runner_scripts')
-            $dirs['UtilityScripts'] = Join-PathRobust $repoRoot.Path @('lab_utils','LabRunner')
-            $dirs['ConfigFiles']    = Join-PathRobust $repoRoot.Path @('..','configs','config_files')
-            $dirs['InfraRepo']      = if ($cfg.InfraRepoPath) { $cfg.InfraRepoPath } else { 'C:\\Temp\\base-infra' }
-            Add-Member -InputObject $cfg -MemberType NoteProperty -Name Directories -Value ([pscustomobject]$dirs) -Force
+            $dirs'RepoRoot'       = $repoRoot.Path
+            $dirs'RunnerScripts'  = Join-PathRobust $repoRoot.Path @('runner_scripts')
+            $dirs'UtilityScripts' = Join-PathRobust $repoRoot.Path @('lab_utils','LabRunner')
+            $dirs'ConfigFiles'    = Join-PathRobust $repoRoot.Path @('..','configs','config_files')
+            $dirs'InfraRepo'      = if ($cfg.InfraRepoPath) { $cfg.InfraRepoPath } else { 'C:\\Temp\\base-infra' }
+            Add-Member -InputObject $cfg -MemberType NoteProperty -Name Directories -Value (pscustomobject$dirs) -Force
             return $cfg
         } else {
             throw
@@ -97,7 +98,7 @@ function Get-SafeLabConfig {
 if ($Quiet.IsPresent) { $Verbosity = 'silent' }
 
 $script:VerbosityLevels = @{ silent = 0; normal = 1; detailed = 2 }
-$script:ConsoleLevel    = $script:VerbosityLevels[$Verbosity]
+$script:ConsoleLevel    = $script:VerbosityLevels$Verbosity
 
 $targetBranch = 'main'
 $baseUrl = 'https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/refs/heads/'
@@ -108,18 +109,18 @@ $defaultConfig = "${baseUrl}${targetBranch}/configs/config_files/default-config.
 
 
 function Write-Continue {
-    param([string]$Message = "Press any key to continue...")
+    param(string$Message = "Press any key to continue...")
     
     # Skip interactive prompts in WhatIf, NonInteractive modes, or when PowerShell is in NonInteractive mode
     if ($WhatIf -or $NonInteractive -or $Quiet -or 
-        ([Environment]::UserInteractive -eq $false) -or
+        (Environment::UserInteractive -eq $false) -or
         ($Host.Name -eq "ConsoleHost" -and $Host.UI.RawUI.KeyAvailable -eq $false)) {
         Write-CustomLog "Skipping interactive prompt: $Message" 'INFO'
         return
     }
     
     # Check if we're actually running in an interactive environment before using Read-Host
-    if ([Environment]::UserInteractive -and 
+    if (Environment::UserInteractive -and 
         $Host.Name -ne 'Default Host' -and
         (-not ($commandLine -match '-NonInteractive'))) {
         try {
@@ -139,7 +140,7 @@ $ProgressPreference = 'SilentlyContinue'
 
 # Resolve script root even when $PSScriptRoot is not populated (e.g. -Command)
 $scriptRoot = if ($PSScriptRoot) { $PSScriptRoot    } else { Split-Path -Parent $MyInvocation.MyCommand.Path    }
-$isWindowsOS = [System.Environment]::OSVersion.Platform -eq 'Win32NT'
+$isWindowsOS = System.Environment::OSVersion.Platform -eq 'Win32NT'
 
 # Ensure the logger utility is available even when this script is executed
 # standalone. If the logger script is missing, download it from the repository.
@@ -147,7 +148,7 @@ $loggerDir  = Join-Path (Join-Path $scriptRoot 'lab_utils') 'LabRunner'
 $loggerPath = Join-Path $loggerDir 'Logger.ps1'
 if (-not (Test-Path $loggerPath)) {
     if (-not (Test-Path $loggerDir)) {
-        New-Item -ItemType Directory -Path $loggerDir -Force | Out-Null
+        New-Item -ItemType Directory -Path $loggerDir -Force  Out-Null
     }
     $loggerUrl = "${baseUrl}${targetBranch}/pwsh/modules/LabRunner/Logger.ps1"
     Invoke-WebRequest -Uri $loggerUrl -OutFile $loggerPath
@@ -164,9 +165,9 @@ if (-not (Get-Variable -Name LogFilePath -Scope Script -ErrorAction SilentlyCont
     -not (Get-Variable -Name LogFilePath -Scope Global -ErrorAction SilentlyContinue)) {
     $logDir = $env:LAB_LOG_DIR
     if (-not $logDir) {
-        if ($isWindowsOS) { $logDir = 'C:\\temp' } else { $logDir = [System.IO.Path]::GetTempPath() }
+        if ($isWindowsOS) { $logDir = 'C:\\temp' } else { $logDir = System.IO.Path::GetTempPath() }
     }
-    if (-not (Test-Path $logDir)) { New-Item -ItemType Directory -Path $logDir -Force | Out-Null }
+    if (-not (Test-Path $logDir)) { New-Item -ItemType Directory -Path $logDir -Force  Out-Null }
     $script:LogFilePath = Join-Path $logDir 'lab.log'
 }
 
@@ -174,44 +175,44 @@ if (-not (Get-Variable -Name LogFilePath -Scope Script -ErrorAction SilentlyCont
 if (-not (Get-Command Write-CustomLog -ErrorAction SilentlyContinue)) {
     function Write-CustomLog {
         param(
-            [string]$Message,
-            [ValidateSet('INFO','WARN','ERROR')
+            string$Message,
+            ValidateSet('INFO','WARN','ERROR')
 
 
 
-] [string]$Level = 'INFO'
+ string$Level = 'INFO'
         )
-        $levelIdx = @{ INFO = 1; WARN = 1; ERROR = 0 }[$Level]
+        $levelIdx = @{ INFO = 1; WARN = 1; ERROR = 0 }$Level
         if (-not (Get-Variable -Name LogFilePath -Scope Script -ErrorAction SilentlyContinue)) {
             $logDir = $env:LAB_LOG_DIR
-            if (-not $logDir) { $logDir = if ($isWindowsOS) { 'C:\\temp'    } else { [System.IO.Path]::GetTempPath()    } }
+            if (-not $logDir) { $logDir = if ($isWindowsOS) { 'C:\\temp'    } else { System.IO.Path::GetTempPath()    } }
             $script:LogFilePath = Join-Path $logDir 'lab.log'
         }
         if (-not (Get-Variable -Name ConsoleLevel -Scope Script -ErrorAction SilentlyContinue)) {
             $script:ConsoleLevel = 1
         }
         $ts  = Get-Date -Format 'yyyy-MM-dd HH:mm:ss'
-        $fmt = "[$ts] [$Level] $Message"
-        $fmt | Out-File -FilePath $script:LogFilePath -Encoding utf8 -Append
+        $fmt = "$ts $Level $Message"
+        fmt | Out-File -FilePath $script:LogFilePath -Encoding utf8 -Append
         if ($levelIdx -le $script:ConsoleLevel) {
-            $color = @{ INFO='Gray'; WARN='Yellow'; ERROR='Red' }[$Level]
+            $color = @{ INFO='Gray'; WARN='Yellow'; ERROR='Red' }$Level
             Write-Host $fmt -ForegroundColor $color
         }
     }    function Read-LoggedInput {
-        [CmdletBinding()]
+        CmdletBinding()
         param(
-            [Parameter(Mandatory)][string]$Prompt,
-            [switch]$AsSecureString,
-            [string]$DefaultValue = ""
+            Parameter(Mandatory)string$Prompt,
+            switch$AsSecureString,
+            string$DefaultValue = ""
         )
 
         # Check if we're in non-interactive mode
         if ($WhatIf -or $NonInteractive -or 
-            ([Environment]::UserInteractive -eq $false) -or
+            (Environment::UserInteractive -eq $false) -or
             ($Host.Name -eq 'Default Host') -or
             ($commandLine -match '-NonInteractive')) {
             Write-CustomLog "Non-interactive mode detected. Using default value for: $Prompt" 'INFO'
-            if ($AsSecureString -and -not [string]::IsNullOrEmpty($DefaultValue)) {
+            if ($AsSecureString -and -not string::IsNullOrEmpty($DefaultValue)) {
                 return ConvertTo-SecureString -String $DefaultValue -AsPlainText -Force
             }
             return $DefaultValue
@@ -229,7 +230,7 @@ if (-not (Get-Command Write-CustomLog -ErrorAction SilentlyContinue)) {
         }
         catch {
             Write-CustomLog "Error reading input: $($_.Exception.Message). Using default value." 'WARN'
-            if ($AsSecureString -and -not [string]::IsNullOrEmpty($DefaultValue)) {
+            if ($AsSecureString -and -not string::IsNullOrEmpty($DefaultValue)) {
                 return ConvertTo-SecureString -String $DefaultValue -AsPlainText -Force
             }
             return $DefaultValue
@@ -243,14 +244,14 @@ $labConfigScript = Join-Path $labUtilsDir 'Get-LabConfig.ps1'
 $formatScript    = Join-Path $labUtilsDir 'Format-Config.ps1'
 if (-not (Test-Path $labConfigScript)) {
     if (-not (Test-Path $labUtilsDir)) {
-        New-Item -ItemType Directory -Path $labUtilsDir -Force | Out-Null
+        New-Item -ItemType Directory -Path $labUtilsDir -Force  Out-Null
     }
     $labConfigUrl = 'https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/main/pwsh/modules/LabRunner/Get-LabConfig.ps1'
     Invoke-WebRequest -Uri $labConfigUrl -OutFile $labConfigScript
 }
 if (-not (Test-Path $formatScript)) {
     if (-not (Test-Path $labUtilsDir)) {
-        New-Item -ItemType Directory -Path $labUtilsDir -Force | Out-Null
+        New-Item -ItemType Directory -Path $labUtilsDir -Force  Out-Null
     }
     $formatUrl = 'https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/main/pwsh/modules/CodeFixerFormat-Config.ps1'
     Invoke-WebRequest -Uri $formatUrl -OutFile $formatScript
@@ -294,7 +295,7 @@ The script will do the following if you proceed:
 """
 
 # Prompt for input to provide remote/local or accept default
-if ($WhatIf -or $NonInteractive -or [Environment]::UserInteractive -eq $false) {
+if ($WhatIf -or $NonInteractive -or Environment::UserInteractive -eq $false) {
     Write-CustomLog "Non-interactive mode: Using default configuration" 'INFO'
     $configOption = ""
 } else {
@@ -309,28 +310,28 @@ if ($configOption -match "https://") {
 } else {
     $localConfigDir = Join-Path (Join-Path $scriptRoot "configs") "config_files"
     if (!(Test-Path $localConfigDir)) {
-        New-Item -ItemType Directory -Path $localConfigDir | Out-Null
+        New-Item -ItemType Directory -Path localConfigDir | Out-Null
     }
     $configFiles = Get-ChildItem -Path $localConfigDir -Filter '*.json' -File
     if ($configFiles.Count -gt 1) {
         Write-CustomLog "Multiple configuration files found:" "INFO"
         for ($i = 0; $i -lt $configFiles.Count; $i++) {
             $num = $i + 1
-            Write-Host "$num) $($configFiles[$i].Name)" -ForegroundColor White
+            Write-Host "$num) $($configFiles$i.Name)" -ForegroundColor White
         }
         
         if ($WhatIf -or $NonInteractive) {
             Write-CustomLog "Non-interactive mode: Using first configuration file" 'INFO'
-            $ConfigFile = $configFiles[0].FullName
+            $ConfigFile = $configFiles0.FullName
         } else {            $ans = Read-LoggedInput -Prompt "Select configuration number" -DefaultValue "1"
-            if ($ans -match '^[0-9]+$' -and [int]$ans -ge 1 -and [int]$ans -le $configFiles.Count) {
-                $ConfigFile = $configFiles[[int]$ans - 1].FullName
+            if ($ans -match '^0-9+$' -and int$ans -ge 1 -and int$ans -le $configFiles.Count) {
+                $ConfigFile = $configFilesint$ans - 1.FullName
             } else {
-                $ConfigFile = $configFiles[0].FullName
+                $ConfigFile = $configFiles0.FullName
             }
         }
     } elseif ($configFiles.Count -eq 1) {
-        $ConfigFile = $configFiles[0].FullName
+        $ConfigFile = $configFiles0.FullName
     } else {
         $localConfigPath = Join-Path $localConfigDir "default-config.json"
         if (-not (Test-Path $localConfigPath)) {
@@ -412,7 +413,7 @@ try {
 # (2.5) Ensure PowerShell 7 is present
 # ------------------------------------------------
 
-$isWindowsOS = [System.Environment]::OSVersion.Platform -eq 'Win32NT'
+$isWindowsOS = System.Environment::OSVersion.Platform -eq 'Win32NT'
 if (-not $isWindowsOS) {
 
     Write-Error "PowerShell 7 installation via this script is only supported on Windows."
@@ -487,17 +488,17 @@ catch {
         Write-CustomLog "Note: Repository operations may fail without authentication" 'WARN'
     } else {
     # Optional: Prompt user for a personal access token
-        $pat = if ($NonInteractive -or [Environment]::UserInteractive -eq $false) {
+        $pat = if ($NonInteractive -or Environment::UserInteractive -eq $false) {
             # In non-interactive mode, check for environment variable
             $env:GITHUB_PAT
         } else {
             Read-LoggedInput -Prompt "Enter your GitHub Personal Access Token (or press Enter to skip):" -DefaultValue ""
         }
 
-        if (-not [string]::IsNullOrWhiteSpace($pat)) {
+        if (-not string::IsNullOrWhiteSpace($pat)) {
             Write-CustomLog "Attempting PAT-based GitHub CLI login..."
             try {
-                $pat | & "$ghExePath" auth login --hostname github.com --git-protocol https --with-token
+                $pat  & "$ghExePath" auth login --hostname github.com --git-protocol https --with-token
             }
             catch {
                 Write-Error "ERROR: PAT-based login failed. Please verify your token or try interactive login."
@@ -506,7 +507,7 @@ catch {
         }
         else {
             # No PAT, attempt normal interactive login in the console
-            if ($NonInteractive -or [Environment]::UserInteractive -eq $false) {
+            if ($NonInteractive -or Environment::UserInteractive -eq $false) {
                 Write-CustomLog "No PAT provided and in non-interactive mode. Repository operations may fail." 'WARN'
             } else {
                 Write-CustomLog "No PAT provided. Attempting interactive login..."
@@ -536,9 +537,9 @@ catch {
 # Helper to update repo while preserving local config changes
 function Update-RepoPreserveConfig {
     param(
-        [string]$RepoPath,
-        [string]$Branch,
-        [string]$GitPath
+        string$RepoPath,
+        string$Branch,
+        string$GitPath
     )
     
 
@@ -552,14 +553,14 @@ Push-Location $RepoPath
         Write-CustomLog "Backing up local config changes to $backupDir" 'INFO'
         if (Test-Path $backupDir) { Remove-Item -Recurse -Force $backupDir }
         Copy-Item -Path 'configs/config_files' -Destination $backupDir -Recurse -Force
-        & $GitPath stash push -u -- 'configs/config_files' | Out-Null
+        & $GitPath stash push -u -- 'configs/config_files'  Out-Null
     }
     & $GitPath pull origin $Branch --quiet 2>&1 >> "$(Get-CrossPlatformTempPath)\git.log"
     if ($configChanges -and (Test-Path $backupDir)) {
         Write-CustomLog 'Restoring backed up config files' 'INFO'
         Copy-Item -Path (Join-Path $backupDir '*') -Destination 'configs/config_files' -Recurse -Force
         Remove-Item -Recurse -Force $backupDir -ErrorAction SilentlyContinue
-        & $GitPath stash drop --quiet | Out-Null
+        & $GitPath stash drop --quiet  Out-Null
     }
     Pop-Location
 }
@@ -570,7 +571,7 @@ Push-Location $RepoPath
 Write-CustomLog "==== Cloning or updating the target repository ===="
 
 try {
-    & "$ghExePath" auth status 2>&1 | Out-Null
+    & "$ghExePath" auth status 2>&1  Out-Null
 } catch {
     Write-Error "GitHub CLI is not authenticated. Please run '$ghExePath auth login' and re-run this script."
     exit 1
@@ -584,27 +585,27 @@ if (-not $config.RepoUrl) {
 # Define local path (fallback if not in config)
 $localPath = $config.LocalPath
 
-$localPath = if (-not $localPath -or [string]::IsNullOrWhiteSpace($localPath)) {
+$localPath = if (-not $localPath -or string::IsNullOrWhiteSpace($localPath)) {
     if ($isWindowsOS) {
         Get-CrossPlatformTempPath
     } else {
-        [System.IO.Path]::GetTempPath()
+        System.IO.Path::GetTempPath()
     }
 } else {
     $localPath
 
 }
-$localPath = [System.Environment]::ExpandEnvironmentVariables($localPath)
+$localPath = System.Environment::ExpandEnvironmentVariables($localPath)
 
 
 # Ensure local directory exists
 Write-CustomLog "Ensuring local path '$localPath' exists..."
 if (!(Test-Path $localPath)) {
-    New-Item -ItemType Directory -Path $localPath -Force | Out-Null
+    New-Item -ItemType Directory -Path $localPath -Force  Out-Null
 }
 
 # Define repo path
-$repoName = ($config.RepoUrl -split '/')[-1] -replace "\.git$", ""
+$repoName = ($config.RepoUrl -split '/')-1 -replace "\.git$", ""
 $repoPath = Join-Path $localPath $repoName
 
 if (-not $repoPath) {
@@ -614,7 +615,7 @@ if (-not $repoPath) {
 
 # Configure git safe.directory to avoid dubious ownership errors
 # Use GetFullPath so path need not exist yet
-$resolvedRepoPath = [System.IO.Path]::GetFullPath($repoPath)
+$resolvedRepoPath = System.IO.Path::GetFullPath($repoPath)
 & "$gitPath" config --global --add safe.directory $resolvedRepoPath 2>$null
 
 if (!(Test-Path $repoPath)) {
@@ -623,7 +624,7 @@ if (!(Test-Path $repoPath)) {
     $prevEAP = $ErrorActionPreference
     $ErrorActionPreference = 'Continue'
 
-    & "$ghExePath" repo clone $config.RepoUrl $repoPath -- -q 2>&1 | Tee-Object -FilePath "$(Get-CrossPlatformTempPath)\gh_clone_log.txt"
+    & "$ghExePath" repo clone $config.RepoUrl $repoPath -- -q 2>&1  Tee-Object -FilePath "$(Get-CrossPlatformTempPath)\gh_clone_log.txt"
     $ghExit = $LASTEXITCODE
     $ErrorActionPreference = $prevEAP
 
@@ -640,7 +641,7 @@ if (!(Test-Path $repoPath)) {
             }
         }
         
-        & "$gitPath" clone $config.RepoUrl $repoPath --quiet 2>&1 | Tee-Object -FilePath "$(Get-CrossPlatformTempPath)\git_clone_log.txt"
+        & "$gitPath" clone $config.RepoUrl $repoPath --quiet 2>&1  Tee-Object -FilePath "$(Get-CrossPlatformTempPath)\git_clone_log.txt"
         $gitExit = $LASTEXITCODE
         
         # Handle Windows-specific checkout failures due to invalid filenames
@@ -649,7 +650,7 @@ if (!(Test-Path $repoPath)) {
             Push-Location $repoPath
             try {
                 # Restore files that can be checked out on Windows
-                & "$gitPath" restore --source=HEAD :/ 2>&1 | Out-Null
+                & "$gitPath" restore --source=HEAD :/ 2>&1  Out-Null
                 Write-CustomLog "Attempted file restoration. Repository may be partially functional."
                 $gitExit = 0  # Consider this a success for Windows
             } catch {
@@ -663,26 +664,26 @@ if (!(Test-Path $repoPath)) {
             Write-Error "ERROR: Repository cloning failed. Check logs: $(Get-CrossPlatformTempPath)\gh_clone_log.txt and $(Get-CrossPlatformTempPath)\git_clone_log.txt"
             if (Test-Path "$(Get-CrossPlatformTempPath)\gh_clone_log.txt") {
                 Write-Host '--- gh_clone_log.txt ---' -ForegroundColor Yellow
-                Get-Content "$(Get-CrossPlatformTempPath)\gh_clone_log.txt" | Out-Host
+                Get-Content "$(Get-CrossPlatformTempPath)\gh_clone_log.txt"  Out-Host
             }
             if (Test-Path "$(Get-CrossPlatformTempPath)\git_clone_log.txt") {
                 Write-Host '--- git_clone_log.txt ---' -ForegroundColor Yellow
-                Get-Content "$(Get-CrossPlatformTempPath)\git_clone_log.txt" | Out-Host
+                Get-Content "$(Get-CrossPlatformTempPath)\git_clone_log.txt"  Out-Host
             }
             exit 1
         }
     }
 }
 # Immediately check directory contents after clone
-if ((Get-ChildItem -Path $repoPath -Recurse -ErrorAction SilentlyContinue | Measure-Object).Count -eq 0) {
+if ((Get-ChildItem -Path $repoPath -Recurse -ErrorAction SilentlyContinue  Measure-Object).Count -eq 0) {
     Write-Error "ERROR: Repo directory $repoPath is empty after clone. Check clone logs above."
     if (Test-Path "$(Get-CrossPlatformTempPath)\gh_clone_log.txt") {
         Write-Host '--- gh_clone_log.txt ---' -ForegroundColor Yellow
-        Get-Content "$(Get-CrossPlatformTempPath)\gh_clone_log.txt" | Out-Host
+        Get-Content "$(Get-CrossPlatformTempPath)\gh_clone_log.txt"  Out-Host
     }
     if (Test-Path "$(Get-CrossPlatformTempPath)\git_clone_log.txt") {
         Write-Host '--- git_clone_log.txt ---' -ForegroundColor Yellow
-        Get-Content "$(Get-CrossPlatformTempPath)\git_clone_log.txt" | Out-Host
+        Get-Content "$(Get-CrossPlatformTempPath)\git_clone_log.txt"  Out-Host
     }
     exit 1
 }
@@ -722,25 +723,25 @@ if (-not $runnerScriptName) {
 Set-Location $repoPath
 
 # Robust path resolution for runner script
-if ([System.IO.Path]::IsPathRooted($runnerScriptName)) {
+if (System.IO.Path::IsPathRooted($runnerScriptName)) {
     $runnerScriptPath = $runnerScriptName
 } else {
     $runnerScriptPath = Join-Path $repoPath $runnerScriptName
 }
 
-Write-Host "[DEBUG] ConfigFile: $ConfigFile" -ForegroundColor Cyan
-Write-Host "[DEBUG] repoPath: $repoPath" -ForegroundColor Cyan
-Write-Host "[DEBUG] runnerScriptName: $runnerScriptName" -ForegroundColor Cyan
-Write-Host "[DEBUG] runnerScriptPath: $runnerScriptPath" -ForegroundColor Cyan
-if ($ConsoleLevel -ge $script:VerbosityLevels['detailed']) {
-    Write-Host "[DEBUG] Directory contents of repoPath (${repoPath}):" -ForegroundColor Cyan
-    Get-ChildItem -Path $repoPath -Recurse | Select-Object FullName
+Write-Host "DEBUG ConfigFile: $ConfigFile" -ForegroundColor Cyan
+Write-Host "DEBUG repoPath: $repoPath" -ForegroundColor Cyan
+Write-Host "DEBUG runnerScriptName: $runnerScriptName" -ForegroundColor Cyan
+Write-Host "DEBUG runnerScriptPath: $runnerScriptPath" -ForegroundColor Cyan
+if ($ConsoleLevel -ge $script:VerbosityLevels'detailed') {
+    Write-Host "DEBUG Directory contents of repoPath (${repoPath}):" -ForegroundColor Cyan
+    Get-ChildItem -Path $repoPath -Recurse  Select-Object FullName
 }
 
 if (!(Test-Path $runnerScriptPath)) {
     Write-Error "ERROR: Could not find runner script at $runnerScriptPath. Exiting."
-    Write-Host "[DEBUG] Directory contents of repoPath (${repoPath}):" -ForegroundColor Yellow
-    Get-ChildItem -Path $repoPath -Recurse | Format-List FullName | Out-Host
+    Write-Host "DEBUG Directory contents of repoPath (${repoPath}):" -ForegroundColor Yellow
+    Get-ChildItem -Path $repoPath -Recurse  Format-List FullName  Out-Host
     Write-Host @"
 Possible causes:
 - The repository clone failed or is incomplete.
@@ -769,6 +770,8 @@ if ($exitCode -ne 0) {
 
 Write-CustomLog "`n=== Kicker script finished successfully! ==="
 exit 0
+
+
 
 
 

@@ -9,7 +9,7 @@ rules:
   empty-lines:
     max: 2
   truthy:
-    allowed-values: [true, false, 'on']  # Allow 'on' for GitHub Actions
+    allowed-values: true, false, 'on'  # Allow 'on' for GitHub Actions
     check-keys: false  # Don't check keys to allow GitHub Actions keywords
   comments:
     min-spaces-from-content: 1

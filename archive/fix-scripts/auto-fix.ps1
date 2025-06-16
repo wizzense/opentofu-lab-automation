@@ -1,20 +1,20 @@
 # auto-fix.ps1 
 # A simple wrapper around the CodeFixer module's Invoke-AutoFix function
-[CmdletBinding()]
+CmdletBinding()
 param(
-    [switch]$Apply,
-    [switch]$Quiet,
-    [switch]$Force,
-    [string[]]$ScriptPaths,
-    [ValidateSet('All', 'Syntax', 'Ternary', 'ScriptOrder', 'ImportModule')
+    switch$Apply,
+    switch$Quiet,
+    switch$Force,
+    string$ScriptPaths,
+    ValidateSet('All', 'Syntax', 'Ternary', 'ScriptOrder', 'ImportModule')
 
 
 
 
 
 
-]
-    [string[]]$FixTypes = 'All'
+
+    string$FixTypes = 'All'
 )
 
 $ErrorActionPreference = 'Stop'

@@ -6,12 +6,12 @@ MetaSocialImage: ../images/shared/github-copilot-social.png
 ---
 # GitHub Copilot in VS Code settings reference
 
-This article lists the configuration settings for GitHub Copilot in Visual Studio Code. For general information about working with settings in VS Code, refer to [User and workspace settings](/docs/configure/settings.md), as well as the [Variables reference](/docs/reference/variables-reference.md) for information about predefined variable support.
+This article lists the configuration settings for GitHub Copilot in Visual Studio Code. For general information about working with settings in VS Code, refer to User and workspace settings(/docs/configure/settings.md), as well as the Variables reference(/docs/reference/variables-reference.md) for information about predefined variable support.
 
-> [!TIP]
-> If you don't yet have a Copilot subscription, you can use Copilot for free by signing up for the [Copilot Free plan](https://github.com/github-copilot/signup) and get a monthly limit of completions and chat interactions.
+> !TIP
+> If you don't yet have a Copilot subscription, you can use Copilot for free by signing up for the Copilot Free plan(https://github.com/github-copilot/signup) and get a monthly limit of completions and chat interactions.
 
-The team is continuously working on improving Copilot in VS Code and adding new features. Some features are still experimental. Try them out and share your feedback in [our issues](https://github.com/microsoft/vscode-copilot-release/issues). Get more info about the [feature lifecycle in VS Code](/docs/configure/settings.md#feature-lifecycle).
+The team is continuously working on improving Copilot in VS Code and adding new features. Some features are still experimental. Try them out and share your feedback in our issues(https://github.com/microsoft/vscode-copilot-release/issues). Get more info about the feature lifecycle in VS Code(/docs/configure/settings.md#feature-lifecycle).
 
 ## General settings
 
@@ -25,7 +25,7 @@ The team is continuously working on improving Copilot in VS Code and adding new 
 
 ## Code completion settings
 
-* `setting(github.copilot.enable)`: Enable or disable Copilot completions for specified [languages](/docs/languages/identifiers.md).
+* `setting(github.copilot.enable)`: Enable or disable Copilot completions for specified languages(/docs/languages/identifiers.md).
 * `setting(github.copilot.nextEditSuggestions.enabled)`: Enables Copilot next edit suggestions (Copilot NES).
 * `setting(editor.inlineSuggest.edits.allowCodeShifting)`: Configure if Copilot NES is able to shift your code to show a suggestion.
 * `setting(editor.inlineSuggest.edits.renderSideBySide)`: Configure if Copilot NES can show larger suggestions side-by-side if possible, or if Copilot NES should always show larger suggestions below the relevant code.
@@ -115,4 +115,4 @@ Copilot requests for reviewing the current editor selection.
 
 ## Related resources
 
-* [Get a quick overview of the Copilot features in VS Code](/docs/copilot/reference/copilot-vscode-features.md)
+* Get a quick overview of the Copilot features in VS Code(/docs/copilot/reference/copilot-vscode-features.md)

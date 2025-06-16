@@ -42,35 +42,35 @@
  Updated: 2025-06-13
 #>
 function Invoke-ComprehensiveAutoFix {
- [CmdletBinding()]
+ CmdletBinding()
  param(
- [Parameter(Mandatory = $false)
+ Parameter(Mandatory = $false)
 
 
 
 
 
 
-]
- [string]$Path = ".",
+
+ string$Path = ".",
  
- [Parameter(Mandatory = $false)]
- [switch]$AutoFix,
+ Parameter(Mandatory = $false)
+ switch$AutoFix,
  
- [Parameter(Mandatory = $false)]
- [switch]$WhatIf,
+ Parameter(Mandatory = $false)
+ switch$WhatIf,
  
- [Parameter(Mandatory = $false)]
- [switch]$SkipValidation,
+ Parameter(Mandatory = $false)
+ switch$SkipValidation,
  
- [Parameter(Mandatory = $false)]
- [switch]$Recurse,
+ Parameter(Mandatory = $false)
+ switch$Recurse,
  
- [Parameter(Mandatory = $false)]
- [switch]$CleanupRoot,
+ Parameter(Mandatory = $false)
+ switch$CleanupRoot,
  
- [Parameter(Mandatory = $false)]
- [string[]]$ExcludePath = @("archive", "legacy", "backup")
+ Parameter(Mandatory = $false)
+ string$ExcludePath = @("archive", "legacy", "backup")
  )
 
  Write-Host " Comprehensive PowerShell Auto-Fix" -ForegroundColor Cyan
@@ -202,7 +202,7 @@ function Invoke-ComprehensiveAutoFix {
  $duration = $endTime - $startTime
 
  # Calculate total fixes
- $stats.TotalFixes = ($stats.FixesByCategory.Values | Measure-Object -Sum).Sum
+ $stats.TotalFixes = ($stats.FixesByCategory.Values  Measure-Object -Sum).Sum
  
  # Summary
  Write-Host "`n Comprehensive Auto-Fix Summary:" -ForegroundColor Cyan
@@ -234,9 +234,9 @@ function Invoke-ComprehensiveAutoFix {
  }
  
  if ($WhatIf) {
- Write-Host "`n [WARN] WhatIf mode - no changes were made" -ForegroundColor Yellow
+ Write-Host "`n WARN WhatIf mode - no changes were made" -ForegroundColor Yellow
  } elseif (-not $AutoFix) {
- Write-Host "`n [INFO] Report-only mode - use -AutoFix to apply changes" -ForegroundColor Yellow
+ Write-Host "`n INFO Report-only mode - use -AutoFix to apply changes" -ForegroundColor Yellow
  }
 
  return $stats

@@ -22,12 +22,12 @@ from pathlib import Path
 def print_status(msg, level="INFO"):
     """Print colored status message"""
     colors = {
-        "INFO": "\033[0;34m",  # Blue
-        "SUCCESS": "\033[0;32m",  # Green
-        "WARNING": "\033[1;33m",  # Yellow
-        "ERROR": "\033[0;31m",   # Red
+        "INFO": "\0330;34m",  # Blue
+        "SUCCESS": "\0330;32m",  # Green
+        "WARNING": "\0331;33m",  # Yellow
+        "ERROR": "\0330;31m",   # Red
     }
-    reset = "\033[0m"
+    reset = "\0330m"
     
     # Disable colors on Windows if needed
     if platform.system() == "Windows":
@@ -65,7 +65,7 @@ def check_dependencies():
         print_status(f"Python 3.7+ required, found {python_version.major}.{python_version.minor}", "ERROR")
         print_status("Please install Python 3.7+ from https://python.org", "ERROR")
         return False
-    print_status(f"✓ Python {python_version.major}.{python_version.minor}.{python_version.micro}", "SUCCESS")
+    print_status(f" Python {python_version.major}.{python_version.minor}.{python_version.micro}", "SUCCESS")
     
     # Check git
     git_result = run_command("git --version", check=False)
@@ -85,7 +85,7 @@ def check_dependencies():
                 print_status("Running in non-interactive mode, continuing without Git", "WARNING")
         
         return "no-git"
-    print_status("✓ Git available", "SUCCESS")
+    print_status(" Git available", "SUCCESS")
     
     return True
 
@@ -114,7 +114,7 @@ def download_project():
     )
     
     if git_result and git_result.returncode == 0:
-        print_status("✓ Downloaded via git clone", "SUCCESS")
+        print_status(" Downloaded via git clone", "SUCCESS")
         return project_dir
     
     # Git failed, try wget or curl
@@ -125,10 +125,10 @@ def download_project():
     zip_file = "opentofu-lab-automation.zip"
     
     # Try different download methods
-    download_commands = [
+    download_commands = 
         f"curl -L -o {zip_file} {zip_url}",
         f"wget -O {zip_file} {zip_url}",
-    ]
+    
     
     download_success = False
     for cmd in download_commands:
@@ -158,7 +158,7 @@ def download_project():
         # Clean up
         Path(zip_file).unlink()
         
-        print_status("✓ Downloaded and extracted", "SUCCESS")
+        print_status(" Downloaded and extracted", "SUCCESS")
         return project_dir
         
     except Exception as e:
@@ -179,7 +179,7 @@ def launch_project(project_dir):
     os.chdir(project_dir)
     
     try:
-        subprocess.run([sys.executable, "launcher.py"], check=True)
+        subprocess.run(sys.executable, "launcher.py", check=True)
         return True
     except subprocess.CalledProcessError:
         print_status("Failed to start launcher", "ERROR")

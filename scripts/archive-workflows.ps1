@@ -28,7 +28,7 @@ if (!(Test-Path -Path "$repoRoot/.github/workflows")) {
 # Create archive directory if it doesn't exist
 $archiveDir = "$repoRoot/.github/archived_workflows"
 if (!(Test-Path -Path $archiveDir)) {
- New-Item -Path $archiveDir -ItemType Directory | Out-Null
+ New-Item -Path $archiveDir -ItemType Directory  Out-Null
  Write-Host "� Created archive directory: $archiveDir"
 }
 
@@ -40,13 +40,13 @@ $readmePath = "$archiveDir/README.md"
 These workflows have been consolidated into newer, more maintainable workflows.
 They are kept here for reference purposes only.
 
-See the main [workflows README](./../workflows/README.md) for details on the current workflow structure.
+See the main workflows README(./../workflows/README.md) for details on the current workflow structure.
 
 ## Archived Workflows
 
-| Original Workflow | Consolidated Into |
-|------------------|-------------------|
-"@ | Out-File -FilePath $readmePath -Encoding utf8
+ Original Workflow  Consolidated Into 
+-------------------------------------
+"@  Out-File -FilePath $readmePath -Encoding utf8
 
 # List of legacy workflows to archive
 $legacyWorkflows = @(
@@ -75,17 +75,17 @@ foreach ($workflow in $legacyWorkflows) {
  if (Test-Path -Path $sourcePath) {
  try {
  Move-Item -Path $sourcePath -Destination $destPath -Force
- Write-Host "[PASS] Archived: $($workflow.File) → $($workflow.ConsolidatedInto)"
+ Write-Host "PASS Archived: $($workflow.File) → $($workflow.ConsolidatedInto)"
  
  # Add entry to README
- "| $($workflow.File) | $($workflow.ConsolidatedInto) |" | Out-File -FilePath $readmePath -Append -Encoding utf8
+ " $($workflow.File)  $($workflow.ConsolidatedInto) "  Out-File -FilePath $readmePath -Append -Encoding utf8
  }
  catch {
- Write-Error "[FAIL] Failed to archive $($workflow.File): $_"
+ Write-Error "FAIL Failed to archive $($workflow.File): $_"
  }
  }
  else {
- Write-Warning "[WARN] Workflow not found: $($workflow.File)"
+ Write-Warning "WARN Workflow not found: $($workflow.File)"
  }
 }
 
@@ -103,16 +103,17 @@ if (Test-Path -Path $mainReadmePath) {
 
 > Archiving completed on $timestamp
 
-The legacy workflows mentioned above have been moved to [.github/archived_workflows](../archived_workflows/).
-See the [archive README](../archived_workflows/README.md) for details.
+The legacy workflows mentioned above have been moved to .github/archived_workflows(../archived_workflows/).
+See the archive README(../archived_workflows/README.md) for details.
 "@
- $readmeContent | Out-File -FilePath $mainReadmePath -Encoding utf8
- Write-Host "[PASS] Updated main workflows README with archive information"
+ readmeContent | Out-File -FilePath $mainReadmePath -Encoding utf8
+ Write-Host "PASS Updated main workflows README with archive information"
  }
 }
 
 Write-Host "`n Archiving complete! Legacy workflows have been moved to $archiveDir"
 Write-Host " See $readmePath for details on which workflows were archived"
+
 
 
 

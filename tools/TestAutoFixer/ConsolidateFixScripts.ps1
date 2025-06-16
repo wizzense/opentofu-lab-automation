@@ -2,11 +2,11 @@
 # This script identifies all fix-*.ps1 scripts and consolidates their logic into TestAutoFixer
 
 param(
-    [Parameter()]
-    [switch]$WhatIf,
+    Parameter()
+    switch$WhatIf,
     
-    [Parameter()]
-    [switch]$Archive
+    Parameter()
+    switch$Archive
 )
 
 function Invoke-FixScriptConsolidation {
@@ -15,8 +15,8 @@ function Invoke-FixScriptConsolidation {
     Migrate and consolidate all fix scripts into the TestAutoFixer module
     #>
     param(
-        [switch]$WhatIf,
-        [switch]$Archive
+        switch$WhatIf,
+        switch$Archive
     )
     
     # Find all fix scripts
@@ -56,7 +56,7 @@ function Invoke-FixScriptConsolidation {
         }
         
         # Record the migration
-        $migratedScripts += [PSCustomObject]@{
+        $migratedScripts += PSCustomObject@{
             OriginalScript = $script.Name
             MigratedTo = $targetModule
             FunctionName = "Migrated_" + ($script.Name -replace "fix-", "" -replace "\.ps1", "")
@@ -69,10 +69,10 @@ function Invoke-FixScriptConsolidation {
 
 The following scripts have been migrated into the TestAutoFixer module:
 
-| Original Script | Migrated To | Function Name |
-|----------------|-------------|--------------|
+ Original Script  Migrated To  Function Name 
+-------------------------------------------
 $(foreach ($script in $migratedScripts) {
-    "| $($script.OriginalScript) | $($script.MigratedTo) | $($script.FunctionName) |"
+    " $($script.OriginalScript)  $($script.MigratedTo)  $($script.FunctionName) "
 })
 
 ## How to Use
@@ -104,7 +104,7 @@ Please review the original scripts if you encounter issues not addressed by the 
         $archiveFolder = "/workspaces/opentofu-lab-automation/archive/fix-scripts-archive"
         
         if (-not (Test-Path $archiveFolder)) {
-            New-Item -Path $archiveFolder -ItemType Directory -Force | Out-Null
+            New-Item -Path $archiveFolder -ItemType Directory -Force  Out-Null
         }
         
         foreach ($script in $fixScripts) {

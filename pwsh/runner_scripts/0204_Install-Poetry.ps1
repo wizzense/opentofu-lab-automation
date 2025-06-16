@@ -1,5 +1,5 @@
 Param(
-    [object]$Config
+    object$Config
 )
 
 
@@ -9,11 +9,11 @@ Param(
 
 
 
-Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation//pwsh/modules/LabRunner/" -Force -Force -Force -Force -Force -Force -ForceWrite-CustomLog "Starting $MyInvocation.MyCommand"
+Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\pwsh/modules/LabRunner/" -ForceWrite-CustomLog "Starting $MyInvocation.MyCommand"
 
 function Install-Poetry {
-    [CmdletBinding(SupportsShouldProcess=$true)]
-    param([object]$Config)
+    CmdletBinding(SupportsShouldProcess=$true)
+    param(object$Config)
 
     
 
@@ -67,6 +67,7 @@ $args = @()
 
 if ($MyInvocation.InvocationName -ne '.') { Install-Poetry @PSBoundParameters }
 Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
+
 
 
 

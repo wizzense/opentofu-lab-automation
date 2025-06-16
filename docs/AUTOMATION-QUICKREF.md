@@ -4,13 +4,13 @@ Quick reference for AI agents, developers, and automated systems working on the 
 
 ## Critical Rules
 
-### [FAIL] NEVER DO
+### FAIL NEVER DO
 - Create `.md` summary files in project root directory
 - Use deprecated `pwsh/lab_utils/` import paths
 - Edit files without running validation afterwards
 - Skip report generation for significant changes (>5 files)
 
-### [PASS] ALWAYS DO
+### PASS ALWAYS DO
 - Use report utility: `./scripts/utilities/new-report.ps1`
 - Validate after changes: Run appropriate validation scripts
 - Update CHANGELOG.md for major changes
@@ -69,19 +69,19 @@ Invoke-ComprehensiveValidation
 
 ```
 /workspaces/opentofu-lab-automation/
-├── docs/reports/ # [PASS] All reports go here
+├── docs/reports/ # PASS All reports go here
 │ ├── test-analysis/ # Test & validation reports
 │ ├── workflow-analysis/ # CI/CD & workflow reports 
 │ ├── project-status/ # Milestone & status reports
 │ ├── README.md # Report templates & guidelines
 │ └── INDEX.md # Report index & quick links
-├── pwsh/modules/ # [PASS] Current module location
-│ ├── LabRunner/ # [PASS] Use this path
-│ └── CodeFixer/ # [PASS] Use this path
-├── pwsh/lab_utils/ # [FAIL] DEPRECATED - Don't use
+├── pwsh/modules/ # PASS Current module location
+│ ├── LabRunner/ # PASS Use this path
+│ └── CodeFixer/ # PASS Use this path
+├── pwsh/lab_utils/ # FAIL DEPRECATED - Don't use
 ├── scripts/
-│ ├── utilities/new-report.ps1 # [PASS] Report generation utility
-│ ├── maintenance/auto-maintenance.ps1 # [PASS] Automated maintenance
+│ ├── utilities/new-report.ps1 # PASS Report generation utility
+│ ├── maintenance/auto-maintenance.ps1 # PASS Automated maintenance
 │ └── validation/ # Validation scripts
 └── .github/copilot-instructions.md # Agent guidelines
 ```

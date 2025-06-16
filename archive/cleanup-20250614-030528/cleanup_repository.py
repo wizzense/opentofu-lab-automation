@@ -15,7 +15,7 @@ import time
 import datetime
 
 # Files to keep (core files and enhanced versions)
-KEEP_FILES = [
+KEEP_FILES = 
     # Enhanced versions
     "enhanced_launcher.py",
     "gui_enhanced.py",
@@ -44,10 +44,10 @@ KEEP_FILES = [
     "docs/",
     "tests/",
     ".github/",
-]
+
 
 # Files to specifically remove (known redundant files)
-REMOVE_FILES = [
+REMOVE_FILES = 
     # Old launchers and duplicates
     "deploy.bat",
     "deploy.sh",
@@ -84,7 +84,7 @@ REMOVE_FILES = [
     "TESTING.md",
     "WINDOWS-TESTING-GUIDE.md",
     "WORKFLOW-CONSOLIDATION-SUMMARY.md"
-]
+
 
 def should_keep_file(file_path):
     """Check if a file should be kept or archived"""
@@ -106,11 +106,11 @@ def should_keep_file(file_path):
             return False
     
     # Special handling for README variants
-    if str_path in ["README-old.md", "README-new.md", "README-backup.md"]:
+    if str_path in "README-old.md", "README-new.md", "README-backup.md":
         return False
         
     # For other files, consider based on extension and location
-    if file_path.suffix in ['.md', '.ps1', '.py', '.bat', '.sh'] and file_path.parent == Path.cwd():
+    if file_path.suffix in '.md', '.ps1', '.py', '.bat', '.sh' and file_path.parent == Path.cwd():
         # Non-essential scripts in the root directory
         return False
         
@@ -161,7 +161,7 @@ def cleanup_files():
             "timestamp": datetime.datetime.now().isoformat(),
             "files_kept": files_kept,
             "files_archived": files_archived,
-            "archived_files": [str(p.relative_to(archive_dir)) for p in archive_dir.rglob("*") if p.is_file() and "cleanup-summary.json" not in str(p)]
+            "archived_files": str(p.relative_to(archive_dir)) for p in archive_dir.rglob("*") if p.is_file() and "cleanup-summary.json" not in str(p)
         }, f, indent=2)
     
     return files_archived
@@ -174,7 +174,7 @@ def main():
     print("This will archive redundant files and clean up the repository.")
     print("Original files will be preserved in the archive directory.")
     
-    if input("Continue? (y/n): ").lower() not in ["y", "yes"]:
+    if input("Continue? (y/n): ").lower() not in "y", "yes":
         print("Cleanup cancelled.")
         return 0
     

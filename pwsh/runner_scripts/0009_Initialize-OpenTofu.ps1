@@ -1,4 +1,4 @@
-Param([object]$Config)
+Param(object$Config)
 
 
 
@@ -6,7 +6,7 @@ Param([object]$Config)
 
 
 
-Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation//pwsh/modules/LabRunner/" -Force -Force -Force -Force -Force -Force -Force$scriptRoot = $PSScriptRoot
+Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\pwsh/modules/LabRunner/" -Force$scriptRoot = $PSScriptRoot
 
 Write-CustomLog "Starting $MyInvocation.MyCommand"
 
@@ -30,7 +30,7 @@ if ($Config.InitializeOpenTofu -eq $true) {
 
     Write-CustomLog "---- Hyper-V Configuration Check ----"
     Write-CustomLog "Final Hyper-V configuration:"
-    $Config.HyperV | Format-List
+    $Config.HyperV  Format-List
 
     # --------------------------------------------------
     # 1) Determine infra repo path
@@ -39,7 +39,7 @@ if ($Config.InitializeOpenTofu -eq $true) {
     $infraRepoPath = $Config.InfraRepoPath
 
     # Fallback if InfraRepoPath is not specified
-    if ([string]::IsNullOrWhiteSpace($infraRepoPath)) {
+    if (string::IsNullOrWhiteSpace($infraRepoPath)) {
         $infraRepoPath = Join-Path $scriptRoot "my-infra"
     }
 
@@ -50,14 +50,14 @@ if ($Config.InitializeOpenTofu -eq $true) {
         Write-CustomLog "Directory already exists: $infraRepoPath"
     }
     else {
-        New-Item -ItemType Directory -Path $infraRepoPath -Force | Out-Null
+        New-Item -ItemType Directory -Path $infraRepoPath -Force  Out-Null
         Write-CustomLog "Created directory: $infraRepoPath"
     }
 
 # --------------------------------------------------
 # 2) If InfraRepoUrl is given, clone directly to InfraRepoPath
 # --------------------------------------------------
-if (-not [string]::IsNullOrWhiteSpace($infraRepoUrl)) {
+if (-not string::IsNullOrWhiteSpace($infraRepoUrl)) {
     Write-CustomLog "InfraRepoUrl detected: $infraRepoUrl"
 
     if (Test-Path (Join-Path $infraRepoPath '.git')) {
@@ -198,6 +198,7 @@ exit 0
     Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
 }
 Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
+
 
 
 

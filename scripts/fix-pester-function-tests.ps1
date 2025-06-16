@@ -13,15 +13,15 @@ $ErrorActionPreference = 'Stop'
 Write-Host " Fixing Pester test files with Get-Command issues..." -ForegroundColor Yellow
 
 # Find all test files that have the problematic pattern
-$testFiles = Get-ChildItem -Path 'tests' -Filter '*.Tests.ps1' -Recurse | 
+$testFiles = Get-ChildItem -Path 'tests' -Filter '*.Tests.ps1' -Recurse  
  Where-Object { 
  $content = Get-Content $_.FullName -Raw
  $content -match "Get-Command.*-ErrorAction SilentlyContinue.*Should.*Not.*BeNullOrEmpty" -or
- $content -match "{ \. \$script:ScriptPath } \| Should -Not -Throw"
+ $content -match "{ \. \$script:ScriptPath } \ Should -Not -Throw"
  }
 
 Write-Host "Found $($testFiles.Count) test files to fix:" -ForegroundColor Cyan
-$testFiles | ForEach-Object { Write-Host " - $($_.Name)" -ForegroundColor Gray }
+testFiles | ForEach-Object { Write-Host " - $($_.Name)" -ForegroundColor Gray }
 
 foreach ($file in $testFiles) {
  Write-Host "`n Processing $($file.Name)..." -ForegroundColor Green
@@ -31,31 +31,31 @@ foreach ($file in $testFiles) {
  
  # Fix 1: Replace dot-sourcing syntax check with PowerShell parser
  $content = $content -replace 
- '\{ \. \$script:ScriptPath \} \| Should -Not -Throw',
+ '\{ \. \$script:ScriptPath \} \ Should -Not -Throw',
  '# Test syntax by parsing the script content instead of dot-sourcing
- { $null = [System.Management.Automation.PSParser]::Tokenize((Get-Content $script:ScriptPath -Raw), [ref]$null) } | Should -Not -Throw'
+ { $null = System.Management.Automation.PSParser::Tokenize((Get-Content $script:ScriptPath -Raw), ref$null) }  Should -Not -Throw'
  
  # Fix 2: Replace Get-Command function definition checks with content pattern matching
  $content = $content -replace 
- 'Get-Command\s+''([^'']+)''\s+-ErrorAction SilentlyContinue \| Should -Not -BeNullOrEmpty',
+ 'Get-Command\s+''(^''+)''\s+-ErrorAction SilentlyContinue \ Should -Not -BeNullOrEmpty',
  '$scriptContent = Get-Content $script:ScriptPath -Raw
- $scriptContent | Should -Match ''function\\s+$1'''
+ $scriptContent  Should -Match ''function\\s+$1'''
  
  # Fix 3: Replace Get-Command parameter checks with content pattern matching
  $content = $content -replace 
- '\(Get-Command\s+''([^'']+)''\)\.Parameters\.Keys \| Should -Contain ''Verbose''',
+ '\(Get-Command\s+''(^''+)''\)\.Parameters\.Keys \ Should -Contain ''Verbose''',
  '$scriptContent = Get-Content $script:ScriptPath -Raw
- $scriptContent | Should -Match ''\[CmdletBinding\('''
+ $scriptContent  Should -Match ''\CmdletBinding\('''
  
  $content = $content -replace 
- '\(Get-Command\s+''([^'']+)''\)\.Parameters\.Keys \| Should -Contain ''WhatIf''',
+ '\(Get-Command\s+''(^''+)''\)\.Parameters\.Keys \ Should -Contain ''WhatIf''',
  '$scriptContent = Get-Content $script:ScriptPath -Raw
- $scriptContent | Should -Match ''SupportsShouldProcess'''
+ $scriptContent  Should -Match ''SupportsShouldProcess'''
  
  # Only write the file if content changed
  if ($content -ne $originalContent) {
  Set-Content -Path $file.FullName -Value $content -Encoding UTF8
- Write-Host " [PASS] Fixed $($file.Name)" -ForegroundColor Green
+ Write-Host " PASS Fixed $($file.Name)" -ForegroundColor Green
  } else {
  Write-Host " ⏭ No changes needed for $($file.Name)" -ForegroundColor Yellow
  }
@@ -63,6 +63,7 @@ foreach ($file in $testFiles) {
 
 Write-Host "`n Batch fix completed!" -ForegroundColor Green
 Write-Host "Run tests to verify the fixes work correctly." -ForegroundColor Cyan
+
 
 
 

@@ -65,30 +65,30 @@ foreach ($testFile in $testFiles) {
     }
     
     # Find and replace the execution patterns
-    $oldPattern1 = '(\s+)(\{ & \$script:ScriptPath -Config \$config \} \| Should -Not -Throw)'
-    $oldPattern2 = '(\s+)(\{ & \$script:ScriptPath -Config \$config -WhatIf \} \| Should -Not -Throw)'
+    $oldPattern1 = '(\s+)(\{ & \$script:ScriptPath -Config \$config \} \ Should -Not -Throw)'
+    $oldPattern2 = '(\s+)(\{ & \$script:ScriptPath -Config \$config -WhatIf \} \ Should -Not -Throw)'
     
     $newReplacement1 = @'
-$1$config = [pscustomobject]@{}
-$1$configJson = $config | ConvertTo-Json -Depth 5
-$1$tempConfig = Join-Path ([System.IO.Path]::GetTempPath()) "$([System.Guid]::NewGuid()).json"
-$1$configJson | Set-Content -Path $tempConfig
+$1$config = pscustomobject@{}
+$1$configJson = config | ConvertTo-Json -Depth 5
+$1$tempConfig = Join-Path (System.IO.Path::GetTempPath()) "$(System.Guid::NewGuid()).json"
+$1configJson | Set-Content -Path $tempConfig
 $1try {
 $1    $pwsh = (Get-Command pwsh).Source
-$1    { & $pwsh -NoLogo -NoProfile -File $script:ScriptPath -Config $tempConfig } | Should -Not -Throw
+$1    { & $pwsh -NoLogo -NoProfile -File $script:ScriptPath -Config $tempConfig }  Should -Not -Throw
 $1} finally {
 $1    Remove-Item $tempConfig -Force -ErrorAction SilentlyContinue
 $1}
 '@
     
     $newReplacement2 = @'
-$1$config = [pscustomobject]@{}
-$1$configJson = $config | ConvertTo-Json -Depth 5
-$1$tempConfig = Join-Path ([System.IO.Path]::GetTempPath()) "$([System.Guid]::NewGuid()).json"
-$1$configJson | Set-Content -Path $tempConfig
+$1$config = pscustomobject@{}
+$1$configJson = config | ConvertTo-Json -Depth 5
+$1$tempConfig = Join-Path (System.IO.Path::GetTempPath()) "$(System.Guid::NewGuid()).json"
+$1configJson | Set-Content -Path $tempConfig
 $1try {
 $1    $pwsh = (Get-Command pwsh).Source
-$1    { & $pwsh -NoLogo -NoProfile -File $script:ScriptPath -Config $tempConfig -WhatIf } | Should -Not -Throw
+$1    { & $pwsh -NoLogo -NoProfile -File $script:ScriptPath -Config $tempConfig -WhatIf }  Should -Not -Throw
 $1} finally {
 $1    Remove-Item $tempConfig -Force -ErrorAction SilentlyContinue
 $1}
@@ -116,6 +116,7 @@ $1}
 }
 
 Write-Host "`nCompleted processing all numbered test files."
+
 
 
 

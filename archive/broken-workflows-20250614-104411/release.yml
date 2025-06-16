@@ -21,19 +21,19 @@ jobs:
 
       - name: Install PowerShell
   shell: bash
-  run: |
+  run: 
  # PowerShell is pre-installed on ubuntu-latest
  pwsh --version
 
       - name: Setup PowerShell modules
   shell: pwsh
-  run: |
+  run: 
  Install-Module -Name PSScriptAnalyzer -Force -Scope CurrentUser
  Install-Module -Name Pester -Force -Scope CurrentUser -MinimumVersion 5.0
 
       - name: Set version
   shell: pwsh
-  run: |
+  run: 
  if ('${{ github.event_name }}' -eq 'workflow_dispatch') {
  $version = '${{ github.event.inputs.version }}'
  } else {
@@ -44,21 +44,21 @@ jobs:
 
       - name: Update module version
   shell: pwsh
-  run: |
+  run: 
  $manifestPath = "./pwsh/modules/CodeFixer/CodeFixer.psd1"
  $content = Get-Content $manifestPath -Raw
- $content = $content -replace "ModuleVersion\s*=\s*'[^']*'", "ModuleVersion = '$env:VERSION'"
+ $content = $content -replace "ModuleVersion\s*=\s*'^'*'", "ModuleVersion = '$env:VERSION'"
  Set-Content $manifestPath $content
  Write-Host "Updated manifest version to $env:VERSION"
 
       - name: Run tests
   shell: pwsh
-  run: |
+  run: 
  ./scripts/final-validation.ps1
 
       - name: Package module
   shell: pwsh
-  run: |
+  run: 
  $packageDir = "release-package"
  $moduleDir = "$packageDir/CodeFixer"
 
@@ -83,9 +83,9 @@ jobs:
       - name: Create Release
   uses: softprops/action-gh-release@v1
   with:
- tag_name: ${{ github.event_name == 'workflow_dispatch' && format('v{0}', github.event.inputs.version) || github.ref_name }}
+ tag_name: ${{ github.event_name == 'workflow_dispatch' && format('v{0}', github.event.inputs.version)  github.ref_name }}
   name: CodeFixer Module v${{ env.VERSION }}
-  body: |
+  body: 
  ## CodeFixer PowerShell Module v${{ env.VERSION }}
 
  ### Key Features
@@ -112,7 +112,7 @@ jobs:
  ### Requirements
  - PowerShell 7.0+
  - PSScriptAnalyzer module (auto-installed)
-  files: |
+  files: 
  CodeFixer-v${{ env.VERSION }}.zip
   draft: false
   prerelease: false

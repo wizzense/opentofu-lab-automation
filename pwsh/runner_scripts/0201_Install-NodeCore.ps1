@@ -1,5 +1,5 @@
 # Ensure the Param block is at the top if it's meant for the whole script
-Param([object]$Config)
+Param(object$Config)
 
 
 
@@ -9,11 +9,11 @@ Param([object]$Config)
 
 
 # Import necessary modules
-Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation//pwsh/modules/LabRunner/" -Force -Force -Force -Force -Force -Force -ForceWrite-CustomLog "Starting $MyInvocation.MyCommand"
+Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\pwsh/modules/LabRunner/" -ForceWrite-CustomLog "Starting $MyInvocation.MyCommand"
 
 function Install-NodeCore {
-    [CmdletBinding(SupportsShouldProcess = $true)]
-    param([object]$Config)
+    CmdletBinding(SupportsShouldProcess = $true)
+    param(object$Config)
 
     
 
@@ -24,9 +24,9 @@ function Install-NodeCore {
 
 Write-CustomLog "Running $($MyInvocation.MyCommand.Name)"
 
-    Write-CustomLog "==== [0201] Installing Node.js Core ===="
+    Write-CustomLog "==== 0201 Installing Node.js Core ===="
 
-    $nodeDeps = if ($Config -is [hashtable]) { $Config['Node_Dependencies']    } else { $Config.Node_Dependencies    }
+    $nodeDeps = if ($Config -is hashtable) { $Config'Node_Dependencies'    } else { $Config.Node_Dependencies    }
     if (-not $nodeDeps) {
         Write-CustomLog "Config missing Node_Dependencies; skipping Node.js installation."
         return
@@ -40,8 +40,8 @@ Write-CustomLog "Running $($MyInvocation.MyCommand.Name)"
         try {
             $url = $null
             if ($nodeDeps.Node) {
-                if ($nodeDeps.Node -is [hashtable]) {
-                    $url = $nodeDeps.Node['InstallerUrl']
+                if ($nodeDeps.Node -is hashtable) {
+                    $url = $nodeDeps.Node'InstallerUrl'
                 } elseif ($nodeDeps.Node.PSObject.Properties.Match('InstallerUrl').Count -gt 0) {
                     $url = $nodeDeps.Node.InstallerUrl
                 }
@@ -82,6 +82,7 @@ Start-Process msiexec.exe -ArgumentList "/i `"$installerPath`" /quiet /norestart
 # Start the NodeCore installation if the script is directly invoked
 if ($MyInvocation.InvocationName -ne '.') { Install-NodeCore @PSBoundParameters }
 Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
+
 
 
 

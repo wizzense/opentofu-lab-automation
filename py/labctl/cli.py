@@ -25,7 +25,7 @@ logger = logging.getLogger("labctl")
 def configure_logger() -> None:
     """Configure logging to console and optional log file."""
 
-    handlers = [logging.StreamHandler()]
+    handlers = logging.StreamHandler()
     log_dir = os.environ.get("LAB_LOG_DIR")
     if log_dir:
         log_file = Path(log_dir) / "lab.log"

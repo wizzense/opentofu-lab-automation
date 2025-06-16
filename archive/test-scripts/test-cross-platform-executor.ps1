@@ -4,14 +4,14 @@
 
 $ErrorActionPreference = "Stop"
 
-Write-Host "🧪 TESTING CROSS-PLATFORM EXECUTOR SYSTEM" -ForegroundColor Cyan
+Write-Host "� TESTING CROSS-PLATFORM EXECUTOR SYSTEM" -ForegroundColor Cyan
 Write-Host "=" * 60
 
 # Test 1: Create a simple test script
 $testScript = @'
 Param(
-    [string]$Message = "Hello from encoded script!",
-    [string]$Environment = "test"
+    string$Message = "Hello from encoded script!",
+    string$Environment = "test"
 )
 
 
@@ -28,10 +28,10 @@ Write-Host "Platform: $($PSVersionTable.Platform)" -ForegroundColor Cyan
 Write-Host "PowerShell Version: $($PSVersionTable.PSVersion)" -ForegroundColor Cyan
 
 if ($Environment -eq "test") {
-    Write-Host "✅ Test environment detected - execution successful" -ForegroundColor Green
+    Write-Host "PASS Test environment detected - execution successful" -ForegroundColor Green
     exit 0
 } else {
-    Write-Host "❌ Unexpected environment: $Environment" -ForegroundColor Red
+    Write-Host "FAIL Unexpected environment: $Environment" -ForegroundColor Red
     exit 1
 }
 '@
@@ -42,50 +42,50 @@ $testScriptPath = Join-Path $tempDir "cross-platform-test.ps1"
 Set-Content -Path $testScriptPath -Value $testScript -Encoding UTF8
 
 try {
-    Write-Host "`n🔍 Test 1: Script Encoding" -ForegroundColor Yellow
+    Write-Host "`n� Test 1: Script Encoding" -ForegroundColor Yellow
     
     # Test encoding
     $encodeResult = & "$PSScriptRoot/pwsh/CrossPlatformExecutor.ps1" -Action encode -ScriptPath $testScriptPath -Parameters @{
         Message = "Encoded script working perfectly!"
         Environment = "test"
-    } -CI | ConvertFrom-Json
+    } -CI  ConvertFrom-Json
     
-    Write-Host "  ✅ Script encoded successfully" -ForegroundColor Green
+    Write-Host "  PASS Script encoded successfully" -ForegroundColor Green
     Write-Host "  Encoded length: $($encodeResult.EncodedScript.Length) characters" -ForegroundColor Gray
     
-    Write-Host "`n🔍 Test 2: Script Validation" -ForegroundColor Yellow
+    Write-Host "`n� Test 2: Script Validation" -ForegroundColor Yellow
     
     # Test validation
-    $validateResult = & "$PSScriptRoot/pwsh/CrossPlatformExecutor.ps1" -Action validate -EncodedScript $encodeResult.EncodedScript -CI | ConvertFrom-Json
+    $validateResult = & "$PSScriptRoot/pwsh/CrossPlatformExecutor.ps1" -Action validate -EncodedScript $encodeResult.EncodedScript -CI  ConvertFrom-Json
     
     if ($validateResult.Valid) {
-        Write-Host "  ✅ Encoded script is valid" -ForegroundColor Green
+        Write-Host "  PASS Encoded script is valid" -ForegroundColor Green
         Write-Host "  Contains Param block: $($validateResult.ContainsParam)" -ForegroundColor Gray
         Write-Host "  Contains functions: $($validateResult.ContainsFunction)" -ForegroundColor Gray
     } else {
-        Write-Host "  ❌ Validation failed: $($validateResult.Error)" -ForegroundColor Red
+        Write-Host "  FAIL Validation failed: $($validateResult.Error)" -ForegroundColor Red
         exit 1
     }
     
-    Write-Host "`n🔍 Test 3: Script Execution" -ForegroundColor Yellow
+    Write-Host "`n� Test 3: Script Execution" -ForegroundColor Yellow
     
     # Test execution
-    $executeResult = & "$PSScriptRoot/pwsh/CrossPlatformExecutor.ps1" -Action execute -EncodedScript $encodeResult.EncodedScript -CI | ConvertFrom-Json
+    $executeResult = & "$PSScriptRoot/pwsh/CrossPlatformExecutor.ps1" -Action execute -EncodedScript $encodeResult.EncodedScript -CI  ConvertFrom-Json
     
     if ($executeResult.ExitCode -eq 0) {
-        Write-Host "  ✅ Encoded script executed successfully" -ForegroundColor Green
+        Write-Host "  PASS Encoded script executed successfully" -ForegroundColor Green
         Write-Host "  Exit Code: $($executeResult.ExitCode)" -ForegroundColor Gray
     } else {
-        Write-Host "  ❌ Execution failed with exit code: $($executeResult.ExitCode)" -ForegroundColor Red
+        Write-Host "  FAIL Execution failed with exit code: $($executeResult.ExitCode)" -ForegroundColor Red
         exit 1
     }
     
-    Write-Host "`n🔍 Test 4: Complex Script with Functions" -ForegroundColor Yellow
+    Write-Host "`n� Test 4: Complex Script with Functions" -ForegroundColor Yellow
     
     # Test with a more complex script
     $complexScript = @'
 Param(
-    [string]$ConfigPath = "default.json"
+    string$ConfigPath = "default.json"
 )
 
 
@@ -96,7 +96,7 @@ Param(
 
 
 function Test-ComplexFunction {
-    param([string]$Input)
+    param(string$Input)
     
 
 
@@ -122,21 +122,21 @@ exit 0
     Set-Content -Path $complexScriptPath -Value $complexScript -Encoding UTF8
     
     # Encode and execute complex script
-    $complexEncoded = & "$PSScriptRoot/pwsh/CrossPlatformExecutor.ps1" -Action encode -ScriptPath $complexScriptPath -CI | ConvertFrom-Json
-    $complexResult = & "$PSScriptRoot/pwsh/CrossPlatformExecutor.ps1" -Action execute -EncodedScript $complexEncoded.EncodedScript -CI | ConvertFrom-Json
+    $complexEncoded = & "$PSScriptRoot/pwsh/CrossPlatformExecutor.ps1" -Action encode -ScriptPath $complexScriptPath -CI  ConvertFrom-Json
+    $complexResult = & "$PSScriptRoot/pwsh/CrossPlatformExecutor.ps1" -Action execute -EncodedScript $complexEncoded.EncodedScript -CI  ConvertFrom-Json
     
     if ($complexResult.ExitCode -eq 0) {
-        Write-Host "  ✅ Complex script executed successfully" -ForegroundColor Green
+        Write-Host "  PASS Complex script executed successfully" -ForegroundColor Green
     } else {
-        Write-Host "  ❌ Complex script failed with exit code: $($complexResult.ExitCode)" -ForegroundColor Red
+        Write-Host "  FAIL Complex script failed with exit code: $($complexResult.ExitCode)" -ForegroundColor Red
         exit 1
     }
     
     Write-Host "`n" + "=" * 60 -ForegroundColor Cyan
-    Write-Host "🎉 CROSS-PLATFORM EXECUTOR TESTS PASSED!" -ForegroundColor Green
+    Write-Host " CROSS-PLATFORM EXECUTOR TESTS PASSED!" -ForegroundColor Green
     Write-Host "=" * 60
     
-    Write-Host "`n✅ Key Capabilities Verified:" -ForegroundColor Green
+    Write-Host "`nPASS Key Capabilities Verified:" -ForegroundColor Green
     Write-Host "  • Base64 encoding/decoding of PowerShell scripts" -ForegroundColor Gray
     Write-Host "  • Parameter injection into encoded scripts" -ForegroundColor Gray
     Write-Host "  • Cross-platform script execution" -ForegroundColor Gray
@@ -144,10 +144,10 @@ exit 0
     Write-Host "  • Complex script support with functions" -ForegroundColor Gray
     Write-Host "  • JSON output for CI integration" -ForegroundColor Gray
     
-    Write-Host "`n💡 Usage in GitHub Actions:" -ForegroundColor Cyan
+    Write-Host "`n� Usage in GitHub Actions:" -ForegroundColor Cyan
     Write-Host @"
 # Encode script for cross-platform execution
-`$encoded = pwsh CrossPlatformExecutor.ps1 -Action encode -ScriptPath "script.ps1" -CI | ConvertFrom-Json
+`$encoded = pwsh CrossPlatformExecutor.ps1 -Action encode -ScriptPath "script.ps1" -CI  ConvertFrom-Json
 
 # Execute on any platform
 pwsh CrossPlatformExecutor.ps1 -Action execute -EncodedScript "`$(`$encoded.EncodedScript)"

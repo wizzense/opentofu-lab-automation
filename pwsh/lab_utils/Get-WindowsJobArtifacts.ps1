@@ -1,8 +1,8 @@
-[CmdletBinding()]
+CmdletBinding()
 param(
-    [string]$Repo = 'wizzense/opentofu-lab-automation',
-    [string]$Workflow = 'pester.yml',
-    [long]$RunId
+    string$Repo = 'wizzense/opentofu-lab-automation',
+    string$Workflow = 'pester.yml',
+    long$RunId
 )
 
 
@@ -12,8 +12,8 @@ param(
 
 
 
-$tempDir = Join-Path ([System.IO.Path]::GetTempPath()) "gh-artifacts-$([System.Guid]::NewGuid())"
-New-Item -ItemType Directory -Path $tempDir | Out-Null
+$tempDir = Join-Path (System.IO.Path::GetTempPath()) "gh-artifacts-$(System.Guid::NewGuid())"
+New-Item -ItemType Directory -Path tempDir | Out-Null
 
 $downloadArgs = @{}
 . $PSScriptRoot/Download-Archive.ps1
@@ -28,8 +28,8 @@ if ($useGh) {
         } else {
             $artifacts = @()
         }
-        $cov = $artifacts | Where-Object { $_.name -match 'coverage.*windows-latest' }
-        $res = $artifacts | Where-Object { $_.name -match 'results.*windows-latest' }
+        $cov = artifacts | Where-Object { $_.name -match 'coverage.*windows-latest' }
+        $res = artifacts | Where-Object { $_.name -match 'results.*windows-latest' }
         if ($res) {
             if ($cov) {
                 Download-Archive $cov.archive_download_url (Join-Path $tempDir 'coverage.zip') @downloadArgs
@@ -48,8 +48,8 @@ if ($useGh) {
         foreach ($run in $runs) {
             $artJson = gh api "repos/$Repo/actions/runs/$($run.id)/artifacts"
             $artifacts = if ($artJson) { (ConvertFrom-Json $artJson).artifacts    } else { @()    }
-            $cov = $artifacts | Where-Object { $_.name -match 'coverage.*windows-latest' }
-            $res = $artifacts | Where-Object { $_.name -match 'results.*windows-latest' }
+            $cov = artifacts | Where-Object { $_.name -match 'coverage.*windows-latest' }
+            $res = artifacts | Where-Object { $_.name -match 'results.*windows-latest' }
             if ($res) {
                 if ($cov) {
                     Download-Archive $cov.archive_download_url (Join-Path $tempDir 'coverage.zip') @downloadArgs
@@ -92,20 +92,21 @@ if (Test-Path (Join-Path $tempDir 'results.zip')) {
     exit 1
 }
 
-$resultsFile = Get-ChildItem -Path $resDir -Filter *.xml -Recurse | Select-Object -First 1
+$resultsFile = Get-ChildItem -Path $resDir -Filter *.xml -Recurse  Select-Object -First 1
 if (-not $resultsFile) {
     Write-Host 'Results file not found.' -ForegroundColor Yellow
     exit 1
 }
 
-$failed = Select-Xml -Path $resultsFile.FullName -XPath '//test-case[@result="Failed" or @outcome="Failed"]' |
+$failed = Select-Xml -Path $resultsFile.FullName -XPath '//test-case@result="Failed" or @outcome="Failed"' 
     ForEach-Object { $_.Node.name }
 if ($failed) {
     Write-Host 'Failing tests:' -ForegroundColor Red
-    $failed | ForEach-Object { Write-Host " - $_" }
+    failed | ForEach-Object { Write-Host " - $_" }
 } else {
     Write-Host 'All tests passed.' -ForegroundColor Green
 }
+
 
 
 

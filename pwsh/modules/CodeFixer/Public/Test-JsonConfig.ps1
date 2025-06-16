@@ -22,10 +22,10 @@ Test-JsonConfig
 Test-JsonConfig -Path "." -OutputFormat JSON
 #>
 function Test-JsonConfig {
- [CmdletBinding()]
+ CmdletBinding()
  param(
- [string]$Path = ".",
- [string[]]$ExcludePattern = @("*backup*", "*archive*")
+ string$Path = ".",
+ string$ExcludePattern = @("*backup*", "*archive*")
 
 
 
@@ -33,16 +33,16 @@ function Test-JsonConfig {
 
 
 ,
- [ValidateSet('Text', 'JSON', 'CI')]
- [string]$OutputFormat = 'Text',
- [string]$OutputPath,
- [switch]$PassThru
+ ValidateSet('Text', 'JSON', 'CI')
+ string$OutputFormat = 'Text',
+ string$OutputPath,
+ switch$PassThru
  )
  
  Write-Host "Validating JSON configuration files..." -ForegroundColor Cyan
  
  # Find JSON files
- $jsonFiles = Get-ChildItem -Path $Path -Recurse -Include *.json -File | 
+ $jsonFiles = Get-ChildItem -Path $Path -Recurse -Include *.json -File  
  Where-Object { 
  $include = $true
  foreach ($pattern in $ExcludePattern) {
@@ -71,17 +71,17 @@ function Test-JsonConfig {
  
  # Test JSON parsing
  try {
- $jsonObj = $content | ConvertFrom-Json -ErrorAction Stop
- Write-Host " ✓ Valid JSON syntax" -ForegroundColor Green
+ $jsonObj = $content  ConvertFrom-Json -ErrorAction Stop
+ Write-Host "  Valid JSON syntax" -ForegroundColor Green
  
  # Additional validation for config files
  if ($file.Name -like "*config*") {
  $configIssues = Test-ConfigFileStructure -JsonObject $jsonObj -FilePath $file.FullName
  if ($configIssues.Count -gt 0) {
  $allResults += $configIssues
- Write-Host " [WARN] $($configIssues.Count) configuration issue(s)" -ForegroundColor Yellow
+ Write-Host " WARN $($configIssues.Count) configuration issue(s)" -ForegroundColor Yellow
  } else {
- Write-Host " ✓ Valid configuration structure" -ForegroundColor Green
+ Write-Host "  Valid configuration structure" -ForegroundColor Green
  }
  }
  
@@ -92,13 +92,13 @@ function Test-JsonConfig {
  
  # Try to extract line/column info from error message
  if ($errorMessage -match "line (\d+)") {
- $lineNumber = [int]$Matches[1]
+ $lineNumber = int$Matches1
  }
  if ($errorMessage -match "position (\d+)") {
- $columnNumber = [int]$Matches[1]
+ $columnNumber = int$Matches1
  }
  
- $allResults += [PSCustomObject]@{
+ $allResults += PSCustomObject@{
  File = $file.FullName
  Line = $lineNumber
  Column = $columnNumber
@@ -109,11 +109,11 @@ function Test-JsonConfig {
  ErrorType = "Syntax"
  FixSuggestion = Get-JsonFixSuggestion -ErrorMessage $errorMessage
  }
- Write-Host " [FAIL] JSON syntax error" -ForegroundColor Red
+ Write-Host " FAIL JSON syntax error" -ForegroundColor Red
  }
  
  } catch {
- $allResults += [PSCustomObject]@{
+ $allResults += PSCustomObject@{
  File = $file.FullName
  Line = 1
  Column = 1
@@ -124,14 +124,14 @@ function Test-JsonConfig {
  ErrorType = "System"
  FixSuggestion = "Check file permissions and accessibility"
  }
- Write-Host " [FAIL] File read error" -ForegroundColor Red
+ Write-Host " FAIL File read error" -ForegroundColor Red
  }
  }
  
  # Display results based on format
  switch ($OutputFormat) {
  'JSON' {
- $allResults | ConvertTo-Json -Depth 3
+ allResults | ConvertTo-Json -Depth 3
  }
  'CI' {
  foreach ($result in $allResults) {
@@ -141,29 +141,29 @@ function Test-JsonConfig {
  'Information' { 'notice' }
  default { 'notice' }
  }
- Write-Host "::$level file=$($result.File),line=$($result.Line),col=$($result.Column)::[$($result.RuleName)] $($result.Message)"
+ Write-Host "::$level file=$($result.File),line=$($result.Line),col=$($result.Column)::$($result.RuleName) $($result.Message)"
  }
  }
  default {
  if ($allResults.Count -eq 0) {
- Write-Host "[PASS] All JSON files are valid!" -ForegroundColor Green
+ Write-Host "PASS All JSON files are valid!" -ForegroundColor Green
  } else {
  Write-Host "`n JSON Validation Results:" -ForegroundColor Cyan
  Write-Host "============================" -ForegroundColor Cyan
  
- $groupedResults = $allResults | Group-Object File
+ $groupedResults = allResults | Group-Object File
  foreach ($group in $groupedResults) {
  Write-Host "`n $($group.Name)" -ForegroundColor Yellow
  Write-Host ("-" * 50) -ForegroundColor Gray
  
- foreach ($result in $group.Group | Sort-Object Line) {
+ foreach ($result in $group.Group  Sort-Object Line) {
  $color = switch ($result.Severity) {
  'Error' { 'Red' }
  'Warning' { 'Yellow' }
  'Information' { 'Cyan' }
  default { 'White' }
  }
- Write-Host " Line $($result.Line): [$($result.Severity)] $($result.Message)" -ForegroundColor $color
+ Write-Host " Line $($result.Line): $($result.Severity) $($result.Message)" -ForegroundColor $color
  if ($result.FixSuggestion) {
  Write-Host " Fix: $($result.FixSuggestion)" -ForegroundColor Green
  }
@@ -171,9 +171,9 @@ function Test-JsonConfig {
  }
  
  # Summary
- $errorCount = ($allResults | Where-Object Severity -eq 'Error').Count
- $warningCount = ($allResults | Where-Object Severity -eq 'Warning').Count
- $infoCount = ($allResults | Where-Object Severity -eq 'Information').Count
+ $errorCount = (allResults | Where-Object Severity -eq 'Error').Count
+ $warningCount = (allResults | Where-Object Severity -eq 'Warning').Count
+ $infoCount = (allResults | Where-Object Severity -eq 'Information').Count
  
  Write-Host "`n Summary:" -ForegroundColor Cyan
  Write-Host "===========" -ForegroundColor Cyan
@@ -191,8 +191,8 @@ function Test-JsonConfig {
 
 function Test-ConfigFileStructure {
  param(
- [PSCustomObject]$JsonObject,
- [string]$FilePath
+ PSCustomObject$JsonObject,
+ string$FilePath
  )
  
  
@@ -208,8 +208,8 @@ $issues = @()
  $requiredProperties = @('RepoUrl', 'LocalPath', 'RunnerScriptName')
  
  foreach ($prop in $requiredProperties) {
- if (-not $JsonObject.PSObject.Properties[$prop]) {
- $issues += [PSCustomObject]@{
+ if (-not $JsonObject.PSObject.Properties$prop) {
+ $issues += PSCustomObject@{
  File = $FilePath
  Line = 1
  Column = 1
@@ -221,10 +221,9 @@ $issues = @()
  }
  }
  
- # Validate URLs if present
- if ($JsonObject.PSObject.Properties['RepoUrl'] -and $JsonObject.RepoUrl) {
+ # Validate URLs if present if ($JsonObject.PSObject.Properties'RepoUrl' -and $JsonObject.RepoUrl) {
  if ($JsonObject.RepoUrl -notmatch '^https?://') {
- $issues += [PSCustomObject]@{
+ $issues += PSCustomObject@{
  File = $FilePath
  Line = 1
  Column = 1
@@ -238,6 +237,8 @@ $issues = @()
  
  return $issues
 }
+
+
 
 
 

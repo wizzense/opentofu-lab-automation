@@ -22,7 +22,7 @@ provider "hyperv" {
 }
 ```
 
-Each argument can instead be sourced from environment variables such as `HYPERV_USER`, `HYPERV_PASSWORD`, `HYPERV_HOST` and so on. Paths for Kerberos configuration also map to `HYPERV_KERBEROS_*` variables. See [`opentofu/examples/hyperv/examples_tailiesins/hyperv-provider.example`](../opentofu/examples/hyperv/examples_tailiesins/hyperv-provider.example) for a complete list.
+Each argument can instead be sourced from environment variables such as `HYPERV_USER`, `HYPERV_PASSWORD`, `HYPERV_HOST` and so on. Paths for Kerberos configuration also map to `HYPERV_KERBEROS_*` variables. See `opentofu/examples/hyperv/examples_tailiesins/hyperv-provider.example`(../opentofu/examples/hyperv/examples_tailiesins/hyperv-provider.example) for a complete list.
 
 The `pwsh/runner_scripts/0010_Prepare-HyperVHost.ps1` script installs the provider and converts the generated certificates into PEM files so that `providers.tf` works without additional steps.
 
@@ -40,5 +40,5 @@ If omitted, the scripts fall back to `1.2.1`.
 
 ---
 
-See [pester-test-failures.md](pester-test-failures.md) for a tracked list of current test failures.
+See pester-test-failures.md(pester-test-failures.md) for a tracked list of current test failures.
 

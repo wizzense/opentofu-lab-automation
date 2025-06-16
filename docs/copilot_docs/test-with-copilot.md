@@ -16,8 +16,8 @@ Copilot can help with the following testing tasks:
 * **Fix failing tests**: receive suggestions for fixing test failures.
 * **Maintain consistency**: personalize Copilot to generate tests that follow your project's coding practices.
 
-> [!TIP]
-> If you don't yet have a Copilot subscription, you can use Copilot for free by signing up for the [Copilot Free plan](https://github.com/github-copilot/signup) and get a monthly limit of completions and chat interactions.
+> !TIP
+> If you don't yet have a Copilot subscription, you can use Copilot for free by signing up for the Copilot Free plan(https://github.com/github-copilot/signup) and get a monthly limit of completions and chat interactions.
 
 ## Set up your testing framework
 
@@ -45,7 +45,7 @@ Copilot can help you write tests for your application code by generating test co
     * "Write unit tests including edge cases"
     * "Create integration tests for this module"
 
-Get more guidance about [using GitHub Copilot for writing tests](https://docs.github.com/en/copilot/using-github-copilot/guides-on-using-github-copilot/writing-tests-with-github-copilot) in the GitHub documentation.
+Get more guidance about using GitHub Copilot for writing tests(https://docs.github.com/en/copilot/using-github-copilot/guides-on-using-github-copilot/writing-tests-with-github-copilot) in the GitHub documentation.
 
 ### Use editor smart actions
 
@@ -73,8 +73,8 @@ Alternatively, you can:
 1. Enter the `/fixTestFailure` command
 1. Follow Copilot's suggestions to fix the test
 
-> [!TIP]
-> [Agent mode](/docs/copilot/chat/chat-agent-mode.md) monitors the test output when running tests, and automatically attempts to fix and rerun failing tests.
+> !TIP
+> Agent mode(/docs/copilot/chat/chat-agent-mode.md) monitors the test output when running tests, and automatically attempts to fix and rerun failing tests.
 
 ## Personalize test generation
 
@@ -85,7 +85,7 @@ If your organization has specific testing requirements, you can customize how Co
 * Set code structure preferences
 * Request specific test patterns or methodologies
 
-Get more information about [personalizing Copilot for generating tests](/docs/copilot/copilot-customization.md).
+Get more information about personalizing Copilot for generating tests(/docs/copilot/copilot-customization.md).
 
 ## Tips for better test generation
 
@@ -98,6 +98,6 @@ To get the best results when generating tests with Copilot, follow these tips:
 
 ## Next steps
 
-* Learn more about [Copilot in VS Code](/docs/copilot/overview.md).
-* Explore [general testing features in VS Code](/docs/debugtest/testing.md).
-* Check out example prompts for [generating unit tests](https://docs.github.com/en/copilot/example-prompts-for-github-copilot-chat/testing-code/generate-unit-tests)
+* Learn more about Copilot in VS Code(/docs/copilot/overview.md).
+* Explore general testing features in VS Code(/docs/debugtest/testing.md).
+* Check out example prompts for generating unit tests(https://docs.github.com/en/copilot/example-prompts-for-github-copilot-chat/testing-code/generate-unit-tests)

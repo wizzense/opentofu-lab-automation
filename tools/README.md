@@ -4,7 +4,7 @@ This directory contains tools for managing, organizing, and maintaining the Open
 
 ## Organization Tools
 
-### [`Cleanup-Project.ps1`](./Cleanup-Project.ps1)
+### `Cleanup-Project.ps1`(./Cleanup-Project.ps1)
 **Comprehensive project cleanup with smart file organization**
 
 ```powershell
@@ -19,13 +19,13 @@ This directory contains tools for managing, organizing, and maintaining the Open
 ```
 
 **Features:**
-- [PASS] Analyzes root directory clutter
-- [PASS] Proposes logical organization structure
-- [PASS] Creates backup before changes
-- [PASS] Automatic file tagging
-- [PASS] Smart categorization
+- PASS Analyzes root directory clutter
+- PASS Proposes logical organization structure
+- PASS Creates backup before changes
+- PASS Automatic file tagging
+- PASS Smart categorization
 
-### [`Organize-ProjectFiles.ps1`](./Organize-ProjectFiles.ps1)
+### `Organize-ProjectFiles.ps1`(./Organize-ProjectFiles.ps1)
 **Smart file organization with pattern-based rules**
 
 ```powershell
@@ -43,7 +43,7 @@ This directory contains tools for managing, organizing, and maintaining the Open
 - `*report*.json` → `reports/`
 - `*.tf` → `infrastructure/`
 
-### [`Manage-FileTags.ps1`](./Manage-FileTags.ps1)
+### `Manage-FileTags.ps1`(./Manage-FileTags.ps1)
 **Smart file tagging system for automatic organization**
 
 ```powershell
@@ -65,7 +65,7 @@ This directory contains tools for managing, organizing, and maintaining the Open
 
 ## Testing Tools
 
-### [`New-RunnerScriptTest.ps1`](./New-RunnerScriptTest.ps1)
+### `New-RunnerScriptTest.ps1`(./New-RunnerScriptTest.ps1)
 **Generate comprehensive test files for runner scripts**
 
 ```powershell
@@ -112,7 +112,7 @@ $testCases = @(
 ### Managing Technical Debt
 ```powershell
 # Find legacy files
-./tools/Manage-FileTags.ps1 -ListTags | grep "legacy"
+./tools/Manage-FileTags.ps1 -ListTags  grep "legacy"
 
 # Organize legacy content
 ./tools/Cleanup-Project.ps1 -WhatIf
@@ -173,12 +173,12 @@ $organizationRules = @{
 
 ## Benefits
 
-- [PASS] **Clean Root Directory**: Essential files only in root
-- [PASS] **Logical Organization**: Related files grouped together 
-- [PASS] **Automatic Maintenance**: Smart tagging and categorization
-- [PASS] **Easy Navigation**: Clear directory structure
-- [PASS] **Future-Proof**: Extensible rules and patterns
-- [PASS] **Developer Friendly**: Better development experience
+- PASS **Clean Root Directory**: Essential files only in root
+- PASS **Logical Organization**: Related files grouped together 
+- PASS **Automatic Maintenance**: Smart tagging and categorization
+- PASS **Easy Navigation**: Clear directory structure
+- PASS **Future-Proof**: Extensible rules and patterns
+- PASS **Developer Friendly**: Better development experience
 
 ---
 

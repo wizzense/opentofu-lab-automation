@@ -1,17 +1,17 @@
 # fix-runner-execution.ps1
 # Comprehensive fix for PowerShell script execution issues in runner.ps1
 
-[CmdletBinding()]
+CmdletBinding()
 param(
- [Parameter(Mandatory = $false)
+ Parameter(Mandatory = $false)
 
 
 
 
 
 
-]
- [switch]$WhatIf
+
+ switch$WhatIf
 )
 
 Import-Module (Join-Path $PSScriptRoot "/pwsh/modules/CodeFixer/CodeFixer.psd1") -Force
@@ -38,19 +38,19 @@ $fixes = @()
 Write-Host " Fix 1: Improving parameter handling..." -ForegroundColor Green
 
 $oldExecutionPattern = @'
- $tempCfg = [System.IO.Path]::GetTempFileName()
- $Config | ConvertTo-Json -Depth 5 | Out-File -FilePath $tempCfg -Encoding utf8
+ $tempCfg = System.IO.Path::GetTempFileName()
+ Config | ConvertTo-Json -Depth 5  Out-File -FilePath $tempCfg -Encoding utf8
  $scriptArgs = @('-File', $scriptPath, '-Config', $tempCfg)
  if ((Get-Command $scriptPath).Parameters.ContainsKey('AsJson')) { $scriptArgs += '-AsJson' }
- $env:LAB_CONSOLE_LEVEL = $script:VerbosityLevels[$Verbosity]
+ $env:LAB_CONSOLE_LEVEL = $script:VerbosityLevels$Verbosity
  $output = & $pwshPath -NoLogo -NoProfile @scriptArgs *>&1
 '@
 
 $newExecutionPattern = @'
  # Create temporary config file with proper encoding
- $tempCfg = [System.IO.Path]::GetTempFileName()
+ $tempCfg = System.IO.Path::GetTempFileName()
  try {
- $Config | ConvertTo-Json -Depth 5 | Out-File -FilePath $tempCfg -Encoding utf8 -NoNewline
+ Config | ConvertTo-Json -Depth 5  Out-File -FilePath $tempCfg -Encoding utf8 -NoNewline
  
  # Validate script file exists and is readable
  if (-not (Test-Path $scriptPath)) {
@@ -75,7 +75,7 @@ $newExecutionPattern = @'
  }
  
  # Set environment and execute
- $env:LAB_CONSOLE_LEVEL = $script:VerbosityLevels[$Verbosity]
+ $env:LAB_CONSOLE_LEVEL = $script:VerbosityLevels$Verbosity
  
  # Use Start-Process for better error handling and isolation
  $processArgs = @{
@@ -102,9 +102,9 @@ $newExecutionPattern = @'
  $exitCode = $process.ExitCode
 '@
 
-if ($content -match [regex]::Escape($oldExecutionPattern)) {
- $content = $content -replace [regex]::Escape($oldExecutionPattern), $newExecutionPattern
- $fixes += "[PASS] Improved script execution with better parameter handling"
+if ($content -match regex::Escape($oldExecutionPattern)) {
+ $content = $content -replace regex::Escape($oldExecutionPattern), $newExecutionPattern
+ $fixes += "PASS Improved script execution with better parameter handling"
 } else {
  Write-Warning "Could not find exact execution pattern - applying targeted fixes"
  
@@ -117,7 +117,7 @@ if ($content -match [regex]::Escape($oldExecutionPattern)) {
  '\$output = & \$pwshPath -NoLogo -NoProfile @scriptArgs \*>&1', 
  '$output = & $pwshPath @scriptArgs 2>&1'
  
- $fixes += "[PASS] Applied targeted execution improvements"
+ $fixes += "PASS Applied targeted execution improvements"
 }
 
 # Fix 2: Add script validation before execution
@@ -127,7 +127,7 @@ $validationCode = @'
  # Validate script syntax before execution
  try {
  $scriptContent = Get-Content $scriptPath -Raw
- $null = [System.Management.Automation.PSParser]::Tokenize($scriptContent, [ref]$null)
+ $null = System.Management.Automation.PSParser::Tokenize($scriptContent, ref$null)
  } catch {
  Write-CustomLog "ERROR: Script has syntax errors: $scriptPath - $_" 'ERROR'
  $failed += $s.Name
@@ -140,7 +140,7 @@ $content = $content -replace
  '(\s+)(if \(\$flag = Get-ScriptConfigFlag)', 
  "$1$validationCode$1$2"
 
-$fixes += "[PASS] Added script syntax validation"
+$fixes += "PASS Added script syntax validation"
 
 # Fix 3: Improve error handling and logging
 Write-Host " Fix 3: Enhancing error handling..." -ForegroundColor Green
@@ -150,9 +150,9 @@ $oldErrorHandling = @'
 
  foreach ($line in $output) {
  if (-not $line) { continue }
- if ($line -is [System.Management.Automation.ErrorRecord]) {
+ if ($line -is System.Management.Automation.ErrorRecord) {
  Write-Error $line.ToString()
- } elseif ($line -is [System.Management.Automation.WarningRecord]) {
+ } elseif ($line -is System.Management.Automation.WarningRecord) {
  Write-Warning $line.ToString()
  } else {
  Write-CustomLog $line.ToString()
@@ -174,7 +174,7 @@ $newErrorHandling = @'
 
  # Process output with improved error detection
  foreach ($line in $output) {
- if (-not $line -or [string]::IsNullOrWhiteSpace($line)) { continue }
+ if (-not $line -or string::IsNullOrWhiteSpace($line)) { continue }
  
  $lineStr = $line.ToString().Trim()
  
@@ -184,10 +184,10 @@ $newErrorHandling = @'
  $lineStr -match "positional parameter cannot be found") {
  Write-CustomLog "ERROR: Parameter binding issue detected in $($s.Name): $lineStr" 'ERROR'
  $exitCode = 1
- } elseif ($line -is [System.Management.Automation.ErrorRecord] -or $lineStr.StartsWith('ERROR:')) {
+ } elseif ($line -is System.Management.Automation.ErrorRecord -or $lineStr.StartsWith('ERROR:')) {
  Write-CustomLog "ERROR: $lineStr" 'ERROR'
  $exitCode = 1
- } elseif ($line -is [System.Management.Automation.WarningRecord] -or $lineStr.StartsWith('WARNING:')) {
+ } elseif ($line -is System.Management.Automation.WarningRecord -or $lineStr.StartsWith('WARNING:')) {
  Write-CustomLog "WARNING: $lineStr" 'WARN'
  } else {
  Write-CustomLog $lineStr
@@ -195,8 +195,8 @@ $newErrorHandling = @'
  }
 '@
 
-$content = $content -replace [regex]::Escape($oldErrorHandling), $newErrorHandling
-$fixes += "[PASS] Enhanced error handling and parameter binding detection"
+$content = $content -replace regex::Escape($oldErrorHandling), $newErrorHandling
+$fixes += "PASS Enhanced error handling and parameter binding detection"
 
 # Fix 4: Add fallback execution method for problematic scripts
 Write-Host " Fix 4: Adding fallback execution method..." -ForegroundColor Green
@@ -208,10 +208,10 @@ $fallbackMethod = @'
  
  try {
  # Try direct dot-sourcing with error handling
- $tempScript = [System.IO.Path]::GetTempFileName() + '.ps1'
+ $tempScript = System.IO.Path::GetTempFileName() + '.ps1'
  $fallbackContent = @"
 try {
- `$Config = Get-Content -Raw '$tempCfg' | ConvertFrom-Json
+ `$Config = Get-Content -Raw '$tempCfg'  ConvertFrom-Json
  . '$scriptPath'
 } catch {
  Write-Error "Fallback execution failed: `$_"
@@ -239,7 +239,7 @@ $content = $content -replace
  '(\s+)(Remove-Item \$tempCfg -ErrorAction SilentlyContinue)', 
  "$1$fallbackMethod$1$2"
 
-$fixes += "[PASS] Added fallback execution method for problematic scripts"
+$fixes += "PASS Added fallback execution method for problematic scripts"
 
 # Fix 5: Improve PowerShell executable detection
 Write-Host " Fix 5: Improving PowerShell detection..." -ForegroundColor Green
@@ -289,8 +289,8 @@ foreach ($candidate in $pwshCandidates) {
 if (-not $pwshPath) {
 '@
 
-$content = $content -replace [regex]::Escape($oldPwshDetection), $newPwshDetection
-$fixes += "[PASS] Improved PowerShell executable detection"
+$content = $content -replace regex::Escape($oldPwshDetection), $newPwshDetection
+$fixes += "PASS Improved PowerShell executable detection"
 
 # Display what we're fixing
 Write-Host "`n Applied Fixes:" -ForegroundColor Cyan
@@ -299,7 +299,7 @@ foreach ($fix in $fixes) {
 }
 
 if ($WhatIf) {
- Write-Host "`n[WARN] WhatIf mode - changes not applied" -ForegroundColor Yellow
+ Write-Host "`nWARN WhatIf mode - changes not applied" -ForegroundColor Yellow
  Write-Host "Run without -WhatIf to apply fixes" -ForegroundColor Gray
  return
 }
@@ -311,17 +311,17 @@ Write-Host "� Backup created: $backupPath" -ForegroundColor Gray
 
 # Apply fixes
 Set-Content -Path $runnerPath -Value $content -Encoding UTF8
-Write-Host "[PASS] Runner script fixes applied successfully!" -ForegroundColor Green
+Write-Host "PASS Runner script fixes applied successfully!" -ForegroundColor Green
 
 # Validate the fixed script
 Write-Host "`n� Validating fixed script..." -ForegroundColor Cyan
 
 try {
  # Test PowerShell syntax
- $null = [System.Management.Automation.PSParser]::Tokenize($content, [ref]$null)
- Write-Host "[PASS] PowerShell syntax validation passed" -ForegroundColor Green
+ $null = System.Management.Automation.PSParser::Tokenize($content, ref$null)
+ Write-Host "PASS PowerShell syntax validation passed" -ForegroundColor Green
 } catch {
- Write-Error "[FAIL] PowerShell syntax validation failed: $_"
+ Write-Error "FAIL PowerShell syntax validation failed: $_"
  Write-Host "Restoring backup..." -ForegroundColor Yellow
  Copy-Item $backupPath $runnerPath -Force
  exit 1
@@ -342,7 +342,8 @@ Write-Host " 2. Monitor for 'Param is not recognized' errors" -ForegroundColor W
 Write-Host " 3. Verify parameter binding works correctly" -ForegroundColor White
 Write-Host " 4. Check fallback execution method effectiveness" -ForegroundColor White
 
-Write-Host "`n✨ Runner script fixes completed successfully!" -ForegroundColor Green
+Write-Host "`n Runner script fixes completed successfully!" -ForegroundColor Green
+
 
 
 

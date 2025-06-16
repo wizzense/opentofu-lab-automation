@@ -22,10 +22,10 @@ Invoke-AutoFix
 Invoke-AutoFix -Path "/workspaces/opentofu-lab-automation" -WhatIf
 #>
 function Invoke-AutoFix {
- [CmdletBinding(SupportsShouldProcess)]
+ CmdletBinding(SupportsShouldProcess)
  param(
- [string]$Path = ".",
- [switch]$PassThru
+ string$Path = ".",
+ switch$PassThru
  )
  
  
@@ -50,7 +50,7 @@ $ErrorActionPreference = "Stop"
  
  # Filter out legacy/archive files
  $ignorePaths = @("archive", "backups", "legacy", "historical-fixes", "deprecated-")
- $powerShellFiles = $powerShellFiles | Where-Object {
+ $powerShellFiles = powerShellFiles | Where-Object {
  $filePath = $_.FullName
  $shouldIgnore = $false
  foreach ($ignorePath in $ignorePaths) {
@@ -77,15 +77,15 @@ $ErrorActionPreference = "Stop"
  $tokens = $null
  $parseErrors = $null
  $content = Get-Content -Path $file.FullName -Raw
- $ast = [System.Management.Automation.Language.Parser]::ParseInput(
+ $ast = System.Management.Automation.Language.Parser::ParseInput(
  $content, 
  $file.FullName,
- [ref]$tokens, 
- [ref]$parseErrors
+ ref$tokens, 
+ ref$parseErrors
  )
  
  if ($parseErrors.Count -eq 0) {
- Write-Host " ✓ No syntax errors found" -ForegroundColor Green
+ Write-Host "  No syntax errors found" -ForegroundColor Green
  continue
  }
  
@@ -95,7 +95,7 @@ $ErrorActionPreference = "Stop"
  $backupPath = "$($file.FullName).backup-$(Get-Date -Format 'yyyyMMdd-HHmmss')"
  if ($PSCmdlet.ShouldProcess($file.FullName, "Create backup and fix syntax errors")) {
  Copy-Item -Path $file.FullName -Destination $backupPath
- Write-Host " Created backup: $([System.IO.Path]::GetFileName($backupPath))" -ForegroundColor Cyan
+ Write-Host " Created backup: $(System.IO.Path::GetFileName($backupPath))" -ForegroundColor Cyan
  
  # Apply fixes
  $fixedContent = $content
@@ -103,7 +103,7 @@ $ErrorActionPreference = "Stop"
  
  # Sort errors by line number (descending) to fix from bottom up
  # This prevents line number shifts from affecting later fixes
- $sortedErrors = $parseErrors | Sort-Object { $_.Extent.StartLineNumber } -Descending
+ $sortedErrors = parseErrors | Sort-Object { $_.Extent.StartLineNumber } -Descending
  
  foreach ($error in $sortedErrors) {
  Write-Host " Fixing: $($error.Message)" -ForegroundColor Yellow
@@ -112,43 +112,43 @@ $ErrorActionPreference = "Stop"
  if ($fixResult.Fixed) {
  $fixedContent = $fixResult.Content
  $hasChanges = $true
- Write-Host " [PASS] Applied fix: $($fixResult.Description)" -ForegroundColor Green
+ Write-Host " PASS Applied fix: $($fixResult.Description)" -ForegroundColor Green
  } else {
- Write-Host " [WARN] Could not auto-fix: $($error.Message)" -ForegroundColor Yellow
+ Write-Host " WARN Could not auto-fix: $($error.Message)" -ForegroundColor Yellow
  }
  }
  
  # Save the fixed content if changes were made
  if ($hasChanges) {
- $fixedContent | Set-Content -Path $file.FullName -Encoding UTF8
+ fixedContent | Set-Content -Path $file.FullName -Encoding UTF8
  $fixedFiles += $file.FullName
- Write-Host " [PASS] Fixed and saved $($file.Name)" -ForegroundColor Green
+ Write-Host " PASS Fixed and saved $($file.Name)" -ForegroundColor Green
  
  # Verify the fix worked
  $verifyErrors = $null
  try {
- [System.Management.Automation.Language.Parser]::ParseFile(
+ System.Management.Automation.Language.Parser::ParseFile(
  $file.FullName, 
- [ref]$null, 
- [ref]$verifyErrors
+ ref$null, 
+ ref$verifyErrors
  )
  if ($verifyErrors.Count -eq 0) {
- Write-Host " [PASS] Verification passed - no syntax errors remain" -ForegroundColor Green
+ Write-Host " PASS Verification passed - no syntax errors remain" -ForegroundColor Green
  } else {
- Write-Host " [WARN] $($verifyErrors.Count) syntax error(s) remain" -ForegroundColor Yellow
+ Write-Host " WARN $($verifyErrors.Count) syntax error(s) remain" -ForegroundColor Yellow
  }
  } catch {
- Write-Host " [FAIL] Verification failed: $($_.Exception.Message)" -ForegroundColor Red
+ Write-Host " FAIL Verification failed: $($_.Exception.Message)" -ForegroundColor Red
  }
  } else {
- Write-Host " [WARN] No automatic fixes could be applied" -ForegroundColor Yellow
+ Write-Host " WARN No automatic fixes could be applied" -ForegroundColor Yellow
  # Remove backup if no changes were made
  Remove-Item -Path $backupPath -Force
  }
  }
  
  } catch {
- Write-Host " [FAIL] Error processing file: $($_.Exception.Message)" -ForegroundColor Red
+ Write-Host " FAIL Error processing file: $($_.Exception.Message)" -ForegroundColor Red
  }
  }
  
@@ -161,7 +161,7 @@ $ErrorActionPreference = "Stop"
  if ($fixedFiles.Count -gt 0) {
  Write-Host "`n� Fixed Files:" -ForegroundColor Green
  foreach ($file in $fixedFiles) {
- Write-Host " • $([System.IO.Path]::GetFileName($file))" -ForegroundColor Green
+ Write-Host " • $(System.IO.Path::GetFileName($file))" -ForegroundColor Green
  }
  }
  
@@ -169,6 +169,7 @@ $ErrorActionPreference = "Stop"
  return $fixedFiles
  }
 }
+
 
 
 

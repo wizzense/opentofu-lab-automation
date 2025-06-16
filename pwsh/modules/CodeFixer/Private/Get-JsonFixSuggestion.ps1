@@ -13,42 +13,42 @@ The error message from JSON parsing
 Get-JsonFixSuggestion -ErrorMessage "Expected comma"
 #>
 function Get-JsonFixSuggestion {
-    [CmdletBinding()]
+    CmdletBinding()
     param(
-        [Parameter(Mandatory)
+        Parameter(Mandatory)
 
 
 
 
 
 
-]
-        [string]$ErrorMessage
+
+        string$ErrorMessage
     )
     
     $message = $ErrorMessage.ToLower()
     
     switch -Regex ($message) {
-        "expected.*comma|missing.*comma" {
+        "expected.*commamissing.*comma" {
             return "Add missing comma (,) between JSON properties or array elements"
         }
-        "unexpected.*token|invalid.*character" {
+        "unexpected.*tokeninvalid.*character" {
             return "Remove invalid characters or check for unescaped special characters"
         }
-        "unterminated.*string|missing.*quote" {
+        "unterminated.*stringmissing.*quote" {
             return "Add missing closing quote character for string value"
         }
-        "comments.*not.*permitted|invalid.*comment" {
+        "comments.*not.*permittedinvalid.*comment" {
             return "Remove comments - JSON does not support comments"
         }
-        "duplicate.*key|duplicate.*property" {
+        "duplicate.*keyduplicate.*property" {
             return "Remove or rename duplicate property keys"
         }
         "expected.*}" {
             return "Add missing closing brace (}) for JSON object"
         }
-        "expected.*]" {
-            return "Add missing closing bracket (]) for JSON array"
+        "expected.*" {
+            return "Add missing closing bracket () for JSON array"
         }
         "invalid.*escape.*sequence" {
             return "Fix invalid escape sequence in string (use \\\\ for backslash)"

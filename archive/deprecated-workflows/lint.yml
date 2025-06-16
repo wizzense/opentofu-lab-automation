@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
   pull_request:
   push:
-    branches: [main]
+    branches: main
 
 jobs:
   lint:
@@ -14,14 +14,14 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-latest, ubuntu-latest, macos-latest]
+        os: windows-latest, ubuntu-latest, macos-latest
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
 
       - name: Authenticate gh
         shell: bash
-        run: |
+        run: 
           if ! gh auth login --with-token <<< "${{ secrets.GITHUB_TOKEN }}"; then
             echo "Failed to authenticate with GitHub CLI" >&2
             exit 1
@@ -30,14 +30,14 @@ jobs:
       - name: Install PowerShell
         if: runner.os != 'Windows'
         shell: bash
-        run: |
+        run: 
           if ! command -v pwsh >/dev/null 2>&1; then
-            if [[ "$RUNNER_OS" == "Linux" ]]; then
-              if ! sudo apt-get update || ! sudo apt-get install -y powershell; then
+            if  "$RUNNER_OS" == "Linux" ; then
+              if ! sudo apt-get update  ! sudo apt-get install -y powershell; then
                 echo "Failed to install PowerShell on Linux" >&2
                 exit 1
               fi
-            elif [[ "$RUNNER_OS" == "macOS" ]]; then
+            elif  "$RUNNER_OS" == "macOS" ; then
               if ! brew install --cask powershell; then
                 echo "Failed to install PowerShell on macOS" >&2
                 exit 1
@@ -54,7 +54,7 @@ jobs:
         if: runner.os == 'Windows'
         uses: actions/cache@v4
         with:
-          path: |
+          path: 
             C:\Users\runneradmin\Documents\WindowsPowerShell\Modules
             C:\Users\runneradmin\Documents\PowerShell\Modules
           key: windows-pwsh-modules-${{ hashFiles('tests/PesterConfiguration.psd1') }}
@@ -68,10 +68,10 @@ jobs:
           restore-keys: ${{ runner.os }}-pwsh-modules-
       - name: Install PSScriptAnalyzer
         shell: pwsh
-        run: |
+        run: 
           $ErrorActionPreference = 'Stop'
           try {
-            if (-not (Get-Module -ListAvailable -Name PSScriptAnalyzer | Where-Object { $_.Version -ge [version]'1.22.0' })) {
+            if (-not (Get-Module -ListAvailable -Name PSScriptAnalyzer  Where-Object { $_.Version -ge version'1.22.0' })) {
               Install-Module -Name PSScriptAnalyzer -RequiredVersion 1.22.0 -Scope CurrentUser -Force
             }
             Write-Host "PSScriptAnalyzer ready" -ForegroundColor Green
@@ -81,7 +81,7 @@ jobs:
           }
       - name: Install powershell-yaml
         shell: pwsh
-        run: |
+        run: 
           $ErrorActionPreference = 'Stop'
           try {
             Install-Module -Name powershell-yaml -Force -Scope CurrentUser
@@ -100,17 +100,17 @@ jobs:
         run: pip install "ruff>=0.1"
       - name: Run Script Analyzer
         shell: pwsh
-        run: |
+        run: 
           $ErrorActionPreference = 'Stop'
           try {
             $log = $env:LOG_FILE
             $settings = Join-Path $PWD 'pwsh/PSScriptAnalyzerSettings.psd1'
-            $files = Get-ChildItem -Path . -Recurse -Include *.ps1,*.psm1,*.psd1 -File |
-                Where-Object { $_.FullName -ne $settings } |
+            $files = Get-ChildItem -Path . -Recurse -Include *.ps1,*.psm1,*.psd1 -File 
+                Where-Object { $_.FullName -ne $settings } 
                 Select-Object -ExpandProperty FullName
-            $results = $files | Invoke-ScriptAnalyzer -Severity Error,Warning -Settings $settings
-            $results | Format-Table | Tee-Object -FilePath $log
-            if ($results | Where-Object Severity -eq 'Error') {
+            $results = $files  Invoke-ScriptAnalyzer -Severity Error,Warning -Settings $settings
+            $results  Format-Table  Tee-Object -FilePath $log
+            if ($results  Where-Object Severity -eq 'Error') {
                 Write-Error 'ScriptAnalyzer errors detected'
                 exit 1
             }
@@ -121,7 +121,7 @@ jobs:
           }
       - name: Run Comprehensive PowerShell Validation
         shell: pwsh
-        run: |
+        run: 
           $ErrorActionPreference = 'Stop'
           try {
             Write-Host "Running comprehensive PowerShell validation..." -ForegroundColor Cyan
@@ -131,16 +131,16 @@ jobs:
             $exitCode = $LASTEXITCODE
 
             # Log results
-            "PowerShell Validation Results:" | Out-File -FilePath $env:LOG_FILE -Append
-            $validationResult | Out-File -FilePath $env:LOG_FILE -Append
+            "PowerShell Validation Results:"  Out-File -FilePath $env:LOG_FILE -Append
+            $validationResult  Out-File -FilePath $env:LOG_FILE -Append
 
             if ($exitCode -ne 0) {
-              Write-Host "❌ PowerShell validation failed" -ForegroundColor Red
+              Write-Host "FAIL PowerShell validation failed" -ForegroundColor Red
               Write-Host "Run 'pwsh tools/Validate-PowerShellScripts.ps1 -Path . -AutoFix' to fix issues" -ForegroundColor Yellow
               exit 1
             }
 
-            Write-Host "✅ All PowerShell files passed comprehensive validation" -ForegroundColor Green
+            Write-Host "PASS All PowerShell files passed comprehensive validation" -ForegroundColor Green
 
           } catch {
             Write-Error "PowerShell validation failed: $_"
@@ -153,16 +153,16 @@ jobs:
             foreach ($file in $files) {
               try {
                 $content = Get-Content $file.FullName -Raw
-                [System.Management.Automation.PSParser]::Tokenize($content, [ref]$null) | Out-Null
+                System.Management.Automation.PSParser::Tokenize($content, ref$null)  Out-Null
               } catch {
-                $syntaxErrors += "❌ $($file.Name): $($_.Exception.Message)"
+                $syntaxErrors += "FAIL $($file.Name): $($_.Exception.Message)"
               }
             }
 
             if ($syntaxErrors.Count -gt 0) {
               Write-Host "Basic Syntax Errors Found:" -ForegroundColor Red
-              $syntaxErrors | ForEach-Object { Write-Host $_ -ForegroundColor Red }
-              $syntaxErrors | Out-File -FilePath $env:LOG_FILE -Append
+              $syntaxErrors  ForEach-Object { Write-Host $_ -ForegroundColor Red }
+              $syntaxErrors  Out-File -FilePath $env:LOG_FILE -Append
               exit 1
             }
 
@@ -170,10 +170,10 @@ jobs:
           }
       - name: Run Custom Script Analyzer
         shell: pwsh
-        run: |
+        run: 
           $ErrorActionPreference = 'Stop'
           try {
-            ./CustomLint.ps1 2>&1 | Tee-Object -FilePath $env:LOG_FILE -Append
+            ./CustomLint.ps1 2>&1  Tee-Object -FilePath $env:LOG_FILE -Append
             Write-Host "Custom lint analysis completed" -ForegroundColor Green
           } catch {
             Write-Warning "Custom lint analysis failed: $_"
@@ -181,12 +181,12 @@ jobs:
           }
       - name: Run ruff
         shell: bash
-        run: |
-          ruff check . 2>&1 | tee -a "$LOG_FILE"
+        run: 
+          ruff check . 2>&1  tee -a "$LOG_FILE"
       - name: Run yamllint
         shell: bash
-        run: |
-          yamllint .github/workflows $(git ls-files '*.yml' '*.yaml') 2>&1 | tee -a "$LOG_FILE"
+        run: 
+          yamllint .github/workflows $(git ls-files '*.yml' '*.yaml') 2>&1  tee -a "$LOG_FILE"
       - name: Upload lint log
         if: always()
         uses: actions/upload-artifact@v4

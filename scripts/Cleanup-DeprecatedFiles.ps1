@@ -1,10 +1,10 @@
 # Cleanup-DeprecatedFiles.ps1
 # Script to clean up deprecated files after CodeFixer module integration
-[CmdletBinding()]
+CmdletBinding()
 param(
-    [switch]$Force,
-    [switch]$SkipBackup,
-    [switch]$WhatIf
+    switch$Force,
+    switch$SkipBackup,
+    switch$WhatIf
 )
 
 
@@ -19,7 +19,7 @@ $ErrorActionPreference = 'Stop'
 # Helper function to backup files before removing them
 function Backup-Files {
     param(
-        [string[]]$FilePaths
+        string$FilePaths
     )
 
     
@@ -35,7 +35,7 @@ if ($SkipBackup) {
 
     $backupDir = Join-Path $PSScriptRoot ".." "backups" "deprecated" (Get-Date -Format "yyyyMMdd-HHmmss")
     if (-not (Test-Path $backupDir)) {
-        New-Item -Path $backupDir -ItemType Directory -Force | Out-Null
+        New-Item -Path $backupDir -ItemType Directory -Force  Out-Null
     }
 
     foreach ($filePath in $FilePaths) {
@@ -56,8 +56,8 @@ if ($SkipBackup) {
 
 function Remove-DeprecatedFiles {
     param(
-        [string[]]$FilePaths,
-        [switch]$WhatIf
+        string$FilePaths,
+        switch$WhatIf
     )
 
     
@@ -90,8 +90,8 @@ function Remove-DeprecatedFiles {
 
 function Move-ToArchive {
     param(
-        [string[]]$FilePaths,
-        [switch]$WhatIf
+        string$FilePaths,
+        switch$WhatIf
     )
 
     
@@ -107,7 +107,7 @@ $archiveDir = Join-Path $PSScriptRoot ".." "archive" "deprecated"
             Write-Host "What if: Would create archive directory: $archiveDir" -ForegroundColor Yellow
         }
         else {
-            New-Item -Path $archiveDir -ItemType Directory -Force | Out-Null
+            New-Item -Path $archiveDir -ItemType Directory -Force  Out-Null
             Write-Host "Created archive directory: $archiveDir" -ForegroundColor Cyan
         }
     }
@@ -133,8 +133,8 @@ $archiveDir = Join-Path $PSScriptRoot ".." "archive" "deprecated"
 
 function Update-ReadmeFile {
     param(
-        [string]$FilePath,
-        [switch]$WhatIf
+        string$FilePath,
+        switch$WhatIf
     )
 
     
@@ -172,16 +172,16 @@ The OpenTofu Lab Automation project includes a comprehensive testing and validat
 - `comprehensive-lint.ps1` - Runs and reports on PowerShell linting
 - `comprehensive-health-check.ps1` - Performs system health checks
 
-For more information, see [TESTING.md](docs/TESTING.md)
+For more information, see TESTING.md(docs/TESTING.md)
 '@
 
     if ($content -notmatch 'CodeFixer Module') {
         # Find a good place to add the testing framework section
         if ($content -match '## Project Structure') {
-            $content = $content -replace '(## Project Structure.*?)(\n+##|\n*$)', "`$1$updateSection`$2"
+            $content = $content -replace '(## Project Structure.*?)(\n+##\n*$)', "`$1$updateSection`$2"
         }
         elseif ($content -match '## Getting Started') {
-            $content = $content -replace '(## Getting Started.*?)(\n+##|\n*$)', "`$1$updateSection`$2"
+            $content = $content -replace '(## Getting Started.*?)(\n+##\n*$)', "`$1$updateSection`$2"
         }
         else {
             # Append to the end
@@ -210,7 +210,7 @@ try {
     $filesToRemove = @(
         "fix-ternary-syntax.ps1",
         "fix-test-formatting.ps1"
-    ) | ForEach-Object { Join-Path $rootDir $_ }
+    )  ForEach-Object { Join-Path $rootDir $_ }
 
     # Files to move to archive (deprecated but kept for reference)
     $filesToArchive = @(
@@ -220,7 +220,7 @@ try {
         "test-bootstrap-fixes.py",
         "test-bootstrap-syntax.py",
         "validate-syntax.py"
-    ) | ForEach-Object { Join-Path $rootDir $_ }
+    )  ForEach-Object { Join-Path $rootDir $_ }
 
     Write-Host "Starting cleanup of deprecated files..." -ForegroundColor Cyan
 

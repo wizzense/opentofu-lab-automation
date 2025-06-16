@@ -1,7 +1,7 @@
 ---
 description: Analyze and fix code issues using the CodeFixer module and project standards
 mode: agent
-tools: ["filesystem", "powershell", "codefixer"]
+tools: "filesystem", "powershell", "codefixer"
 ---
 
 # Code Analysis and Fixing
@@ -83,8 +83,8 @@ param($config)
 
 #  Proper structure:
 Param(
-    [Parameter(Mandatory=$true)]
-    [pscustomobject]$Config
+    Parameter(Mandatory=$true)
+    pscustomobject$Config
 )
 
 $ErrorActionPreference = "Stop"
@@ -141,27 +141,27 @@ try {
 
 ### File: ${file}
 
-#### Issues Found: [X]
-#### Auto-fixable: [Y]
-#### Manual review: [Z]
+#### Issues Found: X
+#### Auto-fixable: Y
+#### Manual review: Z
 
 ### Critical Issues
-- **Line X**: [Issue description]
+- **Line X**: Issue description
   - **Severity**: Critical
-  - **Type**: [Syntax/Security/Performance]
-  - **Fix**: [Automatic/Manual]
-  - **Recommendation**: [Specific fix description]
+  - **Type**: Syntax/Security/Performance
+  - **Fix**: Automatic/Manual
+  - **Recommendation**: Specific fix description
 
 ### Warnings
-- **Line X**: [Issue description]
+- **Line X**: Issue description
   - **Severity**: Warning
-  - **Type**: [Style/Performance/Best Practice]
-  - **Recommendation**: [Improvement suggestion]
+  - **Type**: Style/Performance/Best Practice
+  - **Recommendation**: Improvement suggestion
 
 ### Suggestions
-- **Line X**: [Suggestion description]
-  - **Type**: [Optimization/Enhancement]
-  - **Benefit**: [Expected improvement]
+- **Line X**: Suggestion description
+  - **Type**: Optimization/Enhancement
+  - **Benefit**: Expected improvement
 
 ### Auto-fixes Applied
 -  Updated import paths (lab_utils  modules)
@@ -170,9 +170,9 @@ try {
 -  Added missing error handling
 
 ### Summary
-- **Overall Quality Score**: [X/10]
-- **Compliance**: [Y%] with project standards
-- **Next Steps**: [Prioritized recommendations]
+- **Overall Quality Score**: X/10
+- **Compliance**: Y% with project standards
+- **Next Steps**: Prioritized recommendations
 ```
 
 ## Validation Commands
@@ -182,7 +182,7 @@ After fixing, validate the results:
 ```powershell
 # Syntax validation
 $errors = $null
-$null = [System.Management.Automation.Language.Parser]::ParseFile($FilePath, [ref]$null, [ref]$errors)
+$null = System.Management.Automation.Language.Parser::ParseFile($FilePath, ref$null, ref$errors)
 if ($errors.Count -eq 0) { 
     Write-Host " Syntax valid" -ForegroundColor Green 
 }
@@ -193,7 +193,7 @@ Write-Host "PSScriptAnalyzer issues: $($issues.Count)"
 
 # Module import test
 try {
-    & $FilePath -Config ([pscustomobject]@{}) -WhatIf
+    & $FilePath -Config (pscustomobject@{}) -WhatIf
     Write-Host " Script executes without errors"
 } catch {
     Write-Host " Execution error: $_"
@@ -229,5 +229,5 @@ Please specify:
 ## Reference Instructions
 
 This prompt references:
-- [PowerShell Standards](../instructions/powershell-standards.instructions.md)
-- [Testing Standards](../instructions/testing-standards.instructions.md)
+- PowerShell Standards(../instructions/powershell-standards.instructions.md)
+- Testing Standards(../instructions/testing-standards.instructions.md)

@@ -25,13 +25,13 @@ Invoke-ImportAnalysis
 Invoke-ImportAnalysis -Path "/scripts" -AutoFix -OutputFormat JSON
 #>
 function Invoke-ImportAnalysis {
- [CmdletBinding()]
+ CmdletBinding()
  param(
- [string]$Path = ".",
- [switch]$AutoFix,
- [ValidateSet('Text', 'JSON', 'CI')]
- [string]$OutputFormat = 'Text',
- [switch]$PassThru
+ string$Path = ".",
+ switch$AutoFix,
+ ValidateSet('Text', 'JSON', 'CI')
+ string$OutputFormat = 'Text',
+ switch$PassThru
  )
  
  $ErrorActionPreference = "Continue"
@@ -41,15 +41,15 @@ function Invoke-ImportAnalysis {
  # Define known import patterns and their fixes
  $importPatterns = @{
  # LabRunner path migrations
- 'pwsh[\\/]lab_utils[\\/]LabRunner' = 'pwsh/modules/LabRunner'
- 'pwsh[\\/]lab_utils[\\/]Get-LabConfig\.ps1' = 'pwsh/modules/LabRunner/Get-LabConfig.ps1'
- 'pwsh[\\/]lab_utils[\\/]Get-Platform\.ps1' = 'pwsh/modules/LabRunner/Get-Platform.ps1'
- 'pwsh[\\/]lab_utils[\\/]Hypervisor\.psm1' = 'pwsh/modules/LabRunner/Hypervisor.psm1'
+ 'pwsh\\/lab_utils\\/LabRunner' = 'pwsh/modules/LabRunner'
+ 'pwsh\\/lab_utils\\/Get-LabConfig\.ps1' = 'pwsh/modules/LabRunner/Get-LabConfig.ps1'
+ 'pwsh\\/lab_utils\\/Get-Platform\.ps1' = 'pwsh/modules/LabRunner/Get-Platform.ps1'
+ 'pwsh\\/lab_utils\\/Hypervisor\.psm1' = 'pwsh/modules/LabRunner/Hypervisor.psm1'
  
  # Common missing imports
  'Invoke-ScriptAnalyzer' = 'PSScriptAnalyzer'
  'Invoke-Pester' = 'Pester'
- 'ConvertTo-Json|ConvertFrom-Json' = 'Microsoft.PowerShell.Utility'
+ 'ConvertTo-JsonConvertFrom-Json' = 'Microsoft.PowerShell.Utility'
  }
  
  # Find all PowerShell files
@@ -77,7 +77,7 @@ function Invoke-ImportAnalysis {
  
  # Check for outdated LabRunner paths
  if ($content -match "lab_utils") {
- $fileIssues += [PSCustomObject]@{
+ $fileIssues += PSCustomObject@{
  File = $file.FullName
  Line = 0
  Type = 'OutdatedPath'
@@ -90,7 +90,7 @@ function Invoke-ImportAnalysis {
  if ($AutoFix) {
  foreach ($pattern in $importPatterns.Keys) {
  if ($pattern -like "*lab_utils*") {
- $content = $content -replace $pattern, $importPatterns[$pattern]
+ $content = $content -replace $pattern, $importPatterns$pattern
  }
  }
  }
@@ -102,7 +102,7 @@ function Invoke-ImportAnalysis {
  # Check for PSScriptAnalyzer usage without import
  if ($content -match "Invoke-ScriptAnalyzer" -and $content -notmatch "Import-Module.*PSScriptAnalyzer") {
  $missingImports += "PSScriptAnalyzer"
- $fileIssues += [PSCustomObject]@{
+ $fileIssues += PSCustomObject@{
  File = $file.FullName
  Line = 0
  Type = 'MissingImport'
@@ -114,9 +114,9 @@ function Invoke-ImportAnalysis {
  }
  
  # Check for Pester usage without import
- if ($content -match "Describe|It|BeforeAll|AfterAll|Should" -and $content -notmatch "Import-Module.*Pester") {
+ if ($content -match "DescribeItBeforeAllAfterAllShould" -and $content -notmatch "Import-Module.*Pester") {
  $missingImports += "Pester"
- $fileIssues += [PSCustomObject]@{
+ $fileIssues += PSCustomObject@{
  File = $file.FullName
  Line = 0
  Type = 'MissingImport'
@@ -129,7 +129,7 @@ function Invoke-ImportAnalysis {
  
  # Check for LabRunner usage without import
  if ($content -match "InModuleScope.*LabRunner" -and $content -notmatch "Import-Module.*LabRunner") {
- $fileIssues += [PSCustomObject]@{
+ $fileIssues += PSCustomObject@{
  File = $file.FullName
  Line = 0
  Type = 'MissingImport'
@@ -156,7 +156,7 @@ function Invoke-ImportAnalysis {
  
  # Add imports at the top of the file (after param block if exists)
  if ($content -match "param\s*\(") {
- $content = $content -replace "(param\s*\([^)]*\)\s*)", "`$1$importStatements"
+ $content = $content -replace "(param\s*\(^)*\)\s*)", "`$1$importStatements"
  } else {
  $content = $importStatements + $content
  }
@@ -167,7 +167,7 @@ function Invoke-ImportAnalysis {
  try {
  Set-Content -Path $file.FullName -Value $content -Encoding UTF8
  $fixedCount++
- Write-Host " [PASS] Auto-fixed import issues" -ForegroundColor Green
+ Write-Host " PASS Auto-fixed import issues" -ForegroundColor Green
  } catch {
  Write-Warning "Failed to apply fixes to $($file.FullName): $($_.Exception.Message)"
  }
@@ -187,12 +187,12 @@ function Invoke-ImportAnalysis {
  Issues = $allIssues
  Summary = @{
  TotalFiles = $powerShellFiles.Count
- FilesWithIssues = ($allIssues | Group-Object File).Count
+ FilesWithIssues = (allIssues | Group-Object File).Count
  TotalIssues = $allIssues.Count
  FixedFiles = $fixedCount
  }
  }
- $result | ConvertTo-Json -Depth 3
+ result | ConvertTo-Json -Depth 3
  }
  'CI' {
  foreach ($issue in $allIssues) {
@@ -201,17 +201,17 @@ function Invoke-ImportAnalysis {
  'Warning' { 'warning' }
  default { 'notice' }
  }
- Write-Host "::$level file=$($issue.File),line=$($issue.Line)::[$($issue.Type)] $($issue.Issue)"
+ Write-Host "::$level file=$($issue.File),line=$($issue.Line)::$($issue.Type) $($issue.Issue)"
  }
  }
  default {
  if ($allIssues.Count -eq 0) {
- Write-Host "[PASS] No import issues found!" -ForegroundColor Green
+ Write-Host "PASS No import issues found!" -ForegroundColor Green
  } else {
  Write-Host "`n Import Analysis Results:" -ForegroundColor Cyan
  Write-Host "=============================" -ForegroundColor Cyan
  
- $groupedIssues = $allIssues | Group-Object File
+ $groupedIssues = allIssues | Group-Object File
  foreach ($group in $groupedIssues) {
  Write-Host "`n $($group.Name)" -ForegroundColor Yellow
  Write-Host ("-" * 50) -ForegroundColor Gray
@@ -222,19 +222,19 @@ function Invoke-ImportAnalysis {
  'Warning' { 'Yellow' }
  default { 'Cyan' }
  }
- Write-Host " [$($issue.Type)] $($issue.Issue)" -ForegroundColor $color
+ Write-Host " $($issue.Type) $($issue.Issue)" -ForegroundColor $color
  Write-Host " Fix: $($issue.Suggestion)" -ForegroundColor Green
  }
  }
  
  # Summary
- $errorCount = ($allIssues | Where-Object Severity -eq 'Error').Count
- $warningCount = ($allIssues | Where-Object Severity -eq 'Warning').Count
+ $errorCount = (allIssues | Where-Object Severity -eq 'Error').Count
+ $warningCount = (allIssues | Where-Object Severity -eq 'Warning').Count
  
  Write-Host "`n Summary:" -ForegroundColor Cyan
  Write-Host "==========" -ForegroundColor Cyan
  Write-Host "Files scanned: $($powerShellFiles.Count)" -ForegroundColor White
- Write-Host "Files with issues: $(($allIssues | Group-Object File).Count)" -ForegroundColor Yellow
+ Write-Host "Files with issues: $((allIssues | Group-Object File).Count)" -ForegroundColor Yellow
  Write-Host "Import errors: $errorCount" -ForegroundColor $$(if (errorCount -gt 0) { 'Red' } else { 'Green' })
  Write-Host "Import warnings: $warningCount" -ForegroundColor $$(if (warningCount -gt 0) { 'Yellow' } else { 'Green' })
  
@@ -249,3 +249,4 @@ function Invoke-ImportAnalysis {
  return $allIssues
  }
 }
+

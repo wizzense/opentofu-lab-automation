@@ -3,14 +3,12 @@
 
 Describe '0201_Install-NodeCore Tests' {
     BeforeAll {
-        Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation//pwsh/modules/LabRunner/" -Force -Force -Force -Force -Force -Force -Force
-        Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation//pwsh/modules/CodeFixer/" -Force -Force -Force -Force -Force -Force -Force
-    }
+        Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\pwsh/modules/LabRunner/" -ForceImport-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\pwsh/modules/CodeFixer/" -Force}
 
     Context 'Module Loading' {
         It 'should load required modules' {
-            Get-Module LabRunner | Should -Not -BeNullOrEmpty
-            Get-Module CodeFixer | Should -Not -BeNullOrEmpty
+            Get-Module LabRunner  Should -Not -BeNullOrEmpty
+            Get-Module CodeFixer  Should -Not -BeNullOrEmpty
         }
     }
 
@@ -25,6 +23,8 @@ Describe '0201_Install-NodeCore Tests' {
         # Cleanup test resources
     }
 }
+
+
 
 
 

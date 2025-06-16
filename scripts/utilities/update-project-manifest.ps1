@@ -20,9 +20,9 @@ Force update even if manifest is recent
 ./scripts/utilities/update-project-manifest.ps1 -Force
 #>
 
-[CmdletBinding()]
+CmdletBinding()
 param(
-    [switch]$Force
+    switch$Force
 )
 
 $ErrorActionPreference = "Stop"
@@ -35,7 +35,7 @@ if ($IsWindows -or $env:OS -eq "Windows_NT") {
 $ManifestPath = "$ProjectRoot/PROJECT-MANIFEST.json"
 
 function Write-ManifestLog {
-    param([string]$Message, [string]$Level = "INFO")
+    param(string$Message, string$Level = "INFO")
     $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
     $color = switch ($Level) {
         "INFO" { "Cyan" }
@@ -44,11 +44,11 @@ function Write-ManifestLog {
         "ERROR" { "Red" }
         default { "White" }
     }
-    Write-Host "[$timestamp] [$Level] $Message" -ForegroundColor $color
+    Write-Host "$timestamp $Level $Message" -ForegroundColor $color
 }
 
 function Get-ModuleInfo {
-    param([string]$ModulePath)
+    param(string$ModulePath)
     
     $info = @{
         functions = @()
@@ -57,7 +57,7 @@ function Get-ModuleInfo {
     }
     
     # Get module manifest info
-    $manifestFile = Get-ChildItem "$ModulePath/*.psd1" -ErrorAction SilentlyContinue | Select-Object -First 1
+    $manifestFile = Get-ChildItem "$ModulePath/*.psd1" -ErrorAction SilentlyContinue  Select-Object -First 1
     if ($manifestFile) {
         try {
             $manifestData = Import-PowerShellDataFile $manifestFile.FullName
@@ -72,7 +72,7 @@ function Get-ModuleInfo {
     $publicPath = "$ModulePath/Public"
     if (Test-Path $publicPath) {
         $functionFiles = Get-ChildItem "$publicPath/*.ps1" -ErrorAction SilentlyContinue
-        $info.functions = $functionFiles | ForEach-Object {
+        $info.functions = functionFiles | ForEach-Object {
             $_.BaseName
         }
     }
@@ -90,7 +90,7 @@ function Get-ProjectMetrics {
     }
     
     # Count PowerShell files
-    $psFiles = Get-ChildItem "$ProjectRoot" -Recurse -Include "*.ps1", "*.psm1", "*.psd1" -File | 
+    $psFiles = Get-ChildItem "$ProjectRoot" -Recurse -Include "*.ps1", "*.psm1", "*.psd1" -File  
         Where-Object { $_.FullName -notlike "*backup*" -and $_.FullName -notlike "*archive*" }
     $metrics.powerShellFiles = $psFiles.Count
     
@@ -124,10 +124,10 @@ function Get-PerformanceMetrics {
     $healthFile = "$ProjectRoot/docs/reports/project-status/current-health.json"
     if (Test-Path $healthFile) {
         try {
-            $healthData = Get-Content $healthFile | ConvertFrom-Json
+            $healthData = Get-Content $healthFile  ConvertFrom-Json
             if ($healthData.Timestamp) {
-                $healthTime = [DateTime]::Parse($healthData.Timestamp)
-                if ((Get-Date) - $healthTime -lt [TimeSpan]::FromHours(24)) {
+                $healthTime = DateTime::Parse($healthData.Timestamp)
+                if ((Get-Date) - $healthTime -lt TimeSpan::FromHours(24)) {
                     $performance.lastHealthCheck = $healthData.Timestamp
                 }
             }
@@ -146,7 +146,7 @@ function Update-ProjectManifest {
     $manifest = @{}
     if (Test-Path $ManifestPath) {
         try {
-            $manifest = Get-Content $ManifestPath | ConvertFrom-Json -AsHashtable
+            $manifest = Get-Content $ManifestPath  ConvertFrom-Json -AsHashtable
         } catch {
             Write-ManifestLog "Could not parse existing manifest, creating new" "WARNING"
         }
@@ -225,7 +225,7 @@ function Update-ProjectManifest {
     }
     
     # Save updated manifest
-    $manifest | ConvertTo-Json -Depth 10 | Set-Content $ManifestPath
+    manifest | ConvertTo-Json -Depth 10  Set-Content $ManifestPath
     Write-ManifestLog "Updated manifest at $ManifestPath" "SUCCESS"
     
     # Update AGENTS.md reference if needed
@@ -244,7 +244,7 @@ Write-ManifestLog "Starting project manifest update..." "INFO"
 # Check if update is needed
 if (-not $Force -and (Test-Path $ManifestPath)) {
     $lastModified = (Get-Item $ManifestPath).LastWriteTime
-    if ((Get-Date) - $lastModified -lt [TimeSpan]::FromHours(1)) {
+    if ((Get-Date) - $lastModified -lt TimeSpan::FromHours(1)) {
         Write-ManifestLog "Manifest is recent (updated within 1 hour), use -Force to update anyway" "INFO"
         exit 0
     }
@@ -257,3 +257,4 @@ try {
     Write-ManifestLog "Failed to update manifest: $($_.Exception.Message)" "ERROR"
     exit 1
 }
+

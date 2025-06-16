@@ -4,29 +4,29 @@ This directory contains the GitHub Actions workflows for the OpenTofu Lab Automa
 
 ## Core Workflows
 
-| Workflow | Description |
-|----------|-------------|
-| [ CI/CD Pipeline](./unified-ci.yml) | Main CI/CD pipeline for validation, linting, and testing |
-| [ Cross-Platform Testing](./unified-testing.yml) | Runs tests across Windows, Linux, and macOS |
-| [ System Health Monitor](./system-health-monitor.yml) | Monitors system health and creates alerts |
-| [ Unified Utilities](./unified-utilities.yml) | Updates dashboard, path index, and documentation |
+ Workflow  Description 
+-----------------------
+  CI/CD Pipeline(./unified-ci.yml)  Main CI/CD pipeline for validation, linting, and testing 
+  Cross-Platform Testing(./unified-testing.yml)  Runs tests across Windows, Linux, and macOS 
+  System Health Monitor(./system-health-monitor.yml)  Monitors system health and creates alerts 
+  Unified Utilities(./unified-utilities.yml)  Updates dashboard, path index, and documentation 
 
 ## Support Workflows
 
-| Workflow | Description |
-|----------|-------------|
-| [ Workflow Validation](./validate-workflows.yml) | Validates the syntax of workflow files |
-| [ Automatic Test Generation](./auto-test-generation-consolidated.yml) | Automatically generates tests for PowerShell scripts |
-| [ Update Changelog](./changelog.yml) | Updates the CHANGELOG.md file |
-| [ Automated Issue Creation](./issue-on-fail.yml) | Creates issues for workflow failures |
+ Workflow  Description 
+-----------------------
+  Workflow Validation(./validate-workflows.yml)  Validates the syntax of workflow files 
+  Automatic Test Generation(./auto-test-generation-consolidated.yml)  Automatically generates tests for PowerShell scripts 
+  Update Changelog(./changelog.yml)  Updates the CHANGELOG.md file 
+  Automated Issue Creation(./issue-on-fail.yml)  Creates issues for workflow failures 
 
 ## Development Workflows
 
-| Workflow | Description |
-|----------|-------------|
-| [ Copilot Auto-Fix](./copilot-auto-fix.yml) | Generates AI-powered fix suggestions for open issues |
-| [ Auto-Merge PRs](./auto-merge.yml) | Automatically merges eligible pull requests |
-| [ Package LabCTL Tool](./package-labctl.yml) | Builds and packages the LabCTL tool |
+ Workflow  Description 
+-----------------------
+  Copilot Auto-Fix(./copilot-auto-fix.yml)  Generates AI-powered fix suggestions for open issues 
+  Auto-Merge PRs(./auto-merge.yml)  Automatically merges eligible pull requests 
+  Package LabCTL Tool(./package-labctl.yml)  Builds and packages the LabCTL tool 
 
 ## Features
 
@@ -57,5 +57,5 @@ The following workflows have been consolidated and can be safely archived:
 
 > Archiving completed on 2025-06-13 02:01:40
 
-The legacy workflows mentioned above have been moved to [.github/archived_workflows](../archived_workflows/).
-See the [archive README](../archived_workflows/README.md) for details.
+The legacy workflows mentioned above have been moved to .github/archived_workflows(../archived_workflows/).
+See the archive README(../archived_workflows/README.md) for details.

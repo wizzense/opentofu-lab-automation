@@ -13,7 +13,7 @@ A PSCustomObject containing configuration parameters:
 - ExcludePaths: Additional paths to exclude from backup consolidation (Optional)
 
 .EXAMPLE
-$config = [PSCustomObject]@{
+$config = PSCustomObject@{
     ProjectRoot = "."
     Force = $true
 }
@@ -23,22 +23,21 @@ Invoke-BackupConsolidation -Config $config
 Follows OpenTofu Lab Automation maintenance standards
 #>
 function Invoke-BackupConsolidation {
-    [CmdletBinding()]
+    CmdletBinding()
     param(
-        [Parameter(Mandatory = $true)]
-        [PSCustomObject]$Config
+        Parameter(Mandatory = $true)
+        PSCustomObject$Config
     )
     
     $ErrorActionPreference = "Stop"
     
     # Import required modules
-    Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation//pwsh/modules/LabRunner/" -Force -Force -Force -Force -Force -Force -Force
-    Import-Module "//pwsh/modules/CodeFixerLogging/" -Force
+    Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\pwsh/modules/LabRunner/" -ForceImport-Module "/pwsh/modules/CodeFixerLogging/" -Force
 
     # Fallback definition for Write-CustomLog if not available
     if (-not (Get-Command "Write-CustomLog" -ErrorAction SilentlyContinue)) {
         function Write-CustomLog {
-            param([string]$Message, [string]$Level = "INFO")
+            param(string$Message, string$Level = "INFO")
             $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
             $color = switch ($Level) {
                 "ERROR" { "Red" }
@@ -46,7 +45,7 @@ function Invoke-BackupConsolidation {
                 "INFO" { "Green" }
                 default { "White" }
             }
-            Write-Host "[$timestamp] [$Level] $Message" -ForegroundColor $color
+            Write-Host "$timestamp $Level $Message" -ForegroundColor $color
         }
     }
     
@@ -67,7 +66,7 @@ function Invoke-BackupConsolidation {
             
             # Create backup destination
             if (-not (Test-Path $BackupDestination)) {
-                New-Item -ItemType Directory -Path $BackupDestination -Force | Out-Null
+                New-Item -ItemType Directory -Path $BackupDestination -Force  Out-Null
                 Write-CustomLog "Created backup destination directory" "INFO"
             }
             
@@ -82,9 +81,9 @@ function Invoke-BackupConsolidation {
             foreach ($Pattern in $BackupPatterns) {
                 try {
                     $Files = Get-ChildItem -Path $ProjectRoot -Recurse -File -Filter $Pattern -ErrorAction SilentlyContinue
-                    $FilteredFiles = $Files | Where-Object {
+                    $FilteredFiles = Files | Where-Object {
                         $FilePath = $_.FullName
-                        $RelativePath = $FilePath.Replace($ProjectRoot, "").TrimStart([char]'\', [char]'/')
+                        $RelativePath = $FilePath.Replace($ProjectRoot, "").TrimStart(char'\', char'/')
                         
                         $Excluded = $false
                         foreach ($Exclusion in $AllExclusions) {
@@ -116,7 +115,7 @@ function Invoke-BackupConsolidation {
             if (-not $Force) {
                 Write-CustomLog "Found $($BackupFiles.Count) backup files to consolidate" "INFO"
                 $Confirmation = Read-Host "Proceed with consolidation? (y/N)"
-                if ($Confirmation -notmatch '^[Yy]') {
+                if ($Confirmation -notmatch '^Yy') {
                     Write-CustomLog "Operation cancelled by user" "INFO"
                     return @{ Success = $false; Message = "Cancelled by user" }
                 }
@@ -130,17 +129,17 @@ function Invoke-BackupConsolidation {
             Write-Progress -Activity "Backup Consolidation" -Status "Preparing to process files" -PercentComplete 0
             
             for ($i = 0; $i -lt $BackupFiles.Count; $i++) {
-                $File = $BackupFiles[$i]
+                $File = $BackupFiles$i
                 $percentComplete = ($i / $BackupFiles.Count) * 100
                 Write-Progress -Activity "Backup Consolidation" -Status "Processing file $($i+1) of $($BackupFiles.Count)" -PercentComplete $percentComplete
                 
                 try {
-                    $RelativePath = $File.FullName.Replace($ProjectRoot, "").TrimStart([char]'\', [char]'/')
+                    $RelativePath = $File.FullName.Replace($ProjectRoot, "").TrimStart(char'\', char'/')
                     $DestinationPath = Join-Path $BackupDestination $RelativePath
                     $DestinationDir = Split-Path $DestinationPath -Parent
 
                     if (-not (Test-Path $DestinationDir)) {
-                        New-Item -ItemType Directory -Path $DestinationDir -Force | Out-Null
+                        New-Item -ItemType Directory -Path $DestinationDir -Force  Out-Null
                     }
 
                     Move-Item -Path $File.FullName -Destination $DestinationPath -Force
@@ -156,7 +155,7 @@ function Invoke-BackupConsolidation {
             
             Write-Progress -Activity "Backup Consolidation" -Status "Complete" -Completed
             
-            $SummaryMessage = "Backup consolidation completed: $ProcessedCount files moved, $([math]::Round($TotalSize / 1MB, 2)) MB total size"
+            $SummaryMessage = "Backup consolidation completed: $ProcessedCount files moved, $(math::Round($TotalSize / 1MB, 2)) MB total size"
             Write-CustomLog $SummaryMessage "INFO"
 
             if ($FailedMoves.Count -gt 0) {
@@ -176,6 +175,8 @@ function Invoke-BackupConsolidation {
         }
     }
 }
+
+
 
 
 

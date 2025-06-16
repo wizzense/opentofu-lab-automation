@@ -15,7 +15,7 @@ try:
     from config_schema import ConfigSchema, ConfigField
     from enhanced_powershell_executor import EnhancedPowerShellExecutor
     
-    print("✓ Successfully imported configuration schema and PowerShell executor")
+    print(" Successfully imported configuration schema and PowerShell executor")
     
     # Test configuration schema
     schema = ConfigSchema()
@@ -27,8 +27,8 @@ try:
         print(f"  Section '{section_name}': {len(fields)} fields")
         
         # Show a few example fields
-        for i, field in enumerate(fields[:2]):  # Show first 2 fields per section
-            print(f"    - {field.display_name} ({field.field_type}): {field.help_text[:50]}...")
+        for i, field in enumerate(fields:2):  # Show first 2 fields per section
+            print(f"    - {field.display_name} ({field.field_type}): {field.help_text:50}...")
     
     # Test defaults
     defaults = schema.get_defaults()
@@ -36,7 +36,7 @@ try:
     print(f"  Total default values: {len(defaults)}")
     print(f"  Sample defaults:")
     
-    for i, (key, value) in enumerate(list(defaults.items())[:5]):
+    for i, (key, value) in enumerate(list(defaults.items()):5):
         print(f"    {key}: {value}")
     
     # Test validation
@@ -50,13 +50,13 @@ try:
     if errors:
         print(f"\nValidation Errors: {errors}")
     else:
-        print(f"\n✓ Configuration validation passed")
+        print(f"\n Configuration validation passed")
     
     # Test PowerShell executor
     print(f"\nPowerShell Executor Test:")
     try:
         executor = EnhancedPowerShellExecutor()
-        print(f"  ✓ Executor initialized")
+        print(f"   Executor initialized")
         print(f"  PowerShell: {executor.powershell_cmd}")
         print(f"  Working Dir: {executor.working_directory}")
         print(f"  Executor Script: {executor.executor_script}")
@@ -64,18 +64,18 @@ try:
         # Quick test
         success, stdout, stderr = executor.execute_script("Write-Host 'Test successful'")
         if success:
-            print(f"  ✓ PowerShell execution test passed")
+            print(f"   PowerShell execution test passed")
         else:
-            print(f"  ✗ PowerShell execution test failed: {stderr}")
+            print(f"   PowerShell execution test failed: {stderr}")
             
     except Exception as e:
-        print(f"  ✗ PowerShell executor error: {e}")
+        print(f"   PowerShell executor error: {e}")
     
-    print(f"\n✓ All component tests completed successfully!")
+    print(f"\n All component tests completed successfully!")
     
 except ImportError as e:
-    print(f"✗ Import error: {e}")
+    print(f" Import error: {e}")
     sys.exit(1)
 except Exception as e:
-    print(f"✗ Test error: {e}")
+    print(f" Test error: {e}")
     sys.exit(1)

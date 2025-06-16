@@ -47,51 +47,51 @@ class ConfigBuilder:
         
         # Repository URL
         ttk.Label(self.frame, text="Repository URL:").grid(row=0, column=0, sticky="w", pady=2)
-        self.fields['RepoUrl'] = ttk.Entry(self.frame, width=60)
-        self.fields['RepoUrl'].grid(row=0, column=1, columnspan=2, sticky="ew", pady=2)
-        self.fields['RepoUrl'].insert(0, "https://github.com/wizzense/tofu-base-lab.git")
+        self.fields'RepoUrl' = ttk.Entry(self.frame, width=60)
+        self.fields'RepoUrl'.grid(row=0, column=1, columnspan=2, sticky="ew", pady=2)
+        self.fields'RepoUrl'.insert(0, "https://github.com/wizzense/tofu-base-lab.git")
         
         # Local Path
         ttk.Label(self.frame, text="Local Path:").grid(row=1, column=0, sticky="w", pady=2)
-        self.fields['LocalPath'] = ttk.Entry(self.frame, width=45)
-        self.fields['LocalPath'].grid(row=1, column=1, sticky="ew", pady=2)
+        self.fields'LocalPath' = ttk.Entry(self.frame, width=45)
+        self.fields'LocalPath'.grid(row=1, column=1, sticky="ew", pady=2)
         ttk.Button(self.frame, text="Browse", command=self.browse_local_path).grid(row=1, column=2, padx=(5,0), pady=2)
         
         # Set default path based on platform
         if platform.system() == "Windows":
-            self.fields['LocalPath'].insert(0, "C:\\Temp\\lab")
+            self.fields'LocalPath'.insert(0, "C:\\Temp\\lab")
         else:
-            self.fields['LocalPath'].insert(0, "/tmp/lab")
+            self.fields'LocalPath'.insert(0, "/tmp/lab")
         
         # Runner Script Name
         ttk.Label(self.frame, text="Runner Script:").grid(row=2, column=0, sticky="w", pady=2)
-        self.fields['RunnerScriptName'] = ttk.Entry(self.frame, width=30)
-        self.fields['RunnerScriptName'].grid(row=2, column=1, sticky="w", pady=2)
-        self.fields['RunnerScriptName'].insert(0, "runner.ps1")
+        self.fields'RunnerScriptName' = ttk.Entry(self.frame, width=30)
+        self.fields'RunnerScriptName'.grid(row=2, column=1, sticky="w", pady=2)
+        self.fields'RunnerScriptName'.insert(0, "runner.ps1")
         
         # Infrastructure Repository URL
         ttk.Label(self.frame, text="Infrastructure Repo:").grid(row=3, column=0, sticky="w", pady=2)
-        self.fields['InfraRepoUrl'] = ttk.Entry(self.frame, width=60)
-        self.fields['InfraRepoUrl'].grid(row=3, column=1, columnspan=2, sticky="ew", pady=2)
-        self.fields['InfraRepoUrl'].insert(0, "https://github.com/wizzense/base-infra.git")
+        self.fields'InfraRepoUrl' = ttk.Entry(self.frame, width=60)
+        self.fields'InfraRepoUrl'.grid(row=3, column=1, columnspan=2, sticky="ew", pady=2)
+        self.fields'InfraRepoUrl'.insert(0, "https://github.com/wizzense/base-infra.git")
         
         # Infrastructure Path
         ttk.Label(self.frame, text="Infrastructure Path:").grid(row=4, column=0, sticky="w", pady=2)
-        self.fields['InfraRepoPath'] = ttk.Entry(self.frame, width=45)
-        self.fields['InfraRepoPath'].grid(row=4, column=1, sticky="ew", pady=2)
+        self.fields'InfraRepoPath' = ttk.Entry(self.frame, width=45)
+        self.fields'InfraRepoPath'.grid(row=4, column=1, sticky="ew", pady=2)
         ttk.Button(self.frame, text="Browse", command=self.browse_infra_path).grid(row=4, column=2, padx=(5,0), pady=2)
         
         # Set default infra path
         if platform.system() == "Windows":
-            self.fields['InfraRepoPath'].insert(0, "C:\\Temp\\base-infra")
+            self.fields'InfraRepoPath'.insert(0, "C:\\Temp\\base-infra")
         else:
-            self.fields['InfraRepoPath'].insert(0, "/tmp/base-infra")
+            self.fields'InfraRepoPath'.insert(0, "/tmp/base-infra")
         
         # Verbosity
         ttk.Label(self.frame, text="Verbosity:").grid(row=5, column=0, sticky="w", pady=2)
-        self.fields['Verbosity'] = ttk.Combobox(self.frame, values=["silent", "normal", "detailed"], width=15)
-        self.fields['Verbosity'].grid(row=5, column=1, sticky="w", pady=2)
-        self.fields['Verbosity'].set("normal")
+        self.fields'Verbosity' = ttk.Combobox(self.frame, values="silent", "normal", "detailed", width=15)
+        self.fields'Verbosity'.grid(row=5, column=1, sticky="w", pady=2)
+        self.fields'Verbosity'.set("normal")
         
         # Buttons frame
         button_frame = ttk.Frame(self.frame)
@@ -108,30 +108,30 @@ class ConfigBuilder:
         """Browse for local deployment path"""
         directory = filedialog.askdirectory(title="Select Local Deployment Directory")
         if directory:
-            self.fields['LocalPath'].delete(0, tk.END)
-            self.fields['LocalPath'].insert(0, directory)
+            self.fields'LocalPath'.delete(0, tk.END)
+            self.fields'LocalPath'.insert(0, directory)
     
     def browse_infra_path(self):
         """Browse for infrastructure path"""
         directory = filedialog.askdirectory(title="Select Infrastructure Directory")
         if directory:
-            self.fields['InfraRepoPath'].delete(0, tk.END)
-            self.fields['InfraRepoPath'].insert(0, directory)
+            self.fields'InfraRepoPath'.delete(0, tk.END)
+            self.fields'InfraRepoPath'.insert(0, directory)
     
-    def get_config(self) -> Dict[str, Any]:
+    def get_config(self) -> Dictstr, Any:
         """Get current configuration from UI fields"""
         config = {}
         for key, field in self.fields.items():
             value = field.get().strip()
             if value:  # Only include non-empty values
-                config[key] = value
+                configkey = value
         return config
     
     def load_config(self):
         """Load configuration from file"""
         file_path = filedialog.askopenfilename(
             title="Load Configuration File",
-            filetypes=[("JSON files", "*.json"), ("All files", "*.*")],
+            filetypes=("JSON files", "*.json"), ("All files", "*.*"),
             initialdir=CONFIGS_DIR
         )
         
@@ -144,7 +144,7 @@ class ConfigBuilder:
                 for key, field in self.fields.items():
                     field.delete(0, tk.END)
                     if key in config:
-                        field.insert(0, str(config[key]))
+                        field.insert(0, str(configkey))
                 
                 self.config_file = file_path
                 messagebox.showinfo("Success", f"Configuration loaded from {Path(file_path).name}")
@@ -162,7 +162,7 @@ class ConfigBuilder:
         
         file_path = filedialog.asksaveasfilename(
             title="Save Configuration File",
-            filetypes=[("JSON files", "*.json"), ("All files", "*.*")],
+            filetypes=("JSON files", "*.json"), ("All files", "*.*"),
             defaultextension=".json",
             initialdir=CONFIGS_DIR,
             initialfile="my-lab-config.json"
@@ -193,7 +193,7 @@ class ConfigBuilder:
         for key, field in self.fields.items():
             field.delete(0, tk.END)
             if key in defaults:
-                field.insert(0, defaults[key])
+                field.insert(0, defaultskey)
 
 class DeploymentManager:
     """Manages deployment process and real-time output"""
@@ -215,16 +215,16 @@ class DeploymentManager:
         button_frame = ttk.Frame(self.frame)
         button_frame.grid(row=0, column=0, sticky="ew", pady=(0, 10))
         
-        self.deploy_btn = ttk.Button(button_frame, text="🚀 Deploy Lab", command=self.start_deployment)
+        self.deploy_btn = ttk.Button(button_frame, text=" Deploy Lab", command=self.start_deployment)
         self.deploy_btn.pack(side="left", padx=5)
         
-        self.quick_btn = ttk.Button(button_frame, text="⚡ Quick Deploy", command=self.quick_deployment)
+        self.quick_btn = ttk.Button(button_frame, text=" Quick Deploy", command=self.quick_deployment)
         self.quick_btn.pack(side="left", padx=5)
         
-        self.check_btn = ttk.Button(button_frame, text="🔍 Check Prerequisites", command=self.check_prerequisites)
+        self.check_btn = ttk.Button(button_frame, text="� Check Prerequisites", command=self.check_prerequisites)
         self.check_btn.pack(side="left", padx=5)
         
-        self.stop_btn = ttk.Button(button_frame, text="⏹️ Stop", command=self.stop_deployment, state="disabled")
+        self.stop_btn = ttk.Button(button_frame, text="⏹ Stop", command=self.stop_deployment, state="disabled")
         self.stop_btn.pack(side="left", padx=5)
         
         # Progress bar
@@ -272,11 +272,11 @@ class DeploymentManager:
         """Run deployment command in background thread"""
         try:
             # Find deploy.py - check multiple locations
-            possible_locations = [
+            possible_locations = 
                 PROJECT_ROOT / "deploy.py",  # Same directory as GUI
                 Path.cwd() / "deploy.py",    # Current working directory
                 Path(__file__).parent / "deploy.py",  # Script directory
-            ]
+            
             
             deploy_script = None
             for location in possible_locations:
@@ -286,19 +286,19 @@ class DeploymentManager:
             
             if not deploy_script:
                 # Try to download deploy.py if not found
-                self.log_output("⚠️ deploy.py not found locally, attempting to download...")
+                self.log_output("WARN deploy.py not found locally, attempting to download...")
                 try:
                     import urllib.request
                     deploy_url = "https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/feature/deployment-wrapper-gui/deploy.py"
                     deploy_script = Path.cwd() / "deploy.py"
                     urllib.request.urlretrieve(deploy_url, deploy_script)
-                    self.log_output(f"✅ Downloaded deploy.py to {deploy_script}")
+                    self.log_output(f"PASS Downloaded deploy.py to {deploy_script}")
                 except Exception as e:
                     self.output_queue.put(('error', f"Could not find or download deploy.py: {str(e)}"))
                     return
             
             # Build command
-            cmd = [sys.executable, str(deploy_script)] + args
+            cmd = sys.executable, str(deploy_script) + args
             
             self.log_output(f"Running: {' '.join(cmd)}")
             self.log_output(f"Deploy script location: {deploy_script}")
@@ -363,18 +363,18 @@ class DeploymentManager:
         
         if return_code == 0:
             self.update_status("Deployment completed successfully!", "green")
-            self.log_output("🎉 Deployment completed successfully!")
+            self.log_output(" Deployment completed successfully!")
             messagebox.showinfo("Success", "Lab deployment completed successfully!")
         else:
             self.update_status("Deployment failed", "red")
-            self.log_output(f"❌ Deployment failed with exit code {return_code}")
+            self.log_output(f"FAIL Deployment failed with exit code {return_code}")
             messagebox.showerror("Error", f"Deployment failed with exit code {return_code}")
     
     def deployment_error(self, error: str):
         """Handle deployment error"""
         self.set_buttons_state(False)
         self.update_status("Deployment error", "red")
-        self.log_output(f"💥 Error: {error}")
+        self.log_output(f"� Error: {error}")
         messagebox.showerror("Error", f"Deployment error:\n{error}")
     
     def start_deployment(self):
@@ -399,8 +399,8 @@ class DeploymentManager:
         self.output_text.delete(1.0, tk.END)
         
         # Start deployment in background
-        args = ['--config', str(temp_config), '--non-interactive']
-        threading.Thread(target=self.run_deployment_command, args=[args], daemon=True).start()
+        args = '--config', str(temp_config), '--non-interactive'
+        threading.Thread(target=self.run_deployment_command, args=args, daemon=True).start()
         
         # Start output monitoring
         self.check_output_queue()
@@ -412,8 +412,8 @@ class DeploymentManager:
         self.output_text.delete(1.0, tk.END)
         
         # Start quick deployment
-        args = ['--quick', '--non-interactive']
-        threading.Thread(target=self.run_deployment_command, args=[args], daemon=True).start()
+        args = '--quick', '--non-interactive'
+        threading.Thread(target=self.run_deployment_command, args=args, daemon=True).start()
         
         # Start output monitoring
         self.check_output_queue()
@@ -425,8 +425,8 @@ class DeploymentManager:
         self.output_text.delete(1.0, tk.END)
         
         # Start prerequisites check
-        args = ['--check', '--non-interactive']
-        threading.Thread(target=self.run_deployment_command, args=[args], daemon=True).start()
+        args = '--check', '--non-interactive'
+        threading.Thread(target=self.run_deployment_command, args=args, daemon=True).start()
         
         # Start output monitoring
         self.check_output_queue()
@@ -436,7 +436,7 @@ class DeploymentManager:
         if self.process:
             try:
                 self.process.terminate()
-                self.log_output("🛑 Deployment stopped by user")
+                self.log_output("� Deployment stopped by user")
                 self.update_status("Deployment stopped", "orange")
             except Exception as e:
                 self.log_output(f"Error stopping deployment: {e}")
@@ -513,7 +513,7 @@ class LabAutomationGUI:
         header_frame = ttk.Frame(self.root)
         header_frame.grid(row=0, column=0, sticky="ew", padx=10, pady=10)
         
-        title_label = ttk.Label(header_frame, text="🚀 OpenTofu Lab Automation", font=("Arial", 16, "bold"))
+        title_label = ttk.Label(header_frame, text=" OpenTofu Lab Automation", font=("Arial", 16, "bold"))
         title_label.pack(side="left")
         
         subtitle_label = ttk.Label(header_frame, text="Cross-Platform Infrastructure Lab Deployment", font=("Arial", 10))
@@ -575,7 +575,7 @@ class LabAutomationGUI:
                 for key, field in self.config_builder.fields.items():
                     if key in config:
                         field.delete(0, tk.END)
-                        field.insert(0, str(config[key]))
+                        field.insert(0, str(configkey))
                         
             except Exception as e:
                 print(f"Could not load default config: {e}")
@@ -586,9 +586,9 @@ class LabAutomationGUI:
             if platform.system() == "Windows":
                 os.startfile(PROJECT_ROOT)
             elif platform.system() == "Darwin":  # macOS
-                subprocess.run(["open", PROJECT_ROOT])
+                subprocess.run("open", PROJECT_ROOT)
             else:  # Linux and others
-                subprocess.run(["xdg-open", PROJECT_ROOT])
+                subprocess.run("xdg-open", PROJECT_ROOT)
         except Exception as e:
             messagebox.showerror("Error", f"Could not open project folder:\n{str(e)}")
     
@@ -598,9 +598,9 @@ class LabAutomationGUI:
             if platform.system() == "Windows":
                 os.startfile(CONFIGS_DIR)
             elif platform.system() == "Darwin":  # macOS
-                subprocess.run(["open", CONFIGS_DIR])
+                subprocess.run("open", CONFIGS_DIR)
             else:  # Linux and others
-                subprocess.run(["xdg-open", CONFIGS_DIR])
+                subprocess.run("xdg-open", CONFIGS_DIR)
         except Exception as e:
             messagebox.showerror("Error", f"Could not open config folder:\n{str(e)}")
     

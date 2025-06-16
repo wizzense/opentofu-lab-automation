@@ -2,13 +2,13 @@
 # run-all-tests.ps1
 # This script executes all test and validation processes for the OpenTofu Lab Automation project
 
-[CmdletBinding()]
+CmdletBinding()
 param(
- [switch]$SkipLint,
- [switch]$SkipPester,
- [switch]$SkipPyTest,
- [switch]$SkipHealthCheck,
- [switch]$FixSyntax
+ switch$SkipLint,
+ switch$SkipPester,
+ switch$SkipPyTest,
+ switch$SkipHealthCheck,
+ switch$FixSyntax
 )
 
 
@@ -66,14 +66,14 @@ if (-not $SkipLint) {
  $lintCode = $LASTEXITCODE
  if ($lintCode -eq 0) {
  $results.Lint = "PASS"
- Write-Host "[PASS] Linting completed successfully" -ForegroundColor Green
+ Write-Host "PASS Linting completed successfully" -ForegroundColor Green
  } else {
  $results.Lint = "FAIL ($lintCode)"
  $results.TotalErrors++
- Write-Host "[FAIL] Linting completed with errors (code: $lintCode)" -ForegroundColor Red
+ Write-Host "FAIL Linting completed with errors (code: $lintCode)" -ForegroundColor Red
  }
  } else {
- Write-Host "[FAIL] Lint script not found: $lintScript" -ForegroundColor Red
+ Write-Host "FAIL Lint script not found: $lintScript" -ForegroundColor Red
  $results.Lint = "NOT_FOUND"
  $results.TotalErrors++
  }
@@ -81,7 +81,7 @@ if (-not $SkipLint) {
  catch {
  $results.Lint = "ERROR"
  $results.TotalErrors++
- Write-Host "[FAIL] Linting failed with an exception: $_" -ForegroundColor Red
+ Write-Host "FAIL Linting failed with an exception: $_" -ForegroundColor Red
  }
 }
 
@@ -105,17 +105,17 @@ if (-not $SkipPester) {
  
  if ($failedTests -eq 0) {
  $results.Pester = "PASS ($passedTests/$totalTests)"
- Write-Host "[PASS] Pester tests completed successfully: $passedTests passed, $skippedTests skipped" -ForegroundColor Green
+ Write-Host "PASS Pester tests completed successfully: $passedTests passed, $skippedTests skipped" -ForegroundColor Green
  } else {
  $results.Pester = "FAIL ($failedTests/$totalTests)"
  $results.TotalErrors += $failedTests
- Write-Host "[FAIL] Pester tests completed with $failedTests failures: $passedTests passed, $failedTests failed, $skippedTests skipped" -ForegroundColor Red
+ Write-Host "FAIL Pester tests completed with $failedTests failures: $passedTests passed, $failedTests failed, $skippedTests skipped" -ForegroundColor Red
  }
  }
  catch {
  $results.Pester = "ERROR"
  $results.TotalErrors++
- Write-Host "[FAIL] Pester tests failed with an exception: $_" -ForegroundColor Red
+ Write-Host "FAIL Pester tests failed with an exception: $_" -ForegroundColor Red
  }
 }
 
@@ -130,14 +130,14 @@ if (-not $SkipPyTest) {
  
  if ($pytestCode -eq 0) {
  $results.PyTest = "PASS"
- Write-Host "[PASS] Python tests completed successfully" -ForegroundColor Green
+ Write-Host "PASS Python tests completed successfully" -ForegroundColor Green
  } else {
  $results.PyTest = "FAIL ($pytestCode)"
  $results.TotalErrors++
- Write-Host "[FAIL] Python tests completed with errors (code: $pytestCode)" -ForegroundColor Red
+ Write-Host "FAIL Python tests completed with errors (code: $pytestCode)" -ForegroundColor Red
  }
  } else {
- Write-Host "[FAIL] Python test directory not found: $pyTestDir" -ForegroundColor Red
+ Write-Host "FAIL Python test directory not found: $pyTestDir" -ForegroundColor Red
  $results.PyTest = "NOT_FOUND"
  $results.TotalErrors++
  }
@@ -145,7 +145,7 @@ if (-not $SkipPyTest) {
  catch {
  $results.PyTest = "ERROR"
  $results.TotalErrors++
- Write-Host "[FAIL] Python tests failed with an exception: $_" -ForegroundColor Red
+ Write-Host "FAIL Python tests failed with an exception: $_" -ForegroundColor Red
  }
 }
 
@@ -160,14 +160,14 @@ if (-not $SkipHealthCheck) {
  
  if ($healthCode -eq 0) {
  $results.HealthCheck = "PASS"
- Write-Host "[PASS] Health check completed successfully" -ForegroundColor Green
+ Write-Host "PASS Health check completed successfully" -ForegroundColor Green
  } else {
  $results.HealthCheck = "WARN"
  $results.TotalWarnings++
- Write-Host "[WARN] Health check found issues (code: $healthCode)" -ForegroundColor Yellow
+ Write-Host "WARN Health check found issues (code: $healthCode)" -ForegroundColor Yellow
  }
  } else {
- Write-Host "[FAIL] Health check script not found: $healthScript" -ForegroundColor Red
+ Write-Host "FAIL Health check script not found: $healthScript" -ForegroundColor Red
  $results.HealthCheck = "NOT_FOUND"
  $results.TotalErrors++
  }
@@ -175,7 +175,7 @@ if (-not $SkipHealthCheck) {
  catch {
  $results.HealthCheck = "ERROR"
  $results.TotalErrors++
- Write-Host "[FAIL] Health check failed with an exception: $_" -ForegroundColor Red
+ Write-Host "FAIL Health check failed with an exception: $_" -ForegroundColor Red
  }
 }
 
@@ -198,13 +198,13 @@ Write-Host "=============================================" -ForegroundColor Cyan
 
 # Return appropriate exit code
 if ($results.TotalErrors -gt 0) {
- Write-Host "[FAIL] Tests completed with errors" -ForegroundColor Red
+ Write-Host "FAIL Tests completed with errors" -ForegroundColor Red
  exit 1
 } elseif ($results.TotalWarnings -gt 0) {
- Write-Host "[WARN] Tests completed with warnings" -ForegroundColor Yellow
+ Write-Host "WARN Tests completed with warnings" -ForegroundColor Yellow
  exit 0
 } else {
- Write-Host "[PASS] All tests passed successfully" -ForegroundColor Green
+ Write-Host "PASS All tests passed successfully" -ForegroundColor Green
  exit 0
 }
 

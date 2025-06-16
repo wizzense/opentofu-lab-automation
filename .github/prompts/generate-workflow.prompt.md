@@ -1,7 +1,7 @@
 ---
 description: Create or update GitHub Actions workflows following OpenTofu Lab Automation standards
 mode: agent  
-tools: ["filesystem", "yaml"]
+tools: "filesystem", "yaml"
 ---
 
 # Generate GitHub Actions Workflow
@@ -41,11 +41,11 @@ name: "${input:workflowName}"
 
 on:
   push:
-    branches: [ main, develop ]
+    branches:  main, develop 
     paths:
       - '${input:triggerPaths}'
   pull_request:
-    branches: [ main ]
+    branches:  main 
     paths:
       - '${input:triggerPaths}'
   workflow_dispatch:
@@ -75,17 +75,17 @@ jobs:
         uses: actions/checkout@v4.1.1
         
       - name: "Validate YAML Syntax"
-        run: |
+        run: 
           sudo apt-get update
           sudo apt-get install -y yamllint
           yamllint .github/workflows/
           
       - name: "Validate PowerShell Syntax"
         shell: pwsh
-        run: |
+        run: 
           $ErrorActionPreference = "Stop"
-          Get-ChildItem -Path "." -Filter "*.ps1" -Recurse | ForEach-Object {
-            $null = [System.Management.Automation.Language.Parser]::ParseFile($_.FullName, [ref]$null, [ref]$null)
+          Get-ChildItem -Path "." -Filter "*.ps1" -Recurse  ForEach-Object {
+            $null = System.Management.Automation.Language.Parser::ParseFile($_.FullName, ref$null, ref$null)
             Write-Host " $($_.Name) syntax valid"
           }
 
@@ -97,7 +97,7 @@ jobs:
     
     strategy:
       matrix:
-        os: [ ubuntu-latest, windows-latest ]
+        os:  ubuntu-latest, windows-latest 
         include:
           - os: ubuntu-latest
             shell: pwsh
@@ -116,7 +116,7 @@ jobs:
           
       - name: "Install Required Modules"
         shell: ${{ matrix.shell }}
-        run: |
+        run: 
           $ErrorActionPreference = "Stop"
           
           # Install PSScriptAnalyzer
@@ -131,7 +131,7 @@ jobs:
           
       - name: "Load Project Modules"
         shell: ${{ matrix.shell }}
-        run: |
+        run: 
           $ErrorActionPreference = "Stop"
           
           # Import LabRunner
@@ -144,7 +144,7 @@ jobs:
           
       - name: "${input:mainStepName}"
         shell: ${{ matrix.shell }}
-        run: |
+        run: 
           $ErrorActionPreference = "Stop"
           
           try {
@@ -169,13 +169,13 @@ For code quality and syntax checking:
 ```yaml
 - name: "Run PowerShell Linting"
   shell: pwsh
-  run: |
+  run: 
     Import-Module "./pwsh/modules/CodeFixer/" -Force
     Invoke-PowerShellLint -Path "." -Parallel -OutputFormat "CI"
     
 - name: "Run Pester Tests"  
   shell: pwsh
-  run: |
+  run: 
     Import-Module Pester -RequiredVersion 5.7.1
     $config = New-PesterConfiguration
     $config.Run.Path = "./tests/"
@@ -191,10 +191,10 @@ For automated deployments:
 ```yaml
 - name: "Deploy to Environment"
   shell: pwsh
-  run: |
+  run: 
     Import-Module "./pwsh/modules/LabRunner/" -Force
     
-    $config = [pscustomobject]@{
+    $config = pscustomobject@{
       Environment = "${{ github.ref_name }}"
       Version = "${{ github.sha }}"
     }
@@ -211,7 +211,7 @@ For security scanning and validation:
 ```yaml
 - name: "Security Scan"
   shell: pwsh
-  run: |
+  run: 
     Import-Module "./pwsh/modules/LabRunner/" -Force
     
     # Run security validation
@@ -235,8 +235,8 @@ For security scanning and validation:
 ## Reference Instructions
 
 This prompt references:
-- [YAML Standards](../instructions/yaml-standards.instructions.md)
-- [PowerShell Standards](../instructions/powershell-standards.instructions.md)
+- YAML Standards(../instructions/yaml-standards.instructions.md)
+- PowerShell Standards(../instructions/powershell-standards.instructions.md)
 
 Please specify:
 1. Workflow name and purpose

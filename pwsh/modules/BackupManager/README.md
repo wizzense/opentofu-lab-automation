@@ -241,7 +241,7 @@ When adding new functions:
 
 ## Related
 
-- [Unified Maintenance System](../../scripts/maintenance/)
-- [LabRunner Module](../LabRunner/)
-- [CodeFixer Module](../CodeFixer/)
-- [Project Maintenance Standards](../../.github/instructions/maintenance-standards.instructions.md)
+- Unified Maintenance System(../../scripts/maintenance/)
+- LabRunner Module(../LabRunner/)
+- CodeFixer Module(../CodeFixer/)
+- Project Maintenance Standards(../../.github/instructions/maintenance-standards.instructions.md)

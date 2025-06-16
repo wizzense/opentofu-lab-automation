@@ -9,7 +9,7 @@ This is a cross-platform OpenTofu (Terraform alternative) lab automation project
 - **Cross-platform deployment** via Python scripts
 
 For guidance on writing your own repository instructions, see
-[docs/copilot_docs/repository-custom-instructions.md](../docs/copilot_docs/repository-custom-instructions.md).
+docs/copilot_docs/repository-custom-instructions.md(../docs/copilot_docs/repository-custom-instructions.md).
 
 ## Current Architecture
 
@@ -17,8 +17,17 @@ For guidance on writing your own repository instructions, see
 - **CodeFixer**: /pwsh/modules/CodeFixer/
 - **LabRunner**: /pwsh/modules/LabRunner/
 - **BackupManager**: /pwsh/modules/BackupManager/
+- **PatchManager**: /pwsh/modules/PatchManager/ (NEW - Enhanced with Copilot Integration)
 
 ### Key Functions Available
+#### PatchManager (NEW - Enhanced Copilot Integration)
+```powershell
+Import-Module "/pwsh/modules/PatchManager/"
+Invoke-GitControlledPatch
+Invoke-QuickRollback
+Invoke-CopilotSuggestionHandler  # NEW - Automated Copilot suggestion implementation
+```
+
 #### CodeFixer
 ``powershell
 Import-Module "/pwsh/modules/CodeFixer/"
@@ -63,7 +72,7 @@ Get-BackupStatistics
 ### Always Use Project Manifest First
 `powershell
 # Check current state before making changes
-$manifest = Get-Content "./PROJECT-MANIFEST.json" | ConvertFrom-Json
+$manifest = Get-Content "./PROJECT-MANIFEST.json"  ConvertFrom-Json
 $manifest.core.modules # View all modules
 `
 
@@ -97,6 +106,83 @@ $manifest.core.modules # View all modules
 - **Automation**: Full YAML validation and auto-fix
 - **Cross-Platform**: Windows, Linux, macOS deployment
 - **Real-time**: Live validation and error correction
+- **Copilot Integration**: Automated suggestion implementation with background monitoring
+
+## Advanced PatchManager Features (NEW)
+
+### Automated Copilot Suggestion Implementation
+PatchManager now includes advanced Copilot integration that handles the reality of delayed reviews:
+
+```powershell
+# Single-run mode: Check and implement existing suggestions
+Invoke-CopilotSuggestionHandler -PullRequestNumber 123 -AutoCommit -ValidateAfterFix
+
+# Background monitoring mode: Continuously monitor for new suggestions
+Invoke-CopilotSuggestionHandler -PullRequestNumber 123 -BackgroundMonitor -MonitorIntervalSeconds 300 -AutoCommit
+
+# Real workflow example
+Invoke-GitControlledPatch -PatchDescription "feat: new feature" -PatchOperation {
+    # Your changes
+} -AutoCommitUncommitted -CreatePullRequest
+
+# Then start background monitoring for Copilot suggestions
+Invoke-CopilotSuggestionHandler -PullRequestNumber $prNumber -BackgroundMonitor -AutoCommit
+```
+
+### Benefits of Copilot Integration:
+- **Handles Review Delays**: Accounts for natural delay in Copilot reviews (minutes to hours)
+- **Automated Implementation**: Suggestions implemented automatically when detected
+- **Comprehensive Logging**: Full audit trail with timestamped logs
+- **Human-Ready Reviews**: PRs have suggestions already implemented before human review
+- **Faster Iterations**: Reduces back-and-forth between developers and reviewers
+
+### Anti-Recursive Branching Protection
+PatchManager now prevents branch explosion with intelligent branch handling:
+
+```powershell
+# SAFE: Works on current branch if already on feature branch
+Invoke-GitControlledPatch -PatchDescription "fix: update configuration" -PatchOperation { 
+    # Your changes 
+} -AutoCommitUncommitted
+
+# Creates new branch only from main, otherwise works on current branch
+# Prevents: patch/feature/sub-patch/sub-sub-patch recursive nesting
+```
+
+### Cross-Platform Environment Variables
+Project now uses environment variables for cross-platform compatibility:
+
+ **Variable**  **Description**  **Auto-Set** 
+--------------------------------------------
+ `PROJECT_ROOT`  Project root directory  PASS 
+ `PWSH_MODULES_PATH`  PowerShell modules path  PASS 
+ `PLATFORM`  Current platform (Windows/Linux/macOS)  PASS 
+
+### Enhanced Comprehensive Cleanup
+```powershell
+# Includes cross-platform path fixing and emoji removal
+Invoke-GitControlledPatch -PatchDescription "chore: comprehensive cleanup" -PatchOperation {
+    # Cleanup runs automatically before patch
+} -CleanupMode "Standard" -AutoCommitUncommitted
+```
+
+### Intelligent Branch Strategy
+ **Current Branch**  **PatchManager Action**  **Prevents** 
+----------------------------------------------------------
+ `main` or `master`  Creates new patch branch  Working directly on main 
+ Feature branch  Works on current branch  Recursive branch explosion 
+ Patch branch  Works on current branch  Nested patch branches 
+
+### Cross-Platform Path Standards
+All hardcoded paths now use environment variables:
+```powershell
+# OLD (environment-specific)
+$modulePath = "C:\Users\user\Documents\project\pwsh\modules"
+
+# NEW (cross-platform)
+$modulePath = "$env:PWSH_MODULES_PATH"
+```
+
 
 ## Critical Guidelines
 
@@ -105,34 +191,42 @@ $manifest.core.modules # View all modules
 - Don't create files in project root without using report utility
 - Don't modify workflows without YAML validation
 - Don't use deprecated import patterns
+- **Don't create nested branches manually** (use PatchManager anti-recursive protection)
+- **Don't hardcode paths** (use environment variables)
 
 ### Always Do These:
 - Check PROJECT-MANIFEST.json before making changes
 - Use unified maintenance for validation
 - Reference correct module paths from manifest
 - Run YAML validation after workflow changes
+- **Use PatchManager for all changes** (enforces standards and prevents issues)
+- **Let PatchManager handle branch strategy** (prevents recursive branch explosion)
 
-### Report Creation (MANDATORY)
-`powershell
-# Use the report utility, never create manual .md files in root
-./scripts/utilities/new-report.ps1 -Type "test-analysis" -Title "My Report"
-`
+### Modern Change Control Workflow
+```powershell
+# Standard workflow - PatchManager handles everything
+Import-Module "$env:PWSH_MODULES_PATH/PatchManager" -Force
 
-## Integration Points
+# Single command replaces: git add, git commit, git checkout -b, git push, create PR
+Invoke-GitControlledPatch -PatchDescription "feat: new functionality" -PatchOperation {
+    # Your changes here
+} -AutoCommitUncommitted -CreatePullRequest
 
-### GitHub Actions Integration
-- All workflows validated with yamllint
-- PowerShell scripts syntax-checked
-- Cross-platform testing enabled
-- Automated deployment workflows
+# Emergency rollback if needed
+Invoke-QuickRollback -RollbackType "LastPatch" -Force
+```
 
-### Module System
-- Modern PowerShell module structure
-- Automated import path updates
-- Dependency validation
-- Performance optimized batch processing
+### Automated Copilot Review Workflow
+```powershell
+# Complete workflow with automated Copilot suggestion handling
+$patchResult = Invoke-GitControlledPatch -PatchDescription "feat: implement new feature" -PatchOperation {
+    # Your implementation
+} -AutoCommitUncommitted -CreatePullRequest
 
----
-*Auto-generated from PROJECT-MANIFEST.json*
-*Project health: < 1 minute*
-*Last update: 2025-06-14 16:45:01*
+# Start background monitoring for Copilot suggestions (handles delays automatically)
+if ($patchResult.Success -and $patchResult.PullRequestNumber) {
+    Invoke-CopilotSuggestionHandler -PullRequestNumber $patchResult.PullRequestNumber -BackgroundMonitor -AutoCommit -LogPath "logs/copilot-auto-fix.log"
+}
+```
+
+## Critical Guidelines

@@ -18,7 +18,7 @@ This script provides enhanced test execution with:
 #>
 
 param(
-    [string[]]$Category = @()
+    string$Category = @()
 
 
 
@@ -27,24 +27,24 @@ param(
 
 ,
     
-    [ValidateSet('Windows', 'Linux', 'macOS', 'All')]
-    [string]$Platform = 'All',
+    ValidateSet('Windows', 'Linux', 'macOS', 'All')
+    string$Platform = 'All',
     
-    [string]$ScriptPattern = '*',
+    string$ScriptPattern = '*',
     
-    [string]$TestPattern = '*',
+    string$TestPattern = '*',
     
-    [switch]$Parallel,
+    switch$Parallel,
     
-    [switch]$EnableCodeCoverage,
+    switch$EnableCodeCoverage,
     
-    [switch]$GenerateReport,
+    switch$GenerateReport,
     
-    [string]$OutputPath = 'coverage',
+    string$OutputPath = 'coverage',
     
-    [int]$MaxParallelJobs = 4,
+    int$MaxParallelJobs = 4,
     
-    [switch]$Verbose
+    switch$Verbose
 )
 
 # Load required modules
@@ -55,7 +55,7 @@ function Get-TestCategories {
     .SYNOPSIS
     Discovers and categorizes test files
     #>
-    param([string]$TestsPath)
+    param(string$TestsPath)
     
     
 
@@ -73,26 +73,26 @@ $testFiles = Get-ChildItem $TestsPath -Filter "*.Tests.ps1" -Recurse
         # Determine category based on content analysis
         $category = 'Unknown'
         
-        if ($content -match 'New-InstallerScriptTest|Install-|Download-') {
+        if ($content -match 'New-InstallerScriptTestInstall-Download-') {
             $category = 'Installer'
-        } elseif ($content -match 'New-FeatureScriptTest|Enable-|Feature') {
+        } elseif ($content -match 'New-FeatureScriptTestEnable-Feature') {
             $category = 'Feature'
-        } elseif ($content -match 'New-ServiceScriptTest|Service|WinRM') {
+        } elseif ($content -match 'New-ServiceScriptTestServiceWinRM') {
             $category = 'Service'
-        } elseif ($content -match 'New-ConfigurationScriptTest|Config-|Set-') {
+        } elseif ($content -match 'New-ConfigurationScriptTestConfig-Set-') {
             $category = 'Configuration'
-        } elseif ($content -match 'Integration|runner\.ps1') {
+        } elseif ($content -match 'Integrationrunner\.ps1') {
             $category = 'Integration'
-        } elseif ($content -match 'SkipNonWindows|Windows-specific') {
+        } elseif ($content -match 'SkipNonWindowsWindows-specific') {
             $category = 'Windows'
-        } elseif ($content -match 'Cross-platform|CrossPlatform') {
+        } elseif ($content -match 'Cross-platformCrossPlatform') {
             $category = 'CrossPlatform'
         }
         
         # Determine platform compatibility
         $platforms = @('Windows', 'Linux', 'macOS')  # Default to all
         
-        if ($content -match '-Skip:\$SkipNonWindows|RequiredPlatforms.*Windows') {
+        if ($content -match '-Skip:\$SkipNonWindowsRequiredPlatforms.*Windows') {
             $platforms = @('Windows')
         } elseif ($content -match 'RequiredPlatforms.*Linux') {
             $platforms = @('Linux')
@@ -101,10 +101,10 @@ $testFiles = Get-ChildItem $TestsPath -Filter "*.Tests.ps1" -Recurse
         }
         
         if (-not $categories.ContainsKey($category)) {
-            $categories[$category] = @()
+            $categories$category = @()
         }
         
-        $categories[$category] += @{
+        $categories$category += @{
             Path = $file.FullName
             Name = $file.BaseName
             Category = $category
@@ -118,7 +118,7 @@ $testFiles = Get-ChildItem $TestsPath -Filter "*.Tests.ps1" -Recurse
 }
 
 function Test-PlatformCompatibility {
-    param([string[]]$TestPlatforms, [string]$TargetPlatform)
+    param(string$TestPlatforms, string$TargetPlatform)
     
     
 
@@ -136,9 +136,9 @@ if ($TargetPlatform -eq 'All') {
 
 function Invoke-TestBatch {
     param(
-        [object[]]$Tests,
-        [object]$Configuration,
-        [switch]$Parallel
+        object$Tests,
+        object$Configuration,
+        switch$Parallel
     )
     
     
@@ -242,7 +242,7 @@ try {
 }
 
 function New-TestReport {
-    param([object[]]$Results, [string]$OutputPath)
+    param(object$Results, string$OutputPath)
     
     
 
@@ -255,15 +255,15 @@ $reportData = @{
         Timestamp = Get-Date
         Platform = $script:CurrentPlatform
         TotalTests = $Results.Count
-        PassedTests = ($Results | Where-Object { $_.Success -and $_.Result.FailedCount -eq 0 }).Count
-        FailedTests = ($Results | Where-Object { -not $_.Success -or $_.Result.FailedCount -gt 0 }).Count
+        PassedTests = (Results | Where-Object { $_.Success -and $_.Result.FailedCount -eq 0 }).Count
+        FailedTests = (Results | Where-Object { -not $_.Success -or $_.Result.FailedCount -gt 0 }).Count
         Categories = @{}
         Details = $Results
     }
     
     # Group by category for summary
     foreach ($result in $Results) {
-        $testName = [System.IO.Path]::GetFileNameWithoutExtension($result.Path)
+        $testName = System.IO.Path::GetFileNameWithoutExtension($result.Path)
         $category = 'Unknown'
         
         if ($testName -match 'Install') { $category = 'Installer' }
@@ -272,18 +272,18 @@ $reportData = @{
         elseif ($testName -match 'Service') { $category = 'Service' }
         
         if (-not $reportData.Categories.ContainsKey($category)) {
-            $reportData.Categories[$category] = @{
+            $reportData.Categories$category = @{
                 Total = 0
                 Passed = 0
                 Failed = 0
             }
         }
         
-        $reportData.Categories[$category].Total++
+        $reportData.Categories$category.Total++
         if ($result.Success -and $result.Result.FailedCount -eq 0) {
-            $reportData.Categories[$category].Passed++
+            $reportData.Categories$category.Passed++
         } else {
-            $reportData.Categories[$category].Failed++
+            $reportData.Categories$category.Failed++
         }
     }
     
@@ -323,8 +323,8 @@ $reportData = @{
 "@
     
     foreach ($cat in $reportData.Categories.Keys) {
-        $catData = $reportData.Categories[$cat]
-        $successRate = if ($catData.Total -gt 0) { [math]::Round(($catData.Passed / $catData.Total) * 100, 1)    } else { 0    }
+        $catData = $reportData.Categories$cat
+        $successRate = if ($catData.Total -gt 0) { math::Round(($catData.Passed / $catData.Total) * 100, 1)    } else { 0    }
         $html += "<tr><td>$cat</td><td>$($catData.Total)</td><td class='passed'>$($catData.Passed)</td><td class='failed'>$($catData.Failed)</td><td>$successRate%</td></tr>`n"
     }
     
@@ -339,7 +339,7 @@ $reportData = @{
 "@
     
     foreach ($result in $Results) {
-        $testName = [System.IO.Path]::GetFileNameWithoutExtension($result.Path)
+        $testName = System.IO.Path::GetFileNameWithoutExtension($result.Path)
         $status = if ($result.Success -and $result.Result.FailedCount -eq 0) { 'PASSED'    } else { 'FAILED'    }
         $statusClass = if ($status -eq 'PASSED') { 'passed'    } else { 'failed'    }
         $duration = if ($result.Result) { $result.Result.Duration    } else { 'N/A'    }
@@ -361,7 +361,7 @@ $reportData = @{
     
     # Also generate JSON for programmatic consumption
     $jsonPath = Join-Path $OutputPath 'test-report.json'
-    $reportData | ConvertTo-Json -Depth 10 | Set-Content -Path $jsonPath -Encoding UTF8
+    reportData | ConvertTo-Json -Depth 10  Set-Content -Path $jsonPath -Encoding UTF8
     Write-Host "JSON report generated: $jsonPath" -ForegroundColor Green
 }
 
@@ -377,22 +377,22 @@ try {
     if ($Category.Count -gt 0) {
         foreach ($cat in $Category) {
             if ($categories.ContainsKey($cat)) {
-                $selectedTests += $categories[$cat]
+                $selectedTests += $categories$cat
             }
         }
     } else {
         # Include all categories
         foreach ($cat in $categories.Keys) {
-            $selectedTests += $categories[$cat]
+            $selectedTests += $categories$cat
         }
     }
     
     # Filter by platform compatibility
-    $selectedTests = $selectedTests | Where-Object { Test-PlatformCompatibility $_.Platforms $Platform }
+    $selectedTests = selectedTests | Where-Object { Test-PlatformCompatibility $_.Platforms $Platform }
     
     # Filter by script pattern
     if ($ScriptPattern -ne '*') {
-        $selectedTests = $selectedTests | Where-Object { $_.Name -like $ScriptPattern }
+        $selectedTests = selectedTests | Where-Object { $_.Name -like $ScriptPattern }
     }
     
     Write-Host "Found $($selectedTests.Count) compatible tests for platform: $Platform" -ForegroundColor Green
@@ -404,7 +404,7 @@ try {
     
     # Ensure output directory exists
     if (-not (Test-Path $OutputPath)) {
-        New-Item -ItemType Directory -Path $OutputPath -Force | Out-Null
+        New-Item -ItemType Directory -Path $OutputPath -Force  Out-Null
     }
     
     # Configure Pester
@@ -433,20 +433,20 @@ try {
     
     # Summary
     $totalTests = $results.Count
-    $passedTests = ($results | Where-Object { $_.Success -and $_.Result.FailedCount -eq 0 }).Count
+    $passedTests = (results | Where-Object { $_.Success -and $_.Result.FailedCount -eq 0 }).Count
     $failedTests = $totalTests - $passedTests
     
     Write-Host "`nTest Execution Summary:" -ForegroundColor Cyan
     Write-Host "  Total Tests: $totalTests"
     Write-Host "  Passed: $passedTests" -ForegroundColor Green
     Write-Host "  Failed: $failedTests" -ForegroundColor Red
-    Write-Host "  Success Rate: $([math]::Round(($passedTests / $totalTests) * 100, 1))%"
+    Write-Host "  Success Rate: $(math::Round(($passedTests / $totalTests) * 100, 1))%"
     
     if ($failedTests -gt 0) {
         Write-Host "`nFailed Tests:" -ForegroundColor Red
-        $failedResults = $results | Where-Object { -not $_.Success -or $_.Result.FailedCount -gt 0 }
+        $failedResults = results | Where-Object { -not $_.Success -or $_.Result.FailedCount -gt 0 }
         foreach ($failed in $failedResults) {
-            $testName = [System.IO.Path]::GetFileNameWithoutExtension($failed.Path)
+            $testName = System.IO.Path::GetFileNameWithoutExtension($failed.Path)
             $error = if ($failed.Error) { $failed.Error    } else { "Test failures: $($failed.Result.FailedCount)"    }
             Write-Host "  - $testName`: $error" -ForegroundColor Red
         }
@@ -459,6 +459,7 @@ try {
     Write-Error "Test execution failed: $_"
     exit 1
 }
+
 
 
 

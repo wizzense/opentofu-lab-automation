@@ -42,7 +42,7 @@ $testFiles = @(
 
 # Function to restore files from git
 function Restore-TestFile {
-    param([string]$FilePath)
+    param(string$FilePath)
     
 
 
@@ -56,7 +56,7 @@ Write-Host "Restoring $FilePath from git..."
 
 # Function to fix the test file execution pattern
 function Fix-TestFile {
-    param([string]$FilePath)
+    param(string$FilePath)
     
     
 
@@ -70,28 +70,28 @@ $content = Get-Content $FilePath -Raw
     # Define the working pattern to look for and replace
     $basicExecutionPattern = @'
 It 'should execute without errors with valid config' {
-                \$config = \[pscustomobject\]@\{\}
-                \{ & \$script:ScriptPath -Config \$config \} \| Should -Not -Throw
+                \$config = \pscustomobject\@\{\}
+                \{ & \$script:ScriptPath -Config \$config \} \ Should -Not -Throw
             \}
 '@
     
     $whatifExecutionPattern = @'
 It 'should handle whatif parameter' {
-                \$config = \[pscustomobject\]@\{\}
-                \{ & \$script:ScriptPath -Config \$config -WhatIf \} \| Should -Not -Throw
+                \$config = \pscustomobject\@\{\}
+                \{ & \$script:ScriptPath -Config \$config -WhatIf \} \ Should -Not -Throw
             \}
 '@
     
     # The corrected patterns to replace them with
     $newBasicPattern = @'
 It 'should execute without errors with valid config' {
-                $config = [pscustomobject]@{}
-                $configJson = $config | ConvertTo-Json -Depth 5
-                $tempConfig = Join-Path ([System.IO.Path]::GetTempPath()) "$([System.Guid]::NewGuid()).json"
-                $configJson | Set-Content -Path $tempConfig
+                $config = pscustomobject@{}
+                $configJson = config | ConvertTo-Json -Depth 5
+                $tempConfig = Join-Path (System.IO.Path::GetTempPath()) "$(System.Guid::NewGuid()).json"
+                configJson | Set-Content -Path $tempConfig
                 try {
                     $pwsh = (Get-Command pwsh).Source
-                    { & $pwsh -NoLogo -NoProfile -File $script:ScriptPath -Config $tempConfig } | Should -Not -Throw
+                    { & $pwsh -NoLogo -NoProfile -File $script:ScriptPath -Config $tempConfig }  Should -Not -Throw
                 } finally {
                     Remove-Item $tempConfig -Force -ErrorAction SilentlyContinue
                 }
@@ -100,13 +100,13 @@ It 'should execute without errors with valid config' {
     
     $newWhatifPattern = @'
 It 'should handle whatif parameter' {
-                $config = [pscustomobject]@{}
-                $configJson = $config | ConvertTo-Json -Depth 5
-                $tempConfig = Join-Path ([System.IO.Path]::GetTempPath()) "$([System.Guid]::NewGuid()).json"
-                $configJson | Set-Content -Path $tempConfig
+                $config = pscustomobject@{}
+                $configJson = config | ConvertTo-Json -Depth 5
+                $tempConfig = Join-Path (System.IO.Path::GetTempPath()) "$(System.Guid::NewGuid()).json"
+                configJson | Set-Content -Path $tempConfig
                 try {
                     $pwsh = (Get-Command pwsh).Source
-                    { & $pwsh -NoLogo -NoProfile -File $script:ScriptPath -Config $tempConfig -WhatIf } | Should -Not -Throw
+                    { & $pwsh -NoLogo -NoProfile -File $script:ScriptPath -Config $tempConfig -WhatIf }  Should -Not -Throw
                 } finally {
                     Remove-Item $tempConfig -Force -ErrorAction SilentlyContinue
                 }
@@ -147,6 +147,7 @@ foreach ($testFile in $testFiles) {
 }
 
 Write-Host "`nCompleted processing all numbered test files."
+
 
 
 

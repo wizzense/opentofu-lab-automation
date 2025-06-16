@@ -1,18 +1,18 @@
 # Infrastructure Health Report - 2025-06-13
 
 **Analysis Time**: 2025-06-13 04:33:21 
-**Overall Status**: [FAIL] **Critical**
+**Overall Status**: FAIL **Critical**
 
 ## Health Metrics
 
-| Metric | Value | Status |
-|--------|-------|--------|
-| **PowerShell Files** | 350 | [INFO] |
-| **Syntax Errors** | 23 | [FAIL] |
-| **Deprecated Imports** | 17 | [WARN] |
-| **Missing Mocks** | 1 | [WARN] |
-| **Test Files** | 86 | [INFO] |
-| **Total Issues** | 3 | [WARN] |
+ Metric  Value  Status 
+-----------------------
+ **PowerShell Files**  350  INFO 
+ **Syntax Errors**  23  FAIL 
+ **Deprecated Imports**  17  WARN 
+ **Missing Mocks**  1  WARN 
+ **Test Files**  86  INFO 
+ **Total Issues**  3  WARN 
 
 ## Issues Detected
 

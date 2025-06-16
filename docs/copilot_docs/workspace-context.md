@@ -27,7 +27,7 @@ Conceptually, both `@workspace` and `#codebase` enable you to ask questions abou
 
 It's recommended to use `#codebase` in your chat prompts, as it provides more flexibility.
 
-> [!TIP]
+> !TIP
 > Enable the `setting(github.copilot.chat.codesearch.enabled)` to make `#codebase` more effective in finding relevant code snippets. This setting is enabled by default.
 
 ## Prompt examples
@@ -48,13 +48,13 @@ It's recommended to use `#codebase` in your chat prompts, as it provides more fl
 
 To answer your question, workspace context searches through the same sources a developer would use when navigating a codebase in VS Code:
 
-- All [indexable files](#what-content-is-included-in-the-workspace-index) in the workspace, except for files that are ignored by a `.gitignore` file
+- All indexable files(#what-content-is-included-in-the-workspace-index) in the workspace, except for files that are ignored by a `.gitignore` file
 - Directory structure with nested folder and file names
-- GitHub's code search index, if the workspace is a GitHub repository and [indexed by code search](https://docs.github.com/en/enterprise-cloud@latest/copilot/github-copilot-enterprise/copilot-chat-in-github/using-github-copilot-chat-in-githubcom#asking-a-question-about-a-specific-repository-file-or-symbol)
+- GitHub's code search index, if the workspace is a GitHub repository and indexed by code search(https://docs.github.com/en/enterprise-cloud@latest/copilot/github-copilot-enterprise/copilot-chat-in-github/using-github-copilot-chat-in-githubcom#asking-a-question-about-a-specific-repository-file-or-symbol)
 - Symbols and definitions in the workspace
 - Currently selected text or visible text in the active editor
 
-> [!NOTE]
+> !NOTE
 > `.gitignore` is bypassed if you have a file open or have text selected within an ignored file.
 
 ## How does `@workspace` find the most relevant context
@@ -63,7 +63,7 @@ Your full VS Code workspace can be too large to pass entirely to GitHub Copilot 
 
 First, `@workspace` determines which information is needed to answer your question, also including the conversation history, workspace structure, and currently selected code.
 
-Next, it collects the context using different approaches, such as finding relevant code snippets by searching locally or by using [GitHub's code search](https://github.blog/2023-02-06-the-technology-behind-githubs-new-code-search), and using VS Code's language IntelliSense to add details like function signatures, parameters, and more.
+Next, it collects the context using different approaches, such as finding relevant code snippets by searching locally or by using GitHub's code search(https://github.blog/2023-02-06-the-technology-behind-githubs-new-code-search), and using VS Code's language IntelliSense to add details like function signatures, parameters, and more.
 
 Finally, this context is used by GitHub Copilot to answer your question. If the context is too large, only the most relevant parts of the context are used. The response is marked up with references to files, file ranges, and symbols. This enables you to link directly from the chat response to the corresponding information in your codebase. The code snippets that were provided to Copilot are listed as references in the response.
 
@@ -73,11 +73,11 @@ Copilot uses an index to quickly and accurately search your codebase for relevan
 
 You can view the type of index and its status in the Copilot status dashboard in the Status Bar.
 
-![Screenshot showing the workspace index status in the Copilot status menu.](images/workspace-context/workspace-index-status.png)
+!Screenshot showing the workspace index status in the Copilot status menu.(images/workspace-context/workspace-index-status.png)
 
 ### Remote index
 
-If your code is hosted in a GitHub repository, you can build a remote index with [GitHub code search](https://docs.github.com/en/search-github/github-code-search/about-github-code-search) to enable AI to search your codebase quickly, even for large codebases.
+If your code is hosted in a GitHub repository, you can build a remote index with GitHub code search(https://docs.github.com/en/search-github/github-code-search/about-github-code-search) to enable AI to search your codebase quickly, even for large codebases.
 
 To build a remote index for your workspace:
 
@@ -89,12 +89,12 @@ To build a remote index for your workspace:
 
     You only need to build the remote index once. GitHub automatically keeps it up-to-date whenever you push code changes.
 
-> [!IMPORTANT]
+> !IMPORTANT
 > Remote indexing requires a project with a git remote on GitHub. Make sure that you have pushed your code to GitHub too. The remote index works best if GitHub has a relatively up-to-date version of your code, so make sure to push your code to GitHub regularly.
 
 ### Local index
 
-If you can't use a [remote index](#remote-index), Copilot can use an advanced semantic index that is stored on your local machine to provide fast, high quality search results. Currently, local indexes are limited to 2500 indexable files.
+If you can't use a remote index(#remote-index), Copilot can use an advanced semantic index that is stored on your local machine to provide fast, high quality search results. Currently, local indexes are limited to 2500 indexable files.
 
 To build a local index:
 
@@ -102,15 +102,15 @@ To build a local index:
 
 - The project has between 750 and 2500 indexable files: run the **Build local workspace index** command in the Command Palette (`kb(workbench.action.showCommands))`. This command only needs to be run once.
 
-- The project has more than 2500 indexable files: see the [basic index](#basic-index) section below.
+- The project has more than 2500 indexable files: see the basic index(#basic-index) section below.
 
 It may take some time to build the initial local index or update the index if many files have changed (such as when switching git branches). You can monitor the current local index status in the Copilot status dashboard in the Status Bar.
 
 ### Basic index
 
-If your project does not have a [remote index](#remote-index) and has more than 2500 [indexable files](#what-content-is-included-in-the-workspace-index), Copilot falls back to using a basic index to search your codebase. This index uses simpler algorithms to search your codebase and has been optimized to work locally for larger codebases.
+If your project does not have a remote index(#remote-index) and has more than 2500 indexable files(#what-content-is-included-in-the-workspace-index), Copilot falls back to using a basic index to search your codebase. This index uses simpler algorithms to search your codebase and has been optimized to work locally for larger codebases.
 
-The basic index should work just fine for many questions. However, if you find that Copilot is struggling to answer questions about your codebase, try upgrading to a [remote index](#remote-index).
+The basic index should work just fine for many questions. However, if you find that Copilot is struggling to answer questions about your codebase, try upgrading to a remote index(#remote-index).
 
 ### What content is included in the workspace index
 
@@ -131,6 +131,6 @@ The way you phrase your question can significantly influence the quality of the 
 
 ## Related resources
 
-- Learn more about [adding context to your chat prompt](/docs/copilot/chat/copilot-chat-context.md)
-- Get started with the [Copilot Chat tutorial](/docs/copilot/chat/getting-started-chat.md)
-- Learn more about [Copilot Chat](/docs/copilot/chat/copilot-chat.md)
+- Learn more about adding context to your chat prompt(/docs/copilot/chat/copilot-chat-context.md)
+- Get started with the Copilot Chat tutorial(/docs/copilot/chat/getting-started-chat.md)
+- Learn more about Copilot Chat(/docs/copilot/chat/copilot-chat.md)

@@ -8,10 +8,10 @@ This script helps consolidate workflows by marking legacy ones for archival
 and ensuring the new mega-consolidated workflow is properly set up.
 #>
 
-[CmdletBinding()]
+CmdletBinding()
 param(
- [switch]$Execute,
- [switch]$WhatIf
+ switch$Execute,
+ switch$WhatIf
 )
 
 $ErrorActionPreference = 'Stop'
@@ -46,7 +46,7 @@ $WorkflowDir = ".github/workflows"
 Write-Host "`n Analysis:" -ForegroundColor Yellow
 
 if (Test-Path $WorkflowDir) {
- $AllWorkflows = Get-ChildItem "$WorkflowDir/*.yml" | ForEach-Object { $_.Name }
+ $AllWorkflows = Get-ChildItem "$WorkflowDir/*.yml"  ForEach-Object { $_.Name }
  
  Write-Host "Total workflows found: $($AllWorkflows.Count)" -ForegroundColor Green
  Write-Host "Workflows to archive: $($LegacyWorkflows.Count)" -ForegroundColor Yellow
@@ -55,16 +55,16 @@ if (Test-Path $WorkflowDir) {
  Write-Host "`n Legacy workflows to archive:" -ForegroundColor Red
  foreach ($workflow in $LegacyWorkflows) {
  if ($workflow -in $AllWorkflows) {
- Write-Host " [FAIL] $workflow" -ForegroundColor Red
+ Write-Host " FAIL $workflow" -ForegroundColor Red
  }
  }
  
- Write-Host "`n[PASS] Workflows to keep:" -ForegroundColor Green
+ Write-Host "`nPASS Workflows to keep:" -ForegroundColor Green
  foreach ($workflow in $KeepWorkflows) {
  if ($workflow -in $AllWorkflows) {
- Write-Host " [PASS] $workflow" -ForegroundColor Green
+ Write-Host " PASS $workflow" -ForegroundColor Green
  } else {
- Write-Host " [WARN] $workflow (not found)" -ForegroundColor Yellow
+ Write-Host " WARN $workflow (not found)" -ForegroundColor Yellow
  }
  }
  
@@ -74,7 +74,7 @@ if (Test-Path $WorkflowDir) {
  # Create archive directory
  $ArchiveDir = ".github/archived_workflows"
  if (-not (Test-Path $ArchiveDir)) {
- New-Item -ItemType Directory -Path $ArchiveDir -Force | Out-Null
+ New-Item -ItemType Directory -Path $ArchiveDir -Force  Out-Null
  Write-Host "Created archive directory: $ArchiveDir" -ForegroundColor Green
  }
  
@@ -98,14 +98,14 @@ They are kept here for reference purposes only.
 
 ## Archived on: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')
 
-| Original Workflow | Consolidated Into |
-|------------------|-------------------|
-| auto-test-generation.yml | mega-consolidated.yml |
-| auto-test-generation-consolidated.yml | mega-consolidated.yml |
-| unified-ci.yml | mega-consolidated.yml |
-| unified-testing.yml | mega-consolidated.yml |
-| unified-utilities.yml | mega-consolidated.yml |
-| system-health-monitor.yml | mega-consolidated.yml |
+ Original Workflow  Consolidated Into 
+-------------------------------------
+ auto-test-generation.yml  mega-consolidated.yml 
+ auto-test-generation-consolidated.yml  mega-consolidated.yml 
+ unified-ci.yml  mega-consolidated.yml 
+ unified-testing.yml  mega-consolidated.yml 
+ unified-utilities.yml  mega-consolidated.yml 
+ system-health-monitor.yml  mega-consolidated.yml 
 
 The new mega-consolidated workflow provides:
 - All testing functionality
@@ -121,8 +121,8 @@ To restore any of these workflows, copy them back to .github/workflows/
  Set-Content "$ArchiveDir/README.md" $readmeContent
  Write-Host "Created archive README" -ForegroundColor Green
  
- Write-Host "`n[PASS] Archival complete!" -ForegroundColor Green
- } else { Write-Host "`n[WARN] WHAT-IF MODE - No changes made" -ForegroundColor Yellow
+ Write-Host "`nPASS Archival complete!" -ForegroundColor Green
+ } else { Write-Host "`nWARN WHAT-IF MODE - No changes made" -ForegroundColor Yellow
  Write-Host "Use -Execute to actually archive workflows" -ForegroundColor Yellow
  }
 } else {

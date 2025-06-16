@@ -2,7 +2,7 @@
 
 ## Quick Test Checklist
 
-### [PASS] **CLI Testing**
+### PASS **CLI Testing**
 
 #### 1. Test Main Deployment Script
 ```bash
@@ -37,7 +37,7 @@ curl -LO https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/HEAD
 python3 deploy.py
 
 # Test one-liner execution
-curl -sL https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/HEAD/deploy.py | python3
+curl -sL https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/HEAD/deploy.py  python3
 ```
 
 ### **GUI Testing**
@@ -134,7 +134,7 @@ curl -LO https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/HEAD
 python3 gui.py
 ```
 
-### [WARN] **Error Scenario Testing**
+### WARN **Error Scenario Testing**
 
 #### 1. Missing Dependencies
 ```bash
@@ -201,15 +201,15 @@ python3 deploy.py --config configs/config_files/default-config.json
 4. **PowerShell Execution Policy**: Windows may block script execution
 5. **Network Timeouts**: Download commands may timeout on slow connections
 
-## [PASS] **Success Criteria**
+## PASS **Success Criteria**
 
-- [PASS] All launchers work on target platforms
-- [PASS] GUI loads without errors and displays configuration form
-- [PASS] Configuration can be loaded, edited, and saved
-- [PASS] Deployment starts and shows real-time output
-- [PASS] CLI download commands work from fresh directory
-- [PASS] Error handling shows helpful messages
-- [PASS] Documentation is clear and accurate
+- PASS All launchers work on target platforms
+- PASS GUI loads without errors and displays configuration form
+- PASS Configuration can be loaded, edited, and saved
+- PASS Deployment starts and shows real-time output
+- PASS CLI download commands work from fresh directory
+- PASS Error handling shows helpful messages
+- PASS Documentation is clear and accurate
 
 ## **Quick Smoke Test**
 

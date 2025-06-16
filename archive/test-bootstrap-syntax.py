@@ -14,12 +14,12 @@ def check_bootstrap_syntax():
         content = f.read()
     
     # Look for the specific issue we fixed: $repoPath: in strings
-    problematic_patterns = [
-        r'"\s*[^"]*\$repoPath:[^"]*"',  # $repoPath: in double quotes
-        r"'\s*[^']*\$repoPath:[^']*'",  # $repoPath: in single quotes
-    ]
+    problematic_patterns = 
+        r'"\s*^"*\$repoPath:^"*"',  # $repoPath: in double quotes
+        r"'\s*^'*\$repoPath:^'*'",  # $repoPath: in single quotes
     
-    issues_found = []
+    
+    issues_found = 
     lines = content.split('\n')
     
     for i, line in enumerate(lines, 1):
@@ -34,9 +34,9 @@ def check_bootstrap_syntax():
         return False
     
     # Check that we have proper escaping where needed
-    escaped_patterns = [
+    escaped_patterns = 
         r'\$\{repoPath\}',  # Should find ${repoPath}
-    ]
+    
     
     found_escaping = False
     for pattern in escaped_patterns:
@@ -45,9 +45,9 @@ def check_bootstrap_syntax():
             break
     
     if found_escaping:
-        print("✓ Found proper variable escaping with ${}")
+        print(" Found proper variable escaping with ${}")
     
-    print("✓ Bootstrap script syntax looks good!")
+    print(" Bootstrap script syntax looks good!")
     return True
 
 if __name__ == '__main__':

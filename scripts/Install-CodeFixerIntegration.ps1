@@ -1,10 +1,10 @@
 # Install-CodeFixerIntegration.ps1
 # Script to integrate the CodeFixer module into the CI/CD pipeline and fix scripts
-[CmdletBinding()]
+CmdletBinding()
 param(
-    [switch]$Force,
-    [switch]$SkipBackup,
-    [switch]$UpdateWorkflows
+    switch$Force,
+    switch$SkipBackup,
+    switch$UpdateWorkflows
 )
 
 
@@ -18,7 +18,7 @@ $ErrorActionPreference = 'Stop'
 
 function Backup-File {
     param(
-        [string]$FilePath
+        string$FilePath
     )
 
     
@@ -34,7 +34,7 @@ if ($SkipBackup) {
 
     $backupDir = Join-Path $PSScriptRoot ".." "backups" (Get-Date -Format "yyyyMMdd-HHmmss")
     if (-not (Test-Path $backupDir)) {
-        New-Item -Path $backupDir -ItemType Directory -Force | Out-Null
+        New-Item -Path $backupDir -ItemType Directory -Force  Out-Null
     }
 
     $fileName = Split-Path -Path $FilePath -Leaf
@@ -51,7 +51,7 @@ if ($SkipBackup) {
 
 function Update-RunnerScript {
     param(
-        [string]$ScriptPath
+        string$ScriptPath
     )
 
     
@@ -82,13 +82,13 @@ if (-not (Test-Path $ScriptPath)) {
             # Add after the import modules comment
             $content = $content -replace '(?m)(^# Import modules.*$)', "`$1`n$moduleImport"
         }
-        elseif ($content -match '(?m)^\[CmdletBinding\(\)\]') {
-            # Add after [CmdletBinding()]
-            $content = $content -replace '(?m)(^\[CmdletBinding\(\)\].*$)', "`$1`n`n$moduleImport"
+        elseif ($content -match '(?m)^\CmdletBinding\(\)\') {
+            # Add after CmdletBinding()
+            $content = $content -replace '(?m)(^\CmdletBinding\(\)\.*$)', "`$1`n`n$moduleImport"
         }
         else {
             # Add at the beginning after any comments and param blocks
-            $content = $content -replace '(?ms)^((\s*#.*|\s*\[CmdletBinding.*\]|\s*param\s*\(.*?\)|\s*)*)(.+)', "`$1`n$moduleImport`n`$3"
+            $content = $content -replace '(?ms)^((\s*#.*\s*\CmdletBinding.*\\s*param\s*\(.*?\)\s*)*)(.+)', "`$1`n$moduleImport`n`$3"
         }
 
         Set-Content -Path $ScriptPath -Value $content -Force
@@ -101,7 +101,7 @@ if (-not (Test-Path $ScriptPath)) {
 
 function Update-WorkflowFile {
     param(
-        [string]$FilePath
+        string$FilePath
     )
 
     
@@ -125,9 +125,9 @@ if (-not (Test-Path $FilePath)) {
         # For the unified-ci.yml file
         if ($FilePath -like '*unified-ci.yml') {
             # Add module import to Pester tests step
-            $content = $content -replace '(?m)(shell: pwsh\s+run: \|\s+\$config = New-PesterConfiguration)', @"
+            $content = $content -replace '(?m)(shell: pwsh\s+run: \\s+\$config = New-PesterConfiguration)', @"
 shell: pwsh
-        run: |
+        run: 
           # Import the CodeFixer module
           Import-Module .//pwsh/modules/CodeFixer/CodeFixer.psd1 -Force
           
@@ -138,10 +138,10 @@ shell: pwsh
 "@
 
             # Update the lint job to use the CodeFixer module
-            $content = $content -replace '(?m)(name: Run comprehensive linting\s+shell: pwsh\s+run: \|\s+\./comprehensive-lint.ps1)', @"
+            $content = $content -replace '(?m)(name: Run comprehensive linting\s+shell: pwsh\s+run: \\s+\./comprehensive-lint.ps1)', @"
 name: Run comprehensive linting
         shell: pwsh
-        run: |
+        run: 
           # Import the CodeFixer module
           Import-Module .//pwsh/modules/CodeFixer/CodeFixer.psd1 -Force
           
@@ -152,10 +152,10 @@ name: Run comprehensive linting
         # For the auto-test-generation-execution.yml file
         elseif ($FilePath -like '*auto-test-generation-execution.yml') {
             # Update the test generation step
-            $content = $content -replace '(?m)(name: Generate Tests\s+shell: pwsh\s+run: \|)', @"
+            $content = $content -replace '(?m)(name: Generate Tests\s+shell: pwsh\s+run: \)', @"
 name: Generate Tests
         shell: pwsh
-        run: |
+        run: 
           # Import the CodeFixer module
           Import-Module .//pwsh/modules/CodeFixer/CodeFixer.psd1 -Force
 "@
@@ -192,20 +192,20 @@ function Update-MainScripts {
         $lintContent = @'
 # comprehensive-lint.ps1
 # This script is a wrapper around the CodeFixer module's Invoke-PowerShellLint function
-[CmdletBinding()]
+CmdletBinding()
 param(
-    [switch]$FixErrors,
-    [ValidateSet('Default', 'CI', 'JSON', 'Detailed')
+    switch$FixErrors,
+    ValidateSet('Default', 'CI', 'JSON', 'Detailed')
 
 
 
 
 
 
-]
-    [string]$OutputFormat = 'Default',
-    [string]$OutputPath,
-    [switch]$IncludeArchive
+
+    string$OutputFormat = 'Default',
+    string$OutputPath,
+    switch$IncludeArchive
 )
 
 $ErrorActionPreference = 'Stop'
@@ -260,20 +260,20 @@ try {
         $healthContent = @'
 # comprehensive-health-check.ps1
 # This script is a wrapper around the CodeFixer module's health check capabilities
-[CmdletBinding()]
+CmdletBinding()
 param(
-    [switch]$CI,
-    [switch]$Detailed,
-    [ValidateSet('JSON','Text')
+    switch$CI,
+    switch$Detailed,
+    ValidateSet('JSON','Text')
 
 
 
 
 
 
-]
-    [string]$OutputFormat = 'Text',
-    [string]$OutputPath
+
+    string$OutputFormat = 'Text',
+    string$OutputPath
 )
 
 $ErrorActionPreference = 'Stop'
@@ -326,21 +326,21 @@ try {
     $validationContent = @'
 # invoke-comprehensive-validation.ps1
 # This script runs a full system validation using the CodeFixer module
-[CmdletBinding()]
+CmdletBinding()
 param(
-    [switch]$Fix,
-    [switch]$GenerateTests,
-    [switch]$SaveResults,
-    [ValidateSet('JSON','Text','CI')
+    switch$Fix,
+    switch$GenerateTests,
+    switch$SaveResults,
+    ValidateSet('JSON','Text','CI')
 
 
 
 
 
 
-]
-    [string]$OutputFormat = 'Text',
-    [string]$OutputDirectory = "reports/validation"
+
+    string$OutputFormat = 'Text',
+    string$OutputDirectory = "reports/validation"
 )
 
 $ErrorActionPreference = 'Stop'
@@ -363,10 +363,10 @@ try {
 $timestamp = Get-Date -Format "yyyyMMdd-HHmmss"
 
 # Create output directory if it doesn't exist
-if ($SaveResults -and -not [string]::IsNullOrEmpty($OutputDirectory)) {
+if ($SaveResults -and -not string::IsNullOrEmpty($OutputDirectory)) {
     $reportPath = Join-Path $PSScriptRoot $OutputDirectory
     if (-not (Test-Path $reportPath)) {
-        New-Item -Path $reportPath -ItemType Directory -Force | Out-Null
+        New-Item -Path $reportPath -ItemType Directory -Force  Out-Null
         Write-Host "Created report directory: $reportPath" -ForegroundColor Cyan
     }
 }
@@ -391,7 +391,7 @@ try {
     }
     
     if ($SaveResults) {
-        if (-not [string]::IsNullOrEmpty($OutputDirectory)) {
+        if (-not string::IsNullOrEmpty($OutputDirectory)) {
             $params.OutputPath = Join-Path $PSScriptRoot $OutputDirectory "validation-report-$timestamp.json"
             Write-Host "Results will be saved to: $($params.OutputPath)" -ForegroundColor Cyan
         }
@@ -430,21 +430,21 @@ try {
     $autoFixContent = @'
 # auto-fix.ps1 
 # A simple wrapper around the CodeFixer module's Invoke-AutoFix function
-[CmdletBinding()]
+CmdletBinding()
 param(
-    [switch]$Apply,
-    [switch]$Quiet,
-    [switch]$Force,
-    [string[]]$ScriptPaths,
-    [ValidateSet('All', 'Syntax', 'Ternary', 'ScriptOrder', 'ImportModule')
+    switch$Apply,
+    switch$Quiet,
+    switch$Force,
+    string$ScriptPaths,
+    ValidateSet('All', 'Syntax', 'Ternary', 'ScriptOrder', 'ImportModule')
 
 
 
 
 
 
-]
-    [string[]]$FixTypes = 'All'
+
+    string$FixTypes = 'All'
 )
 
 $ErrorActionPreference = 'Stop'
@@ -500,7 +500,7 @@ function Update-Documentation {
     # Create a TESTING.md file with comprehensive documentation
     $testingDocsPath = Join-Path $PSScriptRoot ".." "docs" "TESTING.md"
     if (-not (Test-Path (Split-Path -Path $testingDocsPath -Parent))) {
-        New-Item -Path (Split-Path -Path $testingDocsPath -Parent) -ItemType Directory -Force | Out-Null
+        New-Item -Path (Split-Path -Path $testingDocsPath -Parent) -ItemType Directory -Force  Out-Null
     }
 
     $testingDocsContent = @'
@@ -529,17 +529,17 @@ The CodeFixer module (`/pwsh/modules/CodeFixer/`) provides automated tools for:
 
 ### Key Functions
 
-| Function | Description |
-|----------|-------------|
-| `Invoke-TestSyntaxFix` | Fixes common syntax errors in test files |
-| `Invoke-TernarySyntaxFix` | Fixes ternary operator issues in scripts |
-| `Invoke-ScriptOrderFix` | Fixes Import-Module/Param order in scripts |
-| `Invoke-PowerShellLint` | Runs and reports on PowerShell linting |
-| `New-AutoTest` | Generates tests for scripts |
-| `Watch-ScriptDirectory` | Watches for script changes and generates tests |
-| `Invoke-ResultsAnalysis` | Parses test results and applies fixes |
-| `Invoke-ComprehensiveValidation` | Runs full validation suite |
-| `Invoke-AutoFix` | Runs all available fixers in sequence |
+ Function  Description 
+-----------------------
+ `Invoke-TestSyntaxFix`  Fixes common syntax errors in test files 
+ `Invoke-TernarySyntaxFix`  Fixes ternary operator issues in scripts 
+ `Invoke-ScriptOrderFix`  Fixes Import-Module/Param order in scripts 
+ `Invoke-PowerShellLint`  Runs and reports on PowerShell linting 
+ `New-AutoTest`  Generates tests for scripts 
+ `Watch-ScriptDirectory`  Watches for script changes and generates tests 
+ `Invoke-ResultsAnalysis`  Parses test results and applies fixes 
+ `Invoke-ComprehensiveValidation`  Runs full validation suite 
+ `Invoke-AutoFix`  Runs all available fixers in sequence 
 
 ## Using the Framework
 
@@ -642,7 +642,7 @@ If you encounter issues with the testing framework:
 4. Review test output in the TestResults.xml file
 5. Use the `-Verbose` parameter with validation scripts for more detailed output
 
-For more information, consult the [project documentation](README.md).
+For more information, consult the project documentation(README.md).
 '@
     Set-Content -Path $testingDocsPath -Value $testingDocsContent -Force
     Write-Host "Created new documentation at $testingDocsPath" -ForegroundColor Green

@@ -35,8 +35,8 @@ Review any failures in the terminal output or in the generated `artifacts` folde
    ```
 3. Follow the suggestions to inspect logs, locate error messages and propose fixes.
 
-For manual steps on interpreting `testResults.xml` and `coverage.xml`, see [Troubleshooting CI](troubleshooting.md).
+For manual steps on interpreting `testResults.xml` and `coverage.xml`, see Troubleshooting CI(troubleshooting.md).
 
 ---
 
-See [pester-test-failures.md](pester-test-failures.md) for a tracked list of current test failures.
+See pester-test-failures.md(pester-test-failures.md) for a tracked list of current test failures.

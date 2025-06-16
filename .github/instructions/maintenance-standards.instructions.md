@@ -8,11 +8,13 @@ description: Project maintenance, health checking, and continuous validation gui
 ## Quick Reference
 
 ### Health Check Commands
-| **Command**                                | **Purpose**                     |
-|-------------------------------------------|----------------------------------|
-| `./scripts/maintenance/unified-maintenance.ps1 -Mode "Quick"` | Quick health assessment         |
-| `./scripts/maintenance/unified-maintenance.ps1 -Mode "All" -AutoFix` | Comprehensive health check      |
-| `./scripts/validation/Invoke-YamlValidation.ps1 -Mode "Fix"` | YAML validation and formatting  |
+ **Command**                                 **Purpose**                     
+-----------------------------------------------------------------------------
+ `./scripts/maintenance/unified-maintenance.ps1 -Mode "Quick"`  Quick health assessment         
+ `./scripts/maintenance/unified-maintenance.ps1 -Mode "All" -AutoFix`  Comprehensive health check      
+ `./scripts/validation/Invoke-YamlValidation.ps1 -Mode "Fix"`  YAML validation and formatting  
+ `Invoke-GitControlledPatch -DirectCommit -AutoCommitUncommitted`  Safe maintenance with proper change control 
+ `Invoke-QuickRollback -RollbackType "Emergency" -Force`  Emergency recovery (respects branch protection) 
 
 ### Validation Sequence
 Run:
@@ -52,7 +54,7 @@ Always update the project manifest after changes:
 
 ```powershell
 # Read current manifest
-$manifest = Get-Content "./PROJECT-MANIFEST.json" | ConvertFrom-Json
+$manifest = Get-Content "./PROJECT-MANIFEST.json"  ConvertFrom-Json
 
 # Update last modified
 $manifest.project.lastUpdated = (Get-Date -Format "yyyy-MM-dd HH:mm:ss")
@@ -64,7 +66,7 @@ if ($ModuleChanges) {
 }
 
 # Save updated manifest
-$manifest | ConvertTo-Json -Depth 10 | Set-Content "./PROJECT-MANIFEST.json"
+$manifest  ConvertTo-Json -Depth 10  Set-Content "./PROJECT-MANIFEST.json"
 
 # Validate manifest structure
 Test-JsonConfig -Path "./PROJECT-MANIFEST.json"
@@ -91,7 +93,7 @@ $moduleIndex = @{
     }
 }
 
-$moduleIndex | ConvertTo-Json -Depth 5 | Set-Content "./MODULE-INDEX.json"
+$moduleIndex  ConvertTo-Json -Depth 5  Set-Content "./MODULE-INDEX.json"
 ```
 
 ## Cleanup and Organization
@@ -99,14 +101,14 @@ $moduleIndex | ConvertTo-Json -Depth 5 | Set-Content "./MODULE-INDEX.json"
 ### Automated Cleanup Procedures
 ```powershell
 # 1. Clean temporary files
-Get-ChildItem -Path "." -Recurse -Filter "*.tmp" | Remove-Item -Force
-Get-ChildItem -Path "." -Recurse -Filter "*.log" -OlderThan (Get-Date).AddDays(-7) | Remove-Item -Force
+Get-ChildItem -Path "." -Recurse -Filter "*.tmp"  Remove-Item -Force
+Get-ChildItem -Path "." -Recurse -Filter "*.log" -OlderThan (Get-Date).AddDays(-7)  Remove-Item -Force
 
 # 2. Organize archive files
 $archiveThreshold = (Get-Date).AddDays(-30)
-Get-ChildItem -Path "./coverage/" -Recurse -File | Where-Object { 
+Get-ChildItem -Path "./coverage/" -Recurse -File  Where-Object { 
     $_.LastWriteTime -lt $archiveThreshold 
-} | Move-Item -Destination "./archive/coverage/"
+}  Move-Item -Destination "./archive/coverage/"
 
 # 3. Clean up test artifacts
 Remove-Item "./TestResults*.xml" -Force -ErrorAction SilentlyContinue
@@ -130,6 +132,63 @@ Copy-Item "./.github/" "$backupPath/" -Recurse
 
 Write-CustomLog "Created backup at $backupPath" "INFO"
 ```
+
+## Modern Change Control with PatchManager
+
+### Reduced Backup Requirements
+With PatchManager's advanced rollback capabilities, traditional backup frequency can be reduced:
+
+#### Traditional Approach (High Backup Frequency)
+- **Daily backups** required for safety
+- **Manual rollback** process prone to errors
+- **No audit trail** of changes
+- **Limited recovery options**
+
+#### PatchManager Approach (Low Backup Frequency)
+- **Git-based change control** provides automatic versioning
+- **Instant rollback** capabilities with multiple strategies
+- **Complete audit trail** of all operations
+- **Automated safety checks** before destructive operations
+
+### Change Control Workflow
+```powershell
+# Standard workflow with built-in safety
+Import-Module "/pwsh/modules/PatchManager/" -Force
+
+# Apply changes with automatic backup
+Invoke-GitControlledPatch -PatchDescription "maintenance: optimize performance" -PatchOperation {
+    Optimize-SystemPerformance
+} -DirectCommit -Force -CleanupMode "Standard"
+
+# If issues detected, instant rollback
+if (Test-SystemIssues) {
+    Invoke-PatchRollback -RollbackTarget "LastCommit" -Force -ValidateAfterRollback
+}
+```
+
+### Emergency Recovery Procedures
+```powershell
+# Level 1: Last commit rollback (safest)
+Invoke-PatchRollback -RollbackTarget "LastCommit" -Force
+
+# Level 2: Last working state (finds last validated commit)
+Invoke-PatchRollback -RollbackTarget "LastWorkingState" -CreateBackup
+
+# Level 3: Emergency rollback (resets to known good state)
+Invoke-PatchRollback -RollbackTarget "Emergency" -Force -ValidateAfterRollback
+
+# Level 4: Selective file recovery
+Invoke-PatchRollback -RollbackTarget "SelectiveFiles" -AffectedFiles @("critical-file.ps1")
+```
+
+### Backup Strategy with PatchManager
+ **Component**  **Traditional**  **With PatchManager** 
+-----------------------------------------------------
+ **Frequency**  Daily  Weekly (or on-demand) 
+ **Scope**  Full system  Critical config only 
+ **Recovery Time**  Hours  Seconds 
+ **Accuracy**  Manual, error-prone  Automated, validated 
+ **Audit Trail**  Limited  Complete 
 
 ## Logging and Issue Tracking
 
@@ -155,14 +214,14 @@ Write-CustomLog "Context: File=$CurrentFile, Line=$LineNumber" "DEBUG"
 # Create issue tracking entries
 function New-MaintenanceIssue {
     param(
-        [string]$Title,
-        [string]$Description,
-        [string]$Severity = "Medium",
-        [string[]]$AffectedFiles
+        string$Title,
+        string$Description,
+        string$Severity = "Medium",
+        string$AffectedFiles
     )
     
     $issue = @{
-        Id = [Guid]::NewGuid().ToString()
+        Id = Guid::NewGuid().ToString()
         Title = $Title
         Description = $Description
         Severity = $Severity
@@ -174,13 +233,13 @@ function New-MaintenanceIssue {
     
     $issuesFile = "./PROJECT-ISSUES.json"
     $issues = if (Test-Path $issuesFile) {
-        Get-Content $issuesFile | ConvertFrom-Json
+        Get-Content $issuesFile  ConvertFrom-Json
     } else {
         @()
     }
     
     $issues += $issue
-    $issues | ConvertTo-Json -Depth 5 | Set-Content $issuesFile
+    $issues  ConvertTo-Json -Depth 5  Set-Content $issuesFile
     
     Write-CustomLog "Created issue: $Title (ID: $($issue.Id))" "WARN"
 }
@@ -197,7 +256,7 @@ if ($ValidationErrors.Count -gt 0) {
 ```powershell
 # After any maintenance operation, validate the results
 function Test-MaintenanceResults {
-    param([string]$OperationType)
+    param(string$OperationType)
     
     Write-Host "Validating maintenance results..." -ForegroundColor Cyan
     
@@ -251,12 +310,12 @@ function Test-MaintenanceResults {
 # Monitor maintenance operation performance
 function Measure-MaintenancePerformance {
     param(
-        [ScriptBlock]$Operation,
-        [string]$OperationName
+        ScriptBlock$Operation,
+        string$OperationName
     )
     
-    $stopwatch = [System.Diagnostics.Stopwatch]::StartNew()
-    $memoryBefore = [GC]::GetTotalMemory($false)
+    $stopwatch = System.Diagnostics.Stopwatch::StartNew()
+    $memoryBefore = GC::GetTotalMemory($false)
     
     try {
         $result = & $Operation
@@ -267,7 +326,7 @@ function Measure-MaintenancePerformance {
     }
     
     $stopwatch.Stop()
-    $memoryAfter = [GC]::GetTotalMemory($false)
+    $memoryAfter = GC::GetTotalMemory($false)
     
     $performance = @{
         OperationName = $OperationName
@@ -298,13 +357,13 @@ function Invoke-PreCommitValidation {
     Write-Host "Running pre-commit validation..." -ForegroundColor Green
     
     # 1. Lint all changed PowerShell files
-    $changedFiles = git diff --name-only --cached | Where-Object { $_ -match '\.ps1$' }
+    $changedFiles = git diff --name-only --cached  Where-Object { $_ -match '\.ps1$' }
     if ($changedFiles) {
         Invoke-PowerShellLint -Files $changedFiles -OutputFormat "CI"
     }
     
     # 2. Validate YAML files
-    $changedYaml = git diff --name-only --cached | Where-Object { $_ -match '\.(yml|yaml)$' }
+    $changedYaml = git diff --name-only --cached  Where-Object { $_ -match '\.(ymlyaml)$' }
     if ($changedYaml) {
         foreach ($file in $changedYaml) {
             ./scripts/validation/Invoke-YamlValidation.ps1 -Path $file
@@ -337,10 +396,10 @@ function Invoke-PreCommitValidation {
 ```powershell
 # Always run after maintenance operations
 function Invoke-PostOperationCleanup {
-    param([string]$OperationType)
+    param(string$OperationType)
     
     # 1. Clean temporary files created during operation
-    Get-ChildItem -Path "." -Recurse -Filter "*.$OperationType.tmp" | Remove-Item -Force
+    Get-ChildItem -Path "." -Recurse -Filter "*.$OperationType.tmp"  Remove-Item -Force
     
     # 2. Reset any test artifacts
     Remove-Item "./TestResults*.xml" -Force -ErrorAction SilentlyContinue
@@ -391,8 +450,8 @@ Always validate changes across multiple operating systems using GitHub Actions:
 # Pre-commit GitHub Actions validation
 function Invoke-CrossPlatformValidation {
     param(
-        [string[]]$ChangedFiles,
-        [string]$BranchName = (git branch --show-current)
+        string$ChangedFiles,
+        string$BranchName = (git branch --show-current)
     )
     
     Write-Host "Starting cross-platform validation..." -ForegroundColor Cyan
@@ -426,8 +485,8 @@ function Invoke-CrossPlatformValidation {
 
 function Wait-ForWorkflowCompletion {
     param(
-        [string]$Branch,
-        [int]$TimeoutMinutes = 15
+        string$Branch,
+        int$TimeoutMinutes = 15
     )
     
     $timeout = (Get-Date).AddMinutes($TimeoutMinutes)
@@ -444,12 +503,12 @@ function Wait-ForWorkflowCompletion {
                 continue
             }
             
-            $inProgress = $runs | Where-Object { $_.status -eq "in_progress" -or $_.status -eq "queued" }
+            $inProgress = $runs  Where-Object { $_.status -eq "in_progress" -or $_.status -eq "queued" }
             
             if ($inProgress.Count -eq 0) {
                 # All workflows completed
-                $failed = $runs | Where-Object { $_.conclusion -eq "failure" }
-                $cancelled = $runs | Where-Object { $_.conclusion -eq "cancelled" }
+                $failed = $runs  Where-Object { $_.conclusion -eq "failure" }
+                $cancelled = $runs  Where-Object { $_.conclusion -eq "cancelled" }
                 
                 if ($failed.Count -gt 0 -or $cancelled.Count -gt 0) {
                     $failures = @()
@@ -498,10 +557,10 @@ Always validate fixes before applying and revert if validation fails:
 # Safe fix application with automatic rollback
 function Invoke-SafeFixApplication {
     param(
-        [scriptblock]$FixOperation,
-        [scriptblock]$ValidationOperation,
-        [string]$FixDescription,
-        [string[]]$AffectedFiles
+        scriptblock$FixOperation,
+        scriptblock$ValidationOperation,
+        string$FixDescription,
+        string$AffectedFiles
     )
     
     Write-Host "Applying fix: $FixDescription" -ForegroundColor Cyan
@@ -566,13 +625,13 @@ function Invoke-SafeFixApplication {
 }
 
 function Get-ProjectState {
-    param([string[]]$Files)
+    param(string$Files)
     
     $state = @{
     }
     foreach ($file in $Files) {
         if (Test-Path $file) {
-            $state[$file] = @{
+            $state$file = @{
                 Hash = Get-FileHash $file -Algorithm SHA256
                 LastWriteTime = (Get-Item $file).LastWriteTime
                 Size = (Get-Item $file).Length
@@ -584,8 +643,8 @@ function Get-ProjectState {
 
 function Restore-FromBackup {
     param(
-        [string]$BackupPath,
-        [string[]]$RestoreFiles
+        string$BackupPath,
+        string$RestoreFiles
     )
     
     foreach ($file in $RestoreFiles) {
@@ -614,10 +673,10 @@ Integrate with existing validation systems:
 # Enhanced comprehensive validation with GitHub Actions
 function Invoke-EnhancedValidation {
     param(
-        [string]$Path = ".",
-        [switch]$IncludeCrossPlatform,
-        [switch]$AutoFix,
-        [string]$OutputFormat = "Detailed"
+        string$Path = ".",
+        switch$IncludeCrossPlatform,
+        switch$AutoFix,
+        string$OutputFormat = "Detailed"
     )
     
     $results = @{
@@ -679,7 +738,7 @@ All validation must work across Windows, Linux, and macOS:
 ```powershell
 # Platform-specific validation patterns
 function Invoke-PlatformSpecificValidation {
-    param([string]$Platform = (Get-Platform))
+    param(string$Platform = (Get-Platform))
     
     switch ($Platform) {
         "Windows" {
@@ -726,7 +785,7 @@ function Test-LinuxShellCompatibility {
         if (Get-Command $shell -ErrorAction SilentlyContinue) {
             Write-Host "Testing with $shell..." -ForegroundColor Yellow
             $testScript = "#!/bin/$shell`necho 'Shell test successful'"
-            $testScript | Set-Content "/tmp/shell-test.sh"
+            $testScript  Set-Content "/tmp/shell-test.sh"
             chmod +x "/tmp/shell-test.sh"
             $result = & $shell "/tmp/shell-test.sh"
             if ($result -ne "Shell test successful") {
@@ -744,17 +803,17 @@ Validate commits by monitoring GitHub Actions workflow results:
 # Check GitHub Actions status before proceeding
 function Test-GitHubActionsStatus {
     param(
-        [string]$CommitSha,
-        [string]$Repository = "origin"
+        string$CommitSha,
+        string$Repository = "origin"
     )
     
     Write-CustomLog "Checking GitHub Actions status for commit $CommitSha" "INFO"
     
     # Use GitHub CLI to check workflow status
     $workflowRuns = gh run list --commit $CommitSha --json status,conclusion,name
-    $workflowData = $workflowRuns | ConvertFrom-Json
+    $workflowData = $workflowRuns  ConvertFrom-Json
     
-    $failedWorkflows = $workflowData | Where-Object { 
+    $failedWorkflows = $workflowData  Where-Object { 
         $_.status -eq "completed" -and $_.conclusion -ne "success" 
     }
     
@@ -763,7 +822,7 @@ function Test-GitHubActionsStatus {
         return $false
     }
     
-    $pendingWorkflows = $workflowData | Where-Object { $_.status -ne "completed" }
+    $pendingWorkflows = $workflowData  Where-Object { $_.status -ne "completed" }
     if ($pendingWorkflows.Count -gt 0) {
         Write-CustomLog "Waiting for GitHub Actions workflows to complete: $($pendingWorkflows.name -join ', ')" "WARN"
         return $null  # Pending status
@@ -776,8 +835,8 @@ function Test-GitHubActionsStatus {
 # Validate fixes across multiple platforms via GitHub Actions
 function Test-CrossPlatformFixes {
     param(
-        [string[]]$ModifiedFiles,
-        [string]$FixDescription
+        string$ModifiedFiles,
+        string$FixDescription
     )
     
     # Create backup before applying fixes
@@ -854,10 +913,10 @@ Implement comprehensive validation with automatic revert on failure:
 # Comprehensive fix validation with revert capability
 function Invoke-ValidatedFix {
     param(
-        [scriptblock]$FixOperation,
-        [string]$FixDescription,
-        [string[]]$AffectedFiles,
-        [switch]$RequireCrossPlatform
+        scriptblock$FixOperation,
+        string$FixDescription,
+        string$AffectedFiles,
+        switch$RequireCrossPlatform
     )
     
     Write-CustomLog "Starting validated fix operation: $FixDescription" "INFO"
@@ -988,13 +1047,13 @@ These files should be considered for archival or complete rewrite as they contai
 ### YAML Validation Integration
 YAML validation is integrated into maintenance scripts but **AUTO-FIX IS DISABLED** due to previous corruption issues:
 
-- **Pre-commit validation**: `git diff --cached | grep -E '\.(yml|yaml)$'` files validated (check only)
+- **Pre-commit validation**: `git diff --cached  grep -E '\.(ymlyaml)$'` files validated (check only)
 - **Maintenance scripts**: `./scripts/maintenance/unified-maintenance.ps1` includes YAML validation (check only)  
 - **Health checks**: `./scripts/validation/health-check.ps1` includes YAML validation (check only)
 - **Final validation**: `./scripts/final-validation.ps1` includes YAML validation (check only)
 - **VS Code tasks**: YAML validation available through task runner (check only)
 
-⚠️ **IMPORTANT**: YAML auto-fix is permanently disabled due to corruption issues. Use manual fixes only.
+WARN **IMPORTANT**: YAML auto-fix is permanently disabled due to corruption issues. Use manual fixes only.
 
 ### Validation Commands
 ```powershell

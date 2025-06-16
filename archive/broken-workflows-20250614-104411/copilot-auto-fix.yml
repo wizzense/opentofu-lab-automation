@@ -23,8 +23,8 @@ jobs:
  - uses: actions/checkout@v4
 
       - name: Fail if GH_TOKEN missing
-  run: |
- if [ -z "$GH_TOKEN" ]; then
+  run: 
+ if  -z "$GH_TOKEN" ; then
  echo "::error::COPILOT_OAUTH_TOKEN secret not set"
  exit 1
  fi
@@ -33,7 +33,7 @@ jobs:
 
  # Headless defaults never prompt
       - name: Pre-seed Copilot config
-  run: |
+  run: 
  mkdir -p "$HOME/.config/gh-copilot"
  cat >"$HOME/.config/gh-copilot/config.yml" <<'YAML'
  optional_analytics: false
@@ -46,13 +46,13 @@ jobs:
 
  # Ask Copilot and comment back
       - name: Suggest fixes for each open issue
-  run: |
- for num in $(gh issue list --state open --json number -q '.[].number'); do
+  run: 
+ for num in $(gh issue list --state open --json number -q '..number'); do
  title=$(gh issue view "$num" --json title -q .title)
  body=$(gh issue view "$num" --json body -q .body)
 
  prompt="Propose a concise git diff or detailed steps to fix issue # $num ($title) in ${{ github.repository }}.\n\nContext:\n$body"
- gh copilot suggest "$prompt" > suggestion.md || true if [ -s suggestion.md ]; then
+ gh copilot suggest "$prompt" > suggestion.md  true if  -s suggestion.md ; then
  gh issue comment "$num" -F suggestion.md
  else
  echo "No suggestion generated for issue #$num"

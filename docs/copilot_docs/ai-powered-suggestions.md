@@ -22,10 +22,10 @@ Copilot provides two kinds of suggestions:
 
 1. Sign in with your GitHub account to use Copilot.
 
-    > [!TIP]
-    > If you don't yet have a Copilot subscription, you can use Copilot for free by signing up for the [Copilot Free plan](https://github.com/github-copilot/signup) and get a monthly limit of completions and chat interactions.
+    > !TIP
+    > If you don't yet have a Copilot subscription, you can use Copilot for free by signing up for the Copilot Free plan(https://github.com/github-copilot/signup) and get a monthly limit of completions and chat interactions.
 
-1. Discover the key features of Copilot in VS Code with our [Copilot Quickstart](/docs/copilot/getting-started.md).
+1. Discover the key features of Copilot in VS Code with our Copilot Quickstart(/docs/copilot/getting-started.md).
 
 ## Inline suggestions
 
@@ -33,13 +33,13 @@ Copilot offers code suggestions as you type: sometimes the completion of the cur
 
 Notice in the following example how Copilot suggests an implementation of the `calculateDaysBetweenDates` JavaScript function by using dimmed *ghost text*:
 
-![JavaScript ghost text suggestion.](images/inline-suggestions/js-suggest.png)
+!JavaScript ghost text suggestion.(images/inline-suggestions/js-suggest.png)
 
 When you're presented with an inline suggestion, you can accept it with the `kbstyle(Tab)` key.
 
 Copilot tries to apply the same coding style for the code suggestions that you already have in your code. Notice in the following example that Copilot applies the same input parameter naming scheme from the `add` method for the suggested `subtract` method.
 
-![JavaScript ghost text suggestion.](images/inline-suggestions/ts-suggest-parameter-names.png)
+!JavaScript ghost text suggestion.(images/inline-suggestions/ts-suggest-parameter-names.png)
 
 ### Partially accepting suggestions
 
@@ -49,7 +49,7 @@ You might not want to accept an entire suggestion from GitHub Copilot. You can u
 
 For any given input, Copilot might offer multiple, alternative suggestions. You can hover over the suggestion to any of the other suggestions.
 
-![Hovering over inline suggestions enables you to select from multiple suggestions](images/inline-suggestions/copilot-hover-highlight.png)
+!Hovering over inline suggestions enables you to select from multiple suggestions(images/inline-suggestions/copilot-hover-highlight.png)
 
 ### Generate suggestions from code comments
 
@@ -57,7 +57,7 @@ Instead of relying on Copilot to provide suggestions, you can provide hints abou
 
 The following example shows how to instruct Copilot to create a class in TypeScript to represent a student, providing information about methods and properties:
 
-![Use code comments to let Copilot generate a Student class in TypeScript with properties and methods.](images/inline-suggestions/ts-suggest-code-comment.png)
+!Use code comments to let Copilot generate a Student class in TypeScript with properties and methods.(images/inline-suggestions/ts-suggest-code-comment.png)
 
 ## Next Edit Suggestions
 
@@ -75,14 +75,14 @@ You can quickly navigate to suggested code changes with the `kbstyle(Tab)` key, 
 
 An arrow in the gutter indicates if there is an edit suggestion available. You can hover over the arrow to explore the edit suggestion menu, which includes keyboard shortcuts and settings configuration:
 
-![Copilot NES gutter menu expanded](./images/inline-suggestions/gutter-menu-highlighted-updated.png)
+!Copilot NES gutter menu expanded(./images/inline-suggestions/gutter-menu-highlighted-updated.png)
 
 If an edit suggestion is below the current editor view, the arrow will point down instead of right:
 
-![Copilot NES with arrow directions changing](./images/inline-suggestions/nes-arrow-directions.gif)
+!Copilot NES with arrow directions changing(./images/inline-suggestions/nes-arrow-directions.gif)
 
-> [!IMPORTANT]
-> If you are a [VS Code vim extension](https://marketplace.visualstudio.com/items?itemName=vscodevim.vim) user, please use the latest version of the extension to avoid any conflicts in keybindings with NES.
+> !IMPORTANT
+> If you are a VS Code vim extension(https://marketplace.visualstudio.com/items?itemName=vscodevim.vim) user, please use the latest version of the extension to avoid any conflicts in keybindings with NES.
 
 ### Reduce distractions by edit suggestions
 
@@ -96,24 +96,24 @@ To disable showing the code changes in the editor, enable the `setting(editor.in
 
 * **Copilot helps with simple mistakes like typos.** It'll suggest fixes where letters are missing or swapped, like `cont x = 5` or `conts x = 5`, which should've been `const x = 5`.
 
-    ![Copilot NES fixing a typo from "conts" to "const"](./images/inline-suggestions/nes-typo.gif)
+    !Copilot NES fixing a typo from "conts" to "const"(./images/inline-suggestions/nes-typo.gif)
 
 * **Copilot can also help with more challenging mistakes in logic**, like an inverted ternary expression:
 
-    ![Copilot NES fixing a fibonacci logic mistake](./images/inline-suggestions/nes-fib-logic.gif)
+    !Copilot NES fixing a fibonacci logic mistake(./images/inline-suggestions/nes-fib-logic.gif)
 
-    Or a comparison that should've used `&&` instead of `||`:
+    Or a comparison that should've used `&&` instead of ``:
 
-    ![Copilot NES fixing an if statement mistake](./images/inline-suggestions/nes-de-morgan.gif)
+    !Copilot NES fixing an if statement mistake(./images/inline-suggestions/nes-de-morgan.gif)
 
 **Changing intent**
 
 * **Copilot suggests changes to the rest of your code that match a new change in intent.** For example, when changing a class from `Point` to `Point3D`, Copilot will suggest to add a `z` variable to the class definition. After accepting the change, Copilot NES next recommends adding `z` to the distance calculation:
 
-    ![Copilot NES gif for updating Point to Point3D](./images/inline-suggestions/nes-point.gif)
-    <!-- ![Copilot NES for updating Point to Point3D](./images/inline-suggestions/point3d.png)
+    !Copilot NES gif for updating Point to Point3D(./images/inline-suggestions/nes-point.gif)
+    <!-- !Copilot NES for updating Point to Point3D(./images/inline-suggestions/point3d.png)
 
-    ![Copilot NES for adding z to distance calculation of Point3D](./images/inline-suggestions/point3d-distance.png) -->
+    !Copilot NES for adding z to distance calculation of Point3D(./images/inline-suggestions/point3d-distance.png) -->
 
 **Adding new variables or logic**
 
@@ -121,16 +121,16 @@ To disable showing the code changes in the editor, enable the `setting(editor.in
 
     It could also be more complex: if you added a new command to your VS Code extension's `extension.ts`, Copilot will first suggest to clean up the command in `extension.ts`. Then when you open `package.json`, Copilot suggests registering that command as well:
 
-    ![Updating extension.ts and package.json with a new command](./images/inline-suggestions/nes-extension-and-package.gif)
+    !Updating extension.ts and package.json with a new command(./images/inline-suggestions/nes-extension-and-package.gif)
 
-    <!-- ![Add command in package.json](./images/inline-suggestions/add-disposable.png)
-    ![Add command in package.json](./images/inline-suggestions/call-disposable-full.png) -->
+    <!-- !Add command in package.json(./images/inline-suggestions/add-disposable.png)
+    !Add command in package.json(./images/inline-suggestions/call-disposable-full.png) -->
 
 **Refactoring**
 
 * **Rename a variable once in a file, and Copilot will suggest to update it everywhere else.** If you use a new name or naming pattern, Copilot suggests to update subsequent code similarly.
 
-    ![Copilot NES suggesting change after updating function name](./images/inline-suggestions/nes-gutter.gif)
+    !Copilot NES suggesting change after updating function name(./images/inline-suggestions/nes-gutter.gif)
 
 * **Matching code style**. After copy-pasting some code, Copilot will suggest how to adjust it to match the current code where the paste happened.
 
@@ -140,7 +140,7 @@ You can enable or disable code completions either for all languages, or for spec
 
 * To enable or disable code completions, select the Copilot menu in the Status Bar, and then check or uncheck the options to enable or disable code completions.
 
-    ![Screenshot of the Copilot menu in the Status Bar with checkboxes to enabled or disable code completions and NES.](images/inline-suggestions/copilot-menu-status-bar.png)
+    !Screenshot of the Copilot menu in the Status Bar with checkboxes to enabled or disable code completions and NES.(images/inline-suggestions/copilot-menu-status-bar.png)
 
 * Alternatively, modify the `setting(github.copilot.enable)` setting in the Settings editor.
 
@@ -148,7 +148,7 @@ You can enable or disable code completions either for all languages, or for spec
 
 ## Change the AI model for completions
 
-Different Large Language Models (LLMs) are trained on different types of data and might have different capabilities and strengths. Learn more about how to [choose between different AI language models](/docs/copilot/language-models.md) in VS Code.
+Different Large Language Models (LLMs) are trained on different types of data and might have different capabilities and strengths. Learn more about how to choose between different AI language models(/docs/copilot/language-models.md) in VS Code.
 
 To change the language model that is used for generating code completions in the editor:
 
@@ -160,8 +160,8 @@ To change the language model that is used for generating code completions in the
 
 Alternatively, if Command Center is enabled, you can click the Copilot menu in the VS Code title bar, then click **Configure Code Completions** in the dropdown menu. Then choose **Change Completions Model...** in the dropdown menu and select the model you want to use.
 
-> [!NOTE]
-> The list of available models might vary and change over time. The model picker may not always show more than one model, and preview models and additional code completion models will become available there if/when we release them. If you are a Copilot Business or Enterprise user, your Administrator needs to enable certain models for your organization by opting in to `Editor Preview Features` in the [Copilot policy settings](https://docs.github.com/en/enterprise-cloud@latest/copilot/managing-copilot/managing-github-copilot-in-your-organization/managing-policies-for-copilot-in-your-organization#enabling-copilot-features-in-your-organization) on GitHub.com.
+> !NOTE
+> The list of available models might vary and change over time. The model picker may not always show more than one model, and preview models and additional code completion models will become available there if/when we release them. If you are a Copilot Business or Enterprise user, your Administrator needs to enable certain models for your organization by opting in to `Editor Preview Features` in the Copilot policy settings(https://docs.github.com/en/enterprise-cloud@latest/copilot/managing-copilot/managing-github-copilot-in-your-organization/managing-policies-for-copilot-in-your-organization#enabling-copilot-features-in-your-organization) on GitHub.com.
 
 ## Tips & tricks
 
@@ -194,8 +194,8 @@ To give you relevant inline suggestions, Copilot looks at the current and open f
 
 ## Next steps
 
-* Discover the key features with the [Copilot Quickstart](/docs/copilot/chat/getting-started-chat.md).
+* Discover the key features with the Copilot Quickstart(/docs/copilot/chat/getting-started-chat.md).
 
-* Use AI chat conversations with [Copilot Chat](/docs/copilot/chat/copilot-chat.md).
+* Use AI chat conversations with Copilot Chat(/docs/copilot/chat/copilot-chat.md).
 
-* Watch the videos in our [VS Code Copilot Series](https://www.youtube.com/playlist?list=PLj6YeMhvp2S5_hvBl2SE-7YCHYlLQ0bPt) on YouTube.
+* Watch the videos in our VS Code Copilot Series(https://www.youtube.com/playlist?list=PLj6YeMhvp2S5_hvBl2SE-7YCHYlLQ0bPt) on YouTube.

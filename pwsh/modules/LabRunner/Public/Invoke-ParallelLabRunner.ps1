@@ -19,19 +19,19 @@ function Invoke-ParallelLabRunner {
  Enable safe mode with dependency checking and resource locking
  #>
  
- [CmdletBinding()]
+ CmdletBinding()
  param(
- [Parameter(Mandatory=$true)]
- [array]$Scripts,
+ Parameter(Mandatory=$true)
+ array$Scripts,
  
- [Parameter()]
- [int]$MaxConcurrency = [Environment]::ProcessorCount,
+ Parameter()
+ int$MaxConcurrency = Environment::ProcessorCount,
  
- [Parameter()]
- [int]$TimeoutMinutes = 30,
+ Parameter()
+ int$TimeoutMinutes = 30,
  
- [Parameter()]
- [switch]$SafeMode
+ Parameter()
+ switch$SafeMode
  )
  
  # Import required modules
@@ -52,11 +52,11 @@ function Invoke-ParallelLabRunner {
  
  # Process scripts in batches
  for ($i = 0; $i -lt $total; $i++) {
- $script = $Scripts[$i]
+ $script = $Scripts$i
  
  # Wait for available slot if at max concurrency
  while ($activeJobs.Count -ge $MaxConcurrency) {
- $finishedJobs = $activeJobs | Where-Object { $_.State -eq 'Completed' -or $_.State -eq 'Failed' }
+ $finishedJobs = activeJobs | Where-Object { $_.State -eq 'Completed' -or $_.State -eq 'Failed' }
  
  foreach ($job in $finishedJobs) {
  $result = Receive-Job $job -ErrorAction SilentlyContinue
@@ -67,10 +67,10 @@ function Invoke-ParallelLabRunner {
  Duration = (Get-Date) - $job.PSBeginTime
  }
  Remove-Job $job
- $activeJobs = $activeJobs | Where-Object { $_.Id -ne $job.Id }
+ $activeJobs = activeJobs | Where-Object { $_.Id -ne $job.Id }
  $completed++
  
- $percentComplete = [math]::Round(($completed / $total) * 100, 1)
+ $percentComplete = math::Round(($completed / $total) * 100, 1)
  Write-Progress -Activity "Parallel Script Execution" -Status "$completed of $total completed ($percentComplete%)" -PercentComplete $percentComplete
  }
  
@@ -86,12 +86,12 @@ function Invoke-ParallelLabRunner {
  try {
  if ($SafeMode) {
  # Implement resource locking and dependency checking
- $lockFile = "$env:TEMP\labrunner-$($ScriptPath -replace '[\\/:*?"<>|]', '_').lock"
+ $lockFile = "$env:TEMP\labrunner-$($ScriptPath -replace '\\/:*?"<>', '_').lock"
  
  # Check for existing lock
  if (Test-Path $lockFile) {
  $lockContent = Get-Content $lockFile -ErrorAction SilentlyContinue
- if ($lockContent -and ((Get-Date) - [DateTime]::Parse($lockContent[0])).TotalMinutes -lt 30) {
+ if ($lockContent -and ((Get-Date) - DateTime::Parse($lockContent0)).TotalMinutes -lt 30) {
  throw "Script is locked by another process"
  }
  }
@@ -138,7 +138,7 @@ function Invoke-ParallelLabRunner {
  
  # Wait for remaining jobs to complete
  while ($activeJobs.Count -gt 0) {
- $finishedJobs = $activeJobs | Where-Object { $_.State -eq 'Completed' -or $_.State -eq 'Failed' }
+ $finishedJobs = activeJobs | Where-Object { $_.State -eq 'Completed' -or $_.State -eq 'Failed' }
  
  foreach ($job in $finishedJobs) {
  $result = Receive-Job $job -ErrorAction SilentlyContinue
@@ -149,10 +149,10 @@ function Invoke-ParallelLabRunner {
  Duration = (Get-Date) - $job.PSBeginTime
  }
  Remove-Job $job
- $activeJobs = $activeJobs | Where-Object { $_.Id -ne $job.Id }
+ $activeJobs = activeJobs | Where-Object { $_.Id -ne $job.Id }
  $completed++
  
- $percentComplete = [math]::Round(($completed / $total) * 100, 1)
+ $percentComplete = math::Round(($completed / $total) * 100, 1)
  Write-Progress -Activity "Parallel Script Execution" -Status "$completed of $total completed ($percentComplete%)" -PercentComplete $percentComplete
  }
  
@@ -162,16 +162,16 @@ function Invoke-ParallelLabRunner {
  }
  
  Write-Progress -Activity "Parallel Script Execution" -Completed
- Write-Host "[PASS] Parallel execution completed: $completed scripts processed" -ForegroundColor Green
+ Write-Host "PASS Parallel execution completed: $completed scripts processed" -ForegroundColor Green
  
  # Summary
- $successful = ($results | Where-Object { $_.Result.Success -eq $true }).Count
+ $successful = (results | Where-Object { $_.Result.Success -eq $true }).Count
  $failed = $total - $successful
  
  Write-Host " Results Summary:" -ForegroundColor Yellow
- Write-Host " [PASS] Successful: $successful" -ForegroundColor Green
- Write-Host " [FAIL] Failed: $failed" -ForegroundColor Red
- Write-Host " Average Duration: $([math]::Round(($results | Measure-Object -Property {$_.Duration.TotalSeconds} -Average).Average, 2)) seconds" -ForegroundColor Blue
+ Write-Host " PASS Successful: $successful" -ForegroundColor Green
+ Write-Host " FAIL Failed: $failed" -ForegroundColor Red
+ Write-Host " Average Duration: $(math::Round((results | Measure-Object -Property {$_.Duration.TotalSeconds} -Average).Average, 2)) seconds" -ForegroundColor Blue
  
  return $results
 }
@@ -191,31 +191,31 @@ function Test-ParallelRunnerSupport {
  # Check ThreadJob module
  if (Get-Module -ListAvailable ThreadJob) {
  $checks.ThreadJobModule = $true
- Write-Host "[PASS] ThreadJob module available" -ForegroundColor Green
+ Write-Host "PASS ThreadJob module available" -ForegroundColor Green
  } else {
- Write-Host "[WARN] ThreadJob module not available - will attempt to install" -ForegroundColor Yellow
+ Write-Host "WARN ThreadJob module not available - will attempt to install" -ForegroundColor Yellow
  }
  
  # Check PowerShell version
  if ($PSVersionTable.PSVersion.Major -ge 5) {
  $checks.PowerShellVersion = $true
- Write-Host "[PASS] PowerShell version supported: $($PSVersionTable.PSVersion)" -ForegroundColor Green
+ Write-Host "PASS PowerShell version supported: $($PSVersionTable.PSVersion)" -ForegroundColor Green
  } else {
- Write-Host "[FAIL] PowerShell version too old: $($PSVersionTable.PSVersion)" -ForegroundColor Red
+ Write-Host "FAIL PowerShell version too old: $($PSVersionTable.PSVersion)" -ForegroundColor Red
  }
  
  # Check system resources
- $cpuCores = [Environment]::ProcessorCount
- $availableMemoryGB = [math]::Round((Get-CimInstance Win32_OperatingSystem -ErrorAction SilentlyContinue).FreePhysicalMemory / 1MB, 2)
+ $cpuCores = Environment::ProcessorCount
+ $availableMemoryGB = math::Round((Get-CimInstance Win32_OperatingSystem -ErrorAction SilentlyContinue).FreePhysicalMemory / 1MB, 2)
  
  if ($cpuCores -ge 2 -and $availableMemoryGB -ge 1) {
  $checks.SystemResources = $true
- Write-Host "[PASS] System resources adequate: $cpuCores cores, ${availableMemoryGB}GB RAM" -ForegroundColor Green
+ Write-Host "PASS System resources adequate: $cpuCores cores, ${availableMemoryGB}GB RAM" -ForegroundColor Green
  } else {
- Write-Host "[WARN] Limited system resources: $cpuCores cores, ${availableMemoryGB}GB RAM" -ForegroundColor Yellow
+ Write-Host "WARN Limited system resources: $cpuCores cores, ${availableMemoryGB}GB RAM" -ForegroundColor Yellow
  }
  
- $overallSupport = $checks.Values | Where-Object { $_ -eq $true } | Measure-Object | Select-Object -ExpandProperty Count
+ $overallSupport = $checks.Values  Where-Object { $_ -eq $true }  Measure-Object  Select-Object -ExpandProperty Count
  $totalChecks = $checks.Count
  
  Write-Host "`n Parallel Processing Support: $overallSupport/$totalChecks checks passed" -ForegroundColor Cyan
@@ -224,3 +224,4 @@ function Test-ParallelRunnerSupport {
 }
 
 Export-ModuleMember -Function Invoke-ParallelLabRunner, Test-ParallelRunnerSupport
+

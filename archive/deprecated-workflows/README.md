@@ -15,4 +15,4 @@ The project now uses the following primary workflows:
 - unified-ci.yml - Main CI/CD pipeline
 - auto-test-generation.yml and related workflows - Automatic test generation
 
-For more information, see the [Integration Summary](../../INTEGRATION-SUMMARY.md).
+For more information, see the Integration Summary(../../INTEGRATION-SUMMARY.md).

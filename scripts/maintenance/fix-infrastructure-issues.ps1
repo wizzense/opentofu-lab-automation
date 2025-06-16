@@ -26,17 +26,17 @@ Show what would be fixed without making changes
 ./scripts/maintenance/fix-infrastructure-issues.ps1 -Fix "TestContainers" -DryRun
 #>
 
-[CmdletBinding()]
+CmdletBinding()
 param(
-    [Parameter(Mandatory=$true)]
-    [ValidateSet('All','CodeFixer','MissingCommands','TestContainers','ImportPaths','GitHubActions','TestSyntax')]
-    [string]$Fix,
+    Parameter(Mandatory=$true)
+    ValidateSet('All','CodeFixer','MissingCommands','TestContainers','ImportPaths','GitHubActions','TestSyntax')
+    string$Fix,
     
-    [Parameter()]
-    [switch]$DryRun,
+    Parameter()
+    switch$DryRun,
     
-    [Parameter()]
-    [switch]$AutoFix
+    Parameter()
+    switch$AutoFix
 )
 
 $ErrorActionPreference = "Stop"
@@ -48,7 +48,7 @@ if ($IsWindows -or $env:OS -eq "Windows_NT") {
 }
 
 function Write-FixLog {
-    param([string]$Message, [string]$Level = "INFO")
+    param(string$Message, string$Level = "INFO")
     
 
 
@@ -65,7 +65,7 @@ $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
         "FIX" { "Magenta" }
         default { "White" }
     }
-    Write-Host "[$timestamp] [$Level] $Message" -ForegroundColor $color
+    Write-Host "$timestamp $Level $Message" -ForegroundColor $color
 }
 
 function Fix-CodeFixerSyntax {
@@ -94,7 +94,7 @@ function Fix-CodeFixerSyntax {
     $publicFiles = Get-ChildItem "$codeFixerPath/Public/*.ps1" -ErrorAction SilentlyContinue
     foreach ($file in $publicFiles) {
         try {
-            $null = [System.Management.Automation.PSParser]::Tokenize((Get-Content $file.FullName -Raw), [ref]$null)
+            $null = System.Management.Automation.PSParser::Tokenize((Get-Content $file.FullName -Raw), ref$null)
             Write-FixLog "Syntax OK: $($file.Name)" "SUCCESS"
         }
         catch {
@@ -133,14 +133,14 @@ function Fix-MissingCommands {
 
 # Mock function for missing command: $command
 function global:$command {
-    param([Parameter(ValueFromPipeline)
+    param(Parameter(ValueFromPipeline)
 
 
 
 
 
 
-][object]`$InputObject)
+object`$InputObject)
     if (`$InputObject) { return `$InputObject }
     return `$true
 }
@@ -170,7 +170,7 @@ function Fix-TestContainers {
     foreach ($testFile in $testFiles) {
         try {
             # Try to parse the file
-            $null = [System.Management.Automation.PSParser]::Tokenize((Get-Content $testFile.FullName -Raw), [ref]$null)
+            $null = System.Management.Automation.PSParser::Tokenize((Get-Content $testFile.FullName -Raw), ref$null)
         }
         catch {
             Write-FixLog "Fixing syntax in: $($testFile.Name)" "FIX"
@@ -184,10 +184,10 @@ function Fix-TestContainers {
             
             # Common fixes for test syntax issues
             $fixes = @(
-                @{ Pattern = "It '([^']*)\([^)]*'"; Replacement = "It '`$1'" },  # Fix malformed It statements
+                @{ Pattern = "It '(^'*)\(^)*'"; Replacement = "It '`$1'" },  # Fix malformed It statements
                 @{ Pattern = "\{\s*\n\s*Context"; Replacement = "{\n\n    Context" },  # Fix Context indentation
                 @{ Pattern = "InModuleScope\s+(\w+)\s*\{\s*\n\s*Describe"; Replacement = "InModuleScope `$1 {\n    Describe" },  # Fix InModuleScope
-                @{ Pattern = "Should\s+-Invoke\s+-CommandName\s+([^\s]+)\s+-Times\s+(\d+)"; Replacement = "Should -Invoke -CommandName `$1 -Exactly `$2" }  # Fix Should -Invoke syntax
+                @{ Pattern = "Should\s+-Invoke\s+-CommandName\s+(^\s+)\s+-Times\s+(\d+)"; Replacement = "Should -Invoke -CommandName `$1 -Exactly `$2" }  # Fix Should -Invoke syntax
             )
             
             foreach ($fix in $fixes) {
@@ -195,8 +195,8 @@ function Fix-TestContainers {
             }
             
             # Ensure proper closing braces
-            $openBraces = ($content | Select-String '\{' -AllMatches).Matches.Count
-            $closeBraces = ($content | Select-String '\}' -AllMatches).Matches.Count
+            $openBraces = ($content  Select-String '\{' -AllMatches).Matches.Count
+            $closeBraces = ($content  Select-String '\}' -AllMatches).Matches.Count
             
             if ($openBraces -gt $closeBraces) {
                 $content += "`n}"
@@ -212,12 +212,12 @@ function Fix-TestContainers {
 }
 
 function Fix-ImportPaths {
-    param([bool]$DryRun, [bool]$AutoFix)
+    param(bool$DryRun, bool$AutoFix)
     
     Write-FixLog "Scanning for import path issues..." -Level "INFO"
     
-    $files = Get-ChildItem -Path $ProjectRoot -Recurse -Filter "*.ps1" |
-        Where-Object { $_.FullName -notmatch '\\(archive|backups|deprecated)\\' }
+    $files = Get-ChildItem -Path $ProjectRoot -Recurse -Filter "*.ps1" 
+        Where-Object { $_.FullName -notmatch '\\(archivebackupsdeprecated)\\' }
         
     $fixCount = 0
     foreach ($file in $files) {

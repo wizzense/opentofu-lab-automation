@@ -14,11 +14,11 @@ While we're using JavaScript and TypeScript for this tutorial, note that Copilot
 
 ## Prerequisites
 
-* VS Code installed on your machine. Download it from the [Visual Studio Code website](https://code.visualstudio.com/).
+* VS Code installed on your machine. Download it from the Visual Studio Code website(https://code.visualstudio.com/).
 
-* Access to GitHub Copilot. Follow these steps to [Set up GitHub Copilot in VS Code](/docs/copilot/setup.md).
+* Access to GitHub Copilot. Follow these steps to Set up GitHub Copilot in VS Code(/docs/copilot/setup.md).
 
-    > [!TIP]
+    > !TIP
     > If you don't have a Copilot subscription or have a seat assigned by your organization, you can sign up to use Copilot for free directly from within VS Code and get a monthly limit of completions and chat interactions.
 
 ## Get your first code suggestion
@@ -35,7 +35,7 @@ To get started with AI features in VS Code, you don't have to do anything specia
 
     Notice that as you type, you automatically get code suggestions for the implementation of the `Calculator` class in gray dimmed text (ghost text). The exact suggestions you receive might vary because large language models are non-deterministic.
 
-    ![Screenshot of VS Code editor, showing Copilot suggesting the `add` method inside the `Calculator` class.](./images/getting-started/copilot-code-completion.png)
+    !Screenshot of VS Code editor, showing Copilot suggesting the `add` method inside the `Calculator` class.(./images/getting-started/copilot-code-completion.png)
 
 1. To accept the suggestion, press the `kbstyle(Tab)` key.
 
@@ -49,7 +49,7 @@ To get started with AI features in VS Code, you don't have to do anything specia
 
 1. Hover over the suggestion in the editor and notice that there are multiple suggestions.
 
-    ![Screenshot of VS Code editor, showing Copilot giving multiple suggestions for `factorial` when hovering over it.](./images/getting-started/copilot-code-completion-multiple.png)
+    !Screenshot of VS Code editor, showing Copilot giving multiple suggestions for `factorial` when hovering over it.(./images/getting-started/copilot-code-completion-multiple.png)
 
     You can use the arrow controls or use the keyboard shortcuts to show the next (`kb(editor.action.inlineSuggest.showNext)`) or previous (`kb(editor.action.inlineSuggest.showPrevious)`) suggestion.
 
@@ -67,13 +67,13 @@ Let's use editor inline chat to help generate a basic Express web server.
 
     Editor inline chat gives you a chat interface that lets you ask questions about the code in the active editor or generate code for you.
 
-    ![Screenshot of VS Code editor, showing the Copilot Inline Chat control.](./images/getting-started/copilot-inline-chat.png)
+    !Screenshot of VS Code editor, showing the Copilot Inline Chat control.(./images/getting-started/copilot-inline-chat.png)
 
 1. Type "add a simple express web server" in the chat input field, and press `kbstyle(Enter)` to submit the prompt.
 
     Notice that the code changes start streaming directly in the editor. The response is an implementation for a simple Node.js Express web server.
 
-    ![Screenshot of VS Code editor, showing the inline chat response for adding an Express web server.](./images/getting-started/copilot-inline-chat-express-server.png)
+    !Screenshot of VS Code editor, showing the inline chat response for adding an Express web server.(./images/getting-started/copilot-inline-chat-express-server.png)
 
 1. Select **Accept** or press `kb(inlineChat.acceptChanges)` to apply the proposed code changes.
 
@@ -91,7 +91,7 @@ Notice that the generated web server is currently using a static port number `30
 
     Notice how the existing code is updated to use an environment variable for the port number.
 
-    ![Screenshot of VS Code editor, showing editor inline chat to use an environment variable for the port number.](./images/getting-started/copilot-inline-chat-refactor-port.png)
+    !Screenshot of VS Code editor, showing editor inline chat to use an environment variable for the port number.(./images/getting-started/copilot-inline-chat-refactor-port.png)
 
 1. Select **Accept** or press `kb(inlineChat.acceptChanges)` to apply the proposed code changes.
 
@@ -103,24 +103,24 @@ As you're working in a new codebase, or exploring a new programming language, yo
 
 1. Open the Chat view from the Copilot menu in the title bar or press `kb(workbench.action.chat.open)`.
 
-    ![Screenshot of the VS Code editor, showing the Copilot menu, highlighting the Open Chat option.](./images/getting-started/copilot-chat-menu-command-center.png)
+    !Screenshot of the VS Code editor, showing the Copilot menu, highlighting the Open Chat option.(./images/getting-started/copilot-chat-menu-command-center.png)
 
 1. You can use chat in different ways. Select **Ask** from the mode dropdown to ask questions.
 
     In a later step, you'll use chat to start an editing session and make changes across multiple files.
 
-    ![Screenshot of the Chat view, highlighting the dropdown to to change the chat mode to 'Ask'.](./images/getting-started/copilot-chat-ask-mode.png)
+    !Screenshot of the Chat view, highlighting the dropdown to to change the chat mode to 'Ask'.(./images/getting-started/copilot-chat-ask-mode.png)
 
-    > [!TIP]
+    > !TIP
     > You can change the language model that is used in chat by choosing a different model from the dropdown.
 
 1. Type "what is recursion?" in the chat input field and press `kb(workbench.action.chat.submit)` to submit your chat prompt.
 
     Notice how the chat response contains rich results like Markdown text and code blocks.
 
-    ![Screenshot of VS Code editor, showing the Chat view containing the answer to what recursion is.](./images/getting-started/copilot-chat-view-recursion.png)
+    !Screenshot of VS Code editor, showing the Chat view containing the answer to what recursion is.(./images/getting-started/copilot-chat-view-recursion.png)
 
-1. Follow the steps in the [Chat Tutorial](/docs/copilot/chat/getting-started-chat.md) to learn how you can also use chat to ask questions about your specific codebase.
+1. Follow the steps in the Chat Tutorial(/docs/copilot/chat/getting-started-chat.md) to learn how you can also use chat to ask questions about your specific codebase.
 
 ## Make edits across multiple files
 
@@ -130,25 +130,25 @@ Let's start an editing session to return the contents of an HTML file for our we
 
 1. Select **Edit** from the mode dropdown in the Chat view.
 
-    ![Screenshot of the Chat view, highlighting the dropdown to to change the chat mode to 'Edit'](./images/getting-started/copilot-chat-edit-mode.png)
+    !Screenshot of the Chat view, highlighting the dropdown to to change the chat mode to 'Edit'(./images/getting-started/copilot-chat-edit-mode.png)
 
 1. Notice that the `server.ts` file is automatically added as context for your chat prompt.
 
     By adding the file as context to your prompt, the AI model can provide more relevant code edits. Optionally, add more context to your prompt with the **Add Context** button.
 
-    ![Screenshot of the Chat view, showing the prompt input field with the `server.ts` file.](./images/getting-started/copilot-edits-working-set.png)
+    !Screenshot of the Chat view, showing the prompt input field with the `server.ts` file.(./images/getting-started/copilot-edits-working-set.png)
 
 1. Enter _Return a static html page as the home page and implement it._ in the chat input field and press `kbstyle(Enter)` to start a new edit session.
 
     Notice that multiple edits are applied to your project: the `server.ts` file now returns the newly created `index.html` HTML page.
 
-    ![Screenshot of VS Code editor, showing the chat response for returning a static HTML page in the web server response.](./images/getting-started/copilot-edits-html-response.png)
+    !Screenshot of VS Code editor, showing the chat response for returning a static HTML page in the web server response.(./images/getting-started/copilot-edits-html-response.png)
 
 1. If you're happy with the results, select **Keep** to apply all suggested changes.
 
     You can also navigate between the different edited files and accept or reject them by using the editor overlay controls.
 
-    ![Screenshot of the Chat view, highlighting the Keep button to apply the changes and the editor overlay controls.](./images/getting-started/copilot-edits-accept.png)
+    !Screenshot of the Chat view, highlighting the Keep button to apply the changes and the editor overlay controls.(./images/getting-started/copilot-edits-accept.png)
 
 ## Fix coding errors with AI
 
@@ -160,15 +160,15 @@ One such place is the editor, whenever there's a red squiggle due to a compiler 
 
     Notice that the `import express from 'express';` statement contains a red squiggle. If you put the cursor on the red squiggle, you can see the sparkle icon appear.
 
-    ![Screenshot of VS Code editor, showing the Copilot sparkle because of an error with the express import statement.](./images/getting-started/copilot-code-action-sparkle.png)
+    !Screenshot of VS Code editor, showing the Copilot sparkle because of an error with the express import statement.(./images/getting-started/copilot-code-action-sparkle.png)
 
 1. Select the sparkle icon to view the AI Code Actions, and then select **Fix using Copilot**.
 
-    ![Screenshot of VS Code editor, showing the Copilot code actions, highlighting `Fix using Copilot`.](./images/getting-started/copilot-code-action-fix.png)
+    !Screenshot of VS Code editor, showing the Copilot code actions, highlighting `Fix using Copilot`.(./images/getting-started/copilot-code-action-fix.png)
 
 1. Notice that editor inline chat comes up, prepopulated with the error message, and a solution to fix the problem.
 
-    ![Screenshot of VS Code editor, showing the Copilot Inline Chat proposing to install the express npm package to solve the problem.](./images/getting-started/copilot-code-action-fix-result.png)
+    !Screenshot of VS Code editor, showing the Copilot Inline Chat proposing to install the express npm package to solve the problem.(./images/getting-started/copilot-code-action-fix-result.png)
 
     Directly from the chat response, you can optionally select the **Insert into Terminal** button to copy the proposed command in your terminal.
 
@@ -176,10 +176,10 @@ One such place is the editor, whenever there's a red squiggle due to a compiler 
 
 Congratulations, you've now used AI to enhance your coding! In this tutorial, you successfully used AI features in VS Code to get code completions in the editor, and used chat to ask questions and generate code edits.
 
-* To learn more about chat, proceed to the [Copilot Chat Tutorial](/docs/copilot/chat/getting-started-chat.md).
+* To learn more about chat, proceed to the Copilot Chat Tutorial(/docs/copilot/chat/getting-started-chat.md).
 
-* To learn more about AI code editing, proceed to the [Copilot Edits](/docs/copilot/chat/copilot-edits.md) documentation.
+* To learn more about AI code editing, proceed to the Copilot Edits(/docs/copilot/chat/copilot-edits.md) documentation.
 
 ## Related resources
 
-* Check our videos on YouTube about [Copilot Best Practices](https://youtu.be/2q0BoioYSxQ) and [Advanced Features](https://www.youtube.com/watch?v=SLMfhuptCo8).
+* Check our videos on YouTube about Copilot Best Practices(https://youtu.be/2q0BoioYSxQ) and Advanced Features(https://www.youtube.com/watch?v=SLMfhuptCo8).

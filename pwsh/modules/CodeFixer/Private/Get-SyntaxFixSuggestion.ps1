@@ -13,17 +13,17 @@ The parse error object from PowerShell AST parser
 Get-SyntaxFixSuggestion -Error $parseError
 #>
 function Get-SyntaxFixSuggestion {
-    [CmdletBinding()]
+    CmdletBinding()
     param(
-        [Parameter(Mandatory)
+        Parameter(Mandatory)
 
 
 
 
 
 
-]
-        [System.Management.Automation.Language.ParseError]$Error
+
+        System.Management.Automation.Language.ParseError$Error
     )
     
     $message = $error.Message.ToLower()
@@ -36,7 +36,7 @@ function Get-SyntaxFixSuggestion {
             return "Add missing closing brace (})"
         }
         "missing closing.*bracket" {
-            return "Add missing closing bracket (])"
+            return "Add missing closing bracket ()"
         }
         "missing closing.*parenthesis" {
             return "Add missing closing parenthesis ())"

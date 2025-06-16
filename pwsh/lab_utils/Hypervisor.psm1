@@ -1,5 +1,5 @@
 function Get-HVFacts {
-    [pscustomobject]@{
+    pscustomobject@{
         Provider = 'Hyper-V'
         Version  = '0.1'
     }
@@ -11,7 +11,7 @@ function Enable-Provider {
 
 function Deploy-VM {
     param(
-        [string]$Name
+        string$Name
     )
     "Deployed $Name"
 }

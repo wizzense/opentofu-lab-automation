@@ -42,13 +42,13 @@ Dismount-DiskImage -ImagePath "E:\2_auto_unattend_en-us_windows_server_2025_upda
 
 # Script parameters with sensible defaults so the script can be reused
 param(
-    [string]$ISOPath = "E:\2_auto_unattend_en-us_windows_server_2025_updated_feb_2025_x64_dvd_3733c10e.iso",
-    [string]$ExtractPath = "E:\CustomISO",
-    [string]$MountPath = "E:\Mount",
-    [string]$SetupScript = "E:\bootstrap.ps1",
-    [string]$UnattendXML = "E:\Path\to\autounattend.xml",
-    [string]$OutputISO = "E:\CustomWinISO.iso",
-    [string]$OscdimgExe = "C:\Program Files (x86)
+    string$ISOPath = "E:\2_auto_unattend_en-us_windows_server_2025_updated_feb_2025_x64_dvd_3733c10e.iso",
+    string$ExtractPath = "E:\CustomISO",
+    string$MountPath = "E:\Mount",
+    string$SetupScript = "E:\bootstrap.ps1",
+    string$UnattendXML = "E:\Path\to\autounattend.xml",
+    string$OutputISO = "E:\CustomWinISO.iso",
+    string$OscdimgExe = "C:\Program Files (x86)
 
 
 
@@ -56,7 +56,7 @@ param(
 
 
 \Windows Kits\10\Assessment and Deployment Kit\Deployment Tools\amd64\Oscdimg\oscdimg.exe",
-    [int]$WIMIndex = 3
+    int$WIMIndex = 3
 )
 
 # Ensure target paths exist for extraction and mounting
@@ -64,17 +64,17 @@ if (Test-Path $MountPath) {
     Remove-Item -Recurse -Force $MountPath
 }
 if (-not (Test-Path $ExtractPath)) {
-    New-Item -Path $ExtractPath -ItemType Directory | Out-Null
+    New-Item -Path $ExtractPath -ItemType Directory  Out-Null
 }
 if (-not (Test-Path $MountPath)) {
-    New-Item -Path $MountPath -ItemType Directory | Out-Null
+    New-Item -Path $MountPath -ItemType Directory  Out-Null
 }
 
 # Derived path to the WIM file inside the extracted ISO
 $WIMFile = Join-Path $ExtractPath "sources\install.wim"
 
 # Ensure running as Administrator
-if (-not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) {
+if (-not (Security.Principal.WindowsPrincipal Security.Principal.WindowsIdentity::GetCurrent()).IsInRole(Security.Principal.WindowsBuiltInRole "Administrator")) {
 
     $scriptPath = $PSCommandPath
     $warnMsg1 = "This script requires administrator privileges."
@@ -110,7 +110,7 @@ $DriveLetter = (Get-Volume -DiskImage $ISO).DriveLetter + ":"
 
 # Step 2: Extract ISO contents
 Write-CustomLog "Extracting ISO contents to $ExtractPath..."
-if (-Not (Test-Path $ExtractPath)) { New-Item -Path $ExtractPath -ItemType Directory | Out-Null }
+if (-Not (Test-Path $ExtractPath)) { New-Item -Path $ExtractPath -ItemType Directory  Out-Null }
 robocopy "$DriveLetter\" $ExtractPath /E /NFL /NDL /NJH /NJS /NC /NS
 
 # Step 3: Dismount the ISO
@@ -119,7 +119,7 @@ Dismount-DiskImage -ImagePath $ISOPath
 
 # Step 4: Mount the Install.wim Image
 Write-CustomLog "Mounting install.wim..."
-if (-Not (Test-Path $MountPath)) { New-Item -Path $MountPath -ItemType Directory | Out-Null }
+if (-Not (Test-Path $MountPath)) { New-Item -Path $MountPath -ItemType Directory  Out-Null }
 dism /Mount-Image /ImageFile:$WIMFile /Index:$WIMIndex /MountDir:$MountPath
 
 # Step 5: Copy bootstrap.ps1 into Windows

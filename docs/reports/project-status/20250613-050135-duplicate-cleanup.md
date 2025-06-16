@@ -7,9 +7,9 @@ This report documents the cleanup of duplicate directories and obsolete fix scri
 
 ## Issues Identified
 
-[INFO] 2025-06-13 05:01:35: Starting duplicate directory cleanup process
-[INFO] 2025-06-13 05:01:35: Analyzing duplicate Modules directories...
-[ERROR] 2025-06-13 05:01:35: FATAL ERROR: A parameter cannot be found that matches parameter name 'and'.
+INFO 2025-06-13 05:01:35: Starting duplicate directory cleanup process
+INFO 2025-06-13 05:01:35: Analyzing duplicate Modules directories...
+ERROR 2025-06-13 05:01:35: FATAL ERROR: A parameter cannot be found that matches parameter name 'and'.
 
 ## Final Status
 - **Duplicate Modules**: Found and processed
@@ -29,4 +29,4 @@ This report documents the cleanup of duplicate directories and obsolete fix scri
 
 ---
 **Report completed**: 2025-06-13 05:01:35
-[INFO] 2025-06-13 05:01:35: Report saved to: /workspaces/opentofu-lab-automation/docs/reports/project-status/20250613-050135-duplicate-cleanup.md
+INFO 2025-06-13 05:01:35: Report saved to: /workspaces/opentofu-lab-automation/docs/reports/project-status/20250613-050135-duplicate-cleanup.md

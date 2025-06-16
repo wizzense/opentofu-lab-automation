@@ -26,16 +26,16 @@ Invoke-PermanentCleanup -ProjectRoot "." -Force -CreatePreventionRules
 This function implements aggressive cleanup following maintenance standards
 #>
 function Invoke-PermanentCleanup {
-    [CmdletBinding()]
+    CmdletBinding()
     param(
-        [Parameter(Mandatory = $true)]
-        [string]$ProjectRoot,
+        Parameter(Mandatory = $true)
+        string$ProjectRoot,
         
-        [string[]]$ProblematicPatterns = @(),
+        string$ProblematicPatterns = @(),
         
-        [switch]$CreatePreventionRules,
+        switch$CreatePreventionRules,
         
-        [switch]$Force
+        switch$Force
     )
     
     $ErrorActionPreference = "Stop"
@@ -45,16 +45,16 @@ function Invoke-PermanentCleanup {
         if (Get-Module LabRunner -ErrorAction SilentlyContinue) {
             Write-CustomLog "Starting permanent cleanup process" "INFO"
         } else {
-            Write-Host "[INFO] Starting permanent cleanup process" -ForegroundColor Green
+            Write-Host "INFO Starting permanent cleanup process" -ForegroundColor Green
         }
         
         # Import Logging module for enhanced logging capabilities
-        Import-Module "//pwsh/modules/CodeFixerLogging/" -Force
+        Import-Module "/pwsh/modules/CodeFixerLogging/" -Force
         
         # Fallback definition for Write-CustomLog if not available
         if (-not (Get-Command "Write-CustomLog" -ErrorAction SilentlyContinue)) {
             function Write-CustomLog {
-                param([string]$Message, [string]$Level = "INFO")
+                param(string$Message, string$Level = "INFO")
                 $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
                 $color = switch ($Level) {
                     "ERROR" { "Red" }
@@ -62,7 +62,7 @@ function Invoke-PermanentCleanup {
                     "INFO" { "Green" }
                     default { "White" }
                 }
-                Write-Host "[$timestamp] [$Level] $Message" -ForegroundColor $color
+                Write-Host "$timestamp $Level $Message" -ForegroundColor $color
             }
         }
         
@@ -116,7 +116,7 @@ function Invoke-PermanentCleanup {
         foreach ($Pattern in $AllPatterns) {
             $Files = Get-ChildItem -Path $ProjectRoot -Recurse -File -Filter $Pattern -ErrorAction SilentlyContinue
             # Exclude files in the consolidated backup directory
-            $FilteredFiles = $Files | Where-Object {
+            $FilteredFiles = Files | Where-Object {
                 $_.FullName -notlike "*backups/consolidated-backups*" -and
                 $_.FullName -notlike "*.git*"
             }
@@ -124,7 +124,7 @@ function Invoke-PermanentCleanup {
         }
         
         if ($ProblematicFiles.Count -eq 0) {
-            Write-Host "[INFO] No problematic files found" -ForegroundColor Green
+            Write-Host "INFO No problematic files found" -ForegroundColor Green
             return @{
                 Success = $true
                 FilesRemoved = 0
@@ -133,8 +133,8 @@ function Invoke-PermanentCleanup {
         }
         
         # Show what will be removed
-        Write-Host "[WARNING] Found $($ProblematicFiles.Count) problematic files:" -ForegroundColor Yellow
-        $ProblematicFiles | ForEach-Object {
+        Write-Host "WARNING Found $($ProblematicFiles.Count) problematic files:" -ForegroundColor Yellow
+        ProblematicFiles | ForEach-Object {
             $RelativePath = $_.FullName.Replace($ProjectRoot, "").TrimStart('\', '/')
             Write-Host "  - $RelativePath" -ForegroundColor Yellow
         }
@@ -142,10 +142,10 @@ function Invoke-PermanentCleanup {
         # Confirm operation unless Force is specified
         if (-not $Force) {
             Write-Host ""
-            Write-Host "[WARNING] This will PERMANENTLY DELETE these files!" -ForegroundColor Red
+            Write-Host "WARNING This will PERMANENTLY DELETE these files!" -ForegroundColor Red
             $Confirmation = Read-Host "Are you sure you want to proceed? (type 'DELETE' to confirm)"
             if ($Confirmation -ne "DELETE") {
-                Write-Host "[INFO] Operation cancelled" -ForegroundColor Yellow
+                Write-Host "INFO Operation cancelled" -ForegroundColor Yellow
                 return @{ Success = $false; Message = "Cancelled by user" }
             }
         }
@@ -177,7 +177,7 @@ function Invoke-PermanentCleanup {
                 if (Get-Module LabRunner -ErrorAction SilentlyContinue) {
                     Write-CustomLog "Prevention rules updated for problematic patterns" "INFO"
                 } else {
-                    Write-Host "[INFO] Prevention rules updated for problematic patterns"
+                    Write-Host "INFO Prevention rules updated for problematic patterns"
                 }
             } catch {
                 $Errors += "Failed to update prevention rules: $($_.Exception.Message)"
@@ -190,7 +190,7 @@ function Invoke-PermanentCleanup {
         if (Get-Module LabRunner -ErrorAction SilentlyContinue) {
             Write-CustomLog $SummaryMessage "INFO"
         } else {
-            Write-Host "[INFO] $SummaryMessage" -ForegroundColor Green
+            Write-Host "INFO $SummaryMessage" -ForegroundColor Green
         }
         
         return @{
@@ -212,4 +212,6 @@ function Invoke-PermanentCleanup {
         throw
     }
 }
+
+
 

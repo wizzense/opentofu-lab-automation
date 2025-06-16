@@ -57,15 +57,15 @@ foreach ($testFile in $testFiles) {
     $content = Get-Content $testFile -Raw
     
     # Pattern 1: Replace the direct script execution with & operator
-    $oldPattern1 = '\{ & \$scriptPath -Config ''TestValue'' -WhatIf \} \| Should -Not -Throw'
+    $oldPattern1 = '\{ & \$scriptPath -Config ''TestValue'' -WhatIf \} \ Should -Not -Throw'
     $newPattern1 = @'
-$config = [pscustomobject]@{ TestProperty = 'TestValue' }
-            $configJson = $config | ConvertTo-Json -Depth 5
-            $tempConfig = Join-Path ([System.IO.Path]::GetTempPath()) "$([System.Guid]::NewGuid()).json"
-            $configJson | Set-Content -Path $tempConfig
+$config = pscustomobject@{ TestProperty = 'TestValue' }
+            $configJson = config | ConvertTo-Json -Depth 5
+            $tempConfig = Join-Path (System.IO.Path::GetTempPath()) "$(System.Guid::NewGuid()).json"
+            configJson | Set-Content -Path $tempConfig
             try {
                 $pwsh = (Get-Command pwsh).Source
-                { & $pwsh -NoLogo -NoProfile -File $scriptPath -Config $tempConfig -WhatIf } | Should -Not -Throw
+                { & $pwsh -NoLogo -NoProfile -File $scriptPath -Config $tempConfig -WhatIf }  Should -Not -Throw
             } finally {
                 Remove-Item $tempConfig -Force -ErrorAction SilentlyContinue
             }
@@ -89,6 +89,7 @@ $config = [pscustomobject]@{ TestProperty = 'TestValue' }
 }
 
 Write-Host "`nCompleted processing all numbered test files."
+
 
 
 

@@ -71,57 +71,57 @@ PS> .\install-opentofu.ps1 -installMethod standalone
 #>
 param(
 
-    [Parameter(Mandatory = $false)
+    Parameter(Mandatory = $false)
 
 
 
 
 
 
-]
-    [switch]$help = $false,
 
-    [Parameter(Mandatory = $false)]
-    [string]$installPath = "",
+    switch$help = $false,
 
-    [Parameter(Mandatory = $false)]
-    [string]$opentofuVersion = "latest",
+    Parameter(Mandatory = $false)
+    string$installPath = "",
 
-    [Parameter(Mandatory = $false)]
-    [string]$installMethod,
+    Parameter(Mandatory = $false)
+    string$opentofuVersion = "latest",
 
-    [Parameter(Mandatory = $false)]
-    [string]$cosignPath = "cosign.exe",
+    Parameter(Mandatory = $false)
+    string$installMethod,
 
-    [Parameter(Mandatory = $false)]
-    [string]$cosignOidcIssuer = "https://token.actions.githubusercontent.com",
+    Parameter(Mandatory = $false)
+    string$cosignPath = "cosign.exe",
 
-    [Parameter(Mandatory = $false)]
-    [string]$cosignIdentity = "autodetect",
+    Parameter(Mandatory = $false)
+    string$cosignOidcIssuer = "https://token.actions.githubusercontent.com",
 
-    [Parameter(Mandatory = $false)]
-    [string]$gpgPath = "gpg.exe",
+    Parameter(Mandatory = $false)
+    string$cosignIdentity = "autodetect",
 
-    [Parameter(Mandatory = $false)]
-    [string]$gpgURL = "https://get.opentofu.org/opentofu.asc",
+    Parameter(Mandatory = $false)
+    string$gpgPath = "gpg.exe",
 
-    [Parameter(Mandatory = $false)]
-    [string]$gpgKeyID = "E3E6E43D84CB852EADB0051D0C0AF313E5FD9F80",
+    Parameter(Mandatory = $false)
+    string$gpgURL = "https://get.opentofu.org/opentofu.asc",
 
-    [Parameter(Mandatory = $false)]
-    [switch]$skipVerify = $false,
+    Parameter(Mandatory = $false)
+    string$gpgKeyID = "E3E6E43D84CB852EADB0051D0C0AF313E5FD9F80",
 
-    [Parameter(Mandatory = $false)]
-    [switch]$skipChangePath = $false,
+    Parameter(Mandatory = $false)
+    switch$skipVerify = $false,
 
-    [Parameter(Mandatory = $false)]
-    [switch]$allUsers = $false,
+    Parameter(Mandatory = $false)
+    switch$skipChangePath = $false,
 
-    [Parameter(Mandatory = $false)]
-    [switch]$internalContinue = $false,
+    Parameter(Mandatory = $false)
+    switch$allUsers = $false,
 
-    [Parameter(Mandatory = $false)]
-    [string]$internalZipFile = ""
+    Parameter(Mandatory = $false)
+    switch$internalContinue = $false,
+
+    Parameter(Mandatory = $false)
+    string$internalZipFile = ""
 )
 
 . $PSScriptRoot/Logger.ps1
@@ -136,13 +136,13 @@ $ProgressPreference = 'silentlyContinue'
 # expose elevation log directory for testing purposes
 Set-Variable -Name OpenTofuInstallerLogDir -Value $null -Scope Global -Force
 
-$esc = [char]27
-$bold = "$esc[1m"
-$orange = "$esc[33m"
-$red = "$esc[31m"
-$blue = "$esc[34m"
-$normal = "$esc[0m"
-$magenta = "$esc[35m"
+$esc = char27
+$bold = "$esc1m"
+$orange = "$esc33m"
+$red = "$esc31m"
+$blue = "$esc34m"
+$normal = "$esc0m"
+$magenta = "$esc35m"
 
 $defaultOpenTofuVersion = "latest"
 # Provide cross-platform defaults when key environment variables are missing
@@ -201,32 +201,32 @@ $exitCodeInstallFailed = 2
 $exitCodeInvalidArgument = 3
 
 class ExitCodeException : System.Exception {
-    [int]  $ExitCode
-    [bool] $PrintUsage
-    ExitCodeException([string] $message, [int] $exitCode) : base($message) {
+    int  $ExitCode
+    bool $PrintUsage
+    ExitCodeException(string $message, int $exitCode) : base($message) {
         $this.ExitCode = $exitCode
         $this.PrintUsage = $false
     }
-    ExitCodeException([string] $message, [int] $exitCode, [bool] $printUsage) : base($message) {
+    ExitCodeException(string $message, int $exitCode, bool $printUsage) : base($message) {
         $this.ExitCode = $exitCode
         $this.PrintUsage = $printUsage
     }
 }
 
 class InvalidArgumentException : ExitCodeException {
-    InvalidArgumentException([string] $message) : base($message, $exitCodeInvalidArgument, $true) {
+    InvalidArgumentException(string $message) : base($message, $exitCodeInvalidArgument, $true) {
 
     }
 }
 
 class InstallRequirementNotMetException : ExitCodeException {
-    InstallRequirementNotMetException([string] $message) : base($message, $exitCodeInstallRequirementNotMet, $false) {
+    InstallRequirementNotMetException(string $message) : base($message, $exitCodeInstallRequirementNotMet, $false) {
 
     }
 }
 
 class InstallFailedException : ExitCodeException {
-    InstallFailedException([string] $message) : base($message, $exitCodeInstallFailed, $false) {
+    InstallFailedException(string $message) : base($message, $exitCodeInstallFailed, $false) {
     }
 }
 
@@ -271,7 +271,7 @@ function logError() {
 
 try
     {
-        [Console]::Error.WriteLine("${red}${message}${normal}")
+        Console::Error.WriteLine("${red}${message}${normal}")
     } catch {
         $msg = $_.ToString()
         Write-Error $msg
@@ -280,8 +280,8 @@ try
 }
 
 function tempdir() {
-    $tempPath = [System.IO.Path]::GetTempPath()
-    $randomName = [System.IO.Path]::GetRandomFileName()
+    $tempPath = System.IO.Path::GetTempPath()
+    $randomName = System.IO.Path::GetRandomFileName()
     $path = Join-Path $tempPath $randomName
     New-Item -Path $path -ItemType directory
 }
@@ -295,7 +295,7 @@ function unpackStandalone() {
     catch
     {
         $msg = $_.ToString()
-        throw [InstallFailedException]::new("Failed to create target directory at ${installPath}. (${msg})")
+        throw InstallFailedException::new("Failed to create target directory at ${installPath}. (${msg})")
     }
     $prevProgressPreference = $global:ProgressPreference
     $global:ProgressPreference = 'SilentlyContinue'
@@ -307,7 +307,7 @@ function unpackStandalone() {
     catch
     {
         $msg = $_.ToString()
-        throw [InstallFailedException]::new("Failed to unzip to ${installPath}. (${msg})")
+        throw InstallFailedException::new("Failed to unzip to ${installPath}. (${msg})")
     }
     finally
     {
@@ -320,20 +320,20 @@ function unpackStandalone() {
     try {
         if ($allUsers) {
             logInfo "Updating system PATH variable..."
-            $target = [EnvironmentVariableTarget]::Machine
+            $target = EnvironmentVariableTarget::Machine
         } else {
             logInfo "Updating user PATH variable..."
-            $target = [EnvironmentVariableTarget]::User
+            $target = EnvironmentVariableTarget::User
         }
-        $currentPath = [Environment]::GetEnvironmentVariable("Path", $target)
+        $currentPath = Environment::GetEnvironmentVariable("Path", $target)
         if (!($currentPath.Contains($installPath))) {
-            [Environment]::SetEnvironmentVariable("Path", $currentPath + ";${installPath}", $target)
+            Environment::SetEnvironmentVariable("Path", $currentPath + ";${installPath}", $target)
         }
     }
     catch
     {
         $msg = $_.ToString()
-        throw [InstallFailedException]::new("Failed to set path. (${msg})")
+        throw InstallFailedException::new("Failed to set path. (${msg})")
     }
 }
 
@@ -346,8 +346,8 @@ function Test-IsAdmin {
     $hasAdmin = $false
     if ($IsWindows) {
         try {
-            $principal = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
-            $hasAdmin = $principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
+            $principal = New-Object Security.Principal.WindowsPrincipal(Security.Principal.WindowsIdentity::GetCurrent())
+            $hasAdmin = $principal.IsInRole(Security.Principal.WindowsBuiltInRole::Administrator)
         } catch {
             logWarning "Could not determine admin privileges: $_"
             $hasAdmin = $false
@@ -388,7 +388,7 @@ function installStandalone() {
         } elseif ($gpgAvailable) {
             $verifyMethod = "gpg"
         } else {
-            throw [InstallRequirementNotMetException]::new("${bold}Additional tools are needed for the installation. Please read the following text carefully!${normal}`n`nThis installer tries to verify that the OpenTofu version downloaded has been ${bold}signed by OpenTofu and has not been tampered with${normal}. This is only possible if either cosign or GPG is installed on the system, but neither was found. You have the following options:`n`n1. ${bold}Install cosign${normal} and add it to your ${magenta}PATH${normal} or provide the ${magenta}-cosignPath${normal} parameter to your cosign installation.`n2. ${bold}Install GPG${normal} and add it to your ${magenta}PATH${normal} or provide the ${magenta}-gpgPath${normal} parameter to your GPG installation.`n3. ${bold}Disable integrity verification${normal} with ${magenta}-skipVerify${normal} (${red}not recommended${normal}).")
+            throw InstallRequirementNotMetException::new("${bold}Additional tools are needed for the installation. Please read the following text carefully!${normal}`n`nThis installer tries to verify that the OpenTofu version downloaded has been ${bold}signed by OpenTofu and has not been tampered with${normal}. This is only possible if either cosign or GPG is installed on the system, but neither was found. You have the following options:`n`n1. ${bold}Install cosign${normal} and add it to your ${magenta}PATH${normal} or provide the ${magenta}-cosignPath${normal} parameter to your cosign installation.`n2. ${bold}Install GPG${normal} and add it to your ${magenta}PATH${normal} or provide the ${magenta}-gpgPath${normal} parameter to your GPG installation.`n3. ${bold}Disable integrity verification${normal} with ${magenta}-skipVerify${normal} (${red}not recommended${normal}).")
         }
     } else {
         $verifyMethod = "-"
@@ -404,17 +404,17 @@ function installStandalone() {
             if ($Env:GITHUB_TOKEN)
             {
                 logInfo "Using provided GITHUB_TOKEN to prevent rate limiting..."
-                $headers["Authorization"] = "token ${Env:GITHUB_TOKEN}"
+                $headers"Authorization" = "token ${Env:GITHUB_TOKEN}"
             }
             $body = Invoke-WebRequest -uri "https://api.github.com/repos/opentofu/opentofu/releases/latest" -headers $headers -UseBasicParsing
-            $releaseData = $body | ConvertFrom-Json
+            $releaseData = $body  ConvertFrom-Json
         } catch {
             $msg = $_.ToString()
-            throw [InstallFailedException]::new("Failed to download release information from GitHub. This may be due to GitHub rate limiting, which you can work around by providing a GITHUB_TOKEN environment variable or by providing a specific OpenTofu version to install using the -opentofuVersion parameter. (Error: ${msg}; Response body: " + $body + ")")
+            throw InstallFailedException::new("Failed to download release information from GitHub. This may be due to GitHub rate limiting, which you can work around by providing a GITHUB_TOKEN environment variable or by providing a specific OpenTofu version to install using the -opentofuVersion parameter. (Error: ${msg}; Response body: " + $body + ")")
         }
         if (!$releaseData.name)
         {
-            throw [InstallFailedException]::new("Failed to parse release information from GitHub. This may be due to GitHub rate limiting, which you can work around by providing a GITHUB_TOKEN environment variable or by providing a specific OpenTofu version to install using the -opentofuVersion parameter. There seems to be no 'name' field in response, which indicates that GitHub sent us an unexpected response. The full response body was: " + $body)
+            throw InstallFailedException::new("Failed to parse release information from GitHub. This may be due to GitHub rate limiting, which you can work around by providing a GITHUB_TOKEN environment variable or by providing a specific OpenTofu version to install using the -opentofuVersion parameter. There seems to be no 'name' field in response, which indicates that GitHub sent us an unexpected response. The full response body was: " + $body)
         }
         $opentofuVersion = $releaseData.name.Substring(1)
         logInfo "Latest OpenTofu version is ${opentofuVersion}."
@@ -423,7 +423,7 @@ function installStandalone() {
     logInfo "Downloading OpenTofu version ${opentofuVersion}..."
 
     $tempPath = tempdir
-    if ([Environment]::Is64BitOperatingSystem) {
+    if (Environment::Is64BitOperatingSystem) {
         $arch = "amd64"
     } else {
         $arch = "386"
@@ -455,7 +455,7 @@ function installStandalone() {
         } elseif ($verifyMethod -eq "gpg") {
             $dlFiles += $gpgSigFile
         } elseif ($verifyMethod -ne "-") {
-            throw [InstallFailedException]::new("Bug: unsupported verification method: ${verifyMethod}.")
+            throw InstallFailedException::new("Bug: unsupported verification method: ${verifyMethod}.")
         }
     }
 
@@ -464,13 +464,13 @@ function installStandalone() {
         for ($i = 0; $i -lt $dlFiles.Length; $i++) {
             try
             {
-                $target = Join-Path $tempPath $dlFiles[$i]
-                $uri = $urlPrefix + $dlFiles[$i]
+                $target = Join-Path $tempPath $dlFiles$i
+                $uri = $urlPrefix + $dlFiles$i
                 logInfo "Downloading ${uri} to ${target} ..."
                 Invoke-ArchiveDownload $uri $target -Required
             } catch {
                 $msg = $_.ToString()
-                throw [InstallFailedException]::new("Failed to download OpenTofu ${opentofuVersion} release file ${dlFiles[i]}. (${msg})")
+                throw InstallFailedException::new("Failed to download OpenTofu ${opentofuVersion} release file ${dlFilesi}. (${msg})")
             }
             logInfo "Download of ${target} complete."
         }
@@ -485,34 +485,34 @@ function installStandalone() {
             catch
             {
                 $msg = $_.ToString()
-                throw [InstallFailedException]::new("Failed to download OpenTofu GPG key from ${gpgURL}. (${msg})")
+                throw InstallFailedException::new("Failed to download OpenTofu GPG key from ${gpgURL}. (${msg})")
             }
             logInfo "GPG key download complete."
 
             logInfo "Dearmoring GPG key..."
             & $gpgPath --dearmor ${gpgKeyPath}
             if (!$?) {
-                throw [InstallFailedException]::new("Failed to dearmor GPG file from ${gpgURL}.")
+                throw InstallFailedException::new("Failed to dearmor GPG file from ${gpgURL}.")
             }
             $gpgKeyPath = "${gpgKeyPath}.gpg"
 
             logInfo "Verifying GPG key fingerprint..."
             $gpgOutput = (& $gpgPath "--no-default-keyring" "--with-colons" "--show-keys" "--fingerprint" "${gpgKeyPath}" 2>&1)
             if (!$?) {
-                throw [InstallFailedException]::new("Failed to parse GPG file from ${gpgURL}.")
+                throw InstallFailedException::new("Failed to parse GPG file from ${gpgURL}.")
             }
             if (!$gpgOutput.Contains("fpr:::::::::${gpgKeyID}:")) {
-                throw [InstallFailedException]::new("The downloaded GPG file from ${gpgURL} does not contain a key with the fingerprint ${gpgKeyID}.")
+                throw InstallFailedException::new("The downloaded GPG file from ${gpgURL} does not contain a key with the fingerprint ${gpgKeyID}.")
             }
             logInfo "Verifying GPG key fingerprint verified."
         }
 
         logInfo "Verifying checksum..."
-        $expectedHash = $((Get-Content $sumsPath | Select-String -Pattern $zipName) -split '\s+')[0]
+        $expectedHash = $((Get-Content $sumsPath  Select-String -Pattern $zipName) -split '\s+')0
         $realHash = $(Get-FileHash -Algorithm SHA256 $zipPath).Hash
         if ($realHash -ne $expectedHash) {
             logWarning "Checksums don't match."
-            throw [InstallFailedException]::new("Checksum mismatch, expected: ${expectedHash}, got: ${realHash}")
+            throw InstallFailedException::new("Checksum mismatch, expected: ${expectedHash}, got: ${realHash}")
         }
         logInfo "Checksums match."
 
@@ -526,7 +526,7 @@ function installStandalone() {
                 }
                 else
                 {
-                    $ver = [version]($opentofuVersion -replace "-rc.*")
+                    $ver = version($opentofuVersion -replace "-rc.*")
                     $major = $ver.Major
                     $minor = $ver.Minor
                     $cosignIdentity = "https://github.com/opentofu/opentofu/.github/workflows/release.yml@refs/heads/v${major}.${minor}"
@@ -542,7 +542,7 @@ function installStandalone() {
             }
             else
             {
-                throw [InstallFailedException]::new("Failed to verify ${opentofuVersion} with cosign.")
+                throw InstallFailedException::new("Failed to verify ${opentofuVersion} with cosign.")
             }
         } elseif ($verifyMethod -eq "gpg") {
 
@@ -554,24 +554,24 @@ function installStandalone() {
             logInfo "Importing GPG key..."
             $gpgOutput = & $gpgPath --batch --no-tty --no-autostart --homedir $tempPath --import $gpgKeyPath
             if (!$?) {
-                throw [InstallFailedException]::new("Failed to import the GPG key for OpenTofu. (${gpgOutput})")
+                throw InstallFailedException::new("Failed to import the GPG key for OpenTofu. (${gpgOutput})")
             }
 
             logInfo "Trusting GPG key..."
             $gpgOutput = & $gpgPath --batch --no-tty --no-autostart --homedir $tempPath --tofu-policy good $gpgKeyID
             if (!$?) {
-                throw [InstallFailedException]::new("Failed to trust the GPG key for OpenTofu. Possible fingerprint mismatch? (${gpgOutput})")
+                throw InstallFailedException::new("Failed to trust the GPG key for OpenTofu. Possible fingerprint mismatch? (${gpgOutput})")
             }
 
             logInfo "Verifying GPG signature..."
             $gpgOutput = & $gpgPath --batch --no-tty --no-autostart --homedir $tempPath --trust-model tofu --verify $gpgSigPath $sumsPath
             if (!$?) {
-                throw [InstallFailedException]::new("Failed to verify OpenTofu ${opentofuVersion} with GPG. ($?, $LASTEXITCODE, ${gpgOutput})")
+                throw InstallFailedException::new("Failed to verify OpenTofu ${opentofuVersion} with GPG. ($?, $LASTEXITCODE, ${gpgOutput})")
             }
 
             logInfo "Signature verified."
         } elseif ($verifyMethod -ne "-") {
-            throw [InstallFailedException]::new("Bug: unsupported verification method: ${verifyMethod}.")
+            throw InstallFailedException::new("Bug: unsupported verification method: ${verifyMethod}.")
         }
 
         $internalZipFile = Join-Path $tempPath $zipName
@@ -593,18 +593,18 @@ function installStandalone() {
 
                 $argList = @(
                     '-NonInteractive',
-                    '-File', ($scriptCommand | escapePathArgument),
+                    '-File', ($scriptCommand  escapePathArgument),
                     '-internalContinue',
                     '-allUsers',
                     '-installMethod', 'standalone',
-                    '-installPath', ($installPath | escapePathArgument),
-                    '-internalZipFile', ($internalZipFile | escapePathArgument)
+                    '-installPath', ($installPath  escapePathArgument),
+                    '-internalZipFile', ($internalZipFile  escapePathArgument)
                 )
                 if ($skipChangePath) {
                     $argList += '-skipChangePath'
                 }
 
-                $wrapperCmd = "& $scriptCommand $($argList -join ' ') > $($outLog | escapePathArgument) 2> $($errLog | escapePathArgument)"
+                $wrapperCmd = "& $scriptCommand $($argList -join ' ') > $($outLog  escapePathArgument) 2> $($errLog  escapePathArgument)"
                 Set-Content -Path $wrapper -Value $wrapperCmd -Encoding utf8
 
                 $global:startProcessCalled = $true
@@ -614,7 +614,7 @@ function installStandalone() {
                     -Wait `
                     -Passthru `
                     -FilePath 'powershell' `
-                    -ArgumentList @('-NoLogo', '-NoProfile', '-File', ($wrapper | escapePathArgument))
+                    -ArgumentList @('-NoLogo', '-NoProfile', '-File', ($wrapper  escapePathArgument))
 
                 $subprocess.WaitForExit()
                 if (Test-Path $outLog) { Get-Content $outLog }
@@ -622,7 +622,7 @@ function installStandalone() {
                 Remove-Item -Force $wrapper -ErrorAction SilentlyContinue
                 Remove-Item -Recurse -Force $logDir -ErrorAction SilentlyContinue
                 if ($subprocess.ExitCode -ne 0) {
-                    throw [InstallFailedException]::new("Unpack failed. (Exit code ${subprocess.ExitCode})")
+                    throw InstallFailedException::new("Unpack failed. (Exit code ${subprocess.ExitCode})")
                 }
             } else {
                 logWarning "-allUsers specified but privilege escalation is not supported on this platform. Continuing with current privileges."
@@ -644,7 +644,7 @@ function installStandalone() {
         }
     } finally {
         for ($i = 0; $i -le ($dlFiles.Length - 1); $i++) {
-            $target = Join-Path $tempPath $dlFiles[$i]
+            $target = Join-Path $tempPath $dlFiles$i
             if (Test-Path $target) {
                 try {
                     Remove-Item -Force -Recurse $target
@@ -666,22 +666,22 @@ function installStandalone() {
 }
 
 function escapePathArgument {
-    [CmdletBinding()]
+    CmdletBinding()
     param(
-        [Parameter(Mandatory=$true, ValueFromPipeline=$true)
+        Parameter(Mandatory=$true, ValueFromPipeline=$true)
 
 
 
 
 
 
-]
-        [string] $Path
+
+        string $Path
     )
 
     process {
         if ($Path -match '"') {
-            throw [InvalidArgumentException]::new("Invalid path: $Path")
+            throw InvalidArgumentException::new("Invalid path: $Path")
         }
 
         "`"${Path}`""
@@ -689,9 +689,9 @@ function escapePathArgument {
 }
 
 function usage() {
-    $scriptName = $scriptCommand.Split("\")[-1].split("/")[-1]
+    $scriptName = $scriptCommand.Split("\")-1.split("/")-1
     $usageText = @"
-${bold}Usage:${normal} ${scriptName} ${magenta}[OPTIONS]${normal}
+${bold}Usage:${normal} ${scriptName} ${magenta}OPTIONS${normal}
 
 ${bold}${blue}OPTIONS for all installation methods:${normal}
 
@@ -757,16 +757,16 @@ try
     Switch ($installMethod)
     {
         "" {
-            throw [InvalidArgumentException]::new("Please select an installation method by specifying the -installMethod parameter.")
+            throw InvalidArgumentException::new("Please select an installation method by specifying the -installMethod parameter.")
         }
         "standalone" {
             installStandalone
         }
         default {
-            throw [InvalidArgumentException]::new("Invalid value for -installMethod: ${installMethod}")
+            throw InvalidArgumentException::new("Invalid value for -installMethod: ${installMethod}")
         }
     }
-} catch [ExitCodeException] {
+} catch ExitCodeException {
     logError($_.ToString())
     if ($_.Exception.PrintUsage) {
         usage

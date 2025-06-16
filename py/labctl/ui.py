@@ -16,7 +16,7 @@ class LabUI(App):
     CSS_PATH = None
     TITLE = "labctl UI"
 
-    def __init__(self, scripts: list[str], log_path: Path, default_config: Path, recommended_config: Path) -> None:
+    def __init__(self, scripts: liststr, log_path: Path, default_config: Path, recommended_config: Path) -> None:
         super().__init__()
         self.scripts = scripts
         self.log_path = log_path
@@ -39,7 +39,7 @@ class LabUI(App):
         table = DataTable(zebra_stripes=True)
         table.add_columns("Prefix", "Script")
         for name in self.scripts:
-            table.add_row(name[:4], name)
+            table.add_row(name:4, name)
         return table
 
     def build_log_view(self) -> Log:
@@ -60,7 +60,7 @@ class LabUI(App):
 
 def run_ui() -> None:
     """Launch the Textual UI."""
-    repo_root = Path(__file__).resolve().parents[2]
+    repo_root = Path(__file__).resolve().parents2
 
     script_dir = resolve_path("pwsh/runner_scripts")
     if script_dir is None:

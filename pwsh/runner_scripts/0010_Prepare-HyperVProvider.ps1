@@ -1,4 +1,4 @@
-Param([object]$Config)
+Param(object$Config)
 
 
 
@@ -6,60 +6,60 @@ Param([object]$Config)
 
 
 
-Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation//pwsh/modules/LabRunner/" -Force -Force -Force -Force -Force -Force -ForceWrite-CustomLog "Starting $MyInvocation.MyCommand"
+Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\pwsh/modules/LabRunner/" -ForceWrite-CustomLog "Starting $MyInvocation.MyCommand"
 
 if (-not (Get-Command Convert-CerToPem -ErrorAction SilentlyContinue)) {
 function Convert-CerToPem {
-    [CmdletBinding(SupportsShouldProcess)]
+    CmdletBinding(SupportsShouldProcess)
     param(
-        [Parameter(Mandatory)
+        Parameter(Mandatory)
 
 
 
 
 
 
-]
-        [ValidateNotNullOrEmpty()]
-        [string]$CerPath,
-        [Parameter(Mandatory)]
-        [ValidateNotNullOrEmpty()]
-        [string]$PemPath
+
+        ValidateNotNullOrEmpty()
+        string$CerPath,
+        Parameter(Mandatory)
+        ValidateNotNullOrEmpty()
+        string$PemPath
     )
     if (-not $PSCmdlet.ShouldProcess($PemPath, 'Create PEM file')) { return }
 
-    $bytes = [System.IO.File]::ReadAllBytes($CerPath)
+    $bytes = System.IO.File::ReadAllBytes($CerPath)
 
-    $b64   = [System.Convert]::ToBase64String($bytes, 'InsertLineBreaks')
-    "-----BEGIN CERTIFICATE-----`n$b64`n-----END CERTIFICATE-----" | Set-Content -Path $PemPath
+    $b64   = System.Convert::ToBase64String($bytes, 'InsertLineBreaks')
+    "-----BEGIN CERTIFICATE-----`n$b64`n-----END CERTIFICATE-----"  Set-Content -Path $PemPath
 }
 }
 
 if (-not (Get-Command Convert-PfxToPem -ErrorAction SilentlyContinue)) {
 function Convert-PfxToPem {
-    [CmdletBinding(SupportsShouldProcess)]
+    CmdletBinding(SupportsShouldProcess)
     param(
-        [Parameter(Mandatory)
+        Parameter(Mandatory)
 
 
 
 
 
 
-]
-        [ValidateNotNullOrEmpty()]
-        [string]$PfxPath,
-        [securestring]$Password,
-        [Parameter(Mandatory)]
-        [ValidateNotNullOrEmpty()]
-        [string]$CertPath,
-        [Parameter(Mandatory)]
-        [ValidateNotNullOrEmpty()]
-        [string]$KeyPath
+
+        ValidateNotNullOrEmpty()
+        string$PfxPath,
+        securestring$Password,
+        Parameter(Mandatory)
+        ValidateNotNullOrEmpty()
+        string$CertPath,
+        Parameter(Mandatory)
+        ValidateNotNullOrEmpty()
+        string$KeyPath
     )
-    if ([string]::IsNullOrWhiteSpace($PfxPath)) { throw 'PfxPath cannot be null or empty' }
-    if ([string]::IsNullOrWhiteSpace($CertPath)) { throw 'CertPath cannot be null or empty' }
-    if ([string]::IsNullOrWhiteSpace($KeyPath))  { throw 'KeyPath cannot be null or empty' }
+    if (string::IsNullOrWhiteSpace($PfxPath)) { throw 'PfxPath cannot be null or empty' }
+    if (string::IsNullOrWhiteSpace($CertPath)) { throw 'CertPath cannot be null or empty' }
+    if (string::IsNullOrWhiteSpace($KeyPath))  { throw 'KeyPath cannot be null or empty' }
 
     if (-not $PSCmdlet.ShouldProcess($PfxPath, 'Convert PFX to PEM')) { return }
     if (-not (Test-Path $PfxPath) -or ((Get-Item -Path $PfxPath -ErrorAction SilentlyContinue).Length -eq 0)) {
@@ -70,23 +70,23 @@ function Convert-PfxToPem {
         $cert = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2(
             $PfxPath,
             $Password,
-            [System.Security.Cryptography.X509Certificates.X509KeyStorageFlags]::Exportable
+            System.Security.Cryptography.X509Certificates.X509KeyStorageFlags::Exportable
         )
 
-        $certBytes = $cert.Export([System.Security.Cryptography.X509Certificates.X509ContentType]::Cert)
-        $certB64   = [System.Convert]::ToBase64String($certBytes,'InsertLineBreaks')
+        $certBytes = $cert.Export(System.Security.Cryptography.X509Certificates.X509ContentType::Cert)
+        $certB64   = System.Convert::ToBase64String($certBytes,'InsertLineBreaks')
         if ($PSCmdlet.ShouldProcess($CertPath, 'Write certificate PEM')) {
-            "-----BEGIN CERTIFICATE-----`n$certB64`n-----END CERTIFICATE-----" | Set-Content -Path $CertPath
+            "-----BEGIN CERTIFICATE-----`n$certB64`n-----END CERTIFICATE-----"  Set-Content -Path $CertPath
         }
 
         $rsa = $cert.GetRSAPrivateKey()
         $keyBytes = $rsa.ExportPkcs8PrivateKey()
-        $keyB64   = [System.Convert]::ToBase64String($keyBytes,'InsertLineBreaks')
+        $keyB64   = System.Convert::ToBase64String($keyBytes,'InsertLineBreaks')
         if ($PSCmdlet.ShouldProcess($KeyPath, 'Write key PEM')) {
-            "-----BEGIN PRIVATE KEY-----`n$keyB64`n-----END PRIVATE KEY-----" | Set-Content -Path $KeyPath
+            "-----BEGIN PRIVATE KEY-----`n$keyB64`n-----END PRIVATE KEY-----"  Set-Content -Path $KeyPath
         }
     }
-    catch [System.Security.Cryptography.CryptographicException] {
+    catch System.Security.Cryptography.CryptographicException {
         throw "Failed to convert certificate: $($_.Exception.Message)"
     }
     catch {
@@ -97,9 +97,9 @@ function Convert-PfxToPem {
 
 if (-not (Get-Command Get-HyperVProviderVersion -ErrorAction SilentlyContinue)) {
 function Get-HyperVProviderVersion {
-    [CmdletBinding()]
+    CmdletBinding()
     param(
-        [pscustomobject]$Config
+        pscustomobject$Config
     )
 
     
@@ -128,7 +128,7 @@ if ($Config.PrepareHyperVHost -eq $true) {
 
 # Use Config to find the infra repo path early so certificate
 # operations can copy files correctly.
-    $infraRepoPath = if ([string]::IsNullOrWhiteSpace($Config.InfraRepoPath)) {
+    $infraRepoPath = if (string::IsNullOrWhiteSpace($Config.InfraRepoPath)) {
         Join-Path $PSScriptRoot "my-infra"
     } else {
         $Config.InfraRepoPath
@@ -151,7 +151,7 @@ if ($hvFeature.State -ne "Enabled") {
 
 # Check if WinRM is enabled by testing the local WSMan endpoint
 try {
-    Test-WSMan -ComputerName localhost -ErrorAction Stop | Out-Null
+    Test-WSMan -ComputerName localhost -ErrorAction Stop  Out-Null
     Write-CustomLog "WinRM is already enabled."
 }
 catch {
@@ -211,7 +211,7 @@ else {
 $rootCaName = $config.CertificateAuthority.CommonName
 $UserInput = Read-LoggedInput -Prompt "Enter the password for the Root CA certificate" -AsSecureString
 $rootCaPassword = $UserInput
-$rootCaCertificate = Get-ChildItem cert:\LocalMachine\Root | Where-Object {$_.Subject -eq "CN=$rootCaName"}
+$rootCaCertificate = Get-ChildItem cert:\LocalMachine\Root  Where-Object {$_.Subject -eq "CN=$rootCaName"}
 
 if (-not $rootCaCertificate) {
     $cerPath = ".\$rootCaName.cer"
@@ -221,13 +221,13 @@ if (-not $rootCaCertificate) {
 
     if ($cerExists -and $pfxExists) {
         Write-CustomLog "Importing existing Root CA certificates..."
-        Get-ChildItem cert:\LocalMachine\My | Where-Object {$_.subject -eq "CN=$rootCaName"} | Remove-Item -Force -ErrorAction SilentlyContinue
-        Import-PfxCertificate -FilePath $pfxPath -CertStoreLocation Cert:\LocalMachine\Root -Password $rootCaPassword -Exportable -Verbose | Out-Null
-        Import-PfxCertificate -FilePath $pfxPath -CertStoreLocation Cert:\LocalMachine\My -Password $rootCaPassword -Exportable -Verbose | Out-Null
-        $rootCaCertificate = Get-ChildItem cert:\LocalMachine\My | Where-Object {$_.subject -eq "CN=$rootCaName"}
+        Get-ChildItem cert:\LocalMachine\My  Where-Object {$_.subject -eq "CN=$rootCaName"}  Remove-Item -Force -ErrorAction SilentlyContinue
+        Import-PfxCertificate -FilePath $pfxPath -CertStoreLocation Cert:\LocalMachine\Root -Password $rootCaPassword -Exportable -Verbose  Out-Null
+        Import-PfxCertificate -FilePath $pfxPath -CertStoreLocation Cert:\LocalMachine\My -Password $rootCaPassword -Exportable -Verbose  Out-Null
+        $rootCaCertificate = Get-ChildItem cert:\LocalMachine\My  Where-Object {$_.subject -eq "CN=$rootCaName"}
     } else {
         # Cleanup if present
-        Get-ChildItem cert:\LocalMachine\My | Where-Object {$_.subject -eq "CN=$rootCaName"} | Remove-Item -Force -ErrorAction SilentlyContinue
+        Get-ChildItem cert:\LocalMachine\My  Where-Object {$_.subject -eq "CN=$rootCaName"}  Remove-Item -Force -ErrorAction SilentlyContinue
         if ($cerExists) { Remove-Item $cerPath -Force -ErrorAction SilentlyContinue }
         if ($pfxExists) { Remove-Item $pfxPath -Force -ErrorAction SilentlyContinue }
 
@@ -254,11 +254,11 @@ if (-not $rootCaCertificate) {
         Export-PfxCertificate -Cert $rootCaCertificate -FilePath $pfxPath -Password $rootCaPassword -Verbose
 
         # Re-import to Root store & My store
-        Get-ChildItem cert:\LocalMachine\My | Where-Object {$_.subject -eq "CN=$rootCaName"} | Remove-Item -Force -ErrorAction SilentlyContinue
-        Import-PfxCertificate -FilePath $pfxPath -CertStoreLocation Cert:\LocalMachine\Root -Password $rootCaPassword -Exportable -Verbose | Out-Null
-        Import-PfxCertificate -FilePath $pfxPath -CertStoreLocation Cert:\LocalMachine\My -Password $rootCaPassword -Exportable -Verbose | Out-Null
+        Get-ChildItem cert:\LocalMachine\My  Where-Object {$_.subject -eq "CN=$rootCaName"}  Remove-Item -Force -ErrorAction SilentlyContinue
+        Import-PfxCertificate -FilePath $pfxPath -CertStoreLocation Cert:\LocalMachine\Root -Password $rootCaPassword -Exportable -Verbose  Out-Null
+        Import-PfxCertificate -FilePath $pfxPath -CertStoreLocation Cert:\LocalMachine\My -Password $rootCaPassword -Exportable -Verbose  Out-Null
 
-        $rootCaCertificate = Get-ChildItem cert:\LocalMachine\My | Where-Object {$_.subject -eq "CN=$rootCaName"}
+        $rootCaCertificate = Get-ChildItem cert:\LocalMachine\My  Where-Object {$_.subject -eq "CN=$rootCaName"}
     }
 } else {
     Export-Certificate -Cert $rootCaCertificate -FilePath ".\$rootCaName.cer" -Force -Verbose
@@ -266,18 +266,18 @@ if (-not $rootCaCertificate) {
 }
 
 # Create Host Certificate
-$hostName      = [System.Net.Dns]::GetHostName()
+$hostName      = System.Net.Dns::GetHostName()
 $UserInput = Read-LoggedInput -Prompt "Enter the password for the host." -AsSecureString
 $hostPassword = $UserInput
-$hostCertificate = Get-ChildItem cert:\LocalMachine\My | Where-Object {$_.Subject -eq "CN=$hostName"}
+$hostCertificate = Get-ChildItem cert:\LocalMachine\My  Where-Object {$_.Subject -eq "CN=$hostName"}
 
 if (-not $hostCertificate) {
     # Cleanup if present
-    Get-ChildItem cert:\LocalMachine\My | Where-Object {$_.subject -eq "CN=$hostName"} | Remove-Item -Force -ErrorAction SilentlyContinue
+    Get-ChildItem cert:\LocalMachine\My  Where-Object {$_.subject -eq "CN=$hostName"}  Remove-Item -Force -ErrorAction SilentlyContinue
     Remove-Item ".\$hostName.cer" -Force -ErrorAction SilentlyContinue
     Remove-Item ".\$hostName.pfx" -Force -ErrorAction SilentlyContinue
 
-    $dnsNames = @($hostName, "localhost", "127.0.0.1") + [System.Net.Dns]::GetHostByName($env:ComputerName).AddressList.IPAddressToString
+    $dnsNames = @($hostName, "localhost", "127.0.0.1") + System.Net.Dns::GetHostByName($env:ComputerName).AddressList.IPAddressToString
     $params = @{
         Type              = 'Custom'
         DnsName           = $dnsNames
@@ -302,10 +302,10 @@ if (-not $hostCertificate) {
     Export-Certificate -Cert $hostCertificate -FilePath ".\$hostName.cer" -Verbose
     Export-PfxCertificate -Cert $hostCertificate -FilePath ".\$hostName.pfx" -Password $hostPassword -Verbose
 
-    Get-ChildItem cert:\LocalMachine\My | Where-Object {$_.Subject -eq "CN=$hostName"} | Remove-Item -Force -ErrorAction SilentlyContinue
+    Get-ChildItem cert:\LocalMachine\My  Where-Object {$_.Subject -eq "CN=$hostName"}  Remove-Item -Force -ErrorAction SilentlyContinue
     Import-PfxCertificate -FilePath ".\$hostName.pfx" -CertStoreLocation Cert:\LocalMachine\My -Password $hostPassword -Exportable -Verbose
 
-    $hostCertificate = Get-ChildItem cert:\LocalMachine\My | Where-Object {$_.subject -eq "CN=$hostName"}
+    $hostCertificate = Get-ChildItem cert:\LocalMachine\My  Where-Object {$_.subject -eq "CN=$hostName"}
 } else {
     Export-Certificate -Cert $hostCertificate -FilePath ".\$hostName.cer" -Force -Verbose
     Export-PfxCertificate -Cert $hostCertificate -FilePath ".\$hostName.pfx" -Password $hostPassword -Force -Verbose
@@ -327,7 +327,7 @@ if (-not $hostCertificate) {
     Copy-Item ".\$hostName-key.pem" -Destination $dest -Force
 
 Write-CustomLog "Configuring WinRM HTTPS listener..."
-Get-ChildItem wsman:\localhost\Listener\ | Where-Object -Property Keys -eq 'Transport=HTTPS' | Remove-Item -Recurse -ErrorAction SilentlyContinue
+Get-ChildItem wsman:\localhost\Listener\  Where-Object -Property Keys -eq 'Transport=HTTPS'  Remove-Item -Recurse -ErrorAction SilentlyContinue
 New-Item -Path WSMan:\localhost\Listener -Transport HTTPS -Address * -CertificateThumbPrint $($hostCertificate.Thumbprint) -Force -Verbose
 Restart-Service WinRM -Verbose -Force
 
@@ -349,7 +349,7 @@ foreach ($PubNet in $PubNets) {
     Set-NetConnectionProfile -InterfaceIndex $PubNet.InterfaceIndex -NetworkCategory Public
 }
 
-Get-ChildItem wsman:\localhost\Listener\ | Where-Object -Property Keys -eq 'Transport=HTTP' | Remove-Item -Recurse -ErrorAction SilentlyContinue
+Get-ChildItem wsman:\localhost\Listener\  Where-Object -Property Keys -eq 'Transport=HTTP'  Remove-Item -Recurse -ErrorAction SilentlyContinue
 New-Item -Path WSMan:\localhost\Listener -Transport HTTP -Address * -Force -Verbose
 Restart-Service WinRM -Verbose -Force
 
@@ -401,7 +401,7 @@ Expand-Archive -Path $zipPath -DestinationPath $tempDir -Force
 $provider
 $hypervProviderDir = Join-Path $infraRepoPath ".terraform\providers\registry.opentofu.org\taliesins\hyperv\$providerVersion\${os}_${arch}"
 if (!(Test-Path $hypervProviderDir)) {
-    New-Item -ItemType Directory -Force -Path $hypervProviderDir | Out-Null
+    New-Item -ItemType Directory -Force -Path hypervProviderDir | Out-Null
 }
 
 Write-CustomLog "Copying provider exe -> $hypervProviderDir"
@@ -427,11 +427,11 @@ if (Test-Path $tfFile) {
     $escapedHostKeyPath  = $hostKeyPath.Replace('\\', '\\\\')
 
     $content = Get-Content $tfFile -Raw
-    $content = $content -replace '(insecure\s*=\s*)(true|false)', '${1}false'
-    $content = $content -replace '(tls_server_name\s*=\s*")[^"]*"', '${1}' + $hostName + '"'
-    $content = $content -replace '(cacert_path\s*=\s*")[^"]*"', '${1}' + $escapedRootCAPath + '"'
-    $content = $content -replace '(cert_path\s*=\s*")[^"]*"', '${1}' + $escapedHostCertPath + '"'
-    $content = $content -replace '(key_path\s*=\s*")[^"]*"', '${1}' + $escapedHostKeyPath + '"'
+    $content = $content -replace '(insecure\s*=\s*)(truefalse)', '${1}false'
+    $content = $content -replace '(tls_server_name\s*=\s*")^"*"', '${1}' + $hostName + '"'
+    $content = $content -replace '(cacert_path\s*=\s*")^"*"', '${1}' + $escapedRootCAPath + '"'
+    $content = $content -replace '(cert_path\s*=\s*")^"*"', '${1}' + $escapedHostCertPath + '"'
+    $content = $content -replace '(key_path\s*=\s*")^"*"', '${1}' + $escapedHostKeyPath + '"'
     Set-Content -Path $tfFile -Value $content
     Write-CustomLog "Updated providers.tf successfully."
 } else {
@@ -447,6 +447,8 @@ You can now run 'tofu plan'/'tofu apply' in $infraRepoPath.
 Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
 }
 }
+
+
 
 
 

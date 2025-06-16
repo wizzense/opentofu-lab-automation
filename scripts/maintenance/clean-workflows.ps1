@@ -3,8 +3,8 @@
 # This script helps identify and archive redundant or unnecessary workflow files
 
 param(
-    [switch]$Archive,  # When set, moves redundant workflows to an archive folder
-    [switch]$WhatIf    # Show what would happen without making changes
+    switch$Archive,  # When set, moves redundant workflows to an archive folder
+    switch$WhatIf    # Show what would happen without making changes
 )
 
 
@@ -35,7 +35,7 @@ if (-not (Test-Path $workflowDir)) {
 # Check if the archive directory exists, create it if needed and -Archive was specified
 if ($Archive -and -not (Test-Path $archiveDir)) {
     if (-not $WhatIf) {
-        New-Item -ItemType Directory -Path $archiveDir -Force | Out-Null
+        New-Item -ItemType Directory -Path $archiveDir -Force  Out-Null
         Write-Host "Created archive directory: $archiveDir" -ForegroundColor Green
     }
     else {
@@ -44,7 +44,7 @@ if ($Archive -and -not (Test-Path $archiveDir)) {
 }
 
 # Get all workflow files
-$workflows = Get-ChildItem -Path $workflowDir -Filter "*.yml" | Where-Object { $_.Name -ne ".gitkeep" }
+$workflows = Get-ChildItem -Path $workflowDir -Filter "*.yml"  Where-Object { $_.Name -ne ".gitkeep" }
 
 Write-Host "Found $($workflows.Count) workflow files in $workflowDir" -ForegroundColor Cyan
 

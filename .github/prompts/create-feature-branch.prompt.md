@@ -1,7 +1,7 @@
 ---
 description: Create new Git branch and prepare development environment with proper validation
 mode: agent
-tools: ["git", "filesystem", "powershell"]
+tools: "git", "filesystem", "powershell"
 ---
 
 # Create Feature Branch and Setup
@@ -54,8 +54,8 @@ if ($healthResult.TotalErrors -gt 0) {
 ### 2. Create Feature Branch
 ```bash
 # Ensure we're on the correct base branch
-git checkout ${input:baseBranch|main}
-git pull origin ${input:baseBranch|main}
+git checkout ${input:baseBranchmain}
+git pull origin ${input:baseBranchmain}
 
 # Create and switch to new feature branch
 git checkout -b ${input:branchType}/${input:branchName}
@@ -85,7 +85,7 @@ git push -u origin ${input:branchType}/${input:branchName}
 # Create branch info file
 $branchInfo = @{
     branchName = "${input:branchType}/${input:branchName}"
-    baseBranch = "${input:baseBranch|main}"
+    baseBranch = "${input:baseBranchmain}"
     createdDate = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
     creator = git config user.name
     purpose = "${input:branchPurpose}"
@@ -93,7 +93,7 @@ $branchInfo = @{
     relatedIssues = @(${input:relatedIssues})
 }
 
-$branchInfo | ConvertTo-Json -Depth 3 | Set-Content "./.branch-info.json"
+$branchInfo  ConvertTo-Json -Depth 3  Set-Content "./.branch-info.json"
 git add .branch-info.json
 git commit -m "chore: initialize branch ${input:branchType}/${input:branchName}"
 ```
@@ -119,7 +119,7 @@ foreach ($module in $requiredModules) {
 
 # 2. Verify VS Code settings
 if (Test-Path ".vscode/settings.json") {
-    $settings = Get-Content ".vscode/settings.json" | ConvertFrom-Json
+    $settings = Get-Content ".vscode/settings.json"  ConvertFrom-Json
     if ($settings.'github.copilot.chat.codeGeneration.useInstructionFiles') {
         Write-Host " GitHub Copilot instructions enabled" -ForegroundColor Green
     } else {
@@ -146,7 +146,7 @@ if (-not (Test-Path $devWorkspace)) {
 # Quick validation
 function Test-BranchChanges {
     Import-Module "/pwsh/modules/CodeFixer/" -Force
-    `$changedFiles = git diff --name-only ${input:baseBranch|main}
+    `$changedFiles = git diff --name-only ${input:baseBranchmain}
     if (`$changedFiles) {
         Invoke-PowerShellLint -Files `$changedFiles -OutputFormat "CI"
     }
@@ -154,7 +154,7 @@ function Test-BranchChanges {
 
 # Run tests for changed modules
 function Test-ChangedModules {
-    `$changedFiles = git diff --name-only ${input:baseBranch|main}
+    `$changedFiles = git diff --name-only ${input:baseBranchmain}
     `$affectedModules = Get-AffectedModules -Files `$changedFiles
     if (`$affectedModules) {
         Invoke-Pester -Path "./tests/" -Tag `$affectedModules
@@ -163,7 +163,7 @@ function Test-ChangedModules {
 
 # Quick commit with validation
 function Invoke-QuickCommit {
-    param([string]`$Message)
+    param(string`$Message)
     
     # Pre-commit validation
     if (Test-BranchChanges) {
@@ -174,7 +174,7 @@ function Invoke-QuickCommit {
         Write-Host " Commit aborted due to validation failures" -ForegroundColor Red
     }
 }
-"@ | Set-Content "$devWorkspace/dev-utils.ps1"
+"@  Set-Content "$devWorkspace/dev-utils.ps1"
 }
 ```
 
@@ -185,7 +185,7 @@ Write-Host " Running pre-development validation..." -ForegroundColor Yellow
 
 # 1. Code quality baseline
 $baselineResult = Invoke-PowerShellLint -Path "." -PassThru -OutputFormat "JSON"
-$baselineResult | ConvertTo-Json | Set-Content "./.dev-workspace/baseline-lint.json"
+$baselineResult  ConvertTo-Json  Set-Content "./.dev-workspace/baseline-lint.json"
 
 # 2. Test baseline
 try {
@@ -196,7 +196,7 @@ try {
         total = $baselineTests.TotalCount
         timestamp = Get-Date
     }
-    $testBaseline | ConvertTo-Json | Set-Content "./.dev-workspace/baseline-tests.json"
+    $testBaseline  ConvertTo-Json  Set-Content "./.dev-workspace/baseline-tests.json"
 } catch {
     Write-Host " Baseline tests could not be established: $_" -ForegroundColor Yellow
 }
@@ -204,7 +204,7 @@ try {
 # 3. Performance baseline
 try {
     $performanceBaseline = ./scripts/performance/Invoke-PerformanceBenchmarks.ps1 -Quick
-    $performanceBaseline | ConvertTo-Json | Set-Content "./.dev-workspace/baseline-performance.json"
+    $performanceBaseline  ConvertTo-Json  Set-Content "./.dev-workspace/baseline-performance.json"
 } catch {
     Write-Host " Performance baseline could not be established" -ForegroundColor Yellow
 }
@@ -213,10 +213,10 @@ try {
 $docFiles = Get-ChildItem -Path "./docs/" -Filter "*.md" -Recurse
 $docBaseline = @{
     fileCount = $docFiles.Count
-    totalSize = ($docFiles | Measure-Object -Property Length -Sum).Sum
-    lastUpdated = ($docFiles | Sort-Object LastWriteTime -Descending | Select-Object -First 1).LastWriteTime
+    totalSize = ($docFiles  Measure-Object -Property Length -Sum).Sum
+    lastUpdated = ($docFiles  Sort-Object LastWriteTime -Descending  Select-Object -First 1).LastWriteTime
 }
-$docBaseline | ConvertTo-Json | Set-Content "./.dev-workspace/baseline-docs.json"
+$docBaseline  ConvertTo-Json  Set-Content "./.dev-workspace/baseline-docs.json"
 ```
 
 ## Continuous Integration Setup
@@ -232,9 +232,9 @@ name: "Feature Branch Validation - ${input:branchType}/${input:branchName}"
 
 on:
   push:
-    branches: [ ${input:branchType}/${input:branchName} ]
+    branches:  ${input:branchType}/${input:branchName} 
   pull_request:
-    branches: [ ${input:baseBranch|main} ]
+    branches:  ${input:baseBranchmain} 
 
 jobs:
   validate:
@@ -247,7 +247,7 @@ jobs:
           pwsh: true
       - name: "Run Validation"
         shell: pwsh
-        run: |
+        run: 
           Import-Module "/pwsh/modules/LabRunner/" -Force
           Import-Module "/pwsh/modules/CodeFixer/" -Force
           Invoke-ComprehensiveValidation -OutputFormat "CI"
@@ -255,7 +255,7 @@ jobs:
 
 # Only create if this is a long-term feature branch
 if ("${input:branchType}" -eq "feature" -and "${input:longTerm}" -eq "true") {
-    $branchWorkflow | Set-Content "./.github/workflows/branch-${input:branchName}.yml"
+    $branchWorkflow  Set-Content "./.github/workflows/branch-${input:branchName}.yml"
     git add "./.github/workflows/branch-${input:branchName}.yml"
     git commit -m "ci: add branch-specific workflow"
 }
@@ -271,12 +271,12 @@ $guidelines = @"
 ${input:branchPurpose}
 
 ## Development Checklist
-- [ ] All changes follow OpenTofu Lab Automation standards
-- [ ] PowerShell scripts use proper module imports (/pwsh/modules/)
-- [ ] Error handling includes Write-CustomLog usage
-- [ ] Cross-platform compatibility maintained
-- [ ] Tests updated for new functionality
-- [ ] Documentation updated as needed
+-   All changes follow OpenTofu Lab Automation standards
+-   PowerShell scripts use proper module imports (/pwsh/modules/)
+-   Error handling includes Write-CustomLog usage
+-   Cross-platform compatibility maintained
+-   Tests updated for new functionality
+-   Documentation updated as needed
 
 ## Before Each Commit
 ```powershell
@@ -313,7 +313,7 @@ ${input:relatedIssues}
 ${input:estimatedCompletion}
 "@
 
-$guidelines | Set-Content "./.dev-workspace/DEVELOPMENT-GUIDELINES.md"
+$guidelines  Set-Content "./.dev-workspace/DEVELOPMENT-GUIDELINES.md"
 ```
 
 ### 8. Final Setup Validation
@@ -323,19 +323,19 @@ Write-Host " Validating complete branch setup..." -ForegroundColor Green
 
 $setupValidation = @{
     branchCreated = (git branch --show-current) -eq "${input:branchType}/${input:branchName}"
-    branchTracked = (git remote show origin | Select-String "${input:branchType}/${input:branchName}") -ne $null
+    branchTracked = (git remote show origin  Select-String "${input:branchType}/${input:branchName}") -ne $null
     modulesLoaded = (Get-Module LabRunner) -and (Get-Module CodeFixer)
     devWorkspaceCreated = Test-Path "./.dev-workspace"
     branchInfoCreated = Test-Path "./.branch-info.json"
     guidelinesCreated = Test-Path "./.dev-workspace/DEVELOPMENT-GUIDELINES.md"
 }
 
-$setupValidation | ConvertTo-Json | Set-Content "./.dev-workspace/setup-validation.json"
+$setupValidation  ConvertTo-Json  Set-Content "./.dev-workspace/setup-validation.json"
 
-$failedChecks = $setupValidation.GetEnumerator() | Where-Object { -not $_.Value }
+$failedChecks = $setupValidation.GetEnumerator()  Where-Object { -not $_.Value }
 if ($failedChecks) {
     Write-Host " Setup validation failed:" -ForegroundColor Red
-    $failedChecks | ForEach-Object { Write-Host "  - $($_.Key)" -ForegroundColor Red }
+    $failedChecks  ForEach-Object { Write-Host "  - $($_.Key)" -ForegroundColor Red }
 } else {
     Write-Host " Branch setup completed successfully!" -ForegroundColor Green
     Write-Host " Development guidelines: ./.dev-workspace/DEVELOPMENT-GUIDELINES.md" -ForegroundColor Cyan
@@ -359,9 +359,9 @@ Write-CustomLog "Created feature branch: ${input:branchType}/${input:branchName}
 ## Reference Instructions
 
 This prompt references:
-- [Git Collaboration](../instructions/git-collaboration.instructions.md)
-- [Maintenance Standards](../instructions/maintenance-standards.instructions.md)
-- [PowerShell Standards](../instructions/powershell-standards.instructions.md)
+- Git Collaboration(../instructions/git-collaboration.instructions.md)
+- Maintenance Standards(../instructions/maintenance-standards.instructions.md)
+- PowerShell Standards(../instructions/powershell-standards.instructions.md)
 
 Please specify:
 1. Branch type and descriptive name

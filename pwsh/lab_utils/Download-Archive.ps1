@@ -1,5 +1,5 @@
 function Get-GhDownloadArgs {
-    [CmdletBinding()]
+    CmdletBinding()
     param()
 
     
@@ -22,19 +22,19 @@ if (Get-Command gh -ErrorAction SilentlyContinue) {
 }
 
 function Download-Archive {
-    [CmdletBinding()]
+    CmdletBinding()
     param(
-        [Parameter(Mandatory)
+        Parameter(Mandatory)
 
 
 
 
 
 
-][string]$Url,
-        [Parameter(Mandatory)][string]$Destination,
-        [switch]$Required,
-        [switch]$UseGh
+string$Url,
+        Parameter(Mandatory)string$Destination,
+        switch$Required,
+        switch$UseGh
     )
 
     if ($UseGh) {

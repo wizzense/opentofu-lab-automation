@@ -11,7 +11,7 @@ print("Loading configuration schema...")
 class ConfigField:
     """Simple configuration field definition"""
     def __init__(self, name: str, display_name: str, field_type: str, default_value: Any, 
-                 help_text: str, required: bool = False, choices: Optional[List[str]] = None,
+                 help_text: str, required: bool = False, choices: OptionalListstr = None,
                  category: str = "General"):
         self.name = name
         self.display_name = display_name
@@ -19,7 +19,7 @@ class ConfigField:
         self.default_value = default_value
         self.help_text = help_text
         self.required = required
-        self.choices = choices or []
+        self.choices = choices or 
         self.category = category
 
 class ConfigSchema:
@@ -30,7 +30,7 @@ class ConfigSchema:
         self.sections = self._build_schema()
         print(f"ConfigSchema initialized with {len(self.sections)} sections")
     
-    def _build_schema(self) -> Dict[str, List[ConfigField]]:
+    def _build_schema(self) -> Dictstr, ListConfigField:
         """Build the configuration schema organized by sections"""
         
         # Platform-specific defaults
@@ -38,7 +38,7 @@ class ConfigSchema:
         default_temp = "C:\\Temp" if is_windows else "/tmp"
         
         return {
-            "Repository Settings": [
+            "Repository Settings": 
                 ConfigField(
                     name="RepoUrl",
                     display_name="Repository URL",
@@ -60,12 +60,12 @@ class ConfigSchema:
                     display_name="Output Verbosity",
                     field_type="choice",
                     default_value="normal",
-                    choices=["silent", "normal", "detailed"],
+                    choices="silent", "normal", "detailed",
                     help_text="Control the amount of output during deployment."
                 )
-            ],
+            ,
             
-            "System Configuration": [
+            "System Configuration": 
                 ConfigField(
                     name="ComputerName",
                     display_name="Computer Name",
@@ -87,10 +87,10 @@ class ConfigSchema:
                     default_value=True,
                     help_text="Install PowerShell 7+ (cross-platform)."
                 )
-            ]
+            
         }
     
-    def get_field_by_name(self, name: str) -> Optional[ConfigField]:
+    def get_field_by_name(self, name: str) -> OptionalConfigField:
         """Get a configuration field by name"""
         for section_fields in self.sections.values():
             for field in section_fields:
@@ -98,17 +98,17 @@ class ConfigSchema:
                     return field
         return None
     
-    def get_defaults(self) -> Dict[str, Any]:
+    def get_defaults(self) -> Dictstr, Any:
         """Get dictionary of all default values"""
         defaults = {}
         for section_fields in self.sections.values():
             for field in section_fields:
-                defaults[field.name] = field.default_value
+                defaultsfield.name = field.default_value
         return defaults
     
-    def validate_config(self, config: Dict[str, Any]) -> List[str]:
+    def validate_config(self, config: Dictstr, Any) -> Liststr:
         """Validate configuration and return list of errors"""
-        errors = []
+        errors = 
         
         for section_fields in self.sections.values():
             for field in section_fields:
@@ -116,7 +116,7 @@ class ConfigSchema:
                     errors.append(f"Required field '{field.display_name}' is missing")
                 
                 if field.name in config:
-                    value = config[field.name]
+                    value = configfield.name
                     
                     # Validate choices
                     if field.choices and value not in field.choices:
@@ -131,20 +131,20 @@ if __name__ == "__main__":
     print("Testing ConfigSchema...")
     try:
         schema = ConfigSchema()
-        print(f"✓ Schema created with {len(schema.sections)} sections")
+        print(f" Schema created with {len(schema.sections)} sections")
         
         defaults = schema.get_defaults()
-        print(f"✓ Got {len(defaults)} default values")
+        print(f" Got {len(defaults)} default values")
         
         # Test validation
         test_config = {"RepoUrl": "https://example.com", "LocalPath": "/tmp"}
         errors = schema.validate_config(test_config)
-        print(f"✓ Validation test: {len(errors)} errors")
+        print(f" Validation test: {len(errors)} errors")
         
-        print("✓ ConfigSchema test completed successfully")
+        print(" ConfigSchema test completed successfully")
         
     except Exception as e:
-        print(f"✗ Error: {e}")
+        print(f" Error: {e}")
         import traceback
         traceback.print_exc()
 

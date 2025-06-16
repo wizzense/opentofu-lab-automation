@@ -17,8 +17,8 @@ jobs:
   runs-on: ubuntu-latest
   steps:
       - name: Merge eligible PRs
-  run: |
- for pr in $(gh pr list --state open --json number,mergeable -q '.[] | select(.mergeable=="MERGEABLE") | .number'); do
+  run: 
+ for pr in $(gh pr list --state open --json number,mergeable -q '.  select(.mergeable=="MERGEABLE")  .number'); do
  echo "Attempting to merge PR #$pr..."
  if ! gh pr merge "$pr" --merge --auto --delete-branch; then
  echo "Failed to merge PR #$pr" >&2

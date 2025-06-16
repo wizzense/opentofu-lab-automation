@@ -37,12 +37,12 @@ PROJECT_NAME = "OpenTofu Lab Automation"
 
 # Console colors for cross-platform output
 class Colors:
-    RED = '\033[0;31m'
-    GREEN = '\033[0;32m'
-    YELLOW = '\033[1;33m'
-    BLUE = '\033[0;34m'
-    BOLD = '\033[1m'
-    NC = '\033[0m'
+    RED = '\0330;31m'
+    GREEN = '\0330;32m'
+    YELLOW = '\0331;33m'
+    BLUE = '\0330;34m'
+    BOLD = '\0331m'
+    NC = '\0330m'
     
     @classmethod
     def disable_on_windows(cls):
@@ -68,11 +68,11 @@ class BootstrapInstaller:
         
     def _detect_python(self) -> str:
         """Detect the best Python command to use"""
-        candidates = ['python3', 'python']
+        candidates = 'python3', 'python'
         
         for cmd in candidates:
             try:
-                result = subprocess.run([cmd, '--version'], 
+                result = subprocess.run(cmd, '--version', 
                                       capture_output=True, text=True, timeout=5)
                 if result.returncode == 0 and 'Python 3.' in result.stdout:
                     return cmd
@@ -90,16 +90,16 @@ class BootstrapInstaller:
         print(f"{Colors.NC}")
     
     def _print_success(self, message: str):
-        print(f"{Colors.GREEN}✅ {message}{Colors.NC}")
+        print(f"{Colors.GREEN}PASS {message}{Colors.NC}")
     
     def _print_error(self, message: str):
-        print(f"{Colors.RED}❌ {message}{Colors.NC}")
+        print(f"{Colors.RED}FAIL {message}{Colors.NC}")
     
     def _print_info(self, message: str):
-        print(f"{Colors.BLUE}ℹ️  {message}{Colors.NC}")
+        print(f"{Colors.BLUE}INFO  {message}{Colors.NC}")
     
     def _print_warning(self, message: str):
-        print(f"{Colors.YELLOW}⚠️  {message}{Colors.NC}")
+        print(f"{Colors.YELLOW}WARN  {message}{Colors.NC}")
     
     def create_config_file(self) -> bool:
         """Create default configuration file"""
@@ -146,7 +146,7 @@ import subprocess
 from pathlib import Path
 
 def main():
-    print("🚀 OpenTofu Lab Deployment")
+    print(" OpenTofu Lab Deployment")
     print("=" * 40)
     
     # Load config
@@ -154,18 +154,18 @@ def main():
     if config_file.exists():
         with open(config_file) as f:
             config = json.load(f)
-        print(f"✅ Loaded config: {config_file}")
+        print(f"PASS Loaded config: {config_file}")
     else:
-        print("❌ No configuration found. Run bootstrap.py first.")
+        print("FAIL No configuration found. Run bootstrap.py first.")
         return 1
     
     # Basic deployment simulation
     repo_url = config.get("deployment", {}).get("repo_url", "")
     local_path = config.get("deployment", {}).get("local_path", "")
     
-    print(f"📥 Repository: {repo_url}")
-    print(f"📁 Local path: {local_path}")
-    print("🔧 This is a minimal deployment demo.")
+    print(f"� Repository: {repo_url}")
+    print(f"� Local path: {local_path}")
+    print(" This is a minimal deployment demo.")
     print("   Full deployment requires PowerShell modules and OpenTofu/Terraform.")
     
     return 0
@@ -208,7 +208,7 @@ class SimpleGUI:
     
     def setup_ui(self):
         # Header
-        header = ttk.Label(self.root, text="🚀 OpenTofu Lab Automation", 
+        header = ttk.Label(self.root, text=" OpenTofu Lab Automation", 
                           font=("Arial", 16, "bold"))
         header.pack(pady=20)
         
@@ -248,19 +248,19 @@ class SimpleGUI:
     
     def deploy_lab(self):
         self.status.config(text="Deploying...", foreground="orange")
-        self.log("🚀 Starting deployment...")
+        self.log(" Starting deployment...")
         self.log("   This is a demo - full deployment requires PowerShell modules")
         self.status.config(text="Demo Complete", foreground="green")
     
     def health_check(self):
-        self.log("🔍 Running health check...")
+        self.log("� Running health check...")
         config_file = Path("configs/default-config.json")
         if config_file.exists():
-            self.log("✅ Configuration file found")
+            self.log("PASS Configuration file found")
         else:
-            self.log("❌ Configuration file missing")
-        self.log("✅ Python environment OK")
-        self.log("✅ GUI components working")
+            self.log("FAIL Configuration file missing")
+        self.log("PASS Python environment OK")
+        self.log("PASS GUI components working")
     
     def show_settings(self):
         messagebox.showinfo("Settings", "Settings configuration coming soon!\\nFor now, edit configs/default-config.json manually.")
@@ -275,7 +275,7 @@ def main():
     try:
         import tkinter
     except ImportError:
-        print("❌ tkinter not available. GUI mode requires tkinter.")
+        print("FAIL tkinter not available. GUI mode requires tkinter.")
         print("Install instructions:")
         print("  Ubuntu/Debian: sudo apt install python3-tk")
         print("  CentOS/RHEL: sudo yum install tkinter") 
@@ -308,7 +308,7 @@ if __name__ == "__main__":
         
         # Check Python version
         try:
-            version_output = subprocess.run([self.python_cmd, '--version'], 
+            version_output = subprocess.run(self.python_cmd, '--version', 
                                           capture_output=True, text=True)
             if version_output.returncode == 0:
                 self._print_success(f"Python found: {version_output.stdout.strip()}")
@@ -321,7 +321,7 @@ if __name__ == "__main__":
         
         # Check tkinter for GUI
         try:
-            subprocess.run([self.python_cmd, '-c', 'import tkinter'], 
+            subprocess.run(self.python_cmd, '-c', 'import tkinter', 
                          capture_output=True, check=True)
             self._print_success("GUI support (tkinter) available")
         except subprocess.CalledProcessError:
@@ -349,14 +349,14 @@ if __name__ == "__main__":
         """Show interactive menu"""
         self._print_header(f"{PROJECT_NAME} - Bootstrap Installer")
         
-        options = [
+        options = 
             ("1", "Install Components", "install"),
             ("2", "Deploy Lab", "deploy"),
             ("3", "Launch GUI", "gui"),
             ("4", "Health Check", "health"),
             ("5", "Show Help", "help"),
             ("q", "Quit", "quit")
-        ]
+        
         
         print("Select an option:")
         for key, description, _ in options:
@@ -381,7 +381,7 @@ if __name__ == "__main__":
             return False
         
         try:
-            result = subprocess.run([self.python_cmd, str(deploy_file)])
+            result = subprocess.run(self.python_cmd, str(deploy_file))
             return result.returncode == 0
         except Exception as e:
             self._print_error(f"Deployment failed: {e}")
@@ -396,7 +396,7 @@ if __name__ == "__main__":
             return False
         
         try:
-            result = subprocess.run([self.python_cmd, str(gui_file)])
+            result = subprocess.run(self.python_cmd, str(gui_file))
             return result.returncode == 0
         except Exception as e:
             self._print_error(f"GUI launch failed: {e}")
@@ -474,7 +474,7 @@ def main():
     
     parser = argparse.ArgumentParser(description=f"{PROJECT_NAME} - Bootstrap Installer")
     parser.add_argument('action', nargs='?',
-                       choices=['install', 'deploy', 'gui', 'health', 'help'],
+                       choices='install', 'deploy', 'gui', 'health', 'help',
                        help='Action to perform')
     
     args = parser.parse_args()

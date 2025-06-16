@@ -27,28 +27,28 @@
 #>
 
 param(
-    [ValidateSet('launcher', 'gui', 'deploy', 'all')]
-    [string]$Component = 'launcher',
-    [switch]$NoMenu
+    ValidateSet('launcher', 'gui', 'deploy', 'all')
+    string$Component = 'launcher',
+    switch$NoMenu
 )
 
 # Cross-platform console colors
 $script:Colors = @{
-    Red = if ($PSVersionTable.Platform -eq 'Win32NT') { 'Red' } else { "`e[31m" }
-    Green = if ($PSVersionTable.Platform -eq 'Win32NT') { 'Green' } else { "`e[32m" }
-    Yellow = if ($PSVersionTable.Platform -eq 'Win32NT') { 'Yellow' } else { "`e[33m" }
-    Blue = if ($PSVersionTable.Platform -eq 'Win32NT') { 'Blue' } else { "`e[34m" }
-    Reset = if ($PSVersionTable.Platform -eq 'Win32NT') { 'White' } else { "`e[0m" }
+    Red = if ($PSVersionTable.Platform -eq 'Win32NT') { 'Red' } else { "`e31m" }
+    Green = if ($PSVersionTable.Platform -eq 'Win32NT') { 'Green' } else { "`e32m" }
+    Yellow = if ($PSVersionTable.Platform -eq 'Win32NT') { 'Yellow' } else { "`e33m" }
+    Blue = if ($PSVersionTable.Platform -eq 'Win32NT') { 'Blue' } else { "`e34m" }
+    Reset = if ($PSVersionTable.Platform -eq 'Win32NT') { 'White' } else { "`e0m" }
 }
 
 function Write-ColorOutput {
-    param([string]$Message, [string]$Color = 'White')
+    param(string$Message, string$Color = 'White')
     
     if ($PSVersionTable.Platform -eq 'Win32NT') {
         Write-Host $Message -ForegroundColor $Color
     } else {
-        $colorCode = $script:Colors[$Color]
-        $resetCode = $script:Colors['Reset']
+        $colorCode = $script:Colors$Color
+        $resetCode = $script:Colors'Reset'
         Write-Host "$colorCode$Message$resetCode"
     }
 }
@@ -86,11 +86,11 @@ function Test-InternetConnectivity {
 
 function Download-File {
     param(
-        [string]$Url,
-        [string]$DestinationPath
+        string$Url,
+        string$DestinationPath
     )
     
-    Write-ColorOutput "📥 Downloading: $DestinationPath" 'Blue'
+    Write-ColorOutput "� Downloading: $DestinationPath" 'Blue'
     
     try {
         # Try modern method first
@@ -106,14 +106,14 @@ function Download-File {
         }
         
         if (Test-Path $DestinationPath) {
-            Write-ColorOutput "✅ Downloaded successfully: $DestinationPath" 'Green'
+            Write-ColorOutput "PASS Downloaded successfully: $DestinationPath" 'Green'
             return $true
         } else {
             throw "File not found after download"
         }
     }
     catch {
-        Write-ColorOutput "❌ Download failed: $_" 'Red'
+        Write-ColorOutput "FAIL Download failed: $_" 'Red'
         return $false
     }
 }
@@ -129,7 +129,7 @@ function Show-Header {
 function Show-PlatformInfo {
     $platform = Get-PlatformInfo
     
-    Write-ColorOutput "🖥️  Platform Information:" 'Yellow'
+    Write-ColorOutput "�  Platform Information:" 'Yellow'
     Write-ColorOutput "   OS: $($platform.Type)" 'White'
     Write-ColorOutput "   PowerShell: $($platform.PSVersion)" 'White'
     Write-ColorOutput "   Architecture: $($platform.Architecture)" 'White'
@@ -160,19 +160,19 @@ function Get-ComponentUrls {
 }
 
 function Install-Components {
-    param([string]$ComponentType)
+    param(string$ComponentType)
     
     $urls = Get-ComponentUrls
-    $componentUrls = $urls[$ComponentType]
+    $componentUrls = $urls$ComponentType
     
     if (-not $componentUrls) {
-        Write-ColorOutput "❌ Unknown component: $ComponentType" 'Red'
+        Write-ColorOutput "FAIL Unknown component: $ComponentType" 'Red'
         return $false
     }
     
     $allSuccess = $true
     foreach ($file in $componentUrls.Keys) {
-        $url = $componentUrls[$file]
+        $url = $componentUrls$file
         if (-not (Download-File -Url $url -DestinationPath $file)) {
             $allSuccess = $false
         }
@@ -188,7 +188,7 @@ function Test-PythonAvailability {
         try {
             $version = & $cmd --version 2>&1
             if ($LASTEXITCODE -eq 0 -and $version -match 'Python 3\.\d+') {
-                Write-ColorOutput "✅ Python found: $version" 'Green'
+                Write-ColorOutput "PASS Python found: $version" 'Green'
                 return $cmd
             }
         }
@@ -197,15 +197,15 @@ function Test-PythonAvailability {
         }
     }
     
-    Write-ColorOutput "⚠️  Python 3.7+ not found" 'Yellow'
+    Write-ColorOutput "WARN  Python 3.7+ not found" 'Yellow'
     return $null
 }
 
 function Show-PostInstallInstructions {
-    param([string]$PythonCmd)
+    param(string$PythonCmd)
     
     Write-ColorOutput "" 'White'
-    Write-ColorOutput "🎯 Next Steps:" 'Green'
+    Write-ColorOutput " Next Steps:" 'Green'
     
     if ($PythonCmd) {
         Write-ColorOutput "   1. Run: $PythonCmd launcher.py" 'White'
@@ -226,7 +226,7 @@ function Show-PostInstallInstructions {
     }
     
     Write-ColorOutput "" 'White'
-    Write-ColorOutput "📚 Available Commands:" 'Blue'
+    Write-ColorOutput "� Available Commands:" 'Blue'
     Write-ColorOutput "   launcher.py          # Interactive menu" 'White'
     Write-ColorOutput "   launcher.py deploy   # Deploy lab environment" 'White'
     Write-ColorOutput "   launcher.py gui      # Launch GUI interface" 'White'
@@ -238,23 +238,23 @@ function main {
     Show-PlatformInfo
     
     # Check internet connectivity
-    Write-ColorOutput "🌐 Checking internet connectivity..." 'Blue'
+    Write-ColorOutput "� Checking internet connectivity..." 'Blue'
     if (-not (Test-InternetConnectivity)) {
-        Write-ColorOutput "❌ No internet connection. Please check your network." 'Red'
+        Write-ColorOutput "FAIL No internet connection. Please check your network." 'Red'
         return 1
     }
-    Write-ColorOutput "✅ Internet connection confirmed" 'Green'
+    Write-ColorOutput "PASS Internet connection confirmed" 'Green'
     Write-ColorOutput "" 'White'
     
     # Download components
-    Write-ColorOutput "📦 Downloading components..." 'Blue'
+    Write-ColorOutput "� Downloading components..." 'Blue'
     if (-not (Install-Components -ComponentType $Component)) {
-        Write-ColorOutput "❌ Download failed. Please try again later." 'Red'
+        Write-ColorOutput "FAIL Download failed. Please try again later." 'Red'
         return 1
     }
     
     Write-ColorOutput "" 'White'
-    Write-ColorOutput "✅ Download completed successfully!" 'Green'
+    Write-ColorOutput "PASS Download completed successfully!" 'Green'
     
     # Check Python
     $pythonCmd = Test-PythonAvailability
@@ -265,7 +265,7 @@ function main {
     # Auto-launch if not in NoMenu mode and Python is available
     if (-not $NoMenu -and $pythonCmd -and (Test-Path 'launcher.py')) {
         Write-ColorOutput "" 'White'
-        Write-ColorOutput "🚀 Launching interactive menu..." 'Green'
+        Write-ColorOutput " Launching interactive menu..." 'Green'
         & $pythonCmd 'launcher.py'
     }
     

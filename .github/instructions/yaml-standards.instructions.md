@@ -14,9 +14,9 @@ Always follow these YAML standards:
 name: "Workflow Name"
 on:
   push:
-    branches: [ main, develop ]
+    branches:  main, develop 
   pull_request:
-    branches: [ main ]
+    branches:  main 
 
 jobs:
   # Job names use kebab-case
@@ -71,7 +71,7 @@ Use consistent PowerShell execution patterns:
 ```yaml
 - name: "Execute PowerShell Script"
   shell: pwsh
-  run: |
+  run: 
     $ErrorActionPreference = "Stop"
     Import-Module "./pwsh/modules/LabRunner/" -Force
     
@@ -123,7 +123,7 @@ Include proper error handling and reporting:
 ```yaml
 - name: "Execute with Error Handling"
   shell: pwsh
-  run: |
+  run: 
     try {
       # Your operation
       Write-Host "Operation successful" -ForegroundColor Green
@@ -141,7 +141,7 @@ Support multiple platforms when needed:
 ```yaml
 strategy:
   matrix:
-    os: [ ubuntu-latest, windows-latest, macos-latest ]
+    os:  ubuntu-latest, windows-latest, macos-latest 
     include:
       - os: ubuntu-latest
         shell: pwsh
@@ -155,7 +155,7 @@ runs-on: ${{ matrix.os }}
 steps:
   - name: "Cross-Platform Setup"
     shell: ${{ matrix.shell }}
-    run: |
+    run: 
       # Platform-agnostic PowerShell code
 ```
 
@@ -178,7 +178,7 @@ env:
   
 # Validate inputs
 - name: "Validate Inputs"
-  run: |
+  run: 
     if (-not $env:REQUIRED_VAR) {
       throw "Required variable not set"
     }

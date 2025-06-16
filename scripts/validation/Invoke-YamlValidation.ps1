@@ -18,12 +18,12 @@
 #>
 
 param(
- [ValidateSet("Check", "Fix", "Report")]
- [string]$Mode = "Check",
+ ValidateSet("Check", "Fix", "Report")
+ string$Mode = "Check",
  
- [string]$Path = ".github/workflows",
+ string$Path = ".github/workflows",
  
- [switch]$Verbose
+ switch$Verbose
 )
 
 $ErrorActionPreference = "Continue"
@@ -50,7 +50,7 @@ function Get-PythonCommand {
  $programFiles = @($env:ProgramFiles, ${env:ProgramFiles(x86)}, $env:LocalAppData)
  foreach ($pf in $programFiles) {
  if ($pf) {
- Get-ChildItem -Path $pf -Filter "Python*" -Directory -ErrorAction SilentlyContinue | 
+ Get-ChildItem -Path $pf -Filter "Python*" -Directory -ErrorAction SilentlyContinue  
  ForEach-Object {
  $pythonExe = Join-Path $_.FullName "python.exe"
  if (Test-Path $pythonExe) {
@@ -82,7 +82,7 @@ function Test-YamlLintAvailable {
  return $true
  }
  catch {
- Write-Host "[WARN] yamllint not available, installing..." -ForegroundColor Yellow
+ Write-Host "WARN yamllint not available, installing..." -ForegroundColor Yellow
  try {
  $pythonCmd = Get-PythonCommand
  Write-Host "Using Python: $pythonCmd" -ForegroundColor Cyan
@@ -100,18 +100,18 @@ function Test-YamlLintAvailable {
  return $true
  }
  catch {
- Write-Host "[FAIL] Failed to install yamllint: $_" -ForegroundColor Red
+ Write-Host "FAIL Failed to install yamllint: $_" -ForegroundColor Red
  return $false
  }
  }
 }
 
 function Get-YamlFiles {
- param([string]$SearchPath)
+ param(string$SearchPath)
  
  $yamlFiles = @()
  if (Test-Path $SearchPath) {
- $yamlFiles = Get-ChildItem -Path $SearchPath -Recurse -Include "*.yml", "*.yaml" | Where-Object { 
+ $yamlFiles = Get-ChildItem -Path $SearchPath -Recurse -Include "*.yml", "*.yaml"  Where-Object { 
      !$_.PSIsContainer -and 
      $_.Name -notlike "*.backup*" -and 
      $_.Name -notlike "*archive*" -and
@@ -124,9 +124,9 @@ function Get-YamlFiles {
 
 function Test-YamlSyntax {
  param(
- [Parameter(Mandatory=$true)]
- [string]$FilePath,
- [int]$MaxRetries = 3
+ Parameter(Mandatory=$true)
+ string$FilePath,
+ int$MaxRetries = 3
  )
  
  $retryCount = 0
@@ -151,8 +151,8 @@ except Exception as e:
 "@
  
  # Save the validation script to a temporary file
- $tempScript = [System.IO.Path]::GetTempFileName() + ".py"
- $pythonCode | Out-File -FilePath $tempScript -Encoding UTF8
+ $tempScript = System.IO.Path::GetTempFileName() + ".py"
+ pythonCode | Out-File -FilePath $tempScript -Encoding UTF8
  
  try {
  $pythonTest = & $pythonCmd $tempScript 2>&1
@@ -180,7 +180,7 @@ except Exception as e:
  $retryCount++
  
  if ($retryCount -lt $MaxRetries) {
- Write-Host "[WARN] YAML syntax check attempt $retryCount failed, retrying..." -ForegroundColor Yellow
+ Write-Host "WARN YAML syntax check attempt $retryCount failed, retrying..." -ForegroundColor Yellow
  Start-Sleep -Seconds 1
  }
  }
@@ -194,10 +194,10 @@ except Exception as e:
 
 function Invoke-YamlLint {
  param(
- [Parameter(Mandatory=$true)]
- [string]$FilePath,
+ Parameter(Mandatory=$true)
+ string$FilePath,
  
- [int]$MaxRetries = 3
+ int$MaxRetries = 3
  )
  
  # Ensure the config file exists
@@ -237,20 +237,20 @@ function Invoke-YamlLint {
  $retryCount++
  
  if ($retryCount -lt $MaxRetries) {
- Write-Host "[WARN] YAML lint attempt $retryCount failed, retrying..." -ForegroundColor Yellow
+ Write-Host "WARN YAML lint attempt $retryCount failed, retrying..." -ForegroundColor Yellow
  Start-Sleep -Seconds 1
  }
  }
  } while (-not $success -and $retryCount -lt $MaxRetries)
  
  if (-not $success) {
- Write-Host "[FAIL] YAML lint failed after $MaxRetries attempts: $lastError" -ForegroundColor Red
+ Write-Host "FAIL YAML lint failed after $MaxRetries attempts: $lastError" -ForegroundColor Red
  throw $lastError
  }
 }
 
 function Repair-YamlFile {
- param([string]$FilePath)
+ param(string$FilePath)
  
  Write-Host " Auto-fixing YAML file: $FilePath" -ForegroundColor Yellow
  
@@ -264,7 +264,7 @@ function Repair-YamlFile {
  $fixesApplied += "Removed trailing whitespace"
  } # Fix 2: Fix truthy values while preserving GitHub Actions keywords
  # Skip this fix for GitHub workflow files
- $isWorkflow = $FilePath -match '\.github[/\\]workflows[/\\].*\.ya?ml$'
+ $isWorkflow = $FilePath -match '\.github/\\workflows/\\.*\.ya?ml$'
  
  if (-not $isWorkflow) {
  # Define truthy value replacements as an array of replacement pairs
@@ -282,8 +282,8 @@ function Repair-YamlFile {
  )
  
  foreach ($replacement in $truthyReplacements) {
- if ($content -match [regex]::Escape($replacement.Pattern)) {
- $content = $content -replace [regex]::Escape($replacement.Pattern), $replacement.Replace
+ if ($content -match regex::Escape($replacement.Pattern)) {
+ $content = $content -replace regex::Escape($replacement.Pattern), $replacement.Replace
  $fixesApplied += "Fixed truthy value: $($replacement.Pattern) -> $($replacement.Replace)"
  }
  }
@@ -305,8 +305,8 @@ function Repair-YamlFile {
  # This logic was destroying valid YAML indentation by incorrectly
  # calculating spaces and breaking GitHub Actions workflow structure
  # if ($line -match '^( {3,})' -and $line -notmatch '^( {2})*') {
- #     $leadingSpaces = ($Matches[1].Length)
- #     $correctSpaces = [Math]::Floor($leadingSpaces / 2) * 2
+ #     $leadingSpaces = ($Matches1.Length)
+ #     $correctSpaces = Math::Floor($leadingSpaces / 2) * 2
  #     $line = (' ' * $correctSpaces) + $line.TrimStart()
  #     if ($fixesApplied -notcontains "Fixed indentation spacing") {
  #         $fixesApplied += "Fixed indentation spacing"
@@ -333,20 +333,20 @@ function Repair-YamlFile {
  # Apply fixes if any were made
  if ($content -ne $originalContent) {
  Set-Content $FilePath $content -NoNewline -Encoding UTF8
- Write-Host " [PASS] Applied $($fixesApplied.Count) fixes:" -ForegroundColor Green
+ Write-Host " PASS Applied $($fixesApplied.Count) fixes:" -ForegroundColor Green
  foreach ($fix in $fixesApplied) {
  Write-Host " - $fix" -ForegroundColor White
  }
  return $true
  }
  else {
- Write-Host " [PASS] No fixes needed" -ForegroundColor Green
+ Write-Host " PASS No fixes needed" -ForegroundColor Green
  return $false
  }
 }
 
 function Invoke-YamlValidation {
- param([string]$Mode, [string]$Path)
+ param(string$Mode, string$Path)
  
  $results = @{
  TotalFiles = 0
@@ -359,7 +359,7 @@ function Invoke-YamlValidation {
  
  # Check if yamllint is available
  if (-not (Test-YamlLintAvailable)) {
- Write-Host "[FAIL] yamllint is required but not available" -ForegroundColor Red
+ Write-Host "FAIL yamllint is required but not available" -ForegroundColor Red
  return $results
  }
  
@@ -368,7 +368,7 @@ function Invoke-YamlValidation {
  $results.TotalFiles = $yamlFiles.Count
  
  if ($yamlFiles.Count -eq 0) {
- Write-Host "[WARN] No YAML files found in $Path" -ForegroundColor Yellow
+ Write-Host "WARN No YAML files found in $Path" -ForegroundColor Yellow
  return $results
  }
  
@@ -383,7 +383,7 @@ function Invoke-YamlValidation {
  $syntaxTest = Test-YamlSyntax -FilePath $file.FullName
  
  if (-not $syntaxTest.Valid) {
- Write-Host " [FAIL] Syntax errors found:" -ForegroundColor Red
+ Write-Host " FAIL Syntax errors found:" -ForegroundColor Red
  foreach ($error in $syntaxTest.Errors) {
  Write-Host " $error" -ForegroundColor Red
  $results.Errors += "$relativePath`: $error"
@@ -398,7 +398,7 @@ function Invoke-YamlValidation {
  # Re-test after fixes
  $retestSyntax = Test-YamlSyntax -FilePath $file.FullName
  if ($retestSyntax.Valid) {
- Write-Host " [PASS] Fixed and now valid" -ForegroundColor Green
+ Write-Host " PASS Fixed and now valid" -ForegroundColor Green
  $results.ValidFiles++
  $results.InvalidFiles--
  }
@@ -410,7 +410,7 @@ function Invoke-YamlValidation {
  $lintResult = Invoke-YamlLint -FilePath $file.FullName
  
  if ($lintResult.Errors.Count -gt 0) {
- Write-Host " [FAIL] Linting errors:" -ForegroundColor Red
+ Write-Host " FAIL Linting errors:" -ForegroundColor Red
  foreach ($error in $lintResult.Errors) {
  Write-Host " $error" -ForegroundColor Red
  $results.Errors += $error
@@ -425,7 +425,7 @@ function Invoke-YamlValidation {
  }
  }
  elseif ($lintResult.Warnings.Count -gt 0) {
- Write-Host " [WARN] Warnings:" -ForegroundColor Yellow
+ Write-Host " WARN Warnings:" -ForegroundColor Yellow
  foreach ($warning in $lintResult.Warnings) {
  Write-Host " $warning" -ForegroundColor Yellow
  $results.Warnings += $warning
@@ -440,7 +440,7 @@ function Invoke-YamlValidation {
  }
  }
  else {
- Write-Host " [PASS] Valid" -ForegroundColor Green
+ Write-Host " PASS Valid" -ForegroundColor Green
  $results.ValidFiles++
  
  if ($Mode -eq "Fix") {
@@ -476,11 +476,12 @@ Write-Host "Warnings: $($results.Warnings.Count)" -ForegroundColor Yellow
 # Exit with appropriate code
 if ($results.InvalidFiles -gt 0) {
  Write-Host ""
- Write-Host "[FAIL] YAML validation failed" -ForegroundColor Red
+ Write-Host "FAIL YAML validation failed" -ForegroundColor Red
  exit 1
 }
 else {
  Write-Host ""
- Write-Host "[PASS] All YAML files are valid" -ForegroundColor Green
+ Write-Host "PASS All YAML files are valid" -ForegroundColor Green
  exit 0
 }
+

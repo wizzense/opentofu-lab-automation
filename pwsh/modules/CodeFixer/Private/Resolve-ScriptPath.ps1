@@ -2,19 +2,19 @@
 # Helper function to resolve script paths in the repository
 
 function Resolve-ScriptPath {
-    [CmdletBinding()]
+    CmdletBinding()
     param(
-        [Parameter(Mandatory=$true, Position=0)
+        Parameter(Mandatory=$true, Position=0)
 
 
 
 
 
 
-]
-        [string]$Path,
+
+        string$Path,
         
-        [string]$BaseDir = ""
+        string$BaseDir = ""
     )
     
     # If BaseDir not specified, use current directory
@@ -23,7 +23,7 @@ function Resolve-ScriptPath {
     }
     
     # If path is absolute, return as-is
-    if ([System.IO.Path]::IsPathRooted($Path)) {
+    if (System.IO.Path::IsPathRooted($Path)) {
         return $Path
     }
     

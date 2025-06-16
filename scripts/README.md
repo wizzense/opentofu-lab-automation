@@ -18,5 +18,5 @@ This directory contains various automation and integration scripts for the OpenT
 ## Documentation
 
 For more information about the project structure and testing framework, see:
-- [TESTING.md](../docs/TESTING.md)
-- [INTEGRATION-SUMMARY.md](../INTEGRATION-SUMMARY.md)
+- TESTING.md(../docs/TESTING.md)
+- INTEGRATION-SUMMARY.md(../INTEGRATION-SUMMARY.md)

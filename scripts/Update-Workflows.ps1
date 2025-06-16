@@ -1,9 +1,9 @@
 # Update-Workflows.ps1
 # Script to update GitHub Actions workflows to use the CodeFixer module
-[CmdletBinding()]
+CmdletBinding()
 param(
-    [switch]$Force,
-    [switch]$SkipBackup
+    switch$Force,
+    switch$SkipBackup
 )
 
 
@@ -18,7 +18,7 @@ $ErrorActionPreference = 'Stop'
 # Helper function to backup files before modifying them
 function Backup-File {
     param(
-        [string]$FilePath
+        string$FilePath
     )
 
     
@@ -34,7 +34,7 @@ if ($SkipBackup) {
 
     $backupDir = Join-Path $PSScriptRoot ".." "backups" "workflows" (Get-Date -Format "yyyyMMdd-HHmmss")
     if (-not (Test-Path $backupDir)) {
-        New-Item -Path $backupDir -ItemType Directory -Force | Out-Null
+        New-Item -Path $backupDir -ItemType Directory -Force  Out-Null
     }
 
     $fileName = Split-Path -Path $FilePath -Leaf
@@ -51,7 +51,7 @@ if ($SkipBackup) {
 
 function Update-WorkflowFile {
     param(
-        [string]$FilePath
+        string$FilePath
     )
 
     
@@ -76,10 +76,10 @@ if (-not (Test-Path $FilePath)) {
         
         # Update the lint job to use the CodeFixer module
         if ($content -match 'name: Run comprehensive linting' -and $content -notmatch 'Invoke-PowerShellLint') {
-            $content = $content -replace '(?sm)(name: Run comprehensive linting.*?shell: pwsh\s+run: \|\s+\./comprehensive-lint.ps1)', @"
+            $content = $content -replace '(?sm)(name: Run comprehensive linting.*?shell: pwsh\s+run: \\s+\./comprehensive-lint.ps1)', @"
 name: Run comprehensive linting
         shell: pwsh
-        run: |
+        run: 
           # Import the CodeFixer module
           Import-Module .//pwsh/modules/CodeFixer/CodeFixer.psd1 -Force
           
@@ -90,10 +90,10 @@ name: Run comprehensive linting
         
         # Update Pester tests step
         if ($content -match 'name: Run Pester Tests' -and $content -notmatch 'Invoke-AutoFix') {
-            $content = $content -replace '(?sm)(name: Run Pester Tests.*?shell: pwsh\s+run: \|)', @"
+            $content = $content -replace '(?sm)(name: Run Pester Tests.*?shell: pwsh\s+run: \)', @"
 name: Run Pester Tests
         shell: pwsh
-        run: |
+        run: 
           # Import the CodeFixer module
           Import-Module .//pwsh/modules/CodeFixer/CodeFixer.psd1 -Force
           
@@ -109,14 +109,14 @@ name: Run Pester Tests
   # Comprehensive validation 
   comprehensive-validation:
     name: Comprehensive Validation
-    needs: [validate]
+    needs: validate
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       
       - name: Install PowerShell
         shell: bash
-        run: |
+        run: 
           sudo apt-get update
           sudo apt-get install -y wget apt-transport-https software-properties-common
           wget -q https://packages.microsoft.com/config/ubuntu/22.04/packages-microsoft-prod.deb
@@ -126,13 +126,13 @@ name: Run Pester Tests
       
       - name: Install Pester and PSScriptAnalyzer
         shell: pwsh
-        run: |
+        run: 
           Install-Module -Name Pester -RequiredVersion 5.7.1 -Force -Scope CurrentUser
           Install-Module -Name PSScriptAnalyzer -Force -Scope CurrentUser
       
       - name: Run Comprehensive Validation
         shell: pwsh
-        run: |
+        run: 
           ./invoke-comprehensive-validation.ps1 -Fix -OutputFormat CI -SaveResults
       
       - name: Upload validation report
@@ -147,18 +147,18 @@ name: Run Pester Tests
 "@
             
             # Update the needs section of the summary job to include the new comprehensive-validation job
-            $content = $content -replace '(?m)(needs: \[validate, lint, pytest, pester-linux, health-check, workflow-health\])', 'needs: [validate, lint, pytest, pester-linux, health-check, comprehensive-validation, workflow-health]'
+            $content = $content -replace '(?m)(needs: \validate, lint, pytest, pester-linux, health-check, workflow-health\)', 'needs: validate, lint, pytest, pester-linux, health-check, comprehensive-validation, workflow-health'
             
             # Update the summary table to include the new job
-            $content = $content -replace '(?m)(echo "| Health Check \| \$\{\{ needs\.health-check\.result \}\} \|" >> \$GITHUB_STEP_SUMMARY)', @"
+            $content = $content -replace '(?m)(echo " Health Check \ \$\{\{ needs\.health-check\.result \}\} \" >> \$GITHUB_STEP_SUMMARY)', @"
 `$1
-          echo "| Comprehensive Validation | `$`{{ needs.comprehensive-validation.result `}} |" >> `$GITHUB_STEP_SUMMARY
+          echo " Comprehensive Validation  `$`{{ needs.comprehensive-validation.result `}} " >> `$GITHUB_STEP_SUMMARY
 "@
 
             # Update the condition check to include the new job
-            $content = $content -replace '(?m)(\s+if \[\[ "\$\{\{ needs\.validate\.result \}\}" != "success" \|\|)', @"
-          if [[ "`$`{{ needs.validate.result `}}" != "success" ||
-                "`$`{{ needs.comprehensive-validation.result `}}" != "success" ||
+            $content = $content -replace '(?m)(\s+if \\ "\$\{\{ needs\.validate\.result \}\}" != "success" \\)', @"
+          if  "`$`{{ needs.validate.result `}}" != "success" 
+                "`$`{{ needs.comprehensive-validation.result `}}" != "success" 
 "@
         }
     }
@@ -167,10 +167,10 @@ name: Run Pester Tests
         
         # Update test generation step to use the CodeFixer module
         if ($content -match 'name: Generate Tests' -and $content -notmatch 'New-AutoTest') {
-            $content = $content -replace '(?sm)(name: Generate Tests.*?shell: pwsh\s+run: \|)', @"
+            $content = $content -replace '(?sm)(name: Generate Tests.*?shell: pwsh\s+run: \)', @"
 name: Generate Tests
         shell: pwsh
-        run: |
+        run: 
           # Import the CodeFixer module
           Import-Module .//pwsh/modules/CodeFixer/CodeFixer.psd1 -Force
 "@

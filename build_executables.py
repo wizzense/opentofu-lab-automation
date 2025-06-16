@@ -21,29 +21,29 @@ def ensure_pyinstaller():
     """Ensure PyInstaller is installed"""
     try:
         import PyInstaller
-        print("✓ PyInstaller already installed")
+        print(" PyInstaller already installed")
         return True
     except ImportError:
         print("Installing PyInstaller...")
         try:
-            subprocess.run([sys.executable, "-m", "pip", "install", "pyinstaller"], check=True)
-            print("✓ PyInstaller installed successfully")
+            subprocess.run(sys.executable, "-m", "pip", "install", "pyinstaller", check=True)
+            print(" PyInstaller installed successfully")
             return True
         except Exception as e:
-            print(f"✗ Failed to install PyInstaller: {e}")
+            print(f" Failed to install PyInstaller: {e}")
             return False
 
 def build_executable(script_path, name=None, onefile=True, console=True, icon=None):
     """Build executable using PyInstaller"""
     script_path = Path(script_path)
     if not script_path.exists():
-        print(f"✗ Source script not found: {script_path}")
+        print(f" Source script not found: {script_path}")
         return False
     
     print(f"Building executable for: {script_path}")
     
     # Prepare command
-    cmd = [sys.executable, "-m", "PyInstaller"]
+    cmd = sys.executable, "-m", "PyInstaller"
     
     # Add options
     if onefile:
@@ -55,18 +55,18 @@ def build_executable(script_path, name=None, onefile=True, console=True, icon=No
         cmd.append("--noconsole")
         
     if name:
-        cmd.extend(["--name", name])
+        cmd.extend("--name", name)
     
     if icon and Path(icon).exists():
-        cmd.extend(["--icon", icon])
+        cmd.extend("--icon", icon)
     
     # Add paths
-    cmd.extend([
+    cmd.extend(
         "--workpath", "build",
         "--distpath", "dist",
         "--specpath", "build",
         str(script_path)
-    ])
+    )
     
     # Execute PyInstaller
     try:
@@ -79,21 +79,21 @@ def build_executable(script_path, name=None, onefile=True, console=True, icon=No
         output_path = Path("dist") / f"{output_name}{exe_ext}"
         
         if output_path.exists():
-            print(f"✓ Successfully built: {output_path}")
+            print(f" Successfully built: {output_path}")
             return True
         else:
-            print(f"✗ Build failed, executable not found: {output_path}")
+            print(f" Build failed, executable not found: {output_path}")
             return False
             
     except Exception as e:
-        print(f"✗ Build error: {e}")
+        print(f" Build error: {e}")
         return False
 
 def copy_required_files(dist_dir="dist"):
     """Copy necessary supporting files to dist directory"""
     dist_path = Path(dist_dir)
     if not dist_path.exists():
-        print(f"✗ Distribution directory not found: {dist_path}")
+        print(f" Distribution directory not found: {dist_path}")
         return False
     
     print("Copying supporting files...")
@@ -111,36 +111,36 @@ def copy_required_files(dist_dir="dist"):
     # Copy configuration schema
     try:
         # Copy Python modules
-        for py_file in ["config_schema.py", "config_schema_simple.py", "enhanced_powershell_executor.py"]:
+        for py_file in "config_schema.py", "config_schema_simple.py", "enhanced_powershell_executor.py":
             src = Path("py") / py_file
             if src.exists():
                 shutil.copy2(src, py_dir / py_file)
-                print(f"  ✓ Copied {py_file}")
+                print(f"   Copied {py_file}")
         
         # Copy PowerShell scripts
-        for ps_file in ["CrossPlatformExecutor.ps1", "CrossPlatformExecutor_Enhanced.ps1"]:
+        for ps_file in "CrossPlatformExecutor.ps1", "CrossPlatformExecutor_Enhanced.ps1":
             src = Path("pwsh") / ps_file
             if src.exists():
                 shutil.copy2(src, pwsh_dir / ps_file)
-                print(f"  ✓ Copied {ps_file}")
+                print(f"   Copied {ps_file}")
         
         # Copy default config
         default_config = Path("configs") / "config_files" / "default-config.json"
         if default_config.exists():
             shutil.copy2(default_config, config_dir / "default-config.json")
-            print(f"  ✓ Copied default-config.json")
+            print(f"   Copied default-config.json")
             
         # Copy README for documentation
         readme = Path("README.md")
         if readme.exists():
             shutil.copy2(readme, dist_path / "README.md")
-            print(f"  ✓ Copied README.md")
+            print(f"   Copied README.md")
             
-        print("✓ Successfully copied supporting files")
+        print(" Successfully copied supporting files")
         return True
             
     except Exception as e:
-        print(f"✗ Error copying files: {e}")
+        print(f" Error copying files: {e}")
         return False
 
 def create_startup_batch(dist_dir="dist"):
@@ -156,7 +156,7 @@ def create_startup_batch(dist_dir="dist"):
             f.write('@echo off\n')
             f.write('echo Starting OpenTofu Lab Automation...\n')
             f.write('enhanced_launcher.exe\n')
-        print("✓ Created launcher.bat")
+        print(" Created launcher.bat")
         
         # Create README.txt with instructions
         with open(dist_path / "README.txt", "w") as f:
@@ -167,18 +167,18 @@ def create_startup_batch(dist_dir="dist"):
             f.write("2. For GUI interface, double-click gui_enhanced.exe\n\n")
             f.write("See README.md for full documentation.\n")
             
-        print("✓ Created README.txt")
+        print(" Created README.txt")
         return True
         
     except Exception as e:
-        print(f"✗ Error creating startup files: {e}")
+        print(f" Error creating startup files: {e}")
         return False
 
 def create_zip_archive(dist_dir="dist"):
     """Create ZIP archive of distribution"""
     dist_path = Path(dist_dir)
     if not dist_path.exists():
-        print(f"✗ Distribution directory not found: {dist_path}")
+        print(f" Distribution directory not found: {dist_path}")
         return False
         
     try:
@@ -193,11 +193,11 @@ def create_zip_archive(dist_dir="dist"):
                     file_path = Path(root) / file
                     zipf.write(file_path, file_path.relative_to(dist_path))
         
-        print(f"✓ Created distribution archive: {zip_path}")
+        print(f" Created distribution archive: {zip_path}")
         return True
         
     except Exception as e:
-        print(f"✗ Error creating ZIP archive: {e}")
+        print(f" Error creating ZIP archive: {e}")
         return False
 
 def main():
@@ -211,7 +211,7 @@ def main():
         return 1
     
     # Clean previous builds
-    for path in ["build", "dist"]:
+    for path in "build", "dist":
         if Path(path).exists():
             print(f"Cleaning {path}...")
             try:

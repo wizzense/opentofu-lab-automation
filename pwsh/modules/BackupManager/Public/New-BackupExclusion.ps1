@@ -22,15 +22,15 @@ New-BackupExclusion -ProjectRoot "." -Patterns @("*.bak", "*.backup")
 Follows OpenTofu Lab Automation maintenance standards
 #>
 function New-BackupExclusion {
-    [CmdletBinding()]
+    CmdletBinding()
     param(
-        [Parameter(Mandatory = $true)]
-        [string]$ProjectRoot,
+        Parameter(Mandatory = $true)
+        string$ProjectRoot,
         
-        [Parameter(Mandatory = $true)]
-        [string[]]$Patterns,
+        Parameter(Mandatory = $true)
+        string$Patterns,
         
-        [string[]]$ConfigFiles = @()
+        string$ConfigFiles = @()
     )
     
     $ErrorActionPreference = "Stop"
@@ -40,7 +40,7 @@ function New-BackupExclusion {
         if (Get-Module LabRunner -ErrorAction SilentlyContinue) {
             Write-CustomLog "Creating backup exclusion rules" "INFO"
         } else {
-            Write-Host "[INFO] Creating backup exclusion rules" -ForegroundColor Green
+            Write-Host "INFO Creating backup exclusion rules" -ForegroundColor Green
         }
         
         # Resolve project root
@@ -90,7 +90,7 @@ function New-BackupExclusion {
                             if ($content -like "*ExcludeRules*") {
                                 foreach ($Pattern in $Patterns) {
                                     if ($content -notlike "*$Pattern*") {
-                                        $content = $content -replace "(ExcludeRules\s*=\s*@\([^)]*)", "`$1, '$Pattern'"
+                                        $content = $content -replace "(ExcludeRules\s*=\s*@\(^)*)", "`$1, '$Pattern'"
                                     }
                                 }
                             }
@@ -119,7 +119,7 @@ function New-BackupExclusion {
         if (Get-Module LabRunner -ErrorAction SilentlyContinue) {
             Write-CustomLog $summaryMessage "INFO"
         } else {
-            Write-Host "[INFO] $summaryMessage" -ForegroundColor Green
+            Write-Host "INFO $summaryMessage" -ForegroundColor Green
         }
         
         return @{
@@ -133,7 +133,7 @@ function New-BackupExclusion {
         if (Get-Module LabRunner -ErrorAction SilentlyContinue) {
             Write-CustomLog $ErrorMessage "ERROR"
         } else {
-            Write-Host "[ERROR] $ErrorMessage" -ForegroundColor Red
+            Write-Host "ERROR $ErrorMessage" -ForegroundColor Red
         }
         throw $_
     }

@@ -7,8 +7,7 @@ Write-Host "=======================================" -ForegroundColor Cyan
 $tests = @{
  "CodeFixer Module" = {
  try {
- Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation//pwsh/modules/CodeFixer/" -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force
- $result = Get-Module CodeFixer
+ Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\pwsh/modules/CodeFixer/" -Force$result = Get-Module CodeFixer
  return $result -ne $null
  } catch {
  return $false
@@ -17,8 +16,7 @@ $tests = @{
  
  "LabRunner Module" = {
  try {
- Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation//pwsh/modules/LabRunner/" -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force
- $result = Get-Module LabRunner
+ Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\pwsh/modules/LabRunner/" -Force$result = Get-Module LabRunner
  return $result -ne $null
  } catch {
  return $false
@@ -28,7 +26,7 @@ $tests = @{
  "TestHelpers Syntax" = {
  try {
  $content = Get-Content "./tests/helpers/TestHelpers.ps1" -Raw
- $null = [System.Management.Automation.PSParser]::Tokenize($content, [ref]$null)
+ $null = System.Management.Automation.PSParser::Tokenize($content, ref$null)
  return $true
  } catch {
  return $false
@@ -38,7 +36,7 @@ $tests = @{
  "Bootstrap Script Syntax" = {
  try {
  $content = Get-Content "./pwsh/kicker-bootstrap.ps1" -Raw
- $null = [System.Management.Automation.PSParser]::Tokenize($content, [ref]$null)
+ $null = System.Management.Automation.PSParser::Tokenize($content, ref$null)
  return $true
  } catch {
  return $false
@@ -68,13 +66,13 @@ $total = $tests.Count
 foreach ($testName in $tests.Keys) {
  Write-Host "`n Testing: $testName" -ForegroundColor Yellow
  
- $result = & $tests[$testName]
+ $result = & $tests$testName
  
  if ($result) {
- Write-Host " [PASS] PASSED" -ForegroundColor Green
+ Write-Host " PASS PASSED" -ForegroundColor Green
  $passed++
  } else {
- Write-Host " [FAIL] FAILED" -ForegroundColor Red
+ Write-Host " FAIL FAILED" -ForegroundColor Red
  }
 }
 
@@ -82,12 +80,13 @@ Write-Host "`n Summary: $passed/$total tests passed" -ForegroundColor Cyan
 
 if ($passed -eq $total) {
  Write-Host " All infrastructure validation tests passed!" -ForegroundColor Green
- Write-Host "[PASS] Ready for merge and deployment!" -ForegroundColor Green
+ Write-Host "PASS Ready for merge and deployment!" -ForegroundColor Green
  exit 0
 } else {
- Write-Host "[WARN] Some tests failed. Review before merging." -ForegroundColor Yellow
+ Write-Host "WARN Some tests failed. Review before merging." -ForegroundColor Yellow
  exit 1
 }
+
 
 
 

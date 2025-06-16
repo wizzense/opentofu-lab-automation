@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
 <test-results xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="nunit_schema_2.5.xsd" name="Pester" total="698" errors="0" failures="208" not-run="0" inconclusive="0" ignored="0" skipped="274" invalid="0" date="2025-06-12" time="01:38:34">
   <environment platform="Linux" clr-version="8.0.1" os-version="6.8.0-1027-azure" machine-name="codespaces-465dd5" user-domain="" nunit-version="2.5.8.0" user="codespace" cwd="/tmp/a908d599-11a4-4b4f-af41-92c45fb72d47/72663523-d9d0-4049-a193-53c4683241f4" />
   <culture-info current-culture="" current-uiculture="" />
@@ -1383,7 +1383,7 @@
               <test-case description="throws when repo removal fails" name="Cleanup-Files script.throws when repo removal fails" time="0.407" asserts="0" success="False" result="Failure" executed="True">
                 <failure>
                   <message>Expected an exception with message like '*Cleanup failed:*' to be thrown, but no exception was thrown.</message>
-                  <stack-trace>at { &amp; $script:scriptPath -Config $config } | Should -Throw '*Cleanup failed:*', /workspaces/opentofu-lab-automation/tests/Cleanup-Files.Tests.ps1:163
+                  <stack-trace>at { &amp; $script:scriptPath -Config $config }  Should -Throw '*Cleanup failed:*', /workspaces/opentofu-lab-automation/tests/Cleanup-Files.Tests.ps1:163
 at &lt;ScriptBlock&gt;, /workspaces/opentofu-lab-automation/tests/Cleanup-Files.Tests.ps1:163</stack-trace>
                 </failure>
               </test-case>
@@ -1442,7 +1442,7 @@ Check the spelling of the name, or if a path was included, verify that the path 
               <test-case description="parses without errors" name="CustomLint.ps1.parses without errors" time="0.02" asserts="0" success="False" result="Failure" executed="True">
                 <failure>
                   <message>Expected 0, but got 1.</message>
-                  <stack-trace>at ($errs ? $errs.Count : 0) | Should -Be 0, /workspaces/opentofu-lab-automation/tests/CustomLint.Tests.ps1:11
+                  <stack-trace>at ($errs ? $errs.Count : 0)  Should -Be 0, /workspaces/opentofu-lab-automation/tests/CustomLint.Tests.ps1:11
 at &lt;ScriptBlock&gt;, /workspaces/opentofu-lab-automation/tests/CustomLint.Tests.ps1:11</stack-trace>
                 </failure>
               </test-case>
@@ -1596,61 +1596,61 @@ Check the spelling of the name, or if a path was included, verify that the path 
               </test-case>
               <test-case description="throws when no Config is provided" name="Format-Config.throws when no Config is provided" time="0.0901" asserts="0" success="False" result="Failure" executed="True">
                 <failure>
-                  <message>Expected the value to have type [System.ArgumentException] or any of its subtypes, but got System.Management.Automation.CommandNotFoundException: The term 'Format-Config' is not recognized as a name of a cmdlet, function, script file, or executable program.
+                  <message>Expected the value to have type System.ArgumentException or any of its subtypes, but got System.Management.Automation.CommandNotFoundException: The term 'Format-Config' is not recognized as a name of a cmdlet, function, script file, or executable program.
 Check the spelling of the name, or if a path was included, verify that the path is correct and try again.
    at System.Management.Automation.ExceptionHandlingOps.CheckActionPreference(FunctionContext funcContext, Exception exception)
    at System.Management.Automation.Interpreter.ActionCallInstruction`2.Run(InterpretedFrame frame)
    at System.Management.Automation.Interpreter.EnterTryCatchFinallyInstruction.Run(InterpretedFrame frame)
-   at System.Management.Automation.Interpreter.EnterTryCatchFinallyInstruction.Run(InterpretedFrame frame) with type [System.Management.Automation.CommandNotFoundException].</message>
-                  <stack-trace>at $_.Exception | Should -BeOfType [System.ArgumentException], /workspaces/opentofu-lab-automation/tests/Format-Config.Tests.ps1:32
+   at System.Management.Automation.Interpreter.EnterTryCatchFinallyInstruction.Run(InterpretedFrame frame) with type System.Management.Automation.CommandNotFoundException.</message>
+                  <stack-trace>at $_.Exception  Should -BeOfType System.ArgumentException, /workspaces/opentofu-lab-automation/tests/Format-Config.Tests.ps1:32
 at &lt;ScriptBlock&gt;, /workspaces/opentofu-lab-automation/tests/Format-Config.Tests.ps1:32</stack-trace>
                 </failure>
               </test-case>
               <test-case description="throws when pipeline is empty" name="Format-Config.throws when pipeline is empty" time="0.0381" asserts="0" success="False" result="Failure" executed="True">
                 <failure>
-                  <message>Expected the value to have type [System.ArgumentException] or any of its subtypes, but got System.Management.Automation.CommandNotFoundException: The term 'Format-Config' is not recognized as a name of a cmdlet, function, script file, or executable program.
+                  <message>Expected the value to have type System.ArgumentException or any of its subtypes, but got System.Management.Automation.CommandNotFoundException: The term 'Format-Config' is not recognized as a name of a cmdlet, function, script file, or executable program.
 Check the spelling of the name, or if a path was included, verify that the path is correct and try again.
    at System.Management.Automation.ExceptionHandlingOps.CheckActionPreference(FunctionContext funcContext, Exception exception)
    at System.Management.Automation.Interpreter.ActionCallInstruction`2.Run(InterpretedFrame frame)
    at System.Management.Automation.Interpreter.EnterTryCatchFinallyInstruction.Run(InterpretedFrame frame)
-   at System.Management.Automation.Interpreter.EnterTryCatchFinallyInstruction.Run(InterpretedFrame frame) with type [System.Management.Automation.CommandNotFoundException].</message>
-                  <stack-trace>at $_.Exception | Should -BeOfType [System.ArgumentException], /workspaces/opentofu-lab-automation/tests/Format-Config.Tests.ps1:41
+   at System.Management.Automation.Interpreter.EnterTryCatchFinallyInstruction.Run(InterpretedFrame frame) with type System.Management.Automation.CommandNotFoundException.</message>
+                  <stack-trace>at $_.Exception  Should -BeOfType System.ArgumentException, /workspaces/opentofu-lab-automation/tests/Format-Config.Tests.ps1:41
 at &lt;ScriptBlock&gt;, /workspaces/opentofu-lab-automation/tests/Format-Config.Tests.ps1:41</stack-trace>
                 </failure>
               </test-case>
               <test-case description="throws when Config is null" name="Format-Config.throws when Config is null" time="0.0406" asserts="0" success="False" result="Failure" executed="True">
                 <failure>
-                  <message>Expected the value to have type [System.ArgumentException] or any of its subtypes, but got System.Management.Automation.CommandNotFoundException: The term 'Format-Config' is not recognized as a name of a cmdlet, function, script file, or executable program.
+                  <message>Expected the value to have type System.ArgumentException or any of its subtypes, but got System.Management.Automation.CommandNotFoundException: The term 'Format-Config' is not recognized as a name of a cmdlet, function, script file, or executable program.
 Check the spelling of the name, or if a path was included, verify that the path is correct and try again.
    at System.Management.Automation.ExceptionHandlingOps.CheckActionPreference(FunctionContext funcContext, Exception exception)
    at System.Management.Automation.Interpreter.ActionCallInstruction`2.Run(InterpretedFrame frame)
    at System.Management.Automation.Interpreter.EnterTryCatchFinallyInstruction.Run(InterpretedFrame frame)
-   at System.Management.Automation.Interpreter.EnterTryCatchFinallyInstruction.Run(InterpretedFrame frame) with type [System.Management.Automation.CommandNotFoundException].</message>
-                  <stack-trace>at $_.Exception | Should -BeOfType [System.ArgumentException], /workspaces/opentofu-lab-automation/tests/Format-Config.Tests.ps1:50
+   at System.Management.Automation.Interpreter.EnterTryCatchFinallyInstruction.Run(InterpretedFrame frame) with type System.Management.Automation.CommandNotFoundException.</message>
+                  <stack-trace>at $_.Exception  Should -BeOfType System.ArgumentException, /workspaces/opentofu-lab-automation/tests/Format-Config.Tests.ps1:50
 at &lt;ScriptBlock&gt;, /workspaces/opentofu-lab-automation/tests/Format-Config.Tests.ps1:50</stack-trace>
                 </failure>
               </test-case>
               <test-case description="is a terminating error when Config is null" name="Format-Config.is a terminating error when Config is null" time="0.0385" asserts="0" success="False" result="Failure" executed="True">
                 <failure>
-                  <message>Expected the value to have type [System.ArgumentException] or any of its subtypes, but got System.Management.Automation.CommandNotFoundException: The term 'Format-Config' is not recognized as a name of a cmdlet, function, script file, or executable program.
+                  <message>Expected the value to have type System.ArgumentException or any of its subtypes, but got System.Management.Automation.CommandNotFoundException: The term 'Format-Config' is not recognized as a name of a cmdlet, function, script file, or executable program.
 Check the spelling of the name, or if a path was included, verify that the path is correct and try again.
    at System.Management.Automation.ExceptionHandlingOps.CheckActionPreference(FunctionContext funcContext, Exception exception)
    at System.Management.Automation.Interpreter.ActionCallInstruction`2.Run(InterpretedFrame frame)
    at System.Management.Automation.Interpreter.EnterTryCatchFinallyInstruction.Run(InterpretedFrame frame)
-   at System.Management.Automation.Interpreter.EnterTryCatchFinallyInstruction.Run(InterpretedFrame frame) with type [System.Management.Automation.CommandNotFoundException].</message>
-                  <stack-trace>at $_.Exception | Should -BeOfType [System.ArgumentException], /workspaces/opentofu-lab-automation/tests/Format-Config.Tests.ps1:59
+   at System.Management.Automation.Interpreter.EnterTryCatchFinallyInstruction.Run(InterpretedFrame frame) with type System.Management.Automation.CommandNotFoundException.</message>
+                  <stack-trace>at $_.Exception  Should -BeOfType System.ArgumentException, /workspaces/opentofu-lab-automation/tests/Format-Config.Tests.ps1:59
 at &lt;ScriptBlock&gt;, /workspaces/opentofu-lab-automation/tests/Format-Config.Tests.ps1:59</stack-trace>
                 </failure>
               </test-case>
               <test-case description="is a terminating error when piped null" name="Format-Config.is a terminating error when piped null" time="0.053" asserts="0" success="False" result="Failure" executed="True">
                 <failure>
-                  <message>Expected the value to have type [System.ArgumentException] or any of its subtypes, but got System.Management.Automation.CommandNotFoundException: The term 'Format-Config' is not recognized as a name of a cmdlet, function, script file, or executable program.
+                  <message>Expected the value to have type System.ArgumentException or any of its subtypes, but got System.Management.Automation.CommandNotFoundException: The term 'Format-Config' is not recognized as a name of a cmdlet, function, script file, or executable program.
 Check the spelling of the name, or if a path was included, verify that the path is correct and try again.
    at System.Management.Automation.ExceptionHandlingOps.CheckActionPreference(FunctionContext funcContext, Exception exception)
    at System.Management.Automation.Interpreter.ActionCallInstruction`2.Run(InterpretedFrame frame)
    at System.Management.Automation.Interpreter.EnterTryCatchFinallyInstruction.Run(InterpretedFrame frame)
-   at System.Management.Automation.Interpreter.EnterTryCatchFinallyInstruction.Run(InterpretedFrame frame) with type [System.Management.Automation.CommandNotFoundException].</message>
-                  <stack-trace>at $_.Exception | Should -BeOfType [System.ArgumentException], /workspaces/opentofu-lab-automation/tests/Format-Config.Tests.ps1:68
+   at System.Management.Automation.Interpreter.EnterTryCatchFinallyInstruction.Run(InterpretedFrame frame) with type System.Management.Automation.CommandNotFoundException.</message>
+                  <stack-trace>at $_.Exception  Should -BeOfType System.ArgumentException, /workspaces/opentofu-lab-automation/tests/Format-Config.Tests.ps1:68
 at &lt;ScriptBlock&gt;, /workspaces/opentofu-lab-automation/tests/Format-Config.Tests.ps1:68</stack-trace>
                 </failure>
               </test-case>
@@ -1756,9 +1756,9 @@ at &lt;ScriptBlock&gt;, /workspaces/opentofu-lab-automation/tests/Initialize-Ope
                 <failure>
                   <message>Expected an exception with message like '*Tofu still not found after installation*' to be thrown, but the message was 'The term 'Param' is not recognized as a name of a cmdlet, function, script file, or executable program.
 Check the spelling of the name, or if a path was included, verify that the path is correct and try again.'. from /workspaces/opentofu-lab-automation/pwsh/runner_scripts/0009_Initialize-OpenTofu.ps1:2 char:1
-    + Param([object]$Config)
+    + Param(object$Config)
     + ~~~~~</message>
-                  <stack-trace>at { &amp; $script:ScriptPath -Config $config } | Should -Throw '*Tofu still not found after installation*', /workspaces/opentofu-lab-automation/tests/Initialize-OpenTofu.Tests.ps1:168
+                  <stack-trace>at { &amp; $script:ScriptPath -Config $config }  Should -Throw '*Tofu still not found after installation*', /workspaces/opentofu-lab-automation/tests/Initialize-OpenTofu.Tests.ps1:168
 at &lt;ScriptBlock&gt;, /workspaces/opentofu-lab-automation/tests/Initialize-OpenTofu.Tests.ps1:168</stack-trace>
                 </failure>
               </test-case>
@@ -1766,7 +1766,7 @@ at &lt;ScriptBlock&gt;, /workspaces/opentofu-lab-automation/tests/Initialize-Ope
                 <failure>
                   <message>Expected an exception with message like '*installer*' to be thrown, but the message was 'The term 'Param' is not recognized as a name of a cmdlet, function, script file, or executable program.
 Check the spelling of the name, or if a path was included, verify that the path is correct and try again.'. from /workspaces/opentofu-lab-automation/pwsh/runner_scripts/0009_Initialize-OpenTofu.ps1:2 char:1
-    + Param([object]$Config)
+    + Param(object$Config)
     + ~~~~~</message>
                   <stack-trace>at Should -Throw '*installer*', /workspaces/opentofu-lab-automation/tests/Initialize-OpenTofu.Tests.ps1:197
 at &lt;ScriptBlock&gt;, /workspaces/opentofu-lab-automation/tests/Initialize-OpenTofu.Tests.ps1:196</stack-trace>
@@ -1948,7 +1948,7 @@ at &lt;ScriptBlock&gt;, /workspaces/opentofu-lab-automation/tests/Initialize-Ope
             <results>
               <test-case description="does not have problematic variable interpolation patterns" name="kicker-bootstrap syntax validation.does not have problematic variable interpolation patterns" time="0.0105" asserts="0" success="False" result="Failure" executed="True">
                 <failure>
-                  <message>Expected regular expression '"\s*[^"]*\$\w+:[^"]*"' to not match '&lt;# 
+                  <message>Expected regular expression '"\s*^"*\$\w+:^"*"' to not match '&lt;# 
 .SYNOPSIS
   Kicker script for a fresh Windows Server Core setup with robust error handling.
   1) Loads configs/config_files/default-config.json by default (override with -ConfigFile).
@@ -1963,10 +1963,10 @@ at &lt;ScriptBlock&gt;, /workspaces/opentofu-lab-automation/tests/Initialize-Ope
   5) Invokes runner.ps1 from that repo.
 #&gt;
 param(
-    [string]$ConfigFile,
-    [switch]$Quiet,
-    [ValidateSet('silent','normal','detailed')]
-    [string]$Verbosity = 'normal'
+    string$ConfigFile,
+    switch$Quiet,
+    ValidateSet('silent','normal','detailed')
+    string$Verbosity = 'normal'
 )
 function Get-CrossPlatformTempPath {
     &lt;#
@@ -1980,33 +1980,33 @@ function Get-CrossPlatformTempPath {
     if ($env:TEMP) { 
         return $env:TEMP 
     } else { 
-        return [System.IO.Path]::GetTempPath() 
+        return System.IO.Path::GetTempPath() 
     }
 }
 if ($Quiet.IsPresent) { $Verbosity = 'silent' }
 $script:VerbosityLevels = @{ silent = 0; normal = 1; detailed = 2 }
-$script:ConsoleLevel    = $script:VerbosityLevels[$Verbosity]
+$script:ConsoleLevel    = $script:VerbosityLevels$Verbosity
 $targetBranch = 'main'
 $baseUrl = 'https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/refs/heads/'
 $defaultConfig = "${baseUrl}${targetBranch}/configs/config_files/default-config.json"
 # example: https://raw.githubusercontent.com/wizzense/tofu-base-lab/refs/heads/main/configs/bootstrap-config.json
 $prompt = "`n&lt;press any key to continue&gt;`n"
 function Write-Continue($prompt) {
-  [Console]::Write($prompt + '  ')
-  Read-LoggedInput -Prompt $prompt | Out-Null
+  Console::Write($prompt + '  ')
+  Read-LoggedInput -Prompt $prompt  Out-Null
 }
 $ErrorActionPreference = 'Stop'  # So any error throws an exception
 $ProgressPreference = 'SilentlyContinue'
 # Resolve script root even when $PSScriptRoot is not populated (e.g. -Command)
 $scriptRoot = if ($PSScriptRoot) { $PSScriptRoot } else { Split-Path -Parent $MyInvocation.MyCommand.Path }
-$isWindowsOS = [System.Environment]::OSVersion.Platform -eq 'Win32NT'
+$isWindowsOS = System.Environment::OSVersion.Platform -eq 'Win32NT'
 # Ensure the logger utility is available even when this script is executed
 # standalone. If the logger script is missing, download it from the repository.
 $loggerDir  = Join-Path (Join-Path $scriptRoot 'lab_utils') 'LabRunner'
 $loggerPath = Join-Path $loggerDir 'Logger.ps1'
 if (-not (Test-Path $loggerPath)) {
     if (-not (Test-Path $loggerDir)) {
-        New-Item -ItemType Directory -Path $loggerDir -Force | Out-Null
+        New-Item -ItemType Directory -Path $loggerDir -Force  Out-Null
     }
     $loggerUrl = "${baseUrl}${targetBranch}/pwsh/lab_utils/LabRunner/Logger.ps1"
     Invoke-WebRequest -Uri $loggerUrl -OutFile $loggerPath
@@ -2022,40 +2022,40 @@ if (-not (Get-Variable -Name LogFilePath -Scope Script -ErrorAction SilentlyCont
     -not (Get-Variable -Name LogFilePath -Scope Global -ErrorAction SilentlyContinue)) {
     $logDir = $env:LAB_LOG_DIR
     if (-not $logDir) {
-        if ($isWindowsOS) { $logDir = 'C:\\temp' } else { $logDir = [System.IO.Path]::GetTempPath() }
+        if ($isWindowsOS) { $logDir = 'C:\\temp' } else { $logDir = System.IO.Path::GetTempPath() }
     }
-    if (-not (Test-Path $logDir)) { New-Item -ItemType Directory -Path $logDir -Force | Out-Null }
+    if (-not (Test-Path $logDir)) { New-Item -ItemType Directory -Path $logDir -Force  Out-Null }
     $script:LogFilePath = Join-Path $logDir 'lab.log'
 }
 # Fallback inline logger in case dot-sourcing failed
 if (-not (Get-Command Write-CustomLog -ErrorAction SilentlyContinue)) {
     function Write-CustomLog {
         param(
-            [string]$Message,
-            [ValidateSet('INFO','WARN','ERROR')] [string]$Level = 'INFO'
+            string$Message,
+            ValidateSet('INFO','WARN','ERROR') string$Level = 'INFO'
         )
-        $levelIdx = @{ INFO = 1; WARN = 1; ERROR = 0 }[$Level]
+        $levelIdx = @{ INFO = 1; WARN = 1; ERROR = 0 }$Level
         if (-not (Get-Variable -Name LogFilePath -Scope Script -ErrorAction SilentlyContinue)) {
             $logDir = $env:LAB_LOG_DIR
-            if (-not $logDir) { $logDir = if ($isWindowsOS) { 'C:\\temp' } else { [System.IO.Path]::GetTempPath() } }
+            if (-not $logDir) { $logDir = if ($isWindowsOS) { 'C:\\temp' } else { System.IO.Path::GetTempPath() } }
             $script:LogFilePath = Join-Path $logDir 'lab.log'
         }
         if (-not (Get-Variable -Name ConsoleLevel -Scope Script -ErrorAction SilentlyContinue)) {
             $script:ConsoleLevel = 1
         }
         $ts  = Get-Date -Format 'yyyy-MM-dd HH:mm:ss'
-        $fmt = "[$ts] [$Level] $Message"
-        $fmt | Out-File -FilePath $script:LogFilePath -Encoding utf8 -Append
+        $fmt = "$ts $Level $Message"
+        $fmt  Out-File -FilePath $script:LogFilePath -Encoding utf8 -Append
         if ($levelIdx -le $script:ConsoleLevel) {
-            $color = @{ INFO='Gray'; WARN='Yellow'; ERROR='Red' }[$Level]
+            $color = @{ INFO='Gray'; WARN='Yellow'; ERROR='Red' }$Level
             Write-Host $fmt -ForegroundColor $color
         }
     }
     function Read-LoggedInput {
-        [CmdletBinding()]
+        CmdletBinding()
         param(
-            [Parameter(Mandatory)][string]$Prompt,
-            [switch]$AsSecureString
+            Parameter(Mandatory)string$Prompt,
+            switch$AsSecureString
         )
         if ($AsSecureString) {
             Write-CustomLog "$Prompt (secure input)"
@@ -2072,14 +2072,14 @@ $labConfigScript = Join-Path $labUtilsDir 'Get-LabConfig.ps1'
 $formatScript    = Join-Path $labUtilsDir 'Format-Config.ps1'
 if (-not (Test-Path $labConfigScript)) {
     if (-not (Test-Path $labUtilsDir)) {
-        New-Item -ItemType Directory -Path $labUtilsDir -Force | Out-Null
+        New-Item -ItemType Directory -Path $labUtilsDir -Force  Out-Null
     }
     $labConfigUrl = 'https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/main/pwsh/lab_utils/Get-LabConfig.ps1'
     Invoke-WebRequest -Uri $labConfigUrl -OutFile $labConfigScript
 }
 if (-not (Test-Path $formatScript)) {
     if (-not (Test-Path $labUtilsDir)) {
-        New-Item -ItemType Directory -Path $labUtilsDir -Force | Out-Null
+        New-Item -ItemType Directory -Path $labUtilsDir -Force  Out-Null
     }
     $formatUrl = 'https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/main/pwsh/lab_utils/Format-Config.ps1'
     Invoke-WebRequest -Uri $formatUrl -OutFile $formatScript
@@ -2120,23 +2120,23 @@ if ($configOption -match "https://") {
 } else {
     $localConfigDir = Join-Path (Join-Path $scriptRoot "configs") "config_files"
     if (!(Test-Path $localConfigDir)) {
-        New-Item -ItemType Directory -Path $localConfigDir | Out-Null
+        New-Item -ItemType Directory -Path $localConfigDir  Out-Null
     }
     $configFiles = Get-ChildItem -Path $localConfigDir -Filter '*.json' -File
     if ($configFiles.Count -gt 1) {
         Write-CustomLog "Multiple configuration files found:" "INFO"
         for ($i = 0; $i -lt $configFiles.Count; $i++) {
             $num = $i + 1
-            Write-CustomLog ("{0}) {1}" -f $num, $configFiles[$i].Name) "INFO" | Write-Host
+            Write-CustomLog ("{0}) {1}" -f $num, $configFiles$i.Name) "INFO"  Write-Host
         }
         $ans = Read-LoggedInput -Prompt 'Select configuration number'
-        if ($ans -match '^[0-9]+$' -and [int]$ans -ge 1 -and [int]$ans -le $configFiles.Count) {
-            $ConfigFile = $configFiles[[int]$ans - 1].FullName
+        if ($ans -match '^0-9+$' -and int$ans -ge 1 -and int$ans -le $configFiles.Count) {
+            $ConfigFile = $configFilesint$ans - 1.FullName
         } else {
-            $ConfigFile = $configFiles[0].FullName
+            $ConfigFile = $configFiles0.FullName
         }
     } elseif ($configFiles.Count -eq 1) {
-        $ConfigFile = $configFiles[0].FullName
+        $ConfigFile = $configFiles0.FullName
     } else {
         $localConfigPath = Join-Path $localConfigDir "default-config.json"
         if (-not (Test-Path $localConfigPath)) {
@@ -2188,7 +2188,7 @@ try {
 # ------------------------------------------------
 # (2.5) Ensure PowerShell 7 is present
 # ------------------------------------------------
-$isWindowsOS = [System.Environment]::OSVersion.Platform -eq 'Win32NT'
+$isWindowsOS = System.Environment::OSVersion.Platform -eq 'Win32NT'
 if (-not $isWindowsOS) {
     Write-Error "PowerShell 7 installation via this script is only supported on Windows."
     exit 1
@@ -2248,10 +2248,10 @@ catch {
     Write-CustomLog "GitHub CLI is not authenticated."
     # Optional: Prompt user for a personal access token
     $pat = Read-LoggedInput -Prompt "Enter your GitHub Personal Access Token (or press Enter to skip):"
-    if (-not [string]::IsNullOrWhiteSpace($pat)) {
+    if (-not string::IsNullOrWhiteSpace($pat)) {
         Write-CustomLog "Attempting PAT-based GitHub CLI login..."
         try {
-            $pat | &amp; "$ghExePath" auth login --hostname github.com --git-protocol https --with-token
+            $pat  &amp; "$ghExePath" auth login --hostname github.com --git-protocol https --with-token
         }
         catch {
             Write-Error "ERROR: PAT-based login failed. Please verify your token or try interactive login."
@@ -2283,9 +2283,9 @@ catch {
 # Helper to update repo while preserving local config changes
 function Update-RepoPreserveConfig {
     param(
-        [string]$RepoPath,
-        [string]$Branch,
-        [string]$GitPath
+        string$RepoPath,
+        string$Branch,
+        string$GitPath
     )
     Push-Location $RepoPath
     $configChanges = &amp; $GitPath status --porcelain "configs/config_files" 2&gt;$null
@@ -2295,14 +2295,14 @@ function Update-RepoPreserveConfig {
         Write-CustomLog "Backing up local config changes to $backupDir" 'INFO'
         if (Test-Path $backupDir) { Remove-Item -Recurse -Force $backupDir }
         Copy-Item -Path 'configs/config_files' -Destination $backupDir -Recurse -Force
-        &amp; $GitPath stash push -u -- 'configs/config_files' | Out-Null
+        &amp; $GitPath stash push -u -- 'configs/config_files'  Out-Null
     }
     &amp; $GitPath pull origin $Branch --quiet 2&gt;&amp;1 &gt;&gt; "$(Get-CrossPlatformTempPath)\git.log"
     if ($configChanges -and (Test-Path $backupDir)) {
         Write-CustomLog 'Restoring backed up config files' 'INFO'
         Copy-Item -Path (Join-Path $backupDir '*') -Destination 'configs/config_files' -Recurse -Force
         Remove-Item -Recurse -Force $backupDir -ErrorAction SilentlyContinue
-        &amp; $GitPath stash drop --quiet | Out-Null
+        &amp; $GitPath stash drop --quiet  Out-Null
     }
     Pop-Location
 }
@@ -2311,7 +2311,7 @@ function Update-RepoPreserveConfig {
 # ------------------------------------------------
 Write-CustomLog "==== Cloning or updating the target repository ===="
 try {
-    &amp; "$ghExePath" auth status 2&gt;&amp;1 | Out-Null
+    &amp; "$ghExePath" auth status 2&gt;&amp;1  Out-Null
 } catch {
     Write-Error "GitHub CLI is not authenticated. Please run '$ghExePath auth login' and re-run this script."
     exit 1
@@ -2322,23 +2322,23 @@ if (-not $config.RepoUrl) {
 }
 # Define local path (fallback if not in config)
 $localPath = $config.LocalPath
-$localPath = if (-not $localPath -or [string]::IsNullOrWhiteSpace($localPath)) {
+$localPath = if (-not $localPath -or string::IsNullOrWhiteSpace($localPath)) {
     if ($isWindowsOS) {
         Get-CrossPlatformTempPath
     } else {
-        [System.IO.Path]::GetTempPath()
+        System.IO.Path::GetTempPath()
     }
 } else {
     $localPath
 }
-$localPath = [System.Environment]::ExpandEnvironmentVariables($localPath)
+$localPath = System.Environment::ExpandEnvironmentVariables($localPath)
 # Ensure local directory exists
 Write-CustomLog "Ensuring local path '$localPath' exists..."
 if (!(Test-Path $localPath)) {
-    New-Item -ItemType Directory -Path $localPath -Force | Out-Null
+    New-Item -ItemType Directory -Path $localPath -Force  Out-Null
 }
 # Define repo path
-$repoName = ($config.RepoUrl -split '/')[-1] -replace "\.git$", ""
+$repoName = ($config.RepoUrl -split '/')-1 -replace "\.git$", ""
 $repoPath = Join-Path $localPath $repoName
 if (-not $repoPath) {
     Write-Error "ERROR: Repository path could not be determined. Check config.json and retry."
@@ -2346,13 +2346,13 @@ if (-not $repoPath) {
 }
 # Configure git safe.directory to avoid dubious ownership errors
 # Use GetFullPath so path need not exist yet
-$resolvedRepoPath = [System.IO.Path]::GetFullPath($repoPath)
+$resolvedRepoPath = System.IO.Path::GetFullPath($repoPath)
 &amp; "$gitPath" config --global --add safe.directory $resolvedRepoPath 2&gt;$null
 if (!(Test-Path $repoPath)) {
     Write-CustomLog "Cloning repository from $($config.RepoUrl) to $repoPath..."
     $prevEAP = $ErrorActionPreference
     $ErrorActionPreference = 'Continue'
-    &amp; "$ghExePath" repo clone $config.RepoUrl $repoPath -- -q 2&gt;&amp;1 | Tee-Object -FilePath "$(Get-CrossPlatformTempPath)\gh_clone_log.txt"
+    &amp; "$ghExePath" repo clone $config.RepoUrl $repoPath -- -q 2&gt;&amp;1  Tee-Object -FilePath "$(Get-CrossPlatformTempPath)\gh_clone_log.txt"
     $ghExit = $LASTEXITCODE
     $ErrorActionPreference = $prevEAP
     if ($ghExit -ne 0 -or !(Test-Path $repoPath)) {
@@ -2368,7 +2368,7 @@ if (!(Test-Path $repoPath)) {
             }
         }
         
-        &amp; "$gitPath" clone $config.RepoUrl $repoPath --quiet 2&gt;&amp;1 | Tee-Object -FilePath "$(Get-CrossPlatformTempPath)\git_clone_log.txt"
+        &amp; "$gitPath" clone $config.RepoUrl $repoPath --quiet 2&gt;&amp;1  Tee-Object -FilePath "$(Get-CrossPlatformTempPath)\git_clone_log.txt"
         $gitExit = $LASTEXITCODE
         
         # Handle Windows-specific checkout failures due to invalid filenames
@@ -2377,7 +2377,7 @@ if (!(Test-Path $repoPath)) {
             Push-Location $repoPath
             try {
                 # Restore files that can be checked out on Windows
-                &amp; "$gitPath" restore --source=HEAD :/ 2&gt;&amp;1 | Out-Null
+                &amp; "$gitPath" restore --source=HEAD :/ 2&gt;&amp;1  Out-Null
                 Write-CustomLog "Attempted file restoration. Repository may be partially functional."
                 $gitExit = 0  # Consider this a success for Windows
             } catch {
@@ -2391,26 +2391,26 @@ if (!(Test-Path $repoPath)) {
             Write-Error "ERROR: Repository cloning failed. Check logs: $(Get-CrossPlatformTempPath)\gh_clone_log.txt and $(Get-CrossPlatformTempPath)\git_clone_log.txt"
             if (Test-Path "$(Get-CrossPlatformTempPath)\gh_clone_log.txt") {
                 Write-Host '--- gh_clone_log.txt ---' -ForegroundColor Yellow
-                Get-Content "$(Get-CrossPlatformTempPath)\gh_clone_log.txt" | Out-Host
+                Get-Content "$(Get-CrossPlatformTempPath)\gh_clone_log.txt"  Out-Host
             }
             if (Test-Path "$(Get-CrossPlatformTempPath)\git_clone_log.txt") {
                 Write-Host '--- git_clone_log.txt ---' -ForegroundColor Yellow
-                Get-Content "$(Get-CrossPlatformTempPath)\git_clone_log.txt" | Out-Host
+                Get-Content "$(Get-CrossPlatformTempPath)\git_clone_log.txt"  Out-Host
             }
             exit 1
         }
     }
 }
 # Immediately check directory contents after clone
-if ((Get-ChildItem -Path $repoPath -Recurse -ErrorAction SilentlyContinue | Measure-Object).Count -eq 0) {
+if ((Get-ChildItem -Path $repoPath -Recurse -ErrorAction SilentlyContinue  Measure-Object).Count -eq 0) {
     Write-Error "ERROR: Repo directory $repoPath is empty after clone. Check clone logs above."
     if (Test-Path "$(Get-CrossPlatformTempPath)\gh_clone_log.txt") {
         Write-Host '--- gh_clone_log.txt ---' -ForegroundColor Yellow
-        Get-Content "$(Get-CrossPlatformTempPath)\gh_clone_log.txt" | Out-Host
+        Get-Content "$(Get-CrossPlatformTempPath)\gh_clone_log.txt"  Out-Host
     }
     if (Test-Path "$(Get-CrossPlatformTempPath)\git_clone_log.txt") {
         Write-Host '--- git_clone_log.txt ---' -ForegroundColor Yellow
-        Get-Content "$(Get-CrossPlatformTempPath)\git_clone_log.txt" | Out-Host
+        Get-Content "$(Get-CrossPlatformTempPath)\git_clone_log.txt"  Out-Host
     }
     exit 1
 }
@@ -2444,21 +2444,21 @@ if (-not $runnerScriptName) {
 }
 Set-Location $repoPath
 # Robust path resolution for runner script
-if ([System.IO.Path]::IsPathRooted($runnerScriptName)) {
+if (System.IO.Path::IsPathRooted($runnerScriptName)) {
     $runnerScriptPath = $runnerScriptName
 } else {
     $runnerScriptPath = Join-Path $repoPath $runnerScriptName
 }
-Write-Host "[DEBUG] ConfigFile: $ConfigFile" -ForegroundColor Cyan
-Write-Host "[DEBUG] repoPath: $repoPath" -ForegroundColor Cyan
-Write-Host "[DEBUG] runnerScriptName: $runnerScriptName" -ForegroundColor Cyan
-Write-Host "[DEBUG] runnerScriptPath: $runnerScriptPath" -ForegroundColor Cyan
-Write-Host "[DEBUG] Directory contents of repoPath (${repoPath}):" -ForegroundColor Cyan
-Get-ChildItem -Path $repoPath -Recurse | Select-Object FullName
+Write-Host "DEBUG ConfigFile: $ConfigFile" -ForegroundColor Cyan
+Write-Host "DEBUG repoPath: $repoPath" -ForegroundColor Cyan
+Write-Host "DEBUG runnerScriptName: $runnerScriptName" -ForegroundColor Cyan
+Write-Host "DEBUG runnerScriptPath: $runnerScriptPath" -ForegroundColor Cyan
+Write-Host "DEBUG Directory contents of repoPath (${repoPath}):" -ForegroundColor Cyan
+Get-ChildItem -Path $repoPath -Recurse  Select-Object FullName
 if (!(Test-Path $runnerScriptPath)) {
     Write-Error "ERROR: Could not find runner script at $runnerScriptPath. Exiting."
-    Write-Host "[DEBUG] Directory contents of repoPath (${repoPath}):" -ForegroundColor Yellow
-    Get-ChildItem -Path $repoPath -Recurse | Format-List FullName | Out-Host
+    Write-Host "DEBUG Directory contents of repoPath (${repoPath}):" -ForegroundColor Yellow
+    Get-ChildItem -Path $repoPath -Recurse  Format-List FullName  Out-Host
     Write-Host @"
 Possible causes:
 - The repository clone failed or is incomplete.
@@ -2483,7 +2483,7 @@ if ($exitCode -ne 0) {
 Write-CustomLog "`n=== Kicker script finished successfully! ==="
 exit 0
 ', because Variables followed by colon in strings should be escaped, but it did match.</message>
-                  <stack-trace>at $content | Should -Not -Match '"\s*[^"]*\$\w+:[^"]*"' -Because "Variables followed by colon in strings should be escaped", /workspaces/opentofu-lab-automation/tests/Kicker-Bootstrap.Tests.ps1:113
+                  <stack-trace>at $content  Should -Not -Match '"\s*^"*\$\w+:^"*"' -Because "Variables followed by colon in strings should be escaped", /workspaces/opentofu-lab-automation/tests/Kicker-Bootstrap.Tests.ps1:113
 at &lt;ScriptBlock&gt;, /workspaces/opentofu-lab-automation/tests/Kicker-Bootstrap.Tests.ps1:113</stack-trace>
                 </failure>
               </test-case>
@@ -2599,7 +2599,7 @@ at &lt;ScriptBlock&gt;, /workspaces/opentofu-lab-automation/tests/Kicker-Bootstr
                   <test-case description="returns all items" name="Get-MenuSelection.returns all items when user types all.returns all items" time="0.0152" asserts="0" success="False" result="Failure" executed="True">
                     <failure>
                       <message>Expected @('0001_Test.ps1', '0002_Other.ps1'), but got $null.</message>
-                      <stack-trace>at $sel | Should -Be $items, /workspaces/opentofu-lab-automation/tests/Menu.Tests.ps1:16
+                      <stack-trace>at $sel  Should -Be $items, /workspaces/opentofu-lab-automation/tests/Menu.Tests.ps1:16
 at &lt;ScriptBlock&gt;, /workspaces/opentofu-lab-automation/tests/Menu.Tests.ps1:16</stack-trace>
                     </failure>
                   </test-case>
@@ -2610,7 +2610,7 @@ at &lt;ScriptBlock&gt;, /workspaces/opentofu-lab-automation/tests/Menu.Tests.ps1
                   <test-case description="returns item by prefix" name="Get-MenuSelection.returns item by prefix.returns item by prefix" time="0.0357" asserts="0" success="False" result="Failure" executed="True">
                     <failure>
                       <message>Expected '0002_Other.ps1', but got $null.</message>
-                      <stack-trace>at $sel | Should -Be @('0002_Other.ps1'), /workspaces/opentofu-lab-automation/tests/Menu.Tests.ps1:25
+                      <stack-trace>at $sel  Should -Be @('0002_Other.ps1'), /workspaces/opentofu-lab-automation/tests/Menu.Tests.ps1:25
 at &lt;ScriptBlock&gt;, /workspaces/opentofu-lab-automation/tests/Menu.Tests.ps1:25</stack-trace>
                     </failure>
                   </test-case>
@@ -3003,22 +3003,22 @@ at &lt;ScriptBlock&gt;, /workspaces/opentofu-lab-automation/tests/Runner.Tests.p
               <test-case description="pipes Get-SystemInfo output to the caller" name="runner.ps1 script selection.pipes Get-SystemInfo output to the caller" time="0.2667" asserts="0" success="False" result="Failure" executed="True">
                 <failure>
                   <message>Expected regular expression 'ComputerName' to match 'The argument './runner.ps1' is not recognized as the name of a script file. Check the spelling of the name, or if a path was included, verify that the path is correct and try again.
-Usage: pwsh[.exe] [-Login] [[-File] &lt;filePath&gt; [args]]
-                  [-Command { - | &lt;script-block&gt; [-args &lt;arg-array&gt;]
-                                | &lt;string&gt; [&lt;CommandParameters&gt;] } ]
-                  [-CommandWithArgs &lt;string&gt; [&lt;CommandParameters&gt;]
-                  [-ConfigurationName &lt;string&gt;] [-ConfigurationFile &lt;filePath&gt;]
-                  [-CustomPipeName &lt;string&gt;] [-EncodedCommand &lt;Base64EncodedCommand&gt;]
-                  [-ExecutionPolicy &lt;ExecutionPolicy&gt;] [-InputFormat {Text | XML}]
-                  [-Interactive] [-MTA] [-NoExit] [-NoLogo] [-NonInteractive] [-NoProfile]
-                  [-NoProfileLoadTime] [-OutputFormat {Text | XML}] 
-                  [-SettingsFile &lt;filePath&gt;] [-SSHServerMode] [-STA] 
-                  [-Version] [-WindowStyle &lt;style&gt;] 
-                  [-WorkingDirectory &lt;directoryPath&gt;]
-       pwsh[.exe] -h | -Help | -? | /?
+Usage: pwsh.exe -Login -File &lt;filePath&gt; args
+                  -Command { -  &lt;script-block&gt; -args &lt;arg-array&gt;
+                                 &lt;string&gt; &lt;CommandParameters&gt; } 
+                  -CommandWithArgs &lt;string&gt; &lt;CommandParameters&gt;
+                  -ConfigurationName &lt;string&gt; -ConfigurationFile &lt;filePath&gt;
+                  -CustomPipeName &lt;string&gt; -EncodedCommand &lt;Base64EncodedCommand&gt;
+                  -ExecutionPolicy &lt;ExecutionPolicy&gt; -InputFormat {Text  XML}
+                  -Interactive -MTA -NoExit -NoLogo -NonInteractive -NoProfile
+                  -NoProfileLoadTime -OutputFormat {Text  XML} 
+                  -SettingsFile &lt;filePath&gt; -SSHServerMode -STA 
+                  -Version -WindowStyle &lt;style&gt; 
+                  -WorkingDirectory &lt;directoryPath&gt;
+       pwsh.exe -h  -Help  -?  /?
 PowerShell Online Help https://aka.ms/powershell-docs
 All parameters are case-insensitive.', but it did not match.</message>
-                  <stack-trace>at $text | Should -Match 'ComputerName', /workspaces/opentofu-lab-automation/tests/Runner.Tests.ps1:495
+                  <stack-trace>at $text  Should -Match 'ComputerName', /workspaces/opentofu-lab-automation/tests/Runner.Tests.ps1:495
 at &lt;ScriptBlock&gt;, /workspaces/opentofu-lab-automation/tests/Runner.Tests.ps1:495</stack-trace>
                 </failure>
               </test-case>

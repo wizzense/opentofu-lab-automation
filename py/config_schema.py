@@ -19,10 +19,10 @@ class ConfigField:
     default_value: Any
     help_text: str
     required: bool = False
-    choices: Optional[List[str]] = None
-    validation_pattern: Optional[str] = None
+    choices: OptionalListstr = None
+    validation_pattern: Optionalstr = None
     category: str = "General"
-    platform_specific: Optional[Dict[str, Any]] = None
+    platform_specific: OptionalDictstr, Any = None
 
 class ConfigSchema:
     """Complete configuration schema with organized sections"""
@@ -30,7 +30,7 @@ class ConfigSchema:
     def __init__(self):
         self.sections = self._build_schema()
     
-    def _build_schema(self) -> Dict[str, List[ConfigField]]:
+    def _build_schema(self) -> Dictstr, ListConfigField:
         """Build the complete configuration schema organized by sections"""
         
         # Platform-specific defaults
@@ -38,7 +38,7 @@ class ConfigSchema:
         default_temp = "C:\\Temp" if is_windows else "/tmp"
         
         return {
-            "Repository Settings": [
+            "Repository Settings": 
                 ConfigField(
                     name="RepoUrl",
                     display_name="Repository URL",
@@ -76,9 +76,9 @@ class ConfigSchema:
                     default_value=f"{default_temp}\\base-infra" if is_windows else f"{default_temp}/base-infra",
                     help_text="Local path where infrastructure code will be cloned and managed."
                 )
-            ],
+            ,
             
-            "System Configuration": [
+            "System Configuration": 
                 ConfigField(
                     name="ComputerName",
                     display_name="Computer Name",
@@ -112,12 +112,12 @@ class ConfigSchema:
                     display_name="Output Verbosity",
                     field_type="choice",
                     default_value="normal",
-                    choices=["silent", "normal", "detailed"],
+                    choices="silent", "normal", "detailed",
                     help_text="Control the amount of output during deployment. 'detailed' shows all commands and outputs."
                 )
-            ],
+            ,
             
-            "Security & Remote Access": [
+            "Security & Remote Access": 
                 ConfigField(
                     name="AllowRemoteDesktop",
                     display_name="Enable Remote Desktop",
@@ -147,9 +147,9 @@ class ConfigSchema:
                     default_value=False,
                     help_text="Enable to configure PowerShell trusted hosts for remote management."
                 )
-            ],
+            ,
             
-            "Development Tools": [
+            "Development Tools": 
                 ConfigField(
                     name="InstallGit",
                     display_name="Install Git",
@@ -185,9 +185,9 @@ class ConfigSchema:
                     default_value=False,
                     help_text="Install Python runtime for additional scripting and automation tools."
                 )
-            ],
+            ,
             
-            "Infrastructure Tools": [
+            "Infrastructure Tools": 
                 ConfigField(
                     name="InstallOpenTofu",
                     display_name="Install OpenTofu",
@@ -230,9 +230,9 @@ class ConfigSchema:
                     default_value=False,
                     help_text="Install Amazon Web Services Command Line Interface for AWS cloud management."
                 )
-            ],
+            ,
             
-            "Hyper-V Configuration": [
+            "Hyper-V Configuration": 
                 ConfigField(
                     name="InstallHyperV",
                     display_name="Install Hyper-V",
@@ -256,9 +256,9 @@ class ConfigSchema:
                     help_text="Install Windows Admin Center for web-based server management interface.",
                     platform_specific={"windows": True}
                 )
-            ],
+            ,
             
-            "Package Managers": [
+            "Package Managers": 
                 ConfigField(
                     name="InstallChocolatey",
                     display_name="Install Chocolatey",
@@ -274,9 +274,9 @@ class ConfigSchema:
                     default_value=False,
                     help_text="Install 7-Zip archiving utility for handling compressed files."
                 )
-            ],
+            ,
             
-            "Advanced Settings": [
+            "Advanced Settings": 
                 ConfigField(
                     name="DisableTCPIP6",
                     display_name="Disable IPv6",
@@ -298,10 +298,10 @@ class ConfigSchema:
                     default_value=False,
                     help_text="Create PowerShell profile with lab-specific aliases and functions."
                 )
-            ]
+            
         }
     
-    def get_field_by_name(self, name: str) -> Optional[ConfigField]:
+    def get_field_by_name(self, name: str) -> OptionalConfigField:
         """Get a configuration field by name"""
         for section_fields in self.sections.values():
             for field in section_fields:
@@ -309,21 +309,21 @@ class ConfigSchema:
                     return field
         return None
     
-    def get_defaults(self) -> Dict[str, Any]:
+    def get_defaults(self) -> Dictstr, Any:
         """Get dictionary of all default values"""
         defaults = {}
         for section_fields in self.sections.values():
             for field in section_fields:
                 # Apply platform-specific defaults if applicable
                 if field.platform_specific and platform.system().lower() in field.platform_specific:
-                    defaults[field.name] = field.platform_specific[platform.system().lower()]
+                    defaultsfield.name = field.platform_specificplatform.system().lower()
                 else:
-                    defaults[field.name] = field.default_value
+                    defaultsfield.name = field.default_value
         return defaults
     
-    def validate_config(self, config: Dict[str, Any]) -> List[str]:
+    def validate_config(self, config: Dictstr, Any) -> Liststr:
         """Validate configuration and return list of errors"""
-        errors = []
+        errors = 
         
         for section_fields in self.sections.values():
             for field in section_fields:
@@ -331,7 +331,7 @@ class ConfigSchema:
                     errors.append(f"Required field '{field.display_name}' is missing")
                 
                 if field.name in config:
-                    value = config[field.name]
+                    value = configfield.name
                     
                     # Validate choices
                     if field.choices and value not in field.choices:

@@ -12,8 +12,8 @@
 #>
 
 param(
-    [switch]$Fix,
-    [switch]$ExitOnError
+    switch$Fix,
+    switch$ExitOnError
 )
 
 # Set strict mode and error handling
@@ -22,11 +22,11 @@ $ErrorActionPreference = "Stop"
 
 # Define emoji patterns (same as purge script but focused on most common ones)
 $emojiPatterns = @(
-    "🔧", "🚀", "📝", "✅", "❌", "⚠️", "🎯", "📋", "🏗️", "🛠️", "🗂️", "💡", "🔍", "📊", "🧪", "🔄", "⭐", "📚", "🌟", "💻", "🎨", "🔥", "💪", "🚨", "📦", "ℹ️", "⏳", "🩺", "🛡️"
+    "", "", "�", "PASS", "FAIL", "WARN", "", "", "�", "", "�", "�", "�", "", "�", "�", "⭐", "�", "", "�", "", "", "", "�", "�", "INFO", "⏳", "�", "�"
 )
 
 # Build regex pattern
-$emojiRegex = "[$($emojiPatterns -join '')]"
+$emojiRegex = "$($emojiPatterns -join '')"
 
 # Get the project root
 $projectRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
@@ -56,7 +56,7 @@ $emojiFound = $false
 $filesWithEmojis = @()
 
 foreach ($pattern in $filePatterns) {
-    $files = Get-ChildItem -Path $projectRoot -Filter $pattern -Recurse | Where-Object {
+    $files = Get-ChildItem -Path $projectRoot -Filter $pattern -Recurse  Where-Object {
         $skip = $false
         foreach ($skipDir in $skipDirs) {
             if ($_.FullName -like "*\$skipDir\*" -or $_.FullName -like "*/$skipDir/*") {
@@ -72,7 +72,7 @@ foreach ($pattern in $filePatterns) {
             $content = Get-Content -Path $file.FullName -Raw -Encoding UTF8
             if (-not $content) { continue }
             
-            $emojiMatches = [regex]::Matches($content, $emojiRegex)
+            $emojiMatches = regex::Matches($content, $emojiRegex)
             
             if ($emojiMatches.Count -gt 0) {
                 $emojiFound = $true
@@ -110,7 +110,7 @@ foreach ($pattern in $filePatterns) {
 if ($emojiFound) {
     Write-Host "`nEMOJI CHECK RESULT: FAILED" -ForegroundColor Red
     Write-Host "Files with emojis: $($filesWithEmojis.Count)" -ForegroundColor Red
-    Write-Host "Total emojis found: $(($filesWithEmojis | ForEach-Object { $_.Count } | Measure-Object -Sum).Sum)" -ForegroundColor Red
+    Write-Host "Total emojis found: $((filesWithEmojis | ForEach-Object { $_.Count }  Measure-Object -Sum).Sum)" -ForegroundColor Red
     
     if (-not $Fix) {
         Write-Host "`nTo fix automatically, run:" -ForegroundColor Yellow
@@ -126,3 +126,4 @@ if ($emojiFound) {
     Write-Host "EMOJI CHECK RESULT: PASSED" -ForegroundColor Green
     Write-Host "No emojis detected in codebase" -ForegroundColor Green
 }
+

@@ -17,12 +17,12 @@ This script monitors the pwsh/ directory for new scripts and automatically:
 #>
 
 param(
-    [string]$WatchDirectory = "pwsh",
-    [string]$ScriptPath,
-    [string]$OutputDirectory = "tests",
-    [switch]$Force,
-    [switch]$WatchMode,
-    [int]$WatchIntervalSeconds = 30
+    string$WatchDirectory = "pwsh",
+    string$ScriptPath,
+    string$OutputDirectory = "tests",
+    switch$Force,
+    switch$WatchMode,
+    int$WatchIntervalSeconds = 30
 )
 
 
@@ -39,7 +39,7 @@ function Get-ScriptAnalysis {
     .SYNOPSIS
     Analyzes a PowerShell script to determine test generation strategy
     #>
-    param([string]$ScriptPath)
+    param(string$ScriptPath)
     
     
 
@@ -53,7 +53,7 @@ if (-not (Test-Path $ScriptPath)) {
     }
     
     $content = Get-Content $ScriptPath -Raw
-    $ast = [System.Management.Automation.Language.Parser]::ParseInput($content, [ref]$null, [ref]$null)
+    $ast = System.Management.Automation.Language.Parser::ParseInput($content, ref$null, ref$null)
     
     $analysis = @{
         Functions = @()
@@ -69,7 +69,7 @@ if (-not (Test-Path $ScriptPath)) {
     }
     
     # Find functions
-    $functions = $ast.FindAll({ $args[0] -is [System.Management.Automation.Language.FunctionDefinitionAst] }, $true)
+    $functions = $ast.FindAll({ $args0 -is System.Management.Automation.Language.FunctionDefinitionAst }, $true)
     foreach ($func in $functions) {
         $analysis.Functions += @{
             Name = $func.Name
@@ -79,46 +79,46 @@ if (-not (Test-Path $ScriptPath)) {
     }
     
     # Find script parameters
-    $paramBlock = $ast.FindAll({ $args[0] -is [System.Management.Automation.Language.ParamBlockAst] }, $true) | Select-Object -First 1
+    $paramBlock = $ast.FindAll({ $args0 -is System.Management.Automation.Language.ParamBlockAst }, $true)  Select-Object -First 1
     if ($paramBlock) {
         $analysis.Parameters = $paramBlock.Parameters.Name.VariablePath.UserPath
     }
     
     # Determine category and characteristics
-    if ($content -match 'Install-|Download-|Invoke-WebRequest|wget|curl') {
+    if ($content -match 'Install-Download-Invoke-WebRequestwgetcurl') {
         $analysis.Category = 'Installer'
         $analysis.HasDownloads = $true
         $analysis.HasInstallation = $true
     }
-    elseif ($content -match 'Enable-|Disable-|Set-.*Feature|WindowsFeature') {
+    elseif ($content -match 'Enable-Disable-Set-.*FeatureWindowsFeature') {
         $analysis.Category = 'Feature'
         $analysis.HasConfiguration = $true
     }
-    elseif ($content -match 'Start-Service|Stop-Service|New-Service|Set-Service') {
+    elseif ($content -match 'Start-ServiceStop-ServiceNew-ServiceSet-Service') {
         $analysis.Category = 'Service'
         $analysis.HasServiceManagement = $true
     }
-    elseif ($content -match 'Set-.*Config|Config-|Configure-') {
+    elseif ($content -match 'Set-.*ConfigConfig-Configure-') {
         $analysis.Category = 'Configuration'
         $analysis.HasConfiguration = $true
     }
-    elseif ($content -match 'Reset-|Cleanup-|Remove-') {
+    elseif ($content -match 'Reset-Cleanup-Remove-') {
         $analysis.Category = 'Maintenance'
     }
     
     # Platform detection
-    if ($content -match 'Win32|Windows|\.msi|\.exe|Registry|WinRM') {
+    if ($content -match 'Win32Windows\.msi\.exeRegistryWinRM') {
         $analysis.Platform = 'Windows'
     }
-    elseif ($content -match 'apt-get|yum|systemctl|/usr/|/etc/') {
+    elseif ($content -match 'apt-getyumsystemctl/usr//etc/') {
         $analysis.Platform = 'Linux'
     }
-    elseif ($content -match 'brew|/usr/local|launchctl') {
+    elseif ($content -match 'brew/usr/locallaunchctl') {
         $analysis.Platform = 'macOS'
     }
     
     # Admin requirements
-    if ($content -match 'RequireAdministrator|Start-Process.*-Verb RunAs|sudo') {
+    if ($content -match 'RequireAdministratorStart-Process.*-Verb RunAssudo') {
         $analysis.RequiresAdmin = $true
     }
     
@@ -139,9 +139,9 @@ function New-TestTemplate {
     Generates a test template based on script analysis
     #>
     param(
-        [string]$ScriptName,
-        [object]$Analysis,
-        [string]$ScriptPath
+        string$ScriptName,
+        object$Analysis,
+        string$ScriptPath
     )
     
     
@@ -152,7 +152,7 @@ function New-TestTemplate {
 
 
 $testName = $ScriptName -replace '\.ps1$', '.Tests.ps1'
-    $scriptRelativePath = $ScriptPath -replace [regex]::Escape((Get-Location).Path + '\'), ''
+    $scriptRelativePath = $ScriptPath -replace regex::Escape((Get-Location).Path + '\'), ''
     
     $skipConditions = @()
     if ($Analysis.Platform -eq 'Windows') {
@@ -197,13 +197,13 @@ Describe '$($ScriptName -replace '\.ps1$', '') Tests' -Tag '$($Analysis.Category
     
     Context 'Script Structure Validation' {
         It 'should have valid PowerShell syntax'$skipClause {
-            `$scriptPath | Should -Exist
-            { . `$scriptPath } | Should -Not -Throw
+            `$scriptPath  Should -Exist
+            { . `$scriptPath }  Should -Not -Throw
         }
         
         It 'should follow naming conventions'$skipClause {
-            `$scriptName = [System.IO.Path]::GetFileName(`$scriptPath)
-            `$scriptName | Should -Match '^[0-9]{4}_[A-Z][a-zA-Z0-9-]+\.ps1$|^[A-Z][a-zA-Z0-9-]+\.ps1$'
+            `$scriptName = System.IO.Path::GetFileName(`$scriptPath)
+            `$scriptName  Should -Match '^0-9{4}_A-Za-zA-Z0-9-+\.ps1$^A-Za-zA-Z0-9-+\.ps1$'
         }
 "@
 
@@ -217,7 +217,7 @@ Describe '$($ScriptName -replace '\.ps1$', '') Tests' -Tag '$($Analysis.Category
         foreach ($func in $Analysis.Functions) {
             $template += @"
 
-            Get-Command '$($func.Name)' -ErrorAction SilentlyContinue | Should -Not -BeNullOrEmpty
+            Get-Command '$($func.Name)' -ErrorAction SilentlyContinue  Should -Not -BeNullOrEmpty
 "@
         }
         $template += @"
@@ -238,7 +238,7 @@ Describe '$($ScriptName -replace '\.ps1$', '') Tests' -Tag '$($Analysis.Category
             $template += @"
 
         It 'should accept $param parameter'$skipClause {
-            { & `$scriptPath -$param 'TestValue' -WhatIf } | Should -Not -Throw
+            { & `$scriptPath -$param 'TestValue' -WhatIf }  Should -Not -Throw
         }
 "@
         }
@@ -246,7 +246,7 @@ Describe '$($ScriptName -replace '\.ps1$', '') Tests' -Tag '$($Analysis.Category
         $template += @"
 
         It 'should handle execution without parameters'$skipClause {
-            { & `$scriptPath -WhatIf } | Should -Not -Throw
+            { & `$scriptPath -WhatIf }  Should -Not -Throw
         }
 "@
     }
@@ -349,15 +349,15 @@ Describe '$($ScriptName -replace '\.ps1$', '') Tests' -Tag '$($Analysis.Category
     
     Context '$($func.Name) Function Tests' {
         It 'should be defined and accessible'$skipClause {
-            Get-Command '$($func.Name)' | Should -Not -BeNullOrEmpty
+            Get-Command '$($func.Name)'  Should -Not -BeNullOrEmpty
         }
         
 "@
         if ($func.HasCmdletBinding) {
             $template += @"
         It 'should support common parameters'$skipClause {
-            (Get-Command '$($func.Name)').Parameters.Keys | Should -Contain 'Verbose'
-            (Get-Command '$($func.Name)').Parameters.Keys | Should -Contain 'WhatIf'
+            (Get-Command '$($func.Name)').Parameters.Keys  Should -Contain 'Verbose'
+            (Get-Command '$($func.Name)').Parameters.Keys  Should -Contain 'WhatIf'
         }
         
 "@
@@ -366,7 +366,7 @@ Describe '$($ScriptName -replace '\.ps1$', '') Tests' -Tag '$($Analysis.Category
         foreach ($param in $func.Parameters) {
             $template += @"
         It 'should accept $param parameter'$skipClause {
-            (Get-Command '$($func.Name)').Parameters.Keys | Should -Contain '$param'
+            (Get-Command '$($func.Name)').Parameters.Keys  Should -Contain '$param'
         }
         
 "@
@@ -400,7 +400,7 @@ function Format-ScriptName {
     .SYNOPSIS
     Formats script names to follow the project naming convention
     #>
-    param([string]$OriginalName)
+    param(string$OriginalName)
     
     
 
@@ -410,15 +410,15 @@ function Format-ScriptName {
 
 
 # Remove file extension
-    $baseName = [System.IO.Path]::GetFileNameWithoutExtension($OriginalName)
+    $baseName = System.IO.Path::GetFileNameWithoutExtension($OriginalName)
     
     # Check if already follows convention (nnnn_Verb-Noun format)
-    if ($baseName -match '^[0-9]{4}_[A-Z][a-zA-Z0-9-]+$') {
+    if ($baseName -match '^0-9{4}_A-Za-zA-Z0-9-+$') {
         return $OriginalName
     }
     
     # Split and convert to proper case
-    $parts = $baseName -split '[-_\s]' | Where-Object { $_.Length -gt 0 } | ForEach-Object {
+    $parts = $baseName -split '-_\s'  Where-Object { $_.Length -gt 0 }  ForEach-Object {
         $_.Substring(0,1).ToUpper() + $_.Substring(1).ToLower()
     }
     
@@ -429,21 +429,21 @@ function Format-ScriptName {
     $commonVerbs = @('Install', 'Enable', 'Disable', 'Configure', 'Set', 'Get', 'New', 'Remove', 'Reset', 'Start', 'Stop', 'Test', 'Invoke', 'Config')
     
     # Check if first part is a verb
-    if ($parts.Count -gt 0 -and $commonVerbs -contains $parts[0]) {
-        $verb = $parts[0]
-        $noun = ($parts[1..($parts.Count-1)] -join '')
+    if ($parts.Count -gt 0 -and $commonVerbs -contains $parts0) {
+        $verb = $parts0
+        $noun = ($parts1..($parts.Count-1) -join '')
     } else {
         # Try to infer verb from context
         $allParts = $parts -join ''
         $verb = 'Install'  # Default verb
         
         # Infer verb based on common patterns
-        if ($allParts -match 'Config|Configure|Setup|Set') { $verb = 'Configure' }
-        elseif ($allParts -match 'Enable|Start|Turn.*On') { $verb = 'Enable' }
-        elseif ($allParts -match 'Disable|Stop|Turn.*Off') { $verb = 'Disable' }
-        elseif ($allParts -match 'Get|Retrieve|Fetch') { $verb = 'Get' }
-        elseif ($allParts -match 'Remove|Delete|Clean|Reset') { $verb = 'Remove' }
-        elseif ($allParts -match 'Test|Check|Verify') { $verb = 'Test' }
+        if ($allParts -match 'ConfigConfigureSetupSet') { $verb = 'Configure' }
+        elseif ($allParts -match 'EnableStartTurn.*On') { $verb = 'Enable' }
+        elseif ($allParts -match 'DisableStopTurn.*Off') { $verb = 'Disable' }
+        elseif ($allParts -match 'GetRetrieveFetch') { $verb = 'Get' }
+        elseif ($allParts -match 'RemoveDeleteCleanReset') { $verb = 'Remove' }
+        elseif ($allParts -match 'TestCheckVerify') { $verb = 'Test' }
         
         $noun = $allParts
     }
@@ -460,12 +460,12 @@ function Format-ScriptName {
         # Find next available sequence number
         $runnerScriptsPath = Join-Path $PSScriptRoot ".." ".." "pwsh" "runner_scripts"
         if (Test-Path $runnerScriptsPath) {
-            $existingScripts = Get-ChildItem $runnerScriptsPath -Filter "*.ps1" | 
-                Where-Object { $_.Name -match '^[0-9]{4}_' } |
-                ForEach-Object { [int]($_.Name.Substring(0,4)) } |
+            $existingScripts = Get-ChildItem $runnerScriptsPath -Filter "*.ps1"  
+                Where-Object { $_.Name -match '^0-9{4}_' } 
+                ForEach-Object { int($_.Name.Substring(0,4)) } 
                 Sort-Object
             
-            $nextNumber = if ($existingScripts.Count -gt 0) { $existingScripts[-1] + 1    } else { 100    }
+            $nextNumber = if ($existingScripts.Count -gt 0) { $existingScripts-1 + 1    } else { 100    }
         } else {
             $nextNumber = 100
         }
@@ -480,7 +480,7 @@ function Watch-ScriptDirectory {
     .SYNOPSIS
     Monitors directory for new scripts and auto-generates tests
     #>
-    param([string]$Directory, [int]$IntervalSeconds = 30)
+    param(string$Directory, int$IntervalSeconds = 30)
     
     
 
@@ -496,7 +496,7 @@ Write-Host "Starting script directory watcher for: $Directory" -ForegroundColor 
     
     while ($true) {
         try {
-            $scriptFiles = Get-ChildItem $Directory -Filter "*.ps1" -Recurse | 
+            $scriptFiles = Get-ChildItem $Directory -Filter "*.ps1" -Recurse  
                 Where-Object { -not $_.Name.EndsWith('.Tests.ps1') }
             
             foreach ($script in $scriptFiles) {
@@ -504,7 +504,7 @@ Write-Host "Starting script directory watcher for: $Directory" -ForegroundColor 
                 $lastWrite = $script.LastWriteTime
                 
                 # Check if file is new or modified
-                if (-not $processedFiles.ContainsKey($key) -or $processedFiles[$key] -lt $lastWrite) {
+                if (-not $processedFiles.ContainsKey($key) -or $processedFiles$key -lt $lastWrite) {
                     Write-Host "Detected new/modified script: $($script.Name)" -ForegroundColor Cyan
                     
                     try {
@@ -526,7 +526,7 @@ Write-Host "Starting script directory watcher for: $Directory" -ForegroundColor 
                             New-TestForScript -ScriptPath $script.FullName -OutputPath $testPath
                         }
                         
-                        $processedFiles[$key] = $lastWrite
+                        $processedFiles$key = $lastWrite
                         
                     } catch {
                         Write-Error "Failed to process script $($script.Name): $_"
@@ -549,8 +549,8 @@ function New-TestForScript {
     Creates a new test file for a given script
     #>
     param(
-        [string]$ScriptPath,
-        [string]$OutputPath
+        string$ScriptPath,
+        string$OutputPath
     )
     
     
@@ -560,7 +560,7 @@ function New-TestForScript {
 
 
 
-$scriptName = [System.IO.Path]::GetFileName($ScriptPath)
+$scriptName = System.IO.Path::GetFileName($ScriptPath)
     Write-Host "Analyzing script: $scriptName" -ForegroundColor Cyan
     
     $analysis = Get-ScriptAnalysis $ScriptPath
@@ -569,7 +569,7 @@ $scriptName = [System.IO.Path]::GetFileName($ScriptPath)
     # Ensure output directory exists
     $outputDir = Split-Path $OutputPath -Parent
     if (-not (Test-Path $outputDir)) {
-        New-Item -ItemType Directory -Path $outputDir -Force | Out-Null
+        New-Item -ItemType Directory -Path $outputDir -Force  Out-Null
     }
     
     Set-Content -Path $OutputPath -Value $template -Encoding UTF8
@@ -578,7 +578,7 @@ $scriptName = [System.IO.Path]::GetFileName($ScriptPath)
     # Update test index if it exists
     $indexPath = Join-Path (Split-Path $OutputPath -Parent) 'test-index.json'
     if (Test-Path $indexPath) {
-        $index = Get-Content $indexPath | ConvertFrom-Json
+        $index = Get-Content $indexPath  ConvertFrom-Json
     } else {
         $index = @{
             Tests = @()
@@ -587,7 +587,7 @@ $scriptName = [System.IO.Path]::GetFileName($ScriptPath)
     }
     
     $testInfo = @{
-        TestFile = [System.IO.Path]::GetFileName($OutputPath)
+        TestFile = System.IO.Path::GetFileName($OutputPath)
         SourceScript = $scriptName
         Category = $analysis.Category
         Platform = $analysis.Platform
@@ -596,11 +596,11 @@ $scriptName = [System.IO.Path]::GetFileName($ScriptPath)
     }
     
     # Remove existing entry for this script if present
-    $index.Tests = $index.Tests | Where-Object { $_.SourceScript -ne $scriptName }
+    $index.Tests = $index.Tests  Where-Object { $_.SourceScript -ne $scriptName }
     $index.Tests += $testInfo
     $index.LastUpdated = Get-Date
     
-    $index | ConvertTo-Json -Depth 10 | Set-Content $indexPath -Encoding UTF8
+    index | ConvertTo-Json -Depth 10  Set-Content $indexPath -Encoding UTF8
 }
 
 # Main execution
@@ -611,7 +611,7 @@ if ($ScriptPath) {
         exit 1
     }
     
-    $testName = [System.IO.Path]::GetFileNameWithoutExtension($ScriptPath) + '.Tests.ps1'
+    $testName = System.IO.Path::GetFileNameWithoutExtension($ScriptPath) + '.Tests.ps1'
     $testPath = Join-Path $OutputDirectory $testName
     
     if ((Test-Path $testPath) -and -not $Force) {
@@ -639,7 +639,7 @@ if ($ScriptPath) {
         exit 1
     }
     
-    $scriptFiles = Get-ChildItem $fullWatchPath -Filter "*.ps1" -Recurse | 
+    $scriptFiles = Get-ChildItem $fullWatchPath -Filter "*.ps1" -Recurse  
         Where-Object { -not $_.Name.EndsWith('.Tests.ps1') }
     
     Write-Host "Found $($scriptFiles.Count) scripts to process" -ForegroundColor Green
@@ -659,6 +659,8 @@ if ($ScriptPath) {
         }
     }
 }
+
+
 
 
 

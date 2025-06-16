@@ -1,7 +1,7 @@
-[CmdletBinding()]
+CmdletBinding()
 param(
-    [string]$Target = '.',
-    [string]$SettingsPath = $null
+    string$Target = '.',
+    string$SettingsPath = $null
 )
 
 # Simple PSScriptAnalyzer import
@@ -41,24 +41,24 @@ if ($SettingsPath) {
 }
 
 # Discover all PowerShell files to analyze
-$files = Get-ChildItem -Path $Target -Recurse -Include *.ps1,*.psm1,*.psd1 -File |
+$files = Get-ChildItem -Path $Target -Recurse -Include *.ps1,*.psm1,*.psd1 -File 
     Select-Object -ExpandProperty FullName
 
 # Run Script Analyzer against the collected files
 if ($include -and $exclude) {
-    $results = $files | Invoke-ScriptAnalyzer -Severity Error,Warning -IncludeRule $include -ExcludeRule $exclude
+    $results = $files  Invoke-ScriptAnalyzer -Severity Error,Warning -IncludeRule $include -ExcludeRule $exclude
 } elseif ($include) {
-    $results = $files | Invoke-ScriptAnalyzer -Severity Error,Warning -IncludeRule $include
+    $results = $files  Invoke-ScriptAnalyzer -Severity Error,Warning -IncludeRule $include
 } elseif ($exclude) {
-    $results = $files | Invoke-ScriptAnalyzer -Severity Error,Warning -ExcludeRule $exclude
+    $results = $files  Invoke-ScriptAnalyzer -Severity Error,Warning -ExcludeRule $exclude
 } else {
-    $results = $files | Invoke-ScriptAnalyzer -Severity Error,Warning
+    $results = $files  Invoke-ScriptAnalyzer -Severity Error,Warning
 }
 # Use Write-Output so callers can capture or redirect the formatted results
-$results | Format-Table | Out-String | Write-Output
+$results  Format-Table  Out-String  Write-Output
 
 $failed = $false
-if ($results | Where-Object Severity -eq 'Error') {
+if (results | Where-Object Severity -eq 'Error') {
     Write-Error 'ScriptAnalyzer errors detected' -ErrorAction Continue
     $failed = $true
 }
@@ -66,13 +66,13 @@ if ($results | Where-Object Severity -eq 'Error') {
 # Enforce ParameterFilter on Invoke-WebRequest mocks
 $mockIssues = @()
 foreach ($file in $files) {
-    $ast = [System.Management.Automation.Language.Parser]::ParseFile($file, [ref]$null, [ref]$null)
+    $ast = System.Management.Automation.Language.Parser::ParseFile($file, ref$null, ref$null)
     $calls = $ast.FindAll({ param($n) 
-        $n -is [System.Management.Automation.Language.CommandAst] -and $n.GetCommandName() -eq 'Mock' }, $true)
+        $n -is System.Management.Automation.Language.CommandAst -and $n.GetCommandName() -eq 'Mock' }, $true)
     foreach ($c in $calls) {
-        $first = $c.CommandElements[1]
+        $first = $c.CommandElements1
         if ($first -and $first.Extent.Text -match 'Invoke-WebRequest') {
-            $hasFilter = $c.CommandElements | Where-Object { $_ -is [System.Management.Automation.Language.CommandParameterAst] -and $_.ParameterName -eq 'ParameterFilter' }
+            $hasFilter = $c.CommandElements  Where-Object { $_ -is System.Management.Automation.Language.CommandParameterAst -and $_.ParameterName -eq 'ParameterFilter' }
             if (-not $hasFilter) {
                 $mockIssues += "${file}:$($c.Extent.StartLineNumber) Mock Invoke-WebRequest missing -ParameterFilter"
             }
@@ -80,7 +80,7 @@ foreach ($file in $files) {
     }
 }
 if ($mockIssues) {
-    $mockIssues | ForEach-Object { Write-Warning $_ }
+    mockIssues | ForEach-Object { Write-Warning $_ }
     Write-Error 'Mock lint errors detected' -ErrorAction Continue
     $failed = $true
 }
@@ -90,5 +90,6 @@ if ($failed) {
     return
 }
 $global:LASTEXITCODE = 0
+
 
 

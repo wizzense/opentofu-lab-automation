@@ -56,19 +56,19 @@ git push origin hotfix/critical-issue
 ## Protection Rules
 
 ### Main Branch Protection
-- [PASS] Require PR reviews (1+ approvals)
-- [PASS] Require status checks (CI/CD must pass)
-- [PASS] Require up-to-date branches
-- [PASS] Auto-delete head branches after merge
-- [PASS] Restrict force pushes
-- [PASS] Restrict deletions
+- PASS Require PR reviews (1+ approvals)
+- PASS Require status checks (CI/CD must pass)
+- PASS Require up-to-date branches
+- PASS Auto-delete head branches after merge
+- PASS Restrict force pushes
+- PASS Restrict deletions
 
 ### Auto-Validation Requirements
-- [PASS] PowerShell syntax validation
-- [PASS] YAML lint checks
-- [PASS] Pester test execution
-- [PASS] Auto-fix application
-- [PASS] Security scanning
+- PASS PowerShell syntax validation
+- PASS YAML lint checks
+- PASS Pester test execution
+- PASS Auto-fix application
+- PASS Security scanning
 
 ## Auto-Fix Integration
 
@@ -89,9 +89,9 @@ git push origin hotfix/critical-issue
 \\\
 <type>(<scope>): <description>
 
-[optional body]
+optional body
 
-[optional footer]
+optional footer
 \\\
 
 ### Types

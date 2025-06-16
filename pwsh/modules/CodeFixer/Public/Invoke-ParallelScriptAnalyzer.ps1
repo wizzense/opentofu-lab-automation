@@ -13,14 +13,14 @@ function Invoke-ParallelScriptAnalyzer {
  Number of files to process per job (default: 10)
  #>
  
- [CmdletBinding()]
+ CmdletBinding()
  param(
- [Parameter(Mandatory=$true, Position=0)]
- [System.IO.FileInfo[]]$Files,
+ Parameter(Mandatory=$true, Position=0)
+ System.IO.FileInfo$Files,
  
- [int]$MaxJobs = [Environment]::ProcessorCount,
+ int$MaxJobs = Environment::ProcessorCount,
  
- [int]$BatchSize = 10
+ int$BatchSize = 10
  )
  
  # Validate input
@@ -37,8 +37,8 @@ function Invoke-ParallelScriptAnalyzer {
  # Split files into batches
  $batches = @()
  for ($i = 0; $i -lt $Files.Count; $i += $BatchSize) {
- $end = [Math]::Min($i + $BatchSize - 1, $Files.Count - 1)
- $batches += ,@($Files[$i..$end])
+ $end = Math::Min($i + $BatchSize - 1, $Files.Count - 1)
+ $batches += ,@($Files$i..$end)
  }
  
  Write-Host " Starting TRUE batch parallel analysis: $($batches.Count) batches ($BatchSize files/batch) with $MaxJobs concurrent jobs" -ForegroundColor Green
@@ -59,7 +59,7 @@ function Invoke-ParallelScriptAnalyzer {
  }
  } catch {
  # Add error as a synthetic issue
- $batchResults += [PSCustomObject]@{
+ $batchResults += PSCustomObject@{
  RuleName = 'ParsingError'
  Severity = 'Error'
  ScriptName = $file.FullName
@@ -73,7 +73,7 @@ function Invoke-ParallelScriptAnalyzer {
  return $batchResults
  }
  
- $allResults = [System.Collections.ArrayList]::new()
+ $allResults = System.Collections.ArrayList::new()
  $activeJobs = @{}
  $completed = 0
  $total = $batches.Count
@@ -81,7 +81,7 @@ function Invoke-ParallelScriptAnalyzer {
  foreach ($batch in $batches) {
  # Wait for available job slot
  while ($activeJobs.Count -ge $MaxJobs) {
- $completedJobs = $activeJobs.Values | Where-Object { $_.State -eq 'Completed' -or $_.State -eq 'Failed' }
+ $completedJobs = $activeJobs.Values  Where-Object { $_.State -eq 'Completed' -or $_.State -eq 'Failed' }
  
  foreach ($job in $completedJobs) {
  try {
@@ -105,16 +105,16 @@ function Invoke-ParallelScriptAnalyzer {
  # Start new job for this batch using the pre-defined scriptblock
  $batchName = "Batch_$($completed + 1)_$($batch.Count)files"
  $job = Start-Job -Name $batchName -ScriptBlock $batchScriptBlock -ArgumentList (,$batch)
- $activeJobs[$job.Id] = $job
+ $activeJobs$job.Id = $job
  
  # Show progress
- $percentComplete = [math]::Round((($completed + $activeJobs.Count) / $total) * 100, 1)
+ $percentComplete = math::Round((($completed + $activeJobs.Count) / $total) * 100, 1)
  Write-Progress -Activity "Parallel Script Analysis" -Status "Started $batchName" -PercentComplete $percentComplete
  }
  
  # Wait for remaining jobs
  while ($activeJobs.Count -gt 0) {
- $completedJobs = $activeJobs.Values | Where-Object { $_.State -eq 'Completed' -or $_.State -eq 'Failed' }
+ $completedJobs = $activeJobs.Values  Where-Object { $_.State -eq 'Completed' -or $_.State -eq 'Failed' }
  
  foreach ($job in $completedJobs) {
  try {
@@ -134,12 +134,12 @@ function Invoke-ParallelScriptAnalyzer {
  Start-Sleep -Milliseconds 100
  }
  
- $percentComplete = [math]::Round(($completed / $total) * 100, 1)
+ $percentComplete = math::Round(($completed / $total) * 100, 1)
  Write-Progress -Activity "Parallel Script Analysis" -Status "Completing..." -PercentComplete $percentComplete
  }
  
  Write-Progress -Activity "Parallel Script Analysis" -Completed
- Write-Host "[PASS] Parallel analysis completed: $completed batches processed ($($Files.Count) total files)" -ForegroundColor Green
+ Write-Host "PASS Parallel analysis completed: $completed batches processed ($($Files.Count) total files)" -ForegroundColor Green
  
  return $allResults.ToArray()
 }

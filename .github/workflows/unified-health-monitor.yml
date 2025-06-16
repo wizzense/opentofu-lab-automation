@@ -30,13 +30,13 @@ jobs:
         uses: PowerShell/PowerShell@v1
 
       - name: Run Quick Health Check
-        if: github.event_name == 'push' || github.event_name == 'pull_request'
-        run: |
+        if: github.event_name == 'push'  github.event_name == 'pull_request'
+        run: 
           pwsh -File ./scripts/maintenance/Invoke-UnifiedHealthCheck.ps1 -Mode Quick
 
       - name: Run Full Health Check
-        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
-        run: |
+        if: github.event_name == 'schedule'  github.event_name == 'workflow_dispatch'
+        run: 
           pwsh -File ./scripts/maintenance/Invoke-UnifiedHealthCheck.ps1 -Mode All -AutoFix
 
       - name: Upload Health Report
@@ -46,28 +46,28 @@ jobs:
           path: reports/unified-health/
 
       - name: Process Results
-        run: |
+        run: 
           $report = Get-Content ./reports/unified-health/unified-health-report.md -Raw
           $summary = @"
           ## Health Check Results
 
           $report
           "@
-          $summary | Out-File $env:GITHUB_STEP_SUMMARY -Encoding utf8
+          $summary  Out-File $env:GITHUB_STEP_SUMMARY -Encoding utf8
         shell: pwsh
 
       - name: Create Issue on Failure
         if: failure()
         uses: actions/github-script@v6
         with:
-          script: |
+          script: 
             const fs = require('fs');
             const report = fs.readFileSync('./reports/unified-health/unified-health-report.md', 'utf8');
 
             await github.rest.issues.create({
               owner: context.repo.owner,
               repo: context.repo.name,
-              title: '🚨 Health Check Failure',
+              title: '� Health Check Failure',
               body: report,
-              labels: ['health-check-failure', 'needs-attention']
+              labels: 'health-check-failure', 'needs-attention'
             });

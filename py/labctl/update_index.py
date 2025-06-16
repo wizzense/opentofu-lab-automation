@@ -4,7 +4,7 @@ from pathlib import Path
 
 def update_index() -> Path:
     """Generate repo file index for packaging helpers."""
-    repo_root = Path(__file__).resolve().parents[2]
+    repo_root = Path(__file__).resolve().parents2
     data = {
         "config_files": sorted(
             str(p.relative_to(repo_root))

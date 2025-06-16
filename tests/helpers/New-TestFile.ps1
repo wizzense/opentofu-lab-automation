@@ -14,32 +14,32 @@ using the extensible testing framework templates.
 #>
 
 param(
-    [Parameter(Mandatory)
+    Parameter(Mandatory)
 
 
 
 
 
 
-]
-    [string]$ScriptName,
+
+    string$ScriptName,
     
-    [Parameter(Mandatory)]
-    [ValidateSet('Installer', 'Feature', 'Service', 'Configuration', 'CrossPlatform', 'Integration')]
-    [string]$TestType,
+    Parameter(Mandatory)
+    ValidateSet('Installer', 'Feature', 'Service', 'Configuration', 'CrossPlatform', 'Integration')
+    string$TestType,
     
-    [string]$OutputPath,
+    string$OutputPath,
     
-    [switch]$Overwrite,
+    switch$Overwrite,
     
-    [switch]$DryRun
+    switch$DryRun
 )
 
 # Load the framework
 . (Join-Path $PSScriptRoot 'TestHelpers.ps1')
 
 function Get-ScriptAnalysis {
-    param([string]$ScriptPath)
+    param(string$ScriptPath)
     
     
 
@@ -53,7 +53,7 @@ if (-not (Test-Path $ScriptPath)) {
     }
     
     $content = Get-Content $ScriptPath -Raw
-    $ast = [System.Management.Automation.Language.Parser]::ParseFile($ScriptPath, [ref]$null, [ref]$null)
+    $ast = System.Management.Automation.Language.Parser::ParseFile($ScriptPath, ref$null, ref$null)
     
     $analysis = @{
         HasConfigParam = $content -match 'Param\s*\(\s*.*\$Config'
@@ -65,29 +65,29 @@ if (-not (Test-Path $ScriptPath)) {
     }
     
     # Extract configuration properties that look like boolean flags
-    $configMatches = [regex]::Matches($content, '\$Config\.([A-Za-z][A-Za-z0-9_]*)')
+    $configMatches = regex::Matches($content, '\$Config\.(A-Za-zA-Za-z0-9_*)')
     foreach ($match in $configMatches) {
-        $propertyName = $match.Groups[1].Value
+        $propertyName = $match.Groups1.Value
         if ($propertyName -notin $analysis.ConfigProperties) {
             $analysis.ConfigProperties += $propertyName
         }
     }
     
     # Find command invocations that might need mocking
-    $commandMatches = [regex]::Matches($content, '(Start-Process|Invoke-WebRequest|Get-Command|Install-WindowsFeature|Enable-WindowsOptionalFeature|New-NetFirewallRule|Get-Service)')
+    $commandMatches = regex::Matches($content, '(Start-ProcessInvoke-WebRequestGet-CommandInstall-WindowsFeatureEnable-WindowsOptionalFeatureNew-NetFirewallRuleGet-Service)')
     foreach ($match in $commandMatches) {
-        $command = $match.Groups[1].Value
+        $command = $match.Groups1.Value
         if ($command -notin $analysis.MockCandidates) {
             $analysis.MockCandidates += $command
         }
     }
     
     # Detect platform specificity
-    if ($content -match 'Windows|Hyper-V|Net-|WindowsFeature|Registry') {
+    if ($content -match 'WindowsHyper-VNet-WindowsFeatureRegistry') {
         $analysis.Platform = 'Windows'
-    } elseif ($content -match 'apt-get|yum|systemctl') {
+    } elseif ($content -match 'apt-getyumsystemctl') {
         $analysis.Platform = 'Linux'
-    } elseif ($content -match 'brew|launchctl') {
+    } elseif ($content -match 'brewlaunchctl') {
         $analysis.Platform = 'macOS'
     }
     
@@ -104,12 +104,12 @@ function New-InstallerTestContent {
 
 
 
-$enabledProperty = $Analysis.ConfigProperties | Where-Object { $_ -match 'Install' } | Select-Object -First 1
+$enabledProperty = $Analysis.ConfigProperties  Where-Object { $_ -match 'Install' }  Select-Object -First 1
     if (-not $enabledProperty) {
         $enabledProperty = 'InstallEnabled'  # fallback
     }
     
-    $installerCommand = $Analysis.MockCandidates | Where-Object { $_ -match 'Start-Process|Install' } | Select-Object -First 1
+    $installerCommand = $Analysis.MockCandidates  Where-Object { $_ -match 'Start-ProcessInstall' }  Select-Object -First 1
     if (-not $installerCommand) {
         $installerCommand = 'Start-Process'  # fallback
     }
@@ -135,7 +135,7 @@ Customize as needed for specific requirements.
 New-InstallerScriptTest -ScriptName '$ScriptName' -EnabledProperty '$enabledProperty' -InstallerCommand '$installerCommand'$platformClause -AdditionalMocks @{
     # Add any script-specific mocks here
     # Example:
-    # 'Get-SomeSpecificCommand' = { [PSCustomObject]@{ Status = 'Ready' } }
+    # 'Get-SomeSpecificCommand' = { PSCustomObject@{ Status = 'Ready' } }
 }
 
 # TODO: Review and customize the following:
@@ -157,12 +157,12 @@ function New-FeatureTestContent {
 
 
 
-$enabledProperty = $Analysis.ConfigProperties | Where-Object { $_ -match 'Enable|Allow' } | Select-Object -First 1
+$enabledProperty = $Analysis.ConfigProperties  Where-Object { $_ -match 'EnableAllow' }  Select-Object -First 1
     if (-not $enabledProperty) {
         $enabledProperty = 'FeatureEnabled'  # fallback
     }
     
-    $featureCommands = $Analysis.MockCandidates | Where-Object { $_ -match 'Enable|Install|New-' }
+    $featureCommands = $Analysis.MockCandidates  Where-Object { $_ -match 'EnableInstallNew-' }
     if (-not $featureCommands) {
         $featureCommands = @('Enable-WindowsOptionalFeature')  # fallback
     }
@@ -189,7 +189,7 @@ Customize as needed for specific requirements.
 New-FeatureScriptTest -ScriptName '$ScriptName' -EnabledProperty '$enabledProperty' -FeatureCommands @($commandsArray)$platformClause -AdditionalMocks @{
     # Add any script-specific mocks here
     # Example:
-    # 'Get-WindowsOptionalFeature' = { [PSCustomObject]@{ State = 'Disabled' } }
+    # 'Get-WindowsOptionalFeature' = { PSCustomObject@{ State = 'Disabled' } }
 }
 
 # TODO: Review and customize the following:
@@ -249,12 +249,12 @@ function New-ConfigurationTestContent {
 
 
 
-$enabledProperty = $Analysis.ConfigProperties | Where-Object { $_ -match 'Config|Setup|Set' } | Select-Object -First 1
+$enabledProperty = $Analysis.ConfigProperties  Where-Object { $_ -match 'ConfigSetupSet' }  Select-Object -First 1
     if (-not $enabledProperty) {
         $enabledProperty = 'ConfigEnabled'  # fallback
     }
     
-    $configCommands = $Analysis.MockCandidates | Where-Object { $_ -match 'Set-|New-|Config' }
+    $configCommands = $Analysis.MockCandidates  Where-Object { $_ -match 'Set-New-Config' }
     if (-not $configCommands) {
         $configCommands = @('Set-ItemProperty')  # fallback
     }
