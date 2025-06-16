@@ -1,8 +1,8 @@
 function Invoke-IntelligentBranchStrategy {
-    CmdletBinding()
+    [CmdletBinding()]
     param(
-        string$PatchDescription,
-        string$CurrentBranch = "main"
+        [string]$PatchDescription,
+        [string]$CurrentBranch = "main"
     )
     
     try {

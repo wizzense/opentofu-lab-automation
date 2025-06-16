@@ -37,22 +37,22 @@
 #>
 
 function Invoke-QuickRollback {
-    CmdletBinding(SupportsShouldProcess)
+    [CmdletBinding(SupportsShouldProcess)]
     param(
-        Parameter(Mandatory = $true)
-        ValidateSet("LastPatch", "LastCommit", "ToCommit", "ToBranch", "Emergency")
-        string$RollbackType,
+        [Parameter(Mandatory = $true)]
+        [ValidateSet("LastPatch", "LastCommit", "ToCommit", "ToBranch", "Emergency")]
+        [string]$RollbackType,
         
-        Parameter(Mandatory = $false)
-        string$TargetCommit,
+        [Parameter(Mandatory = $false)]
+        [string]$TargetCommit,
         
-        Parameter(Mandatory = $false)
-        string$TargetBranch,
+        [Parameter(Mandatory = $false)]
+        [string]$TargetBranch,
         
-        Parameter(Mandatory = $false)
-        switch$Force,
-          Parameter(Mandatory = $false)
-        switch$CreateBackup
+        [Parameter(Mandatory = $false)]
+        [switch]$Force,
+          [Parameter(Mandatory = $false)]
+        [switch]$CreateBackup
     )
       begin {
         Write-Host "Starting quick rollback process..." -ForegroundColor Cyan
@@ -62,7 +62,7 @@ function Invoke-QuickRollback {
             $CreateBackup = $true
         }
         
-        Write-Host "Type: $RollbackType  Force: $Force  Backup: $CreateBackup" -ForegroundColor Yellow
+        Write-Host "Type: $RollbackType | Force: $Force | Backup: $CreateBackup" -ForegroundColor Yellow
         
         # Validate we're in a Git repository
         if (-not (Test-Path ".git")) {
@@ -100,7 +100,7 @@ function Invoke-QuickRollback {
                         throw "No recent patch commits found"
                     }
                     
-                    $lastPatchCommit = ($patchCommits  Select-Object -First 1) -split ' '  Select-Object -First 1
+                    $lastPatchCommit = ($patchCommits | Select-Object -First 1) -split ' ' | Select-Object -First 1
                     $targetCommit = git rev-parse "$lastPatchCommit^"  # Parent of patch commit
                     
                     Write-Host "Last patch commit: $lastPatchCommit" -ForegroundColor Cyan
@@ -142,7 +142,7 @@ function Invoke-QuickRollback {
                     # Find last successful validation commit
                     $validCommits = git log --oneline --grep="validation passed" --grep="health check" --max-count=10
                     if ($validCommits) {
-                        $lastGoodCommit = ($validCommits  Select-Object -First 1) -split ' '  Select-Object -First 1
+                        $lastGoodCommit = ($validCommits | Select-Object -First 1) -split ' ' | Select-Object -First 1
                         Write-Host "Emergency rollback to last validated commit: $lastGoodCommit" -ForegroundColor Cyan
                         Invoke-CommitRollback -TargetCommit $lastGoodCommit
                     } else {
@@ -206,8 +206,8 @@ function Invoke-QuickRollback {
 }
 
 function Invoke-CommitRollback {
-    CmdletBinding(SupportsShouldProcess)
-    param(string$TargetCommit)
+    [CmdletBinding(SupportsShouldProcess)]
+    param([string]$TargetCommit)
     
     Write-Host "Performing commit rollback to: $TargetCommit" -ForegroundColor Blue
     
@@ -226,8 +226,8 @@ function Invoke-CommitRollback {
 }
 
 function Invoke-BranchRollback {
-    CmdletBinding(SupportsShouldProcess)
-    param(string$TargetBranch)
+    [CmdletBinding(SupportsShouldProcess)]
+    param([string]$TargetBranch)
     
     Write-Host "Performing branch rollback to: $TargetBranch" -ForegroundColor Blue
     
@@ -262,12 +262,12 @@ function Invoke-PostRollbackValidation {
     }
     
     # Check basic PowerShell syntax of key files
-    $keyFiles = Get-ChildItem -Path "scripts", "pwsh" -Recurse -Include "*.ps1" -ErrorAction SilentlyContinue  Select-Object -First 5
+    $keyFiles = Get-ChildItem -Path "scripts", "pwsh" -Recurse -Include "*.ps1" -ErrorAction SilentlyContinue | Select-Object -First 5
     foreach ($file in $keyFiles) {
         try {
             $content = Get-Content $file.FullName -Raw -ErrorAction SilentlyContinue
             if ($content) {
-                $null = System.Management.Automation.PSParser::Tokenize($content, ref$null)
+                $null = [System.Management.Automation.PSParser]::Tokenize($content, [ref]$null)
             }
         } catch {
             $issues += "PowerShell syntax issue in $($file.Name)"
