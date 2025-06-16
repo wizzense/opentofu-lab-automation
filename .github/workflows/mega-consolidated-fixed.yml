@@ -113,6 +113,8 @@ jobs:
   cross-platform-tests:
     name: "Tests (${{ matrix.os }})"
     runs-on: ${{ matrix.os }}
+    env:
+      LAB_REPO_ROOT: ${{ github.workspace }}
     if: ${{ github.event_name != 'workflow_dispatch' || inputs.run_tests }}
     strategy:
       fail-fast: false
