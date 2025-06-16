@@ -148,11 +148,13 @@ function Invoke-GitControlledPatch {
             
             $currentBranch = git branch --show-current
             if ($currentBranch -ne "main" -and $currentBranch -ne "master") {
-                # Create child branch from current feature branch (prevents recursive explosion)
-                $branchName = "$currentBranch/sub-$timestamp-$sanitizedDescription"
-                Write-Host "Creating child branch from feature branch: $currentBranch" -ForegroundColor Yellow
+                # ANTI-RECURSIVE PROTECTION: Instead of creating nested branches, work directly on current branch
+                Write-Host "ANTI-RECURSIVE PROTECTION: Already on feature branch '$currentBranch'" -ForegroundColor Yellow
+                Write-Host "Working directly on current branch to prevent branch explosion" -ForegroundColor Yellow
+                $branchName = $currentBranch
+                $skipBranchCreation = $true
             } else {
-                # Create top-level patch branch
+                # Create top-level patch branch from main
                 $branchName = "patch/$timestamp-$sanitizedDescription"
             }
         } else {
