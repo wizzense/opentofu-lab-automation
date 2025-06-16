@@ -168,10 +168,22 @@ Write-Host "Updated GitHub issue with progress: $UpdateMessage" -ForegroundColor
         # INTELLIGENT UNCOMMITTED CHANGES HANDLING with Anti-Recursive Logic
         if ($gitStatus) {
             $currentBranch = git branch --show-current
-            
-            if ($AutoCommitUncommitted) {
+              if ($AutoCommitUncommitted) {
                 Write-Host "Working tree has uncommitted changes - auto-committing..." -ForegroundColor Yellow
+                Update-IssueProgress "Staging all changes for auto-commit..."
+                
+                # Stage all changes first
                 git add -A
+                if ($LASTEXITCODE -ne 0) {
+                    $errorMsg = "Failed to stage changes with 'git add -A'"
+                    Update-IssueProgress "ERROR: $errorMsg" "ERROR"
+                    throw $errorMsg
+                }
+                
+                Write-Host "Changes staged successfully" -ForegroundColor Green
+                Update-IssueProgress "Changes staged successfully, committing..."
+                
+                # Now commit the staged changes
                 git commit -m "chore: Auto-commit before patch - $PatchDescription
 
 - Automated commit of uncommitted changes
@@ -180,18 +192,25 @@ Write-Host "Updated GitHub issue with progress: $UpdateMessage" -ForegroundColor
 - Timestamp: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss UTC')"
                 if ($LASTEXITCODE -eq 0) {
                     Write-Host "Changes committed successfully" -ForegroundColor Green
+                    Update-IssueProgress "Auto-commit completed successfully"
                     $commitCreated = $true
                 } else {
-                    throw "Failed to commit changes. Manual intervention required."
-                }
-            } elseif ($Force) {
+                    $errorMsg = "Failed to commit changes. Git returned exit code: $LASTEXITCODE"
+                    Update-IssueProgress "ERROR: $errorMsg" "ERROR"
+                    throw $errorMsg
+                }            } elseif ($Force) {
                 Write-Host "Working tree has uncommitted changes - auto-stashing..." -ForegroundColor Yellow
+                Update-IssueProgress "Stashing uncommitted changes..."
+                
                 git stash push -m "Auto-stash before patch: $PatchDescription $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')"
                 if ($LASTEXITCODE -eq 0) {
                     Write-Host "Changes stashed successfully" -ForegroundColor Green
+                    Update-IssueProgress "Changes stashed successfully"
                     $stashCreated = $true
                 } else {
-                    throw "Failed to stash changes. Manual intervention required."
+                    $errorMsg = "Failed to stash changes. Git returned exit code: $LASTEXITCODE"
+                    Update-IssueProgress "ERROR: $errorMsg" "ERROR"
+                    throw $errorMsg
                 }
             } elseif ($DirectCommit -and ($currentBranch -ne "main" -and $currentBranch -ne "master")) {
                 # ANTI-RECURSIVE: If we're already on a feature branch and using DirectCommit, just work on current branch
@@ -291,14 +310,30 @@ Write-Host "Updated GitHub issue with progress: $UpdateMessage" -ForegroundColor
                 if (-not $changedFiles) {
                     $changedFiles = git status --porcelain | ForEach-Object{ $_.Substring(3) }
                 }
-                
-                if ($changedFiles) {
+                  if ($changedFiles) {
                     Write-Host "Changed files:" -ForegroundColor Green
                     $changedFiles | ForEach-Object{ Write-Host "  - $_" -ForegroundColor White }
-                      # Commit changes directly
+
+                    # Update changelog for DirectCommit too
+                    Write-Host "Updating CHANGELOG.md..." -ForegroundColor Blue
+                    try {
+                        $changelogResult = Update-Changelog -PatchDescription $PatchDescription -AffectedFiles $changedFiles -ProjectRoot $env:PROJECT_ROOT
+                        if ($changelogResult.Success) {
+                            Write-Host "✓ Changelog updated successfully" -ForegroundColor Green
+                            if ($changedFiles -notcontains "CHANGELOG.md") {
+                                $changedFiles += "CHANGELOG.md"
+                            }
+                        } else {
+                            Write-Warning "Failed to update changelog: $($changelogResult.Error)"
+                        }
+                    } catch {
+                        Write-Warning "Changelog update failed: $($_.Exception.Message)"
+                    }
+
+                    # Commit changes directly
                     git add -A
                     git commit -m $PatchDescription
-                    
+
                     Write-Host "Direct commit completed successfully!" -ForegroundColor Green
                     Write-Host "Changes committed to current branch" -ForegroundColor Cyan
                     Update-IssueProgress "DirectCommit completed successfully - changes committed to current branch"
@@ -483,8 +518,7 @@ if ($AffectedFiles.Count -gt 0) {
                 
                 Write-Host "Patch operation completed" -ForegroundColor Green
             }
-            
-            # Validate changes
+              # Validate changes
             Write-Host "Validating changes..." -ForegroundColor Blue
             $changedFiles = git diff --name-only
             if (-not $changedFiles) {
@@ -497,10 +531,28 @@ if ($AffectedFiles.Count -gt 0) {
                     $changedFiles = @("patch-log.md")
                 }
             }
-            
+
             Write-Host "Changed files:" -ForegroundColor Green
             $changedFiles | ForEach-Object{ Write-Host "  - $_" -ForegroundColor White }
-            
+
+            # Update changelog before validation
+            Write-Host "Updating CHANGELOG.md..." -ForegroundColor Blue
+            Update-IssueProgress "Updating project changelog..."
+            try {
+                $changelogResult = Update-Changelog -PatchDescription $PatchDescription -AffectedFiles $changedFiles -ProjectRoot $env:PROJECT_ROOT
+                if ($changelogResult.Success) {
+                    Write-Host "✓ Changelog updated successfully" -ForegroundColor Green
+                    # Add changelog to changed files if it wasn't already there
+                    if ($changedFiles -notcontains "CHANGELOG.md") {
+                        $changedFiles += "CHANGELOG.md"
+                    }
+                } else {
+                    Write-Warning "Failed to update changelog: $($changelogResult.Error)"
+                }
+            } catch {
+                Write-Warning "Changelog update failed: $($_.Exception.Message)"
+            }
+
             # Run validation checks (non-blocking)
             try {
                 $validationResult = Invoke-PatchValidation -ChangedFiles $changedFiles
@@ -522,21 +574,47 @@ fix: $PatchDescription
 - Requires manual review before merge
 
 Auto-generated by PatchManager v2.0
-"@
-            
+"@            
+            # Stage and commit patch changes
+            Write-Host "Staging patch changes..." -ForegroundColor Blue
+            Update-IssueProgress "Staging patch changes for commit..."
             git add -A
+            if ($LASTEXITCODE -ne 0) {
+                $errorMsg = "Failed to stage patch changes with 'git add -A'"
+                Update-IssueProgress "ERROR: $errorMsg" "ERROR"
+                throw $errorMsg
+            }
+            
+            Write-Host "Committing patch changes..." -ForegroundColor Blue
+            Update-IssueProgress "Committing patch changes..."
             git commit -m $commitMessage
+            if ($LASTEXITCODE -ne 0) {
+                $errorMsg = "Failed to commit patch changes. Git returned exit code: $LASTEXITCODE"
+                Update-IssueProgress "ERROR: $errorMsg" "ERROR"
+                throw $errorMsg
+            }
             
             # Push branch
             Write-Host "Pushing patch branch to origin..." -ForegroundColor Blue
+            Update-IssueProgress "Pushing patch branch to remote repository..."
             git push -u origin $branchName
-              # Automatically create pull request
-            Write-Host "Creating pull request..." -ForegroundColor Blue
-            Update-IssueProgress "Creating pull request for patch review..."
-            $prResult = New-PatchPullRequest -BranchName $branchName -BaseBranch $BaseBranch -Description $PatchDescription -ChangedFiles $changedFiles
-            if ($prResult.Success) {
-                Write-Host "Pull request created successfully: $($prResult.Url)" -ForegroundColor Green
-                Update-IssueProgress "Pull request created successfully: $($prResult.Url)"
+            if ($LASTEXITCODE -ne 0) {
+                $errorMsg = "Failed to push branch to origin. Git returned exit code: $LASTEXITCODE"
+                Update-IssueProgress "ERROR: $errorMsg" "ERROR"
+                throw $errorMsg
+            }
+              Write-Host "Branch pushed successfully" -ForegroundColor Green
+            Update-IssueProgress "Branch pushed successfully to origin"
+            
+            # Check if we should create a pull request
+            if ($CreatePullRequest) {
+                # Automatically create pull request
+                Write-Host "Creating pull request..." -ForegroundColor Blue
+                Update-IssueProgress "Creating pull request for patch review..."
+                $prResult = New-PatchPullRequest -BranchName $branchName -BaseBranch $BaseBranch -Description $PatchDescription -ChangedFiles $changedFiles
+                if ($prResult.Success) {
+                    Write-Host "Pull request created successfully: $($prResult.Url)" -ForegroundColor Green
+                    Update-IssueProgress "Pull request created successfully: $($prResult.Url)"
                 
                 # Final issue update with success status and PR link
                 if ($script:IssueTracker.Success -and $script:IssueTracker.IssueNumber) {
@@ -902,10 +980,13 @@ This branch will be **automatically deleted** after PR is merged. To prevent thi
         $category = "fix"
         if ($Description -match "^feat") { $category = "feat" }
         elseif ($Description -match "^chore|^maintenance") { $category = "chore" }
-        elseif ($Description -match "^docs") { $category = "docs" }
+        elseif ($Description -match "^docs") { $category = "docs" }        
+        $prUrl = gh pr create --title "${category}: $cleanDesc" --body $prBody --base $BaseBranch --head $BranchName
+        if ($LASTEXITCODE -ne 0 -or [string]::IsNullOrWhiteSpace($prUrl)) {
+            throw "Failed to create pull request. GitHub CLI returned exit code: $LASTEXITCODE"
+        }
         
-        $prUrl = gh pr create --title "$category`: $cleanDesc" --body $prBody --base $BaseBranch --head $BranchName
-        
+        Write-Host "Pull request created successfully: $prUrl" -ForegroundColor Green
         return @{ Success = $true; Url = $prUrl; Message = "Pull request created successfully" }
         
     } catch {
