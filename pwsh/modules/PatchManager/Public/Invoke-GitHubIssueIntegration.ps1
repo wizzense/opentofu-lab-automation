@@ -155,20 +155,61 @@ if ($LASTEXITCODE -ne 0) {
                         Write-Warning "  Failed to create label '$label': $_"
                     }
                 }
-            }            # Create GitHub issue
-            $title = $PatchDescription
-            $body = "Affected files: $($AffectedFiles -join ', ')"
+            }            # Create comprehensive GitHub issue
+            $title = "🔧 PatchManager: $PatchDescription"
+            
+            # Create detailed issue body with full context
+            $body = @"
+## Automated Patch Issue
+
+**Patch Description**: $PatchDescription
+**Priority**: $Priority
+**Created**: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss UTC')
+**PatchManager Version**: v2.0
+
+### Affected Files
+$($AffectedFiles | ForEach-Object { "- ``$_``" } | Out-String)
+
+### Patch Details
+- **Type**: $(if ($PatchDescription -match '\b(fix|bug)\b') { 'Bug Fix' } elseif ($PatchDescription -match '\b(feat|feature)\b') { 'Feature' } elseif ($PatchDescription -match '\b(chore|maintenance)\b') { 'Maintenance' } else { 'General Patch' })
+- **Auto-generated**: Yes
+- **Manual Review Required**: Yes
+
+### Expected Actions
+1. **Review the pull request** (will be linked when created)
+2. **Validate changes** in a clean environment  
+3. **Test functionality** to ensure no regressions
+4. **Approve and merge** if all validations pass
+5. **Close this issue** after successful merge
+
+### Automation Status
+- ✅ Patch applied successfully
+- ⏳ Pull request pending (will be linked)
+- ⏳ Awaiting human review and approval
+
+**Note**: This issue was created automatically by PatchManager to track the patch lifecycle and ensure proper review process.
+"@
+            
             $labelString = $allLabels -join ','
+            Write-Host "  Creating issue with title: $title" -ForegroundColor Cyan
+            Write-Host "  Labels: $labelString" -ForegroundColor Gray
 
-            $issueResult = gh issue create --title $title --body $body --label $labelString
-
-            if ($LASTEXITCODE -eq 0) {
-                Write-Host "  GitHub issue created successfully" -ForegroundColor Green
+            $issueResult = gh issue create --title $title --body $body --label $labelString            if ($LASTEXITCODE -eq 0 -and $issueResult) {
+                Write-Host "  GitHub issue created successfully: $issueResult" -ForegroundColor Green
+                
+                # Extract issue number from the URL
+                # GitHub CLI returns URL like: https://github.com/owner/repo/issues/123
+                $issueNumber = $null
+                if ($issueResult -match '/issues/(\d+)') {
+                    $issueNumber = $matches[1]
+                    Write-Host "  Issue number extracted: #$issueNumber" -ForegroundColor Cyan
+                }
+                
                 return @{
                     Success = $true
                     Message = "GitHub issue created successfully"
                     IssueUrl = $issueResult
-                    IssueNumber = ($issueResult -match "#(\d+)") ? $matches[1] : $null
+                    IssueNumber = $issueNumber
                 }
             } else {
                 Write-Warning "  Failed to create GitHub issue: $issueResult"
