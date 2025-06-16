@@ -41,6 +41,19 @@
     - STRICT NO EMOJI POLICY
 #>
 
+# Import modularized functions
+$modulePath = Split-Path -Parent $PSCommandPath
+$publicPath = Join-Path -Path $modulePath -ChildPath "Public"
+$privatePath = Join-Path -Path $modulePath -ChildPath "Private"
+
+# Import required modules
+Import-Module (Join-Path -Path $publicPath -ChildPath "Invoke-PatchValidation.ps1") -Force
+Import-Module (Join-Path -Path $publicPath -ChildPath "GitOperations.ps1") -Force
+Import-Module (Join-Path -Path $publicPath -ChildPath "CleanupOperations.ps1") -Force
+Import-Module (Join-Path -Path $publicPath -ChildPath "CopilotIntegration.ps1") -Force
+Import-Module (Join-Path -Path $publicPath -ChildPath "ErrorHandling.ps1") -Force
+Import-Module (Join-Path -Path $publicPath -ChildPath "BranchStrategy.ps1") -Force
+
 function Invoke-GitControlledPatch {
     [CmdletBinding(SupportsShouldProcess)]
     param(
@@ -104,8 +117,7 @@ function Invoke-GitControlledPatch {
             Write-Warning "GitHub issue creation failed: $($_.Exception.Message)"
             Write-Host "Continuing without external issue tracking..." -ForegroundColor Yellow
         }
-        
-        # Helper function to update GitHub issue with progress
+          # Function to update GitHub issue with progress
         function Update-IssueProgress {
             param([string]$UpdateMessage, [string]$Status = "IN_PROGRESS")
             
@@ -116,9 +128,14 @@ function Invoke-GitControlledPatch {
                     $progressComment = "**Progress Update** ($timestamp):`n`n$UpdateMessage`n`n**Status**: $Status"
                     
                     gh issue comment $script:IssueTracker.IssueNumber --body $progressComment | Out-Null
-Write-Host "Updated GitHub issue with progress: $UpdateMessage" -ForegroundColor Gray
+                    
+                    # Use Write-PatchLog from ErrorHandling module
+                    Write-PatchLog "Updated GitHub issue with progress: $UpdateMessage" -LogLevel "INFO" -NoConsole
+                    Write-Host "Updated GitHub issue with progress: $UpdateMessage" -ForegroundColor Gray
                 } catch {
-                    Write-Warning "Failed to update GitHub issue: $($_.Exception.Message)"
+                    # Use HandlePatchError from ErrorHandling module
+                    $errorObj = HandlePatchError -ErrorMessage "Failed to update GitHub issue: $($_.Exception.Message)" -ErrorCategory "General" -Silent
+                    Write-Warning $errorObj.Message
                 }
             }
         }
@@ -226,28 +243,21 @@ Write-Host "Updated GitHub issue with progress: $UpdateMessage" -ForegroundColor
                 throw "Working tree is not clean. Use one of the above options or commit changes manually."
             }
         }
-        
-        # ANTI-RECURSIVE BRANCHING: Generate intelligent branch name or skip branch creation
+          # Get intelligent branch strategy using modularized function
         if (-not $skipBranchCreation) {
-            $timestamp = Get-Date -Format "yyyyMMdd-HHmmss"
-            $sanitizedDescription = $PatchDescription -replace '[^a-zA-Z0-9]', '-' -replace '-+', '-'
-            
             $currentBranch = git branch --show-current
-            # If ForceNewBranch is specified, always create a new branch
-            if ($ForceNewBranch) {
-                Write-Host "Force creating new branch (ignoring anti-recursive protection)" -ForegroundColor Cyan
-                $branchName = "patch/$timestamp-$sanitizedDescription"
-            }
-            # ANTI-RECURSIVE PROTECTION: Don't create nested branches if already on feature branch
-            elseif ($currentBranch -ne "main" -and $currentBranch -ne "master") {
-                # ANTI-RECURSIVE PROTECTION: Instead of creating nested branches, work directly on current branch
-                Write-Host "ANTI-RECURSIVE PROTECTION: Already on feature branch '$currentBranch'" -ForegroundColor Yellow
-                Write-Host "Working directly on current branch to prevent branch explosion" -ForegroundColor Yellow
+            
+            # Use modular branch strategy function
+            $branchStrategy = Get-IntelligentBranchStrategy -PatchDescription $PatchDescription -CurrentBranch $currentBranch -ForceNewBranch:$ForceNewBranch
+            
+            if (-not $branchStrategy.Success) {
+                Write-Warning $branchStrategy.Message
                 $branchName = $currentBranch
                 $skipBranchCreation = $true
             } else {
-                # Create top-level patch branch from main
-                $branchName = "patch/$timestamp-$sanitizedDescription"
+                $branchName = $branchStrategy.NewBranchName
+                $skipBranchCreation = $branchStrategy.SkipBranchCreation
+                Write-Host $branchStrategy.Message -ForegroundColor Cyan
             }
         } else {
             # Anti-recursive mode: use current branch
@@ -853,8 +863,7 @@ If you need to handle resolution manually:
                     gh issue comment $script:IssueTracker.IssueNumber --body $resolutionUpdate | Out-Null
                     Write-Host "Added issue resolution monitoring information to issue" -ForegroundColor Green
                 }
-                
-            } catch {
+                  } catch {
                 Write-Warning "Failed to start issue resolution monitoring: $($_.Exception.Message)"
                 Update-IssueProgress "WARNING: Issue resolution monitoring failed to start - manual resolution required" "WARNING"
             }
@@ -871,12 +880,10 @@ If you need to handle resolution manually:
                 ChangedFiles = $changedFiles
                 Message = "Patch applied successfully with automated monitoring enabled"
             }
-        
-        } # End of try block that started on line 815
-    } catch {
-        # Catch any errors in the main process block
-        Write-Host "Error in patch operation: $($_.Exception.Message)" -ForegroundColor Red
-        Update-IssueProgress "FATAL ERROR: $($_.Exception.Message)" "ERROR"
+        } catch {
+            # Catch any errors in the main try block
+            Write-Host "Error in patch operation: $($_.Exception.Message)" -ForegroundColor Red
+            Update-IssueProgress "FATAL ERROR: $($_.Exception.Message)" "ERROR"
         
         # Update issue with failure status if we have one
         if ($script:IssueTracker.Success -and $script:IssueTracker.IssueNumber) {
@@ -927,98 +934,37 @@ The patch operation encountered a fatal error and could not be completed.
                 Write-Warning "Note: You have stashed changes that may need manual restoration."
             }
         }
-        
-        Write-Host "Git-controlled patch process completed" -ForegroundColor Cyan
+          Write-Host "Git-controlled patch process completed" -ForegroundColor Cyan
         Write-Host "REMINDER: Manual review and approval required before merging" -ForegroundColor Red
     }
 }
 
+# Function declaration
 function Invoke-PatchValidation {
     param(
         [string[]]$ChangedFiles
     )
-    
+
     Write-Host "Running patch validation..." -ForegroundColor Blue
     $issues = @()
-    
+
     # PowerShell syntax validation
-    $psFiles = $ChangedFiles | Where-Object{ $_ -match '\.ps1$' }
-    if ($psFiles) {
-        foreach ($file in $psFiles) {
-            if (Test-Path $file) {
-                try {
-                    $content = Get-Content $file -Raw -ErrorAction SilentlyContinue
-                    if ($content) {
-                        $null = [System.Management.Automation.PSParser]::Tokenize($content, [ref]$null)
-                        Write-Host "  PowerShell syntax OK: $file" -ForegroundColor Green
-                    }
-                } catch {
-                    $issues += "PowerShell syntax error in ${file}: $($_.Exception.Message)"
-                    Write-Warning "  PowerShell syntax issue: $file - $($_.Exception.Message)"
-                }
+    try {
+        foreach ($file in $ChangedFiles) {
+            if (-not (Test-PowerShellSyntax -Path $file)) {
+                $issues += $file
             }
         }
-    }
-    
-    # Python syntax validation
-    $pyFiles = $ChangedFiles | Where-Object{ $_ -match '\.py$' }
-    if ($pyFiles -and (Get-Command python -ErrorAction SilentlyContinue)) {
-        foreach ($file in $pyFiles) {
-            if (Test-Path $file) {
-                try {
-                    $result = python -m py_compile $file 2>&1
-                    if ($LASTEXITCODE -eq 0) {
-                        Write-Host "  Python syntax OK: $file" -ForegroundColor Green
-                    } else {
-                        $issues += "Python syntax error in ${file}: $result"
-                        Write-Warning "  Python syntax issue: $file"
-                    }
-                } catch {
-                    $issues += "Python validation failed for ${file}: $($_.Exception.Message)"
-                    Write-Warning "  Python validation issue: $file"
-                }
-            }
+
+        if ($issues.Count -gt 0) {
+            Write-Warning "Validation failed for the following files: $($issues -join ', ')"
+            throw "Patch validation failed."
+        } else {
+            Write-Host "All files passed validation." -ForegroundColor Green
         }
-    }
-    
-    # YAML validation  
-    $yamlFiles = $ChangedFiles | Where-Object{ $_ -match '\.(yml|yaml)$' }
-    if ($yamlFiles) {
-        foreach ($file in $yamlFiles) {
-            if (Test-Path $file) {
-                try {
-                    if (Get-Command yamllint -ErrorAction SilentlyContinue) {
-                        $result = yamllint $file 2>&1
-                        if ($LASTEXITCODE -eq 0) {
-                            Write-Host "  YAML syntax OK: $file" -ForegroundColor Green
-                        } else {
-                            $issues += "YAML syntax error in ${file}: $result"
-                            Write-Warning "  YAML syntax issue: $file"
-                        }
-                    } else {
-                        # Basic YAML validation using PowerShell
-                        $content = Get-Content $file -Raw
-                        if ($content -match '^[\s]*$' -or $content.Length -eq 0) {
-                            Write-Warning "  YAML file appears empty: $file"
-                        } else {
-                            Write-Host "  YAML basic check OK: $file" -ForegroundColor Green
-                        }
-                    }
-                } catch {
-                    $issues += "YAML validation failed for ${file}: $($_.Exception.Message)"
-                    Write-Warning "  YAML validation issue: $file"
-                }
-            }
-        }
-    }
-    
-    # Return success even if there are issues (non-blocking validation)
-    if ($issues.Count -gt 0) {
-        Write-Warning "Validation completed with $($issues.Count) issues (non-blocking)"
-        return @{ Success = $true; Message = "Validation completed with warnings: $($issues -join '; ')"; Issues = $issues }
-    } else {
-        Write-Host "All validations passed successfully" -ForegroundColor Green
-        return @{ Success = $true; Message = "All validations passed"; Issues = @() }
+    } catch {
+        Write-Error "An error occurred during patch validation: $($_.Exception.Message)"
+        throw
     }
 }
 

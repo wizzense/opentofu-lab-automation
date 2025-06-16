@@ -1,0 +1,52 @@
+{
+    "recommendations": [
+        // PowerShell Development
+        "ms-vscode.powershell",
+        
+        // Git and GitHub Integration
+        "github.vscode-pull-request-github",
+        "github.copilot",
+        "github.copilot-chat",
+        "eamodio.gitlens",
+        "donjayamanne.githistory",
+        
+        // Infrastructure as Code
+        "hashicorp.terraform",
+        "gamunu.opentofu",
+        
+        // Python Development
+        "ms-python.python",
+        "ms-python.debugpy",
+        "ms-python.vscode-pylance",
+        
+        // YAML and JSON
+        "redhat.vscode-yaml",
+        "vscode.json-language-features",
+        
+        // Testing
+        "pspester.pester-test",
+        "ms-python.pytest",
+        
+        // Code Quality
+        "ms-vscode.vscode-json",
+        "davidanson.vscode-markdownlint",
+        "usernamehw.errorlens",
+        
+        // Productivity
+        "formulahendry.code-runner",
+        "ms-vscode.vscode-speech",
+        "hediet.vscode-drawio",
+        
+        // Remote Development (for cross-platform testing)
+        "ms-vscode-remote.remote-ssh",
+        "ms-vscode-remote.remote-containers",
+        "github.codespaces"
+    ],
+    "unwantedRecommendations": [
+        // Avoid conflicting PowerShell extensions
+        "ms-vscode.powershell-preview",
+        
+        // Avoid deprecated Python extensions
+        "ms-python.python-preview"
+    ]
+}

@@ -28,50 +28,18 @@
         "type": "PowerShell Module",
         "purpose": "Git-controlled patch management, comprehensive cleanup, and cross-platform environment standardization"
       },
-      "CodeFixer": {
-        "keyFunctions": [
-          "Invoke-AutoFix",
-          "Invoke-AutoFixCapture",
-          "Invoke-ComprehensiveAutoFix",
-          "Invoke-ComprehensiveValidation",
-          "Invoke-HereStringFix",
-          "Invoke-ImportAnalysis",
-          "Invoke-ParallelScriptAnalyzer",
-          "Invoke-PowerShellLint-clean",
-          "Invoke-PowerShellLint-corrupted",
-          "Invoke-PowerShellLint",
-          "Invoke-ResultsAnalysis",
-          "Invoke-ScriptOrderFix",
-          "Invoke-TernarySyntaxFix",
-          "Invoke-TestSyntaxFix",
-          "New-AutoTest",
-          "Test-JsonConfig",
-          "Test-OpenTofuConfig",
-          "Test-YamlConfig",
-          "Watch-ScriptDirectory"
-        ],
-        "version": "0.1.0",
-        "dependencies": [
-          "PSScriptAnalyzer"
-        ],
-        "path": "/pwsh/modules/CodeFixer/",
-        "entryPoint": "CodeFixer.psd1",
-        "lastUpdated": "2025-06-14",
-        "type": "PowerShell Module",
-        "purpose": "Automated code analysis, fixing, and validation"
-      },
       "LabRunner": {
         "keyFunctions": [
           "Invoke-ParallelLabRunner",
           "Test-RunnerScriptSafety-Fixed"
         ],
-        "version": "0.1.0",
+        "version": "1.0.0",
         "dependencies": [],
         "path": "/pwsh/modules/LabRunner/",
         "entryPoint": "LabRunner.psd1",
-        "lastUpdated": "2025-06-14",
+        "lastUpdated": "2025-06-16",
         "type": "PowerShell Module",
-        "purpose": "Lab environment automation and management"
+        "purpose": "Lab automation and script execution framework"
       },
       "BackupManager": {
         "keyFunctions": [
@@ -80,10 +48,39 @@
           "Invoke-PermanentCleanup",
           "Get-BackupStatistics"
         ],
-        "path": "/pwsh/modules/BackupManager/",
         "version": "1.0.0",
-        "lastUpdated": "2025-06-14",
-        "description": "Comprehensive backup management module"
+        "dependencies": [],
+        "path": "/pwsh/modules/BackupManager/",
+        "entryPoint": "BackupManager.psd1",
+        "lastUpdated": "2025-06-16",
+        "type": "PowerShell Module",
+        "purpose": "Backup management and archival operations"
+      },
+      "Logging": {
+        "keyFunctions": [
+          "Write-CustomLog",
+          "Initialize-LoggingSystem"
+        ],
+        "version": "1.0.0",
+        "dependencies": [],
+        "path": "/pwsh/modules/Logging/",
+        "entryPoint": "Logging.psd1",
+        "lastUpdated": "2025-06-16",
+        "type": "PowerShell Module",
+        "purpose": "Centralized logging and reporting system"
+      },
+      "ScriptManager": {
+        "keyFunctions": [
+          "Invoke-ScriptValidation",
+          "Get-ScriptDependencies"
+        ],
+        "version": "1.0.0",
+        "dependencies": [],
+        "path": "/pwsh/modules/ScriptManager/",
+        "entryPoint": "ScriptManager.psd1",
+        "lastUpdated": "2025-06-16",
+        "type": "PowerShell Module",
+        "purpose": "Script management and validation utilities"
       }
     },
     "maintenanceSystem": {
@@ -434,6 +431,15 @@
     "docs/Unified-Project-Guidelines.md": {
       "description": "Unified project guidelines",
       "lastUpdated": "2025-06-16"
+    }
+  },
+  "deprecatedModules": {
+    "CodeFixer": {
+      "deprecatedOn": "2025-06-16",
+      "reason": "Systematic corruption of pipeline operators causing file damage",
+      "replacedBy": "PatchManager",
+      "archiveLocation": "/archive/codefixer-removal-20250616/",
+      "migrationNote": "CodeFixer functionality migrated to PatchManager module with improved safety"
     }
   }
 }

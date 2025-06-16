@@ -1,0 +1,197 @@
+#Requires -Version 7.0
+<#
+.SYNOPSIS
+    Validation module for PatchManager
+    
+.DESCRIPTION
+    Provides validation functions for PatchManager to ensure code quality
+    and prevent common issues before committing changes.
+    
+.NOTES
+    - Integrated with ModuleValidation
+    - Cross-platform validation support
+    - PowerShell syntax validation
+    - Path standardization validation
+    - No emoji validation
+#>
+
+function Invoke-PatchValidation {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory = $true)]
+        [string[]]$ChangedFiles
+    )
+
+    Write-Host "Running patch validation..." -ForegroundColor Blue
+    $issues = @()
+
+    # PowerShell syntax validation
+    try {
+        foreach ($file in $ChangedFiles) {
+            if (-not (Test-Path $file)) { continue }
+            
+            # Only validate PowerShell files
+            if ($file -like "*.ps1" -or $file -like "*.psm1" -or $file -like "*.psd1") {
+                Write-Verbose "Validating PowerShell syntax for: $file"
+                
+                # Check PowerShell syntax
+                $syntaxErrors = $null
+                $ast = [System.Management.Automation.Language.Parser]::ParseFile($file, [ref]$null, [ref]$syntaxErrors)
+                
+                if ($syntaxErrors) {
+                    foreach ($error in $syntaxErrors) {
+                        Write-Warning "Syntax error in $file at line $($error.Extent.StartLineNumber): $($error.Message)"
+                    }
+                    $issues += $file
+                }
+                
+                # Check for emoji in PowerShell files
+                $content = Get-Content -Path $file -Raw -ErrorAction SilentlyContinue
+                if ($content -match '[\u1F300-\u1F6FF\u2600-\u26FF\u2700-\u27BF]') {
+                    Write-Warning "Emoji detected in $file - these break workflows"
+                    $issues += $file
+                }
+            }
+            
+            # Validate YAML files
+            if ($file -like "*.yml" -or $file -like "*.yaml") {
+                # Skip YAML validation if yamllint not available
+                if (Get-Command yamllint -ErrorAction SilentlyContinue) {
+                    Write-Verbose "Validating YAML syntax for: $file"
+                    $yamlResult = Invoke-Expression "yamllint $file"
+                    if ($LASTEXITCODE -ne 0) {
+                        Write-Warning "YAML issues in $file"
+                        $issues += $file
+                    }
+                }
+            }
+            
+            # Validate cross-platform path issues
+            if (Select-String -Path $file -Pattern "C:\\|D:\\|E:\\|C:/|D:/|E:/" -SimpleMatch -Quiet) {
+                Write-Warning "Hardcoded Windows paths detected in $file"
+                $issues += $file
+            }
+        }
+
+        if ($issues.Count -gt 0) {
+            Write-Warning "Validation failed for the following files: $($issues -join ', ')"
+            
+            return @{
+                Success = $false
+                Message = "$($issues.Count) files failed validation"
+                Issues = $issues
+            }
+        } else {
+            Write-Host "All files passed validation." -ForegroundColor Green
+            
+            return @{
+                Success = $true
+                Message = "All files passed validation"
+                Issues = @()
+            }
+        }
+    } catch {
+        Write-Error "An error occurred during patch validation: $($_.Exception.Message)"
+        
+        return @{
+            Success = $false
+            Message = "Validation error: $($_.Exception.Message)" 
+            Issues = $ChangedFiles
+        }
+    }
+}
+
+function Test-PowerShellSyntax {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$Path
+    )
+    
+    # Skip non-existent or non-PS files
+    if (-not (Test-Path $Path) -or -not ($Path -like "*.ps1" -or $Path -like "*.psm1" -or $Path -like "*.psd1")) {
+        return $true
+    }
+    
+    try {
+        $syntaxErrors = $null
+        $ast = [System.Management.Automation.Language.Parser]::ParseFile($Path, [ref]$null, [ref]$syntaxErrors)
+        
+        if ($syntaxErrors) {
+            foreach ($error in $syntaxErrors) {
+                Write-Warning "Syntax error in $Path at line $($error.Extent.StartLineNumber): $($error.Message)"
+            }
+            return $false
+        }
+        
+        return $true
+    } catch {
+        Write-Warning "Error checking syntax for $Path`: $_"
+        return $false
+    }
+}
+
+function Test-CrossPlatformPaths {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$Path
+    )
+    
+    # Skip non-existent files
+    if (-not (Test-Path $Path)) {
+        return $true
+    }
+    
+    try {
+        $content = Get-Content -Path $Path -Raw -ErrorAction SilentlyContinue
+        
+        # Check for hardcoded Windows paths
+        $windowsPathPattern = 'C:\\|D:\\|E:\\|C:/|D:/|E:/'
+        $hasWindowsPaths = $content -match $windowsPathPattern
+        
+        if ($hasWindowsPaths) {
+            Write-Warning "Hardcoded Windows paths detected in $Path"
+            return $false
+        }
+        
+        return $true
+    } catch {
+        Write-Warning "Error checking cross-platform paths for $Path`: $_"
+        return $false
+    }
+}
+
+function Test-EmojiPresence {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$Path
+    )
+    
+    # Skip non-existent files
+    if (-not (Test-Path $Path)) {
+        return $true
+    }
+    
+    try {
+        $content = Get-Content -Path $Path -Raw -ErrorAction SilentlyContinue
+        
+        # Basic emoji pattern
+        $emojiPattern = '[\u1F300-\u1F6FF\u2600-\u26FF\u2700-\u27BF]'
+        $hasEmoji = $content -match $emojiPattern
+        
+        if ($hasEmoji) {
+            Write-Warning "Emoji detected in $Path - these break workflows"
+            return $false
+        }
+        
+        return $true
+    } catch {
+        Write-Warning "Error checking for emoji in $Path`: $_"
+        return $false
+    }
+}
+
+# Export public functions
+Export-ModuleMember -Function Invoke-PatchValidation, Test-PowerShellSyntax, Test-CrossPlatformPaths, Test-EmojiPresence

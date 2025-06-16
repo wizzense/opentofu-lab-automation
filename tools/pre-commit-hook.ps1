@@ -57,8 +57,11 @@ Write-Host " Validating `$(`$stagedFiles.Count) PowerShell files with batch proc
 
 # Load our new batch processing linting functions
 try {
- . "./pwsh/modules/CodeFixer/Public/Invoke-PowerShellLint.ps1"
- . "./pwsh/modules/CodeFixer/Public/Invoke-ParallelScriptAnalyzer.ps1"
+    # DEPRECATED: CodeFixer module removed due to corruption issues
+    # Using PatchManager for validation instead
+    Import-Module "/pwsh/modules/PatchManager/" -Force -ErrorAction Stop
+    
+    Write-Host "Using PatchManager for validation (CodeFixer deprecated)" -ForegroundColor Yellow
  
  # Convert file paths to FileInfo objects
  `$fileObjects = @()

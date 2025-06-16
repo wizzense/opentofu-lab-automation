@@ -1,4 +1,4 @@
-#!/usr/bin/env pwsh
+wh#!/usr/bin/env pwsh
 # /workspaces/opentofu-lab-automation/scripts/maintenance/unified-maintenance.ps1
 
 <#
@@ -24,6 +24,8 @@ The maintenance mode to run:
 - Quick: Fast health check and basic validation
 - Full: Complete maintenance cycle without tests
 - Test: Include test execution and analysis
+- TestOnly: Run only automated testing workflow
+- Continuous: Start continuous testing monitoring
 - Track: Focus on recurring issue tracking
 - Report: Generate reports only
 - All: Complete maintenance with everything
@@ -47,292 +49,311 @@ Skip test execution even in Full/All modes (for faster runs)
 ./scripts/maintenance/unified-maintenance.ps1 -Mode "Track" -AutoFix
 #>
 
-CmdletBinding()
-param(
-    [Parameter()]
-    [ValidateSet('Quick', 'Full', 'Test', 'Track', 'Report', 'All')]
-    [string]$Mode = 'Quick',
-    
-    [Parameter()]
-    [switch]$AutoFix,
-    
-    [Parameter()]
-    [switch]$UpdateChangelog,
-    
-    [Parameter()]
-    [switch]$SkipTests,
-    
-    [Parameter()]
-    [switch]$IgnoreArchive
-)
+function UnifiedMaintenance {
+    param(
+        [Parameter()]
+        [ValidateSet('Quick', 'Full', 'Test', 'TestOnly', 'Continuous', 'Track', 'Report', 'All')]
+        [string]$Mode = 'Quick',
+        
+        [Parameter()]
+        [switch]$AutoFix,
+        
+        [Parameter()]
+        [switch]$UpdateChangelog,
+        
+        [Parameter()]
+        [switch]$SkipTests,
+        
+        [Parameter()]
+        [switch]$IgnoreArchive
+    )
 
-$ErrorActionPreference = "Stop"
-# Detect the correct project root based on the current environment
-$ProjectRoot = (Get-Location).Path
+    $ErrorActionPreference = "Stop"
+    # Detect the correct project root based on the current environment
+    $ProjectRoot = (Get-Location).Path
 
-# Move misplaced files to appropriate directories
-Write-Host "Organizing misplaced files..." -ForegroundColor Cyan
-$misplacedFiles = @{
-    "test-config-errors.json" = "$ProjectRoot/tests/data/test-config-errors.json",
-    "workflow-optimization-report.json" = "$ProjectRoot/reports/workflow-optimization-report.json"
-}
-
-foreach ($file in $misplacedFiles.Keys) {
-    if (Test-Path $file) {
-        Move-Item -Path $file -Destination $misplacedFiles[$file] -Force
-        Write-Host "Moved $file to $($misplacedFiles[$file])" -ForegroundColor Green
-    } else {
-        Write-Warning "$file not found, skipping..."
+    # Move misplaced files to appropriate directories
+    Write-Host "Organizing misplaced files..." -ForegroundColor Cyan
+    $misplacedFiles = @{
+        "test-config-errors.json" = "$ProjectRoot/tests/data/test-config-errors.json",
+        "workflow-optimization-report.json" = "$ProjectRoot/reports/workflow-optimization-report.json"
     }
-}
 
-# Archive redundant scripts
-Write-Host "Archiving redundant scripts..." -ForegroundColor Yellow
-$redundantScripts = @{
-    "organize-project.ps1" = "$ProjectRoot/archive/maintenance-scripts/organize-project.ps1",
-    "cleanup-remaining.ps1" = "$ProjectRoot/archive/maintenance-scripts/cleanup-remaining.ps1"
-}
-
-foreach ($script in $redundantScripts.Keys) {
-    if (Test-Path $script) {
-        Move-Item -Path $script -Destination $redundantScripts[$script] -Force
-        Write-Host "Archived $script to $($redundantScripts[$script])" -ForegroundColor Green
-    } else {
-        Write-Warning "$script not found, skipping..."
-    }
-}
-
-# Validate project structure
-Write-Host "Validating project structure..." -ForegroundColor Blue
-$validationResults = @{
-    "MissingFiles" = @(),
-    "InvalidPaths" = @()
-}
-
-$requiredFiles = @("PROJECT-MANIFEST.json", "README.md", "pwsh/modules/BackupManager/BackupManager.psd1")
-foreach ($file in $requiredFiles) {
-    if (-not (Test-Path $file)) {
-        $validationResults.MissingFiles += $file
-        Write-Warning "$file is missing!"
-    }
-}
-
-if ($validationResults.MissingFiles.Count -eq 0) {
-    Write-Host "Project structure validated successfully." -ForegroundColor Green
-} else {
-    Write-host "Validation completed with warnings." -ForegroundColor Yellow
-}
-# Detect the correct project root based on the current environment
-$ProjectRoot = if ($IsWindows -or $env:OS -eq "Windows_NT") {
-    Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
-} else {
-    "/workspaces/opentofu-lab-automation"
-}
-
-# Use standardized paths for all operations
-$IssueTrackingPath = "$ProjectRoot/docs/reports/issue-tracking"
-$WorkflowPath = "$ProjectRoot/.github/workflows"
-
-function Write-MaintenanceLog {
- param(string$Message, string$Level = "INFO")
- 
-
-
-
-$timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
- $color = switch ($Level) {
- "INFO" { "Cyan" }
- "SUCCESS" { "Green" }
- "WARNING" { "Yellow" }
- "ERROR" { "Red" }
- "MAINTENANCE" { "Magenta" }
- "STEP" { "Blue" }
- 
-        "BackupCleanup" {
-            Write-Host "Running backup consolidation and exclusion updates..." -ForegroundColor Cyan
-            
-            # Consolidate backup files
-            & "$PSScriptRoot/consolidate-all-backups.ps1" -Force
-            
-            # Update exclusion configurations
-            & "$PSScriptRoot/update-backup-exclusions.ps1"
-            
-            break
-        }
-default { "White" }
- }
- Write-Host "$timestamp $Level $Message" -ForegroundColor $color
-}
-
-function Invoke-MaintenanceStep {
- param(
- string$StepName,
- scriptblock$Action,
- bool$Required = $true
- )
- 
- 
-
-
-
-Write-MaintenanceLog ">>> $StepName" "STEP"
- try {
- $result = & $Action
- Write-MaintenanceLog "PASS $StepName completed" "SUCCESS"
- return $result
- }
- catch {
- $message = "FAIL $StepName failed: $($_.Exception.Message)"
- if ($Required) {
- Write-MaintenanceLog $message "ERROR"
- throw
- } else {
- Write-MaintenanceLog $message "WARNING"
- return $null
- }
- }
-}
-
-function Step-InfrastructureHealthCheck {
- $healthScript = "$ProjectRoot/scripts/maintenance/infrastructure-health-check.ps1"
- if (Test-Path $healthScript) {
- & $healthScript -Mode "Full" -AutoFix:$AutoFix
- } else {
- Write-MaintenanceLog "Infrastructure health check script not found" "WARNING"
- }
-}
-
-function Step-FixInfrastructureIssues {
-    $fixScript = "$ProjectRoot/scripts/maintenance/fix-infrastructure-issues.ps1"
-    if (Test-Path $fixScript) {
-        if ($AutoFix) {
-            & $fixScript -Fix "All"
+    foreach ($file in $misplacedFiles.Keys) {
+        if (Test-Path $file) {
+            Move-Item -Path $file -Destination $misplacedFiles[$file] -Force
+            Write-Host "Moved $file to $($misplacedFiles[$file])" -ForegroundColor Green
         } else {
-            & $fixScript -Fix "All" -DryRun
+            Write-Warning "$file not found, skipping..."
         }
-    } else {
-        Write-MaintenanceLog "Infrastructure fix script not found" "WARNING"
     }
-}
 
-function Step-FixTestSyntax {
- $fixScript = "$ProjectRoot/scripts/maintenance/fix-infrastructure-issues.ps1"
- if (Test-Path $fixScript) {
- & $fixScript -Fix "TestSyntax" -AutoFix:$AutoFix
- } else {
- Write-MaintenanceLog "Fix script not found, using basic syntax validation" "WARNING"
- # Basic syntax validation fallback
- Get-ChildItem -Path "$ProjectRoot/tests" -Filter "*.ps1" -Recurse | ForEach-Object{
- $null = System.Management.Automation.Language.Parser::ParseFile($_.FullName, ref$null, ref$null)
- }
- }
-}
+    # Archive redundant scripts
+    Write-Host "Archiving redundant scripts..." -ForegroundColor Yellow
+    $redundantScripts = @{
+        "organize-project.ps1" = "$ProjectRoot/archive/maintenance-scripts/organize-project.ps1",
+        "cleanup-remaining.ps1" = "$ProjectRoot/archive/maintenance-scripts/cleanup-remaining.ps1"
+    }
 
-function Step-ValidateYaml {
- Write-MaintenanceLog "Validating and fixing YAML files..." "INFO"
- $yamlScript = "$ProjectRoot/scripts/validation/Invoke-YamlValidation.ps1"
- if (Test-Path $yamlScript) {
- try {
- if ($AutoFix) {
- Write-MaintenanceLog "Running YAML validation with auto-fix..." "INFO"
- & $yamlScript -Mode "Fix" -Path ".github/workflows"
- } else {
- Write-MaintenanceLog "Running YAML validation (check only)..." "INFO"
- & $yamlScript -Mode "Check" -Path ".github/workflows"
- }
- Write-MaintenanceLog "YAML validation completed" "SUCCESS"
- } catch {
- Write-MaintenanceLog "YAML validation failed: $($_.Exception.Message)" "ERROR"
- if ($AutoFix) {
- Write-MaintenanceLog "Attempting basic YAML fixes..." "WARNING"
- # Basic fallback validation
- Get-ChildItem -Path "$ProjectRoot/.github/workflows" -Filter "*.yml","*.yaml" -ErrorAction SilentlyContinue | ForEach-Object{
- try {
- $content = Get-Content $_.FullName -Raw
- $null = ConvertFrom-Yaml $content -ErrorAction Stop
- Write-MaintenanceLog " $($_.Name) syntax is valid" "SUCCESS"
- } catch {
- Write-MaintenanceLog " $($_.Name) has syntax issues: $($_.Exception.Message)" "ERROR"
- }
- }
- }
- }
- } else {
- Write-MaintenanceLog "YAML validation script not found: $yamlScript" "WARNING"
- Write-MaintenanceLog "Please ensure the validation script exists" "WARNING"
- }
-}
+    foreach ($script in $redundantScripts.Keys) {
+        if (Test-Path $script) {
+            Move-Item -Path $script -Destination $redundantScripts[$script] -Force
+            Write-Host "Archived $script to $($redundantScripts[$script])" -ForegroundColor Green
+        } else {
+            Write-Warning "$script not found, skipping..."
+        }
+    }
 
-function Step-UpdateDocumentation {
- Write-MaintenanceLog "Updating project documentation and configuration..." "INFO"
- $docScript = "$ProjectRoot/scripts/utilities/Update-ProjectDocumentation.ps1"
- if (Test-Path $docScript) {
- try {
- & $docScript
- Write-MaintenanceLog "Documentation updated successfully" "SUCCESS"
- } catch {
- Write-MaintenanceLog "Failed to update documentation: $($_.Exception.Message)" "WARNING"
- }
- } else {
- Write-MaintenanceLog "Documentation update script not found" "WARNING"
- }
-}
+    # Validate project structure
+    Write-Host "Validating project structure..." -ForegroundColor Blue
+    $validationResults = @{
+        "MissingFiles" = @(),
+        "InvalidPaths" = @()
+    }
 
-function Step-RunTests {
- if ($SkipTests) {
- Write-MaintenanceLog "Skipping tests (SkipTests flag set)" "INFO"
- return
- }
- 
- $testScript = "$ProjectRoot/run-comprehensive-tests.ps1"
- if (Test-Path $testScript) {
- Write-MaintenanceLog "Running comprehensive tests..." "INFO"
- & $testScript
- } else {
- Write-MaintenanceLog "Test script not found, using basic Pester" "WARNING"
- Set-Location $ProjectRoot
- Invoke-Pester tests/ -OutputFile "TestResults.xml" -OutputFormat NUnitXml -ExitOnError:$false
- }
-}
+    $requiredFiles = @("PROJECT-MANIFEST.json", "README.md", "pwsh/modules/BackupManager/BackupManager.psd1")
+    foreach ($file in $requiredFiles) {
+        if (-not (Test-Path $file)) {
+            $validationResults.MissingFiles += $file
+            Write-Warning "$file is missing!"
+        }
+    }
 
-function Step-TrackRecurringIssues {
- $trackingScript = "$ProjectRoot/scripts/maintenance/track-recurring-issues.ps1"
- if (Test-Path $trackingScript) {
- & $trackingScript -Mode "All" -IncludePreventionCheck
- } else {
- Write-MaintenanceLog "Recurring issues tracking script not found" "WARNING"
- }
-}
+    if ($validationResults.MissingFiles.Count -eq 0) {
+        Write-Host "Project structure validated successfully." -ForegroundColor Green
+    } else {
+        Write-host "Validation completed with warnings." -ForegroundColor Yellow
+    }
+    # Detect the correct project root based on the current environment
+    $ProjectRoot = if ($IsWindows -or $env:OS -eq "Windows_NT") {
+        Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
+    } else {
+        "/workspaces/opentofu-lab-automation"
+    }
 
-function Step-GenerateReports {
- # Generate infrastructure health report
- Invoke-MaintenanceStep "Infrastructure Health Report" {
- Step-InfrastructureHealthCheck
- } $false
- 
- # Generate recurring issues report if we have test results
- if (Test-Path "$ProjectRoot/TestResults.xml") {
- Invoke-MaintenanceStep "Recurring Issues Report" {
- Step-TrackRecurringIssues
- } $false
- }
- 
- # Update report index
- $newReportScript = "$ProjectRoot/scripts/utilities/new-report.ps1"
- if (Test-Path $newReportScript) {
- Write-MaintenanceLog "Updating report index..." "INFO"
-function Step-UpdateChangelog {
- if (-not $UpdateChangelog) {
- return
- }
- 
- $changelogPath = "$ProjectRoot/CHANGELOG.md"
- if (-not (Test-Path $changelogPath)) {
- Write-MaintenanceLog "CHANGELOG.md not found" "WARNING"
- return
- }
- 
- $content = Get-Content $changelogPath -Raw
+    # Use standardized paths for all operations
+    $IssueTrackingPath = "$ProjectRoot/docs/reports/issue-tracking"
+    $WorkflowPath = "$ProjectRoot/.github/workflows"
+
+    function Write-MaintenanceLog {
+     param(string$Message, string$Level = "INFO")
+     
+
+    $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+     $color = switch ($Level) {
+     "INFO" { "Cyan" }
+     "SUCCESS" { "Green" }
+     "WARNING" { "Yellow" }
+     "ERROR" { "Red" }
+     "MAINTENANCE" { "Magenta" }
+     "STEP" { "Blue" }
+     
+            "BackupCleanup" {
+                Write-Host "Running backup consolidation and exclusion updates..." -ForegroundColor Cyan
+                
+                # Consolidate backup files
+                & "$PSScriptRoot/consolidate-all-backups.ps1" -Force
+                
+                # Update exclusion configurations
+                & "$PSScriptRoot/update-backup-exclusions.ps1"
+                
+                break
+            }
+    default { "White" }
+     }
+     Write-Host "$timestamp $Level $Message" -ForegroundColor $color
+    }
+
+    function Invoke-MaintenanceStep {
+     param(
+     string$StepName,
+     scriptblock$Action,
+     bool$Required = $true
+     )
+     
+     
+
+    Write-MaintenanceLog ">>> $StepName" "STEP"
+     try {
+     $result = & $Action
+     Write-MaintenanceLog "PASS $StepName completed" "SUCCESS"
+     return $result
+     }
+     catch {
+     $message = "FAIL $StepName failed: $($_.Exception.Message)"
+     if ($Required) {
+     Write-MaintenanceLog $message "ERROR"
+     throw
+     } else {
+     Write-MaintenanceLog $message "WARNING"
+     return $null
+     }
+     }
+    }
+
+    function Step-InfrastructureHealthCheck {
+     $healthScript = "$ProjectRoot/scripts/maintenance/infrastructure-health-check.ps1"
+     if (Test-Path $healthScript) {
+         & $healthScript -Mode "Full" -AutoFix:$AutoFix
+     } else {
+         Write-MaintenanceLog "Infrastructure health check script not found" "WARNING"
+     }
+    }
+
+    function Step-FixInfrastructureIssues {
+        $fixScript = "$ProjectRoot/scripts/maintenance/fix-infrastructure-issues.ps1"
+        if (Test-Path $fixScript) {
+            if ($AutoFix) {
+                & $fixScript -Fix "All"
+            } else {
+                & $fixScript -Fix "All" -DryRun
+            }
+        } else {
+            Write-MaintenanceLog "Infrastructure fix script not found" "WARNING"
+        }
+    }
+
+    function Step-FixTestSyntax {
+     $fixScript = "$ProjectRoot/scripts/maintenance/fix-infrastructure-issues.ps1"
+     if (Test-Path $fixScript) {
+     & $fixScript -Fix "TestSyntax" -AutoFix:$AutoFix
+     } else {
+     Write-MaintenanceLog "Fix script not found, using basic syntax validation" "WARNING"
+     # Basic syntax validation fallback
+     Get-ChildItem -Path "$ProjectRoot/tests" -Filter "*.ps1" -Recurse | ForEach-Object{
+     $null = System.Management.Automation.Language.Parser::ParseFile($_.FullName, ref$null, ref$null)
+     }
+     }
+    }
+
+    function Step-ValidateYaml {
+     Write-MaintenanceLog "Validating and fixing YAML files..." "INFO"
+     $yamlScript = "$ProjectRoot/scripts/validation/Invoke-YamlValidation.ps1"
+     if (Test-Path $yamlScript) {
+     try {
+     if ($AutoFix) {
+     Write-MaintenanceLog "Running YAML validation with auto-fix..." "INFO"
+     & $yamlScript -Mode "Fix" -Path ".github/workflows"
+     } else {
+     Write-MaintenanceLog "Running YAML validation (check only)..." "INFO"
+     & $yamlScript -Mode "Check" -Path ".github/workflows"
+     }
+     Write-MaintenanceLog "YAML validation completed" "SUCCESS"
+     } catch {
+     Write-MaintenanceLog "YAML validation failed: $($_.Exception.Message)" "ERROR"
+     if ($AutoFix) {
+     Write-MaintenanceLog "Attempting basic YAML fixes..." "WARNING"
+     # Basic fallback validation
+     Get-ChildItem -Path "$ProjectRoot/.github/workflows" -Filter "*.yml","*.yaml" -ErrorAction SilentlyContinue | ForEach-Object{
+     try {
+     $content = Get-Content $_.FullName -Raw
+     $null = ConvertFrom-Yaml $content -ErrorAction Stop
+     Write-MaintenanceLog " $($_.Name) syntax is valid" "SUCCESS"
+     } catch {
+     Write-MaintenanceLog " $($_.Name) has syntax issues: $($_.Exception.Message)" "ERROR"
+     }
+     }
+     }
+     } else {
+     Write-MaintenanceLog "YAML validation script not found: $yamlScript" "WARNING"
+     Write-MaintenanceLog "Please ensure the validation script exists" "WARNING"
+     }
+    }
+
+    function Step-UpdateDocumentation {
+     Write-MaintenanceLog "Updating project documentation and configuration..." "INFO"
+     $docScript = "$ProjectRoot/scripts/utilities/Update-ProjectDocumentation.ps1"
+     if (Test-Path $docScript) {
+     try {
+     & $docScript
+     Write-MaintenanceLog "Documentation updated successfully" "SUCCESS"
+     } catch {
+     Write-MaintenanceLog "Failed to update documentation: $($_.Exception.Message)" "WARNING"
+     }
+     } else {
+     Write-MaintenanceLog "Documentation update script not found" "WARNING"
+     }
+    }    function Step-RunTests {
+     if ($SkipTests) {
+     Write-MaintenanceLog "Skipping tests (SkipTests flag set)" "INFO"
+     return
+     }
+     
+     # Use the comprehensive automated testing workflow
+     $automatedTestScript = "$ProjectRoot/Invoke-AutomatedTestWorkflow.ps1"
+     if (Test-Path $automatedTestScript) {
+         Write-MaintenanceLog "Running automated testing workflow..." "INFO"
+         try {
+             & $automatedTestScript -TestCategory All -GenerateCoverage -UpdateTests
+             Write-MaintenanceLog "Automated testing workflow completed successfully" "SUCCESS"
+         } catch {
+             Write-MaintenanceLog "Automated testing workflow failed: $($_.Exception.Message)" "ERROR"
+             # Fallback to basic testing
+             Write-MaintenanceLog "Falling back to basic test execution..." "WARNING"
+             Step-RunBasicTests
+         }
+     } else {
+         Write-MaintenanceLog "Automated test workflow not found, using fallback" "WARNING"
+         Step-RunBasicTests
+     }
+    }
+
+    function Step-RunBasicTests {
+     # Fallback basic testing implementation
+     $testScript = "$ProjectRoot/run-comprehensive-tests.ps1"
+     if (Test-Path $testScript) {
+     Write-MaintenanceLog "Running comprehensive tests..." "INFO"
+     & $testScript
+     } else {
+     Write-MaintenanceLog "Test script not found, using basic Pester" "WARNING"
+     Set-Location $ProjectRoot
+     Invoke-Pester tests/ -OutputFile "TestResults.xml" -OutputFormat NUnitXml -ExitOnError:$false
+     }
+    }
+
+    function Step-TrackRecurringIssues {
+     $trackingScript = "$ProjectRoot/scripts/maintenance/track-recurring-issues.ps1"
+     if (Test-Path $trackingScript) {
+     & $trackingScript -Mode "All" -IncludePreventionCheck
+     } else {
+     Write-MaintenanceLog "Recurring issues tracking script not found" "WARNING"
+     }
+    }
+
+    function Step-GenerateReports {
+     # Generate infrastructure health report
+     Invoke-MaintenanceStep "Infrastructure Health Report" {
+     Step-InfrastructureHealthCheck
+     } $false
+     
+     # Generate recurring issues report if we have test results
+     if (Test-Path "$ProjectRoot/TestResults.xml") {
+     Invoke-MaintenanceStep "Recurring Issues Report" {
+     Step-TrackRecurringIssues
+     } $false
+     }
+     
+     # Update report index
+     $newReportScript = "$ProjectRoot/scripts/utilities/new-report.ps1"
+     if (Test-Path $newReportScript) {
+     Write-MaintenanceLog "Updating report index..." "INFO"
+    function Step-UpdateChangelog {
+     if (-not $UpdateChangelog) {
+     return
+     }
+     
+     $changelogPath = "$ProjectRoot/CHANGELOG.md"
+     if (-not (Test-Path $changelogPath)) {
+     Write-MaintenanceLog "CHANGELOG.md not found" "WARNING"
+     return
+     }
+     
+     $content = Get-Content $changelogPath -Raw
+     $date = Get-Date -Format "yyyy-MM-dd"
+     
+     $maintenanceUpdate = @"
+
+### Automated Maintenance ($date)
  $date = Get-Date -Format "yyyy-MM-dd"
  
  $maintenanceUpdate = @"
@@ -796,10 +817,19 @@ try {
  Invoke-MaintenanceStep "Update Documentation" { Step-UpdateDocumentation } $false
  Invoke-MaintenanceStep "Generate Reports" { Step-GenerateReports } $false
  }
- 
- 'Test' {
+  'Test' {
  Invoke-MaintenanceStep "Run Tests" { Step-RunTests }
  Invoke-MaintenanceStep "Track Recurring Issues" { Step-TrackRecurringIssues } $false
+ }
+
+ 'TestOnly' {
+ Write-MaintenanceLog "Running automated testing workflow only..." "INFO"
+ Invoke-MaintenanceStep "Run Automated Test Workflow" { Step-RunAutomatedTestWorkflow -TestCategory "All" -GenerateCoverage -UpdateTests }
+ }
+
+ 'Continuous' {
+ Write-MaintenanceLog "Starting continuous testing monitoring..." "INFO"
+ Invoke-MaintenanceStep "Start Continuous Testing" { Step-StartContinuousTesting }
  }
  
  'Track' {
@@ -878,7 +908,7 @@ $RootDirectory = "c:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-aut
 $LogFile = "$RootDirectory\maintenance-log.txt"
 
 # Initialize log
-"Maintenance started at $(Get-Date)"  Out-File -FilePath $LogFile -Encoding UTF8
+"Maintenance started at $(Get-Date)" | Out-File -FilePath $LogFile -Encoding UTF8
 
 # Step 1: Validate all scripts
 Write-Host "Starting script validation..." -ForegroundColor Cyan
@@ -891,12 +921,12 @@ foreach ($Script in $ScriptFiles) {
         $ValidationResults += $Results
     } catch {
         Write-Host "Error validating $($Script.FullName): ${_}" -ForegroundColor Red
-        "Error validating $($Script.FullName): ${_}"  Out-File -FilePath $LogFile -Append -Encoding UTF8
+        "Error validating $($Script.FullName): $($_.Exception.Message)" | Out-File -FilePath $LogFile -Append -Encoding UTF8
     }
 }
 if ($ValidationResults.Count -gt 0) {
     Write-Host "Validation completed with issues:" -ForegroundColor Yellow
-    $ValidationResults  Format-Table -AutoSize
+    $ValidationResults | Format-Table -AutoSize
     ValidationResults | Out-File -FilePath "$RootDirectory\validation-results.txt" -Encoding UTF8
     Write-Host "Validation results saved to validation-results.txt" -ForegroundColor Green
 } else {
@@ -918,19 +948,18 @@ foreach ($Directory in $DirectoriesToClean) {
         try {
             Remove-Item -Path $Directory -Recurse -Force -ErrorAction Stop
             Write-Host "Successfully cleaned: $Directory" -ForegroundColor Green
-            "Successfully cleaned: $Directory"  Out-File -FilePath $LogFile -Append -Encoding UTF8
-        } catch {
-            Write-Host "Error cleaning $Directory: ${_}" -ForegroundColor Red
-            "Error cleaning $Directory: ${_}"  Out-File -FilePath $LogFile -Append -Encoding UTF8
+            "Successfully cleaned: $Directory" | Out-File -FilePath $LogFile -Append -Encoding UTF8
+        } catch {            Write-Host "Error cleaning $Directory: $($_.Exception.Message)" -ForegroundColor Red
+            "Error cleaning $Directory: $($_.Exception.Message)" | Out-File -FilePath $LogFile -Append -Encoding UTF8
         }
     } else {
         Write-Host "Directory not found: $Directory" -ForegroundColor Yellow
-        "Directory not found: $Directory"  Out-File -FilePath $LogFile -Append -Encoding UTF8
+        "Directory not found: $Directory" | Out-File -FilePath $LogFile -Append -Encoding UTF8
     }
 }
 
 # Finalize log
-"Maintenance completed at $(Get-Date)"  Out-File -FilePath $LogFile -Append -Encoding UTF8
+"Maintenance completed at $(Get-Date)" | Out-File -FilePath $LogFile -Append -Encoding UTF8
 Write-Host "Maintenance log saved to $LogFile" -ForegroundColor Green
 
 

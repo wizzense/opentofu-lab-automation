@@ -4,7 +4,7 @@
 Describe '0211_Install-VSBuildTools Tests' {
     BeforeAll {
         Import-Module "$env:PWSH_MODULES_PATH/LabRunner/" -Force
-        Import-Module "$env:PWSH_MODULES_PATH/CodeFixer/" -Force}
+        Import-Module "$env:PWSH_MODULES_PATH/LabRunner/" -Force}
 
     Context 'Module Loading' {
         It 'should load required modules' {

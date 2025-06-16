@@ -1,0 +1,79 @@
+{
+    "folders": [
+        {
+            "name": "OpenTofu Lab Automation",
+            "path": "."
+        },
+        {
+            "name": "PowerShell Modules",
+            "path": "./pwsh/modules"
+        },
+        {
+            "name": "Core Application",
+            "path": "./pwsh/core_app"
+        },
+        {
+            "name": "Runner Scripts",
+            "path": "./pwsh/runner_scripts"
+        },
+        {
+            "name": "OpenTofu Configurations",
+            "path": "./opentofu"
+        },
+        {
+            "name": "Python CLI",
+            "path": "./py"
+        },
+        {
+            "name": "Tests",
+            "path": "./tests"
+        },
+        {
+            "name": "Documentation",
+            "path": "./docs"
+        }
+    ],
+    "settings": {
+        "files.exclude": {
+            "**/backups/**": true,
+            "**/archive/**": true,
+            "**/temp-*/**": true,
+            "**/.git": false
+        },
+        "search.exclude": {
+            "**/backups/**": true,
+            "**/archive/**": true,
+            "**/temp-*/**": true
+        }
+    },
+    "extensions": {
+        "recommendations": [
+            "ms-vscode.powershell",
+            "github.copilot",
+            "github.copilot-chat",
+            "hashicorp.terraform",
+            "gamunu.opentofu",
+            "ms-python.python",
+            "pspester.pester-test",
+            "eamodio.gitlens"
+        ]
+    },
+    "tasks": {
+        "version": "2.0.0",
+        "tasks": [
+            {
+                "label": "Build All",
+                "dependsOrder": "sequence",
+                "dependsOn": [
+                    "Run PSScriptAnalyzer",
+                    "Run Pester Tests",
+                    "Run Python Tests"
+                ],
+                "group": {
+                    "kind": "build",
+                    "isDefault": true
+                }
+            }
+        ]
+    }
+}
