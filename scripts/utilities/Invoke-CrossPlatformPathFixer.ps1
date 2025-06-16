@@ -51,36 +51,35 @@ function Invoke-CrossPlatformPathFixer {
         Write-Host "Starting Cross-Platform Path Standardization..." -ForegroundColor Cyan
         $fixedFiles = @()
         $errors = @()
-        
+
         # Cross-platform path patterns to fix
         $pathPatterns = @{
             # Windows hardcoded paths
             'WindowsSpecific' = @(
-                'C:\\Users\\alexa\\OneDrive\\Documents\\0\. wizzense\\opentofu-lab-automation',
-                '/C:\\Users\\alexa\\OneDrive\\Documents\\0\. wizzense\\opentofu-lab-automation',
-                'C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation'
+                $Env:PROJECT_ROOT,  # Use environment variable for project root
+                '/pwsh/modules',    # Use relative paths for modules
+                '/workspaces/opentofu-lab-automation'  # Standardized workspace path
             )
-            
+
             # Malformed import patterns
             'MalformedImports' = @(
-                '"/C:\\Users\\alexa\\OneDrive\\Documents\\0\. wizzense\\opentofu-lab-automation\\pwsh/modules/([^/]+)/"',
-                '"/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\pwsh/modules/([^/]+)/"',
-                'Import-Module "/C:\\Users\\alexa[^"]*" -ForceImport-Module'
+                'Import-Module "$Env:PROJECT_ROOT/pwsh/modules/([^/]+)/"',
+                'Import-Module "$Env:PROJECT_ROOT/pwsh/modules/([^/]+)/" -Force'
             )
-            
+
             # Unicode regex patterns (emoji detection issues)
             'UnicodeRegex' = @(
-                '\\u\{([0-9A-Fa-f]{1,3})\}',  # Invalid short Unicode
-                '\[\\\u\{[^\}]*\}\]'          # Invalid Unicode character classes
+                '\u{([0-9A-Fa-f]{1,3})}',  # Invalid short Unicode
+                '\[\u{[^}]*}\]'          # Invalid Unicode character classes
             )
         }
-        
+
         # Replacement patterns
         $replacements = @{
             # Standard project root replacements
-            'ProjectRoot' = '/workspaces/opentofu-lab-automation'
+            'ProjectRoot' = $Env:PROJECT_ROOT
             'ModulePath' = '/pwsh/modules'
-            
+
             # Fixed Unicode patterns for emoji detection (PowerShell 7+ compatible)
             'EmojiRegex' = '[\uD83C-\uDBFF][\uDC00-\uDFFF]|[\u2600-\u27BF]|[\uD83C][\uDF00-\uDFFF]|[\uD83D][\uDC00-\uDE4F]|[\uD83D][\uDE80-\uDEFF]'
         }
