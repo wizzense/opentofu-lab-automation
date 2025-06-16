@@ -141,6 +141,9 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install pytest
+          # Ensure required dependencies are available even if
+          # `pip install ./py` fails to resolve them
+          pip install textual typer pyyaml
           pip install ./py
 
       - name: "Install PowerShell Modules"
@@ -150,7 +153,7 @@ jobs:
           Install-Module -Name Pester -RequiredVersion 5.7.1 -Force -Scope CurrentUser -AllowClobber
 
       - name: "Run Python Tests"
-        if: matrix.os == 'ubuntu-latest' # Run Python tests only on one platform
+        if: matrix.os == 'ubuntu-latest'  # Run Python tests only on one platform
         run: |
           python -m pytest py/tests -v --tb=short
 
