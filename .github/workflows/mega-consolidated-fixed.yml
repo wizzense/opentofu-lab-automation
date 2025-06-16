@@ -150,7 +150,7 @@ jobs:
           Install-Module -Name Pester -RequiredVersion 5.7.1 -Force -Scope CurrentUser -AllowClobber
 
       - name: "Run Python Tests"
-        if: matrix.os == 'ubuntu-latest' # Run Python tests only on one platform
+        if: matrix.os == 'ubuntu-latest'  # Run Python tests only on one platform
         run: |
           python -m pytest py/tests -v --tb=short
 

@@ -3,8 +3,8 @@
 
 Describe '9999_Reset-Machine Tests' {
     BeforeAll {
-        Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation//pwsh/modules/LabRunner/" -Force -Force -Force -Force -Force -Force -Force
-        Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation//pwsh/modules/CodeFixer/" -Force -Force -Force -Force -Force -Force -Force
+        Disable-InteractivePrompts
+        Enable-WindowsMocks
     }
 
     Context 'Module Loading' {
