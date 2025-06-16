@@ -70,6 +70,17 @@ function Invoke-GitControlledPatch {
     begin {
         Write-Host "Starting Git-controlled patch process..." -ForegroundColor Cyan
         Write-Host "CRITICAL: NO EMOJIS ALLOWED - they break workflows" -ForegroundColor Red
+        
+        # Initialize cross-platform environment variables
+        try {
+            $envResult = Initialize-CrossPlatformEnvironment
+            if (-not $envResult.Success) {
+                Write-Warning "Cross-platform environment initialization failed: $($envResult.Error)"
+            }
+        } catch {
+            Write-Warning "Cross-platform environment initialization failed: $($_.Exception.Message)"
+        }
+        
         # Validate we're in a Git repository
         if (-not (Test-Path ".git")) {
             throw "Not in a Git repository. Git-controlled patching requires version control."
