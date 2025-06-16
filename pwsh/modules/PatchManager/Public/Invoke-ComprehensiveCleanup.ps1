@@ -326,7 +326,7 @@ function Invoke-FileArchival {
     
     if ($oldFiles.Count -gt 0) {
         if (-not $DryRun) {
-            New-Item -ItemType Directory -Path $archivePath -Force  Out-Null
+            New-Item -ItemType Directory -Path $archivePath -Force | Out-Null
         }
         
         foreach ($file in $oldFiles) {
@@ -380,7 +380,7 @@ function Invoke-FileOrganization {
             $destPath = Join-Path $script:ProjectRoot $destination
             if (-not (Test-Path $destPath)) {
                 if (-not $DryRun) {
-                    New-Item -ItemType Directory -Path $destPath -Force  Out-Null
+                    New-Item -ItemType Directory -Path $destPath -Force | Out-Null
                 }
             }
             
