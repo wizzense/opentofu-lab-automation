@@ -11,7 +11,7 @@ param()
 
 $ErrorActionPreference = 'Stop'
 
-Write-Host "🧪 Testing Workflow Setup" -ForegroundColor Cyan
+Write-Host "� Testing Workflow Setup" -ForegroundColor Cyan
 Write-Host "=" * 30
 
 try {
@@ -92,7 +92,7 @@ try {
         }
     }
     
-    Write-Host "`n🎉 All workflow setup tests passed!" -ForegroundColor Green
+    Write-Host "`n All workflow setup tests passed!" -ForegroundColor Green
     exit 0
     
 } catch {

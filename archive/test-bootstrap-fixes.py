@@ -13,7 +13,7 @@ def test_bootstrap_fixes():
     """Test that all bootstrap script fixes are in place."""
     repo_root = Path(__file__).parent
     
-    print("🔍 Testing Bootstrap Script Fixes...")
+    print("� Testing Bootstrap Script Fixes...")
     
     # Test 1: Verify config files have correct RunnerScriptName
     print("\n1. Testing config file runner script paths...")
@@ -86,7 +86,7 @@ def test_bootstrap_fixes():
             print(f"   [FAIL] Missing test: {test_name}")
             return False
     
-    print("\n🎉 All bootstrap script fixes verified successfully!")
+    print("\n All bootstrap script fixes verified successfully!")
     return True
 
 def main():

@@ -1053,7 +1053,7 @@ YAML validation is integrated into maintenance scripts but **AUTO-FIX IS DISABLE
 - **Final validation**: `./scripts/final-validation.ps1` includes YAML validation (check only)
 - **VS Code tasks**: YAML validation available through task runner (check only)
 
-[WARN]️ **IMPORTANT**: YAML auto-fix is permanently disabled due to corruption issues. Use manual fixes only.
+[WARN] **IMPORTANT**: YAML auto-fix is permanently disabled due to corruption issues. Use manual fixes only.
 
 ### Validation Commands
 ```powershell

@@ -13,7 +13,7 @@ param(
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
-Write-Host "🚨 EMERGENCY VALIDATION SYSTEM REPAIR 🚨" -ForegroundColor Red
+Write-Host "� EMERGENCY VALIDATION SYSTEM REPAIR �" -ForegroundColor Red
 Write-Host "Fixing broken validation pipeline..." -ForegroundColor Yellow
 
 $projectRoot = Split-Path -Parent $PSScriptRoot
@@ -163,7 +163,7 @@ Get-ChildItem -Path $Path -Filter "*.ps1" -Recurse | ForEach-Object {
 }
 
 if ($errors.Count -gt 0) {
-    Write-Host "`n🚨 FOUND $($errors.Count) SYNTAX ERRORS!" -ForegroundColor Red
+    Write-Host "`n� FOUND $($errors.Count) SYNTAX ERRORS!" -ForegroundColor Red
     exit 1
 } else {
     Write-Host "`n[PASS] All PowerShell files have valid syntax" -ForegroundColor Green
@@ -177,7 +177,7 @@ Write-Host "[PASS] Created emergency validator: emergency-syntax-check.ps1" -For
 
 # 6. Summary and recommendations
 Write-Host "`n" + "="*60 -ForegroundColor Red
-Write-Host "🚨 VALIDATION SYSTEM DIAGNOSIS COMPLETE 🚨" -ForegroundColor Red
+Write-Host "� VALIDATION SYSTEM DIAGNOSIS COMPLETE �" -ForegroundColor Red
 Write-Host "="*60 -ForegroundColor Red
 
 if ($issues.Count -gt 0) {

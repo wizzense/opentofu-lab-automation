@@ -32,7 +32,7 @@ foreach ($script in $scripts) {
         $lines[0] -match "^Import-Module.*LabRunner.*-Force" -and 
         $lines[1] -match "^Param\(") {
         
-        Write-Host "  🔧 FIXING: Moving Import-Module after Param block" -ForegroundColor Yellow
+        Write-Host "   FIXING: Moving Import-Module after Param block" -ForegroundColor Yellow
         
         # Extract the Import-Module line and Param block
         $importLine = $lines[0]
@@ -82,15 +82,15 @@ foreach ($script in $scripts) {
         $fixedCount++
         
     } else {
-        Write-Host "  ⏭️  SKIPPED: No fix needed for $($script.Name)" -ForegroundColor Gray
+        Write-Host "  ⏭  SKIPPED: No fix needed for $($script.Name)" -ForegroundColor Gray
         $skippedCount++
     }
 }
 
 Write-Host "`n=== Fix Complete ===" -ForegroundColor Cyan
 Write-Host "[PASS] Fixed: $fixedCount scripts" -ForegroundColor Green
-Write-Host "⏭️  Skipped: $skippedCount scripts" -ForegroundColor Gray
-Write-Host "🎯 All PowerShell syntax errors should now be resolved!" -ForegroundColor Green -BackgroundColor Black
+Write-Host "⏭  Skipped: $skippedCount scripts" -ForegroundColor Gray
+Write-Host " All PowerShell syntax errors should now be resolved!" -ForegroundColor Green -BackgroundColor Black
 Import-Module (Join-Path $PSScriptRoot "pwsh/modules/CodeFixer/CodeFixer.psd1") -Force
 
 

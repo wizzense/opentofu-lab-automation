@@ -16,7 +16,7 @@ param(
 
 $ErrorActionPreference = 'Stop'
 
-Write-Host "🔧 FIXING COMMON POWERSHELL TEST SYNTAX ERRORS" -ForegroundColor Cyan
+Write-Host " FIXING COMMON POWERSHELL TEST SYNTAX ERRORS" -ForegroundColor Cyan
 
 $files = Get-ChildItem -Path 'tests' -Filter '*.Tests.ps1' -Recurse
 

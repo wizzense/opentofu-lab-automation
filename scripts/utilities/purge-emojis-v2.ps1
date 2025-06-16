@@ -92,8 +92,8 @@ foreach ($pattern in $filePatterns) {
                 # Replace common patterns with text equivalents
                 $newContent = $newContent -replace '[\u{2705}]', '[PASS]'  # [PASS]
                 $newContent = $newContent -replace '[\u{274C}]', '[FAIL]'  # [FAIL]
-                $newContent = $newContent -replace '[\u{26A0}][\u{FE0F}]?', '[WARN]'  # [WARN]️
-                $newContent = $newContent -replace '[\u{2139}][\u{FE0F}]?', '[INFO]'  # [INFO]️
+                $newContent = $newContent -replace '[\u{26A0}][\u{FE0F}]?', '[WARN]'  # [WARN]
+                $newContent = $newContent -replace '[\u{2139}][\u{FE0F}]?', '[INFO]'  # [INFO]
                 
                 # Remove any remaining emojis
                 $newContent = $newContent -replace $emojiRegex, ""

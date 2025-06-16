@@ -13,7 +13,7 @@ param(
 
 $ErrorActionPreference = "Continue"
 
-Write-Host "🔍 Finding all files with lab_utils references..." -ForegroundColor Cyan
+Write-Host "� Finding all files with lab_utils references..." -ForegroundColor Cyan
 
 # Find all files that might have lab_utils references
 $allFiles = Get-ChildItem -Path "/workspaces/opentofu-lab-automation" -Recurse -Include "*.ps1", "*.psm1", "*.psd1" -File | 
@@ -36,7 +36,7 @@ foreach ($file in $allFiles) {
     }
 }
 
-Write-Host "📄 Found $($filesToFix.Count) files with lab_utils references" -ForegroundColor Yellow
+Write-Host "� Found $($filesToFix.Count) files with lab_utils references" -ForegroundColor Yellow
 
 # Define comprehensive replacement patterns
 $patterns = @{
@@ -58,7 +58,7 @@ $patterns = @{
 $updatedCount = 0
 
 foreach ($fileInfo in $filesToFix) {
-    Write-Host "  📝 Processing: $($fileInfo.Name)" -ForegroundColor Gray
+    Write-Host "  � Processing: $($fileInfo.Name)" -ForegroundColor Gray
     
     $content = $fileInfo.Content
     $originalContent = $content
@@ -71,13 +71,13 @@ foreach ($fileInfo in $filesToFix) {
         if ($newContent -ne $content) {
             $content = $newContent
             $hasChanges = $true
-            Write-Host "    🔄 Applied pattern: $pattern -> $replacement" -ForegroundColor Cyan
+            Write-Host "    � Applied pattern: $pattern -> $replacement" -ForegroundColor Cyan
         }
     }
     
     if ($hasChanges) {
         if ($WhatIf) {
-            Write-Host "    📋 Would update file" -ForegroundColor Yellow
+            Write-Host "     Would update file" -ForegroundColor Yellow
         } else {
             try {
                 Set-Content -Path $fileInfo.File -Value $content -Encoding UTF8
@@ -88,16 +88,16 @@ foreach ($fileInfo in $filesToFix) {
             }
         }
     } else {
-        Write-Host "    ⏭️ No applicable changes" -ForegroundColor Gray
+        Write-Host "    ⏭ No applicable changes" -ForegroundColor Gray
     }
 }
 
-Write-Host "`n📊 Summary:" -ForegroundColor Cyan
+Write-Host "`n Summary:" -ForegroundColor Cyan
 Write-Host "Files processed: $($filesToFix.Count)" -ForegroundColor White
 Write-Host "Files updated: $updatedCount" -ForegroundColor Green
 
 if (-not $WhatIf) {
-    Write-Host "`n🧪 Testing CodeFixer and LabRunner..." -ForegroundColor Cyan
+    Write-Host "`n� Testing CodeFixer and LabRunner..." -ForegroundColor Cyan
     
     # Test CodeFixer
     try {
@@ -126,7 +126,7 @@ if (-not $WhatIf) {
     }
 }
 
-Write-Host "`n🎉 Enhanced fix script completed!" -ForegroundColor Green
+Write-Host "`n Enhanced fix script completed!" -ForegroundColor Green
 
 
 

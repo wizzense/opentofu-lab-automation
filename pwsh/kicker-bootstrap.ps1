@@ -2,7 +2,8 @@
 .SYNOPSIS
   Kicker script for a fresh Windows Server Core setup with robust error handling.
 
-  1) Loads configs/config_files/default-config.json by default (override with -ConfigFile).
+$targetBranch = 'main'
+$baseUrl = 'https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/refs/heads/'1) Loads configs/config_files/default-config.json by default (override with -ConfigFile).
   2) Checks if command-line Git is installed and in PATH.
      - Installs a minimal version if missing.
      - Updates PATH if installed but not found in PATH.

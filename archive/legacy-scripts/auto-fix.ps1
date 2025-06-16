@@ -25,7 +25,7 @@ param(
 )
 
 # Display header
-Write-Host "🚀 Running OpenTofu Lab Automation Auto-Fix" -ForegroundColor Cyan
+Write-Host " Running OpenTofu Lab Automation Auto-Fix" -ForegroundColor Cyan
 Write-Host "=================================================" -ForegroundColor Cyan
 
 # Import CodeFixer module

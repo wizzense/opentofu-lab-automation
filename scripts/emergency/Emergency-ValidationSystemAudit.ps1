@@ -32,7 +32,7 @@ $AuditResults = @{
     SystemicIssues = @()
 }
 
-Write-Host "🚨 EMERGENCY VALIDATION SYSTEM AUDIT 🚨" -ForegroundColor Red
+Write-Host "� EMERGENCY VALIDATION SYSTEM AUDIT �" -ForegroundColor Red
 Write-Host "=========================================" -ForegroundColor Red
 Write-Host "Investigating why validation systems failed to catch corruption..." -ForegroundColor Yellow
 
@@ -40,7 +40,7 @@ Write-Host "Investigating why validation systems failed to catch corruption..." 
 $fileList = Get-ChildItem -Path "." -Recurse -Include "*.ps1"
 
 # Pattern 1: Detect repeated -Force parameters
-Write-Host "`n📊 PATTERN 1: Repeated -Force Parameters" -ForegroundColor Cyan
+Write-Host "`n PATTERN 1: Repeated -Force Parameters" -ForegroundColor Cyan
 $forcePattern = $fileList | ForEach-Object {
     $content = Get-Content $_.FullName -Raw -ErrorAction SilentlyContinue
     if ($content -match '-Force\s+-Force') {
@@ -63,7 +63,7 @@ $forcePattern = $fileList | ForEach-Object {
 Write-Host "   Found $($forcePattern.Count) files with repeated -Force parameters" -ForegroundColor Red
 
 # Pattern 2: Detect malformed paths with excessive slashes
-Write-Host "`n📊 PATTERN 2: Malformed Import Paths" -ForegroundColor Cyan
+Write-Host "`n PATTERN 2: Malformed Import Paths" -ForegroundColor Cyan
 $pathPattern = Get-ChildItem -Path "." -Recurse -Include "*.ps1" | ForEach-Object {
     $content = Get-Content $_.FullName -Raw -ErrorAction SilentlyContinue
     if ($content -match '/.*/|C:\\.*\') {
@@ -82,7 +82,7 @@ $pathPattern = Get-ChildItem -Path "." -Recurse -Include "*.ps1" | ForEach-Objec
 Write-Host "   Found $($pathPattern.Count) files with malformed paths" -ForegroundColor Red
 
 # Pattern 3: Detect Import-Module statements with 20+ Force parameters
-Write-Host "`n📊 PATTERN 3: Catastrophic Import Statements" -ForegroundColor Cyan
+Write-Host "`n PATTERN 3: Catastrophic Import Statements" -ForegroundColor Cyan
 $catastrophicImports = Get-ChildItem -Path "." -Recurse -Include "*.ps1" | ForEach-Object {
     $content = Get-Content $_.FullName -Raw -ErrorAction SilentlyContinue
     $importLines = $content -split "`n" | Where-Object { $_ -match 'Import-Module.*(-Force\s*){20,}' }
@@ -108,7 +108,7 @@ $catastrophicImports = Get-ChildItem -Path "." -Recurse -Include "*.ps1" | ForEa
 Write-Host "   Found $($catastrophicImports.Count) catastrophic import statements" -ForegroundColor Red
 
 # Analyze why validation systems failed
-Write-Host "`n🔍 VALIDATION SYSTEM FAILURE ANALYSIS" -ForegroundColor Magenta
+Write-Host "`n� VALIDATION SYSTEM FAILURE ANALYSIS" -ForegroundColor Magenta
 
 # Check existing validation scripts
 $validationScripts = @(
@@ -142,7 +142,7 @@ foreach ($script in $validationScripts) {
 }
 
 # Generate severity statistics
-Write-Host "`n📈 CORRUPTION SEVERITY ANALYSIS" -ForegroundColor Cyan
+Write-Host "`n CORRUPTION SEVERITY ANALYSIS" -ForegroundColor Cyan
 $severityGroups = $AuditResults.CorruptedFiles | Group-Object Severity
 foreach ($group in $severityGroups) {
     Write-Host "   $($group.Name): $($group.Count) files" -ForegroundColor $(
@@ -156,7 +156,7 @@ foreach ($group in $severityGroups) {
 }
 
 # Find the worst affected files
-Write-Host "`n🔥 TOP 10 MOST CORRUPTED FILES" -ForegroundColor Red
+Write-Host "`n TOP 10 MOST CORRUPTED FILES" -ForegroundColor Red
 $worstFiles = $AuditResults.CorruptedFiles | 
     Where-Object { $_.ForceCount } | 
     Sort-Object ForceCount -Descending | 
@@ -177,7 +177,7 @@ $AuditResults.CriticalFindings = @(
     "[FAIL] Auto-fix systems are actively making problems WORSE"
 )
 
-Write-Host "`n💀 CRITICAL FINDINGS SUMMARY" -ForegroundColor Red
+Write-Host "`n� CRITICAL FINDINGS SUMMARY" -ForegroundColor Red
 foreach ($finding in $AuditResults.CriticalFindings) {
     Write-Host "   $finding" -ForegroundColor Red
 }
@@ -192,7 +192,7 @@ $AuditResults.SystemicIssues = @(
     "No file corruption history tracking"
 )
 
-Write-Host "`n🏗️ SYSTEMIC ISSUES IDENTIFIED" -ForegroundColor DarkRed
+Write-Host "`n� SYSTEMIC ISSUES IDENTIFIED" -ForegroundColor DarkRed
 foreach ($issue in $AuditResults.SystemicIssues) {
     Write-Host "   • $issue" -ForegroundColor DarkRed
 }
@@ -236,10 +236,10 @@ $($AuditResults.ValidationSystemFailures | ForEach-Object {
 "@
 
     Set-Content -Path $reportPath -Value $reportContent
-    Write-Host "`n📄 Report generated: $reportPath" -ForegroundColor Green
+    Write-Host "`n� Report generated: $reportPath" -ForegroundColor Green
 }
 
-Write-Host "`n🚨 EMERGENCY AUDIT COMPLETE" -ForegroundColor Red
+Write-Host "`n� EMERGENCY AUDIT COMPLETE" -ForegroundColor Red
 Write-Host "Next steps: Build proper validation systems using this data as test cases" -ForegroundColor Yellow
 
 return $AuditResults

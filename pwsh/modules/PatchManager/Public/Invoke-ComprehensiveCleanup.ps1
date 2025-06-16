@@ -172,7 +172,7 @@ function Invoke-EmojiCleanup {
         foreach ($file in $files) {            if (-not (Test-CriticalExclusion $file.FullName)) {
                 $content = Get-Content $file.FullName -Raw -ErrorAction SilentlyContinue
                 # Use a simpler emoji detection pattern that works in PowerShell
-                $emojiPattern = '[🔥💪🚀🎯🌟💯🔧🛠️📋📊📈📉🎉🎊🏆🥇🎖️🔒🔓🌈🎨🖼️📸🎭🎪🎨🎯🚩🏁]|[\u2600-\u26FF]|[\u2700-\u27BF]'
+                $emojiPattern = '[]|[\u2600-\u26FF]|[\u2700-\u27BF]'
                 if ($content -and ($content -match $emojiPattern)) {
                     Write-Host "  Removing emojis from: $($file.Name)" -ForegroundColor Yellow
                     

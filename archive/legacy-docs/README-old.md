@@ -75,12 +75,12 @@ Custom config file:
 
 ---
 
-## 📊 Comprehensive Workflow Health Dashboard
+##  Comprehensive Workflow Health Dashboard
 
 **Last Updated:** 2025-06-12 10:35:00 UTC  
-**Overall Health:** 🟡 Good (87%) - System Operational
+**Overall Health:** � Good (87%) - System Operational
 
-### 🚀 Workflow Status Overview
+###  Workflow Status Overview
 
 | Workflow | Status | Purpose | Last Updated |
 |----------|--------|---------|--------------|
@@ -92,20 +92,20 @@ Custom config file:
 | [Pester Windows](https://github.com/wizzense/opentofu-lab-automation/actions/workflows/pester-windows.yml) | ![Windows Status](https://github.com/wizzense/opentofu-lab-automation/actions/workflows/pester-windows.yml/badge.svg) | Windows Platform Tests | Continuous |
 | [Pester macOS](https://github.com/wizzense/opentofu-lab-automation/actions/workflows/pester-macos.yml) | ![macOS Status](https://github.com/wizzense/opentofu-lab-automation/actions/workflows/pester-macos.yml/badge.svg) | macOS Platform Tests | Continuous |
 
-### 🎯 System Health Metrics
+###  System Health Metrics
 
 | Component | Status | Count | Health Score |
 |-----------|--------|-------|--------------|
-| **🔧 PowerShell Scripts** | [PASS] Healthy | 37 validated | 100% |
-| **📋 Workflow Files** | [PASS] Healthy | 22 workflows | 100% |
-| **🧪 Test Coverage** | [PASS] Healthy | 85+ test files | 95% |
-| **🔍 Validation Tools** | [PASS] Operational | 6 tools active | 100% |
-| **📊 Automation System** | [PASS] Operational | 6/6 tests pass | 100% |
+| ** PowerShell Scripts** | [PASS] Healthy | 37 validated | 100% |
+| ** Workflow Files** | [PASS] Healthy | 22 workflows | 100% |
+| **� Test Coverage** | [PASS] Healthy | 85+ test files | 95% |
+| **� Validation Tools** | [PASS] Operational | 6 tools active | 100% |
+| ** Automation System** | [PASS] Operational | 6/6 tests pass | 100% |
 
-### 📈 Recent Validation Results
+###  Recent Validation Results
 
 ```bash
-🏆 AUTOMATION SYSTEM VALIDATION RESULTS
+ AUTOMATION SYSTEM VALIDATION RESULTS
 ═══════════════════════════════════════
 [PASS] PowerShellValidation : PASS (37/37 scripts validated)
 [PASS] PreCommitHook        : PASS (Git hooks operational)  
@@ -115,48 +115,48 @@ Custom config file:
 [PASS] TemplateScript       : PASS (Parameter ordering correct)
 
 Overall Score: 6/6 tests passed
-Status: 🎉 AUTOMATION SYSTEM FULLY OPERATIONAL!
+Status:  AUTOMATION SYSTEM FULLY OPERATIONAL!
 ```
 
-### 🔧 Quick Actions & Tools
+###  Quick Actions & Tools
 
 | Action | Purpose | Command |
 |--------|---------|---------|
-| 🔄 **Run System Validation** | Full system health check | `./final-automation-test.ps1` |
-| 🧪 **Run All Pester Tests** | Execute PowerShell tests | [GitHub Actions](../../actions/workflows/pester.yml) |
-| 🔍 **Validate PowerShell** | Check script syntax | `./tools/Validate-PowerShellScripts.ps1` |
-| 📊 **Generate Dashboard** | Update this dashboard | `./scripts/generate-dashboard.ps1 -UpdateReadme` |
-| 🛠️ **Bootstrap Environment** | Set up development environment | `./pwsh/kicker-bootstrap.ps1` |
-| 📋 **Comprehensive Lint** | Run enhanced code linting | `./comprehensive-lint.ps1` |
+| � **Run System Validation** | Full system health check | `./final-automation-test.ps1` |
+| � **Run All Pester Tests** | Execute PowerShell tests | [GitHub Actions](../../actions/workflows/pester.yml) |
+| � **Validate PowerShell** | Check script syntax | `./tools/Validate-PowerShellScripts.ps1` |
+|  **Generate Dashboard** | Update this dashboard | `./scripts/generate-dashboard.ps1 -UpdateReadme` |
+|  **Bootstrap Environment** | Set up development environment | `./pwsh/kicker-bootstrap.ps1` |
+|  **Comprehensive Lint** | Run enhanced code linting | `./comprehensive-lint.ps1` |
 
-### 💡 Current Recommendations
+### � Current Recommendations
 
 - [PASS] **System Health:** All core components are operational
-- 🔄 **Monitoring:** Continue regular automated validation
-- 📈 **Quality:** Maintain 95%+ test success rate  
-- 🛡️ **Security:** Pre-commit hooks preventing syntax errors
-- 🎯 **Performance:** All workflows optimized and validated
+- � **Monitoring:** Continue regular automated validation
+-  **Quality:** Maintain 95%+ test success rate  
+- � **Security:** Pre-commit hooks preventing syntax errors
+-  **Performance:** All workflows optimized and validated
 
-### 📊 Success Metrics Dashboard
+###  Success Metrics Dashboard
 
 | Metric | Current | Target | Trend |
 |--------|---------|--------|-------|
-| **PowerShell Validation** | 100% | 100% | 🟢 Stable |
-| **Workflow Health** | 100% | 95% | 🟢 Excellent |
-| **Test Coverage** | 95% | 90% | 🟢 Above Target |
-| **Automation Score** | 6/6 | 6/6 | 🟢 Perfect |
-| **Error Prevention** | Active | Active | 🟢 Operational |
+| **PowerShell Validation** | 100% | 100% | � Stable |
+| **Workflow Health** | 100% | 95% | � Excellent |
+| **Test Coverage** | 95% | 90% | � Above Target |
+| **Automation Score** | 6/6 | 6/6 | � Perfect |
+| **Error Prevention** | Active | Active | � Operational |
 
-### 🔔 Health Score Legend
+### � Health Score Legend
 
-- 🟢 **Excellent (95-100%)**: All systems optimal, continue monitoring
-- 🟡 **Good (85-94%)**: Minor optimizations possible, generally stable  
-- 🟠 **Fair (70-84%)**: Some attention needed, address warnings
-- 🔴 **Poor (<70%)**: Critical issues require immediate action
+- � **Excellent (95-100%)**: All systems optimal, continue monitoring
+- � **Good (85-94%)**: Minor optimizations possible, generally stable  
+- � **Fair (70-84%)**: Some attention needed, address warnings
+- � **Poor (<70%)**: Critical issues require immediate action
 
 ---
 
-## 🤖 Project Maintenance Automation
+## � Project Maintenance Automation
 
 This project includes comprehensive automation for maintenance, validation, and reporting:
 

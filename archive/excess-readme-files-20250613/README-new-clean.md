@@ -1,16 +1,16 @@
 # OpenTofu Lab Automation
 
-🚀 **One-click infrastructure lab deployment** - Cross-platform automation for OpenTofu (Terraform alternative) environments.
+ **One-click infrastructure lab deployment** - Cross-platform automation for OpenTofu (Terraform alternative) environments.
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Python Version](https://img.shields.io/badge/python-3.7%2B-blue)](https://python.org)
 [![PowerShell](https://img.shields.io/badge/powershell-7%2B-blue)](https://github.com/PowerShell/PowerShell)
 
-## 🎯 Quick Start (30 seconds)
+##  Quick Start (30 seconds)
 
 ### Option 1: One-Line Install (All Platforms)
 
-**🪟 Windows (PowerShell - Works on Desktop/Server Core):**
+**� Windows (PowerShell - Works on Desktop/Server Core):**
 ```powershell
 # Download and run installer (no curl required)
 iwr -useb https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/HEAD/install.ps1 | iex
@@ -20,14 +20,14 @@ Invoke-WebRequest -Uri "https://raw.githubusercontent.com/wizzense/opentofu-lab-
 ./install.ps1
 ```
 
-**🪟 Windows (Command Prompt/Batch):**
+**� Windows (Command Prompt/Batch):**
 ```batch
 REM Download batch installer (no external tools required)
 powershell -Command "Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/HEAD/install-windows.bat' -OutFile 'install-windows.bat'"
 install-windows.bat
 ```
 
-**🐧 Linux/macOS/Unix:**
+**� Linux/macOS/Unix:**
 ```bash
 # One-line install
 curl -sSL https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/HEAD/install.sh | bash
@@ -42,7 +42,7 @@ wget -qO- https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/HEA
 
 ### Option 2: Manual Download (Cross-Platform)
 
-**🚀 Unified Launcher (Recommended):**
+** Unified Launcher (Recommended):**
 ```bash
 # Windows PowerShell:
 Invoke-WebRequest -Uri "https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/HEAD/launcher.py" -OutFile "launcher.py"
@@ -64,7 +64,7 @@ python launcher.py health   # Run health check
 python launcher.py validate # Validate setup
 ```
 
-**📱 Platform Shortcuts:**
+**� Platform Shortcuts:**
 ```bash
 # Windows
 Invoke-WebRequest -Uri "https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/HEAD/start.bat" -OutFile "start.bat"
@@ -95,40 +95,40 @@ start.bat           # Windows
 ./start.ps1         # PowerShell (any platform)
 ```
 
-## 🌟 Key Features
+##  Key Features
 
-### 🎮 **Interactive GUI & CLI**
+### � **Interactive GUI & CLI**
 - **Modern GUI** with real-time progress monitoring
 - **Cross-platform** - Works on Windows, Linux, macOS
 - **Configuration builder** with validation and templates
 - **CLI interface** for automation and scripting
 
-### 🚀 **One-Click Deployment**
+###  **One-Click Deployment**
 - **Zero-configuration** quick start
 - **Platform detection** and automatic setup
 - **Prerequisite checking** with guided installation
 - **Health monitoring** and validation
 
-### 🔧 **Advanced Automation**
+###  **Advanced Automation**
 - **PowerShell modules** for batch processing and validation
 - **Python CLI tools** for cross-platform management  
 - **Automated testing** with Pester and custom frameworks
 - **CI/CD integration** with GitHub Actions
 
-### 🏗️ **Infrastructure Components**
+### � **Infrastructure Components**
 - **OpenTofu/Terraform** configurations
 - **Virtual machine** provisioning and management
 - **Network automation** and configuration
 - **Monitoring and logging** setup
 
-## 📦 What's Included
+## � What's Included
 
 ### Core Components
-- **🚀 Unified Launcher** (`launcher.py`) - Single entry point for all operations
-- **🎮 GUI Interface** (`gui.py`) - Visual configuration and monitoring
-- **️  Deploy Script** (`deploy.py`) - Core deployment engine
-- **🔧 PowerShell Modules** - Advanced automation and validation
-- **📋 Configuration Templates** - Pre-built lab configurations
+- ** Unified Launcher** (`launcher.py`) - Single entry point for all operations
+- **� GUI Interface** (`gui.py`) - Visual configuration and monitoring
+- **  Deploy Script** (`deploy.py`) - Core deployment engine
+- ** PowerShell Modules** - Advanced automation and validation
+- ** Configuration Templates** - Pre-built lab configurations
 
 ### Platform Support
 - **Windows 10/11** (Desktop & Server Core)
@@ -144,7 +144,7 @@ start.bat           # Windows
 - **tkinter** (for GUI - usually included with Python)
 - **Internet connection** (for downloads and updates)
 
-## 🔧 Installation Methods
+##  Installation Methods
 
 ### Method 1: Automatic Installer (Recommended)
 The automatic installers handle all platform differences and dependencies:
@@ -167,7 +167,7 @@ Full repository clone for development and advanced usage:
 - Testing frameworks and validation scripts
 - Documentation and examples
 
-## 🏃‍️ Usage Examples
+## �‍ Usage Examples
 
 ### Quick Deployment
 ```bash
@@ -218,7 +218,7 @@ Invoke-ComprehensiveValidation
 Invoke-ParallelLabRunner -Config "custom-config.yaml"
 ```
 
-## 🛠️ Advanced Configuration
+##  Advanced Configuration
 
 ### Configuration Files
 - **YAML configs** in `configs/config_files/`
@@ -238,7 +238,7 @@ Invoke-ParallelLabRunner -Config "custom-config.yaml"
 - **Logging and alerting** setup
 - **Backup and recovery** automation
 
-## 📚 Documentation
+## � Documentation
 
 ### User Guides
 - [Getting Started](docs/index.md) - Comprehensive setup guide
@@ -257,7 +257,7 @@ Invoke-ParallelLabRunner -Config "custom-config.yaml"
 - [Platform-Specific](docs/copilot-codespaces.md) - OS-specific guides
 - [Performance](docs/testing.md) - Optimization and tuning
 
-## 🤝 Contributing
+## � Contributing
 
 We welcome contributions! See [CONTRIBUTING.md](docs/CONTRIBUTING.md) for guidelines.
 
@@ -282,11 +282,11 @@ pwsh -Command "./scripts/maintenance/unified-maintenance.ps1 -Mode All"
 - **YAML validation** with yamllint
 - **Cross-platform** compatibility testing
 
-## 📄 License
+## � License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🙏 Acknowledgments
+## � Acknowledgments
 
 - [OpenTofu](https://opentofu.org/) - Open-source Terraform alternative
 - [PowerShell](https://github.com/PowerShell/PowerShell) - Cross-platform automation
@@ -295,8 +295,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-**🚀 Ready to get started?** Run the one-line installer for your platform above!
+** Ready to get started?** Run the one-line installer for your platform above!
 
-**💡 Need help?** Check the [documentation](docs/) or open an [issue](https://github.com/wizzense/opentofu-lab-automation/issues).
+**� Need help?** Check the [documentation](docs/) or open an [issue](https://github.com/wizzense/opentofu-lab-automation/issues).
 
-**🔧 Want to contribute?** See [CONTRIBUTING.md](docs/CONTRIBUTING.md) for guidelines.
+** Want to contribute?** See [CONTRIBUTING.md](docs/CONTRIBUTING.md) for guidelines.

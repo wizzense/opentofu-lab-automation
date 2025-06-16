@@ -25,7 +25,7 @@ This document provides implementation steps for integrating base64 script execut
   - `pwsh/Base64ScriptWrapper.ps1` - Wrapper for complex parameter handling
 - **Features**: Syntax validation, safe execution, error recovery, minimal fallback versions
 
-## 📋 Implementation Roadmap
+##  Implementation Roadmap
 
 ### Phase 1: Immediate Fixes ([PASS] COMPLETE)
 - [x] Fix infrastructure-health-check.ps1 syntax errors
@@ -289,7 +289,7 @@ function Invoke-ScriptWithRollback {
 }
 ```
 
-## 📊 Success Metrics
+##  Success Metrics
 
 ### Immediate Benefits ([PASS] Achieved)
 - [PASS] **Zero syntax errors** in critical maintenance scripts (infrastructure-health-check.ps1)
@@ -304,7 +304,7 @@ function Invoke-ScriptWithRollback {
 - [ ] **Automatic rollback** capability for critical failures
 - [ ] **Comprehensive caching** for frequently executed scripts
 
-## 🔧 Quick Implementation Commands
+##  Quick Implementation Commands
 
 ### Immediate Use (Available Now)
 ```powershell
@@ -328,7 +328,7 @@ function Invoke-ScriptWithRollback {
 & "$ProjectRoot/pwsh/Base64Integration.ps1" -Action execute -ScriptPath "$ProjectRoot/scripts/maintenance/infrastructure-health-check.ps1" -Mode $Mode -AutoFix:$AutoFix
 ```
 
-## 🚀 Next Steps
+##  Next Steps
 
 ### This Week
 1. **Test integration utility** with all existing maintenance scripts

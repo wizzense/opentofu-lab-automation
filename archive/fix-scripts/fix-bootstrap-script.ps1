@@ -18,7 +18,7 @@ param(
 
 $ErrorActionPreference = "Stop"
 
-Write-Host "🔧 Fixing Bootstrap Script Runtime Issues" -ForegroundColor Cyan
+Write-Host " Fixing Bootstrap Script Runtime Issues" -ForegroundColor Cyan
 Write-Host "=" * 50
 
 $bootstrapPath = "pwsh/kicker-bootstrap.ps1"
@@ -28,12 +28,12 @@ if (-not (Test-Path $bootstrapPath)) {
     exit 1
 }
 
-Write-Host "📄 Reading current bootstrap script..." -ForegroundColor Yellow
+Write-Host "� Reading current bootstrap script..." -ForegroundColor Yellow
 
 $content = Get-Content $bootstrapPath -Raw
 
 # Fix 1: Remove duplicate prompt definition and standardize prompting
-Write-Host "🔧 Fix 1: Consolidating prompt logic..." -ForegroundColor Green
+Write-Host " Fix 1: Consolidating prompt logic..." -ForegroundColor Green
 
 $fixes = @()
 
@@ -150,13 +150,13 @@ $content = $content -replace [regex]::Escape('$ans = Read-Host -Prompt "Select c
 $fixes += "[PASS] Added input validation for configuration selection"
 
 # Display what we're fixing
-Write-Host "`n🔍 Applied Fixes:" -ForegroundColor Cyan
+Write-Host "`n� Applied Fixes:" -ForegroundColor Cyan
 foreach ($fix in $fixes) {
     Write-Host "  $fix" -ForegroundColor White
 }
 
 if ($WhatIf) {
-    Write-Host "`n[WARN]️ WhatIf mode - changes not applied" -ForegroundColor Yellow
+    Write-Host "`n[WARN] WhatIf mode - changes not applied" -ForegroundColor Yellow
     Write-Host "Run without -WhatIf to apply fixes" -ForegroundColor Gray
     return
 }
@@ -164,14 +164,14 @@ if ($WhatIf) {
 # Backup original file
 $backupPath = "$bootstrapPath.backup-$(Get-Date -Format 'yyyyMMdd-HHmmss')"
 Copy-Item $bootstrapPath $backupPath
-Write-Host "📁 Backup created: $backupPath" -ForegroundColor Gray
+Write-Host "� Backup created: $backupPath" -ForegroundColor Gray
 
 # Apply fixes
 Set-Content -Path $bootstrapPath -Value $content -Encoding UTF8
 Write-Host "[PASS] Bootstrap script fixes applied successfully!" -ForegroundColor Green
 
 # Validate the fixed script
-Write-Host "`n🔬 Validating fixed script..." -ForegroundColor Cyan
+Write-Host "`n� Validating fixed script..." -ForegroundColor Cyan
 
 try {
     # Test PowerShell syntax
@@ -200,22 +200,22 @@ if ($content -match '\$prompt.*\$prompt') {
 }
 
 if ($issues.Count -gt 0) {
-    Write-Host "`n[WARN]️ Potential remaining issues detected:" -ForegroundColor Yellow
+    Write-Host "`n[WARN] Potential remaining issues detected:" -ForegroundColor Yellow
     foreach ($issue in $issues) {
         Write-Host "  - $issue" -ForegroundColor Yellow
     }
 } else {
-    Write-Host "🎉 No remaining issues detected!" -ForegroundColor Green
+    Write-Host " No remaining issues detected!" -ForegroundColor Green
 }
 
-Write-Host "`n📋 Summary:" -ForegroundColor Cyan
+Write-Host "`n Summary:" -ForegroundColor Cyan
 Write-Host "  - Original file backed up to: $backupPath" -ForegroundColor White
 Write-Host "  - Applied $($fixes.Count) fixes to bootstrap script" -ForegroundColor White
 Write-Host "  - Fixed prompt duplication and formatting issues" -ForegroundColor White
 Write-Host "  - Improved configuration selection logic" -ForegroundColor White
 Write-Host "  - Enhanced error handling and validation" -ForegroundColor White
 
-Write-Host "`n🚀 Next Steps:" -ForegroundColor Cyan
+Write-Host "`n Next Steps:" -ForegroundColor Cyan
 Write-Host "  1. Test the bootstrap script in a clean environment" -ForegroundColor White
 Write-Host "  2. Verify no duplicate prompts appear" -ForegroundColor White
 Write-Host "  3. Check configuration selection works properly" -ForegroundColor White

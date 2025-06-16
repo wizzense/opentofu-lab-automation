@@ -4,7 +4,7 @@
 
 $ErrorActionPreference = "Stop"
 
-Write-Host "🧪 TESTING CROSS-PLATFORM EXECUTOR SYSTEM" -ForegroundColor Cyan
+Write-Host "� TESTING CROSS-PLATFORM EXECUTOR SYSTEM" -ForegroundColor Cyan
 Write-Host "=" * 60
 
 # Test 1: Create a simple test script
@@ -42,7 +42,7 @@ $testScriptPath = Join-Path $tempDir "cross-platform-test.ps1"
 Set-Content -Path $testScriptPath -Value $testScript -Encoding UTF8
 
 try {
-    Write-Host "`n🔍 Test 1: Script Encoding" -ForegroundColor Yellow
+    Write-Host "`n� Test 1: Script Encoding" -ForegroundColor Yellow
     
     # Test encoding
     $encodeResult = & "$PSScriptRoot/pwsh/CrossPlatformExecutor.ps1" -Action encode -ScriptPath $testScriptPath -Parameters @{
@@ -53,7 +53,7 @@ try {
     Write-Host "  [PASS] Script encoded successfully" -ForegroundColor Green
     Write-Host "  Encoded length: $($encodeResult.EncodedScript.Length) characters" -ForegroundColor Gray
     
-    Write-Host "`n🔍 Test 2: Script Validation" -ForegroundColor Yellow
+    Write-Host "`n� Test 2: Script Validation" -ForegroundColor Yellow
     
     # Test validation
     $validateResult = & "$PSScriptRoot/pwsh/CrossPlatformExecutor.ps1" -Action validate -EncodedScript $encodeResult.EncodedScript -CI | ConvertFrom-Json
@@ -67,7 +67,7 @@ try {
         exit 1
     }
     
-    Write-Host "`n🔍 Test 3: Script Execution" -ForegroundColor Yellow
+    Write-Host "`n� Test 3: Script Execution" -ForegroundColor Yellow
     
     # Test execution
     $executeResult = & "$PSScriptRoot/pwsh/CrossPlatformExecutor.ps1" -Action execute -EncodedScript $encodeResult.EncodedScript -CI | ConvertFrom-Json
@@ -80,7 +80,7 @@ try {
         exit 1
     }
     
-    Write-Host "`n🔍 Test 4: Complex Script with Functions" -ForegroundColor Yellow
+    Write-Host "`n� Test 4: Complex Script with Functions" -ForegroundColor Yellow
     
     # Test with a more complex script
     $complexScript = @'
@@ -133,7 +133,7 @@ exit 0
     }
     
     Write-Host "`n" + "=" * 60 -ForegroundColor Cyan
-    Write-Host "🎉 CROSS-PLATFORM EXECUTOR TESTS PASSED!" -ForegroundColor Green
+    Write-Host " CROSS-PLATFORM EXECUTOR TESTS PASSED!" -ForegroundColor Green
     Write-Host "=" * 60
     
     Write-Host "`n[PASS] Key Capabilities Verified:" -ForegroundColor Green
@@ -144,7 +144,7 @@ exit 0
     Write-Host "  • Complex script support with functions" -ForegroundColor Gray
     Write-Host "  • JSON output for CI integration" -ForegroundColor Gray
     
-    Write-Host "`n💡 Usage in GitHub Actions:" -ForegroundColor Cyan
+    Write-Host "`n� Usage in GitHub Actions:" -ForegroundColor Cyan
     Write-Host @"
 # Encode script for cross-platform execution
 `$encoded = pwsh CrossPlatformExecutor.ps1 -Action encode -ScriptPath "script.ps1" -CI | ConvertFrom-Json

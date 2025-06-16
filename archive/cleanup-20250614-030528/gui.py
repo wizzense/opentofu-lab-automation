@@ -215,16 +215,16 @@ class DeploymentManager:
         button_frame = ttk.Frame(self.frame)
         button_frame.grid(row=0, column=0, sticky="ew", pady=(0, 10))
         
-        self.deploy_btn = ttk.Button(button_frame, text="🚀 Deploy Lab", command=self.start_deployment)
+        self.deploy_btn = ttk.Button(button_frame, text=" Deploy Lab", command=self.start_deployment)
         self.deploy_btn.pack(side="left", padx=5)
         
         self.quick_btn = ttk.Button(button_frame, text=" Quick Deploy", command=self.quick_deployment)
         self.quick_btn.pack(side="left", padx=5)
         
-        self.check_btn = ttk.Button(button_frame, text="🔍 Check Prerequisites", command=self.check_prerequisites)
+        self.check_btn = ttk.Button(button_frame, text="� Check Prerequisites", command=self.check_prerequisites)
         self.check_btn.pack(side="left", padx=5)
         
-        self.stop_btn = ttk.Button(button_frame, text="⏹️ Stop", command=self.stop_deployment, state="disabled")
+        self.stop_btn = ttk.Button(button_frame, text="⏹ Stop", command=self.stop_deployment, state="disabled")
         self.stop_btn.pack(side="left", padx=5)
         
         # Progress bar
@@ -286,7 +286,7 @@ class DeploymentManager:
             
             if not deploy_script:
                 # Try to download deploy.py if not found
-                self.log_output("[WARN]️ deploy.py not found locally, attempting to download...")
+                self.log_output("[WARN] deploy.py not found locally, attempting to download...")
                 try:
                     import urllib.request
                     deploy_url = "https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/feature/deployment-wrapper-gui/deploy.py"
@@ -363,7 +363,7 @@ class DeploymentManager:
         
         if return_code == 0:
             self.update_status("Deployment completed successfully!", "green")
-            self.log_output("🎉 Deployment completed successfully!")
+            self.log_output(" Deployment completed successfully!")
             messagebox.showinfo("Success", "Lab deployment completed successfully!")
         else:
             self.update_status("Deployment failed", "red")
@@ -374,7 +374,7 @@ class DeploymentManager:
         """Handle deployment error"""
         self.set_buttons_state(False)
         self.update_status("Deployment error", "red")
-        self.log_output(f"💥 Error: {error}")
+        self.log_output(f"� Error: {error}")
         messagebox.showerror("Error", f"Deployment error:\n{error}")
     
     def start_deployment(self):
@@ -436,7 +436,7 @@ class DeploymentManager:
         if self.process:
             try:
                 self.process.terminate()
-                self.log_output("🛑 Deployment stopped by user")
+                self.log_output("� Deployment stopped by user")
                 self.update_status("Deployment stopped", "orange")
             except Exception as e:
                 self.log_output(f"Error stopping deployment: {e}")
@@ -513,7 +513,7 @@ class LabAutomationGUI:
         header_frame = ttk.Frame(self.root)
         header_frame.grid(row=0, column=0, sticky="ew", padx=10, pady=10)
         
-        title_label = ttk.Label(header_frame, text="🚀 OpenTofu Lab Automation", font=("Arial", 16, "bold"))
+        title_label = ttk.Label(header_frame, text=" OpenTofu Lab Automation", font=("Arial", 16, "bold"))
         title_label.pack(side="left")
         
         subtitle_label = ttk.Label(header_frame, text="Cross-Platform Infrastructure Lab Deployment", font=("Arial", 10))

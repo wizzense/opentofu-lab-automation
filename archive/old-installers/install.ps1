@@ -90,7 +90,7 @@ function Download-File {
         [string]$DestinationPath
     )
     
-    Write-ColorOutput "📥 Downloading: $DestinationPath" 'Blue'
+    Write-ColorOutput "� Downloading: $DestinationPath" 'Blue'
     
     try {
         # Try modern method first
@@ -129,7 +129,7 @@ function Show-Header {
 function Show-PlatformInfo {
     $platform = Get-PlatformInfo
     
-    Write-ColorOutput "🖥️  Platform Information:" 'Yellow'
+    Write-ColorOutput "�  Platform Information:" 'Yellow'
     Write-ColorOutput "   OS: $($platform.Type)" 'White'
     Write-ColorOutput "   PowerShell: $($platform.PSVersion)" 'White'
     Write-ColorOutput "   Architecture: $($platform.Architecture)" 'White'
@@ -197,7 +197,7 @@ function Test-PythonAvailability {
         }
     }
     
-    Write-ColorOutput "[WARN]️  Python 3.7+ not found" 'Yellow'
+    Write-ColorOutput "[WARN]  Python 3.7+ not found" 'Yellow'
     return $null
 }
 
@@ -205,7 +205,7 @@ function Show-PostInstallInstructions {
     param([string]$PythonCmd)
     
     Write-ColorOutput "" 'White'
-    Write-ColorOutput "🎯 Next Steps:" 'Green'
+    Write-ColorOutput " Next Steps:" 'Green'
     
     if ($PythonCmd) {
         Write-ColorOutput "   1. Run: $PythonCmd launcher.py" 'White'
@@ -226,7 +226,7 @@ function Show-PostInstallInstructions {
     }
     
     Write-ColorOutput "" 'White'
-    Write-ColorOutput "📚 Available Commands:" 'Blue'
+    Write-ColorOutput "� Available Commands:" 'Blue'
     Write-ColorOutput "   launcher.py          # Interactive menu" 'White'
     Write-ColorOutput "   launcher.py deploy   # Deploy lab environment" 'White'
     Write-ColorOutput "   launcher.py gui      # Launch GUI interface" 'White'
@@ -238,7 +238,7 @@ function main {
     Show-PlatformInfo
     
     # Check internet connectivity
-    Write-ColorOutput "🌐 Checking internet connectivity..." 'Blue'
+    Write-ColorOutput "� Checking internet connectivity..." 'Blue'
     if (-not (Test-InternetConnectivity)) {
         Write-ColorOutput "[FAIL] No internet connection. Please check your network." 'Red'
         return 1
@@ -247,7 +247,7 @@ function main {
     Write-ColorOutput "" 'White'
     
     # Download components
-    Write-ColorOutput "📦 Downloading components..." 'Blue'
+    Write-ColorOutput "� Downloading components..." 'Blue'
     if (-not (Install-Components -ComponentType $Component)) {
         Write-ColorOutput "[FAIL] Download failed. Please try again later." 'Red'
         return 1
@@ -265,7 +265,7 @@ function main {
     # Auto-launch if not in NoMenu mode and Python is available
     if (-not $NoMenu -and $pythonCmd -and (Test-Path 'launcher.py')) {
         Write-ColorOutput "" 'White'
-        Write-ColorOutput "🚀 Launching interactive menu..." 'Green'
+        Write-ColorOutput " Launching interactive menu..." 'Green'
         & $pythonCmd 'launcher.py'
     }
     

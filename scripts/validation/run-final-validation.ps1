@@ -37,7 +37,7 @@ if (-not $basePath) {
     $basePath = Get-Location
 }
 
-Write-Host "🔍 Starting Final Validation..." -ForegroundColor Cyan
+Write-Host "� Starting Final Validation..." -ForegroundColor Cyan
 Write-Host "Base Path: $basePath" -ForegroundColor Gray
 
 # Initialize results
@@ -87,7 +87,7 @@ function Add-CheckResult {
         "Warning" { 
             $results.Summary.Warnings++
             $results.Warnings += "${Name}: ${Message}"
-            Write-Host "  [WARN]️  $Name - $Message" -ForegroundColor Yellow
+            Write-Host "  [WARN]  $Name - $Message" -ForegroundColor Yellow
         }
     }
     
@@ -99,7 +99,7 @@ function Add-CheckResult {
 }
 
 # Check 1: Project Structure
-Write-Host "📁 Checking Project Structure..." -ForegroundColor Blue
+Write-Host "� Checking Project Structure..." -ForegroundColor Blue
 try {
     $requiredPaths = @(
         "pwsh/modules/CodeFixer",
@@ -128,7 +128,7 @@ try {
 }
 
 # Check 2: PowerShell Modules
-Write-Host "🔧 Checking PowerShell Modules..." -ForegroundColor Blue
+Write-Host " Checking PowerShell Modules..." -ForegroundColor Blue
 try {
     $moduleChecks = @()
     
@@ -158,7 +158,7 @@ try {
 }
 
 # Check 3: Python Setup
-Write-Host "🐍 Checking Python Setup..." -ForegroundColor Blue
+Write-Host "� Checking Python Setup..." -ForegroundColor Blue
 try {
     $pythonChecks = @()
     
@@ -221,7 +221,7 @@ try {
 }
 
 # Check 5: Configuration Files
-Write-Host "️  Checking Configuration..." -ForegroundColor Blue
+Write-Host "  Checking Configuration..." -ForegroundColor Blue
 try {
     $configChecks = @()
     
@@ -247,7 +247,7 @@ try {
 # Quick vs Detailed mode handling
 if (-not $Quick) {
     # Check 6: Test Framework (Detailed only)
-    Write-Host "🧪 Checking Test Framework..." -ForegroundColor Blue
+    Write-Host "� Checking Test Framework..." -ForegroundColor Blue
     try {
         $testChecks = @()
         
@@ -280,7 +280,7 @@ if ($results.Summary.Failed -gt 0) {
 }
 
 # Final summary
-Write-Host "`n📊 Validation Summary:" -ForegroundColor Cyan
+Write-Host "`n Validation Summary:" -ForegroundColor Cyan
 Write-Host "  Total Checks: $($results.Summary.Total)" -ForegroundColor White
 Write-Host "  Passed: $($results.Summary.Passed)" -ForegroundColor Green
 Write-Host "  Failed: $($results.Summary.Failed)" -ForegroundColor Red
@@ -315,7 +315,7 @@ if ($CI) {
         }
     }
     if ($results.Warnings.Count -gt 0) {
-        Write-Host "`n[WARN]️  Warnings:" -ForegroundColor Yellow
+        Write-Host "`n[WARN]  Warnings:" -ForegroundColor Yellow
         foreach ($warning in $results.Warnings) {
             Write-Host "  - $warning" -ForegroundColor Yellow
         }

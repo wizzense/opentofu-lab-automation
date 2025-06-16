@@ -10,7 +10,7 @@
 
 $ErrorActionPreference = "Stop"
 
-Write-Host "🔧 FIXING ALL PESTER TEST SYNTAX ERRORS" -ForegroundColor Cyan
+Write-Host " FIXING ALL PESTER TEST SYNTAX ERRORS" -ForegroundColor Cyan
 
 # Files with known syntax errors
 $problematicFiles = @(
@@ -42,7 +42,7 @@ foreach ($file in $problematicFiles) {
     }
 }
 
-Write-Host "🎯 Syntax error fixes complete!" -ForegroundColor Green
+Write-Host " Syntax error fixes complete!" -ForegroundColor Green
 Import-Module (Join-Path $PSScriptRoot "pwsh/modules/CodeFixer/CodeFixer.psd1") -Force
 
 

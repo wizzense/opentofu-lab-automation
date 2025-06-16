@@ -10,7 +10,7 @@
     Simple fix for remaining issues
 #>
 
-Write-Host "🔧 Simple Import Cleanup" -ForegroundColor Cyan
+Write-Host " Simple Import Cleanup" -ForegroundColor Cyan
 
 # Find all PowerShell files with problematic content
 $files = Get-ChildItem -Path . -Recurse -Include "*.ps1", "*.psm1", "*.psd1" | 

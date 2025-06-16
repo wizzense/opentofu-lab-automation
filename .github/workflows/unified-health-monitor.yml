@@ -67,7 +67,7 @@ jobs:
             await github.rest.issues.create({
               owner: context.repo.owner,
               repo: context.repo.name,
-              title: '🚨 Health Check Failure',
+              title: '� Health Check Failure',
               body: report,
               labels: ['health-check-failure', 'needs-attention']
             });

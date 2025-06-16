@@ -200,7 +200,7 @@ Test-JsonConfig -Path "./PROJECT-MANIFEST.json"
 - **Legacy workflows**: Multiple files with structural errors (archive candidates)
 
 ### YAML Validation (AUTO-FIX DISABLED)
-[WARN]️ **CRITICAL**: YAML auto-fix is permanently disabled due to corruption issues.
+[WARN] **CRITICAL**: YAML auto-fix is permanently disabled due to corruption issues.
 
 ```powershell
 # SAFE: Check YAML syntax only

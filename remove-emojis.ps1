@@ -3,7 +3,7 @@ $ErrorActionPreference = "Stop"
 
 # Define emoji patterns to remove
 $emojiPatterns = @(
-    '🔍', '🏥', '[FAIL]', '[PASS]', '[WARN]️', '🌿', '🛠️', '🧹', '🚀'
+    '�', '�', '[FAIL]', '[PASS]', '[WARN]', '�', '', '�', ''
 )
 
 # Get all markdown files in .github directory

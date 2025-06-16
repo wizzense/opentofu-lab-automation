@@ -272,7 +272,7 @@ function Invoke-CopilotSuggestionHandler {
             Write-Host "Copilot suggestion handling completed:" -ForegroundColor Green
             Write-Host "   Implemented: $implementedCount" -ForegroundColor Green
             Write-Host "   Failed: $failedCount" -ForegroundColor $(if ($failedCount -gt 0) { "Red" } else { "Green" })
-            Write-Host "  📁 Files modified: $($implementedFiles.Count)" -ForegroundColor Cyan
+            Write-Host "  � Files modified: $($implementedFiles.Count)" -ForegroundColor Cyan
             
             return $result
             

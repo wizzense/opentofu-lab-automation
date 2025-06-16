@@ -16,7 +16,7 @@ param(
 $ErrorActionPreference = "Continue"
 $ProgressPreference = "Continue"
 
-Write-Host "🔧 Comprehensive Fix and Test System" -ForegroundColor Cyan
+Write-Host " Comprehensive Fix and Test System" -ForegroundColor Cyan
 Write-Host "=================================" -ForegroundColor Gray
 
 # Import modules
@@ -30,7 +30,7 @@ try {
 }
 
 # Step 1: Run automatic fix capture
-Write-Host "`n1️⃣ Running Automatic Fix Capture..." -ForegroundColor Yellow
+Write-Host "`n1⃣ Running Automatic Fix Capture..." -ForegroundColor Yellow
 try {
     $issues = Invoke-AutomaticFixCapture -ProjectRoot "." -AutoFix:$AutoFix
     Write-Host "Found $($issues.Count) issues" -ForegroundColor White
@@ -43,7 +43,7 @@ try {
 }
 
 # Step 2: Fix common import issues
-Write-Host "`n2️⃣ Fixing Import Issues..." -ForegroundColor Yellow
+Write-Host "`n2⃣ Fixing Import Issues..." -ForegroundColor Yellow
 try {
     Invoke-ImportAnalysis -AutoFix
     Write-Host "[PASS] Import analysis complete" -ForegroundColor Green
@@ -52,7 +52,7 @@ try {
 }
 
 # Step 3: Run PowerShell linting
-Write-Host "`n3️⃣ Running PowerShell Linting..." -ForegroundColor Yellow
+Write-Host "`n3⃣ Running PowerShell Linting..." -ForegroundColor Yellow
 try {
     Invoke-PowerShellLint -Path "." -AutoFix:$AutoFix
     Write-Host "[PASS] Linting complete" -ForegroundColor Green
@@ -61,7 +61,7 @@ try {
 }
 
 # Step 4: Fix specific syntax issues we've identified
-Write-Host "`n4️⃣ Fixing Specific Syntax Issues..." -ForegroundColor Yellow
+Write-Host "`n4⃣ Fixing Specific Syntax Issues..." -ForegroundColor Yellow
 
 # Fix the "errors" command issue
 $testFiles = Get-ChildItem -Path "tests" -Recurse -Include "*.Tests.ps1"
@@ -89,7 +89,7 @@ if ($fixedErrorsCount -gt 0) {
 }
 
 # Step 5: Validate syntax
-Write-Host "`n5️⃣ Validating Syntax..." -ForegroundColor Yellow
+Write-Host "`n5⃣ Validating Syntax..." -ForegroundColor Yellow
 $syntaxErrors = 0
 $allPsFiles = Get-ChildItem -Path "." -Recurse -Include "*.ps1" | Where-Object { $_.FullName -notmatch "\\archive\\" }
 
@@ -110,12 +110,12 @@ foreach ($file in $allPsFiles) {
 if ($syntaxErrors -eq 0) {
     Write-Host "[PASS] No syntax errors found" -ForegroundColor Green
 } else {
-    Write-Host "[WARN]️  Found $syntaxErrors files with syntax errors" -ForegroundColor Yellow
+    Write-Host "[WARN]  Found $syntaxErrors files with syntax errors" -ForegroundColor Yellow
 }
 
 # Step 6: Run tests if requested
 if ($RunTests) {
-    Write-Host "`n6️⃣ Running Tests..." -ForegroundColor Yellow
+    Write-Host "`n6⃣ Running Tests..." -ForegroundColor Yellow
     
     if ($UseParallel) {
         Write-Host "Using parallel test execution with $MaxJobs jobs" -ForegroundColor Cyan
@@ -142,23 +142,23 @@ if ($RunTests) {
 }
 
 # Summary
-Write-Host "`n🎉 Comprehensive Fix and Test Complete!" -ForegroundColor Cyan
+Write-Host "`n Comprehensive Fix and Test Complete!" -ForegroundColor Cyan
 Write-Host "=====================================" -ForegroundColor Gray
 
 if ($AutoFix) {
     Write-Host "[PASS] Auto-fixes applied" -ForegroundColor Green
 } else {
-    Write-Host "[INFO]️  Run with -AutoFix to apply fixes automatically" -ForegroundColor Blue
+    Write-Host "[INFO]  Run with -AutoFix to apply fixes automatically" -ForegroundColor Blue
 }
 
 if ($RunTests) {
     Write-Host "[PASS] Tests executed" -ForegroundColor Green
 } else {
-    Write-Host "[INFO]️  Run with -RunTests to execute test suite" -ForegroundColor Blue
+    Write-Host "[INFO]  Run with -RunTests to execute test suite" -ForegroundColor Blue
 }
 
-Write-Host "[INFO]️  Use -UseParallel for faster test execution" -ForegroundColor Blue
-Write-Host "[INFO]️  Use -MaxJobs N to control parallel job count" -ForegroundColor Blue
+Write-Host "[INFO]  Use -UseParallel for faster test execution" -ForegroundColor Blue
+Write-Host "[INFO]  Use -MaxJobs N to control parallel job count" -ForegroundColor Blue
 
 
 

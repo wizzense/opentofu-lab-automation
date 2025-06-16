@@ -53,7 +53,7 @@ if (-not (Test-Path $SourceFile)) {
 }
 
 $rootDir = $PSScriptRoot
-Write-Host "🧹 Handling remaining files in OpenTofu Lab Automation project" -ForegroundColor Cyan
+Write-Host "� Handling remaining files in OpenTofu Lab Automation project" -ForegroundColor Cyan
 
 # 1. Move workflow scripts to maintenance
 $cleanWorkflows = Join-Path $rootDir "clean-workflows.ps1"

@@ -21,7 +21,7 @@ param(
 
 $ErrorActionPreference = "Stop"
 
-Write-Host "🔧 COMPREHENSIVE POWERSHELL SYNTAX FIX" -ForegroundColor Cyan
+Write-Host " COMPREHENSIVE POWERSHELL SYNTAX FIX" -ForegroundColor Cyan
 Write-Host "=====================================" -ForegroundColor Cyan
 
 $totalFixed = 0
@@ -148,7 +148,7 @@ foreach ($file in $allFiles) {
         $content = Get-Content -Path $file.FullName -Raw -ErrorAction Stop
         
         if ([string]::IsNullOrWhiteSpace($content)) {
-            Write-Host "  [WARN]️  Empty file, skipping" -ForegroundColor Yellow
+            Write-Host "  [WARN]  Empty file, skipping" -ForegroundColor Yellow
             continue
         }
         
@@ -224,13 +224,13 @@ foreach ($file in $allFiles) {
                 if ($verifyErrors.Count -eq 0) {
                     Write-Host "  [PASS] Verification: Syntax is now valid" -ForegroundColor Green
                 } else {
-                    Write-Host "  [WARN]️  Verification: $($verifyErrors.Count) errors remain" -ForegroundColor Yellow
+                    Write-Host "  [WARN]  Verification: $($verifyErrors.Count) errors remain" -ForegroundColor Yellow
                 }
             } catch {
                 Write-Host "  [FAIL] Verification failed: $($_.Exception.Message)" -ForegroundColor Red
             }
         } else {
-            Write-Host "  [WARN]️  No automatic fixes available" -ForegroundColor Yellow
+            Write-Host "  [WARN]  No automatic fixes available" -ForegroundColor Yellow
         }
         
     } catch {
@@ -240,7 +240,7 @@ foreach ($file in $allFiles) {
 
 # Summary
 Write-Host "`n=====================================" -ForegroundColor Cyan
-Write-Host "📊 COMPREHENSIVE FIX SUMMARY" -ForegroundColor Cyan
+Write-Host " COMPREHENSIVE FIX SUMMARY" -ForegroundColor Cyan
 Write-Host "=====================================" -ForegroundColor Cyan
 Write-Host "Files Checked:        $($allFiles.Count)" -ForegroundColor White
 Write-Host "Files with Issues:    $($issuesFound.Count)" -ForegroundColor Yellow
@@ -255,7 +255,7 @@ if ($WhatIf) {
 } else {
     if ($totalFixed -gt 0) {
         Write-Host "`n[PASS] Successfully fixed $totalFixed files!" -ForegroundColor Green
-        Write-Host "💡 Backup files created with .backup-* extension" -ForegroundColor Yellow
+        Write-Host "� Backup files created with .backup-* extension" -ForegroundColor Yellow
     } else {
         Write-Host "`n[PASS] No fixes were needed!" -ForegroundColor Green
     }

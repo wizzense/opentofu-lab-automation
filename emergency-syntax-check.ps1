@@ -25,7 +25,7 @@ Get-ChildItem -Path $Path -Filter "*.ps1" -Recurse | ForEach-Object {
 }
 
 if ($errors.Count -gt 0) {
-    Write-Host "`n🚨 FOUND $($errors.Count) SYNTAX ERRORS!" -ForegroundColor Red
+    Write-Host "`n� FOUND $($errors.Count) SYNTAX ERRORS!" -ForegroundColor Red
     exit 1
 } else {
     Write-Host "`n[PASS] All PowerShell files have valid syntax" -ForegroundColor Green

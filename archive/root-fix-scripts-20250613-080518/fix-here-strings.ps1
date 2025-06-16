@@ -30,7 +30,7 @@ param(
 
 $ErrorActionPreference = "Stop"
 
-Write-Host "🔧 Fixing Here-String Syntax Issues" -ForegroundColor Cyan
+Write-Host " Fixing Here-String Syntax Issues" -ForegroundColor Cyan
 Write-Host "=" * 50
 
 # Find all PowerShell files
@@ -111,13 +111,13 @@ foreach ($file in $psFiles) {
     }
 }
 
-Write-Host "`n📊 Summary:" -ForegroundColor Cyan
+Write-Host "`n Summary:" -ForegroundColor Cyan
 Write-Host "  Files checked: $($psFiles.Count)" -ForegroundColor White
 Write-Host "  Files fixed: $($fixedFiles.Count)" -ForegroundColor Green
 Write-Host "  Total fixes applied: $totalFixes" -ForegroundColor Green
 
 if ($WhatIf) {
-    Write-Host "`n[WARN]️  WhatIf mode - no changes were made" -ForegroundColor Yellow
+    Write-Host "`n[WARN]  WhatIf mode - no changes were made" -ForegroundColor Yellow
 } elseif ($fixedFiles.Count -gt 0) {
     Write-Host "`n[PASS] Here-string syntax fixes completed!" -ForegroundColor Green
     Write-Host "Fixed files:" -ForegroundColor Gray

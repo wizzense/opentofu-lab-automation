@@ -173,7 +173,7 @@ function Repair-ExistingTests {
             if (Test-Path $testFile.FullName) {
                 $backupPath = "$($testFile.FullName).backup.$(Get-Date -Format 'yyyyMMdd-HHmmss')"
                 Copy-Item $testFile.FullName $backupPath
-                Write-Host "  📁 Backed up original to: $backupPath" -ForegroundColor Gray
+                Write-Host "  � Backed up original to: $backupPath" -ForegroundColor Gray
             }
             
             # Generate new test

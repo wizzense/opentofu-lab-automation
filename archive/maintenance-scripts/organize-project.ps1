@@ -26,7 +26,7 @@ function Write-Step {
 
 
 
-Write-Host "📋 $Message" -ForegroundColor $Color
+Write-Host " $Message" -ForegroundColor $Color
 }
 
 function Move-ProjectFile {
@@ -52,7 +52,7 @@ if (-not (Test-Path $Source)) {
     if ($CreateDirectory -and -not (Test-Path $destDir)) {
         try {
             New-Item -Path $destDir -ItemType Directory -Force | Out-Null
-            Write-Host "  📁 Created directory: $destDir" -ForegroundColor Gray
+            Write-Host "  � Created directory: $destDir" -ForegroundColor Gray
         } catch {
             Write-Warning "Failed to create directory $destDir`: $_"
             return $false
@@ -61,7 +61,7 @@ if (-not (Test-Path $Source)) {
     
     try {
         if ($WhatIf) {
-            Write-Host "  📋 Would move: $Source -> $Destination" -ForegroundColor Yellow
+            Write-Host "   Would move: $Source -> $Destination" -ForegroundColor Yellow
         } else {
             Move-Item -Path $Source -Destination $Destination -Force:$Force
             Write-Host "  [PASS] Moved: $Source -> $Destination" -ForegroundColor Green
@@ -96,7 +96,7 @@ if (-not (Test-Path $Source)) {
     if ($CreateDirectory -and -not (Test-Path $destDir)) {
         try {
             New-Item -Path $destDir -ItemType Directory -Force | Out-Null
-            Write-Host "  📁 Created directory: $destDir" -ForegroundColor Gray
+            Write-Host "  � Created directory: $destDir" -ForegroundColor Gray
         } catch {
             Write-Warning "Failed to create directory $destDir`: $_"
             return $false
@@ -105,7 +105,7 @@ if (-not (Test-Path $Source)) {
     
     try {
         if ($WhatIf) {
-            Write-Host "  📋 Would copy: $Source -> $Destination" -ForegroundColor Yellow
+            Write-Host "   Would copy: $Source -> $Destination" -ForegroundColor Yellow
         } else {
             Copy-Item -Path $Source -Destination $Destination -Force:$Force
             Write-Host "  [PASS] Copied: $Source -> $Destination" -ForegroundColor Green
@@ -141,7 +141,7 @@ if (-not (Test-Path $Source)) {
     if (-not (Test-Path $ArchiveDir)) {
         try {
             New-Item -Path $ArchiveDir -ItemType Directory -Force | Out-Null
-            Write-Host "  📁 Created archive directory: $ArchiveDir" -ForegroundColor Gray
+            Write-Host "  � Created archive directory: $ArchiveDir" -ForegroundColor Gray
         } catch {
             Write-Warning "Failed to create archive directory $ArchiveDir`: $_"
             return $false
@@ -150,10 +150,10 @@ if (-not (Test-Path $Source)) {
     
     try {
         if ($WhatIf) {
-            Write-Host "  📋 Would archive: $Source -> $destination" -ForegroundColor Yellow
+            Write-Host "   Would archive: $Source -> $destination" -ForegroundColor Yellow
         } else {
             Move-Item -Path $Source -Destination $destination -Force:$Force
-            Write-Host "  🗄️ Archived: $Source -> $destination" -ForegroundColor Magenta
+            Write-Host "  � Archived: $Source -> $destination" -ForegroundColor Magenta
         }
         return $true
     } catch {
@@ -164,7 +164,7 @@ if (-not (Test-Path $Source)) {
 
 # Start the cleanup process
 $rootDir = $PSScriptRoot
-Write-Host "🧹 Starting OpenTofu Lab Automation project cleanup and organization" -ForegroundColor Cyan
+Write-Host "� Starting OpenTofu Lab Automation project cleanup and organization" -ForegroundColor Cyan
 Write-Host "Working directory: $rootDir" -ForegroundColor Cyan
 if ($WhatIf) {
     Write-Host "Running in WhatIf mode - no changes will be made" -ForegroundColor Yellow
@@ -188,11 +188,11 @@ foreach ($dir in $directories) {
     $dirPath = Join-Path $rootDir $dir
     if (-not (Test-Path $dirPath)) {
         if ($WhatIf) {
-            Write-Host "  📋 Would create directory: $dir" -ForegroundColor Yellow
+            Write-Host "   Would create directory: $dir" -ForegroundColor Yellow
         } else {
             try {
                 New-Item -Path $dirPath -ItemType Directory -Force | Out-Null
-                Write-Host "  📁 Created directory: $dir" -ForegroundColor Green
+                Write-Host "  � Created directory: $dir" -ForegroundColor Green
             } catch {
                 Write-Warning "Failed to create directory $dir`: $_"
             }
@@ -290,7 +290,7 @@ foreach ($file in $archiveFiles) {
        }
     
     if (-not (Test-Path $source)) {
-        Write-Host "  [WARN]️ File not found: $file" -ForegroundColor Yellow
+        Write-Host "  [WARN] File not found: $file" -ForegroundColor Yellow
         continue
     }
 
@@ -301,11 +301,11 @@ foreach ($file in $archiveFiles) {
     $destination = Join-Path $archiveDir $file
     
     if ($WhatIf) {
-        Write-Host "  📋 Would archive: $file -> $destination" -ForegroundColor Yellow
+        Write-Host "   Would archive: $file -> $destination" -ForegroundColor Yellow
     } else {
         try {
             Move-Item -Path $source -Destination $destination -Force:$Force
-            Write-Host "  🗄️ Archived: $file -> $destination" -ForegroundColor Magenta
+            Write-Host "  � Archived: $file -> $destination" -ForegroundColor Magenta
         } catch {
             Write-Warning "Failed to archive file $file`: $_"
         }
@@ -318,11 +318,11 @@ Write-Step "Updating CLEANUP-SUMMARY.md"
 $cleanupSummary = @"
 # OpenTofu Lab Automation Project Cleanup Summary
 
-## 🚀 Project Organization Cleanup
+##  Project Organization Cleanup
 
 This document summarizes the cleanup and organization work performed on the OpenTofu Lab Automation project to improve maintainability and workflow integration.
 
-## 📁 Directory Structure
+## � Directory Structure
 
 The project has been organized into the following structure:
 
@@ -361,7 +361,7 @@ The project has been organized into the following structure:
     └── test-scripts/         # Old test scripts
 ```
 
-## 🔄 Scripts Cleanup Summary
+## � Scripts Cleanup Summary
 
 ### [PASS] Scripts Consolidated into CodeFixer Module
 
@@ -417,7 +417,7 @@ The following obsolete or redundant scripts have been archived:
 | enhanced-fix-labrunner.ps1 | Fix script, functionality in CodeFixer |
 | final-automation-test.ps1 | Test script, functionality in test framework |
 
-## 🚀 Benefits of Reorganization
+##  Benefits of Reorganization
 
 1. **Improved Maintainability**: Clear directory structure with logical organization
 2. **Reduced Duplication**: Consolidated overlapping functionality into modules
@@ -426,7 +426,7 @@ The following obsolete or redundant scripts have been archived:
 5. **Consistent Naming**: Applied consistent naming conventions
 6. **Integration with CI/CD**: Simplified paths for CI/CD workflows
 
-## 📋 Next Steps
+##  Next Steps
 
 1. Update GitHub Actions workflows to use the new script paths
 2. Update documentation to reflect new structure
@@ -434,7 +434,7 @@ The following obsolete or redundant scripts have been archived:
 "@
 
 if ($WhatIf) {
-    Write-Host "  📋 Would update CLEANUP-SUMMARY.md" -ForegroundColor Yellow
+    Write-Host "   Would update CLEANUP-SUMMARY.md" -ForegroundColor Yellow
 } else {
     try {
         Set-Content -Path (Join-Path $rootDir "CLEANUP-SUMMARY.md") -Value $cleanupSummary -Force

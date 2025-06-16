@@ -1,12 +1,12 @@
 # OpenTofu Lab Automation
 
-🚀 **One-click infrastructure lab deployment** - Cross-platform automation for OpenTofu (Terraform alternative) environments.
+ **One-click infrastructure lab deployment** - Cross-platform automation for OpenTofu (Terraform alternative) environments.
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Python Version](https://img.shields.io/badge/python-3.7%2B-blue)](https://python.org)
 [![PowerShell](https://img.shields.io/badge/powershell-7%2B-blue)](https://github.com/PowerShell/PowerShell)
 
-## 🎯 Quick Start (30 seconds)
+##  Quick Start (30 seconds)
 
 ### Option 1: One-Click Deployment (Recommended)
 
@@ -38,7 +38,7 @@ python deploy.py
 python deploy.py --quick
 ```
 
-## 🛠️ What This Does
+##  What This Does
 
 This automation framework:
 - [PASS] **Installs prerequisites** (PowerShell, Git, OpenTofu, etc.)
@@ -47,7 +47,7 @@ This automation framework:
 - [PASS] **Deploys OpenTofu modules** for infrastructure as code
 - [PASS] **Creates ready-to-use lab environment** in minutes
 
-## 🔧 Prerequisites
+##  Prerequisites
 
 **Minimum Requirements:**
 - **Internet connection**
@@ -56,7 +56,7 @@ This automation framework:
 
 **That's it!** Everything else is installed automatically.
 
-## 📋 Deployment Options
+##  Deployment Options
 
 ### Interactive Mode (Default)
 ```bash
@@ -88,7 +88,7 @@ python deploy.py --check
 - Verify system compatibility
 - No installation or changes made
 
-## 🗂️ Configuration
+## � Configuration
 
 ### Basic Config (`configs/config_files/default-config.json`)
 ```json
@@ -104,7 +104,7 @@ python deploy.py --check
 - **Windows**: `C:\Temp\lab`
 - **Linux/macOS**: `/tmp/lab`
 
-## 🎮 Advanced Usage
+## � Advanced Usage
 
 ### Direct PowerShell (After Prerequisites)
 ```powershell
@@ -130,7 +130,7 @@ python deploy.py --check
 .\pwsh\runner.ps1 -StartStep 5
 ```
 
-## 🏗️ What Gets Installed
+## � What Gets Installed
 
 ### Core Infrastructure
 - **PowerShell 7+** (cross-platform scripting)
@@ -156,7 +156,7 @@ python deploy.py --check
 - **DNS configuration** (local resolution)
 - **Trusted hosts** (PowerShell remoting)
 
-## 🚨 Troubleshooting
+## � Troubleshooting
 
 ### Common Issues
 
@@ -187,7 +187,7 @@ sudo ./deploy.sh  # If admin access needed
 3. **Review config**: Verify your configuration file
 4. **Open issue**: [GitHub Issues](https://github.com/wizzense/opentofu-lab-automation/issues)
 
-## 🎯 Use Cases
+##  Use Cases
 
 ### Development Labs
 - Local OpenTofu testing
@@ -207,14 +207,14 @@ sudo ./deploy.sh  # If admin access needed
 - Change validation
 - Performance testing
 
-## 📚 Documentation
+## � Documentation
 
 - **[Configuration Guide](docs/AUTOMATION-QUICKREF.md)** - Detailed setup options
 - **[Troubleshooting](docs/troubleshooting.md)** - Common problems and solutions
 - **[Development](docs/CONTRIBUTING.md)** - Contributing to the project
 - **[Testing Framework](docs/testing-framework.md)** - Running and writing tests
 
-## 🤝 Contributing
+## � Contributing
 
 We welcome contributions! Quick start:
 
@@ -225,11 +225,11 @@ We welcome contributions! Quick start:
 
 See [CONTRIBUTING.md](docs/CONTRIBUTING.md) for detailed guidelines.
 
-## 📄 License
+## � License
 
 MIT License - see [LICENSE](LICENSE) file for details.
 
-## 🙏 Acknowledgments
+## � Acknowledgments
 
 - **OpenTofu Community** - Excellent Terraform alternative
 - **PowerShell Team** - Cross-platform automation platform
@@ -237,7 +237,7 @@ MIT License - see [LICENSE](LICENSE) file for details.
 
 ---
 
-## 🚀 Ready to Deploy?
+##  Ready to Deploy?
 
 **Just run one command:**
 
@@ -250,4 +250,4 @@ python deploy.py --quick
 - Windows: `deploy.bat`
 - Linux/macOS: `deploy.sh`
 
-Your lab environment will be ready in minutes! 🎉
+Your lab environment will be ready in minutes! 

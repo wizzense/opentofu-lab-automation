@@ -17,13 +17,13 @@ which has now been disabled.
 
 $ErrorActionPreference = "Stop"
 
-Write-Host "🚨 EMERGENCY YAML WORKFLOW CLEANUP" -ForegroundColor Red
+Write-Host "� EMERGENCY YAML WORKFLOW CLEANUP" -ForegroundColor Red
 Write-Host "===================================" -ForegroundColor Red
 
 # Create archive directory
 $archiveDir = "./archive/broken-workflows-$(Get-Date -Format 'yyyyMMdd-HHmmss')"
 New-Item -ItemType Directory -Path $archiveDir -Force
-Write-Host "📁 Created archive directory: $archiveDir" -ForegroundColor Yellow
+Write-Host "� Created archive directory: $archiveDir" -ForegroundColor Yellow
 
 # List of working workflow files (YAML valid)
 $workingWorkflows = @(
@@ -34,7 +34,7 @@ $workingWorkflows = @(
 # List all workflow files
 $allWorkflows = Get-ChildItem ".github/workflows/*.yml" -Name
 
-Write-Host "`n📊 WORKFLOW STATUS:" -ForegroundColor Cyan
+Write-Host "`n WORKFLOW STATUS:" -ForegroundColor Cyan
 Write-Host "Total workflows: $($allWorkflows.Count)" -ForegroundColor White
 Write-Host "Working workflows: $($workingWorkflows.Count)" -ForegroundColor Green
 Write-Host "Broken workflows: $($allWorkflows.Count - $workingWorkflows.Count)" -ForegroundColor Red
@@ -47,7 +47,7 @@ if ($brokenWorkflows.Count -eq 0) {
     exit 0
 }
 
-Write-Host "`n🗂️  ARCHIVING BROKEN WORKFLOWS:" -ForegroundColor Yellow
+Write-Host "`n�  ARCHIVING BROKEN WORKFLOWS:" -ForegroundColor Yellow
 foreach ($workflow in $brokenWorkflows) {
     $sourcePath = ".github/workflows/$workflow"
     $destPath = "$archiveDir/$workflow"
@@ -97,7 +97,7 @@ Set-Content "$archiveDir/README.md" $archiveReadme
 $backupDir = "./backups/working-workflows-$(Get-Date -Format 'yyyyMMdd-HHmmss')"
 New-Item -ItemType Directory -Path $backupDir -Force
 
-Write-Host "`n💾 BACKING UP WORKING WORKFLOWS:" -ForegroundColor Cyan
+Write-Host "`n� BACKING UP WORKING WORKFLOWS:" -ForegroundColor Cyan
 foreach ($workflow in $workingWorkflows) {
     $sourcePath = ".github/workflows/$workflow"
     $destPath = "$backupDir/$workflow"
@@ -109,7 +109,7 @@ foreach ($workflow in $workingWorkflows) {
 }
 
 # Validate remaining workflows
-Write-Host "`n🔍 VALIDATING REMAINING WORKFLOWS:" -ForegroundColor Cyan
+Write-Host "`n� VALIDATING REMAINING WORKFLOWS:" -ForegroundColor Cyan
 $validationErrors = 0
 
 foreach ($workflow in $workingWorkflows) {
@@ -123,12 +123,12 @@ foreach ($workflow in $workingWorkflows) {
             $validationErrors++
         }
     } else {
-        Write-Host "  [WARN]️  Missing: $workflow" -ForegroundColor Yellow
+        Write-Host "  [WARN]  Missing: $workflow" -ForegroundColor Yellow
     }
 }
 
 # Summary
-Write-Host "`n📋 CLEANUP SUMMARY:" -ForegroundColor Cyan
+Write-Host "`n CLEANUP SUMMARY:" -ForegroundColor Cyan
 Write-Host "===================" -ForegroundColor Cyan
 Write-Host "[PASS] Archived broken workflows: $($brokenWorkflows.Count)" -ForegroundColor Green
 Write-Host "[PASS] Backed up working workflows: $($workingWorkflows.Count)" -ForegroundColor Green
@@ -136,12 +136,12 @@ Write-Host "[PASS] Validation errors remaining: $validationErrors" -ForegroundCo
 Write-Host "[PASS] Auto-fix corruption: DISABLED" -ForegroundColor Green
 
 if ($validationErrors -eq 0) {
-    Write-Host "`n🎉 SUCCESS: Workflow directory is now clean and valid!" -ForegroundColor Green
-    Write-Host "📁 Archive location: $archiveDir" -ForegroundColor Yellow
-    Write-Host "💾 Backup location: $backupDir" -ForegroundColor Yellow
+    Write-Host "`n SUCCESS: Workflow directory is now clean and valid!" -ForegroundColor Green
+    Write-Host "� Archive location: $archiveDir" -ForegroundColor Yellow
+    Write-Host "� Backup location: $backupDir" -ForegroundColor Yellow
     
     # Update project manifest
-    Write-Host "`n📝 Updating project manifest..." -ForegroundColor Cyan
+    Write-Host "`n� Updating project manifest..." -ForegroundColor Cyan
     try {
         $manifest = Get-Content "./PROJECT-MANIFEST.json" | ConvertFrom-Json
         $manifest.project.lastMaintenance = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
@@ -149,19 +149,19 @@ if ($validationErrors -eq 0) {
         $manifest | ConvertTo-Json -Depth 10 | Set-Content "./PROJECT-MANIFEST.json"
         Write-Host "[PASS] Project manifest updated" -ForegroundColor Green
     } catch {
-        Write-Host "[WARN]️  Failed to update project manifest: $($_.Exception.Message)" -ForegroundColor Yellow
+        Write-Host "[WARN]  Failed to update project manifest: $($_.Exception.Message)" -ForegroundColor Yellow
     }
 } else {
-    Write-Host "`n[WARN]️  WARNING: Some validation errors remain. Manual review required." -ForegroundColor Yellow
+    Write-Host "`n[WARN]  WARNING: Some validation errors remain. Manual review required." -ForegroundColor Yellow
 }
 
-Write-Host "`n🔒 PREVENTION MEASURES ACTIVE:" -ForegroundColor Cyan
+Write-Host "`n PREVENTION MEASURES ACTIVE:" -ForegroundColor Cyan
 Write-Host "- YAML auto-fix disabled in validation script" -ForegroundColor White
 Write-Host "- Manual yamllint validation only" -ForegroundColor White
 Write-Host "- Archive created for broken files" -ForegroundColor White
 Write-Host "- Backup created for working files" -ForegroundColor White
 
-Write-Host "`n🚀 NEXT STEPS:" -ForegroundColor Green
+Write-Host "`n NEXT STEPS:" -ForegroundColor Green
 Write-Host "1. Use mega-consolidated workflows for CI/CD" -ForegroundColor White
 Write-Host "2. Manually fix archived workflows if needed" -ForegroundColor White
 Write-Host "3. Follow YAML standards for new workflows" -ForegroundColor White

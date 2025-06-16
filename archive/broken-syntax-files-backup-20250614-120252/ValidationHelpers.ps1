@@ -286,7 +286,7 @@ Import-Module PSScriptAnalyzer -Force
         [object]$Results
     )
     
-    Write-Host "`n📊 VALIDATION SUMMARY" -ForegroundColor Cyan
+    Write-Host "`n VALIDATION SUMMARY" -ForegroundColor Cyan
     Write-Host "=======================================`n" -ForegroundColor Cyan
     
     # Syntax check summary
@@ -369,7 +369,7 @@ Import-Module PSScriptAnalyzer -Force
         if ($hasErrors) {
             Write-Host "  [FAIL] FAILED - Critical issues found that need to be fixed" -ForegroundColor Red
         } else {
-            Write-Host "  [WARN]️ WARNINGS - Non-critical issues found that should be addressed" -ForegroundColor Yellow
+            Write-Host "  [WARN] WARNINGS - Non-critical issues found that should be addressed" -ForegroundColor Yellow
         }
         
         # Suggest fixes

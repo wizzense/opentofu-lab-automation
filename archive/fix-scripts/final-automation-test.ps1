@@ -13,7 +13,7 @@ param()
 
 $ErrorActionPreference = "Stop"
 
-Write-Host "🧪 FINAL AUTOMATION SYSTEM VALIDATION TEST" -ForegroundColor Cyan
+Write-Host "� FINAL AUTOMATION SYSTEM VALIDATION TEST" -ForegroundColor Cyan
 Write-Host "=" * 60
 
 $results = @{
@@ -28,7 +28,7 @@ $results = @{
 $issues = @()
 
 # Test 1: PowerShell Validation System
-Write-Host "`n🔍 Test 1: PowerShell Validation System" -ForegroundColor Yellow
+Write-Host "`n� Test 1: PowerShell Validation System" -ForegroundColor Yellow
 
 try {
     Write-Host "  Running validation on all runner scripts..." -ForegroundColor Gray
@@ -48,14 +48,14 @@ try {
 }
 
 # Test 2: Pre-commit Hook Installation
-Write-Host "`n🔍 Test 2: Pre-commit Hook" -ForegroundColor Yellow
+Write-Host "`n� Test 2: Pre-commit Hook" -ForegroundColor Yellow
 
 try {
     if (Test-Path ".git/hooks/pre-commit") {
         Write-Host "  [PASS] Pre-commit hook is installed" -ForegroundColor Green
         $results.PreCommitHook = $true
     } else {
-        Write-Host "  [WARN]️ Pre-commit hook not found - installing..." -ForegroundColor Yellow
+        Write-Host "  [WARN] Pre-commit hook not found - installing..." -ForegroundColor Yellow
         & "tools/Pre-Commit-Hook.ps1" -Install
         if (Test-Path ".git/hooks/pre-commit") {
             Write-Host "  [PASS] Pre-commit hook installed successfully" -ForegroundColor Green
@@ -71,7 +71,7 @@ try {
 }
 
 # Test 3: Bootstrap Script Non-Interactive Mode
-Write-Host "`n🔍 Test 3: Bootstrap Script Non-Interactive Mode" -ForegroundColor Yellow
+Write-Host "`n� Test 3: Bootstrap Script Non-Interactive Mode" -ForegroundColor Yellow
 
 try {
     Write-Host "  Testing bootstrap script with -WhatIf..." -ForegroundColor Gray
@@ -95,7 +95,7 @@ try {
 }
 
 # Test 4: Runner Script Syntax  
-Write-Host "`n🔍 Test 4: Runner Script Syntax" -ForegroundColor Yellow
+Write-Host "`n� Test 4: Runner Script Syntax" -ForegroundColor Yellow
 
 try {
     Write-Host "  Validating runner script syntax..." -ForegroundColor Gray
@@ -115,7 +115,7 @@ try {
 }
 
 # Test 5: Workflow Files Syntax
-Write-Host "`n🔍 Test 5: Workflow Files" -ForegroundColor Yellow
+Write-Host "`n� Test 5: Workflow Files" -ForegroundColor Yellow
 
 try {
     $workflowFiles = Get-ChildItem ".github/workflows" -Filter "*.yml"
@@ -126,7 +126,7 @@ try {
             $content = Get-Content $file.FullName -Raw
             # Basic YAML validation - check for document start and basic structure
             if ($content -notmatch "^---" -or $content -match "(?m)^\s*\t") {
-                Write-Host "  [WARN]️ YAML formatting issue in $($file.Name)" -ForegroundColor Yellow
+                Write-Host "  [WARN] YAML formatting issue in $($file.Name)" -ForegroundColor Yellow
                 $allValid = $false
             }
         } catch {
@@ -148,7 +148,7 @@ try {
 }
 
 # Test 6: Script Template
-Write-Host "`n🔍 Test 6: Script Template" -ForegroundColor Yellow
+Write-Host "`n� Test 6: Script Template" -ForegroundColor Yellow
 
 try {
     if (Test-Path "pwsh/ScriptTemplate.ps1") {
@@ -173,7 +173,7 @@ try {
 
 # Final Results
 Write-Host "`n" + "=" * 60 -ForegroundColor Cyan
-Write-Host "🏆 AUTOMATION SYSTEM VALIDATION RESULTS" -ForegroundColor Cyan
+Write-Host " AUTOMATION SYSTEM VALIDATION RESULTS" -ForegroundColor Cyan
 Write-Host "=" * 60
 
 $passedTests = ($results.Values | Where-Object { $_ -eq $true }).Count
@@ -188,19 +188,19 @@ foreach ($test in $results.Keys) {
 Write-Host "`nOverall Score: $passedTests/$totalTests tests passed" -ForegroundColor $$(if (passedTests -eq $totalTests) { "Green" } else { "Yellow" })
 
 if ($issues.Count -gt 0) {
-    Write-Host "`n[WARN]️ Issues Found:" -ForegroundColor Yellow
+    Write-Host "`n[WARN] Issues Found:" -ForegroundColor Yellow
     foreach ($issue in $issues) {
         Write-Host "  - $issue" -ForegroundColor Red
     }
 }
 
 if ($passedTests -eq $totalTests) {
-    Write-Host "`n🎉 AUTOMATION SYSTEM FULLY OPERATIONAL!" -ForegroundColor Green
+    Write-Host "`n AUTOMATION SYSTEM FULLY OPERATIONAL!" -ForegroundColor Green
     Write-Host "   All validation, prevention, and runtime fixes are working correctly." -ForegroundColor Green
     Write-Host "   The project is now protected against PowerShell syntax errors." -ForegroundColor Green
     exit 0
 } else {
-    Write-Host "`n[WARN]️ Some automation components need attention" -ForegroundColor Yellow
+    Write-Host "`n[WARN] Some automation components need attention" -ForegroundColor Yellow
     Write-Host "   Review the issues above and re-run validation" -ForegroundColor Yellow
     exit 1
 }

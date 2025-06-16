@@ -19,7 +19,7 @@ param(
 
 
 
-Write-Host "🧹 Cleaning up root directory..." -ForegroundColor Cyan
+Write-Host "� Cleaning up root directory..." -ForegroundColor Cyan
 
 # Files to move to archive
 $filesToMove = @(
@@ -39,7 +39,7 @@ if (-not $WhatIf) {
 $moved = 0
 foreach ($file in $filesToMove) {
     if (Test-Path $file) {
-        Write-Host "  📦 Moving $file to archive..." -ForegroundColor Yellow
+        Write-Host "  � Moving $file to archive..." -ForegroundColor Yellow
         if (-not $WhatIf) {
             Move-Item $file $archiveDir -Force
         }
@@ -86,14 +86,14 @@ if (-not $WhatIf) {
     Write-Host "  [PASS] Updated auto-fix.ps1 to use CodeFixer module" -ForegroundColor Green
 }
 
-Write-Host "`n📊 Cleanup Summary:" -ForegroundColor Cyan
+Write-Host "`n Cleanup Summary:" -ForegroundColor Cyan
 Write-Host "  Files moved to archive: $moved" -ForegroundColor White
 Write-Host "  Updated auto-fix.ps1 to use module" -ForegroundColor Green
 
 if ($WhatIf) {
-    Write-Host "  [WARN]️  WhatIf mode - no changes made" -ForegroundColor Yellow
+    Write-Host "  [WARN]  WhatIf mode - no changes made" -ForegroundColor Yellow
 } else {
-    Write-Host "  📁 Archive created: $archiveDir" -ForegroundColor Yellow
+    Write-Host "  � Archive created: $archiveDir" -ForegroundColor Yellow
 }
 
 

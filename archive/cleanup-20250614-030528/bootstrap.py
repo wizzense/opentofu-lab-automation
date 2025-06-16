@@ -96,10 +96,10 @@ class BootstrapInstaller:
         print(f"{Colors.RED}[FAIL] {message}{Colors.NC}")
     
     def _print_info(self, message: str):
-        print(f"{Colors.BLUE}[INFO]️  {message}{Colors.NC}")
+        print(f"{Colors.BLUE}[INFO]  {message}{Colors.NC}")
     
     def _print_warning(self, message: str):
-        print(f"{Colors.YELLOW}[WARN]️  {message}{Colors.NC}")
+        print(f"{Colors.YELLOW}[WARN]  {message}{Colors.NC}")
     
     def create_config_file(self) -> bool:
         """Create default configuration file"""
@@ -146,7 +146,7 @@ import subprocess
 from pathlib import Path
 
 def main():
-    print("🚀 OpenTofu Lab Deployment")
+    print(" OpenTofu Lab Deployment")
     print("=" * 40)
     
     # Load config
@@ -163,9 +163,9 @@ def main():
     repo_url = config.get("deployment", {}).get("repo_url", "")
     local_path = config.get("deployment", {}).get("local_path", "")
     
-    print(f"📥 Repository: {repo_url}")
-    print(f"📁 Local path: {local_path}")
-    print("🔧 This is a minimal deployment demo.")
+    print(f"� Repository: {repo_url}")
+    print(f"� Local path: {local_path}")
+    print(" This is a minimal deployment demo.")
     print("   Full deployment requires PowerShell modules and OpenTofu/Terraform.")
     
     return 0
@@ -208,7 +208,7 @@ class SimpleGUI:
     
     def setup_ui(self):
         # Header
-        header = ttk.Label(self.root, text="🚀 OpenTofu Lab Automation", 
+        header = ttk.Label(self.root, text=" OpenTofu Lab Automation", 
                           font=("Arial", 16, "bold"))
         header.pack(pady=20)
         
@@ -248,12 +248,12 @@ class SimpleGUI:
     
     def deploy_lab(self):
         self.status.config(text="Deploying...", foreground="orange")
-        self.log("🚀 Starting deployment...")
+        self.log(" Starting deployment...")
         self.log("   This is a demo - full deployment requires PowerShell modules")
         self.status.config(text="Demo Complete", foreground="green")
     
     def health_check(self):
-        self.log("🔍 Running health check...")
+        self.log("� Running health check...")
         config_file = Path("configs/default-config.json")
         if config_file.exists():
             self.log("[PASS] Configuration file found")
