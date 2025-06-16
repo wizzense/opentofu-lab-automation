@@ -113,18 +113,17 @@ function Invoke-GitHubIssueIntegration {
                     IssueNumber = $null
                 }
             }
-            
-            # Determine priority-based labels
+              # Determine priority-based labels
             $priorityLabels = switch ($Priority) {
-                "Critical" { @("bug", "high-priority") }
-                "High" { @("bug", "priority") }
-                "Medium" { @("bug") }
+                "Critical" { @("high-priority") }
+                "High" { @("priority") }
+                "Medium" { @() }  # No additional labels for medium
                 "Low" { @("minor") }
-                default { @("bug") }
+                default { @() }
             }
             
-            # Combine all labels
-            $allLabels = $Labels + $priorityLabels + @("automated")
+            # Combine all labels and remove duplicates
+            $allLabels = ($Labels + $priorityLabels + @("automated")) | Sort-Object -Unique
             
             # First try to create any missing labels
             foreach ($label in $allLabels) {
@@ -155,8 +154,8 @@ if ($LASTEXITCODE -ne 0) {
                         Write-Warning "  Failed to create label '$label': $_"
                     }
                 }
-            }            # Create comprehensive GitHub issue
-            $title = "🔧 PatchManager: $PatchDescription"
+            }            # Create comprehensive GitHub issue (NO EMOJIS - project policy)
+            $title = "PatchManager: $PatchDescription"
             
             # Create detailed issue body with full context
             $body = @"
@@ -176,6 +175,7 @@ $($AffectedFiles | ForEach-Object { "- ``$_``" } | Out-String)
 - **Manual Review Required**: Yes
 
 ### Expected Actions
+
 1. **Review the pull request** (will be linked when created)
 2. **Validate changes** in a clean environment  
 3. **Test functionality** to ensure no regressions
@@ -183,18 +183,37 @@ $($AffectedFiles | ForEach-Object { "- ``$_``" } | Out-String)
 5. **Close this issue** after successful merge
 
 ### Automation Status
-- ✅ Patch applied successfully
-- ⏳ Pull request pending (will be linked)
-- ⏳ Awaiting human review and approval
+
+- [x] Patch applied successfully
+- [ ] Pull request pending (will be linked)
+- [ ] Awaiting human review and approval
 
 **Note**: This issue was created automatically by PatchManager to track the patch lifecycle and ensure proper review process.
 "@
             
             $labelString = $allLabels -join ','
             Write-Host "  Creating issue with title: $title" -ForegroundColor Cyan
-            Write-Host "  Labels: $labelString" -ForegroundColor Gray
-
-            $issueResult = gh issue create --title $title --body $body --label $labelString            if ($LASTEXITCODE -eq 0 -and $issueResult) {
+            Write-Host "  Labels: $labelString" -ForegroundColor Gray            # Create issue using proper parameter passing to avoid command line issues
+            Write-Host "  Creating GitHub issue..." -ForegroundColor Cyan
+            
+            try {
+                # Save body to temp file to avoid command line issues
+                $tempBodyFile = [System.IO.Path]::GetTempFileName()
+                $body | Out-File -FilePath $tempBodyFile -Encoding utf8
+                
+                # Create issue with file-based body
+                $issueResult = gh issue create --title $title --body-file $tempBodyFile --label $labelString
+                
+                # Clean up temp file
+                Remove-Item $tempBodyFile -Force -ErrorAction SilentlyContinue
+                
+            } catch {
+                Write-Host "  Falling back to simple body..." -ForegroundColor Yellow
+                
+                # Fallback to simple body if file method fails
+                $simpleBody = "Automated patch: $PatchDescription`nAffected files: $($AffectedFiles -join ', ')`nCreated: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss UTC')"
+                $issueResult = gh issue create --title $title --body $simpleBody --label $labelString
+            }if ($LASTEXITCODE -eq 0 -and $issueResult) {
                 Write-Host "  GitHub issue created successfully: $issueResult" -ForegroundColor Green
                 
                 # Extract issue number from the URL
