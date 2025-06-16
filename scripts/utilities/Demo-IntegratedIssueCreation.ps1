@@ -26,11 +26,11 @@ Write-Host ""
 Write-Host "1. Initializing cross-platform environment..." -ForegroundColor Blue
 $envResult = Initialize-CrossPlatformEnvironment
 if ($envResult.Success) {
-    Write-Host "   ✓ Environment initialized for $($envResult.Platform)" -ForegroundColor Green
-    Write-Host "   ✓ Project Root: $($envResult.ProjectRoot)" -ForegroundColor Green
-    Write-Host "   ✓ Modules Path: $($envResult.ModulesPath)" -ForegroundColor Green
+    Write-Host "    Environment initialized for $($envResult.Platform)" -ForegroundColor Green
+    Write-Host "    Project Root: $($envResult.ProjectRoot)" -ForegroundColor Green
+    Write-Host "    Modules Path: $($envResult.ModulesPath)" -ForegroundColor Green
 } else {
-    Write-Host "   ✗ Environment initialization failed: $($envResult.Message)" -ForegroundColor Red
+    Write-Host "    Environment initialization failed: $($envResult.Message)" -ForegroundColor Red
 }
 Write-Host ""
 
@@ -53,28 +53,28 @@ $demo1Result = Invoke-GitControlledPatch -PatchDescription "Fix critical validat
     New-Item -Path "logs" -ItemType Directory -Force -ErrorAction SilentlyContinue | Out-Null
     $bugFixContent | Out-File "logs/bug-fix-$(Get-Date -Format 'yyyyMMdd-HHmmss').log" -Force
     
-    Write-Host "   ✓ Bug fix applied and logged" -ForegroundColor Green
+    Write-Host "    Bug fix applied and logged" -ForegroundColor Green
 } -CreatePullRequest -CreateIssueForBugFix -IssuePriority "High" -IssueLabels @("bug", "critical", "validation", "automated-fix") -AutoCommitUncommitted
 
 if ($demo1Result.Success) {
-    Write-Host "   ✓ Patch applied successfully" -ForegroundColor Green
-    Write-Host "   ✓ Pull Request: $($demo1Result.PullRequest)" -ForegroundColor Green
+    Write-Host "    Patch applied successfully" -ForegroundColor Green
+    Write-Host "    Pull Request: $($demo1Result.PullRequest)" -ForegroundColor Green
     if ($demo1Result.IssueUrl) {
-        Write-Host "   ✓ GitHub Issue: $($demo1Result.IssueUrl)" -ForegroundColor Green
-        Write-Host "   ✓ Issue Priority: $($demo1Result.IssuePriority)" -ForegroundColor Green
+        Write-Host "    GitHub Issue: $($demo1Result.IssueUrl)" -ForegroundColor Green
+        Write-Host "    Issue Priority: $($demo1Result.IssuePriority)" -ForegroundColor Green
     }
     
     # Start Copilot suggestion monitoring if PR was created
     if ($demo1Result.PullRequestNumber) {
-        Write-Host "   ✓ Starting Copilot suggestion monitoring..." -ForegroundColor Blue        try {
+        Write-Host "    Starting Copilot suggestion monitoring..." -ForegroundColor Blue        try {
             Invoke-CopilotSuggestionHandler -PullRequestNumber $demo1Result.PullRequestNumber -BackgroundMonitor -AutoCommit -LogPath "logs/copilot-monitoring-demo.log" | Out-Null
-            Write-Host "   ✓ Copilot monitoring started for PR #$($demo1Result.PullRequestNumber)" -ForegroundColor Green
+            Write-Host "    Copilot monitoring started for PR #$($demo1Result.PullRequestNumber)" -ForegroundColor Green
         } catch {
-            Write-Host "   ⚠ Copilot monitoring failed: $($_.Exception.Message)" -ForegroundColor Yellow
+            Write-Host "   [WARN] Copilot monitoring failed: $($_.Exception.Message)" -ForegroundColor Yellow
         }
     }
 } else {
-    Write-Host "   ✗ Patch failed: $($demo1Result.Message)" -ForegroundColor Red
+    Write-Host "    Patch failed: $($demo1Result.Message)" -ForegroundColor Red
 }
 Write-Host ""
 
@@ -83,7 +83,7 @@ Write-Host "3. Demo: Feature enhancement (no automatic issue creation)" -Foregro
 Write-Host "   This demonstrates normal feature work without issue creation..." -ForegroundColor Gray
 
 $demo2Result = Invoke-GitControlledPatch -PatchDescription "Add enhanced logging capabilities" -PatchOperation {
-    Write-Host "   ⚙️ Implementing enhanced logging features..." -ForegroundColor Yellow
+    Write-Host "   ️ Implementing enhanced logging features..." -ForegroundColor Yellow
     
     $enhancementContent = @"
 # Enhancement Applied: $(Get-Date -Format "yyyy-MM-dd HH:mm:ss")
@@ -96,15 +96,15 @@ $demo2Result = Invoke-GitControlledPatch -PatchDescription "Add enhanced logging
     New-Item -Path "logs" -ItemType Directory -Force -ErrorAction SilentlyContinue | Out-Null
     $enhancementContent | Out-File "logs/enhancement-$(Get-Date -Format 'yyyyMMdd-HHmmss').log" -Force
     
-    Write-Host "   ✓ Enhancement implemented and documented" -ForegroundColor Green
+    Write-Host "    Enhancement implemented and documented" -ForegroundColor Green
 } -CreatePullRequest -AutoCommitUncommitted
 
 if ($demo2Result.Success) {
-    Write-Host "   ✓ Enhancement patch applied successfully" -ForegroundColor Green
-    Write-Host "   ✓ Pull Request: $($demo2Result.PullRequest)" -ForegroundColor Green
-    Write-Host "   ✓ No GitHub issue created (not a bug fix)" -ForegroundColor Green
+    Write-Host "    Enhancement patch applied successfully" -ForegroundColor Green
+    Write-Host "    Pull Request: $($demo2Result.PullRequest)" -ForegroundColor Green
+    Write-Host "    No GitHub issue created (not a bug fix)" -ForegroundColor Green
 } else {
-    Write-Host "   ✗ Enhancement patch failed: $($demo2Result.Message)" -ForegroundColor Red
+    Write-Host "    Enhancement patch failed: $($demo2Result.Message)" -ForegroundColor Red
 }
 Write-Host ""
 
@@ -127,18 +127,18 @@ $demo3Result = Invoke-GitControlledPatch -PatchDescription "Emergency security u
     New-Item -Path "logs" -ItemType Directory -Force -ErrorAction SilentlyContinue | Out-Null
     $securityFixContent | Out-File "logs/security-fix-$(Get-Date -Format 'yyyyMMdd-HHmmss').log" -Force
     
-    Write-Host "   ✓ Security fix applied and documented" -ForegroundColor Green
+    Write-Host "    Security fix applied and documented" -ForegroundColor Green
 } -CreatePullRequest -CreateIssueForBugFix -IssuePriority "Critical" -IssueLabels @("security", "critical", "emergency", "automated-fix") -AutoCommitUncommitted
 
 if ($demo3Result.Success) {
-    Write-Host "   ✓ Emergency patch applied successfully" -ForegroundColor Green
-    Write-Host "   ✓ Pull Request: $($demo3Result.PullRequest)" -ForegroundColor Green
+    Write-Host "    Emergency patch applied successfully" -ForegroundColor Green
+    Write-Host "    Pull Request: $($demo3Result.PullRequest)" -ForegroundColor Green
     if ($demo3Result.IssueUrl) {
-        Write-Host "   ✓ GitHub Issue: $($demo3Result.IssueUrl)" -ForegroundColor Green
-        Write-Host "   ✓ Issue Priority: $($demo3Result.IssuePriority)" -ForegroundColor Green
+        Write-Host "    GitHub Issue: $($demo3Result.IssueUrl)" -ForegroundColor Green
+        Write-Host "    Issue Priority: $($demo3Result.IssuePriority)" -ForegroundColor Green
     }
 } else {
-    Write-Host "   ✗ Emergency patch failed: $($demo3Result.Message)" -ForegroundColor Red
+    Write-Host "    Emergency patch failed: $($demo3Result.Message)" -ForegroundColor Red
 }
 Write-Host ""
 
@@ -162,19 +162,19 @@ try {
         Write-Host "   • Latest Backup: $($backupStats.LatestBackup)" -ForegroundColor White
     }
     
-    Write-Host "   ✓ Rollback capabilities verified" -ForegroundColor Green
+    Write-Host "    Rollback capabilities verified" -ForegroundColor Green
 } catch {
-    Write-Host "   ⚠ Rollback info gathering failed: $($_.Exception.Message)" -ForegroundColor Yellow
+    Write-Host "   [WARN] Rollback info gathering failed: $($_.Exception.Message)" -ForegroundColor Yellow
 }
 Write-Host ""
 
 # Summary
 Write-Host "=== Integration Summary ===" -ForegroundColor Cyan
-Write-Host "✓ PatchManager now automatically creates GitHub issues for bug fixes" -ForegroundColor Green
-Write-Host "✓ Issues are linked to pull requests for complete audit trail" -ForegroundColor Green
-Write-Host "✓ Copilot suggestion monitoring starts automatically for new PRs" -ForegroundColor Green
-Write-Host "✓ Cross-platform environment handling works across Windows/Linux/macOS" -ForegroundColor Green
-Write-Host "✓ Rollback capabilities provide safety net for all operations" -ForegroundColor Green
-Write-Host "✓ All changes tracked with comprehensive logging and backup" -ForegroundColor Green
+Write-Host " PatchManager now automatically creates GitHub issues for bug fixes" -ForegroundColor Green
+Write-Host " Issues are linked to pull requests for complete audit trail" -ForegroundColor Green
+Write-Host " Copilot suggestion monitoring starts automatically for new PRs" -ForegroundColor Green
+Write-Host " Cross-platform environment handling works across Windows/Linux/macOS" -ForegroundColor Green
+Write-Host " Rollback capabilities provide safety net for all operations" -ForegroundColor Green
+Write-Host " All changes tracked with comprehensive logging and backup" -ForegroundColor Green
 Write-Host ""
 Write-Host "🚀 PatchManager v2.0 - Complete Git-controlled workflow with issue tracking!" -ForegroundColor Green

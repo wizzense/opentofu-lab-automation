@@ -122,7 +122,7 @@ This automated patch addresses a bug or issue identified in the codebase. The fi
 $($AffectedFiles | ForEach-Object { "- $_" } | Out-String)
 
 ### Pull Request
-$(if ($PullRequestUrl) { "🔗 **Associated PR**: $PullRequestUrl" } else { "⚠️ **No PR**: This was a direct commit fix" })
+$(if ($PullRequestUrl) { "🔗 **Associated PR**: $PullRequestUrl" } else { "[WARN]️ **No PR**: This was a direct commit fix" })
 
 ## 🔍 Validation Status
 
@@ -161,7 +161,7 @@ $($allLabels | ForEach-Object { "- ``$_``" } | Out-String)
 ---
 
 **🤖 This issue was created automatically by PatchManager v2.0**  
-**⚡ Automated fixes help maintain code quality and reduce manual work**  
+** Automated fixes help maintain code quality and reduce manual work**  
 **👥 Human review and approval still required for all changes**
 "@
 
@@ -175,7 +175,7 @@ $($allLabels | ForEach-Object { "- ``$_``" } | Out-String)
                 # Extract issue number from URL
                 $issueNumber = if ($issueUrl -match '/(\d+)$') { $matches[1] } else { $null }
                 
-                Write-Host "  ✅ GitHub issue created successfully!" -ForegroundColor Green
+                Write-Host "  [PASS] GitHub issue created successfully!" -ForegroundColor Green
                 Write-Host "  📎 Issue URL: $issueUrl" -ForegroundColor Cyan
                 Write-Host "  🔢 Issue Number: #$issueNumber" -ForegroundColor Cyan
                 Write-Host "  🏷️  Priority: $Priority" -ForegroundColor Cyan
@@ -187,7 +187,7 @@ $($allLabels | ForEach-Object { "- ``$_``" } | Out-String)
                         $prNumber = ($PullRequestUrl -split '/')[-1]
                         $linkComment = "🔗 **Linked Pull Request**: #$prNumber`n`nThis issue is automatically linked to the pull request that implements the fix."
                         gh issue comment $issueNumber --body $linkComment | Out-Null
-                        Write-Host "  ✅ Successfully linked to PR #$prNumber" -ForegroundColor Green
+                        Write-Host "  [PASS] Successfully linked to PR #$prNumber" -ForegroundColor Green
                     } catch {
                         Write-Warning "  Failed to link to PR: $($_.Exception.Message)"
                     }

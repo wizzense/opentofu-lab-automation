@@ -132,7 +132,7 @@ function Invoke-TieredPesterTests {
         }
         
         if (-not $testFiles) {
-            Write-Host "⚠️  No test files found for $tierName tier" -ForegroundColor Yellow
+            Write-Host "[WARN]️  No test files found for $tierName tier" -ForegroundColor Yellow
             continue
         }
         
@@ -193,7 +193,7 @@ function Invoke-TieredPesterTests {
             $totalSkipped += $tierSkipped
             
             # Display tier results
-            $statusIcon = if ($tierFailed -eq 0) { "✅" } elseif ($shouldBlock) { "❌" } else { "⚠️" }
+            $statusIcon = if ($tierFailed -eq 0) { "[PASS]" } elseif ($shouldBlock) { "[FAIL]" } else { "[WARN]️" }
             $statusColor = if ($tierFailed -eq 0) { "Green" } elseif ($shouldBlock) { "Red" } else { "Yellow" }
             
             Write-Host ""
@@ -225,14 +225,14 @@ function Invoke-TieredPesterTests {
                     Write-Host "🚫 $tierName tier has failures and is configured to block - stopping execution" -ForegroundColor Red
                     throw "$tierName tier tests failed ($tierFailed failures) - execution blocked"
                 } else {
-                    Write-Host "⚠️  $tierName tier has failures but is configured as non-blocking - continuing" -ForegroundColor Yellow
+                    Write-Host "[WARN]️  $tierName tier has failures but is configured as non-blocking - continuing" -ForegroundColor Yellow
                 }
             }
             
             Write-Host ""
             
         } catch {
-            Write-Host "❌ $tierName tier execution failed: $($_.Exception.Message)" -ForegroundColor Red
+            Write-Host "[FAIL] $tierName tier execution failed: $($_.Exception.Message)" -ForegroundColor Red
             
             $overallResults += @{
                 Tier = $tierName
@@ -257,7 +257,7 @@ function Invoke-TieredPesterTests {
     Write-Host "╠═══════════════════════════════════════════════════════════════════════╣" -ForegroundColor Cyan
     
     $overallSuccess = ($totalFailed -eq 0) -and ($overallResults | Where-Object { -not $_.Success }).Count -eq 0
-    $summaryIcon = if ($overallSuccess) { "✅" } else { "❌" }
+    $summaryIcon = if ($overallSuccess) { "[PASS]" } else { "[FAIL]" }
     $summaryColor = if ($overallSuccess) { "Green" } else { "Red" }
     
     Write-Host "║ Overall Status: $summaryIcon $(if ($overallSuccess) { 'PASSED' } else { 'FAILED' })" -ForegroundColor $summaryColor
@@ -268,7 +268,7 @@ function Invoke-TieredPesterTests {
     Write-Host "║ Tier Breakdown:" -ForegroundColor Cyan
     
     foreach ($tierResult in $overallResults) {
-        $tierIcon = if ($tierResult.Success) { "✅" } elseif ($tierResult.BlockOnFailure) { "❌" } else { "⚠️" }
+        $tierIcon = if ($tierResult.Success) { "[PASS]" } elseif ($tierResult.BlockOnFailure) { "[FAIL]" } else { "[WARN]️" }
         $tierSummary = "$($tierResult.Tier): $tierIcon P:$($tierResult.Passed) F:$($tierResult.Failed) S:$($tierResult.Skipped)"
         Write-Host "║   $tierSummary" -ForegroundColor $(if ($tierResult.Success) { "Green" } elseif ($tierResult.BlockOnFailure) { "Red" } else { "Yellow" })
     }
