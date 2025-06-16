@@ -3,8 +3,8 @@
 
 Describe '0209_Install-7Zip Tests' {
     BeforeAll {
-        Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation//pwsh/modules/LabRunner/" -Force -Force -Force -Force -Force -Force -Force
-        Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation//pwsh/modules/CodeFixer/" -Force -Force -Force -Force -Force -Force -Force
+        Import-Module (Resolve-ProjectPath -Name 'LabRunner') -Force
+        Import-Module (Resolve-ProjectPath -Name 'CodeFixer') -Force
     }
 
     Context 'Module Loading' {
