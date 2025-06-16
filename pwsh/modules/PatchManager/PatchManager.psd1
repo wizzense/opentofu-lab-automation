@@ -21,13 +21,13 @@ ModuleVersion = '2.0.0'
 GUID = '589c2577-c532-4f36-a0ab-8a221ef67690'
 
 # Author of this module
-Author = 'OpenTofu Lab Automation Team'
+Author = 'wizzense'
 
 # Company or vendor of this module
-CompanyName = 'Unknown'
+CompanyName = 'wizzense'
 
 # Copyright statement for this module
-Copyright = '(c) OpenTofu Lab Automation Team. All rights reserved.'
+Copyright = '(c) wizzense. All rights reserved.'
 
 # Description of the functionality provided by this module
 Description = 'Unified patch management with Git-controlled workflows, comprehensive cleanup, backup consolidation, advanced rollback capabilities, and reduced reliance on traditional backups'
