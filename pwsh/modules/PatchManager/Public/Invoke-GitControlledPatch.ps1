@@ -49,9 +49,8 @@ function Invoke-GitControlledPatch {
         [Parameter(Mandatory = $true)]
         [scriptblock]$PatchOperation,
         [Parameter(Mandatory = $false)]
-        [string[]]$AffectedFiles = @(),
-        [Parameter(Mandatory = $false)]
-        [string]$BaseBranch = "main",        [Parameter(Mandatory = $false)]
+        [string[]]$AffectedFiles = @(),        [Parameter(Mandatory = $false)]
+        [string]$BaseBranch,[Parameter(Mandatory = $false)]
         [switch]$CreatePullRequest,        [Parameter(Mandatory = $false)]
         [switch]$Force,
         [Parameter(Mandatory = $false)]
@@ -78,10 +77,17 @@ function Invoke-GitControlledPatch {
         if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
             throw "Git command not found. Please install Git."
         }
-        
-        # Ensure GitHub CLI is available for automatic PR creation
+          # Ensure GitHub CLI is available for automatic PR creation
         if (-not (Get-Command gh -ErrorAction SilentlyContinue)) {
             Write-Warning "GitHub CLI (gh) not found. PR creation will be skipped."
+        }
+        
+        # Set default BaseBranch to current branch if not specified
+        if (-not $BaseBranch) {
+            $BaseBranch = git branch --show-current
+            if (-not $BaseBranch) {
+                $BaseBranch = "main"  # Fallback only if we can't detect current branch
+            }
         }
           # Handle uncommitted changes automatically
         $stashCreated = $false
