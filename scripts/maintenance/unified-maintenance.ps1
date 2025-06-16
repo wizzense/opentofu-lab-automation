@@ -72,6 +72,61 @@ param(
 
 $ErrorActionPreference = "Stop"
 # Detect the correct project root based on the current environment
+$ProjectRoot = (Get-Location).Path
+
+# Move misplaced files to appropriate directories
+Write-Host "Organizing misplaced files..." -ForegroundColor Cyan
+$misplacedFiles = @{
+    "test-config-errors.json" = "$ProjectRoot/tests/data/test-config-errors.json",
+    "workflow-optimization-report.json" = "$ProjectRoot/reports/workflow-optimization-report.json"
+}
+
+foreach ($file in $misplacedFiles.Keys) {
+    if (Test-Path $file) {
+        Move-Item -Path $file -Destination $misplacedFiles[$file] -Force
+        Write-Host "Moved $file to $($misplacedFiles[$file])" -ForegroundColor Green
+    } else {
+        Write-Warning "$file not found, skipping..."
+    }
+}
+
+# Archive redundant scripts
+Write-Host "Archiving redundant scripts..." -ForegroundColor Yellow
+$redundantScripts = @{
+    "organize-project.ps1" = "$ProjectRoot/archive/maintenance-scripts/organize-project.ps1",
+    "cleanup-remaining.ps1" = "$ProjectRoot/archive/maintenance-scripts/cleanup-remaining.ps1"
+}
+
+foreach ($script in $redundantScripts.Keys) {
+    if (Test-Path $script) {
+        Move-Item -Path $script -Destination $redundantScripts[$script] -Force
+        Write-Host "Archived $script to $($redundantScripts[$script])" -ForegroundColor Green
+    } else {
+        Write-Warning "$script not found, skipping..."
+    }
+}
+
+# Validate project structure
+Write-Host "Validating project structure..." -ForegroundColor Blue
+$validationResults = @{
+    "MissingFiles" = @(),
+    "InvalidPaths" = @()
+}
+
+$requiredFiles = @("PROJECT-MANIFEST.json", "README.md", "pwsh/modules/BackupManager/BackupManager.psd1")
+foreach ($file in $requiredFiles) {
+    if (-not (Test-Path $file)) {
+        $validationResults.MissingFiles += $file
+        Write-Warning "$file is missing!"
+    }
+}
+
+if ($validationResults.MissingFiles.Count -eq 0) {
+    Write-Host "Project structure validated successfully." -ForegroundColor Green
+} else {
+    Write-host "Validation completed with warnings." -ForegroundColor Yellow
+}
+# Detect the correct project root based on the current environment
 $ProjectRoot = if ($IsWindows -or $env:OS -eq "Windows_NT") {
     Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 } else {
@@ -648,8 +703,8 @@ function Invoke-ConsolidatedValidation {
             $lintResults = Invoke-ScriptAnalyzer -Path $ProjectRoot -Recurse -ErrorAction SilentlyContinue
             $consolidatedResults.PSScriptAnalyzer = $lintResults
             
-            $errorCount = ($lintResults  Where-Object Severity -eq 'Error').Count
-            $warningCount = ($lintResults  Where-Object Severity -eq 'Warning').Count
+            $errorCount = (lintResults | Where-Object Severity -eq 'Error').Count
+            $warningCount = (lintResults | Where-Object Severity -eq 'Warning').Count
             
             Write-MaintenanceLog "PSScriptAnalyzer: $errorCount errors, $warningCount warnings" "INFO"
             $consolidatedResults.Summary.TotalIssues += ($errorCount + $warningCount)
@@ -850,7 +905,7 @@ foreach ($Script in $ScriptFiles) {
 if ($ValidationResults.Count -gt 0) {
     Write-Host "Validation completed with issues:" -ForegroundColor Yellow
     $ValidationResults  Format-Table -AutoSize
-    $ValidationResults  Out-File -FilePath "$RootDirectory\validation-results.txt" -Encoding UTF8
+    ValidationResults | Out-File -FilePath "$RootDirectory\validation-results.txt" -Encoding UTF8
     Write-Host "Validation results saved to validation-results.txt" -ForegroundColor Green
 } else {
     Write-Host "All scripts validated successfully!" -ForegroundColor Green
@@ -886,268 +941,6 @@ foreach ($Directory in $DirectoriesToClean) {
 "Maintenance completed at $(Get-Date)"  Out-File -FilePath $LogFile -Append -Encoding UTF8
 Write-Host "Maintenance log saved to $LogFile" -ForegroundColor Green
 
-# Main execution function for unified maintenance
-function Invoke-UnifiedMaintenance {
-    CmdletBinding()
-    param(
-        Parameter(Mandatory = $false)
-        ValidateSet("Quick", "Full", "Test", "Track", "Report", "All", "Consolidate")
-        string$Mode = "Quick",
-        
-        Parameter(Mandatory = $false)
-        switch$AutoFix,
-        
-        Parameter(Mandatory = $false)
-        switch$UpdateChangelog,
-        
-        Parameter(Mandatory = $false)
-        switch$SkipTests
-    )
-    
-    Write-MaintenanceLog " UNIFIED MAINTENANCE SYSTEM " "INFO"
-    Write-MaintenanceLog "Mode: $Mode  AutoFix: $AutoFix  Timestamp: $(Get-Date)" "INFO"
-    Write-MaintenanceLog "" "INFO"
-    
-    $maintenanceResults = @{
-        Mode = $Mode
-        StartTime = Get-Date
-        ValidationResults = $null
-        FixesApplied = @()
-        ToolsAnalyzed = @()
-        OverallStatus = "Unknown"
-        Recommendations = @()
-    }
-    
-    try {
-        # Step 1: Always start with comprehensive validation
-        Write-MaintenanceLog "Step 1: Running comprehensive project validation..." "INFO"
-        $validationResults = Invoke-ComprehensiveProjectValidation
-        $maintenanceResults.ValidationResults = $validationResults
-        
-        # Step 2: Mode-specific operations
-        switch ($Mode) {
-            "Quick" {
-                Write-MaintenanceLog "Quick mode: Basic health check and validation only" "INFO"
-                # Quick mode only does validation (already done above)
-            }
-            
-            "Consolidate" {
-                Write-MaintenanceLog "Consolidation mode: Analyzing and repairing tools..." "INFO"
-                $allTools = Find-AllMaintenanceTools
-                $toolResults = Test-AllMaintenanceTools -Tools $allTools
-                $maintenanceResults.ToolsAnalyzed = $toolResults
-                
-                if ($AutoFix -and $toolResults.Broken.Count -gt 0) {
-                    $fixes = Repair-BrokenMaintenanceTools -BrokenTools $toolResults.Broken -SyntaxErrors $toolResults.SyntaxErrors
-                    $maintenanceResults.FixesApplied += $fixes
-                }
-            }
-            
-            "Full" {
-                Write-MaintenanceLog "Full mode: Comprehensive maintenance..." "INFO"
-                
-                # Tool consolidation
-                $allTools = Find-AllMaintenanceTools
-                $toolResults = Test-AllMaintenanceTools -Tools $allTools
-                $maintenanceResults.ToolsAnalyzed = $toolResults
-                
-                # Consolidated validation
-                $consolidatedResults = Invoke-ConsolidatedValidation
-                $maintenanceResults.ConsolidatedValidation = $consolidatedResults
-                
-                # Apply fixes if requested
-                if ($AutoFix) {
-                    Write-MaintenanceLog "Applying automatic fixes..." "FIX"
-                    
-                    # Fix broken tools
-                    if ($toolResults.Broken.Count -gt 0) {
-                        $toolFixes = Repair-BrokenMaintenanceTools -BrokenTools $toolResults.Broken -SyntaxErrors $toolResults.SyntaxErrors
-                        $maintenanceResults.FixesApplied += $toolFixes
-                    }
-                    
-                    # Run syntax fixes
-                    $syntaxScript = "$ProjectRoot/scripts/maintenance/fix-test-syntax.ps1"
-                    if (Test-Path $syntaxScript) {
-                        try {
-                            & $syntaxScript -AutoFix
-                            $maintenanceResults.FixesApplied += "PowerShell syntax fixes"
-                        } catch {
-                            Write-MaintenanceLog "Syntax fix script failed: $($_.Exception.Message)" "WARNING"
-                        }
-                    }
-                    
-                    # Run infrastructure fixes
-                    $infraScript = "$ProjectRoot/scripts/maintenance/fix-infrastructure-issues.ps1"
-                    if (Test-Path $infraScript) {
-                        try {
-                            & $infraScript -Fix "All" -AutoFix:$AutoFix
-                            $maintenanceResults.FixesApplied += "Infrastructure fixes"
-                        } catch {
-                            Write-MaintenanceLog "Infrastructure fix script failed: $($_.Exception.Message)" "WARNING"
-                        }
-                    }
-                }
-            }
-            
-            "All" {
-                Write-MaintenanceLog "All mode: Complete maintenance cycle..." "INFO"
-                
-                # Everything from Full mode
-                $allTools = Find-AllMaintenanceTools
-                $toolResults = Test-AllMaintenanceTools -Tools $allTools
-                $consolidatedResults = Invoke-ConsolidatedValidation
-                $maintenanceResults.ToolsAnalyzed = $toolResults
-                $maintenanceResults.ConsolidatedValidation = $consolidatedResults
-                
-                # Apply all fixes
-                if ($AutoFix) {
-                    Write-MaintenanceLog "Applying comprehensive fixes..." "FIX"
-                    
-                    if ($toolResults.Broken.Count -gt 0) {
-                        $toolFixes = Repair-BrokenMaintenanceTools -BrokenTools $toolResults.Broken -SyntaxErrors $toolResults.SyntaxErrors
-                        $maintenanceResults.FixesApplied += $toolFixes
-                    }
-                    
-                    # Run all available fix scripts
-                    $fixScripts = @(
-                        "$ProjectRoot/scripts/maintenance/fix-test-syntax.ps1",
-                        "$ProjectRoot/scripts/maintenance/fix-infrastructure-issues.ps1",
-                        "$ProjectRoot/scripts/maintenance/fix-runner.ps1"
-                    )
-                    
-                    foreach ($script in $fixScripts) {
-                        if (Test-Path $script) {
-                            try {
-                                $scriptName = Split-Path $script -Leaf
-                                & $script -AutoFix:$AutoFix
-                                $maintenanceResults.FixesApplied += "Applied fixes via $scriptName"
-                            } catch {
-                                Write-MaintenanceLog "Fix script $script failed: $($_.Exception.Message)" "WARNING"
-                            }
-                        }
-                    }
-                }
-                
-                # Run tests if available and not skipped
-                if (-not $SkipTests) {
-                    $testPath = "$ProjectRoot/tests"
-                    if (Test-Path $testPath -and (Get-Module -ListAvailable Pester)) {
-                        try {
-                            Write-MaintenanceLog "Running comprehensive tests..." "INFO"
-                            $testResults = Invoke-Pester -Path $testPath -PassThru
-                            $maintenanceResults.TestResults = @{
-                                Total = $testResults.TotalCount
-                                Passed = $testResults.PassedCount
-                                Failed = $testResults.FailedCount
-                            }
-                        } catch {
-                            Write-MaintenanceLog "Test execution failed: $($_.Exception.Message)" "WARNING"
-                        }
-                    }
-                }
-            }
-        }
-        
-        # Step 3: Determine overall status
-        $criticalIssues = 0
-        if ($validationResults.PowerShellSyntax.ErrorFiles.Count -gt 0) {
-            $criticalIssues += $validationResults.PowerShellSyntax.ErrorFiles.Count
-        }
-        if ($validationResults.ModuleHealth.Missing.Count -gt 0) {
-            $criticalIssues += $validationResults.ModuleHealth.Missing.Count
-        }
-        
-        if ($criticalIssues -eq 0) {
-            $maintenanceResults.OverallStatus = "Success"
-        } elseif ($criticalIssues -lt 5) {
-            $maintenanceResults.OverallStatus = "Warning"
-        } else {
-            $maintenanceResults.OverallStatus = "Critical"
-        }
-        
-        # Step 4: Generate recommendations
-        if ($validationResults.PowerShellSyntax.ErrorFiles.Count -gt 0) {
-            $maintenanceResults.Recommendations += "Run with -AutoFix to repair PowerShell syntax errors"
-        }
-        if ($validationResults.ModuleHealth.Missing.Count -gt 0) {
-            $maintenanceResults.Recommendations += "Restore missing modules: $($validationResults.ModuleHealth.Missing -join ', ')"
-        }
-        if ($maintenanceResults.ToolsAnalyzed.Broken -and $maintenanceResults.ToolsAnalyzed.Broken.Count -gt 0) {
-            $maintenanceResults.Recommendations += "Repair broken maintenance tools"
-        }
-        
-        # Step 5: Final summary
-        $endTime = Get-Date
-        $duration = $endTime - $maintenanceResults.StartTime
-        
-        Write-MaintenanceLog "`n=== UNIFIED MAINTENANCE SUMMARY ===" "INFO"
-        Write-MaintenanceLog "Mode: $Mode  Duration: $($duration.TotalSeconds.ToString('0.0'))s" "INFO"
-        Write-MaintenanceLog "Overall Status: $($maintenanceResults.OverallStatus)" $(
-            switch ($maintenanceResults.OverallStatus) {
-                "Success" { "SUCCESS" }
-                "Warning" { "WARNING" }
-                "Critical" { "ERROR" }
-                default { "INFO" }
-            }
-        )
-        Write-MaintenanceLog "Fixes Applied: $($maintenanceResults.FixesApplied.Count)" "INFO"
-        
-        if ($maintenanceResults.Recommendations.Count -gt 0) {
-            Write-MaintenanceLog "`nRecommendations:" "WARNING"
-            $maintenanceResults.Recommendations  ForEach-Object {
-                Write-MaintenanceLog "  • $_" "WARNING"
-            }
-        }
-        
-        # Step 6: Update changelog if requested
-        if ($UpdateChangelog) {
-            try {
-                Write-MaintenanceLog "Updating CHANGELOG.md..." "INFO"
-                $changelogEntry = @"
-
-## Maintenance - $(Get-Date -Format 'yyyy-MM-dd')
-- **Mode**: $Mode
-- **Status**: $($maintenanceResults.OverallStatus)
-- **Fixes Applied**: $($maintenanceResults.FixesApplied.Count)
-- **PowerShell Files**: $($validationResults.PowerShellSyntax.ValidFiles)/$($validationResults.PowerShellSyntax.TotalFiles) valid
-- **Modules**: $($validationResults.ModuleHealth.Available)/$($validationResults.ModuleHealth.Total) available
-"@
-                
-                $changelogPath = "$ProjectRoot/CHANGELOG.md"
-                if (Test-Path $changelogPath) {
-                    $existingContent = Get-Content $changelogPath -Raw
-                    $newContent = $existingContent -replace "(# Changelog)", "`$1$changelogEntry"
-                    Set-Content $changelogPath $newContent -Encoding UTF8
-                    Write-MaintenanceLog "CHANGELOG.md updated" "SUCCESS"
-                }
-            } catch {
-                Write-MaintenanceLog "Failed to update CHANGELOG.md: $($_.Exception.Message)" "WARNING"
-            }
-        }
-        
-        return $maintenanceResults
-        
-    } catch {
-        Write-MaintenanceLog "Critical error during maintenance: $($_.Exception.Message)" "ERROR"
-        Write-MaintenanceLog "Stack trace: $($_.ScriptStackTrace)" "ERROR"
-        $maintenanceResults.OverallStatus = "Error"
-        return $maintenanceResults
-    }
-}
-
-# Execute main function if script is run directly
-if ($MyInvocation.InvocationName -ne '.') {
-    $result = Invoke-UnifiedMaintenance -Mode $Mode -AutoFix:$AutoFix -UpdateChangelog:$UpdateChangelog -SkipTests:$SkipTests
-    
-    # Exit with appropriate code
-    switch ($result.OverallStatus) {
-        "Success" { exit 0 }
-        "Warning" { exit 0 }  # Warnings don't fail the script
-        "Critical" { exit 1 }
-        "Error" { exit 1 }
-        default { exit 0 }
-    }
-}
 
 
 

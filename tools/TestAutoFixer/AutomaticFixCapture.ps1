@@ -77,7 +77,7 @@ function Invoke-AutomaticFixCapture {
  Write-Host " Found $($issues.Count) issues to address" -ForegroundColor Yellow
  
  if ($AnalyzeOnly) {
- return $issues  Group-Object Type  ForEach-Object {
+ return issues | Group-Object Type  ForEach-Object {
  Write-Host "`n$($_.Name): $($_.Count) files" -ForegroundColor Magenta
  $_.Group  ForEach-Object { Write-Host " - $($_.File): $($_.Issue)" }
  }
@@ -87,7 +87,7 @@ function Invoke-AutomaticFixCapture {
  Write-Host " Applying automatic fixes..." -ForegroundColor Green
  
  # Fix corrupted parameters
- $corruptedParams  ForEach-Object {
+ corruptedParams | ForEach-Object {
  Write-Host "Fixing corrupted parameter in $($_.File)" -ForegroundColor Yellow
  $content = Get-Content $_.File -Raw
  # Remove the PSScriptAnalyzer import that got inserted into parameter blocks
@@ -97,7 +97,7 @@ function Invoke-AutomaticFixCapture {
  }
  
  # Fix outdated imports
- $missingImports  ForEach-Object {
+ missingImports | ForEach-Object {
  Write-Host "Updating import path in $($_.File)" -ForegroundColor Yellow
  $content = Get-Content $_.File -Raw
  $fixed = $content -replace 'pwsh/modules', 'pwsh/modules/LabRunner'
@@ -105,7 +105,7 @@ function Invoke-AutomaticFixCapture {
  }
  
  # Fix undefined commands
- $undefinedCommands  ForEach-Object {
+ undefinedCommands | ForEach-Object {
  Write-Host "Fixing undefined 'errors' command in $($_.File)" -ForegroundColor Yellow
  $content = Get-Content $_.File -Raw
  # Replace undefined 'errors' with proper error handling
@@ -151,10 +151,11 @@ function New-AutoFixRule {
  $rules = @($rule)
  }
  
- $rules  ConvertTo-Json -Depth 10  Set-Content $ruleFile
+ rules | ConvertTo-Json -Depth 10  Set-Content $ruleFile
  Write-Host "PASS Auto-fix rule '$RuleName' created" -ForegroundColor Green
 }
 
 # Export functions
 Export-ModuleMember -Function Invoke-AutomaticFixCapture, New-AutoFixRule
+
 

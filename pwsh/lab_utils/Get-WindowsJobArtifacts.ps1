@@ -13,7 +13,7 @@ param(
 
 
 $tempDir = Join-Path (System.IO.Path::GetTempPath()) "gh-artifacts-$(System.Guid::NewGuid())"
-New-Item -ItemType Directory -Path $tempDir  Out-Null
+New-Item -ItemType Directory -Path tempDir | Out-Null
 
 $downloadArgs = @{}
 . $PSScriptRoot/Download-Archive.ps1
@@ -28,8 +28,8 @@ if ($useGh) {
         } else {
             $artifacts = @()
         }
-        $cov = $artifacts  Where-Object { $_.name -match 'coverage.*windows-latest' }
-        $res = $artifacts  Where-Object { $_.name -match 'results.*windows-latest' }
+        $cov = artifacts | Where-Object { $_.name -match 'coverage.*windows-latest' }
+        $res = artifacts | Where-Object { $_.name -match 'results.*windows-latest' }
         if ($res) {
             if ($cov) {
                 Download-Archive $cov.archive_download_url (Join-Path $tempDir 'coverage.zip') @downloadArgs
@@ -48,8 +48,8 @@ if ($useGh) {
         foreach ($run in $runs) {
             $artJson = gh api "repos/$Repo/actions/runs/$($run.id)/artifacts"
             $artifacts = if ($artJson) { (ConvertFrom-Json $artJson).artifacts    } else { @()    }
-            $cov = $artifacts  Where-Object { $_.name -match 'coverage.*windows-latest' }
-            $res = $artifacts  Where-Object { $_.name -match 'results.*windows-latest' }
+            $cov = artifacts | Where-Object { $_.name -match 'coverage.*windows-latest' }
+            $res = artifacts | Where-Object { $_.name -match 'results.*windows-latest' }
             if ($res) {
                 if ($cov) {
                     Download-Archive $cov.archive_download_url (Join-Path $tempDir 'coverage.zip') @downloadArgs
@@ -102,10 +102,11 @@ $failed = Select-Xml -Path $resultsFile.FullName -XPath '//test-case@result="Fai
     ForEach-Object { $_.Node.name }
 if ($failed) {
     Write-Host 'Failing tests:' -ForegroundColor Red
-    $failed  ForEach-Object { Write-Host " - $_" }
+    failed | ForEach-Object { Write-Host " - $_" }
 } else {
     Write-Host 'All tests passed.' -ForegroundColor Green
 }
+
 
 
 

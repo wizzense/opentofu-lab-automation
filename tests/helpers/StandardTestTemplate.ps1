@@ -39,7 +39,7 @@ Describe '{SCRIPT_NAME} Tests' -Tag '{TAG}' {
     Context 'Basic Functionality Tests' {
         It 'should execute basic validation test' {
             # This test always passes - ensures the test file is syntactically correct
-            $true  Should -Be $true
+            $true | Should -Be $true
         }
         
         It 'should handle script validation if file exists' {
@@ -48,7 +48,7 @@ Describe '{SCRIPT_NAME} Tests' -Tag '{TAG}' {
                 { Get-Content (Join-Path "LabRunner" "$($script:ScriptName).ps1") }  Should -Not -Throw
             } else {
                 # Script doesn't exist yet - that's OK for template
-                $true  Should -Be $true
+                $true | Should -Be $true
             }
         }
     }
@@ -57,7 +57,7 @@ Describe '{SCRIPT_NAME} Tests' -Tag '{TAG}' {
     Context '{CONTEXT_NAME} Tests' {
         It 'should meet basic requirements' {
             # Add specific tests here based on script purpose
-            $true  Should -Be $true
+            $true | Should -Be $true
         }
     }
 }
@@ -67,3 +67,4 @@ Describe '{SCRIPT_NAME} Tests' -Tag '{TAG}' {
 # {SCRIPT_NAME} - The script name (e.g., "0205_Install-Sysinternals")
 # {TAG} - The tag category (e.g., "Installer", "Configuration", "SystemInfo")
 # {CONTEXT_NAME} - Context based on script type (e.g., "Installation", "Configuration", "System Information")
+

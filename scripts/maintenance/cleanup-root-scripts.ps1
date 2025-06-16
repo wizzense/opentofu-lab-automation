@@ -314,12 +314,13 @@ Use the unified maintenance system instead of individual scripts:
 
 $summaryPath = Join-Path $ProjectRoot "docs/reports/project-status/$(Get-Date -Format "yyyy-MM-dd")-root-cleanup-summary.md"
 if (-not $WhatIf) {
- $cleanupSummary  Set-Content $summaryPath
+ cleanupSummary | Set-Content $summaryPath
  Write-CleanupLog "Created cleanup summary: $summaryPath" "SUCCESS"
 }
 
 Write-CleanupLog " Root directory cleanup completed!" "SUCCESS"
 Write-CleanupLog "Use the unified maintenance system for ongoing project maintenance" "INFO"
+
 
 
 

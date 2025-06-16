@@ -302,7 +302,7 @@ Write-ValidationMessage "Validating: $FilePath" "Info"
     # Auto-fix if requested
     if ($AutoFix) {
         # Fix syntax errors first (placeholder for future implementation)
-        $syntaxErrors = $allIssues  Where-Object { $_.Type -eq "SyntaxError" }
+        $syntaxErrors = allIssues | Where-Object { $_.Type -eq "SyntaxError" }
         if ($syntaxErrors.Count -gt 0) {
             # TODO: Implement Fix-SyntaxErrors function
             Write-ValidationMessage "  SYNTAX ERRORS: $($syntaxErrors.Count) errors found (manual fix required)" "Warning"
@@ -319,10 +319,10 @@ Write-ValidationMessage "Validating: $FilePath" "Info"
                 if (-not $SkipSyntaxCheck) {
                     $syntaxResult = Test-PowerShellSyntax -FilePath $FilePath
                     if ($syntaxResult.IsValid) {
-                        $allIssues = $allIssues  Where-Object { $_.Type -ne "SyntaxError" -and $_.Type -ne "ParameterOrderError" }
+                        $allIssues = allIssues | Where-Object { $_.Type -ne "SyntaxError" -and $_.Type -ne "ParameterOrderError" }
                     }
                 } else {
-                    $allIssues = $allIssues  Where-Object { $_.Type -ne "ParameterOrderError" }
+                    $allIssues = allIssues | Where-Object { $_.Type -ne "ParameterOrderError" }
                 }
             }
         }
@@ -346,7 +346,7 @@ Write-ValidationMessage "Validating: $FilePath" "Info"
         }
     }
     
-    $errorIssues = $allIssues  Where-Object { $_.Severity -eq "Error" }
+    $errorIssues = allIssues | Where-Object { $_.Severity -eq "Error" }
     if ($errorIssues.Count -eq 0) {
         if (-not $wasFixed) {
             Write-ValidationMessage "   Valid" "Success"
@@ -568,6 +568,7 @@ $content = Get-Content $FilePath -Raw
     
     return $false
 }
+
 
 
 

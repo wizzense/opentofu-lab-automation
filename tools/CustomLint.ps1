@@ -58,7 +58,7 @@ if ($include -and $exclude) {
 $results  Format-Table  Out-String  Write-Output
 
 $failed = $false
-if ($results  Where-Object Severity -eq 'Error') {
+if (results | Where-Object Severity -eq 'Error') {
     Write-Error 'ScriptAnalyzer errors detected' -ErrorAction Continue
     $failed = $true
 }
@@ -80,7 +80,7 @@ foreach ($file in $files) {
     }
 }
 if ($mockIssues) {
-    $mockIssues  ForEach-Object { Write-Warning $_ }
+    mockIssues | ForEach-Object { Write-Warning $_ }
     Write-Error 'Mock lint errors detected' -ErrorAction Continue
     $failed = $true
 }
@@ -90,5 +90,6 @@ if ($failed) {
     return
 }
 $global:LASTEXITCODE = 0
+
 
 

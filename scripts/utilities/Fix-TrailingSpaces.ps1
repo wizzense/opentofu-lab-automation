@@ -28,7 +28,7 @@ function Remove-TrailingSpaces {
  $fixedContent = $fixedLines -join "`n"
  
  if ($fixedContent -ne $originalContent) {
- $fixedContent  Out-File -FilePath $FilePath -Encoding UTF8 -NoNewline
+ fixedContent | Out-File -FilePath $FilePath -Encoding UTF8 -NoNewline
  return $trailingSpaceCount
  }
  
@@ -66,7 +66,7 @@ if ($totalFixed -gt 0) {
  $yamlLintResult = yamllint $Path --format standard 2>&1  Select-String "trailing spaces"
  if ($yamlLintResult) {
  Write-Host "WARN Still found trailing space issues:" -ForegroundColor Yellow
- $yamlLintResult  ForEach-Object { Write-Host " $_" -ForegroundColor Red }
+ yamlLintResult | ForEach-Object { Write-Host " $_" -ForegroundColor Red }
  } else {
  Write-Host "PASS No trailing space errors found by yamllint" -ForegroundColor Green
  }
@@ -75,3 +75,4 @@ if ($totalFixed -gt 0) {
  Write-Host "WARN Could not verify with yamllint: $_" -ForegroundColor Yellow
  }
 }
+

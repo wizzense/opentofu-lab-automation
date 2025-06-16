@@ -71,7 +71,7 @@ try {
     $testFiles = Get-ChildItem -Path 'tests' -Filter '*.Tests.ps1' -File
     Write-Host "PASS Found $($testFiles.Count) test files" -ForegroundColor Green
     
-    foreach ($testFile in $testFiles  Select-Object -First 3) {
+    foreach ($testFile in testFiles | Select-Object -First 3) {
         Write-Host "   - $($testFile.Name)" -ForegroundColor Cyan
     }
     
@@ -82,7 +82,7 @@ try {
     # Test 6: Validate a sample test file syntax
     Write-Host "Validating sample test syntax..." -ForegroundColor Yellow
     
-    $sampleTest = $testFiles  Select-Object -First 1
+    $sampleTest = testFiles | Select-Object -First 1
     if ($sampleTest) {
         try {
             $ast = Get-ScriptAst -Path $sampleTest.FullName
@@ -100,6 +100,7 @@ try {
     Write-Host "Stack trace: $($_.ScriptStackTrace)" -ForegroundColor Red
     exit 1
 }
+
 
 
 

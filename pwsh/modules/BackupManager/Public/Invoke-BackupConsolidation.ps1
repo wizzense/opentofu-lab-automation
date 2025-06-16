@@ -81,7 +81,7 @@ function Invoke-BackupConsolidation {
             foreach ($Pattern in $BackupPatterns) {
                 try {
                     $Files = Get-ChildItem -Path $ProjectRoot -Recurse -File -Filter $Pattern -ErrorAction SilentlyContinue
-                    $FilteredFiles = $Files  Where-Object {
+                    $FilteredFiles = Files | Where-Object {
                         $FilePath = $_.FullName
                         $RelativePath = $FilePath.Replace($ProjectRoot, "").TrimStart(char'\', char'/')
                         
@@ -175,6 +175,7 @@ function Invoke-BackupConsolidation {
         }
     }
 }
+
 
 
 

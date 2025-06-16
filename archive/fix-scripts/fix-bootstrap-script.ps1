@@ -44,7 +44,7 @@ $prompt = "`n<press any key to continue>`n"
 
 function Write-Continue($prompt) {
   Console::Write($prompt + '  ')
-  Read-LoggedInput -Prompt $prompt  Out-Null
+  Read-LoggedInput -Prompt prompt | Out-Null
 }
 '@
 
@@ -222,6 +222,7 @@ Write-Host "  3. Check configuration selection works properly" -ForegroundColor 
 Write-Host "  4. Monitor for the ':' character issues" -ForegroundColor White
 
 Write-Host "`n Bootstrap script fixes completed successfully!" -ForegroundColor Green
+
 
 
 

@@ -49,7 +49,7 @@ function Initialize-TagIndex {
  }
  }
  
- $initialIndex  ConvertTo-Json -Depth 5  Set-Content $tagIndexPath
+ initialIndex | ConvertTo-Json -Depth 5  Set-Content $tagIndexPath
  Write-Host " Initialized tag index: $tagIndexPath" -ForegroundColor Green
  return $initialIndex
  } else {
@@ -98,7 +98,7 @@ $autoTags = @()
  if ($Content -match "functionparam\(") { $autoTags += "function-definition" }
  }
  
- return $autoTags  Sort-Object -Unique
+ return autoTags | Sort-Object -Unique
 }
 
 function Set-FileTags {
@@ -132,7 +132,7 @@ $index = Initialize-TagIndex
  }
  
  # Save updated index
- $index  ConvertTo-Json -Depth 5  Set-Content $tagIndexPath
+ index | ConvertTo-Json -Depth 5  Set-Content $tagIndexPath
  Write-Host " Tagged '$FilePath' with: $($Tags -join ', ')" -ForegroundColor Green
 }
 
@@ -248,14 +248,14 @@ function Show-TagSummary {
  
  # Show untagged files
  $allFiles = Get-ChildItem -File  Where-Object { $_.Name -ne "file-tags-index.json" }
- $untagged = $allFiles  Where-Object { 
+ $untagged = allFiles | Where-Object { 
  $relativePath = Resolve-Path $_.FullName -Relative
  -not $index.files.$relativePath
  }
  
  if ($untagged.Count -gt 0) {
  Write-Host "`nWARN Untagged Files ($($untagged.Count)):" -ForegroundColor Yellow
- $untagged  ForEach-Object { Write-Host " $($_.Name)" -ForegroundColor Gray }
+ untagged | ForEach-Object { Write-Host " $($_.Name)" -ForegroundColor Gray }
  }
 }
 
@@ -271,7 +271,7 @@ if ($ListTags) {
  Set-FileTags $FilePath $newTags
  } elseif ($RemoveTags) {
  $existingTags = Get-FileTags $FilePath
- $newTags = $existingTags  Where-Object { $_ -notin $RemoveTags }
+ $newTags = existingTags | Where-Object { $_ -notin $RemoveTags }
  Set-FileTags $FilePath $newTags
  } else {
  $tags = Get-FileTags $FilePath
@@ -302,6 +302,7 @@ if ($ListTags) {
  Write-Host " List all tags: $($MyInvocation.MyCommand.Name) -ListTags"
  Write-Host " Update index: $($MyInvocation.MyCommand.Name) -UpdateIndex"
 }
+
 
 
 

@@ -28,15 +28,15 @@ function Show-CleanupPlan {
  
  # Categories
  $categories = @{
- "Legacy Fix Scripts" = $rootFiles  Where-Object { $_.Name -like "fix_*.ps1" }
- "Test Scripts" = $rootFiles  Where-Object { $_.Name -like "test-*.ps1" -or $_.Name -like "test-*.py" }
- "Documentation" = $rootFiles  Where-Object { $_.Name -like "*.md" -and $_.Name -ne "README.md" }
- "Configuration" = $rootFiles  Where-Object { $_.Name -like "*.yml" -or $_.Name -like "*.yaml" -or $_.Name -like "*.toml" }
- "Reports/Results" = $rootFiles  Where-Object { $_.Name -like "*Results*.xml" -or $_.Name -like "*report*.json" }
- "Infrastructure" = $rootFiles  Where-Object { $_.Name -like "*.tf" }
- "Temporary/Unknown" = $rootFiles  Where-Object { $_.Name -eq "a" -or $_.Name -like "tmp_*" }
- "Utilities" = $rootFiles  Where-Object { $_.Name -like "*.ps1" -and $_.Name -notlike "fix_*" -and $_.Name -notlike "test-*" }
- "Keep in Root" = $rootFiles  Where-Object { $_.Name -in @("README.md", "LICENSE") }
+ "Legacy Fix Scripts" = rootFiles | Where-Object { $_.Name -like "fix_*.ps1" }
+ "Test Scripts" = rootFiles | Where-Object { $_.Name -like "test-*.ps1" -or $_.Name -like "test-*.py" }
+ "Documentation" = rootFiles | Where-Object { $_.Name -like "*.md" -and $_.Name -ne "README.md" }
+ "Configuration" = rootFiles | Where-Object { $_.Name -like "*.yml" -or $_.Name -like "*.yaml" -or $_.Name -like "*.toml" }
+ "Reports/Results" = rootFiles | Where-Object { $_.Name -like "*Results*.xml" -or $_.Name -like "*report*.json" }
+ "Infrastructure" = rootFiles | Where-Object { $_.Name -like "*.tf" }
+ "Temporary/Unknown" = rootFiles | Where-Object { $_.Name -eq "a" -or $_.Name -like "tmp_*" }
+ "Utilities" = rootFiles | Where-Object { $_.Name -like "*.ps1" -and $_.Name -notlike "fix_*" -and $_.Name -notlike "test-*" }
+ "Keep in Root" = rootFiles | Where-Object { $_.Name -in @("README.md", "LICENSE") }
  }
  
  foreach ($category in $categories.Keys) {
@@ -260,6 +260,7 @@ try {
  Write-Host "� Backup is available at: $BackupPath" -ForegroundColor Cyan
  }
 }
+
 
 
 

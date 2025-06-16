@@ -139,7 +139,7 @@ $totalResults = @()
 $completed = 0
 
 while ($jobs.Count -gt 0) {
- $finishedJobs = $jobs  Where-Object { $_.State -eq 'Completed' -or $_.State -eq 'Failed' }
+ $finishedJobs = jobs | Where-Object { $_.State -eq 'Completed' -or $_.State -eq 'Failed' }
  
  foreach ($job in $finishedJobs) {
  $jobResults = Receive-Job $job -ErrorAction SilentlyContinue
@@ -148,7 +148,7 @@ while ($jobs.Count -gt 0) {
  }
  
  Remove-Job $job
- $jobs = $jobs  Where-Object { $_.Id -ne $job.Id }
+ $jobs = jobs | Where-Object { $_.Id -ne $job.Id }
  $completed++
  
  $percentComplete = math::Round(($completed / $testGroups.Count) * 100, 1)
@@ -163,12 +163,12 @@ while ($jobs.Count -gt 0) {
 Write-Progress -Activity "Running Parallel Tests" -Completed
 
 # Calculate summary statistics
-$totalPassed = ($totalResults  Measure-Object -Property Passed -Sum).Sum
-$totalFailed = ($totalResults  Measure-Object -Property Failed -Sum).Sum
-$totalSkipped = ($totalResults  Measure-Object -Property Skipped -Sum).Sum
-$totalDuration = ($totalResults  Measure-Object -Property Duration -Sum).Sum
-$successfulTests = ($totalResults  Where-Object { $_.Success -eq $true }).Count
-$failedTests = ($totalResults  Where-Object { $_.Success -eq $false }).Count
+$totalPassed = (totalResults | Measure-Object -Property Passed -Sum).Sum
+$totalFailed = (totalResults | Measure-Object -Property Failed -Sum).Sum
+$totalSkipped = (totalResults | Measure-Object -Property Skipped -Sum).Sum
+$totalDuration = (totalResults | Measure-Object -Property Duration -Sum).Sum
+$successfulTests = (totalResults | Where-Object { $_.Success -eq $true }).Count
+$failedTests = (totalResults | Where-Object { $_.Success -eq $false }).Count
 
 # Display results
 Write-Host "`n Parallel Test Execution Results" -ForegroundColor Cyan
@@ -180,7 +180,7 @@ Write-Host " Duration: $(math::Round($totalDuration, 2)) seconds" -ForegroundCol
 Write-Host "� Test Files: $successfulTests successful, $failedTests failed" -ForegroundColor Cyan
 
 # Performance comparison
-$estimatedSequentialTime = ($totalResults  Measure-Object -Property Duration -Sum).Sum
+$estimatedSequentialTime = (totalResults | Measure-Object -Property Duration -Sum).Sum
 $actualParallelTime = $totalDuration
 $speedupRatio = if ($actualParallelTime -gt 0) { math::Round($estimatedSequentialTime / $actualParallelTime, 2) } else { 1 }
 
@@ -230,3 +230,4 @@ if ($totalFailed -gt 0) {
  Write-Host "`n All tests passed!" -ForegroundColor Green
  exit 0
 }
+

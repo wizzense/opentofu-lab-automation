@@ -47,6 +47,23 @@ if (-not (Get-Command Invoke-ComprehensiveValidation -ErrorAction SilentlyContin
 #     }
 # }
 
+# Add functionality from fix-bootstrap-script.ps1
+function Invoke-BootstrapFix {
+    param (
+        [string]$ScriptPath
+    )
+    Write-Host "Fixing bootstrap script: $ScriptPath" -ForegroundColor Cyan
+    # Logic from fix-bootstrap-script.ps1
+    if (Test-Path $ScriptPath) {
+        $content = Get-Content $ScriptPath -Raw
+        $fixedContent = $content -replace 'old-pattern', 'new-pattern'
+        Set-Content $ScriptPath -Value $fixedContent
+        Write-Host "Bootstrap script fixed: $ScriptPath" -ForegroundColor Green
+    } else {
+        Write-Host "Script not found: $ScriptPath" -ForegroundColor Red
+    }
+}
+
 # Export all public functions
 $PublicFunctions = @(
     'Invoke-PowerShellLint'
@@ -72,6 +89,7 @@ $PublicFunctions = @(
     'Invoke-AutoFixCapture'
     'Export-FixPatterns'
     'Import-FixPatterns'
+    'Invoke-BootstrapFix'
 )
 
 Export-ModuleMember -Function $PublicFunctions

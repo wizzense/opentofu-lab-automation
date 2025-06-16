@@ -20,9 +20,10 @@ Write-Host "Config value: $Config"
 if ($Config -is string -and (Test-Path $Config)) {
     Write-Host "Config is a file path, loading JSON..."
     $Config = Get-Content -Raw -Path $Config  ConvertFrom-Json
-    Write-Host "Loaded config: $($Config  ConvertTo-Json -Depth 2)"
+    Write-Host "Loaded config: $(Config | ConvertTo-Json -Depth 2)"
 }
 Import-Module (Join-Path $PSScriptRoot "pwsh/modules/CodeFixer/CodeFixer.psd1") -Force
+
 
 
 

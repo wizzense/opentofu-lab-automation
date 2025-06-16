@@ -221,7 +221,7 @@ function global:$CommandName {
 }
 "@
  $content += $mockFunction
- $content  Out-File $testHelpersPath -Encoding UTF8
+ content | Out-File $testHelpersPath -Encoding UTF8
  Write-QuickLog "PASS Added mock function for '$CommandName'" "SUCCESS"
  }
 }
@@ -282,7 +282,7 @@ try {
  }
  else {
  Write-QuickLog "Found $($allIssues.Count) issues:" "WARNING"
- $allIssues  ForEach-Object { Write-QuickLog " - $_" "ERROR" }
+ allIssues | ForEach-Object { Write-QuickLog " - $_" "ERROR" }
  
  Invoke-AutoFix $allIssues
  }
@@ -300,10 +300,11 @@ try {
  New-Item -Path $cacheDir -ItemType Directory -Force  Out-Null
  }
  
- $results  ConvertTo-Json -Depth 3  Out-File "$cacheDir/last-quick-check.json" -Encoding UTF8
+ results | ConvertTo-Json -Depth 3  Out-File "$cacheDir/last-quick-check.json" -Encoding UTF8
  Write-QuickLog "Results cached for future reference" "INFO"
 }
 catch {
  Write-QuickLog "Quick check failed: $($_.Exception.Message)" "ERROR"
  exit 1
 }
+

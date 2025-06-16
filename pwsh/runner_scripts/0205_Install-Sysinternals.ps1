@@ -37,12 +37,13 @@ Write-CustomLog "Extracting to $destDir"
     $psInfo = Join-Path $destDir 'PsInfo.exe'
     if (Test-Path $psInfo) {
         Write-CustomLog 'Verifying PsInfo.exe'
-        & $psInfo  Out-Null
+        & psInfo | Out-Null
     }
 
     Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
 }
 Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
+
 
 
 

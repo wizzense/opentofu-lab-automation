@@ -178,7 +178,7 @@ function Invoke-GitControlledPatch {
                 
                 if ($changedFiles) {
                     Write-Host "Changed files:" -ForegroundColor Green
-                    $changedFiles  ForEach-Object { Write-Host "  - $_" -ForegroundColor White }
+                    changedFiles | ForEach-Object { Write-Host "  - $_" -ForegroundColor White }
                     
                     # Commit changes directly
                     git add -A
@@ -308,7 +308,7 @@ function Invoke-GitControlledPatch {
             }
             
             Write-Host "Changed files:" -ForegroundColor Green
-            $changedFiles  ForEach-Object { Write-Host "  - $_" -ForegroundColor White }
+            changedFiles | ForEach-Object { Write-Host "  - $_" -ForegroundColor White }
             
             # Run validation checks (non-blocking)
             try {
@@ -420,7 +420,7 @@ function Invoke-PatchValidation {
     $issues = @()
     
     # PowerShell syntax validation
-    $psFiles = $ChangedFiles  Where-Object { $_ -match '\.ps1$' }
+    $psFiles = ChangedFiles | Where-Object { $_ -match '\.ps1$' }
     if ($psFiles) {
         foreach ($file in $psFiles) {
             if (Test-Path $file) {
@@ -439,7 +439,7 @@ function Invoke-PatchValidation {
     }
     
     # Python syntax validation
-    $pyFiles = $ChangedFiles  Where-Object { $_ -match '\.py$' }
+    $pyFiles = ChangedFiles | Where-Object { $_ -match '\.py$' }
     if ($pyFiles -and (Get-Command python -ErrorAction SilentlyContinue)) {
         foreach ($file in $pyFiles) {
             if (Test-Path $file) {
@@ -460,7 +460,7 @@ function Invoke-PatchValidation {
     }
     
     # YAML validation  
-    $yamlFiles = $ChangedFiles  Where-Object { $_ -match '\.(ymlyaml)$' }
+    $yamlFiles = ChangedFiles | Where-Object { $_ -match '\.(ymlyaml)$' }
     if ($yamlFiles) {
         foreach ($file in $yamlFiles) {
             if (Test-Path $file) {
@@ -525,7 +525,7 @@ This PR contains automated fixes that require manual review before merging.
 - **Generated**: $(Get-Date -Format "yyyy-MM-dd HH:mm:ss UTC")
 
 ### Changed Files
-$($ChangedFiles  ForEach-Object { "- $_" }  Out-String)
+$(ChangedFiles | ForEach-Object { "- $_" }  Out-String)
 
 ### Validation Status
 - x PowerShell linting passed
@@ -565,3 +565,4 @@ $($ChangedFiles  ForEach-Object { "- $_" }  Out-String)
 
 # Note: Export-ModuleMember is handled by the module manifest
 # This script contains functions that will be exported when the module is imported
+

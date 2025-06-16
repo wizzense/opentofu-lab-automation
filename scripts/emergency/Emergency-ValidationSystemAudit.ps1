@@ -41,7 +41,7 @@ $fileList = Get-ChildItem -Path "." -Recurse -Include "*.ps1"
 
 # Pattern 1: Detect repeated -Force parameters
 Write-Host "`n PATTERN 1: Repeated -Force Parameters" -ForegroundColor Cyan
-$forcePattern = $fileList  ForEach-Object {
+$forcePattern = fileList | ForEach-Object {
     $content = Get-Content $_.FullName -Raw -ErrorAction SilentlyContinue
     if ($content -match '-Force\s+-Force') {
         $forceCount = ($content  Select-String '-Force' -AllMatches).Matches.Count
@@ -221,7 +221,7 @@ $($AuditResults.CriticalFindings  ForEach-Object { "- $_" }  Out-String)
 $($AuditResults.SystemicIssues  ForEach-Object { "- $_" }  Out-String)
 
 ## Worst Affected Files
-$($worstFiles  ForEach-Object { "- $($_.File): $($_.ForceCount) -Force parameters" }  Out-String)
+$(worstFiles | ForEach-Object { "- $($_.File): $($_.ForceCount) -Force parameters" }  Out-String)
 
 ## Required Actions
 1. **IMMEDIATE**: Stop all auto-fix operations
@@ -243,4 +243,5 @@ Write-Host "`n� EMERGENCY AUDIT COMPLETE" -ForegroundColor Red
 Write-Host "Next steps: Build proper validation systems using this data as test cases" -ForegroundColor Yellow
 
 return $AuditResults
+
 

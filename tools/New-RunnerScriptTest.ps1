@@ -157,7 +157,7 @@ $testContent += @"
 "@
 
 # Write the test file
-$testContent  Out-File -FilePath $OutputPath -Encoding utf8
+testContent | Out-File -FilePath $OutputPath -Encoding utf8
 Write-Host "Generated test file: $OutputPath" -ForegroundColor Green
 
 # Validate the generated file by running a syntax check
@@ -167,6 +167,7 @@ try {
 } catch {
     Write-Warning "Syntax validation failed: $_"
 }
+
 
 
 

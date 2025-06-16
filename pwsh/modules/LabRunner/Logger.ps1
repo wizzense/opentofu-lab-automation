@@ -28,7 +28,7 @@ function Write-CustomLog {
 
     $ts  = Get-Date -Format 'yyyy-MM-dd HH:mm:ss'
     $fmt = "$ts $Level $Message"
-    $fmt  Out-File -FilePath $script:LogFilePath -Encoding utf8 -Append
+    fmt | Out-File -FilePath $script:LogFilePath -Encoding utf8 -Append
 
     if ($levelIdx -le $script:ConsoleLevel) {
         $color = @{ INFO='Gray'; WARN='Yellow'; ERROR='Red' }$Level
@@ -59,6 +59,7 @@ string$Prompt,
     Write-CustomLog "$($Prompt): $answer"
     return $answer
 }
+
 
 
 

@@ -19,9 +19,10 @@ $newContent = $newContent -replace '($\w\s+)\s+\?\s+($\w\s\.+)\s+:\s+(\d+)', 'if
 $newContent = $newContent -replace 'if\s+(^(.+?)\s+\{', 'if ($1) {'
 
 # Save the modified content
-$newContent  Set-Content -Path $filePath -NoNewline
+newContent | Set-Content -Path $filePath -NoNewline
 
 Write-Host "Fixed file: $filePath" -ForegroundColor Green
+
 
 
 

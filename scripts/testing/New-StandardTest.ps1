@@ -77,7 +77,7 @@ function New-StandardTest {
     
     # Write test file
     try {
-        $testContent  Set-Content -Path $testFilePath -Encoding UTF8
+        testContent | Set-Content -Path $testFilePath -Encoding UTF8
         Write-Host "PASS Generated test file: $testFilePath" -ForegroundColor Green
         
         # Validate the generated test
@@ -211,3 +211,4 @@ if ($ScriptName) {
     Write-Host "  Repair-ExistingTests -WhatIf" -ForegroundColor Gray
     Write-Host "  Repair-ExistingTests" -ForegroundColor Gray
 }
+

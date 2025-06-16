@@ -22,7 +22,7 @@ try {
     
     if ($errors -and $errors.Count -gt 0) {
         Write-Host "SYNTAX ERRORS FOUND:" -ForegroundColor Red
-        $errors  ForEach-Object {
+        errors | ForEach-Object {
             Write-Host "  Line $($_.Extent.StartLineNumber): $($_.Message)" -ForegroundColor Red
             Write-Host "    $($_.Extent.Text)" -ForegroundColor Gray
         }
@@ -43,7 +43,7 @@ try {
     
     if ($parseErrors -and $parseErrors.Count -gt 0) {
         Write-Host "PARSE ERRORS FOUND:" -ForegroundColor Red
-        $parseErrors  ForEach-Object {
+        parseErrors | ForEach-Object {
             Write-Host "  Token: $($_.Token.Content)" -ForegroundColor Red
             Write-Host "    $($_.Message)" -ForegroundColor Gray
         }
@@ -63,7 +63,7 @@ try {
         
         if ($results) {
             Write-Host "PSScriptAnalyzer found $($results.Count) errors:" -ForegroundColor Red
-            $results  ForEach-Object {
+            results | ForEach-Object {
                 Write-Host "  Line $($_.Line): $($_.Message)" -ForegroundColor Red
                 Write-Host "    Rule: $($_.RuleName)" -ForegroundColor Gray
             }
@@ -85,6 +85,7 @@ try {
 } catch {
     Write-Host "  ScriptBlock creation failed: $_" -ForegroundColor Red
 }
+
 
 
 

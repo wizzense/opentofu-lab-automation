@@ -15,7 +15,7 @@ Describe '0104_Install-CA Tests' {
     Context 'Functionality Tests' {
         It 'should execute without errors' {
             # Basic test implementation
-            $true  Should -BeTrue
+            $true | Should -BeTrue
         }
     }
 
@@ -23,6 +23,7 @@ Describe '0104_Install-CA Tests' {
         # Cleanup test resources
     }
 }
+
 
 
 

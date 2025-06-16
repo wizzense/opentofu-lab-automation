@@ -193,7 +193,7 @@ if (-not (Get-Command Write-CustomLog -ErrorAction SilentlyContinue)) {
         }
         $ts  = Get-Date -Format 'yyyy-MM-dd HH:mm:ss'
         $fmt = "$ts $Level $Message"
-        $fmt  Out-File -FilePath $script:LogFilePath -Encoding utf8 -Append
+        fmt | Out-File -FilePath $script:LogFilePath -Encoding utf8 -Append
         if ($levelIdx -le $script:ConsoleLevel) {
             $color = @{ INFO='Gray'; WARN='Yellow'; ERROR='Red' }$Level
             Write-Host $fmt -ForegroundColor $color
@@ -310,7 +310,7 @@ if ($configOption -match "https://") {
 } else {
     $localConfigDir = Join-Path (Join-Path $scriptRoot "configs") "config_files"
     if (!(Test-Path $localConfigDir)) {
-        New-Item -ItemType Directory -Path $localConfigDir  Out-Null
+        New-Item -ItemType Directory -Path localConfigDir | Out-Null
     }
     $configFiles = Get-ChildItem -Path $localConfigDir -Filter '*.json' -File
     if ($configFiles.Count -gt 1) {
@@ -770,6 +770,7 @@ if ($exitCode -ne 0) {
 
 Write-CustomLog "`n=== Kicker script finished successfully! ==="
 exit 0
+
 
 
 

@@ -34,7 +34,7 @@ function Fix-YamlCorruption {
  }
  
  if ($fixesApplied.Count -gt 0) {
- $content  Out-File -FilePath $FilePath -Encoding UTF8 -NoNewline
+ content | Out-File -FilePath $FilePath -Encoding UTF8 -NoNewline
  return $fixesApplied
  }
  
@@ -76,9 +76,9 @@ if ($totalFixed -gt 0) {
  if ($LASTEXITCODE -eq 0) {
  Write-Host "PASS No YAML errors found by yamllint" -ForegroundColor Green
  } else {
- $errorCount = ($yamlLintResult  Measure-Object).Count
+ $errorCount = (yamlLintResult | Measure-Object).Count
  Write-Host "WARN Found $errorCount YAML issues:" -ForegroundColor Yellow
- $yamlLintResult  Select-Object -First 10  ForEach-Object { Write-Host " $_" -ForegroundColor Red }
+ yamlLintResult | Select-Object -First 10  ForEach-Object { Write-Host " $_" -ForegroundColor Red }
  if ($errorCount -gt 10) {
  Write-Host " ... and $($errorCount - 10) more" -ForegroundColor Red
  }
@@ -88,3 +88,4 @@ if ($totalFixed -gt 0) {
  Write-Host "WARN Could not verify with yamllint: $_" -ForegroundColor Yellow
  }
 }
+

@@ -98,7 +98,7 @@ try {
  `$lintResults = Invoke-PowerShellLint -Files `$fileObjects -Parallel -OutputFormat 'CI' -PassThru -BatchSize `$batchSize -MaxJobs `$maxJobs
  
  # Check for errors (syntax errors are critical for commits)
- `$syntaxErrors = `$lintResults  Where-Object { `$_.Severity -eq 'Error' }
+ `$syntaxErrors = `lintResults | Where-Object { `$_.Severity -eq 'Error' }
  
  if (`$syntaxErrors.Count -gt 0) {
  Write-Host "`nFAIL CRITICAL SYNTAX ERRORS found:" -ForegroundColor Red
@@ -230,5 +230,6 @@ if ($Install) {
  Write-Host " Uninstall: .\Pre-Commit-Hook.ps1 -Uninstall" -ForegroundColor Gray
  Write-Host " Test: .\Pre-Commit-Hook.ps1 -Test" -ForegroundColor Gray
 }
+
 
 

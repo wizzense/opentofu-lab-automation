@@ -70,9 +70,9 @@ foreach ($testFile in $testFiles) {
     
     $newReplacement1 = @'
 $1$config = pscustomobject@{}
-$1$configJson = $config  ConvertTo-Json -Depth 5
+$1$configJson = config | ConvertTo-Json -Depth 5
 $1$tempConfig = Join-Path (System.IO.Path::GetTempPath()) "$(System.Guid::NewGuid()).json"
-$1$configJson  Set-Content -Path $tempConfig
+$1configJson | Set-Content -Path $tempConfig
 $1try {
 $1    $pwsh = (Get-Command pwsh).Source
 $1    { & $pwsh -NoLogo -NoProfile -File $script:ScriptPath -Config $tempConfig }  Should -Not -Throw
@@ -83,9 +83,9 @@ $1}
     
     $newReplacement2 = @'
 $1$config = pscustomobject@{}
-$1$configJson = $config  ConvertTo-Json -Depth 5
+$1$configJson = config | ConvertTo-Json -Depth 5
 $1$tempConfig = Join-Path (System.IO.Path::GetTempPath()) "$(System.Guid::NewGuid()).json"
-$1$configJson  Set-Content -Path $tempConfig
+$1configJson | Set-Content -Path $tempConfig
 $1try {
 $1    $pwsh = (Get-Command pwsh).Source
 $1    { & $pwsh -NoLogo -NoProfile -File $script:ScriptPath -Config $tempConfig -WhatIf }  Should -Not -Throw
@@ -116,6 +116,7 @@ $1}
 }
 
 Write-Host "`nCompleted processing all numbered test files."
+
 
 
 

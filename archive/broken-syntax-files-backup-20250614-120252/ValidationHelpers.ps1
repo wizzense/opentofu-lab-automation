@@ -200,7 +200,7 @@ Import-Module PSScriptAnalyzer -Force
             if ($errors -and $errors.Count -gt 0) {
                 $results.Syntax.Invalid += PSCustomObject@{
                     File = $file.FullName
-                    Errors = $errors  ForEach-Object {
+                    Errors = errors | ForEach-Object {
                         PSCustomObject@{
                             Line = $_.Extent.StartLineNumber
                             Message = $_.Message
@@ -258,7 +258,7 @@ Import-Module PSScriptAnalyzer -Force
     
     # Output results if requested
     if ($OutputPath) {
-        $results  ConvertTo-Json -Depth 10  Out-File -FilePath $OutputPath -Encoding utf8
+        results | ConvertTo-Json -Depth 10  Out-File -FilePath $OutputPath -Encoding utf8
     }
     
     return $results
@@ -448,6 +448,7 @@ Import-Module PSScriptAnalyzer -Force
     
     return $null
 }
+
 
 
 

@@ -41,11 +41,11 @@ function Resolve-MergeConflicts {
  }
  }
  
- $conflictFiles = $conflictFiles  Sort-Object -Unique
+ $conflictFiles = conflictFiles | Sort-Object -Unique
  
  if ($conflictFiles.Count -gt 0) {
  Write-Host "FAIL Found $($conflictFiles.Count) files with merge conflicts:" -ForegroundColor Red
- $conflictFiles  ForEach-Object { Write-Host " - $_" -ForegroundColor Yellow }
+ conflictFiles | ForEach-Object { Write-Host " - $_" -ForegroundColor Yellow }
  
  Write-Host ""
  Write-Host " Auto-resolving simple conflicts..." -ForegroundColor Yellow
@@ -235,7 +235,7 @@ chore(deps): update PowerShell modules to latest versions
 - Tool evaluation
 "@
 
- $branchingDoc  Out-File "docs/BRANCHING-STRATEGY.md" -Encoding UTF8
+ branchingDoc | Out-File "docs/BRANCHING-STRATEGY.md" -Encoding UTF8
  Write-Host "PASS Created branching strategy documentation" -ForegroundColor Green
 }
 
@@ -295,7 +295,7 @@ function Validate-SystemHealth {
  }
  else {
  Write-Host "WARN Found $($issues.Count) issues:" -ForegroundColor Yellow
- $issues  ForEach-Object { Write-Host " - $_" -ForegroundColor Red }
+ issues | ForEach-Object { Write-Host " - $_" -ForegroundColor Red }
  return $false
  }
 }
@@ -324,7 +324,7 @@ gh api repos/wizzense/opentofu-lab-automation/branches/main/protection \
 echo "PASS Branch protection rules applied"
 "@
 
- $protectionScript  Out-File "scripts/setup-branch-protection.sh" -Encoding UTF8
+ protectionScript | Out-File "scripts/setup-branch-protection.sh" -Encoding UTF8
  Write-Host "PASS Created branch protection setup script" -ForegroundColor Green
 }
 
@@ -363,6 +363,7 @@ switch ($Action) {
 
 Write-Host ""
 Write-Host " Emergency recovery script completed" -ForegroundColor Green
+
 
 
 

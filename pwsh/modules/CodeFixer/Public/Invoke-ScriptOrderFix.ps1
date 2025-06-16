@@ -119,7 +119,7 @@ function Invoke-ScriptOrderFix {
  
  # Apply fix
  if ($PSCmdlet.ShouldProcess($file.FullName, "Fix Import-Module/Param order")) {
- $newContent  Set-Content $file.FullName
+ newContent | Set-Content $file.FullName
  Write-Verbose " PASS Fixed: $($file.Name)"
  $fixedFiles += $file.FullName
  } else {
@@ -136,6 +136,7 @@ function Invoke-ScriptOrderFix {
  return $fixedFiles
  }
 }
+
 
 
 

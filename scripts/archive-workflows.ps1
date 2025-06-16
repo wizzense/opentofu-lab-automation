@@ -106,13 +106,14 @@ if (Test-Path -Path $mainReadmePath) {
 The legacy workflows mentioned above have been moved to .github/archived_workflows(../archived_workflows/).
 See the archive README(../archived_workflows/README.md) for details.
 "@
- $readmeContent  Out-File -FilePath $mainReadmePath -Encoding utf8
+ readmeContent | Out-File -FilePath $mainReadmePath -Encoding utf8
  Write-Host "PASS Updated main workflows README with archive information"
  }
 }
 
 Write-Host "`n Archiving complete! Legacy workflows have been moved to $archiveDir"
 Write-Host " See $readmePath for details on which workflows were archived"
+
 
 
 

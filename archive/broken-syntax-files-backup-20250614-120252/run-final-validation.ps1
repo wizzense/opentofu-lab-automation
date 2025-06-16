@@ -296,7 +296,7 @@ Write-Host "  Overall Status: $($results.Status)" -ForegroundColor $(
 
 # CI mode output
 if ($CI) {
-    $results  ConvertTo-Json -Depth 10
+    results | ConvertTo-Json -Depth 10
     
     # Exit with appropriate code for CI
     switch ($results.Status) {
@@ -320,3 +320,4 @@ if ($CI) {
         }
     }
 }
+

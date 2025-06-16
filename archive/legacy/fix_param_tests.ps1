@@ -133,12 +133,13 @@ Describe '$($scriptName -replace '\.ps1$', '') Tests' -Tag 'Maintenance' {
 "@
     
     # Write the new content to the file
-    $newContent  Set-Content -Path $fullPath -Encoding UTF8
+    newContent | Set-Content -Path $fullPath -Encoding UTF8
     Write-Host "  Updated: $testFile" -ForegroundColor Yellow
 }
 
 Write-Host "`nCompleted fixing test files with Param errors." -ForegroundColor Green
 Write-Host "The tests now use InModuleScope LabRunner with Get-RunnerScriptPath pattern." -ForegroundColor Green
+
 
 
 

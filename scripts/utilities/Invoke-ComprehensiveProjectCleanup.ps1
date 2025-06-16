@@ -113,7 +113,7 @@ try {
             $manifest = Get-Content "PROJECT-MANIFEST.json"  ConvertFrom-Json
             $manifest.project.lastUpdated = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
             $manifest.project.lastMaintenance = Get-Date -Format "yyyy-MM-dd"
-            $manifest  ConvertTo-Json -Depth 10  Set-Content "PROJECT-MANIFEST.json"
+            manifest | ConvertTo-Json -Depth 10  Set-Content "PROJECT-MANIFEST.json"
             Write-Host "    Updated project manifest" -ForegroundColor Green
         }
         
@@ -174,3 +174,4 @@ try {
 
 Write-Host "`nComprehensive project cleanup process completed successfully!" -ForegroundColor Green
 Write-Host "All changes are under Git version control and require manual review." -ForegroundColor Cyan
+

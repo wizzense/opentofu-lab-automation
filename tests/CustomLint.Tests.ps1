@@ -15,7 +15,7 @@ Describe 'CustomLint Tests' {
     Context 'Functionality Tests' {
         It 'should execute without errors' {
             # Basic test implementation
-            $true  Should -BeTrue
+            $true | Should -BeTrue
         }
     }
 
@@ -23,6 +23,7 @@ Describe 'CustomLint Tests' {
         # Cleanup test resources
     }
 }
+
 
 
 

@@ -101,7 +101,7 @@ foreach ($file in $filesToUpdate) {
  $newContent = $file.Content -replace 'modules/LabRunner', 'modules/LabRunner'
  
  # Write the updated content
- $newContent  Set-Content -Path $file.Path -Encoding UTF8
+ newContent | Set-Content -Path $file.Path -Encoding UTF8
  
  $updatedCount++
  Write-Host " PASS Updated (backup: $(System.IO.Path::GetFileName($backupPath)))" -ForegroundColor Green
@@ -141,7 +141,7 @@ if ($loggerFiles.Count -gt 0) {
  try {
  $content = Get-Content -Path $file.FullName -Raw
  $newContent = $content -replace 'modules/LabRunner/Logger\.ps1', 'modules/LabRunner/Logger.ps1'
- $newContent  Set-Content -Path $file.FullName -Encoding UTF8
+ newContent | Set-Content -Path $file.FullName -Encoding UTF8
  Write-Host " PASS Updated Logger.ps1 reference" -ForegroundColor Green
  } catch {
  Write-Host " FAIL Failed to update Logger.ps1 reference: $($_.Exception.Message)" -ForegroundColor Red
@@ -153,6 +153,7 @@ if ($loggerFiles.Count -gt 0) {
 
 Write-Host "`n LabRunner import path updates completed!" -ForegroundColor Green
 Write-Host "Now LabRunner can be safely used from the new modules location." -ForegroundColor Cyan
+
 
 
 

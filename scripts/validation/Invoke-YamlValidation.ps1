@@ -152,7 +152,7 @@ except Exception as e:
  
  # Save the validation script to a temporary file
  $tempScript = System.IO.Path::GetTempFileName() + ".py"
- $pythonCode  Out-File -FilePath $tempScript -Encoding UTF8
+ pythonCode | Out-File -FilePath $tempScript -Encoding UTF8
  
  try {
  $pythonTest = & $pythonCmd $tempScript 2>&1
@@ -484,3 +484,4 @@ else {
  Write-Host "PASS All YAML files are valid" -ForegroundColor Green
  exit 0
 }
+

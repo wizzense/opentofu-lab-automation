@@ -129,7 +129,7 @@ Invoke-LabStep -Config $Config -Body {
         }
 
         if ($AsJson) {
-            $info  ConvertTo-Json -Depth 5
+            info | ConvertTo-Json -Depth 5
         } else {
             $info
         }
@@ -141,6 +141,7 @@ if ($MyInvocation.InvocationName -ne '.') {
     Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
 }
 Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
+
 
 
 

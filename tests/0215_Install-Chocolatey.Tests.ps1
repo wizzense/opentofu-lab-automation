@@ -15,7 +15,7 @@ Describe '0215_Install-Chocolatey Tests' {
     Context 'Functionality Tests' {
         It 'should execute without errors' {
             # Basic test implementation
-            $true  Should -BeTrue
+            $true | Should -BeTrue
         }
     }
 
@@ -23,6 +23,7 @@ Describe '0215_Install-Chocolatey Tests' {
         # Cleanup test resources
     }
 }
+
 
 
 

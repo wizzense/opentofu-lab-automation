@@ -46,7 +46,7 @@ foreach ($file in $files) {
             Write-Host "Would fix syntax in: $file"
         }
         else {
-            $newContent  Set-Content -Path $file
+            newContent | Set-Content -Path $file
             Write-Host "Fixed ternary operators in: $file"
             $fixedCount++
         }
@@ -58,6 +58,7 @@ if ($WhatIf) {
 } else {
     Write-Host "Fixed ternary operator syntax in $fixedCount files."
 }
+
 
 
 

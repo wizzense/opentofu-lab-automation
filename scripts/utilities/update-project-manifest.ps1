@@ -72,7 +72,7 @@ function Get-ModuleInfo {
     $publicPath = "$ModulePath/Public"
     if (Test-Path $publicPath) {
         $functionFiles = Get-ChildItem "$publicPath/*.ps1" -ErrorAction SilentlyContinue
-        $info.functions = $functionFiles  ForEach-Object {
+        $info.functions = functionFiles | ForEach-Object {
             $_.BaseName
         }
     }
@@ -225,7 +225,7 @@ function Update-ProjectManifest {
     }
     
     # Save updated manifest
-    $manifest  ConvertTo-Json -Depth 10  Set-Content $ManifestPath
+    manifest | ConvertTo-Json -Depth 10  Set-Content $ManifestPath
     Write-ManifestLog "Updated manifest at $ManifestPath" "SUCCESS"
     
     # Update AGENTS.md reference if needed
@@ -257,3 +257,4 @@ try {
     Write-ManifestLog "Failed to update manifest: $($_.Exception.Message)" "ERROR"
     exit 1
 }
+

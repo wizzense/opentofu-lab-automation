@@ -131,7 +131,7 @@ function Test-JsonConfig {
  # Display results based on format
  switch ($OutputFormat) {
  'JSON' {
- $allResults  ConvertTo-Json -Depth 3
+ allResults | ConvertTo-Json -Depth 3
  }
  'CI' {
  foreach ($result in $allResults) {
@@ -151,7 +151,7 @@ function Test-JsonConfig {
  Write-Host "`n JSON Validation Results:" -ForegroundColor Cyan
  Write-Host "============================" -ForegroundColor Cyan
  
- $groupedResults = $allResults  Group-Object File
+ $groupedResults = allResults | Group-Object File
  foreach ($group in $groupedResults) {
  Write-Host "`n $($group.Name)" -ForegroundColor Yellow
  Write-Host ("-" * 50) -ForegroundColor Gray
@@ -171,9 +171,9 @@ function Test-JsonConfig {
  }
  
  # Summary
- $errorCount = ($allResults  Where-Object Severity -eq 'Error').Count
- $warningCount = ($allResults  Where-Object Severity -eq 'Warning').Count
- $infoCount = ($allResults  Where-Object Severity -eq 'Information').Count
+ $errorCount = (allResults | Where-Object Severity -eq 'Error').Count
+ $warningCount = (allResults | Where-Object Severity -eq 'Warning').Count
+ $infoCount = (allResults | Where-Object Severity -eq 'Information').Count
  
  Write-Host "`n Summary:" -ForegroundColor Cyan
  Write-Host "===========" -ForegroundColor Cyan
@@ -237,6 +237,7 @@ $issues = @()
  
  return $issues
 }
+
 
 
 

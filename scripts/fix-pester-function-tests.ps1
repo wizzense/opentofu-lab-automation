@@ -21,7 +21,7 @@ $testFiles = Get-ChildItem -Path 'tests' -Filter '*.Tests.ps1' -Recurse
  }
 
 Write-Host "Found $($testFiles.Count) test files to fix:" -ForegroundColor Cyan
-$testFiles  ForEach-Object { Write-Host " - $($_.Name)" -ForegroundColor Gray }
+testFiles | ForEach-Object { Write-Host " - $($_.Name)" -ForegroundColor Gray }
 
 foreach ($file in $testFiles) {
  Write-Host "`n Processing $($file.Name)..." -ForegroundColor Green
@@ -63,6 +63,7 @@ foreach ($file in $testFiles) {
 
 Write-Host "`n Batch fix completed!" -ForegroundColor Green
 Write-Host "Run tests to verify the fixes work correctly." -ForegroundColor Cyan
+
 
 
 

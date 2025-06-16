@@ -80,8 +80,8 @@ function Invoke-ComprehensiveValidation {
             $results.PowerShellLint = $lintResults
 
             if ($lintResults) {
-                $results.SummaryStats.ScriptsWithIssues = ($lintResults  Select-Object -Unique File).Count
-                if ($lintResults  Where-Object Severity -eq 'Error') {
+                $results.SummaryStats.ScriptsWithIssues = (lintResults | Select-Object -Unique File).Count
+                if (lintResults | Where-Object Severity -eq 'Error') {
                     $results.OverallStatus = "HasIssues"
                 }
             }
@@ -94,7 +94,7 @@ function Invoke-ComprehensiveValidation {
 
         if ($jsonResults) {
             $results.SummaryStats.JsonIssues = $jsonResults.Count
-            if ($jsonResults  Where-Object Severity -eq 'Error') {
+            if (jsonResults | Where-Object Severity -eq 'Error') {
                 $results.OverallStatus = "HasIssues"
             }
         }
@@ -132,9 +132,9 @@ function Invoke-ComprehensiveValidation {
 
         # Output results
         if ($OutputFormat -eq 'JSON') {
-            $jsonOutput = $results  ConvertTo-Json -Depth 10
+            $jsonOutput = results | ConvertTo-Json -Depth 10
             if ($OutputPath) {
-                $jsonOutput  Out-File -FilePath $OutputPath -Encoding UTF8
+                jsonOutput | Out-File -FilePath $OutputPath -Encoding UTF8
                 Write-Host "Comprehensive report saved to $OutputPath" -ForegroundColor Green
             }
             Write-Output $jsonOutput
@@ -167,5 +167,6 @@ function Invoke-ComprehensiveValidation {
         return $results
     }
 }
+
 
 

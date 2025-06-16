@@ -56,7 +56,7 @@ function Install-RequiredModules {
  try {
  $installed = Get-Module -ListAvailable -Name $module.Name
  if ($module.Version) {
- $installed = $installed  Where-Object { $_.Version -ge version$module.Version }
+ $installed = installed | Where-Object { $_.Version -ge version$module.Version }
  }
  
  if ($installed) {
@@ -339,6 +339,7 @@ try {
  Write-Host "Check the error above and try again" -ForegroundColor Gray
  exit 1
 }
+
 
 
 

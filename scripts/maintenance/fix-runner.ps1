@@ -39,7 +39,7 @@ Write-Host " Fix 1: Improving parameter handling..." -ForegroundColor Green
 
 $oldExecutionPattern = @'
  $tempCfg = System.IO.Path::GetTempFileName()
- $Config  ConvertTo-Json -Depth 5  Out-File -FilePath $tempCfg -Encoding utf8
+ Config | ConvertTo-Json -Depth 5  Out-File -FilePath $tempCfg -Encoding utf8
  $scriptArgs = @('-File', $scriptPath, '-Config', $tempCfg)
  if ((Get-Command $scriptPath).Parameters.ContainsKey('AsJson')) { $scriptArgs += '-AsJson' }
  $env:LAB_CONSOLE_LEVEL = $script:VerbosityLevels$Verbosity
@@ -50,7 +50,7 @@ $newExecutionPattern = @'
  # Create temporary config file with proper encoding
  $tempCfg = System.IO.Path::GetTempFileName()
  try {
- $Config  ConvertTo-Json -Depth 5  Out-File -FilePath $tempCfg -Encoding utf8 -NoNewline
+ Config | ConvertTo-Json -Depth 5  Out-File -FilePath $tempCfg -Encoding utf8 -NoNewline
  
  # Validate script file exists and is readable
  if (-not (Test-Path $scriptPath)) {
@@ -343,6 +343,7 @@ Write-Host " 3. Verify parameter binding works correctly" -ForegroundColor White
 Write-Host " 4. Check fallback execution method effectiveness" -ForegroundColor White
 
 Write-Host "`n Runner script fixes completed successfully!" -ForegroundColor Green
+
 
 
 

@@ -104,10 +104,10 @@ function Invoke-ResultsAnalysis {
  $failures = $failuresByFile$filePath
  
  # Group failures by type
- $ternarySyntaxIssue = $failures  Where-Object { $_.Message -match 'The term ''if'' is not recognized' }
- $skipSyntaxIssue = $failures  Where-Object { $_.Message -match 'Missing closing ''\)''' }
- $quoteSyntaxIssue = $failures  Where-Object { $_.Message -match 'Missing closing ''''' -or $_.Message -match 'Missing closing ''"''' }
- $indentationIssue = $failures  Where-Object { $_.Message -match 'Unexpected token' }
+ $ternarySyntaxIssue = failures | Where-Object { $_.Message -match 'The term ''if'' is not recognized' }
+ $skipSyntaxIssue = failures | Where-Object { $_.Message -match 'Missing closing ''\)''' }
+ $quoteSyntaxIssue = failures | Where-Object { $_.Message -match 'Missing closing ''''' -or $_.Message -match 'Missing closing ''"''' }
+ $indentationIssue = failures | Where-Object { $_.Message -match 'Unexpected token' }
  
  if ($ternarySyntaxIssue -or $skipSyntaxIssue -or $quoteSyntaxIssue -or $indentationIssue) {
  if ($ApplyFixes) {
@@ -175,6 +175,7 @@ function Invoke-ResultsAnalysis {
  return $fixedFiles
  }
 }
+
 
 
 

@@ -8,15 +8,15 @@ function global:New-RunnerTestEnv {
     if (Test-Path $root) {
         Remove-Item -Recurse -Force $root -ErrorAction SilentlyContinue
     }
-    New-Item -ItemType Directory -Path $root  Out-Null
+    New-Item -ItemType Directory -Path root | Out-Null
 
     $repoRoot   = Join-Path $PSScriptRoot '..' '..'
     $pwshDir = Join-Path $root 'pwsh'
-    New-Item -ItemType Directory -Path $pwshDir  Out-Null
+    New-Item -ItemType Directory -Path pwshDir | Out-Null
     Copy-Item (Join-Path $repoRoot 'pwsh' 'runner.ps1') -Destination $pwshDir
 
     $rsDir = Join-Path $pwshDir 'runner_scripts'
-    New-Item -ItemType Directory -Path $rsDir  Out-Null
+    New-Item -ItemType Directory -Path rsDir | Out-Null
 
     $utils = Join-Path $pwshDir 'modules/LabRunner'
     New-Item -ItemType Directory -Path $utils -Force  Out-Null
@@ -31,7 +31,7 @@ function global:New-RunnerTestEnv {
         Set-Content -Path (Join-Path $utils 'Logger.ps1')
 
     $labs = Join-Path $pwshDir 'lab_utils'
-    New-Item -ItemType Directory -Path $labs  Out-Null
+    New-Item -ItemType Directory -Path labs | Out-Null
     Copy-Item (Join-Path $repoRoot 'pwsh' 'lab_utils' 'Resolve-ProjectPath.ps1') -Destination $labs -Force -ErrorAction SilentlyContinue
     'function Get-LabConfig { param(string$Path) 
 
@@ -49,7 +49,7 @@ Get-Content -Raw $Path  ConvertFrom-Json }'
 
 
 
-$Config  ConvertTo-Json -Depth 5 }' 
+Config | ConvertTo-Json -Depth 5 }' 
         Set-Content -Path (Join-Path $labs 'Format-Config.ps1')
     'function Get-Platform {
         if ($IsWindows) { return "Windows" }
@@ -68,7 +68,7 @@ $Config  ConvertTo-Json -Depth 5 }'
     Copy-Item (Join-Path $repoRoot 'pwsh' 'lab_utils' 'Resolve-ProjectPath.ps1') -Destination $rootLabs -ErrorAction SilentlyContinue
 
     $cfgDir = Join-Path $root 'configs' 'config_files'
-    New-Item -ItemType Directory -Path $cfgDir  Out-Null
+    New-Item -ItemType Directory -Path cfgDir | Out-Null
     '{}'  Set-Content -Path (Join-Path $cfgDir 'default-config.json')
     '{}'  Set-Content -Path (Join-Path $cfgDir 'recommended-config.json')
 
@@ -82,6 +82,7 @@ function global:Remove-RunnerTestEnv {
     }
     $script:RunnerTestEnvDirs = @()
 }
+
 
 
 

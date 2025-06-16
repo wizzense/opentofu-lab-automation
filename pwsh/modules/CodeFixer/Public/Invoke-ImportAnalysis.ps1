@@ -187,12 +187,12 @@ function Invoke-ImportAnalysis {
  Issues = $allIssues
  Summary = @{
  TotalFiles = $powerShellFiles.Count
- FilesWithIssues = ($allIssues  Group-Object File).Count
+ FilesWithIssues = (allIssues | Group-Object File).Count
  TotalIssues = $allIssues.Count
  FixedFiles = $fixedCount
  }
  }
- $result  ConvertTo-Json -Depth 3
+ result | ConvertTo-Json -Depth 3
  }
  'CI' {
  foreach ($issue in $allIssues) {
@@ -211,7 +211,7 @@ function Invoke-ImportAnalysis {
  Write-Host "`n Import Analysis Results:" -ForegroundColor Cyan
  Write-Host "=============================" -ForegroundColor Cyan
  
- $groupedIssues = $allIssues  Group-Object File
+ $groupedIssues = allIssues | Group-Object File
  foreach ($group in $groupedIssues) {
  Write-Host "`n $($group.Name)" -ForegroundColor Yellow
  Write-Host ("-" * 50) -ForegroundColor Gray
@@ -228,13 +228,13 @@ function Invoke-ImportAnalysis {
  }
  
  # Summary
- $errorCount = ($allIssues  Where-Object Severity -eq 'Error').Count
- $warningCount = ($allIssues  Where-Object Severity -eq 'Warning').Count
+ $errorCount = (allIssues | Where-Object Severity -eq 'Error').Count
+ $warningCount = (allIssues | Where-Object Severity -eq 'Warning').Count
  
  Write-Host "`n Summary:" -ForegroundColor Cyan
  Write-Host "==========" -ForegroundColor Cyan
  Write-Host "Files scanned: $($powerShellFiles.Count)" -ForegroundColor White
- Write-Host "Files with issues: $(($allIssues  Group-Object File).Count)" -ForegroundColor Yellow
+ Write-Host "Files with issues: $((allIssues | Group-Object File).Count)" -ForegroundColor Yellow
  Write-Host "Import errors: $errorCount" -ForegroundColor $$(if (errorCount -gt 0) { 'Red' } else { 'Green' })
  Write-Host "Import warnings: $warningCount" -ForegroundColor $$(if (warningCount -gt 0) { 'Yellow' } else { 'Green' })
  
@@ -249,3 +249,4 @@ function Invoke-ImportAnalysis {
  return $allIssues
  }
 }
+

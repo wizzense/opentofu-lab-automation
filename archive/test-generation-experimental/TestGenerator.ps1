@@ -84,7 +84,7 @@ function New-TestFromScript {
     
     # Write the test file
     if ($PSCmdlet.ShouldProcess($OutputPath, "Create test file")) {
-        $testContent  Out-File -FilePath $OutputPath -Encoding utf8
+        testContent | Out-File -FilePath $OutputPath -Encoding utf8
         Write-Host "Generated test file: $OutputPath" -ForegroundColor Green
         return $true
     }
@@ -378,7 +378,7 @@ jobs:
     
     # Write the workflow file
     if ($PSCmdlet.ShouldProcess($OutputPath, "Create workflow file")) {
-        $workflowContent  Out-File -FilePath $OutputPath -Encoding utf8
+        workflowContent | Out-File -FilePath $OutputPath -Encoding utf8
         Write-Host "Generated workflow file: $OutputPath" -ForegroundColor Green
         return $true
     }
@@ -845,6 +845,7 @@ Describe '$scriptBaseName Tests' -Tag '$($Analysis.Category)' {
 }
 
 }
+
 
 
 

@@ -63,7 +63,7 @@ function Invoke-ParallelPesterTests {
  BatchId = $BatchId
  Success = $true
  Result = $result
- TestFiles = $TestBatch  ForEach-Object { $_.Name }
+ TestFiles = TestBatch | ForEach-Object { $_.Name }
  TestCount = $result.TotalCount
  PassedCount = $result.PassedCount
  FailedCount = $result.FailedCount
@@ -75,7 +75,7 @@ function Invoke-ParallelPesterTests {
  BatchId = $BatchId
  Success = $false
  Error = $_.Exception.Message
- TestFiles = $TestBatch  ForEach-Object { $_.Name }
+ TestFiles = TestBatch | ForEach-Object { $_.Name }
  }
  }
  }
@@ -103,10 +103,10 @@ function Invoke-ParallelPesterTests {
  $results = @()
  
  while ($completed -lt $jobs.Count) {
- $finishedJobs = $jobs  Where-Object { $_.State -eq 'Completed' -or $_.State -eq 'Failed' }
+ $finishedJobs = jobs | Where-Object { $_.State -eq 'Completed' -or $_.State -eq 'Failed' }
  
  foreach ($job in $finishedJobs) {
- if ($job.Id -notin ($results  ForEach-Object { $_.JobId })) {
+ if ($job.Id -notin (results | ForEach-Object { $_.JobId })) {
  try {
  $result = Receive-Job -Job $job -Wait
  $result.JobId = $job.Id
@@ -141,13 +141,13 @@ function Invoke-ParallelPesterTests {
  $totalDuration = $endTime - $startTime
  
  # Aggregate results
- $successfulResults = $results  Where-Object { $_.Success }
- $failedResults = $results  Where-Object { -not $_.Success }
+ $successfulResults = results | Where-Object { $_.Success }
+ $failedResults = results | Where-Object { -not $_.Success }
  
- $totalTests = ($successfulResults  Measure-Object -Property TestCount -Sum).Sum
- $totalPassed = ($successfulResults  Measure-Object -Property PassedCount -Sum).Sum
- $totalFailed = ($successfulResults  Measure-Object -Property FailedCount -Sum).Sum
- $totalSkipped = ($successfulResults  Measure-Object -Property SkippedCount -Sum).Sum
+ $totalTests = (successfulResults | Measure-Object -Property TestCount -Sum).Sum
+ $totalPassed = (successfulResults | Measure-Object -Property PassedCount -Sum).Sum
+ $totalFailed = (successfulResults | Measure-Object -Property FailedCount -Sum).Sum
+ $totalSkipped = (successfulResults | Measure-Object -Property SkippedCount -Sum).Sum
  
  # Merge XML results if needed
  if ($OutputFormat -eq "NUnitXml" -and $OutputPath) {
@@ -166,13 +166,13 @@ function Invoke-ParallelPesterTests {
  
  if ($failedResults.Count -gt 0) {
  Write-Host "`nFAIL Failed Batches:" -ForegroundColor Red
- $failedResults  ForEach-Object {
+ failedResults | ForEach-Object {
  Write-Host " Batch $($_.BatchId): $($_.Error)" -ForegroundColor Red
  }
  }
  
  # Calculate performance improvement
- $estimatedSequentialTime = ($successfulResults  Measure-Object -Property Duration -Sum).Sum
+ $estimatedSequentialTime = (successfulResults | Measure-Object -Property Duration -Sum).Sum
  if ($estimatedSequentialTime -gt 0) {
  $speedup = $estimatedSequentialTime.TotalSeconds / $totalDuration.TotalSeconds
  Write-Host "Estimated Speedup: ${speedup:F1}x faster than sequential" -ForegroundColor Cyan
@@ -288,3 +288,4 @@ function Invoke-IntegrationTests {
 
 # Export functions
 Export-ModuleMember -Function Invoke-ParallelPesterTests, Invoke-IntegrationTests, Merge-TestResults
+

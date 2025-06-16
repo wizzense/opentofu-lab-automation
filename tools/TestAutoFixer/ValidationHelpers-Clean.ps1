@@ -191,7 +191,7 @@ function Invoke-ValidationChecks {
     
     # Output to file if requested
     if ($OutputPath) {
-        $validationResults  ConvertTo-Json -Depth 5  Set-Content $OutputPath
+        validationResults | ConvertTo-Json -Depth 5  Set-Content $OutputPath
     }
     
     return $validationResults
@@ -266,3 +266,4 @@ function Get-RunnerScriptPath {
     
     return $ScriptName
 }
+

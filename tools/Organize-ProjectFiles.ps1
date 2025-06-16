@@ -186,7 +186,7 @@ function Show-OrganizationPlan {
  }
  
  # Group by recommended location
- $grouped = $organizationPlan  Group-Object RecommendedLocation
+ $grouped = organizationPlan | Group-Object RecommendedLocation
  
  foreach ($group in $grouped) {
  $location = $group.Name
@@ -211,8 +211,8 @@ function Show-OrganizationPlan {
  }
  
  # Summary
- $toMove = $organizationPlan  Where-Object { $_.RecommendedLocation -ne "ROOT (keep)" }
- $toKeep = $organizationPlan  Where-Object { $_.RecommendedLocation -eq "ROOT (keep)" }
+ $toMove = organizationPlan | Where-Object { $_.RecommendedLocation -ne "ROOT (keep)" }
+ $toKeep = organizationPlan | Where-Object { $_.RecommendedLocation -eq "ROOT (keep)" }
  
  Write-Host "`n Summary:" -ForegroundColor Yellow
  Write-Host " � Files to organize: $($toMove.Count)" -ForegroundColor Cyan
@@ -239,7 +239,7 @@ if (-not $Force -and -not $WhatIf) {
  }
  }
  
- $toMove = $OrganizationPlan  Where-Object { $_.RecommendedLocation -ne "ROOT (keep)" }
+ $toMove = OrganizationPlan | Where-Object { $_.RecommendedLocation -ne "ROOT (keep)" }
  
  foreach ($item in $toMove) {
  $source = $item.FileName
@@ -282,7 +282,7 @@ function Export-OrganizationRules {
  rules = $organizationRules
  }
  
- $config  ConvertTo-Json -Depth 5  Set-Content $ConfigFile
+ config | ConvertTo-Json -Depth 5  Set-Content $ConfigFile
  Write-Host " Organization rules exported to: $ConfigFile" -ForegroundColor Green
 }
 
@@ -307,6 +307,7 @@ try {
 } catch {
  Write-Error "Organization failed: $_"
 }
+
 
 
 

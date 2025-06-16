@@ -86,9 +86,9 @@ It 'should handle whatif parameter' {
     $newBasicPattern = @'
 It 'should execute without errors with valid config' {
                 $config = pscustomobject@{}
-                $configJson = $config  ConvertTo-Json -Depth 5
+                $configJson = config | ConvertTo-Json -Depth 5
                 $tempConfig = Join-Path (System.IO.Path::GetTempPath()) "$(System.Guid::NewGuid()).json"
-                $configJson  Set-Content -Path $tempConfig
+                configJson | Set-Content -Path $tempConfig
                 try {
                     $pwsh = (Get-Command pwsh).Source
                     { & $pwsh -NoLogo -NoProfile -File $script:ScriptPath -Config $tempConfig }  Should -Not -Throw
@@ -101,9 +101,9 @@ It 'should execute without errors with valid config' {
     $newWhatifPattern = @'
 It 'should handle whatif parameter' {
                 $config = pscustomobject@{}
-                $configJson = $config  ConvertTo-Json -Depth 5
+                $configJson = config | ConvertTo-Json -Depth 5
                 $tempConfig = Join-Path (System.IO.Path::GetTempPath()) "$(System.Guid::NewGuid()).json"
-                $configJson  Set-Content -Path $tempConfig
+                configJson | Set-Content -Path $tempConfig
                 try {
                     $pwsh = (Get-Command pwsh).Source
                     { & $pwsh -NoLogo -NoProfile -File $script:ScriptPath -Config $tempConfig -WhatIf }  Should -Not -Throw
@@ -147,6 +147,7 @@ foreach ($testFile in $testFiles) {
 }
 
 Write-Host "`nCompleted processing all numbered test files."
+
 
 
 

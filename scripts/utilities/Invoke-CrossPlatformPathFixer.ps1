@@ -224,12 +224,12 @@ BeforeAll {
         
         if ($fixedFiles.Count -gt 0) {
             Write-Host "`nFixed Files:" -ForegroundColor Yellow
-            $fixedFiles  ForEach-Object { Write-Host "  $_" -ForegroundColor White }
+            fixedFiles | ForEach-Object { Write-Host "  $_" -ForegroundColor White }
         }
         
         if ($errors.Count -gt 0) {
             Write-Host "`nErrors:" -ForegroundColor Red
-            $errors  ForEach-Object { Write-Host "  $_" -ForegroundColor White }
+            errors | ForEach-Object { Write-Host "  $_" -ForegroundColor White }
         }
         
         return @{
@@ -244,3 +244,4 @@ BeforeAll {
 if ($MyInvocation.InvocationName -ne '.') {
     Export-ModuleMember -Function Invoke-CrossPlatformPathFixer
 }
+

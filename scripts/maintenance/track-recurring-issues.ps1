@@ -218,7 +218,7 @@ $summary = @{
  $severityOrder$_.Value.Severity * 1000 + $_.Value.Count 
  } -Descending
  
- $summary.TopIssues = $sortedIssues  Select-Object -First 10
+ $summary.TopIssues = sortedIssues | Select-Object -First 10
  
  return $summary
 }
@@ -240,12 +240,12 @@ function Save-IssueTracking {
  
  # Save current summary
  $currentFile = "$IssueTrackingPath/current-issues.json"
- $Summary  ConvertTo-Json -Depth 10  Set-Content $currentFile
+ Summary | ConvertTo-Json -Depth 10  Set-Content $currentFile
  
  # Save historical record
  $date = Get-Date -Format "yyyy-MM-dd-HHmm"
  $historicalFile = "$IssueTrackingPath/issues-$date.json"
- $Summary  ConvertTo-Json -Depth 10  Set-Content $historicalFile
+ Summary | ConvertTo-Json -Depth 10  Set-Content $historicalFile
  
  Write-TrackLog "Saved issue tracking to: $currentFile" "SUCCESS"
  Write-TrackLog "Historical record: $historicalFile" "SUCCESS"
@@ -332,7 +332,7 @@ Based on the current issues, run these commands to address problems:
 "@
 
  $reportFile = "$ProjectRoot/docs/reports/issue-tracking/$(Get-Date -Format "yyyy-MM-dd")-recurring-issues-summary.md"
- $reportContent  Set-Content $reportFile
+ reportContent | Set-Content $reportFile
  
  Write-TrackLog "Generated issue report: $reportFile" "SUCCESS"
  return $reportFile
@@ -483,6 +483,7 @@ catch {
  Write-TrackLog "Tracking failed: $($_.Exception.Message)" "ERROR"
  exit 1
 }
+
 
 
 

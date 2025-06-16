@@ -279,17 +279,17 @@ Describe '$($ScriptName -replace '\.ps1$', '') Tests' -Tag '$($Analysis.Category
         
         It 'should validate prerequisites'$skipClause {
             # Test prerequisite checking logic
-            `$true  Should -BeTrue  # Placeholder - implement actual tests
+            `$true | Should -BeTrue  # Placeholder - implement actual tests
         }
         
         It 'should handle download failures gracefully'$skipClause {
             # Test error handling for failed downloads
-            `$true  Should -BeTrue  # Placeholder - implement actual tests
+            `$true | Should -BeTrue  # Placeholder - implement actual tests
         }
         
         It 'should verify installation success'$skipClause {
             # Test installation verification
-            `$true  Should -BeTrue  # Placeholder - implement actual tests
+            `$true | Should -BeTrue  # Placeholder - implement actual tests
         }
     }
 "@
@@ -302,17 +302,17 @@ Describe '$($ScriptName -replace '\.ps1$', '') Tests' -Tag '$($Analysis.Category
     Context 'Configuration Tests' {
         It 'should backup existing configuration'$skipClause {
             # Test configuration backup logic
-            `$true  Should -BeTrue  # Placeholder - implement actual tests
+            `$true | Should -BeTrue  # Placeholder - implement actual tests
         }
         
         It 'should validate configuration changes'$skipClause {
             # Test configuration validation
-            `$true  Should -BeTrue  # Placeholder - implement actual tests
+            `$true | Should -BeTrue  # Placeholder - implement actual tests
         }
         
         It 'should handle rollback on failure'$skipClause {
             # Test rollback functionality
-            `$true  Should -BeTrue  # Placeholder - implement actual tests
+            `$true | Should -BeTrue  # Placeholder - implement actual tests
         }
     }
 "@
@@ -325,17 +325,17 @@ Describe '$($ScriptName -replace '\.ps1$', '') Tests' -Tag '$($Analysis.Category
     Context 'Service Management Tests' {
         It 'should check service status before changes'$skipClause {
             # Test service status checking
-            `$true  Should -BeTrue  # Placeholder - implement actual tests
+            `$true | Should -BeTrue  # Placeholder - implement actual tests
         }
         
         It 'should handle service start/stop operations'$skipClause {
             # Test service operations
-            `$true  Should -BeTrue  # Placeholder - implement actual tests
+            `$true | Should -BeTrue  # Placeholder - implement actual tests
         }
         
         It 'should verify service configuration'$skipClause {
             # Test service configuration
-            `$true  Should -BeTrue  # Placeholder - implement actual tests
+            `$true | Should -BeTrue  # Placeholder - implement actual tests
         }
     }
 "@
@@ -375,7 +375,7 @@ Describe '$($ScriptName -replace '\.ps1$', '') Tests' -Tag '$($Analysis.Category
         $template += @"
         It 'should handle execution with valid parameters'$skipClause {
             # Add specific test logic for $($func.Name)
-            `$true  Should -BeTrue  # Placeholder - implement actual tests
+            `$true | Should -BeTrue  # Placeholder - implement actual tests
         }
     }
 "@
@@ -600,7 +600,7 @@ $scriptName = System.IO.Path::GetFileName($ScriptPath)
     $index.Tests += $testInfo
     $index.LastUpdated = Get-Date
     
-    $index  ConvertTo-Json -Depth 10  Set-Content $indexPath -Encoding UTF8
+    index | ConvertTo-Json -Depth 10  Set-Content $indexPath -Encoding UTF8
 }
 
 # Main execution
@@ -659,6 +659,8 @@ if ($ScriptPath) {
         }
     }
 }
+
+
 
 
 

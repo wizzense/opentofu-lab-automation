@@ -229,7 +229,7 @@ if ($issuesFound.Count -eq 0) {
 } else {
     Write-Host "Found $($issuesFound.Count) issues:" -ForegroundColor Red
     
-    $grouped = $issuesFound  Group-Object Severity
+    $grouped = issuesFound | Group-Object Severity
     foreach ($group in $grouped) {
         Write-Host ""
         Write-Host "$($group.Name) Issues ($($group.Count)):" -ForegroundColor $(
@@ -264,6 +264,7 @@ Write-Host "JSON files: $($jsonFiles.Count)" -ForegroundColor White
 Write-Host "Issues found: $($issuesFound.Count)" -ForegroundColor White
 
 return $issuesFound.Count
+
 
 
 
