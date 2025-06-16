@@ -28,7 +28,7 @@ function Remove-TrailingSpaces {
  $fixedContent = $fixedLines -join "`n"
  
  if ($fixedContent -ne $originalContent) {
- fixedContent | Out-File -FilePath $FilePath -Encoding UTF8 -NoNewline
+ $fixedContent | Out-File -FilePath $FilePath -Encoding UTF8 -NoNewline
  return $trailingSpaceCount
  }
  
