@@ -35,8 +35,7 @@ if ($SkipBackup) {
 
     $backupDir = Join-Path $PSScriptRoot ".." "backups" "deprecated" (Get-Date -Format "yyyyMMdd-HHmmss")
     if (-not (Test-Path $backupDir)) {
-        New-Item -Path $backupDir -ItemType Directory -Force | Out-Null
-    }
+        New-Item -Path $backupDir -ItemType Directory -Force | Out-Null}
 
     foreach ($filePath in $FilePaths) {
         if (Test-Path $filePath) {
@@ -107,8 +106,7 @@ $archiveDir = Join-Path $PSScriptRoot ".." "archive" "deprecated"
             Write-Host "What if: Would create archive directory: $archiveDir" -ForegroundColor Yellow
         }
         else {
-            New-Item -Path $archiveDir -ItemType Directory -Force | Out-Null
-            Write-Host "Created archive directory: $archiveDir" -ForegroundColor Cyan
+            New-Item -Path $archiveDir -ItemType Directory -Force | Out-NullWrite-Host "Created archive directory: $archiveDir" -ForegroundColor Cyan
         }
     }
 
@@ -210,7 +208,7 @@ try {
     $filesToRemove = @(
         "fix-ternary-syntax.ps1",
         "fix-test-formatting.ps1"
-    )  ForEach-Object { Join-Path $rootDir $_ }
+    ) | ForEach-Object{ Join-Path $rootDir $_ }
 
     # Files to move to archive (deprecated but kept for reference)
     $filesToArchive = @(
@@ -220,7 +218,7 @@ try {
         "test-bootstrap-fixes.py",
         "test-bootstrap-syntax.py",
         "validate-syntax.py"
-    )  ForEach-Object { Join-Path $rootDir $_ }
+    ) | ForEach-Object{ Join-Path $rootDir $_ }
 
     Write-Host "Starting cleanup of deprecated files..." -ForegroundColor Cyan
 
@@ -248,6 +246,7 @@ try {
     Write-Host "Full error: $_" -ForegroundColor Red
     exit 1
 }
+
 
 
 

@@ -65,11 +65,11 @@ function Get-BackupStatistics {
             $AverageSize = math::Round($TotalSize / $BackupFiles.Count, 2)
             
             # Find oldest and newest files
-            $OldestFile = BackupFiles | Sort-Object LastWriteTime  Select-Object -First 1
-            $NewestFile = BackupFiles | Sort-Object LastWriteTime -Descending  Select-Object -First 1
+            $OldestFile = BackupFiles | Sort-ObjectLastWriteTime | Select-Object-First 1
+            $NewestFile = BackupFiles | Sort-ObjectLastWriteTime -Descending | Select-Object-First 1
             
             # Group by file extension
-            $FileTypes = BackupFiles | Group-Object Extension  ForEach-Object {
+            $FileTypes = BackupFiles | Group-ObjectExtension | ForEach-Object{
                 $percentage = math::Round(($_.Count / $BackupFiles.Count) * 100, 1)
                 @{
                     Extension = if ($_.Name) { $_.Name } else { "(no extension)" }
@@ -98,7 +98,7 @@ function Get-BackupStatistics {
             }
             
             if ($IncludeDetails) {
-                $result.Details = BackupFiles | ForEach-Object {
+                $result.Details = BackupFiles | ForEach-Object{
                     @{
                         Name = $_.Name
                         Path = $_.FullName.Replace($ProjectRoot, "").TrimStart('\', '/')
@@ -130,4 +130,5 @@ function Get-BackupStatistics {
         throw $_
     }
 }
+
 

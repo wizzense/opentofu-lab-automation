@@ -1,5 +1,5 @@
 # Fix missing pipe syntax in New-Item commands
-$scriptFiles = Get-ChildItem -Path . -Recurse -Include "*.ps1" -Exclude "*.disabled*","*.bak*" | Where-Object { $_.FullName -notmatch "\\archive\\" -and $_.FullName -notmatch "\\backups\\" }
+$scriptFiles = Get-ChildItem -Path . -Recurse -Include "*.ps1" -Exclude "*.disabled*","*.bak*" | Where-Object{ $_.FullName -notmatch "\\archive\\" -and $_.FullName -notmatch "\\backups\\" }
 $fileCount = 0
 $fixCount = 0
 
@@ -16,3 +16,4 @@ foreach ($file in $scriptFiles) {
 }
 
 Write-Host "Fixed $fixCount pipe syntax issues in $fileCount files" -ForegroundColor Cyan
+

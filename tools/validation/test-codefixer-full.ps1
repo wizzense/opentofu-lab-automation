@@ -37,9 +37,7 @@ $testDir = Join-Path $PSScriptRoot "test-output"
 if (Test-Path $testDir) {
  Remove-Item $testDir -Recurse -Force
 }
-New-Item -ItemType Directory -Path $testDir -Force | Out-Null
-
-Write-Host "`n� Created test directory: $testDir" -ForegroundColor Green
+New-Item -ItemType Directory -Path $testDir -Force | Out-NullWrite-Host "`n� Created test directory: $testDir" -ForegroundColor Green
 
 # Test 1: Load CodeFixer module functions
 Write-Host "`n1/6 Testing CodeFixer module loading..." -ForegroundColor Yellow
@@ -140,8 +138,8 @@ $configPath = Join-Path $PSScriptRoot "configs/config_files"
 if (Test-Path $configPath) {
  try {
  $realConfigResults = Test-JsonConfig -Path $configPath -PassThru
- $errorCount = (realConfigResults | Where-Object Severity -eq 'Error').Count
- $warningCount = (realConfigResults | Where-Object Severity -eq 'Warning').Count
+ $errorCount = (realConfigResults | Where-ObjectSeverity -eq 'Error').Count
+ $warningCount = (realConfigResults | Where-ObjectSeverity -eq 'Warning').Count
  
  if ($errorCount -eq 0) {
  Write-Host " PASS All real config files are valid" -ForegroundColor Green
@@ -253,10 +251,10 @@ Write-Host "======================" -ForegroundColor Cyan
 
 $testResults  Format-Table -AutoSize
 
-$passCount = (testResults | Where-Object Status -eq 'PASS').Count
-$failCount = (testResults | Where-Object Status -eq 'FAIL').Count 
-$warnCount = (testResults | Where-Object Status -eq 'WARN').Count
-$skipCount = (testResults | Where-Object Status -eq 'SKIP').Count
+$passCount = (testResults | Where-ObjectStatus -eq 'PASS').Count
+$failCount = (testResults | Where-ObjectStatus -eq 'FAIL').Count 
+$warnCount = (testResults | Where-ObjectStatus -eq 'WARN').Count
+$skipCount = (testResults | Where-ObjectStatus -eq 'SKIP').Count
 
 Write-Host "`n Overall Results:" -ForegroundColor Cyan
 Write-Host "PASS PASSED: $passCount" -ForegroundColor Green
@@ -271,6 +269,7 @@ if ($failCount -eq 0) {
  Write-Host "`n Some tests failed. Please review the results above." -ForegroundColor Red
  exit 1
 }
+
 
 
 

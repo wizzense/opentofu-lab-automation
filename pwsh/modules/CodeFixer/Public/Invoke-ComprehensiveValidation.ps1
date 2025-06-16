@@ -80,8 +80,8 @@ function Invoke-ComprehensiveValidation {
             $results.PowerShellLint = $lintResults
 
             if ($lintResults) {
-                $results.SummaryStats.ScriptsWithIssues = (lintResults | Select-Object -Unique File).Count
-                if (lintResults | Where-Object Severity -eq 'Error') {
+                $results.SummaryStats.ScriptsWithIssues = (lintResults | Select-Object-Unique File).Count
+                if (lintResults | Where-ObjectSeverity -eq 'Error') {
                     $results.OverallStatus = "HasIssues"
                 }
             }
@@ -94,7 +94,7 @@ function Invoke-ComprehensiveValidation {
 
         if ($jsonResults) {
             $results.SummaryStats.JsonIssues = $jsonResults.Count
-            if (jsonResults | Where-Object Severity -eq 'Error') {
+            if (jsonResults | Where-ObjectSeverity -eq 'Error') {
                 $results.OverallStatus = "HasIssues"
             }
         }
@@ -122,17 +122,15 @@ function Invoke-ComprehensiveValidation {
         }
 
         # Calculate total scripts
-        $allScripts = Get-ChildItem -Path $BasePath -Recurse -Include *.ps1,*.psm1,*.psd1 -File 
-            Where-Object { $_.FullName -notlike "*archive*" -and $_.FullName -notlike "*backup*" }
+        $allScripts = Get-ChildItem -Path $BasePath -Recurse -Include *.ps1,*.psm1,*.psd1 -File | Where-Object{ $_.FullName -notlike "*archive*" -and $_.FullName -notlike "*backup*" }
         $results.SummaryStats.TotalScripts = $allScripts.Count
 
-        $allJsonFiles = Get-ChildItem -Path $BasePath -Recurse -Include *.json -File 
-            Where-Object { $_.FullName -notlike "*archive*" -and $_.FullName -notlike "*backup*" }
+        $allJsonFiles = Get-ChildItem -Path $BasePath -Recurse -Include *.json -File | Where-Object{ $_.FullName -notlike "*archive*" -and $_.FullName -notlike "*backup*" }
         $results.SummaryStats.JsonFilesChecked = $allJsonFiles.Count
 
         # Output results
         if ($OutputFormat -eq 'JSON') {
-            $jsonOutput = results | ConvertTo-Json -Depth 10
+            $jsonOutput = results | ConvertTo-Json-Depth 10
             if ($OutputPath) {
                 jsonOutput | Out-File -FilePath $OutputPath -Encoding UTF8
                 Write-Host "Comprehensive report saved to $OutputPath" -ForegroundColor Green
@@ -167,6 +165,7 @@ function Invoke-ComprehensiveValidation {
         return $results
     }
 }
+
 
 
 

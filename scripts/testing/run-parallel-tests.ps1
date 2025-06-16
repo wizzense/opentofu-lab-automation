@@ -26,8 +26,7 @@ param(
 
 # Ensure output directory exists
 if (-not (Test-Path $OutputPath)) {
- New-Item -ItemType Directory -Path $OutputPath -Force | Out-Null
-}
+ New-Item -ItemType Directory -Path $OutputPath -Force | Out-Null}
 
 Write-Host " Enhanced Parallel Pester Test Runner" -ForegroundColor Cyan
 Write-Host "========================================" -ForegroundColor Cyan
@@ -48,7 +47,7 @@ if (-not (Get-Command Start-ThreadJob -ErrorAction SilentlyContinue)) {
 
 # Discover test files
 Write-Host " Discovering test files in: $TestPath" -ForegroundColor Blue
-$testFiles = Get-ChildItem -Path $TestPath -Recurse -Filter "*.Tests.ps1"  Where-Object { $_.Name -notmatch '(integratione2e)' }
+$testFiles = Get-ChildItem -Path $TestPath -Recurse -Filter "*.Tests.ps1" | Where-Object{ $_.Name -notmatch '(integratione2e)' }
 
 if ($testFiles.Count -eq 0) {
  Write-Warning "No test files found in $TestPath"
@@ -139,7 +138,7 @@ $totalResults = @()
 $completed = 0
 
 while ($jobs.Count -gt 0) {
- $finishedJobs = jobs | Where-Object { $_.State -eq 'Completed' -or $_.State -eq 'Failed' }
+ $finishedJobs = jobs | Where-Object{ $_.State -eq 'Completed' -or $_.State -eq 'Failed' }
  
  foreach ($job in $finishedJobs) {
  $jobResults = Receive-Job $job -ErrorAction SilentlyContinue
@@ -148,7 +147,7 @@ while ($jobs.Count -gt 0) {
  }
  
  Remove-Job $job
- $jobs = jobs | Where-Object { $_.Id -ne $job.Id }
+ $jobs = jobs | Where-Object{ $_.Id -ne $job.Id }
  $completed++
  
  $percentComplete = math::Round(($completed / $testGroups.Count) * 100, 1)
@@ -167,8 +166,8 @@ $totalPassed = (totalResults | Measure-Object -Property Passed -Sum).Sum
 $totalFailed = (totalResults | Measure-Object -Property Failed -Sum).Sum
 $totalSkipped = (totalResults | Measure-Object -Property Skipped -Sum).Sum
 $totalDuration = (totalResults | Measure-Object -Property Duration -Sum).Sum
-$successfulTests = (totalResults | Where-Object { $_.Success -eq $true }).Count
-$failedTests = (totalResults | Where-Object { $_.Success -eq $false }).Count
+$successfulTests = (totalResults | Where-Object{ $_.Success -eq $true }).Count
+$failedTests = (totalResults | Where-Object{ $_.Success -eq $false }).Count
 
 # Display results
 Write-Host "`n Parallel Test Execution Results" -ForegroundColor Cyan
@@ -230,4 +229,5 @@ if ($totalFailed -gt 0) {
  Write-Host "`n All tests passed!" -ForegroundColor Green
  exit 0
 }
+
 

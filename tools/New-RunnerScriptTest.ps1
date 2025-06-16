@@ -146,7 +146,7 @@ foreach ($testCase in $TestCases) {
 $testContent += @"
         AfterEach {
             # Cleanup test-specific functions
-            Get-ChildItem Function:  Where-Object { `$_.Name -match '^(pythongonpmgitghtofumsiexec)$' }  Remove-Item -ErrorAction SilentlyContinue
+            Get-ChildItem Function: | Where-Object{ `$_.Name -match '^(pythongonpmgitghtofumsiexec)$' }  Remove-Item -ErrorAction SilentlyContinue
         }
     }
 

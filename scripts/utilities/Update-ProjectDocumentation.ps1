@@ -40,9 +40,7 @@ if (-not (Test-Path $manifestPath)) {
  }
 }
 
-$manifest = Get-Content $manifestPath  ConvertFrom-Json
-
-# Update AGENTS.md
+$manifest = Get-Content $manifestPath | ConvertFrom-Json# Update AGENTS.md
 $agentsPath = "$ProjectRoot/AGENTS.md"
 Write-Host " Updating AGENTS.md..." -ForegroundColor Yellow
 
@@ -69,7 +67,7 @@ $agentsContent = @"
 ## Current Capabilities
 
 ### Core Modules
-$( ($manifest.core.modules.PSObject.Properties  ForEach-Object {
+$( ($manifest.core.modules.PSObject.Properties | ForEach-Object{
  "- **$($_.Name)**: $($_.Value.description)"
 }) -join "`n" )
 
@@ -192,7 +190,7 @@ This is a cross-platform OpenTofu (Terraform alternative) lab automation project
 ## Current Architecture
 
 ### Module Locations (CRITICAL - Always Use These Paths)
-$( ($manifest.core.modules.PSObject.Properties  ForEach-Object {
+$( ($manifest.core.modules.PSObject.Properties | ForEach-Object{
  "- **$($_.Name)**: $($_.Value.path)"
 }) -join "`n" )
 
@@ -204,8 +202,7 @@ $copilotFunctionsText
 ### Always Use Project Manifest First
 ```powershell
 # Check current state before making changes
-`$manifest = Get-Content "./PROJECT-MANIFEST.json"  ConvertFrom-Json
-`$manifest.core.modules # View all modules
+`$manifest = Get-Content "./PROJECT-MANIFEST.json" | ConvertFrom-Json`$manifest.core.modules # View all modules
 ```
 
 ### Maintenance Commands (Use These for Fixes)

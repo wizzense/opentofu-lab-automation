@@ -36,8 +36,7 @@ Write-CustomLog "Running $($MyInvocation.MyCommand.Name)"
             $profilePath = $PROFILE.CurrentUserAllHosts
             $profileDir  = Split-Path $profilePath
             if (-not (Test-Path $profileDir)) {
-                New-Item -ItemType Directory -Path $profileDir -Force | Out-Null
-            }
+                New-Item -ItemType Directory -Path $profileDir -Force | Out-Null}
             $repoRoot = Resolve-Path -Path (Join-Path $PSScriptRoot '..')
             $content = @"
 # OpenTofu Lab Automation profile
@@ -55,6 +54,7 @@ Write-CustomLog "Running $($MyInvocation.MyCommand.Name)"
 
 if ($MyInvocation.InvocationName -ne '.') { Set-LabProfile @PSBoundParameters }
 Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
+
 
 
 

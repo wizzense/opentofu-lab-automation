@@ -82,7 +82,7 @@ function Invoke-AutoFixCapture {
  }
  
  # Get all PowerShell files
- $psFiles = Get-ChildItem -Path $Path -Recurse -Include "*.ps1", "*.psm1", "*.psd1"  Where-Object { 
+ $psFiles = Get-ChildItem -Path $Path -Recurse -Include "*.ps1", "*.psm1", "*.psd1" | Where-Object{ 
  $_.FullName -notmatch '\\(archivebackupsnode_modules)\\' 
  }
  
@@ -229,7 +229,7 @@ function Export-FixPatterns {
  }
  }
  
- patterns | ConvertTo-Json -Depth 5  Set-Content -Path $OutputPath -Encoding UTF8
+ patterns | ConvertTo-Json-Depth 5  Set-Content -Path $OutputPath -Encoding UTF8
  Write-Host "PASS Fix patterns exported to: $OutputPath" -ForegroundColor Green
 }
 
@@ -245,8 +245,7 @@ function Import-FixPatterns {
  )
  
  if (Test-Path $InputPath) {
- $patterns = Get-Content $InputPath -Raw  ConvertFrom-Json
- Write-Host "PASS Imported fix patterns from: $InputPath" -ForegroundColor Green
+ $patterns = Get-Content $InputPath -Raw | ConvertFrom-JsonWrite-Host "PASS Imported fix patterns from: $InputPath" -ForegroundColor Green
  Write-Host " Version: $($patterns.Version)" -ForegroundColor Gray
  Write-Host " Last Updated: $($patterns.LastUpdated)" -ForegroundColor Gray
  Write-Host " Patterns Count: $($patterns.Patterns.PSObject.Properties.Count)" -ForegroundColor Gray
@@ -258,6 +257,7 @@ function Import-FixPatterns {
 }
 
 Export-ModuleMember -Function Invoke-AutoFixCapture, Export-FixPatterns, Import-FixPatterns
+
 
 
 

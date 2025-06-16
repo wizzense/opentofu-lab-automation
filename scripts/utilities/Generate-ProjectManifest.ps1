@@ -80,7 +80,7 @@ function Save-Manifest {
 
     Write-Host "Saving manifest to $Path..." -ForegroundColor Cyan
 
-    $json = $Data | ConvertTo-Json -Depth 10
+    $json = $Data | ConvertTo-Json-Depth 10
     Set-Content -Path $Path -Value $json -Encoding UTF8
 }
 
@@ -96,10 +96,11 @@ $manifest = @{
         version = "1.0.0"
         lastUpdated = (Get-Date -Format "yyyy-MM-dd HH:mm:ss")
     }
-    files = $files | ForEach-Object { $_.FullName }
+    files = $files | ForEach-Object{ $_.FullName }
     dependencies = $dependencies
     dependencyChart = $dependencyChart
 }
 
 Save-Manifest -Path $OutputPath -Data $manifest
 Write-Host "Manifest generation complete." -ForegroundColor Green
+

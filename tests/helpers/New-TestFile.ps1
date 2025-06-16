@@ -104,12 +104,12 @@ function New-InstallerTestContent {
 
 
 
-$enabledProperty = $Analysis.ConfigProperties  Where-Object { $_ -match 'Install' }  Select-Object -First 1
+$enabledProperty = $Analysis.ConfigProperties | Where-Object{ $_ -match 'Install' } | Select-Object-First 1
     if (-not $enabledProperty) {
         $enabledProperty = 'InstallEnabled'  # fallback
     }
     
-    $installerCommand = $Analysis.MockCandidates  Where-Object { $_ -match 'Start-ProcessInstall' }  Select-Object -First 1
+    $installerCommand = $Analysis.MockCandidates | Where-Object{ $_ -match 'Start-ProcessInstall' } | Select-Object-First 1
     if (-not $installerCommand) {
         $installerCommand = 'Start-Process'  # fallback
     }
@@ -157,12 +157,12 @@ function New-FeatureTestContent {
 
 
 
-$enabledProperty = $Analysis.ConfigProperties  Where-Object { $_ -match 'EnableAllow' }  Select-Object -First 1
+$enabledProperty = $Analysis.ConfigProperties | Where-Object{ $_ -match 'EnableAllow' } | Select-Object-First 1
     if (-not $enabledProperty) {
         $enabledProperty = 'FeatureEnabled'  # fallback
     }
     
-    $featureCommands = $Analysis.MockCandidates  Where-Object { $_ -match 'EnableInstallNew-' }
+    $featureCommands = $Analysis.MockCandidates | Where-Object{ $_ -match 'EnableInstallNew-' }
     if (-not $featureCommands) {
         $featureCommands = @('Enable-WindowsOptionalFeature')  # fallback
     }
@@ -249,12 +249,12 @@ function New-ConfigurationTestContent {
 
 
 
-$enabledProperty = $Analysis.ConfigProperties  Where-Object { $_ -match 'ConfigSetupSet' }  Select-Object -First 1
+$enabledProperty = $Analysis.ConfigProperties | Where-Object{ $_ -match 'ConfigSetupSet' } | Select-Object-First 1
     if (-not $enabledProperty) {
         $enabledProperty = 'ConfigEnabled'  # fallback
     }
     
-    $configCommands = $Analysis.MockCandidates  Where-Object { $_ -match 'Set-New-Config' }
+    $configCommands = $Analysis.MockCandidates | Where-Object{ $_ -match 'Set-New-Config' }
     if (-not $configCommands) {
         $configCommands = @('Set-ItemProperty')  # fallback
     }

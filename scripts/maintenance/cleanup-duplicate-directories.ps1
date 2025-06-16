@@ -42,8 +42,7 @@ $reportFile = "$reportPath/$timestamp-duplicate-cleanup.md"
 
 # Ensure report directory exists
 if (-not (Test-Path $reportPath)) {
-    New-Item -Path $reportPath -ItemType Directory -Force | Out-Null
-}
+    New-Item -Path $reportPath -ItemType Directory -Force | Out-Null}
 
 function Write-Log {
     param($Message, $Level = "INFO")
@@ -88,8 +87,8 @@ if (-not (Test-Path $Dir1) -or -not (Test-Path $Dir2)) {
         return $false
     }
     
-    $files1 = Get-ChildItem -Path $Dir1 -Recurse -File  Sort-Object Name
-    $files2 = Get-ChildItem -Path $Dir2 -Recurse -File  Sort-Object Name
+    $files1 = Get-ChildItem -Path $Dir1 -Recurse -File | Sort-ObjectName
+    $files2 = Get-ChildItem -Path $Dir2 -Recurse -File | Sort-ObjectName
     
     if ($files1.Count -ne $files2.Count) {
         return $false
@@ -141,8 +140,7 @@ function Cleanup-DuplicateModules {
                 
                 if (-not $DryRun) {
                     if (-not (Test-Path (Split-Path $archivePath))) {
-                        New-Item -Path (Split-Path $archivePath) -ItemType Directory -Force | Out-Null
-                    }
+                        New-Item -Path (Split-Path $archivePath) -ItemType Directory -Force | Out-Null}
                     Move-Item -Path $legacyModules -Destination $archivePath -Force
                 }
             } else {
@@ -155,8 +153,8 @@ function Cleanup-DuplicateModules {
             Write-Log "WARNING: LabRunner directories differ - manual review needed!" -Level "WARNING"
             
             # Show differences
-            $modernFiles = Get-ChildItem -Path $modernLabRunner -File  Sort-Object Name
-            $legacyFiles = Get-ChildItem -Path $legacyLabRunner -File  Sort-Object Name
+            $modernFiles = Get-ChildItem -Path $modernLabRunner -File | Sort-ObjectName
+            $legacyFiles = Get-ChildItem -Path $legacyLabRunner -File | Sort-ObjectName
             
             Write-Log "Modern LabRunner files: $($modernFiles.Count)"
             Write-Log "Legacy LabRunner files: $($legacyFiles.Count)"
@@ -193,8 +191,7 @@ function Cleanup-FixesDirectory {
                 
                 if (-not $DryRun) {
                     if (-not (Test-Path (Split-Path $archivePath))) {
-                        New-Item -Path (Split-Path $archivePath) -ItemType Directory -Force | Out-Null
-                    }
+                        New-Item -Path (Split-Path $archivePath) -ItemType Directory -Force | Out-Null}
                     Move-Item -Path $fixesDir -Destination $archivePath -Force
                 }
             } else {
@@ -209,7 +206,7 @@ function Check-OtherDuplicates {
     
     # Check for case-sensitive duplicates
     $projectRoot = "/workspaces/opentofu-lab-automation"
-    $directories = Get-ChildItem -Path $projectRoot -Directory  Group-Object { $_.Name.ToLower() }
+    $directories = Get-ChildItem -Path $projectRoot -Directory | Group-Object{ $_.Name.ToLower() }
     
     foreach ($group in $directories) {
         if ($group.Count -gt 1) {
@@ -299,6 +296,7 @@ try {
 } finally {
     Finalize-Report
 }
+
 
 
 

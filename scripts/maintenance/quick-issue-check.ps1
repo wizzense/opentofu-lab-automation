@@ -87,8 +87,7 @@ function Test-KnownCommands {
  $issues = @()
  foreach ($cmd in $KnownIssues.MissingCommands) {
  try {
- Get-Command $cmd -ErrorAction Stop  Out-Null
- Write-QuickLog " Command '$cmd' is available" "SUCCESS"
+ Get-Command $cmd -ErrorAction Stop | Out-NullWrite-QuickLog " Command '$cmd' is available" "SUCCESS"
  }
  catch {
  $issues += "Missing command: $cmd"
@@ -240,7 +239,7 @@ function Fix-SyntaxError {
 function Fix-ImportPath {
  param(string$FileName)
  
- $filePath = Get-ChildItem "$ProjectRoot/tests" -Name $FileName -Recurse  Select-Object -First 1
+ $filePath = Get-ChildItem "$ProjectRoot/tests" -Name $FileName -Recurse | Select-Object-First 1
  if ($filePath) {
  try {
  pwsh -File "$ProjectRoot/fix-import-issues.ps1" -TargetFile $filePath.FullName -ErrorAction SilentlyContinue
@@ -282,7 +281,7 @@ try {
  }
  else {
  Write-QuickLog "Found $($allIssues.Count) issues:" "WARNING"
- allIssues | ForEach-Object { Write-QuickLog " - $_" "ERROR" }
+ allIssues | ForEach-Object{ Write-QuickLog " - $_" "ERROR" }
  
  Invoke-AutoFix $allIssues
  }
@@ -297,14 +296,14 @@ try {
  
  $cacheDir = "$ProjectRoot/docs/reports/issue-tracking"
  if (-not (Test-Path $cacheDir)) {
- New-Item -Path $cacheDir -ItemType Directory -Force | Out-Null
- }
+ New-Item -Path $cacheDir -ItemType Directory -Force | Out-Null}
  
- results | ConvertTo-Json -Depth 3  Out-File "$cacheDir/last-quick-check.json" -Encoding UTF8
+ results | ConvertTo-Json-Depth 3  Out-File "$cacheDir/last-quick-check.json" -Encoding UTF8
  Write-QuickLog "Results cached for future reference" "INFO"
 }
 catch {
  Write-QuickLog "Quick check failed: $($_.Exception.Message)" "ERROR"
  exit 1
 }
+
 

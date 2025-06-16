@@ -34,7 +34,7 @@ function Get-MenuSelection {
         $input = Read-LoggedInput $prompt
         if ($input -match '^(?i)exit$') { return @() }
         if ($AllowAll -and $input -eq 'all') { return $Items }
-        $tokens = $input -split ','  ForEach-Object { $_.Trim() }  Where-Object { $_ }
+        $tokens = $input -split ',' | ForEach-Object{ $_.Trim() } | Where-Object{ $_ }
         $selected = foreach ($t in $tokens) { if ($map.ContainsKey($t)) { $map$t } }
         if ($selected) { return $selected }
         $msg = 'Invalid selection. Try again.'

@@ -56,7 +56,7 @@ $emojiFound = $false
 $filesWithEmojis = @()
 
 foreach ($pattern in $filePatterns) {
-    $files = Get-ChildItem -Path $projectRoot -Filter $pattern -Recurse  Where-Object {
+    $files = Get-ChildItem -Path $projectRoot -Filter $pattern -Recurse | Where-Object{
         $skip = $false
         foreach ($skipDir in $skipDirs) {
             if ($_.FullName -like "*\$skipDir\*" -or $_.FullName -like "*/$skipDir/*") {
@@ -110,7 +110,7 @@ foreach ($pattern in $filePatterns) {
 if ($emojiFound) {
     Write-Host "`nEMOJI CHECK RESULT: FAILED" -ForegroundColor Red
     Write-Host "Files with emojis: $($filesWithEmojis.Count)" -ForegroundColor Red
-    Write-Host "Total emojis found: $((filesWithEmojis | ForEach-Object { $_.Count }  Measure-Object -Sum).Sum)" -ForegroundColor Red
+    Write-Host "Total emojis found: $((filesWithEmojis | ForEach-Object{ $_.Count }  Measure-Object -Sum).Sum)" -ForegroundColor Red
     
     if (-not $Fix) {
         Write-Host "`nTo fix automatically, run:" -ForegroundColor Yellow
@@ -126,4 +126,5 @@ if ($emojiFound) {
     Write-Host "EMOJI CHECK RESULT: PASSED" -ForegroundColor Green
     Write-Host "No emojis detected in codebase" -ForegroundColor Green
 }
+
 

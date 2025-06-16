@@ -12,12 +12,12 @@ $SkipNonWindows = $IsLinux -or $IsMacOS
 if (-not (Get-Command Invoke-Pester -ErrorAction SilentlyContinue)) {
     # Ensure Pester v5.7.1 is loaded, not v3.x
     $desiredPesterVersion = '5.7.1'
-    $pesterModule = Get-Module -Name Pester -ListAvailable  Where-Object { $_.Version -ge version$desiredPesterVersion }  Sort-Object Version -Descending  Select-Object -First 1
+    $pesterModule = Get-Module -Name Pester -ListAvailable | Where-Object{ $_.Version -ge version$desiredPesterVersion } | Sort-ObjectVersion -Descending | Select-Object-First 1
     if (-not $pesterModule) {
         Write-Error "Pester $desiredPesterVersion or newer is required. Run 'Install-Module -Name Pester -RequiredVersion $desiredPesterVersion -Force -Scope CurrentUser'."
         exit 1
     }    # Remove any loaded Pester v3 modules
-    Get-Module -Name Pester  Where-Object { $_.Version -lt version'5.0.0' }  Remove-Module -Force -ErrorAction SilentlyContinue
+    Get-Module -Name Pester | Where-Object{ $_.Version -lt version'5.0.0' }  Remove-Module -Force -ErrorAction SilentlyContinue
     # Import the correct Pester version - ensure 5.7.1
     Import-Module Pester -RequiredVersion 5.7.1 -Force
 }
@@ -222,8 +222,7 @@ function global:New-StandardMocks {
                     param($Uri, $Prefix, $Extension, $Action)
                     
                     $tempFile = Join-Path (System.IO.Path::GetTempPath()) "mock_$Prefix$Extension"
-                    New-Item -ItemType File -Path $tempFile -Force | Out-Null
-                    try { 
+                    New-Item -ItemType File -Path $tempFile -Force | Out-Nulltry { 
                         if ($Action) { & $Action $tempFile }
                     } finally { 
                         Remove-Item $tempFile -Force -ErrorAction SilentlyContinue 
@@ -234,8 +233,7 @@ function global:New-StandardMocks {
                     param($Uri, $Prefix, $Extension, $Action)
                     
                     $tempFile = Join-Path (System.IO.Path::GetTempPath()) "mock_$Prefix$Extension"
-                    New-Item -ItemType File -Path $tempFile -Force | Out-Null
-                    try { 
+                    New-Item -ItemType File -Path $tempFile -Force | Out-Nulltry { 
                         if ($Action) { & $Action $tempFile }
                     } finally { 
                         Remove-Item $tempFile -Force -ErrorAction SilentlyContinue 
@@ -613,7 +611,7 @@ function Get-RunnerScriptPath {
     foreach ($searchPath in $searchPaths) {
         $fullSearchPath = Join-Path $projectRoot $searchPath
         if (Test-Path $fullSearchPath) {
-            $scriptPath = Get-ChildItem -Path $fullSearchPath -Recurse -Filter $ScriptName -File  Select-Object -First 1
+            $scriptPath = Get-ChildItem -Path $fullSearchPath -Recurse -Filter $ScriptName -File | Select-Object-First 1
             if ($scriptPath) {
                 return $scriptPath.FullName
             }
@@ -753,9 +751,7 @@ function Test-RunnerScriptSyntax {
     $tokens = $null
     
     try {
-        System.Management.Automation.Language.Parser::ParseFile($ScriptPath, ref$tokens, ref$errors)  Out-Null
-        
-        return @{
+        System.Management.Automation.Language.Parser::ParseFile($ScriptPath, ref$tokens, ref$errors) | Out-Nullreturn @{
             HasErrors = ($errors.Count -gt 0)
             CanAutoFix = ($errors.Count -gt 0 -and $errors.Count -le 5)  # Assume simple fixes for few errors
             Errors = $errors
@@ -865,11 +861,11 @@ function Disable-InteractivePrompts {
     #>
     
     # Mock common interactive functions
-    if (-not (Get-Command Read-Host -ErrorAction SilentlyContinue  Where-Object { $_.CommandType -eq 'Function' })) {
+    if (-not (Get-Command Read-Host -ErrorAction SilentlyContinue | Where-Object{ $_.CommandType -eq 'Function' })) {
         function global:Read-Host { param(string$Prompt) return "test-input" }
     }
     
-    if (-not (Get-Command Get-Credential -ErrorAction SilentlyContinue  Where-Object { $_.CommandType -eq 'Function' })) {
+    if (-not (Get-Command Get-Credential -ErrorAction SilentlyContinue | Where-Object{ $_.CommandType -eq 'Function' })) {
         function global:Get-Credential { 
             param(string$Message, string$UserName) 
             $securePassword = ConvertTo-SecureString "test-password" -AsPlainText -Force
@@ -1017,7 +1013,7 @@ function Invoke-RunnerScriptAutoFix {
     # Fix common syntax errors
     if ($FixType -eq "All" -or $FixType -eq "Syntax") {
         # Fix missing closing braces
-        $braceCount = ($content.ToCharArray()  Where-Object { $_ -eq '{' }).Count - ($content.ToCharArray()  Where-Object { $_ -eq '}' }).Count
+        $braceCount = ($content.ToCharArray() | Where-Object{ $_ -eq '{' }).Count - ($content.ToCharArray() | Where-Object{ $_ -eq '}' }).Count
         if ($braceCount -gt 0) {
             $content += "`n" + ("}" * $braceCount)
             $fixesApplied += "Added $braceCount missing closing braces"
@@ -1197,6 +1193,7 @@ function Test-RunnerScriptDeployment {
 # ==============================================================================
 # End of Additional Test Helper Functions
 # ==============================================================================
+
 
 
 

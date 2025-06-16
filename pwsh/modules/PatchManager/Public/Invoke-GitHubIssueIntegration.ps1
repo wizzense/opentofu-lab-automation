@@ -144,12 +144,10 @@ function Invoke-GitHubIssueIntegration {
                             default { "fbca04" }  # yellow
                         }
                         
-                        gh label create $label --color $labelColor --description "Auto-created by PatchManager" 2>&1 | Out-Null
-                        
-                        if ($LASTEXITCODE -ne 0) {
+                        gh label create $label --color $labelColor --description "Auto-created by PatchManager" 2>&1 | Out-Nullif ($LASTEXITCODE -ne 0) {
                             Write-Warning "  Could not create label '$label', will continue without it"
                             # Remove the label from our list so we don't try to use it
-                            $allLabels = $allLabels | Where-Object { $_ -ne $label }
+                            $allLabels = $allLabels | Where-Object{ $_ -ne $label }
                         }
                     }
                     catch {
@@ -192,3 +190,4 @@ function Invoke-GitHubIssueIntegration {
         }
     }
 }
+

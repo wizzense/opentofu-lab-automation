@@ -56,7 +56,7 @@ function Invoke-ParallelLabRunner {
  
  # Wait for available slot if at max concurrency
  while ($activeJobs.Count -ge $MaxConcurrency) {
- $finishedJobs = activeJobs | Where-Object { $_.State -eq 'Completed' -or $_.State -eq 'Failed' }
+ $finishedJobs = activeJobs | Where-Object{ $_.State -eq 'Completed' -or $_.State -eq 'Failed' }
  
  foreach ($job in $finishedJobs) {
  $result = Receive-Job $job -ErrorAction SilentlyContinue
@@ -67,7 +67,7 @@ function Invoke-ParallelLabRunner {
  Duration = (Get-Date) - $job.PSBeginTime
  }
  Remove-Job $job
- $activeJobs = activeJobs | Where-Object { $_.Id -ne $job.Id }
+ $activeJobs = activeJobs | Where-Object{ $_.Id -ne $job.Id }
  $completed++
  
  $percentComplete = math::Round(($completed / $total) * 100, 1)
@@ -138,7 +138,7 @@ function Invoke-ParallelLabRunner {
  
  # Wait for remaining jobs to complete
  while ($activeJobs.Count -gt 0) {
- $finishedJobs = activeJobs | Where-Object { $_.State -eq 'Completed' -or $_.State -eq 'Failed' }
+ $finishedJobs = activeJobs | Where-Object{ $_.State -eq 'Completed' -or $_.State -eq 'Failed' }
  
  foreach ($job in $finishedJobs) {
  $result = Receive-Job $job -ErrorAction SilentlyContinue
@@ -149,7 +149,7 @@ function Invoke-ParallelLabRunner {
  Duration = (Get-Date) - $job.PSBeginTime
  }
  Remove-Job $job
- $activeJobs = activeJobs | Where-Object { $_.Id -ne $job.Id }
+ $activeJobs = activeJobs | Where-Object{ $_.Id -ne $job.Id }
  $completed++
  
  $percentComplete = math::Round(($completed / $total) * 100, 1)
@@ -165,7 +165,7 @@ function Invoke-ParallelLabRunner {
  Write-Host "PASS Parallel execution completed: $completed scripts processed" -ForegroundColor Green
  
  # Summary
- $successful = (results | Where-Object { $_.Result.Success -eq $true }).Count
+ $successful = (results | Where-Object{ $_.Result.Success -eq $true }).Count
  $failed = $total - $successful
  
  Write-Host " Results Summary:" -ForegroundColor Yellow
@@ -215,7 +215,7 @@ function Test-ParallelRunnerSupport {
  Write-Host "WARN Limited system resources: $cpuCores cores, ${availableMemoryGB}GB RAM" -ForegroundColor Yellow
  }
  
- $overallSupport = $checks.Values  Where-Object { $_ -eq $true }  Measure-Object  Select-Object -ExpandProperty Count
+ $overallSupport = $checks.Values | Where-Object{ $_ -eq $true }  Measure-Object | Select-Object-ExpandProperty Count
  $totalChecks = $checks.Count
  
  Write-Host "`n Parallel Processing Support: $overallSupport/$totalChecks checks passed" -ForegroundColor Cyan
@@ -224,4 +224,5 @@ function Test-ParallelRunnerSupport {
 }
 
 Export-ModuleMember -Function Invoke-ParallelLabRunner, Test-ParallelRunnerSupport
+
 

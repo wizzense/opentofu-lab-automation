@@ -34,11 +34,11 @@ Invoke-LabStep -Config $Config -Body {
                 $computer = Get-CimInstance -ClassName Win32_ComputerSystem
                 $os       = Get-CimInstance -ClassName Win32_OperatingSystem
                 $net      = Get-NetIPConfiguration
-                $hotfix   = Get-HotFix  Sort-Object InstalledOn -Descending  Select-Object -First 1
-                $features = Get-WindowsFeature  Where-Object { $_.Installed }  Select-Object -ExpandProperty Name
-                $disks    = Get-Disk  ForEach-Object {
+                $hotfix   = Get-HotFix | Sort-ObjectInstalledOn -Descending | Select-Object-First 1
+                $features = Get-WindowsFeature | Where-Object{ $_.Installed } | Select-Object-ExpandProperty Name
+                $disks    = Get-Disk | ForEach-Object{
                     $disk = $_
-                    $parts = Get-Partition -DiskNumber $disk.Number  ForEach-Object {
+                    $parts = Get-Partition -DiskNumber $disk.Number | ForEach-Object{
                         $vol = $_  Get-Volume -ErrorAction SilentlyContinue
                         pscustomobject@{
                             Partition   = $_.PartitionNumber
@@ -53,7 +53,7 @@ Invoke-LabStep -Config $Config -Body {
                 $info = pscustomobject@{
                     ComputerName   = $computer.Name
                     IPAddresses    = $net.IPv4Address.IPAddress
-                    DefaultGateway = ($net.IPv4DefaultGateway  Select-Object -ExpandProperty NextHop)
+                    DefaultGateway = ($net.IPv4DefaultGateway | Select-Object-ExpandProperty NextHop)
                     OSVersion      = $os.Version
                     DiskInfo       = $disks
                     RolesFeatures  = $features
@@ -62,20 +62,10 @@ Invoke-LabStep -Config $Config -Body {
             }
             'Linux' {
                 $computer = (hostname)
-                $addresses = System.Net.NetworkInformation.NetworkInterface::GetAllNetworkInterfaces() 
-                    Where-Object { $_.OperationalStatus -eq 'Up' } 
-                    ForEach-Object { $_.GetIPProperties().UnicastAddresses } 
-                    Where-Object { $_.Address.AddressFamily -eq System.Net.Sockets.AddressFamily::InterNetwork } 
-                    ForEach-Object { $_.Address.ToString() }  Sort-Object -Unique
-                $gateway = System.Net.NetworkInformation.NetworkInterface::GetAllNetworkInterfaces() 
-                    ForEach-Object { $_.GetIPProperties().GatewayAddresses } 
-                    Where-Object { $_.Address.AddressFamily -eq System.Net.Sockets.AddressFamily::InterNetwork } 
-                    Select-Object -First 1 -ExpandProperty Address 
-                    ForEach-Object { $_.ToString() }
+                $addresses = System.Net.NetworkInformation.NetworkInterface::GetAllNetworkInterfaces() | Where-Object{ $_.OperationalStatus -eq 'Up' } | ForEach-Object{ $_.GetIPProperties().UnicastAddresses } | Where-Object{ $_.Address.AddressFamily -eq System.Net.Sockets.AddressFamily::InterNetwork } | ForEach-Object{ $_.Address.ToString() } | Sort-Object-Unique
+                $gateway = System.Net.NetworkInformation.NetworkInterface::GetAllNetworkInterfaces() | ForEach-Object{ $_.GetIPProperties().GatewayAddresses } | Where-Object{ $_.Address.AddressFamily -eq System.Net.Sockets.AddressFamily::InterNetwork } | Select-Object-First 1 -ExpandProperty Address | ForEach-Object{ $_.ToString() }
                 $osVersion = (uname -sr)
-                $disks = System.IO.DriveInfo::GetDrives() 
-                    Where-Object { $_.IsReady } 
-                    ForEach-Object {
+                $disks = System.IO.DriveInfo::GetDrives() | Where-Object{ $_.IsReady } | ForEach-Object{
                         pscustomobject@{
                             Partition   = $_.Name
                             DriveLetter = $_.Name
@@ -93,20 +83,10 @@ Invoke-LabStep -Config $Config -Body {
             }
             'MacOS' {
                 $computer = (hostname)
-                $addresses = System.Net.NetworkInformation.NetworkInterface::GetAllNetworkInterfaces() 
-                    Where-Object { $_.OperationalStatus -eq 'Up' } 
-                    ForEach-Object { $_.GetIPProperties().UnicastAddresses } 
-                    Where-Object { $_.Address.AddressFamily -eq System.Net.Sockets.AddressFamily::InterNetwork } 
-                    ForEach-Object { $_.Address.ToString() }  Sort-Object -Unique
-                $gateway = System.Net.NetworkInformation.NetworkInterface::GetAllNetworkInterfaces() 
-                    ForEach-Object { $_.GetIPProperties().GatewayAddresses } 
-                    Where-Object { $_.Address.AddressFamily -eq System.Net.Sockets.AddressFamily::InterNetwork } 
-                    Select-Object -First 1 -ExpandProperty Address 
-                    ForEach-Object { $_.ToString() }
+                $addresses = System.Net.NetworkInformation.NetworkInterface::GetAllNetworkInterfaces() | Where-Object{ $_.OperationalStatus -eq 'Up' } | ForEach-Object{ $_.GetIPProperties().UnicastAddresses } | Where-Object{ $_.Address.AddressFamily -eq System.Net.Sockets.AddressFamily::InterNetwork } | ForEach-Object{ $_.Address.ToString() } | Sort-Object-Unique
+                $gateway = System.Net.NetworkInformation.NetworkInterface::GetAllNetworkInterfaces() | ForEach-Object{ $_.GetIPProperties().GatewayAddresses } | Where-Object{ $_.Address.AddressFamily -eq System.Net.Sockets.AddressFamily::InterNetwork } | Select-Object-First 1 -ExpandProperty Address | ForEach-Object{ $_.ToString() }
                 $osVersion = (uname -sr)
-                $disks = System.IO.DriveInfo::GetDrives() 
-                    Where-Object { $_.IsReady } 
-                    ForEach-Object {
+                $disks = System.IO.DriveInfo::GetDrives() | Where-Object{ $_.IsReady } | ForEach-Object{
                         pscustomobject@{
                             Partition   = $_.Name
                             DriveLetter = $_.Name
@@ -129,7 +109,7 @@ Invoke-LabStep -Config $Config -Body {
         }
 
         if ($AsJson) {
-            info | ConvertTo-Json -Depth 5
+            info | ConvertTo-Json-Depth 5
         } else {
             $info
         }
@@ -141,6 +121,7 @@ if ($MyInvocation.InvocationName -ne '.') {
     Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
 }
 Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
+
 
 
 

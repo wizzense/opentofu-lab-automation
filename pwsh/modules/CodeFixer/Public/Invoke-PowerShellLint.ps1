@@ -123,8 +123,8 @@ function Invoke-PowerShellLint {
  }
  
  # Output results based on format
- $errorCount = (allIssues | Where-Object { $_.Severity -eq 'Error' }).Count
- $warningCount = (allIssues | Where-Object { $_.Severity -eq 'Warning' }).Count
+ $errorCount = (allIssues | Where-Object{ $_.Severity -eq 'Error' }).Count
+ $warningCount = (allIssues | Where-Object{ $_.Severity -eq 'Warning' }).Count
  $totalIssues = $allIssues.Count
  
  switch ($OutputFormat) {
@@ -137,7 +137,7 @@ function Invoke-PowerShellLint {
  Issues = $allIssues
  Timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
  }
- result | ConvertTo-Json -Depth 10
+ result | ConvertTo-Json-Depth 10
  }
  'CI' {
  Write-Host "::group::PowerShell Linting Results"
@@ -159,10 +159,10 @@ function Invoke-PowerShellLint {
  
  if ($allIssues.Count -gt 0) {
  Write-Host "`n Issues Details:" -ForegroundColor Yellow
- allIssues | Group-Object Severity  ForEach-Object {
+ allIssues | Group-ObjectSeverity | ForEach-Object{
  $severityColor = if ($_.Name -eq 'Error') { 'Red' } else { 'Yellow' }
  Write-Host "`n $($_.Name) ($($_.Count)):" -ForegroundColor $severityColor
- $_.Group  ForEach-Object {
+ $_.Group | ForEach-Object{
  Write-Host " $($_.ScriptName):$($_.Line) - $($_.RuleName): $($_.Message)" -ForegroundColor Gray
  }
  }
@@ -183,4 +183,5 @@ function Invoke-PowerShellLint {
  }
  }
 }
+
 

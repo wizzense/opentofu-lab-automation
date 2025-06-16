@@ -50,8 +50,7 @@ $demo1Result = Invoke-GitControlledPatch -PatchDescription "Fix critical validat
 # Testing: Validated with comprehensive test suite
 "@
     
-    New-Item -Path "logs" -ItemType Directory -Force -ErrorAction SilentlyContinue | | Out-Null
-    $bugFixContent | Out-File "logs/bug-fix-$(Get-Date -Format 'yyyyMMdd-HHmmss').log" -Force
+    New-Item -Path "logs" -ItemType Directory -Force -ErrorAction SilentlyContinue | | Out-Null$bugFixContent | Out-File "logs/bug-fix-$(Get-Date -Format 'yyyyMMdd-HHmmss').log" -Force
     
     Write-Host "    Bug fix applied and logged" -ForegroundColor Green
 } -CreatePullRequest -CreateIssueForBugFix -IssuePriority "High" -IssueLabels @("bug", "critical", "validation", "automated-fix") -AutoCommitUncommitted
@@ -67,8 +66,7 @@ if ($demo1Result.Success) {
     # Start Copilot suggestion monitoring if PR was created
     if ($demo1Result.PullRequestNumber) {
         Write-Host "    Starting Copilot suggestion monitoring..." -ForegroundColor Blue        try {
-            Invoke-CopilotSuggestionHandler -PullRequestNumber $demo1Result.PullRequestNumber -BackgroundMonitor -AutoCommit -LogPath "logs/copilot-monitoring-demo.log" | Out-Null
-            Write-Host "    Copilot monitoring started for PR #$($demo1Result.PullRequestNumber)" -ForegroundColor Green
+            Invoke-CopilotSuggestionHandler -PullRequestNumber $demo1Result.PullRequestNumber -BackgroundMonitor -AutoCommit -LogPath "logs/copilot-monitoring-demo.log" | Out-NullWrite-Host "    Copilot monitoring started for PR #$($demo1Result.PullRequestNumber)" -ForegroundColor Green
         } catch {
             Write-Host "   [WARN] Copilot monitoring failed: $($_.Exception.Message)" -ForegroundColor Yellow
         }
@@ -93,8 +91,7 @@ $demo2Result = Invoke-GitControlledPatch -PatchDescription "Add enhanced logging
 # Compatibility: Backward compatible with existing log consumers
 "@
     
-    New-Item -Path "logs" -ItemType Directory -Force -ErrorAction SilentlyContinue | | Out-Null
-    $enhancementContent | Out-File "logs/enhancement-$(Get-Date -Format 'yyyyMMdd-HHmmss').log" -Force
+    New-Item -Path "logs" -ItemType Directory -Force -ErrorAction SilentlyContinue | | Out-Null$enhancementContent | Out-File "logs/enhancement-$(Get-Date -Format 'yyyyMMdd-HHmmss').log" -Force
     
     Write-Host "    Enhancement implemented and documented" -ForegroundColor Green
 } -CreatePullRequest -AutoCommitUncommitted
@@ -124,8 +121,7 @@ $demo3Result = Invoke-GitControlledPatch -PatchDescription "Emergency security u
 # Testing: Validated against security test suite
 "@
     
-    New-Item -Path "logs" -ItemType Directory -Force -ErrorAction SilentlyContinue | | Out-Null
-    $securityFixContent | Out-File "logs/security-fix-$(Get-Date -Format 'yyyyMMdd-HHmmss').log" -Force
+    New-Item -Path "logs" -ItemType Directory -Force -ErrorAction SilentlyContinue | | Out-Null$securityFixContent | Out-File "logs/security-fix-$(Get-Date -Format 'yyyyMMdd-HHmmss').log" -Force
     
     Write-Host "    Security fix applied and documented" -ForegroundColor Green
 } -CreatePullRequest -CreateIssueForBugFix -IssuePriority "Critical" -IssueLabels @("security", "critical", "emergency", "automated-fix") -AutoCommitUncommitted
@@ -178,3 +174,4 @@ Write-Host " Rollback capabilities provide safety net for all operations" -Foreg
 Write-Host " All changes tracked with comprehensive logging and backup" -ForegroundColor Green
 Write-Host ""
 Write-Host "🚀 PatchManager v2.0 - Complete Git-controlled workflow with issue tracking!" -ForegroundColor Green
+

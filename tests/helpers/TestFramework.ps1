@@ -476,8 +476,7 @@ function Test-RunnerScript {
                         throw "Script path is invalid: $script:ScriptPath"
                     }
                     $errors = $null
-                    System.Management.Automation.Language.Parser::ParseFile($script:ScriptPath, ref$null, ref$errors)  Out-Null
-                    $(if (errors) { $errors.Count  } else { 0 })  Should -Be 0
+                    System.Management.Automation.Language.Parser::ParseFile($script:ScriptPath, ref$null, ref$errors) | Out-Null$(if (errors) { $errors.Count  } else { 0 })  Should -Be 0
                 }
                 
                 It 'has required Config parameter' {

@@ -19,8 +19,7 @@ $errorCount = 0
 foreach ($script in $scripts) {
  try {
  $content = Get-Content $script.FullName -Raw
- System.Management.Automation.PSParser::Tokenize($content, ref$null)  Out-Null
- Write-Host "PASS $($script.Name) - VALID SYNTAX" -ForegroundColor Green
+ System.Management.Automation.PSParser::Tokenize($content, ref$null) | Out-NullWrite-Host "PASS $($script.Name) - VALID SYNTAX" -ForegroundColor Green
  $validCount++
  } catch {
  Write-Host "FAIL $($script.Name) - ERROR: $($_.Exception.Message)" -ForegroundColor Red

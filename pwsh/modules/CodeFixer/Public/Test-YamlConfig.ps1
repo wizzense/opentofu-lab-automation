@@ -68,8 +68,7 @@ function Test-YamlConfig {
     }
     
     # Find YAML files
-    $yamlFiles = Get-ChildItem -Path $Path -Recurse -Include *.yaml,*.yml -File  
-        Where-Object { 
+    $yamlFiles = Get-ChildItem -Path $Path -Recurse -Include *.yaml,*.yml -File | Where-Object{ 
             $include = $true
             foreach ($pattern in $ExcludePath) {
                 if ($_.FullName -like $pattern) {
@@ -215,7 +214,7 @@ function Test-YamlConfig {
     # Run validation (parallel or sequential)
     if ($RunParallel -and $yamlFiles.Count -gt 1) {
         Write-Host "Running parallel validation..." -ForegroundColor Yellow
-        $results = yamlFiles | ForEach-Object -Parallel $validationBlock -ArgumentList $_, $UseYamlLint -ThrottleLimit 4
+        $results = yamlFiles | ForEach-Object-Parallel $validationBlock -ArgumentList $_, $UseYamlLint -ThrottleLimit 4
     } else {
         foreach ($file in $yamlFiles) {
             Write-Host "Validating: $($file.Name)" -ForegroundColor Gray
@@ -225,9 +224,9 @@ function Test-YamlConfig {
     
     # Generate summary
     $totalFiles = $results.Count
-    $validFiles = (results | Where-Object { $_.Valid }).Count
-    $totalErrors = (results | ForEach-Object { $_.Errors.Count }  Measure-Object -Sum).Sum
-    $totalWarnings = (results | ForEach-Object { $_.Warnings.Count }  Measure-Object -Sum).Sum
+    $validFiles = (results | Where-Object{ $_.Valid }).Count
+    $totalErrors = (results | ForEach-Object{ $_.Errors.Count }  Measure-Object -Sum).Sum
+    $totalWarnings = (results | ForEach-Object{ $_.Warnings.Count }  Measure-Object -Sum).Sum
     
     # Output results based on format
     switch ($OutputFormat) {
@@ -242,7 +241,7 @@ function Test-YamlConfig {
                 }
                 Results = $results
             }
-            $json = output | ConvertTo-Json -Depth 10
+            $json = output | ConvertTo-Json-Depth 10
             Write-Output $json
         }
         
@@ -293,4 +292,5 @@ function Test-YamlConfig {
         $global:LASTEXITCODE = 0
     }
 }
+
 

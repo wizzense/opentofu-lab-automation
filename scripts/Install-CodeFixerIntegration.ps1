@@ -34,8 +34,7 @@ if ($SkipBackup) {
 
     $backupDir = Join-Path $PSScriptRoot ".." "backups" (Get-Date -Format "yyyyMMdd-HHmmss")
     if (-not (Test-Path $backupDir)) {
-        New-Item -Path $backupDir -ItemType Directory -Force | Out-Null
-    }
+        New-Item -Path $backupDir -ItemType Directory -Force | Out-Null}
 
     $fileName = Split-Path -Path $FilePath -Leaf
     $backupPath = Join-Path $backupDir $fileName
@@ -366,8 +365,7 @@ $timestamp = Get-Date -Format "yyyyMMdd-HHmmss"
 if ($SaveResults -and -not string::IsNullOrEmpty($OutputDirectory)) {
     $reportPath = Join-Path $PSScriptRoot $OutputDirectory
     if (-not (Test-Path $reportPath)) {
-        New-Item -Path $reportPath -ItemType Directory -Force | Out-Null
-        Write-Host "Created report directory: $reportPath" -ForegroundColor Cyan
+        New-Item -Path $reportPath -ItemType Directory -Force | Out-NullWrite-Host "Created report directory: $reportPath" -ForegroundColor Cyan
     }
 }
 
@@ -500,8 +498,7 @@ function Update-Documentation {
     # Create a TESTING.md file with comprehensive documentation
     $testingDocsPath = Join-Path $PSScriptRoot ".." "docs" "TESTING.md"
     if (-not (Test-Path (Split-Path -Path $testingDocsPath -Parent))) {
-        New-Item -Path (Split-Path -Path $testingDocsPath -Parent) -ItemType Directory -Force | Out-Null
-    }
+        New-Item -Path (Split-Path -Path $testingDocsPath -Parent) -ItemType Directory -Force | Out-Null}
 
     $testingDocsContent = @'
 # OpenTofu Lab Automation Testing Framework
@@ -703,6 +700,7 @@ catch {
     Write-Host "Full error: $_" -ForegroundColor Red
     exit 1
 }
+
 
 
 

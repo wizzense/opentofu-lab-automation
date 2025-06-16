@@ -19,9 +19,7 @@ if ($null -ne $Config.FirewallPorts) {
                             -Direction Inbound `
                             -Protocol TCP `
                             -LocalPort $port `
-                            -Action Allow 
-                            Out-Null
-    }
+                            -Action Allow | Out-Null}
 } else {
     Write-CustomLog "No firewall ports specified."
 }

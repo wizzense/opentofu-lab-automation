@@ -341,7 +341,7 @@ function Invoke-AllBackupMaintenance {
         $reportPath = "./reports/backup-maintenance-$(Get-Date -Format 'yyyyMMdd-HHmmss').json"
         
         if (-not $WhatIfPreference) {
-            Results | ConvertTo-Json -Depth 10  Set-Content -Path $reportPath
+            Results | ConvertTo-Json-Depth 10  Set-Content -Path $reportPath
         }
         
         $Results.Operations += @{
@@ -366,7 +366,7 @@ function Write-BackupMaintenanceResults {
     
     switch ($OutputFormat) {
         "JSON" {
-            Results | ConvertTo-Json -Depth 10
+            Results | ConvertTo-Json-Depth 10
         }
         "CI" {
             Write-Host "::group::Backup Maintenance Results"
@@ -418,4 +418,5 @@ function Write-BackupMaintenanceResults {
         }
     }
 }
+
 

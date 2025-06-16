@@ -50,7 +50,7 @@ $ErrorActionPreference = "Stop"
  
  # Filter out legacy/archive files
  $ignorePaths = @("archive", "backups", "legacy", "historical-fixes", "deprecated-")
- $powerShellFiles = powerShellFiles | Where-Object {
+ $powerShellFiles = powerShellFiles | Where-Object{
  $filePath = $_.FullName
  $shouldIgnore = $false
  foreach ($ignorePath in $ignorePaths) {
@@ -103,7 +103,7 @@ $ErrorActionPreference = "Stop"
  
  # Sort errors by line number (descending) to fix from bottom up
  # This prevents line number shifts from affecting later fixes
- $sortedErrors = parseErrors | Sort-Object { $_.Extent.StartLineNumber } -Descending
+ $sortedErrors = parseErrors | Sort-Object{ $_.Extent.StartLineNumber } -Descending
  
  foreach ($error in $sortedErrors) {
  Write-Host " Fixing: $($error.Message)" -ForegroundColor Yellow
@@ -169,6 +169,7 @@ $ErrorActionPreference = "Stop"
  return $fixedFiles
  }
 }
+
 
 
 

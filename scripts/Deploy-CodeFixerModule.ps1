@@ -58,7 +58,7 @@ $scriptPath = Join-Path $PSScriptRoot $ScriptName
     try {
         if ($WhatIf) {
             Write-Host "What If: Would execute $ScriptName with parameters:" -ForegroundColor Yellow
-            $Parameters.GetEnumerator()  ForEach-Object {
+            $Parameters.GetEnumerator() | ForEach-Object{
                 Write-Host "  -$($_.Key) $($_.Value)" -ForegroundColor Yellow
             }
             return $true

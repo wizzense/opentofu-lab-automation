@@ -80,7 +80,7 @@ function Invoke-HereStringFix {
 
  # Filter out excluded paths
  foreach ($exclude in $ExcludePath) {
- $files = files | Where-Object { $_.FullName -notmatch $exclude }
+ $files = files | Where-Object{ $_.FullName -notmatch $exclude }
  }
 
  $stats.TotalFiles = $files.Count
@@ -166,6 +166,7 @@ function Invoke-HereStringFix {
 
  return $stats
 }
+
 
 
 

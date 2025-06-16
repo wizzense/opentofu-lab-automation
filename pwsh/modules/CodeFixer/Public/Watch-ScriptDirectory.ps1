@@ -49,8 +49,7 @@ function Watch-ScriptDirectory {
     
     if (-not $fullOutputDir) {
         if (-not (Test-Path $OutputDirectory)) {
-            New-Item -ItemType Directory -Path $OutputDirectory -Force | Out-Null
-        }
+            New-Item -ItemType Directory -Path $OutputDirectory -Force | Out-Null}
         $fullOutputDir = Resolve-Path $OutputDirectory
     }
     
@@ -75,8 +74,7 @@ function Watch-ScriptDirectory {
     try {
         while ($true) {
             # Get all script files in directory
-            $scriptFiles = Get-ChildItem -Path $fullDir -Filter "*.ps1" -Recurse  
-                Where-Object { -not $_.Name.EndsWith('.Tests.ps1') }
+            $scriptFiles = Get-ChildItem -Path $fullDir -Filter "*.ps1" -Recurse | Where-Object{ -not $_.Name.EndsWith('.Tests.ps1') }
             
             Write-Verbose "Found $($scriptFiles.Count) script files"
             
@@ -93,12 +91,7 @@ function Watch-ScriptDirectory {
                         $scriptName = $script.Name
                         if ($script.Directory.FullName -like "*runner_scripts*" -and -not ($scriptName -match '^0-9{4}_')) {
                             # Get next available sequence number
-                            $existingScripts = Get-ChildItem $script.Directory -Filter "*.ps1"  
-                                Where-Object { $_.Name -match '^0-9{4}_' } 
-                                ForEach-Object { int($_.Name.Substring(0,4)) } 
-                                Sort-Object
-                            
-                            $nextNumber = if ($existingScripts.Count -gt 0) { $existingScripts-1 + 1    } else { 100    }
+                            $existingScripts = Get-ChildItem $script.Directory -Filter "*.ps1" | Where-Object{ $_.Name -match '^0-9{4}_' } | ForEach-Object{ int($_.Name.Substring(0,4)) } | Sort-Object$nextNumber = if ($existingScripts.Count -gt 0) { $existingScripts-1 + 1    } else { 100    }
                             $newName = "{0:D4}_{1}" -f $nextNumber, $scriptName
                             $newPath = Join-Path $script.Directory $newName
                             
@@ -133,6 +126,7 @@ function Watch-ScriptDirectory {
         Start-Sleep 5
     }
 }
+
 
 
 

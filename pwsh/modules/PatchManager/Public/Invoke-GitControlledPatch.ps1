@@ -74,8 +74,7 @@ function Invoke-GitControlledPatch {
         Write-Host "CRITICAL: NO EMOJIS ALLOWED - they break workflows" -ForegroundColor Red
         
         # Initialize cross-platform environment variables
-        Initialize-CrossPlatformEnvironment | Out-Null
-        Write-Verbose "Cross-platform environment initialized: $env:PLATFORM"
+        Initialize-CrossPlatformEnvironment | Out-NullWrite-Verbose "Cross-platform environment initialized: $env:PLATFORM"
         
         # Initialize tracking variables
         $script:IssueTracker = @{
@@ -117,8 +116,7 @@ function Invoke-GitControlledPatch {
                     $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss UTC"
                     $progressComment = "**Progress Update** ($timestamp):`n`n$UpdateMessage`n`n**Status**: $Status"
                     
-                    gh issue comment $script:IssueTracker.IssueNumber --body $progressComment | Out-Null
-                    Write-Host "Updated GitHub issue with progress: $UpdateMessage" -ForegroundColor Gray
+                    gh issue comment $script:IssueTracker.IssueNumber --body $progressComment | Out-NullWrite-Host "Updated GitHub issue with progress: $UpdateMessage" -ForegroundColor Gray
                 } catch {
                     Write-Warning "Failed to update GitHub issue: $($_.Exception.Message)"
                 }
@@ -291,12 +289,12 @@ function Invoke-GitControlledPatch {
                 Write-Host "Validating changes..." -ForegroundColor Blue
                 $changedFiles = git diff --name-only HEAD
                 if (-not $changedFiles) {
-                    $changedFiles = git status --porcelain | ForEach-Object { $_.Substring(3) }
+                    $changedFiles = git status --porcelain | ForEach-Object{ $_.Substring(3) }
                 }
                 
                 if ($changedFiles) {
                     Write-Host "Changed files:" -ForegroundColor Green
-                    $changedFiles | ForEach-Object { Write-Host "  - $_" -ForegroundColor White }
+                    $changedFiles | ForEach-Object{ Write-Host "  - $_" -ForegroundColor White }
                       # Commit changes directly
                     git add -A
                     git commit -m $PatchDescription
@@ -320,7 +318,7 @@ function Invoke-GitControlledPatch {
 Changes were applied directly to the current branch without creating a pull request.
 
 ### Files Modified
-$($changedFiles | ForEach-Object { "- $_" } | Out-String)
+$($changedFiles | ForEach-Object{ "- $_" } | Out-String)
 
 ### Next Steps
 1. **Monitor the changes** for any issues
@@ -329,8 +327,7 @@ $($changedFiles | ForEach-Object { "- $_" } | Out-String)
 
 **DirectCommit completed** - No pull request required for this change.
 "@
-                            gh issue comment $script:IssueTracker.IssueNumber --body $directCommitUpdate | Out-Null
-                            Write-Host "GitHub issue updated with DirectCommit success status" -ForegroundColor Green
+                            gh issue comment $script:IssueTracker.IssueNumber --body $directCommitUpdate | Out-NullWrite-Host "GitHub issue updated with DirectCommit success status" -ForegroundColor Green
                         } catch {
                             Write-Warning "Failed to update GitHub issue with DirectCommit status: $($_.Exception.Message)"
                         }
@@ -367,8 +364,7 @@ Please review the patch operation to determine if this is expected behavior.
 
 **Issue remains open** for investigation.
 "@
-                            gh issue comment $script:IssueTracker.IssueNumber --body $noChangesUpdate | Out-Null
-                            Write-Host "GitHub issue updated with no-changes status" -ForegroundColor Yellow
+                            gh issue comment $script:IssueTracker.IssueNumber --body $noChangesUpdate | Out-NullWrite-Host "GitHub issue updated with no-changes status" -ForegroundColor Yellow
                         } catch {
                             Write-Warning "Failed to update GitHub issue with no-changes status: $($_.Exception.Message)"
                         }
@@ -407,7 +403,7 @@ Please review the patch operation to determine if this is expected behavior.
                 }
                 
                 # Remove problematic directories manually without prompts
-                @('assets', 'node_modules', '.vs', 'build', 'coverage') | ForEach-Object {
+                @('assets', 'node_modules', '.vs', 'build', 'coverage') | ForEach-Object{
                     if (Test-Path $_) {
                         try {
                             Remove-Item $_ -Recurse -Force -ErrorAction SilentlyContinue
@@ -445,9 +441,7 @@ Please review the patch operation to determine if this is expected behavior.
             }
             # Create backup before applying patch
             $backupPath = "./backups/pre-patch-$(Get-Date -Format 'yyyyMMdd-HHmmss')"
-            New-Item -ItemType Directory -Path $backupPath -Force | Out-Null
-            
-            if ($AffectedFiles.Count -gt 0) {
+            New-Item -ItemType Directory -Path $backupPath -Force | Out-Nullif ($AffectedFiles.Count -gt 0) {
                 foreach ($file in $AffectedFiles) {
                     if (Test-Path $file) {
                         $relativePath = Resolve-Path $file -Relative
@@ -502,7 +496,7 @@ Please review the patch operation to determine if this is expected behavior.
             }
             
             Write-Host "Changed files:" -ForegroundColor Green
-            $changedFiles | ForEach-Object { Write-Host "  - $_" -ForegroundColor White }
+            $changedFiles | ForEach-Object{ Write-Host "  - $_" -ForegroundColor White }
             
             # Run validation checks (non-blocking)
             try {
@@ -564,8 +558,7 @@ All patch operations completed successfully. Manual review and approval required
 
 **Automated patch tracking completed** - Human review now required.
 "@
-                        gh issue comment $script:IssueTracker.IssueNumber --body $finalUpdate | Out-Null
-                        Write-Host "GitHub issue updated with final success status" -ForegroundColor Green
+                        gh issue comment $script:IssueTracker.IssueNumber --body $finalUpdate | Out-NullWrite-Host "GitHub issue updated with final success status" -ForegroundColor Green
                     } catch {
                         Write-Warning "Failed to update GitHub issue with final status: $($_.Exception.Message)"
                     }
@@ -614,8 +607,7 @@ Attempting automatic cleanup of failed patch state...
 
 **This issue remains open** - Manual resolution required.
 "@
-                    gh issue comment $script:IssueTracker.IssueNumber --body $failureUpdate | Out-Null
-                    Write-Host "GitHub issue updated with failure status" -ForegroundColor Red
+                    gh issue comment $script:IssueTracker.IssueNumber --body $failureUpdate | Out-NullWrite-Host "GitHub issue updated with failure status" -ForegroundColor Red
                 } catch {
                     Write-Warning "Failed to update GitHub issue with failure status: $($_.Exception.Message)"
                 }
@@ -630,9 +622,7 @@ Attempting automatic cleanup of failed patch state...
                 if ($currentBranch -eq $branchName) {
                     # Return to previous branch safely (not main)
                     $previousBranch = git reflog --pretty=format:'%gs' | 
-                                    Select-String "checkout: moving from (.+) to $branchName" | 
-                                    ForEach-Object { $_.Matches[0].Groups[1].Value } | 
-                                    Select-Object -First 1
+                                    Select-String "checkout: moving from (.+) to $branchName" | ForEach-Object{ $_.Matches[0].Groups[1].Value } | Select-Object-First 1
                     
                     if ($previousBranch -and $previousBranch -ne "main" -and $previousBranch -ne "master") {
                         git checkout $previousBranch
@@ -698,7 +688,7 @@ function Invoke-PatchValidation {
     $issues = @()
     
     # PowerShell syntax validation
-    $psFiles = $ChangedFiles | Where-Object { $_ -match '\.ps1$' }
+    $psFiles = $ChangedFiles | Where-Object{ $_ -match '\.ps1$' }
     if ($psFiles) {
         foreach ($file in $psFiles) {
             if (Test-Path $file) {
@@ -717,7 +707,7 @@ function Invoke-PatchValidation {
     }
     
     # Python syntax validation
-    $pyFiles = $ChangedFiles | Where-Object { $_ -match '\.py$' }
+    $pyFiles = $ChangedFiles | Where-Object{ $_ -match '\.py$' }
     if ($pyFiles -and (Get-Command python -ErrorAction SilentlyContinue)) {
         foreach ($file in $pyFiles) {
             if (Test-Path $file) {
@@ -738,7 +728,7 @@ function Invoke-PatchValidation {
     }
     
     # YAML validation  
-    $yamlFiles = $ChangedFiles | Where-Object { $_ -match '\.(yml|yaml)$' }
+    $yamlFiles = $ChangedFiles | Where-Object{ $_ -match '\.(yml|yaml)$' }
     if ($yamlFiles) {
         foreach ($file in $yamlFiles) {
             if (Test-Path $file) {
@@ -803,7 +793,7 @@ This PR contains automated fixes that require manual review before merging.
 - **Generated**: $(Get-Date -Format "yyyy-MM-dd HH:mm:ss UTC")
 
 ### Changed Files
-$($ChangedFiles | ForEach-Object { "- $_" } | Out-String)
+$($ChangedFiles | ForEach-Object{ "- $_" } | Out-String)
 
 ### Validation Status
 - [x] PowerShell linting passed
@@ -843,3 +833,4 @@ $($ChangedFiles | ForEach-Object { "- $_" } | Out-String)
 
 # Note: Export-ModuleMember is handled by the module manifest
 # This script contains functions that will be exported when the module is imported
+

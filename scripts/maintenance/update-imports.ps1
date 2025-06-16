@@ -31,8 +31,7 @@ Write-Host " Updating LabRunner import paths..." -ForegroundColor Cyan
 $filesToUpdate = @()
 
 # Search for files with the old import pattern
-$files = Get-ChildItem -Path . -Recurse -Include "*.ps1", "*.psm1" -File  
- Where-Object { $_.FullName -notlike "*backup*" -and $_.FullName -notlike "*archive*" }
+$files = Get-ChildItem -Path . -Recurse -Include "*.ps1", "*.psm1" -File | Where-Object{ $_.FullName -notlike "*backup*" -and $_.FullName -notlike "*archive*" }
 
 foreach ($file in $files) {
  try {

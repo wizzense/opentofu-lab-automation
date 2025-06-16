@@ -30,7 +30,7 @@ Write-Host "=== EMERGENCY FIX: Malformed Import-Module Statements ===" -Foregrou
 Write-Host "Scanning for files with repeated -Force parameters..." -ForegroundColor Yellow
 
 # Find all PowerShell files with malformed imports
-$malformedFiles = Get-ChildItem -Path $TargetPath -Recurse -Filter "*.ps1"  Where-Object {
+$malformedFiles = Get-ChildItem -Path $TargetPath -Recurse -Filter "*.ps1" | Where-Object{
     $content = Get-Content $_.FullName -Raw -ErrorAction SilentlyContinue
     $content -match 'Import-Module.*?-Force.*?-Force'
 }
@@ -45,8 +45,7 @@ if ($malformedFiles.Count -eq 0) {
 # Create backup if requested
 if ($BackupBeforeFix -and -not $WhatIf) {
     $backupPath = "./backups/emergency-import-fix-$(Get-Date -Format 'yyyyMMdd-HHmmss')"
-    New-Item -ItemType Directory -Path $backupPath -Force | Out-Null
-    Write-Host "Creating backup at: $backupPath" -ForegroundColor Yellow
+    New-Item -ItemType Directory -Path $backupPath -Force | Out-NullWrite-Host "Creating backup at: $backupPath" -ForegroundColor Yellow
 }
 
 $fixedCount = 0
@@ -91,8 +90,7 @@ foreach ($file in $malformedFiles) {
                 $relativePath = $file.FullName.Replace($PWD.Path, "").TrimStart('\', '/')
                 $backupFilePath = Join-Path $backupPath $relativePath
                 $backupDir = Split-Path $backupFilePath -Parent
-                New-Item -ItemType Directory -Path $backupDir -Force -ErrorAction SilentlyContinue | Out-Null
-                Copy-Item $file.FullName $backupFilePath -Force
+                New-Item -ItemType Directory -Path $backupDir -Force -ErrorAction SilentlyContinue | Out-NullCopy-Item $file.FullName $backupFilePath -Force
             }
             
             # Apply fix
@@ -121,4 +119,5 @@ if ($WhatIf) {
         Write-Host "Backup location: $backupPath" -ForegroundColor Cyan
     }
 }
+
 

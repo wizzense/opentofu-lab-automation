@@ -407,8 +407,7 @@ function installStandalone() {
                 $headers"Authorization" = "token ${Env:GITHUB_TOKEN}"
             }
             $body = Invoke-WebRequest -uri "https://api.github.com/repos/opentofu/opentofu/releases/latest" -headers $headers -UseBasicParsing
-            $releaseData = $body  ConvertFrom-Json
-        } catch {
+            $releaseData = $body | ConvertFrom-Json} catch {
             $msg = $_.ToString()
             throw InstallFailedException::new("Failed to download release information from GitHub. This may be due to GitHub rate limiting, which you can work around by providing a GITHUB_TOKEN environment variable or by providing a specific OpenTofu version to install using the -opentofuVersion parameter. (Error: ${msg}; Response body: " + $body + ")")
         }

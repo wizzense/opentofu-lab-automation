@@ -49,25 +49,21 @@ Skip test execution even in Full/All modes (for faster runs)
 
 CmdletBinding()
 param(
- Parameter()
-
-
-
-
- ValidateSet('Quick', 'Full', 'Test', 'Track', 'Report', 'All')
- string$Mode = 'Quick',
- 
- Parameter()
- switch$AutoFix,
- 
- Parameter()
- switch$UpdateChangelog,
- 
- Parameter()
- switch$SkipTests,
- 
- Parameter()
- switch$IgnoreArchive
+    [Parameter()]
+    [ValidateSet('Quick', 'Full', 'Test', 'Track', 'Report', 'All')]
+    [string]$Mode = 'Quick',
+    
+    [Parameter()]
+    [switch]$AutoFix,
+    
+    [Parameter()]
+    [switch]$UpdateChangelog,
+    
+    [Parameter()]
+    [switch]$SkipTests,
+    
+    [Parameter()]
+    [switch]$IgnoreArchive
 )
 
 $ErrorActionPreference = "Stop"
@@ -226,7 +222,7 @@ function Step-FixTestSyntax {
  } else {
  Write-MaintenanceLog "Fix script not found, using basic syntax validation" "WARNING"
  # Basic syntax validation fallback
- Get-ChildItem -Path "$ProjectRoot/tests" -Filter "*.ps1" -Recurse  ForEach-Object {
+ Get-ChildItem -Path "$ProjectRoot/tests" -Filter "*.ps1" -Recurse | ForEach-Object{
  $null = System.Management.Automation.Language.Parser::ParseFile($_.FullName, ref$null, ref$null)
  }
  }
@@ -250,7 +246,7 @@ function Step-ValidateYaml {
  if ($AutoFix) {
  Write-MaintenanceLog "Attempting basic YAML fixes..." "WARNING"
  # Basic fallback validation
- Get-ChildItem -Path "$ProjectRoot/.github/workflows" -Filter "*.yml","*.yaml" -ErrorAction SilentlyContinue  ForEach-Object {
+ Get-ChildItem -Path "$ProjectRoot/.github/workflows" -Filter "*.yml","*.yaml" -ErrorAction SilentlyContinue | ForEach-Object{
  try {
  $content = Get-Content $_.FullName -Raw
  $null = ConvertFrom-Yaml $content -ErrorAction Stop
@@ -373,8 +369,7 @@ function Get-MaintenanceSummary {
  $healthFile = "$ProjectRoot/docs/reports/project-status/current-health.json"
  if (Test-Path $healthFile) {
  try {
- $health = Get-Content $healthFile  ConvertFrom-Json
- $summary.InfrastructureStatus = $health.OverallStatus
+ $health = Get-Content $healthFile | ConvertFrom-Json$summary.InfrastructureStatus = $health.OverallStatus
  $summary.IssueCount = $health.Metrics.IssueCount
  $summary.Issues = $health.Issues
  $summary.Recommendations = $health.Recommendations
@@ -438,7 +433,7 @@ function Show-HealthIssues {
         # Show sample affected files (max 5)
         if ($issue.Files -and $issue.Files.Count -gt 0) {
             Write-Host "  Sample affected files:" -ForegroundColor White
-            $sampleFiles = $issue.Files  Select-Object -First 5
+            $sampleFiles = $issue.Files | Select-Object-First 5
             foreach ($file in $sampleFiles) {
                 Write-Host "    - $file" -ForegroundColor Gray
             }
@@ -483,8 +478,7 @@ function Find-AllMaintenanceTools {
     
     $foundTools = @()
     foreach ($pattern in $toolPatterns) {
-        $tools = Get-ChildItem -Path $ProjectRoot -Recurse -Include $pattern -File 
-            Where-Object { 
+        $tools = Get-ChildItem -Path $ProjectRoot -Recurse -Include $pattern -File | Where-Object{ 
                 $_.FullName -notlike "*archive*" -and 
                 $_.FullName -notlike "*backup*" -and
                 $_.FullName -notlike "*node_modules*"
@@ -596,8 +590,7 @@ function Invoke-ComprehensiveProjectValidation {
     
     # 1. PowerShell syntax validation across entire project
     Write-MaintenanceLog "Validating PowerShell syntax across all files..." "INFO"
-    $allPsFiles = Get-ChildItem -Path $ProjectRoot -Recurse -Include "*.ps1", "*.psm1", "*.psd1" 
-        Where-Object { 
+    $allPsFiles = Get-ChildItem -Path $ProjectRoot -Recurse -Include "*.ps1", "*.psm1", "*.psd1" | Where-Object{ 
             $_.FullName -notlike "*archive*" -and 
             $_.FullName -notlike "*backup*" -and
             $_.FullName -notlike "*node_modules*"
@@ -703,8 +696,8 @@ function Invoke-ConsolidatedValidation {
             $lintResults = Invoke-ScriptAnalyzer -Path $ProjectRoot -Recurse -ErrorAction SilentlyContinue
             $consolidatedResults.PSScriptAnalyzer = $lintResults
             
-            $errorCount = (lintResults | Where-Object Severity -eq 'Error').Count
-            $warningCount = (lintResults | Where-Object Severity -eq 'Warning').Count
+            $errorCount = (lintResults | Where-ObjectSeverity -eq 'Error').Count
+            $warningCount = (lintResults | Where-ObjectSeverity -eq 'Warning').Count
             
             Write-MaintenanceLog "PSScriptAnalyzer: $errorCount errors, $warningCount warnings" "INFO"
             $consolidatedResults.Summary.TotalIssues += ($errorCount + $warningCount)
@@ -772,7 +765,7 @@ function Invoke-ConsolidatedValidation {
     
     if ($consolidatedResults.Summary.Recommendations.Count -gt 0) {
         Write-MaintenanceLog "`nRecommendations:" "WARNING"
-        $consolidatedResults.Summary.Recommendations  ForEach-Object {
+        $consolidatedResults.Summary.Recommendations | ForEach-Object{
             Write-MaintenanceLog "  • $_" "WARNING"
         }
     }
@@ -940,6 +933,7 @@ foreach ($Directory in $DirectoriesToClean) {
 # Finalize log
 "Maintenance completed at $(Get-Date)"  Out-File -FilePath $LogFile -Append -Encoding UTF8
 Write-Host "Maintenance log saved to $LogFile" -ForegroundColor Green
+
 
 
 

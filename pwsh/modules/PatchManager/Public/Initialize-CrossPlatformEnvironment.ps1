@@ -78,8 +78,7 @@ function Initialize-CrossPlatformEnvironment {
             (Join-Path $env:PROJECT_ROOT "backups"),
             (Join-Path $env:PROJECT_ROOT "reports")
         )
-        
-        foreach ($dir in $standardDirs) {
+          foreach ($dir in $standardDirs) {
             if (-not (Test-Path $dir)) {
                 New-Item -ItemType Directory -Path $dir -Force | Out-Null
                 Write-Verbose "Created directory: $dir"

@@ -85,8 +85,7 @@ function Get-LintIssues {
     try {
         # Load the JSON file if available
         if ($ResultsPath -match "\.json$") {
-            $lintResults = Get-Content $ResultsPath -Raw  ConvertFrom-Json
-        }
+            $lintResults = Get-Content $ResultsPath -Raw | ConvertFrom-Json}
         # Or the XML file if that's what's available
         elseif ($ResultsPath -match "\.xml$") {
             $lintResults = xml(Get-Content $ResultsPath)
@@ -191,7 +190,7 @@ function Invoke-ValidationChecks {
     
     # Output to file if requested
     if ($OutputPath) {
-        validationResults | ConvertTo-Json -Depth 5  Set-Content $OutputPath
+        validationResults | ConvertTo-Json-Depth 5  Set-Content $OutputPath
     }
     
     return $validationResults
@@ -229,7 +228,7 @@ function Show-ValidationSummary {
     
     # Show details for high-priority lint issues
     if ($ValidationResults.LintIssues.Count -gt 0) {
-        $criticalIssues = $ValidationResults.LintIssues  Where-Object { $_.Severity -eq 'Error' }
+        $criticalIssues = $ValidationResults.LintIssues | Where-Object{ $_.Severity -eq 'Error' }
         if ($criticalIssues.Count -gt 0) {
             Write-Host "`n--- Critical Lint Issues ---" -ForegroundColor Red
             foreach ($issue in $criticalIssues) {
@@ -266,4 +265,5 @@ function Get-RunnerScriptPath {
     
     return $ScriptName
 }
+
 

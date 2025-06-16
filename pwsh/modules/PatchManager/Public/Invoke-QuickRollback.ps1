@@ -100,7 +100,7 @@ function Invoke-QuickRollback {
                         throw "No recent patch commits found"
                     }
                     
-                    $lastPatchCommit = ($patchCommits | Select-Object -First 1) -split ' ' | Select-Object -First 1
+                    $lastPatchCommit = ($patchCommits | Select-Object-First 1) -split ' ' | Select-Object-First 1
                     $targetCommit = git rev-parse "$lastPatchCommit^"  # Parent of patch commit
                     
                     Write-Host "Last patch commit: $lastPatchCommit" -ForegroundColor Cyan
@@ -142,7 +142,7 @@ function Invoke-QuickRollback {
                     # Find last successful validation commit
                     $validCommits = git log --oneline --grep="validation passed" --grep="health check" --max-count=10
                     if ($validCommits) {
-                        $lastGoodCommit = ($validCommits | Select-Object -First 1) -split ' ' | Select-Object -First 1
+                        $lastGoodCommit = ($validCommits | Select-Object-First 1) -split ' ' | Select-Object-First 1
                         Write-Host "Emergency rollback to last validated commit: $lastGoodCommit" -ForegroundColor Cyan
                         Invoke-CommitRollback -TargetCommit $lastGoodCommit
                     } else {
@@ -262,7 +262,7 @@ function Invoke-PostRollbackValidation {
     }
     
     # Check basic PowerShell syntax of key files
-    $keyFiles = Get-ChildItem -Path "scripts", "pwsh" -Recurse -Include "*.ps1" -ErrorAction SilentlyContinue | Select-Object -First 5
+    $keyFiles = Get-ChildItem -Path "scripts", "pwsh" -Recurse -Include "*.ps1" -ErrorAction SilentlyContinue | Select-Object-First 5
     foreach ($file in $keyFiles) {
         try {
             $content = Get-Content $file.FullName -Raw -ErrorAction SilentlyContinue
@@ -283,3 +283,4 @@ function Invoke-PostRollbackValidation {
 
 # Export the function
 Export-ModuleMember -Function Invoke-QuickRollback
+

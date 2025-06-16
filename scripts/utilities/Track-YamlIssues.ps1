@@ -85,7 +85,7 @@ $issueOutput = @{
 
 # Output to issue tracker file
 $outputPath = "/workspaces/opentofu-lab-automation/scripts/testing/yaml-issues.json"
-issueOutput | ConvertTo-Json -Depth 5  Out-File -FilePath $outputPath -Encoding UTF8
+issueOutput | ConvertTo-Json-Depth 5  Out-File -FilePath $outputPath -Encoding UTF8
 
 Write-Host "=${timestamp} YAML-TRACKER Tracked $($yamlIssues.Count) YAML validation issues" -ForegroundColor Green
 Write-Host "=${timestamp} YAML-TRACKER Output written to: $outputPath" -ForegroundColor Green
@@ -140,4 +140,5 @@ pwsh -Command "./scripts/validation/Invoke-YamlValidation.ps1 -Mode Fix"
 summary | Out-File -FilePath $summaryPath -Encoding UTF8
 
 Write-Host "=${timestamp} YAML-TRACKER Summary report written to: $summaryPath" -ForegroundColor Green
+
 

@@ -57,8 +57,7 @@ function New-AutoTest {
  if (-not $fullOutputDir) {
  if (-not (Test-Path $OutputDirectory)) {
  if ($PSCmdlet.ShouldProcess($OutputDirectory, "Create directory")) {
- New-Item -ItemType Directory -Path $OutputDirectory -Force | Out-Null
- }
+ New-Item -ItemType Directory -Path $OutputDirectory -Force | Out-Null}
  }
  $fullOutputDir = Resolve-Path $OutputDirectory
  }
@@ -106,6 +105,7 @@ function New-AutoTest {
  }
  }
 }
+
 
 
 

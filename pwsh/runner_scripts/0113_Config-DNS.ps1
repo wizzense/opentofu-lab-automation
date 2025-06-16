@@ -12,7 +12,7 @@ Invoke-LabStep -Config $Config -Body {
 
 if ($Config.SetDNSServers -eq $true) {
     $mockInterface = PSCustomObject@{ InterfaceIndex = 1 }
-    $interfaceIndex = (Invoke-CrossPlatformCommand -CommandName 'Get-NetIPAddress' -Parameters @{ AddressFamily = 'IPv4' } -MockResult @($mockInterface)  Select-Object -First 1 -ExpandProperty InterfaceIndex)
+    $interfaceIndex = (Invoke-CrossPlatformCommand -CommandName 'Get-NetIPAddress' -Parameters @{ AddressFamily = 'IPv4' } -MockResult @($mockInterface) | Select-Object-First 1 -ExpandProperty InterfaceIndex)
     Write-CustomLog "Setting DNS servers to $($Config.DNSServers) on interface $interfaceIndex"
     Invoke-CrossPlatformCommand -CommandName 'Set-DnsClientServerAddress' -Parameters @{ InterfaceIndex = $interfaceIndex; ServerAddresses = $Config.DNSServers } -SkipOnUnavailable
     Write-CustomLog 'DNS servers configured'

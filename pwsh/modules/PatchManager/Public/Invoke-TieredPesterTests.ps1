@@ -53,8 +53,7 @@ function Invoke-TieredPesterTests {
     )
       # Ensure output directory exists
     if (-not (Test-Path $OutputPath)) {
-        New-Item -ItemType Directory -Path $OutputPath -Force | Out-Null
-    }
+        New-Item -ItemType Directory -Path $OutputPath -Force | Out-Null}
     
     # Define test tiers with their characteristics
     $testTiers = @{
@@ -255,7 +254,7 @@ function Invoke-TieredPesterTests {
     Write-Host "║                           OVERALL TEST SUMMARY                        ║" -ForegroundColor Cyan  
     Write-Host "╠═══════════════════════════════════════════════════════════════════════╣" -ForegroundColor Cyan
     
-    $overallSuccess = ($totalFailed -eq 0) -and ($overallResults | Where-Object { -not $_.Success }).Count -eq 0
+    $overallSuccess = ($totalFailed -eq 0) -and ($overallResults | Where-Object{ -not $_.Success }).Count -eq 0
     $summaryIcon = if ($overallSuccess) { "[PASS]" } else { "[FAIL]" }
     $summaryColor = if ($overallSuccess) { "Green" } else { "Red" }
     
@@ -288,7 +287,7 @@ function Invoke-TieredPesterTests {
     
     # Exit with appropriate code
     if (-not $overallSuccess) {
-        $blockingFailures = $overallResults | Where-Object { -not $_.Success -and $_.BlockOnFailure }
+        $blockingFailures = $overallResults | Where-Object{ -not $_.Success -and $_.BlockOnFailure }
         if ($blockingFailures) {
             Write-Host "Exiting with error code due to blocking tier failures" -ForegroundColor Red
             exit 1
@@ -298,3 +297,4 @@ function Invoke-TieredPesterTests {
         }
     }
 }
+

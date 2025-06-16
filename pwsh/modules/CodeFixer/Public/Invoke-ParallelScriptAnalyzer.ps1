@@ -81,7 +81,7 @@ function Invoke-ParallelScriptAnalyzer {
  foreach ($batch in $batches) {
  # Wait for available job slot
  while ($activeJobs.Count -ge $MaxJobs) {
- $completedJobs = $activeJobs.Values  Where-Object { $_.State -eq 'Completed' -or $_.State -eq 'Failed' }
+ $completedJobs = $activeJobs.Values | Where-Object{ $_.State -eq 'Completed' -or $_.State -eq 'Failed' }
  
  foreach ($job in $completedJobs) {
  try {
@@ -114,7 +114,7 @@ function Invoke-ParallelScriptAnalyzer {
  
  # Wait for remaining jobs
  while ($activeJobs.Count -gt 0) {
- $completedJobs = $activeJobs.Values  Where-Object { $_.State -eq 'Completed' -or $_.State -eq 'Failed' }
+ $completedJobs = $activeJobs.Values | Where-Object{ $_.State -eq 'Completed' -or $_.State -eq 'Failed' }
  
  foreach ($job in $completedJobs) {
  try {

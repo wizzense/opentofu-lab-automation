@@ -68,8 +68,7 @@ function Test-OpenTofuConfig {
     }
     
     # Find Terraform/OpenTofu files
-    $tfFiles = Get-ChildItem -Path $Path -Recurse -Include *.tf,*.tfvars -File  
-        Where-Object { 
+    $tfFiles = Get-ChildItem -Path $Path -Recurse -Include *.tf,*.tfvars -File | Where-Object{ 
             $include = $true
             foreach ($pattern in $ExcludePath) {
                 if ($_.FullName -like $pattern) {
@@ -126,7 +125,7 @@ function Test-OpenTofuConfig {
                     if ($LASTEXITCODE -eq 0) {
                         $fileResult.Valid = $true
                     } else {
-                        $errors = $output  ConvertFrom-Json -ErrorAction SilentlyContinue
+                        $errors = $output | ConvertFrom-Json-ErrorAction SilentlyContinue
                         if ($errors.diagnostics) {
                             foreach ($diag in $errors.diagnostics) {
                                 $fileResult.Errors += PSCustomObject@{
@@ -275,7 +274,7 @@ function Test-OpenTofuConfig {
     # Run validation (parallel or sequential)
     if ($RunParallel -and $tfFiles.Count -gt 1) {
         Write-Host "Running parallel validation..." -ForegroundColor Yellow
-        $results = tfFiles | ForEach-Object -Parallel $validationBlock -ArgumentList $_, $UseOpenTofu -ThrottleLimit 4
+        $results = tfFiles | ForEach-Object-Parallel $validationBlock -ArgumentList $_, $UseOpenTofu -ThrottleLimit 4
     } else {
         foreach ($file in $tfFiles) {
             Write-Host "Validating: $($file.Name)" -ForegroundColor Gray
@@ -285,9 +284,9 @@ function Test-OpenTofuConfig {
     
     # Generate summary
     $totalFiles = $results.Count
-    $validFiles = (results | Where-Object { $_.Valid }).Count
-    $totalErrors = (results | ForEach-Object { $_.Errors.Count }  Measure-Object -Sum).Sum
-    $totalWarnings = (results | ForEach-Object { $_.Warnings.Count }  Measure-Object -Sum).Sum
+    $validFiles = (results | Where-Object{ $_.Valid }).Count
+    $totalErrors = (results | ForEach-Object{ $_.Errors.Count }  Measure-Object -Sum).Sum
+    $totalWarnings = (results | ForEach-Object{ $_.Warnings.Count }  Measure-Object -Sum).Sum
     
     # Output results based on format
     switch ($OutputFormat) {
@@ -302,7 +301,7 @@ function Test-OpenTofuConfig {
                 }
                 Results = $results
             }
-            $json = output | ConvertTo-Json -Depth 10
+            $json = output | ConvertTo-Json-Depth 10
             Write-Output $json
         }
         
@@ -353,3 +352,4 @@ function Test-OpenTofuConfig {
         $global:LASTEXITCODE = 0
     }
 }
+

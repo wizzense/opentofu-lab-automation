@@ -92,7 +92,7 @@ Write-Host " Testing a sample fixed file..." -ForegroundColor Yellow
 
 # Test one of the fixed files
 if ($fixedCount -gt 0) {
- $testFile = targetFiles | Where-Object { Test-Path "tests/$_" }  Select-Object -First 1
+ $testFile = targetFiles | Where-Object{ Test-Path "tests/$_" } | Select-Object-First 1
  if ($testFile) {
  Write-Host " Testing $testFile..." -ForegroundColor Cyan
  try {
@@ -109,6 +109,7 @@ if ($fixedCount -gt 0) {
  }
  }
 }
+
 
 
 

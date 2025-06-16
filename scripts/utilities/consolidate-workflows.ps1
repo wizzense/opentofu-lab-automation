@@ -46,7 +46,7 @@ $WorkflowDir = ".github/workflows"
 Write-Host "`n Analysis:" -ForegroundColor Yellow
 
 if (Test-Path $WorkflowDir) {
- $AllWorkflows = Get-ChildItem "$WorkflowDir/*.yml"  ForEach-Object { $_.Name }
+ $AllWorkflows = Get-ChildItem "$WorkflowDir/*.yml" | ForEach-Object{ $_.Name }
  
  Write-Host "Total workflows found: $($AllWorkflows.Count)" -ForegroundColor Green
  Write-Host "Workflows to archive: $($LegacyWorkflows.Count)" -ForegroundColor Yellow
@@ -74,8 +74,7 @@ if (Test-Path $WorkflowDir) {
  # Create archive directory
  $ArchiveDir = ".github/archived_workflows"
  if (-not (Test-Path $ArchiveDir)) {
- New-Item -ItemType Directory -Path $ArchiveDir -Force | Out-Null
- Write-Host "Created archive directory: $ArchiveDir" -ForegroundColor Green
+ New-Item -ItemType Directory -Path $ArchiveDir -Force | Out-NullWrite-Host "Created archive directory: $ArchiveDir" -ForegroundColor Green
  }
  
  # Move legacy workflows
@@ -138,3 +137,4 @@ Write-Host "- System Health Monitor (system-health-monitor.yml)" -ForegroundColo
 Write-Host "- Auto Test Generation (auto-test-generation*.yml)" -ForegroundColor Gray
 
 Write-Host "`nThis reduces workflow complexity while maintaining all functionality." -ForegroundColor Green
+

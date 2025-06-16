@@ -66,8 +66,7 @@ function Invoke-BackupConsolidation {
             
             # Create backup destination
             if (-not (Test-Path $BackupDestination)) {
-                New-Item -ItemType Directory -Path $BackupDestination -Force | Out-Null
-                Write-CustomLog "Created backup destination directory" "INFO"
+                New-Item -ItemType Directory -Path $BackupDestination -Force | Out-NullWrite-CustomLog "Created backup destination directory" "INFO"
             }
             
             # Build exclusion patterns
@@ -81,7 +80,7 @@ function Invoke-BackupConsolidation {
             foreach ($Pattern in $BackupPatterns) {
                 try {
                     $Files = Get-ChildItem -Path $ProjectRoot -Recurse -File -Filter $Pattern -ErrorAction SilentlyContinue
-                    $FilteredFiles = Files | Where-Object {
+                    $FilteredFiles = Files | Where-Object{
                         $FilePath = $_.FullName
                         $RelativePath = $FilePath.Replace($ProjectRoot, "").TrimStart(char'\', char'/')
                         
@@ -139,8 +138,7 @@ function Invoke-BackupConsolidation {
                     $DestinationDir = Split-Path $DestinationPath -Parent
 
                     if (-not (Test-Path $DestinationDir)) {
-                        New-Item -ItemType Directory -Path $DestinationDir -Force | Out-Null
-                    }
+                        New-Item -ItemType Directory -Path $DestinationDir -Force | Out-Null}
 
                     Move-Item -Path $File.FullName -Destination $DestinationPath -Force
                     Write-CustomLog "Moved $($File.FullName) to $DestinationPath" "INFO"
@@ -175,6 +173,7 @@ function Invoke-BackupConsolidation {
         }
     }
 }
+
 
 
 

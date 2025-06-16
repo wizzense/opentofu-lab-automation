@@ -80,7 +80,7 @@ if ($Name -eq $SoftwareCommandName) { return $null }
         $InstallerCommand = {} # Mock the specific installer command used by the script
     }
     # Merge other additional mocks, giving precedence to AdditionalMocks
-    $AdditionalMocks.GetEnumerator()  ForEach-Object {
+    $AdditionalMocks.GetEnumerator() | ForEach-Object{
         if ($_.Name -ne 'Get-Command') { # Get-Command is handled specially above
             $enabledScenarioMocks$_.Name = $_.Value
         }
@@ -110,7 +110,7 @@ if ($Name -eq $SoftwareCommandName) { return $null }
         'Invoke-LabDownload' = {}
         $InstallerCommand = {}
     }
-    $AdditionalMocks.GetEnumerator()  ForEach-Object {
+    $AdditionalMocks.GetEnumerator() | ForEach-Object{
         if ($_.Name -ne 'Get-Command') {
             $disabledScenarioMocks$_.Name = $_.Value
         }
@@ -140,7 +140,7 @@ if ($Name -eq $SoftwareCommandName) { return PSCustomObject@{ Name = $SoftwareCo
         'Invoke-LabDownload' = {}
         $InstallerCommand = {}
     }
-    $AdditionalMocks.GetEnumerator()  ForEach-Object {
+    $AdditionalMocks.GetEnumerator() | ForEach-Object{
         if ($_.Name -ne 'Get-Command') {
             $alreadyInstalledMocks$_.Name = $_.Value
         }

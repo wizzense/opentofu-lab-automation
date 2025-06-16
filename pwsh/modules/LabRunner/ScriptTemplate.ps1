@@ -22,9 +22,8 @@ function Invoke-LabStep {
 
 if ($Config -is string) {
         if (Test-Path $Config) {
-            $Config = Get-Content -Raw -Path $Config  ConvertFrom-Json
-        } else {
-            try { $Config = $Config  ConvertFrom-Json } catch {}
+            $Config = Get-Content -Raw -Path $Config | ConvertFrom-Json} else {
+            try { $Config = $Config | ConvertFrom-Json} catch {}
         }
     }
     if (-not (Get-Command Write-CustomLog -ErrorAction SilentlyContinue)) {

@@ -41,11 +41,11 @@ function Resolve-MergeConflicts {
  }
  }
  
- $conflictFiles = conflictFiles | Sort-Object -Unique
+ $conflictFiles = conflictFiles | Sort-Object-Unique
  
  if ($conflictFiles.Count -gt 0) {
  Write-Host "FAIL Found $($conflictFiles.Count) files with merge conflicts:" -ForegroundColor Red
- conflictFiles | ForEach-Object { Write-Host " - $_" -ForegroundColor Yellow }
+ conflictFiles | ForEach-Object{ Write-Host " - $_" -ForegroundColor Yellow }
  
  Write-Host ""
  Write-Host " Auto-resolving simple conflicts..." -ForegroundColor Yellow
@@ -295,7 +295,7 @@ function Validate-SystemHealth {
  }
  else {
  Write-Host "WARN Found $($issues.Count) issues:" -ForegroundColor Yellow
- issues | ForEach-Object { Write-Host " - $_" -ForegroundColor Red }
+ issues | ForEach-Object{ Write-Host " - $_" -ForegroundColor Red }
  return $false
  }
 }
@@ -363,6 +363,7 @@ switch ($Action) {
 
 Write-Host ""
 Write-Host " Emergency recovery script completed" -ForegroundColor Green
+
 
 
 

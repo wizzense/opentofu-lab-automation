@@ -213,12 +213,12 @@ $summary = @{
  }
  
  # Sort issues by severity and count
- $sortedIssues = $IssuePatterns.GetEnumerator()  Sort-Object { 
+ $sortedIssues = $IssuePatterns.GetEnumerator() | Sort-Object{ 
  $severityOrder = @{ "Critical" = 4; "High" = 3; "Medium" = 2; "Low" = 1 }
  $severityOrder$_.Value.Severity * 1000 + $_.Value.Count 
  } -Descending
  
- $summary.TopIssues = sortedIssues | Select-Object -First 10
+ $summary.TopIssues = sortedIssues | Select-Object-First 10
  
  return $summary
 }
@@ -235,17 +235,16 @@ function Save-IssueTracking {
 
 # Ensure issue tracking directory exists
  if (-not (Test-Path $IssueTrackingPath)) {
- New-Item -ItemType Directory -Path $IssueTrackingPath -Force | Out-Null
- }
+ New-Item -ItemType Directory -Path $IssueTrackingPath -Force | Out-Null}
  
  # Save current summary
  $currentFile = "$IssueTrackingPath/current-issues.json"
- Summary | ConvertTo-Json -Depth 10  Set-Content $currentFile
+ Summary | ConvertTo-Json-Depth 10  Set-Content $currentFile
  
  # Save historical record
  $date = Get-Date -Format "yyyy-MM-dd-HHmm"
  $historicalFile = "$IssueTrackingPath/issues-$date.json"
- Summary | ConvertTo-Json -Depth 10  Set-Content $historicalFile
+ Summary | ConvertTo-Json-Depth 10  Set-Content $historicalFile
  
  Write-TrackLog "Saved issue tracking to: $currentFile" "SUCCESS"
  Write-TrackLog "Historical record: $historicalFile" "SUCCESS"
@@ -434,16 +433,14 @@ try {
  Save-IssueTracking $summary
  
  if ($IncludePreventionCheck) {
- Run-PreventionChecks  Out-Null
- }
+ Run-PreventionChecks | Out-Null}
  }
  }
  
  'GenerateReport' {
  $currentIssuesFile = "$IssueTrackingPath/current-issues.json"
  if (Test-Path $currentIssuesFile) {
- $summary = Get-Content $currentIssuesFile  ConvertFrom-Json
- $reportFile = Generate-IssueReport $summary
+ $summary = Get-Content $currentIssuesFile | ConvertFrom-Json$reportFile = Generate-IssueReport $summary
  Write-TrackLog "Report generated: $reportFile" "SUCCESS"
  } else {
  Write-TrackLog "No current issues data found. Run -Mode Analyze first." "WARNING"
@@ -453,8 +450,7 @@ try {
  'UpdateChangelog' {
  $currentIssuesFile = "$IssueTrackingPath/current-issues.json"
  if (Test-Path $currentIssuesFile) {
- $summary = Get-Content $currentIssuesFile  ConvertFrom-Json
- $reportFile = "docs/reports/issue-tracking/$(Get-Date -Format "yyyy-MM-dd")-recurring-issues-summary.md"
+ $summary = Get-Content $currentIssuesFile | ConvertFrom-Json$reportFile = "docs/reports/issue-tracking/$(Get-Date -Format "yyyy-MM-dd")-recurring-issues-summary.md"
  Update-ChangelogWithIssues $summary $reportFile
  } else {
  Write-TrackLog "No current issues data found. Run -Mode Analyze first." "WARNING"
@@ -471,8 +467,7 @@ try {
  Update-ChangelogWithIssues $summary $reportFile
  
  if ($IncludePreventionCheck) {
- Run-PreventionChecks  Out-Null
- }
+ Run-PreventionChecks | Out-Null}
  
  Write-TrackLog "Complete tracking cycle finished" "SUCCESS"
  }
@@ -483,6 +478,7 @@ catch {
  Write-TrackLog "Tracking failed: $($_.Exception.Message)" "ERROR"
  exit 1
 }
+
 
 
 

@@ -100,8 +100,7 @@ function Test-PatchingRequirements {
     foreach ($module in $requiredModules) {
         Write-PatchLog "Checking for module: $($module.Name)" "INFO" -LogFile $LogFile
         
-        $moduleInstalled = Get-Module -Name $module.Name -ListAvailable  
-                           Where-Object { $_.Version -ge $module.MinimumVersion }
+        $moduleInstalled = Get-Module -Name $module.Name -ListAvailable | Where-Object{ $_.Version -ge $module.MinimumVersion }
         
         if ($moduleInstalled) {
             Write-PatchLog " Module $($module.Name) v$($moduleInstalled.Version) is available" "SUCCESS" -LogFile $LogFile

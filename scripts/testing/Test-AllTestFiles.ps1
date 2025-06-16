@@ -98,7 +98,7 @@ function Test-SingleTestFile {
         # Test 2: PowerShell syntax validation
         try {
             $tokens = System.Management.Automation.PSParser::Tokenize($content, ref$null)
-            $syntaxErrors = tokens | Where-Object { $_.Type -eq 'SyntaxError' }
+            $syntaxErrors = tokens | Where-Object{ $_.Type -eq 'SyntaxError' }
             if ($syntaxErrors) {
                 $errors += "Syntax errors found: $($syntaxErrors.Content -join ', ')"
                 $isValid = $false
@@ -171,9 +171,9 @@ function Test-SingleTestFile {
         IsValid = $isValid
         Errors = $errors
         Warnings = $warnings
-        HasSyntaxErrors = (errors | Where-Object { $_ -match 'syntaxparsing' }).Count -gt 0
-        HasStructureErrors = (errors | Where-Object { $_ -match 'DescribeContextIt' }).Count -gt 0
-        HasPesterErrors = (errors | Where-Object { $_ -match 'PesterShould' }).Count -gt 0
+        HasSyntaxErrors = (errors | Where-Object{ $_ -match 'syntaxparsing' }).Count -gt 0
+        HasStructureErrors = (errors | Where-Object{ $_ -match 'DescribeContextIt' }).Count -gt 0
+        HasPesterErrors = (errors | Where-Object{ $_ -match 'PesterShould' }).Count -gt 0
     }
 }
 
@@ -230,7 +230,7 @@ function Export-ValidationResults {
     switch ($Format.ToLower()) {
         "json" {
             $outputFile = "$OutputPath-$timestamp.json"
-            Results | ConvertTo-Json -Depth 10  Set-Content $outputFile
+            Results | ConvertTo-Json-Depth 10  Set-Content $outputFile
             Write-Host "Results exported to: $outputFile" -ForegroundColor Cyan
         }
         "html" {
@@ -330,4 +330,5 @@ if ($results.InvalidFiles -gt 0 -and -not $AutoFix) {
 } else {
     exit 0
 }
+
 

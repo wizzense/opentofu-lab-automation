@@ -72,8 +72,8 @@ function Repair-SyntaxError {
                 $braceCount = 0
                 for ($i = $errorLine; $i -ge 0; $i--) {
                     $lineText = $lines$i
-                    $openBraces = ($lineText.ToCharArray()  Where-Object { $_ -eq '{' }).Count
-                    $closeBraces = ($lineText.ToCharArray()  Where-Object { $_ -eq '}' }).Count
+                    $openBraces = ($lineText.ToCharArray() | Where-Object{ $_ -eq '{' }).Count
+                    $closeBraces = ($lineText.ToCharArray() | Where-Object{ $_ -eq '}' }).Count
                     $braceCount += ($openBraces - $closeBraces)
                     
                     if ($braceCount -gt 0) {

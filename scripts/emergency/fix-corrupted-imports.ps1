@@ -59,8 +59,7 @@ Write-EmergencyLog "Starting emergency fix for corrupted import statements..." "
 $manifest = $null
 try {
     $manifestPath = Join-Path $ProjectRoot "PROJECT-MANIFEST.json"
-    $manifest = Get-Content $manifestPath -Raw  ConvertFrom-Json
-    Write-EmergencyLog "Loaded project manifest successfully" "SUCCESS"
+    $manifest = Get-Content $manifestPath -Raw | ConvertFrom-JsonWrite-EmergencyLog "Loaded project manifest successfully" "SUCCESS"
 } catch {
     Write-EmergencyLog "Failed to load manifest: $($_.Exception.Message)" "ERROR"
     exit 1
@@ -69,7 +68,7 @@ try {
 # Define correct import paths from manifest
 $correctPaths = @{}
 if ($manifest -and $manifest.core -and $manifest.core.modules) {
-    $manifest.core.modules.PSObject.Properties  ForEach-Object {
+    $manifest.core.modules.PSObject.Properties | ForEach-Object{
         $moduleName = $_.Name
         $modulePath = $_.Value.path
         $correctPaths$moduleName = $modulePath

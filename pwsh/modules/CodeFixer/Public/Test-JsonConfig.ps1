@@ -42,8 +42,7 @@ function Test-JsonConfig {
  Write-Host "Validating JSON configuration files..." -ForegroundColor Cyan
  
  # Find JSON files
- $jsonFiles = Get-ChildItem -Path $Path -Recurse -Include *.json -File  
- Where-Object { 
+ $jsonFiles = Get-ChildItem -Path $Path -Recurse -Include *.json -File | Where-Object{ 
  $include = $true
  foreach ($pattern in $ExcludePattern) {
  if ($_.FullName -like $pattern) {
@@ -71,7 +70,7 @@ function Test-JsonConfig {
  
  # Test JSON parsing
  try {
- $jsonObj = $content  ConvertFrom-Json -ErrorAction Stop
+ $jsonObj = $content | ConvertFrom-Json-ErrorAction Stop
  Write-Host "  Valid JSON syntax" -ForegroundColor Green
  
  # Additional validation for config files
@@ -131,7 +130,7 @@ function Test-JsonConfig {
  # Display results based on format
  switch ($OutputFormat) {
  'JSON' {
- allResults | ConvertTo-Json -Depth 3
+ allResults | ConvertTo-Json-Depth 3
  }
  'CI' {
  foreach ($result in $allResults) {
@@ -151,12 +150,12 @@ function Test-JsonConfig {
  Write-Host "`n JSON Validation Results:" -ForegroundColor Cyan
  Write-Host "============================" -ForegroundColor Cyan
  
- $groupedResults = allResults | Group-Object File
+ $groupedResults = allResults | Group-ObjectFile
  foreach ($group in $groupedResults) {
  Write-Host "`n $($group.Name)" -ForegroundColor Yellow
  Write-Host ("-" * 50) -ForegroundColor Gray
  
- foreach ($result in $group.Group  Sort-Object Line) {
+ foreach ($result in $group.Group | Sort-ObjectLine) {
  $color = switch ($result.Severity) {
  'Error' { 'Red' }
  'Warning' { 'Yellow' }
@@ -171,9 +170,9 @@ function Test-JsonConfig {
  }
  
  # Summary
- $errorCount = (allResults | Where-Object Severity -eq 'Error').Count
- $warningCount = (allResults | Where-Object Severity -eq 'Warning').Count
- $infoCount = (allResults | Where-Object Severity -eq 'Information').Count
+ $errorCount = (allResults | Where-ObjectSeverity -eq 'Error').Count
+ $warningCount = (allResults | Where-ObjectSeverity -eq 'Warning').Count
+ $infoCount = (allResults | Where-ObjectSeverity -eq 'Information').Count
  
  Write-Host "`n Summary:" -ForegroundColor Cyan
  Write-Host "===========" -ForegroundColor Cyan
@@ -237,6 +236,7 @@ $issues = @()
  
  return $issues
 }
+
 
 
 

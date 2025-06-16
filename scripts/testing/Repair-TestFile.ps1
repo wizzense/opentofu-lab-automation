@@ -76,7 +76,7 @@ $results = Invoke-ScriptAnalyzer -Path $FilePath -Settings $analyzerSettings
 
 if ($results) {
     Write-Host "Script Analyzer found $($results.Count) issues in $FilePath" -ForegroundColor Yellow
-    results | ForEach-Object {
+    results | ForEach-Object{
         Write-Host "$($_.Severity) Line $($_.Line): $($_.Message)" -ForegroundColor Yellow
     }
 }
@@ -89,6 +89,7 @@ try {
     Write-Host "FAIL Test file validation failed: $($_.Exception.Message)" -ForegroundColor Red
     throw
 }
+
 
 
 

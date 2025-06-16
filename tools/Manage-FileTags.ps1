@@ -49,12 +49,11 @@ function Initialize-TagIndex {
  }
  }
  
- initialIndex | ConvertTo-Json -Depth 5  Set-Content $tagIndexPath
+ initialIndex | ConvertTo-Json-Depth 5  Set-Content $tagIndexPath
  Write-Host " Initialized tag index: $tagIndexPath" -ForegroundColor Green
  return $initialIndex
  } else {
- return Get-Content $tagIndexPath  ConvertFrom-Json
- }
+ return Get-Content $tagIndexPath | ConvertFrom-Json}
 }
 
 function Get-AutoTags {
@@ -98,7 +97,7 @@ $autoTags = @()
  if ($Content -match "functionparam\(") { $autoTags += "function-definition" }
  }
  
- return autoTags | Sort-Object -Unique
+ return autoTags | Sort-Object-Unique
 }
 
 function Set-FileTags {
@@ -132,7 +131,7 @@ $index = Initialize-TagIndex
  }
  
  # Save updated index
- index | ConvertTo-Json -Depth 5  Set-Content $tagIndexPath
+ index | ConvertTo-Json-Depth 5  Set-Content $tagIndexPath
  Write-Host " Tagged '$FilePath' with: $($Tags -join ', ')" -ForegroundColor Green
 }
 
@@ -182,7 +181,7 @@ function Update-AutoTags {
  $updated = 0
  
  # Scan all files in project
- $allFiles = Get-ChildItem -Recurse -File  Where-Object { 
+ $allFiles = Get-ChildItem -Recurse -File | Where-Object{ 
  $_.FullName -notlike "*\.git*" -and
  $_.FullName -notlike "*node_modules*" -and
  $_.Name -ne "file-tags-index.json"
@@ -204,7 +203,7 @@ function Update-AutoTags {
  $existingTags = if ($index.files.$relativePath) { $index.files.$relativePath.tags } else { @() }
  
  # Merge auto tags with existing manual tags
- $allTags = ($existingTags + $autoTags)  Sort-Object -Unique
+ $allTags = ($existingTags + $autoTags) | Sort-Object-Unique
  
  # Update only if changed
  $comparison = Compare-Object $existingTags $allTags -ErrorAction SilentlyContinue
@@ -231,7 +230,7 @@ function Show-TagSummary {
  $tagCounts$tag = $index.tags.$tag.Count
  }
  
- $tagCounts.GetEnumerator()  Sort-Object Value -Descending  ForEach-Object {
+ $tagCounts.GetEnumerator() | Sort-ObjectValue -Descending | ForEach-Object{
  $bar = "█" * Math::Min($_.Value, 20)
  Write-Host " $($_.Key.PadRight(15)) │$bar │ $($_.Value) files" -ForegroundColor White
  }
@@ -247,15 +246,15 @@ function Show-TagSummary {
  }
  
  # Show untagged files
- $allFiles = Get-ChildItem -File  Where-Object { $_.Name -ne "file-tags-index.json" }
- $untagged = allFiles | Where-Object { 
+ $allFiles = Get-ChildItem -File | Where-Object{ $_.Name -ne "file-tags-index.json" }
+ $untagged = allFiles | Where-Object{ 
  $relativePath = Resolve-Path $_.FullName -Relative
  -not $index.files.$relativePath
  }
  
  if ($untagged.Count -gt 0) {
  Write-Host "`nWARN Untagged Files ($($untagged.Count)):" -ForegroundColor Yellow
- untagged | ForEach-Object { Write-Host " $($_.Name)" -ForegroundColor Gray }
+ untagged | ForEach-Object{ Write-Host " $($_.Name)" -ForegroundColor Gray }
  }
 }
 
@@ -267,11 +266,11 @@ if ($ListTags) {
 } elseif ($FilePath) {
  if ($AddTags) {
  $existingTags = Get-FileTags $FilePath
- $newTags = ($existingTags + $AddTags)  Sort-Object -Unique
+ $newTags = ($existingTags + $AddTags) | Sort-Object-Unique
  Set-FileTags $FilePath $newTags
  } elseif ($RemoveTags) {
  $existingTags = Get-FileTags $FilePath
- $newTags = existingTags | Where-Object { $_ -notin $RemoveTags }
+ $newTags = existingTags | Where-Object{ $_ -notin $RemoveTags }
  Set-FileTags $FilePath $newTags
  } else {
  $tags = Get-FileTags $FilePath
@@ -302,6 +301,7 @@ if ($ListTags) {
  Write-Host " List all tags: $($MyInvocation.MyCommand.Name) -ListTags"
  Write-Host " Update index: $($MyInvocation.MyCommand.Name) -UpdateIndex"
 }
+
 
 
 
