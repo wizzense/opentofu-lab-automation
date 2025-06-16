@@ -17,8 +17,17 @@ For guidance on writing your own repository instructions, see
 - **CodeFixer**: /pwsh/modules/CodeFixer/
 - **LabRunner**: /pwsh/modules/LabRunner/
 - **BackupManager**: /pwsh/modules/BackupManager/
+- **PatchManager**: /pwsh/modules/PatchManager/ (NEW - Enhanced with Copilot Integration)
 
 ### Key Functions Available
+#### PatchManager (NEW - Enhanced Copilot Integration)
+```powershell
+Import-Module "/pwsh/modules/PatchManager/"
+Invoke-GitControlledPatch
+Invoke-QuickRollback
+Invoke-CopilotSuggestionHandler  # NEW - Automated Copilot suggestion implementation
+```
+
 #### CodeFixer
 ``powershell
 Import-Module "/pwsh/modules/CodeFixer/"
@@ -97,8 +106,35 @@ $manifest.core.modules # View all modules
 - **Automation**: Full YAML validation and auto-fix
 - **Cross-Platform**: Windows, Linux, macOS deployment
 - **Real-time**: Live validation and error correction
+- **Copilot Integration**: Automated suggestion implementation with background monitoring
 
 ## Advanced PatchManager Features (NEW)
+
+### Automated Copilot Suggestion Implementation
+PatchManager now includes advanced Copilot integration that handles the reality of delayed reviews:
+
+```powershell
+# Single-run mode: Check and implement existing suggestions
+Invoke-CopilotSuggestionHandler -PullRequestNumber 123 -AutoCommit -ValidateAfterFix
+
+# Background monitoring mode: Continuously monitor for new suggestions
+Invoke-CopilotSuggestionHandler -PullRequestNumber 123 -BackgroundMonitor -MonitorIntervalSeconds 300 -AutoCommit
+
+# Real workflow example
+Invoke-GitControlledPatch -PatchDescription "feat: new feature" -PatchOperation {
+    # Your changes
+} -AutoCommitUncommitted -CreatePullRequest
+
+# Then start background monitoring for Copilot suggestions
+Invoke-CopilotSuggestionHandler -PullRequestNumber $prNumber -BackgroundMonitor -AutoCommit
+```
+
+### Benefits of Copilot Integration:
+- **Handles Review Delays**: Accounts for natural delay in Copilot reviews (minutes to hours)
+- **Automated Implementation**: Suggestions implemented automatically when detected
+- **Comprehensive Logging**: Full audit trail with timestamped logs
+- **Human-Ready Reviews**: PRs have suggestions already implemented before human review
+- **Faster Iterations**: Reduces back-and-forth between developers and reviewers
 
 ### Anti-Recursive Branching Protection
 PatchManager now prevents branch explosion with intelligent branch handling:
@@ -179,3 +215,18 @@ Invoke-GitControlledPatch -PatchDescription "feat: new functionality" -PatchOper
 # Emergency rollback if needed
 Invoke-QuickRollback -RollbackType "LastPatch" -Force
 ```
+
+### Automated Copilot Review Workflow
+```powershell
+# Complete workflow with automated Copilot suggestion handling
+$patchResult = Invoke-GitControlledPatch -PatchDescription "feat: implement new feature" -PatchOperation {
+    # Your implementation
+} -AutoCommitUncommitted -CreatePullRequest
+
+# Start background monitoring for Copilot suggestions (handles delays automatically)
+if ($patchResult.Success -and $patchResult.PullRequestNumber) {
+    Invoke-CopilotSuggestionHandler -PullRequestNumber $patchResult.PullRequestNumber -BackgroundMonitor -AutoCommit -LogPath "logs/copilot-auto-fix.log"
+}
+```
+
+## Critical Guidelines

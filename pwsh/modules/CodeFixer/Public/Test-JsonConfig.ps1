@@ -221,15 +221,14 @@ $issues = @()
  }
  }
  
- # Validate URLs if present
- if ($JsonObject.PSObject.Properties['RepoUrl'] -and $JsonObject.RepoUrl) {
+ # Validate URLs if present if ($JsonObject.PSObject.Properties['RepoUrl'] -and $JsonObject.RepoUrl) {
  if ($JsonObject.RepoUrl -notmatch '^https?://') {
  $issues += [PSCustomObject]@{
  File = $FilePath
  Line = 1
  Column = 1
  Severity = "Warning"
- Message = "RepoUrl should start with http:/ or https:/"
+ Message = "RepoUrl should start with http:// or https://"
  RuleName = "InvalidUrl"
  ScriptName = Split-Path -Path $FilePath -Leaf
  }
