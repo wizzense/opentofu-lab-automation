@@ -218,7 +218,7 @@ $summary = @{
  $severityOrder$_.Value.Severity * 1000 + $_.Value.Count 
  } -Descending
  
- $summary.TopIssues = sortedIssues | Select-Object-First 10
+ $summary.TopIssues = sortedIssues | Select-Object -First 10
  
  return $summary
 }
@@ -478,6 +478,7 @@ catch {
  Write-TrackLog "Tracking failed: $($_.Exception.Message)" "ERROR"
  exit 1
 }
+
 
 
 

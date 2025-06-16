@@ -65,8 +65,8 @@ function Get-BackupStatistics {
             $AverageSize = math::Round($TotalSize / $BackupFiles.Count, 2)
             
             # Find oldest and newest files
-            $OldestFile = BackupFiles | Sort-ObjectLastWriteTime | Select-Object-First 1
-            $NewestFile = BackupFiles | Sort-ObjectLastWriteTime -Descending | Select-Object-First 1
+            $OldestFile = BackupFiles | Sort-ObjectLastWriteTime | Select-Object -First 1
+            $NewestFile = BackupFiles | Sort-ObjectLastWriteTime -Descending | Select-Object -First 1
             
             # Group by file extension
             $FileTypes = BackupFiles | Group-ObjectExtension | ForEach-Object{
@@ -130,5 +130,6 @@ function Get-BackupStatistics {
         throw $_
     }
 }
+
 
 

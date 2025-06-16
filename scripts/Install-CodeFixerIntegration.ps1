@@ -365,7 +365,8 @@ $timestamp = Get-Date -Format "yyyyMMdd-HHmmss"
 if ($SaveResults -and -not string::IsNullOrEmpty($OutputDirectory)) {
     $reportPath = Join-Path $PSScriptRoot $OutputDirectory
     if (-not (Test-Path $reportPath)) {
-        New-Item -Path $reportPath -ItemType Directory -Force | Out-NullWrite-Host "Created report directory: $reportPath" -ForegroundColor Cyan
+        New-Item -Path $reportPath -ItemType Directory -Force | Out-Null
+Write-Host "Created report directory: $reportPath" -ForegroundColor Cyan
     }
 }
 
@@ -700,6 +701,7 @@ catch {
     Write-Host "Full error: $_" -ForegroundColor Red
     exit 1
 }
+
 
 
 

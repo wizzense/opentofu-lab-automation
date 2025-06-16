@@ -92,7 +92,8 @@ try {
             Write-Host "   Would rollback with backup: $($rollbackResult.Success)" -ForegroundColor White
               # Emergency rollback demonstration
             Write-Host "2. Emergency rollback capability:" -ForegroundColor Cyan
-            Invoke-QuickRollback -RollbackType "Emergency" -WhatIf | Out-NullWrite-Host "   Emergency rollback available: Available" -ForegroundColor White
+            Invoke-QuickRollback -RollbackType "Emergency" -WhatIf | Out-Null
+Write-Host "   Emergency rollback available: Available" -ForegroundColor White
             
             Write-Host "`nRollback capabilities ready for instant recovery!" -ForegroundColor Green
         }
@@ -162,3 +163,4 @@ try {
 
 Write-Host "`nEnhanced PatchManager demonstration completed!" -ForegroundColor Green
 Write-Host "Ready for production use with comprehensive change control." -ForegroundColor Cyan
+

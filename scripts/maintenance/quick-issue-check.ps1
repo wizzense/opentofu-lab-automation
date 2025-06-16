@@ -87,7 +87,8 @@ function Test-KnownCommands {
  $issues = @()
  foreach ($cmd in $KnownIssues.MissingCommands) {
  try {
- Get-Command $cmd -ErrorAction Stop | Out-NullWrite-QuickLog " Command '$cmd' is available" "SUCCESS"
+ Get-Command $cmd -ErrorAction Stop | Out-Null
+Write-QuickLog " Command '$cmd' is available" "SUCCESS"
  }
  catch {
  $issues += "Missing command: $cmd"
@@ -239,7 +240,7 @@ function Fix-SyntaxError {
 function Fix-ImportPath {
  param(string$FileName)
  
- $filePath = Get-ChildItem "$ProjectRoot/tests" -Name $FileName -Recurse | Select-Object-First 1
+ $filePath = Get-ChildItem "$ProjectRoot/tests" -Name $FileName -Recurse | Select-Object -First 1
  if ($filePath) {
  try {
  pwsh -File "$ProjectRoot/fix-import-issues.ps1" -TargetFile $filePath.FullName -ErrorAction SilentlyContinue
@@ -305,5 +306,7 @@ catch {
  Write-QuickLog "Quick check failed: $($_.Exception.Message)" "ERROR"
  exit 1
 }
+
+
 
 

@@ -52,7 +52,7 @@ $forcePattern = fileList | ForEach-Object{
             Type = "RepeatedForceParameters"
             ForceCount = $forceCount
             Severity = if ($forceCount -gt 10) { "CRITICAL" } elseif ($forceCount -gt 5) { "HIGH" } else { "MEDIUM" }
-            SampleLine = ($content -split "`n" | Where-Object{ $_ -match '-Force.*-Force' } | Select-Object-First 1)
+            SampleLine = ($content -split "`n" | Where-Object{ $_ -match '-Force.*-Force' } | Select-Object -First 1)
         }
         
         $AuditResults.CorruptedFiles += $corruption
@@ -71,7 +71,7 @@ $pathPattern = Get-ChildItem -Path "." -Recurse -Include "*.ps1" | ForEach-Objec
             File = $_.FullName
             Type = "MalformedPaths"
             Severity = "HIGH"
-            SampleLine = ($content -split "`n" | Where-Object{ $_ -match '/.*/C:\\.*/Import-Module.*/.*\.*' } | Select-Object-First 1)
+            SampleLine = ($content -split "`n" | Where-Object{ $_ -match '/.*/C:\\.*/Import-Module.*/.*\.*' } | Select-Object -First 1)
         }
         
         $AuditResults.CorruptedFiles += $corruption
@@ -157,7 +157,7 @@ foreach ($group in $severityGroups) {
 
 # Find the worst affected files
 Write-Host "`n TOP 10 MOST CORRUPTED FILES" -ForegroundColor Red
-$worstFiles = $AuditResults.CorruptedFiles | Where-Object{ $_.ForceCount } | Sort-ObjectForceCount -Descending | Select-Object-First 10
+$worstFiles = $AuditResults.CorruptedFiles | Where-Object{ $_.ForceCount } | Sort-ObjectForceCount -Descending | Select-Object -First 10
 
 foreach ($file in $worstFiles) {
     $fileName = Split-Path $file.File -Leaf
@@ -240,6 +240,7 @@ Write-Host "`n� EMERGENCY AUDIT COMPLETE" -ForegroundColor Red
 Write-Host "Next steps: Build proper validation systems using this data as test cases" -ForegroundColor Yellow
 
 return $AuditResults
+
 
 
 

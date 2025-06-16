@@ -252,7 +252,8 @@ if (-not $Force -and -not $WhatIf) {
  try {
  # Create target directory if it doesn't exist
  if (-not (Test-Path $targetDir)) {
- New-Item -ItemType Directory -Path $targetDir -Force | Out-NullWrite-Host "PASS Created directory: $targetDir" -ForegroundColor Green
+ New-Item -ItemType Directory -Path $targetDir -Force | Out-Null
+Write-Host "PASS Created directory: $targetDir" -ForegroundColor Green
  }
  
  # Move the file
@@ -306,6 +307,7 @@ try {
 } catch {
  Write-Error "Organization failed: $_"
 }
+
 
 
 

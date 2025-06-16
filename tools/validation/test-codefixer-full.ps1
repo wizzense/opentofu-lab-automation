@@ -37,7 +37,8 @@ $testDir = Join-Path $PSScriptRoot "test-output"
 if (Test-Path $testDir) {
  Remove-Item $testDir -Recurse -Force
 }
-New-Item -ItemType Directory -Path $testDir -Force | Out-NullWrite-Host "`n� Created test directory: $testDir" -ForegroundColor Green
+New-Item -ItemType Directory -Path $testDir -Force | Out-Null
+Write-Host "`n� Created test directory: $testDir" -ForegroundColor Green
 
 # Test 1: Load CodeFixer module functions
 Write-Host "`n1/6 Testing CodeFixer module loading..." -ForegroundColor Yellow
@@ -269,6 +270,7 @@ if ($failCount -eq 0) {
  Write-Host "`n Some tests failed. Please review the results above." -ForegroundColor Red
  exit 1
 }
+
 
 
 

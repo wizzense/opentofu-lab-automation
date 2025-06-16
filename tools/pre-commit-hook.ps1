@@ -127,7 +127,8 @@ try {
  # Test: Basic syntax
  try {
  `$content = Get-Content `$file -Raw -ErrorAction Stop
- [System.Management.Automation.PSParser]::Tokenize(`$content, [ref]`$null) | Out-NullWrite-Host " [PASS] Valid syntax" -ForegroundColor Green
+ [System.Management.Automation.PSParser]::Tokenize(`$content, [ref]`$null) | Out-Null
+Write-Host " [PASS] Valid syntax" -ForegroundColor Green
  } catch {
  Write-Host " [FAIL] SYNTAX ERROR: `$(`$_.Exception.Message)" -ForegroundColor Red
  `$hasErrors = `$true
@@ -188,7 +189,8 @@ Param([string]`$TestParam
 Write-Host "Test script"
 "@
  
- New-Item -Path "temp" -ItemType Directory -Force | Out-NullSet-Content -Path $testFile -Value $testContent
+ New-Item -Path "temp" -ItemType Directory -Force | Out-Null
+Set-Content -Path $testFile -Value $testContent
  
  try {
  # Stage the test file
@@ -228,6 +230,7 @@ if ($Install) {
  Write-Host " Uninstall: .\Pre-Commit-Hook.ps1 -Uninstall" -ForegroundColor Gray
  Write-Host " Test: .\Pre-Commit-Hook.ps1 -Test" -ForegroundColor Gray
 }
+
 
 
 

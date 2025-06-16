@@ -79,7 +79,7 @@ if (-not (Test-Path $ScriptPath)) {
     }
     
     # Find script parameters
-    $paramBlock = $ast.FindAll({ $args0 -is System.Management.Automation.Language.ParamBlockAst }, $true) | Select-Object-First 1
+    $paramBlock = $ast.FindAll({ $args0 -is System.Management.Automation.Language.ParamBlockAst }, $true) | Select-Object -First 1
     if ($paramBlock) {
         $analysis.Parameters = $paramBlock.Parameters.Name.VariablePath.UserPath
     }
@@ -650,6 +650,7 @@ if ($ScriptPath) {
         }
     }
 }
+
 
 
 

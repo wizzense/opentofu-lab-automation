@@ -57,7 +57,7 @@ function Get-ModuleInfo {
     }
     
     # Get module manifest info
-    $manifestFile = Get-ChildItem "$ModulePath/*.psd1" -ErrorAction SilentlyContinue | Select-Object-First 1
+    $manifestFile = Get-ChildItem "$ModulePath/*.psd1" -ErrorAction SilentlyContinue | Select-Object -First 1
     if ($manifestFile) {
         try {
             $manifestData = Import-PowerShellDataFile $manifestFile.FullName
@@ -255,5 +255,6 @@ try {
     Write-ManifestLog "Failed to update manifest: $($_.Exception.Message)" "ERROR"
     exit 1
 }
+
 
 

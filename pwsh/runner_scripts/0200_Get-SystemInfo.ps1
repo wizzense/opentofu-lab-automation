@@ -34,7 +34,7 @@ Invoke-LabStep -Config $Config -Body {
                 $computer = Get-CimInstance -ClassName Win32_ComputerSystem
                 $os       = Get-CimInstance -ClassName Win32_OperatingSystem
                 $net      = Get-NetIPConfiguration
-                $hotfix   = Get-HotFix | Sort-ObjectInstalledOn -Descending | Select-Object-First 1
+                $hotfix   = Get-HotFix | Sort-ObjectInstalledOn -Descending | Select-Object -First 1
                 $features = Get-WindowsFeature | Where-Object{ $_.Installed } | Select-Object-ExpandProperty Name
                 $disks    = Get-Disk | ForEach-Object{
                     $disk = $_
@@ -63,7 +63,7 @@ Invoke-LabStep -Config $Config -Body {
             'Linux' {
                 $computer = (hostname)
                 $addresses = System.Net.NetworkInformation.NetworkInterface::GetAllNetworkInterfaces() | Where-Object{ $_.OperationalStatus -eq 'Up' } | ForEach-Object{ $_.GetIPProperties().UnicastAddresses } | Where-Object{ $_.Address.AddressFamily -eq System.Net.Sockets.AddressFamily::InterNetwork } | ForEach-Object{ $_.Address.ToString() } | Sort-Object-Unique
-                $gateway = System.Net.NetworkInformation.NetworkInterface::GetAllNetworkInterfaces() | ForEach-Object{ $_.GetIPProperties().GatewayAddresses } | Where-Object{ $_.Address.AddressFamily -eq System.Net.Sockets.AddressFamily::InterNetwork } | Select-Object-First 1 -ExpandProperty Address | ForEach-Object{ $_.ToString() }
+                $gateway = System.Net.NetworkInformation.NetworkInterface::GetAllNetworkInterfaces() | ForEach-Object{ $_.GetIPProperties().GatewayAddresses } | Where-Object{ $_.Address.AddressFamily -eq System.Net.Sockets.AddressFamily::InterNetwork } | Select-Object -First 1 -ExpandProperty Address | ForEach-Object{ $_.ToString() }
                 $osVersion = (uname -sr)
                 $disks = System.IO.DriveInfo::GetDrives() | Where-Object{ $_.IsReady } | ForEach-Object{
                         pscustomobject@{
@@ -84,7 +84,7 @@ Invoke-LabStep -Config $Config -Body {
             'MacOS' {
                 $computer = (hostname)
                 $addresses = System.Net.NetworkInformation.NetworkInterface::GetAllNetworkInterfaces() | Where-Object{ $_.OperationalStatus -eq 'Up' } | ForEach-Object{ $_.GetIPProperties().UnicastAddresses } | Where-Object{ $_.Address.AddressFamily -eq System.Net.Sockets.AddressFamily::InterNetwork } | ForEach-Object{ $_.Address.ToString() } | Sort-Object-Unique
-                $gateway = System.Net.NetworkInformation.NetworkInterface::GetAllNetworkInterfaces() | ForEach-Object{ $_.GetIPProperties().GatewayAddresses } | Where-Object{ $_.Address.AddressFamily -eq System.Net.Sockets.AddressFamily::InterNetwork } | Select-Object-First 1 -ExpandProperty Address | ForEach-Object{ $_.ToString() }
+                $gateway = System.Net.NetworkInformation.NetworkInterface::GetAllNetworkInterfaces() | ForEach-Object{ $_.GetIPProperties().GatewayAddresses } | Where-Object{ $_.Address.AddressFamily -eq System.Net.Sockets.AddressFamily::InterNetwork } | Select-Object -First 1 -ExpandProperty Address | ForEach-Object{ $_.ToString() }
                 $osVersion = (uname -sr)
                 $disks = System.IO.DriveInfo::GetDrives() | Where-Object{ $_.IsReady } | ForEach-Object{
                         pscustomobject@{
@@ -121,6 +121,7 @@ if ($MyInvocation.InvocationName -ne '.') {
     Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
 }
 Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
+
 
 
 

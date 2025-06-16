@@ -123,7 +123,7 @@ try {
 Write-Host "`n5⃣ Testing JSON Config Validation..." -ForegroundColor Yellow
 try {
  # Find some JSON config files to test
- $jsonFiles = Get-ChildItem -Path "/workspaces/opentofu-lab-automation/configs" -Recurse -Include "*.json" -File | Select-Object-First 3
+ $jsonFiles = Get-ChildItem -Path "/workspaces/opentofu-lab-automation/configs" -Recurse -Include "*.json" -File | Select-Object -First 3
  
  if ($jsonFiles.Count -gt 0) {
  foreach ($jsonFile in $jsonFiles) {
@@ -189,6 +189,7 @@ Write-Host "`nNext steps:" -ForegroundColor Cyan
 Write-Host "1. Run 'Invoke-ImportAnalysis -AutoFix' to fix any remaining import issues" -ForegroundColor White
 Write-Host "2. Run 'Invoke-Pester tests/' to verify all tests pass" -ForegroundColor White
 Write-Host "3. Run 'Invoke-PowerShellLint .' to lint the entire project" -ForegroundColor White
+
 
 
 

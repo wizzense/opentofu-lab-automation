@@ -13,7 +13,8 @@ param(
 
 
 $tempDir = Join-Path (System.IO.Path::GetTempPath()) "gh-artifacts-$(System.Guid::NewGuid())"
-New-Item -ItemType Directory -Path tempDir | | Out-Null$downloadArgs = @{}
+New-Item -ItemType Directory -Path $tempDir | Out-Null
+$downloadArgs = @{}
 . $PSScriptRoot/Download-Archive.ps1
 $downloadArgs = Get-GhDownloadArgs
 $useGh = $downloadArgs.ContainsKey('UseGh')
@@ -90,7 +91,7 @@ if (Test-Path (Join-Path $tempDir 'results.zip')) {
     exit 1
 }
 
-$resultsFile = Get-ChildItem -Path $resDir -Filter *.xml -Recurse | Select-Object-First 1
+$resultsFile = Get-ChildItem -Path $resDir -Filter *.xml -Recurse | Select-Object -First 1
 if (-not $resultsFile) {
     Write-Host 'Results file not found.' -ForegroundColor Yellow
     exit 1
@@ -103,6 +104,7 @@ if ($failed) {
 } else {
     Write-Host 'All tests passed.' -ForegroundColor Green
 }
+
 
 
 

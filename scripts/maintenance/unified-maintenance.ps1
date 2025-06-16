@@ -433,7 +433,7 @@ function Show-HealthIssues {
         # Show sample affected files (max 5)
         if ($issue.Files -and $issue.Files.Count -gt 0) {
             Write-Host "  Sample affected files:" -ForegroundColor White
-            $sampleFiles = $issue.Files | Select-Object-First 5
+            $sampleFiles = $issue.Files | Select-Object -First 5
             foreach ($file in $sampleFiles) {
                 Write-Host "    - $file" -ForegroundColor Gray
             }
@@ -933,6 +933,7 @@ foreach ($Directory in $DirectoriesToClean) {
 # Finalize log
 "Maintenance completed at $(Get-Date)"  Out-File -FilePath $LogFile -Append -Encoding UTF8
 Write-Host "Maintenance log saved to $LogFile" -ForegroundColor Green
+
 
 
 

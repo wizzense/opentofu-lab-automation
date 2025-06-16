@@ -306,7 +306,8 @@ if ($configOption -match "https://") {
 } else {
     $localConfigDir = Join-Path (Join-Path $scriptRoot "configs") "config_files"
     if (!(Test-Path $localConfigDir)) {
-        New-Item -ItemType Directory -Path localConfigDir | | Out-Null}
+        New-Item -ItemType Directory -Path $localConfigDir | Out-Null
+    }
     $configFiles = Get-ChildItem -Path $localConfigDir -Filter '*.json' -File
     if ($configFiles.Count -gt 1) {
         Write-CustomLog "Multiple configuration files found:" "INFO"
@@ -641,7 +642,8 @@ if (!(Test-Path $repoPath)) {
             Push-Location $repoPath
             try {
                 # Restore files that can be checked out on Windows
-                & "$gitPath" restore --source=HEAD :/ 2>&1 | Out-NullWrite-CustomLog "Attempted file restoration. Repository may be partially functional."
+                & "$gitPath" restore --source=HEAD :/ 2>&1 | Out-Null
+Write-CustomLog "Attempted file restoration. Repository may be partially functional."
                 $gitExit = 0  # Consider this a success for Windows
             } catch {
                 Write-CustomLog "File restoration failed: $_"
@@ -760,6 +762,7 @@ if ($exitCode -ne 0) {
 
 Write-CustomLog "`n=== Kicker script finished successfully! ==="
 exit 0
+
 
 
 

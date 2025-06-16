@@ -106,7 +106,8 @@ $archiveDir = Join-Path $PSScriptRoot ".." "archive" "deprecated"
             Write-Host "What if: Would create archive directory: $archiveDir" -ForegroundColor Yellow
         }
         else {
-            New-Item -Path $archiveDir -ItemType Directory -Force | Out-NullWrite-Host "Created archive directory: $archiveDir" -ForegroundColor Cyan
+            New-Item -Path $archiveDir -ItemType Directory -Force | Out-Null
+Write-Host "Created archive directory: $archiveDir" -ForegroundColor Cyan
         }
     }
 
@@ -246,6 +247,7 @@ try {
     Write-Host "Full error: $_" -ForegroundColor Red
     exit 1
 }
+
 
 
 

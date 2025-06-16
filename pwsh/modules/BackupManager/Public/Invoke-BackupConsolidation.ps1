@@ -66,7 +66,8 @@ function Invoke-BackupConsolidation {
             
             # Create backup destination
             if (-not (Test-Path $BackupDestination)) {
-                New-Item -ItemType Directory -Path $BackupDestination -Force | Out-NullWrite-CustomLog "Created backup destination directory" "INFO"
+                New-Item -ItemType Directory -Path $BackupDestination -Force | Out-Null
+Write-CustomLog "Created backup destination directory" "INFO"
             }
             
             # Build exclusion patterns
@@ -173,6 +174,7 @@ function Invoke-BackupConsolidation {
         }
     }
 }
+
 
 
 

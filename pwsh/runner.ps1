@@ -920,7 +920,8 @@ if ($Scripts) {
     if ($Scripts -eq 'all') { $sel = Select-Scripts -Spec 'all' }
     else                    { $sel = Select-Scripts -Spec $Scripts }
     if (-not $sel -or $sel.Count -eq 0) { $global:LASTEXITCODE = 1; exit 1 }
-    Invoke-Scripts -ScriptsToRun sel | Out-Nullexit $LASTEXITCODE
+    Invoke-Scripts -ScriptsToRun sel | Out-Null
+exit $LASTEXITCODE
 }
 
 $overallSuccess = $true
@@ -1065,7 +1066,8 @@ if ($Scripts) {
     if ($Scripts -eq 'all') { $sel = Select-Scripts -Spec 'all' }
     else                    { $sel = Select-Scripts -Spec $Scripts }
     if (-not $sel -or $sel.Count -eq 0) { $global:LASTEXITCODE = 1; exit 1 }
-    Invoke-Scripts -ScriptsToRun sel | Out-Nullexit $LASTEXITCODE
+    Invoke-Scripts -ScriptsToRun sel | Out-Null
+exit $LASTEXITCODE
 }
 
 $overallSuccess = $true
@@ -1082,6 +1084,7 @@ Write-CustomLog "`nAll done!"
 if (-not $overallSuccess) { $global:LASTEXITCODE = 1 } else { $global:LASTEXITCODE = 0 }
 Remove-Item Env:LAB_CONSOLE_LEVEL -ErrorAction SilentlyContinue
 exit $LASTEXITCODE
+
 
 
 

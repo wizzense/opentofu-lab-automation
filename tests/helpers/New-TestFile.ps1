@@ -104,12 +104,12 @@ function New-InstallerTestContent {
 
 
 
-$enabledProperty = $Analysis.ConfigProperties | Where-Object{ $_ -match 'Install' } | Select-Object-First 1
+$enabledProperty = $Analysis.ConfigProperties | Where-Object{ $_ -match 'Install' } | Select-Object -First 1
     if (-not $enabledProperty) {
         $enabledProperty = 'InstallEnabled'  # fallback
     }
     
-    $installerCommand = $Analysis.MockCandidates | Where-Object{ $_ -match 'Start-ProcessInstall' } | Select-Object-First 1
+    $installerCommand = $Analysis.MockCandidates | Where-Object{ $_ -match 'Start-ProcessInstall' } | Select-Object -First 1
     if (-not $installerCommand) {
         $installerCommand = 'Start-Process'  # fallback
     }
@@ -157,7 +157,7 @@ function New-FeatureTestContent {
 
 
 
-$enabledProperty = $Analysis.ConfigProperties | Where-Object{ $_ -match 'EnableAllow' } | Select-Object-First 1
+$enabledProperty = $Analysis.ConfigProperties | Where-Object{ $_ -match 'EnableAllow' } | Select-Object -First 1
     if (-not $enabledProperty) {
         $enabledProperty = 'FeatureEnabled'  # fallback
     }
@@ -249,7 +249,7 @@ function New-ConfigurationTestContent {
 
 
 
-$enabledProperty = $Analysis.ConfigProperties | Where-Object{ $_ -match 'ConfigSetupSet' } | Select-Object-First 1
+$enabledProperty = $Analysis.ConfigProperties | Where-Object{ $_ -match 'ConfigSetupSet' } | Select-Object -First 1
     if (-not $enabledProperty) {
         $enabledProperty = 'ConfigEnabled'  # fallback
     }
@@ -337,6 +337,7 @@ try {
     Write-Error "Failed to generate test: $_"
     exit 1
 }
+
 
 
 

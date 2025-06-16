@@ -57,7 +57,7 @@ $dashboardData = @{
 Write-Host " Analyzing Pester test results..." -ForegroundColor Yellow
 
 # Check for recent Pester test results
-$testResultFiles = Get-ChildItem -Path "." -Filter "*TestResults*.xml" -Recurse | Sort-ObjectLastWriteTime -Descending | Select-Object-First 5
+$testResultFiles = Get-ChildItem -Path "." -Filter "*TestResults*.xml" -Recurse | Sort-ObjectLastWriteTime -Descending | Select-Object -First 5
 
 $pesterSummary = @{
  TotalTests = 0
@@ -345,6 +345,7 @@ Write-Host "Overall Health: $($dashboardData.OverallHealth) ($($dashboardData.He
 if ($dashboardData.HealthScore -lt 85) {
  Write-Host "`nWARN Health score is below 85% - consider reviewing the recommendations above" -ForegroundColor Yellow
 }
+
 
 
 

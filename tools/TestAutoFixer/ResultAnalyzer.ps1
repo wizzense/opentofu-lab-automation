@@ -56,7 +56,7 @@ function Get-TestStatistics {
         $testCases = $testResults.SelectNodes("//test-case")
         $longestRunningTests = testCases | Select-Object@{Name="Name"; Expression={$_.name}}, 
                           @{Name="Time"; Expression={double$_.time}},
-                          @{Name="Result"; Expression={$_.result}} | Sort-Object-Property Time -Descending | Select-Object-First 5
+                          @{Name="Result"; Expression={$_.result}} | Sort-Object-Property Time -Descending | Select-Object -First 5
         
         # Return statistics object
         return PSCustomObject@{
@@ -195,7 +195,7 @@ function Analyze-TestResults {
             RuntimeFailures = $runtimeFailures.Count
             AssertionFailures = $assertionFailures.Count
             FailurePatterns = $failurePatterns
-            ProblemFiles = filePatterns | Sort-Object-Property Count -Descending | Select-Object-First 5
+            ProblemFiles = filePatterns | Sort-Object-Property Count -Descending | Select-Object -First 5
             FixRecommendations = $fixRecommendations
             Trends = $trends
             DetailedFailures = $failures
@@ -464,6 +464,7 @@ function Export-TestResults {
         return $false
     }
 }
+
 
 
 

@@ -151,7 +151,8 @@ if ($hvFeature.State -ne "Enabled") {
 
 # Check if WinRM is enabled by testing the local WSMan endpoint
 try {
-    Test-WSMan -ComputerName localhost -ErrorAction Stop | Out-NullWrite-CustomLog "WinRM is already enabled."
+    Test-WSMan -ComputerName localhost -ErrorAction Stop | Out-Null
+Write-CustomLog "WinRM is already enabled."
 }
 catch {
     Write-CustomLog "Enabling WinRM..."
@@ -221,7 +222,8 @@ if (-not $rootCaCertificate) {
     if ($cerExists -and $pfxExists) {
         Write-CustomLog "Importing existing Root CA certificates..."
         Get-ChildItem cert:\LocalMachine\My | Where-Object{$_.subject -eq "CN=$rootCaName"}  Remove-Item -Force -ErrorAction SilentlyContinue
-        Import-PfxCertificate -FilePath $pfxPath -CertStoreLocation Cert:\LocalMachine\Root -Password $rootCaPassword -Exportable -Verbose | Out-NullImport-PfxCertificate -FilePath $pfxPath -CertStoreLocation Cert:\LocalMachine\My -Password $rootCaPassword -Exportable -Verbose | Out-Null$rootCaCertificate = Get-ChildItem cert:\LocalMachine\My | Where-Object{$_.subject -eq "CN=$rootCaName"}
+        Import-PfxCertificate -FilePath $pfxPath -CertStoreLocation Cert:\LocalMachine\Root -Password $rootCaPassword -Exportable -Verbose | Out-Null
+Import-PfxCertificate -FilePath $pfxPath -CertStoreLocation Cert:\LocalMachine\My -Password $rootCaPassword -Exportable -Verbose | Out-Null$rootCaCertificate = Get-ChildItem cert:\LocalMachine\My | Where-Object{$_.subject -eq "CN=$rootCaName"}
     } else {
         # Cleanup if present
         Get-ChildItem cert:\LocalMachine\My | Where-Object{$_.subject -eq "CN=$rootCaName"}  Remove-Item -Force -ErrorAction SilentlyContinue
@@ -252,7 +254,8 @@ if (-not $rootCaCertificate) {
 
         # Re-import to Root store & My store
         Get-ChildItem cert:\LocalMachine\My | Where-Object{$_.subject -eq "CN=$rootCaName"}  Remove-Item -Force -ErrorAction SilentlyContinue
-        Import-PfxCertificate -FilePath $pfxPath -CertStoreLocation Cert:\LocalMachine\Root -Password $rootCaPassword -Exportable -Verbose | Out-NullImport-PfxCertificate -FilePath $pfxPath -CertStoreLocation Cert:\LocalMachine\My -Password $rootCaPassword -Exportable -Verbose | Out-Null$rootCaCertificate = Get-ChildItem cert:\LocalMachine\My | Where-Object{$_.subject -eq "CN=$rootCaName"}
+        Import-PfxCertificate -FilePath $pfxPath -CertStoreLocation Cert:\LocalMachine\Root -Password $rootCaPassword -Exportable -Verbose | Out-Null
+Import-PfxCertificate -FilePath $pfxPath -CertStoreLocation Cert:\LocalMachine\My -Password $rootCaPassword -Exportable -Verbose | Out-Null$rootCaCertificate = Get-ChildItem cert:\LocalMachine\My | Where-Object{$_.subject -eq "CN=$rootCaName"}
     }
 } else {
     Export-Certificate -Cert $rootCaCertificate -FilePath ".\$rootCaName.cer" -Force -Verbose
@@ -395,7 +398,8 @@ Expand-Archive -Path $zipPath -DestinationPath $tempDir -Force
 $provider
 $hypervProviderDir = Join-Path $infraRepoPath ".terraform\providers\registry.opentofu.org\taliesins\hyperv\$providerVersion\${os}_${arch}"
 if (!(Test-Path $hypervProviderDir)) {
-    New-Item -ItemType Directory -Force -Path hypervProviderDir | | Out-Null}
+    New-Item -ItemType Directory -Force -Path $hypervProviderDir | Out-Null
+}
 
 Write-CustomLog "Copying provider exe -> $hypervProviderDir"
 $destinationBinary = Join-Path $hypervProviderDir "terraform-provider-hyperv.exe"
@@ -440,6 +444,7 @@ You can now run 'tofu plan'/'tofu apply' in $infraRepoPath.
 Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
 }
 }
+
 
 
 

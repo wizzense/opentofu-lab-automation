@@ -50,7 +50,8 @@ if ($Config.InitializeOpenTofu -eq $true) {
         Write-CustomLog "Directory already exists: $infraRepoPath"
     }
     else {
-        New-Item -ItemType Directory -Path $infraRepoPath -Force | Out-NullWrite-CustomLog "Created directory: $infraRepoPath"
+        New-Item -ItemType Directory -Path $infraRepoPath -Force | Out-Null
+Write-CustomLog "Created directory: $infraRepoPath"
     }
 
 # --------------------------------------------------
@@ -197,6 +198,7 @@ exit 0
     Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
 }
 Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
+
 
 
 

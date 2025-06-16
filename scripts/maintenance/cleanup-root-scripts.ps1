@@ -84,7 +84,8 @@ $sourcePath = Join-Path $ProjectRoot $SourceFile
  if ($WhatIf) {
  Write-CleanupLog "Would create directory: $destDir" "INFO"
  } else {
- New-Item -ItemType Directory -Path $destDir -Force | Out-NullWrite-CleanupLog "Created directory: $destDir" "SUCCESS"
+ New-Item -ItemType Directory -Path $destDir -Force | Out-Null
+Write-CleanupLog "Created directory: $destDir" "SUCCESS"
  }
  }
  
@@ -318,6 +319,7 @@ if (-not $WhatIf) {
 
 Write-CleanupLog " Root directory cleanup completed!" "SUCCESS"
 Write-CleanupLog "Use the unified maintenance system for ongoing project maintenance" "INFO"
+
 
 
 

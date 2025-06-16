@@ -28,7 +28,8 @@ Invoke-LabStep -Config $Config -Body {
     foreach ($dir in $dirs) {
         Write-CustomLog "Ensuring directory '$dir' exists..."
         if (-not (Test-Path $dir)) {
-            New-Item -ItemType Directory -Path $dir -Force | Out-NullWrite-CustomLog "Created directory '$dir'"
+            New-Item -ItemType Directory -Path $dir -Force | Out-Null
+Write-CustomLog "Created directory '$dir'"
         } else {
             Write-CustomLog "Directory '$dir' already exists; skipping."
         }
@@ -36,6 +37,7 @@ Invoke-LabStep -Config $Config -Body {
     Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
 }
 Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
+
 
 
 
