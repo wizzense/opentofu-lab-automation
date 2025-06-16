@@ -19,6 +19,21 @@ foreach ($import in @($Public + $Private)) {
     }
 }
 
+# Initialize cross-platform environment
+try {
+    # Initialize cross-platform environment when module is loaded
+    $envResult = Initialize-CrossPlatformEnvironment
+    if ($envResult.Success) {
+        Write-Verbose "Cross-platform environment initialized successfully: $($envResult.Platform)"
+        Write-Verbose "PROJECT_ROOT: $env:PROJECT_ROOT"
+        Write-Verbose "PWSH_MODULES_PATH: $env:PWSH_MODULES_PATH"
+    } else {
+        Write-Warning "Failed to initialize cross-platform environment: $($envResult.Error)"
+    }
+} catch {
+    Write-Warning "Error initializing cross-platform environment: $_"
+}
+
 # Export only the public functions (private functions are available internally but not exported)
 if ($Public.Count -gt 0) {
     $functionNames = $Public.BaseName

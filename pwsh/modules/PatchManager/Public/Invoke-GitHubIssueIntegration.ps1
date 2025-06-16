@@ -90,20 +90,44 @@ function Invoke-GitHubIssueIntegration {
         try {
             Write-Host "  Creating GitHub issue for bug fix..." -ForegroundColor Green
             
+            # First check if GitHub CLI is available
+            $ghInstalled = $null -ne (Get-Command "gh" -ErrorAction SilentlyContinue)
+            if (-not $ghInstalled) {
+                Write-Warning "GitHub CLI (gh) not found. Skipping issue creation."
+                return @{
+                    Success = $false
+                    Message = "GitHub CLI (gh) not found"
+                    IssueUrl = $null
+                    IssueNumber = $null
+                }
+            }
+            
+            # Check if we're in a GitHub repository
+            $repoExists = (git config --get remote.origin.url) -match "github\.com"
+            if (-not $repoExists) {
+                Write-Warning "Not in a GitHub repository. Skipping issue creation."
+                return @{
+                    Success = $false
+                    Message = "Not in a GitHub repository"
+                    IssueUrl = $null 
+                    IssueNumber = $null
+                }
+            }
+            
             # Determine priority-based labels
             $priorityLabels = switch ($Priority) {
-                "Critical" { @("priority: critical", "severity: high") }
-                "High" { @("priority: high", "severity: medium") }
-                "Medium" { @("priority: medium") }
-                "Low" { @("priority: low") }
-                default { @("priority: medium") }
+                "Critical" { @("bug", "high-priority") }
+                "High" { @("bug", "priority") }
+                "Medium" { @("bug") }
+                "Low" { @("minor") }
+                default { @("bug") }
             }
             
             # Combine all labels
-            $allLabels = $Labels + $priorityLabels + @("automated-patch", "needs-review")
+            $allLabels = $Labels + $priorityLabels + @("automated")
             
             # Create issue title
-            $issueTitle = "🐛 Automated Fix: $($PatchDescription -replace '^(fix:|bug:)\s*', '')"
+            $issueTitle = "Automated Fix: $($PatchDescription -replace '^(fix:|bug:)\s*', '')"
             
             # Create comprehensive issue body
             $issueBody = @"

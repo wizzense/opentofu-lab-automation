@@ -65,7 +65,9 @@ function Invoke-GitControlledPatch {
         [Parameter(Mandatory = $false)]
         [string]$RollbackBranch,
         [Parameter(Mandatory = $false)]
-        [switch]$AutoCommitUncommitted
+        [switch]$AutoCommitUncommitted,
+        [Parameter(Mandatory = $false)]
+        [switch]$ForceNewBranch
     )
     begin {
         Write-Host "Starting Git-controlled patch process..." -ForegroundColor Cyan
@@ -210,7 +212,13 @@ function Invoke-GitControlledPatch {
             $sanitizedDescription = $PatchDescription -replace '[^a-zA-Z0-9]', '-' -replace '-+', '-'
             
             $currentBranch = git branch --show-current
-            if ($currentBranch -ne "main" -and $currentBranch -ne "master") {
+            # If ForceNewBranch is specified, always create a new branch
+            if ($ForceNewBranch) {
+                Write-Host "Force creating new branch (ignoring anti-recursive protection)" -ForegroundColor Cyan
+                $branchName = "patch/$timestamp-$sanitizedDescription"
+            }
+            # ANTI-RECURSIVE PROTECTION: Don't create nested branches if already on feature branch
+            elseif ($currentBranch -ne "main" -and $currentBranch -ne "master") {
                 # ANTI-RECURSIVE PROTECTION: Instead of creating nested branches, work directly on current branch
                 Write-Host "ANTI-RECURSIVE PROTECTION: Already on feature branch '$currentBranch'" -ForegroundColor Yellow
                 Write-Host "Working directly on current branch to prevent branch explosion" -ForegroundColor Yellow
