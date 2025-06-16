@@ -6,7 +6,7 @@ Param([object]$Config)
 
 
 
-Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation//pwsh/modules/LabRunner/" -Force -Force -Force -Force -Force -Force -ForceWrite-CustomLog "Starting $MyInvocation.MyCommand"
+Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\pwsh/modules/LabRunner/" -ForceWrite-CustomLog "Starting $MyInvocation.MyCommand"
 Invoke-LabStep -Config $Config -Body {
     Write-CustomLog "Running $($MyInvocation.MyCommand.Name)"
 
@@ -20,7 +20,7 @@ Invoke-LabStep -Config $Config -Body {
         New-Item -ItemType Directory -Path $destDir -Force | Out-Null
     }
 
-    $zipUrl  = 'https://download.sysinternals.com/files/SysinternalsSuite.zip'
+    $zipUrl  = 'https:\download.sysinternals.com/files/SysinternalsSuite.zip'
     Invoke-LabDownload -Uri $zipUrl -Prefix 'SysinternalsSuite' -Extension '.zip' -Action {
         param($zipPath)
         
@@ -43,6 +43,7 @@ Write-CustomLog "Extracting to $destDir"
     Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
 }
 Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
+
 
 
 

@@ -100,7 +100,7 @@ $script:VerbosityLevels = @{ silent = 0; normal = 1; detailed = 2 }
 $script:ConsoleLevel    = $script:VerbosityLevels[$Verbosity]
 
 $targetBranch = 'main'
-$baseUrl = 'https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/refs/heads/'
+$baseUrl = 'https:\raw.githubusercontent.com/wizzense/opentofu-lab-automation/refs/heads/'
 $defaultConfig = "${baseUrl}${targetBranch}/configs/config_files/default-config.json"
 
 
@@ -769,6 +769,7 @@ if ($exitCode -ne 0) {
 
 Write-CustomLog "`n=== Kicker script finished successfully! ==="
 exit 0
+
 
 
 

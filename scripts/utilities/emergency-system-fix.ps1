@@ -271,7 +271,7 @@ function Validate-SystemHealth {
  
  # Test PowerShell modules
  try {
- Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation//pwsh/modules/CodeFixer/" -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -ErrorAction Stop
+ Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\pwsh/modules/CodeFixer/" -Force-ErrorAction Stop
  Write-Host " [PASS] CodeFixer module loads" -ForegroundColor Green
  }
  catch {
@@ -280,7 +280,7 @@ function Validate-SystemHealth {
  }
  
  try {
- Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation//pwsh/modules/LabRunner/" -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -ErrorAction Stop 
+ Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\pwsh/modules/LabRunner/" -Force-ErrorAction Stop 
  Write-Host " [PASS] LabRunner module loads" -ForegroundColor Green
  }
  catch {
@@ -363,6 +363,7 @@ switch ($Action) {
 
 Write-Host ""
 Write-Host " Emergency recovery script completed" -ForegroundColor Green
+
 
 
 

@@ -6,7 +6,7 @@ Param([object]$Config)
 
 
 
-Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation//pwsh/modules/LabRunner/" -Force -Force -Force -Force -Force -Force -ForceWrite-CustomLog "Starting $MyInvocation.MyCommand"
+Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\pwsh/modules/LabRunner/" -ForceWrite-CustomLog "Starting $MyInvocation.MyCommand"
 function Install-AWSCLI {
     [CmdletBinding(SupportsShouldProcess = $true)]
     param([object]$Config)
@@ -45,6 +45,7 @@ Start-Process msiexec.exe -ArgumentList "/i `"$msi`" /quiet /norestart" -Wait -N
 }
 if ($MyInvocation.InvocationName -ne '.') { Install-AWSCLI @PSBoundParameters }
 Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
+
 
 
 

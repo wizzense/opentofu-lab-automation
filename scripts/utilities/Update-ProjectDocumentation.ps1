@@ -118,8 +118,7 @@ $functionsText
 ./scripts/validation/Invoke-YamlValidation.ps1 -Mode "Fix"
 
 # Comprehensive validation
-Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation//pwsh/modules/CodeFixer/" -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force
-Invoke-ComprehensiveValidation
+Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\pwsh/modules/CodeFixer/" -ForceInvoke-ComprehensiveValidation
 ```
 
 ## Architecture
@@ -287,6 +286,7 @@ Write-Host " Documentation update completed!" -ForegroundColor Green
 Write-Host " - Updated AGENTS.md with current project state" -ForegroundColor White
 Write-Host " - Updated .github/copilot-instructions.md with architecture" -ForegroundColor White
 Write-Host " - Integrated manifest data and performance metrics" -ForegroundColor White
+
 
 
 

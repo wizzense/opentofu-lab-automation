@@ -39,9 +39,7 @@ Param(
 )
 
 # Import required modules AFTER Param block
-Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation//pwsh/modules/LabRunner/" -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force
-
-Write-CustomLog "Starting $($MyInvocation.MyCommand)"
+Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\pwsh/modules/LabRunner/" -ForceWrite-CustomLog "Starting $($MyInvocation.MyCommand)"
 Invoke-LabStep -Config $Config -Body {
  Write-CustomLog "Running $($MyInvocation.MyCommand.Name)"
  
@@ -369,6 +367,7 @@ Write-Host "`n=== Next Steps ===" -ForegroundColor Cyan
 Write-Host "1. Run validation: pwsh tools/Validate-PowerShellScripts.ps1 -Path pwsh/runner_scripts" -ForegroundColor White
 Write-Host "2. Auto-fix issues: pwsh tools/Validate-PowerShellScripts.ps1 -Path pwsh/runner_scripts -Fix" -ForegroundColor White
 Write-Host "3. Use template for new scripts: pwsh/ScriptTemplate.ps1" -ForegroundColor White
+
 
 
 

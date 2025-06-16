@@ -6,7 +6,7 @@ Param([object]$Config)
 
 
 
-Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation//pwsh/modules/LabRunner/" -Force -Force -Force -Force -Force -Force -ForceWrite-CustomLog "Starting $MyInvocation.MyCommand"
+Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\pwsh/modules/LabRunner/" -ForceWrite-CustomLog "Starting $MyInvocation.MyCommand"
 function Install-CA {
     [CmdletBinding(SupportsShouldProcess = $true)]
     param([object]$Config)
@@ -94,6 +94,7 @@ Write-CustomLog "Standalone Root CA '$CAName' installation complete."
     Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
 if ($MyInvocation.InvocationName -ne '.') { Install-CA @PSBoundParameters }
 Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
+
 
 
 

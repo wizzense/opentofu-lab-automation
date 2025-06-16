@@ -10,10 +10,7 @@ param(
 $ErrorActionPreference = "Stop"
 
 # Import required modules
-Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation//pwsh/modules/LabRunner/" -Force -Force -Force -Force -Force -Force -Force
-Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation//pwsh/modules/CodeFixer/" -Force -Force -Force -Force -Force -Force -Force
-
-# Ensure PSScriptAnalyzer is imported correctly
+Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\pwsh/modules/LabRunner/" -ForceImport-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\pwsh/modules/CodeFixer/" -Force# Ensure PSScriptAnalyzer is imported correctly
 if (-not (Get-Module -ListAvailable PSScriptAnalyzer -ErrorAction SilentlyContinue)) {
     Install-Module PSScriptAnalyzer -Force -Scope CurrentUser
 }
@@ -40,9 +37,7 @@ function Repair-TestFile {
 
 Describe '$($fileName -replace '\.Tests\.ps1$', '') Tests' {
     BeforeAll {
-        Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation//pwsh/modules/LabRunner/" -Force -Force -Force -Force -Force -Force -Force
-        Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation//pwsh/modules/CodeFixer/" -Force -Force -Force -Force -Force -Force -Force
-    }
+        Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\pwsh/modules/LabRunner/" -ForceImport-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\pwsh/modules/CodeFixer/" -Force}
 
     Context 'Module Loading' {
         It 'should load required modules' {
@@ -135,6 +130,7 @@ if (-not $WhatIf) {
         }
     }
 }
+
 
 
 

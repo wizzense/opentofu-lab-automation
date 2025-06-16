@@ -8,9 +8,10 @@ description: Git workflow, branch management, and GitHub collaboration standards
 ## Quick Reference
 
 ### Branch Management
-- **Create Feature Branch**: `git checkout -b feature/<description>`
-- **Push Feature Branch**: `git push -u origin feature/<description>`
-- **Create Pull Request**: `gh pr create --title "feat(scope): description" --body "Detailed description"`
+- **Create Feature Branch**: Use PatchManager module: `Import-Module "/pwsh/modules/PatchManager/" -Force; Invoke-GitControlledPatch -PatchDescription "feature: <description>" -PatchOperation { <your-changes> } -CreatePullRequest -Force`
+- **Comprehensive Cleanup**: Use enhanced PatchManager: `Invoke-GitControlledPatch -PatchDescription "chore: comprehensive cleanup" -PatchOperation { <cleanup-code> } -CleanupMode "Standard" -CreatePullRequest -Force`
+- **Emergency Cleanup**: For critical issues: `Invoke-GitControlledPatch -PatchDescription "fix: emergency cleanup" -PatchOperation { <fixes> } -CleanupMode "Emergency" -CreatePullRequest -Force`
+- **Safe Mode**: For cautious cleanup: `Invoke-GitControlledPatch -PatchDescription "chore: safe cleanup" -PatchOperation { <changes> } -CleanupMode "Safe" -CreatePullRequest -Force`
 
 ### Commit Standards
 | **Type**   | **Scope**       | **Example**                                |
@@ -48,9 +49,28 @@ Brief description of changes.
 - [ ] New feature
 - [ ] Breaking change
 - [ ] Documentation update
+- [ ] Comprehensive cleanup
 
 ## Validation Checklist
 - [ ] Pre-commit validation passed
 - [ ] PowerShell linting passed
 - [ ] YAML validation passed
+- [ ] Cross-platform path issues fixed
+- [ ] Emoji violations removed
+- [ ] Duplicate files consolidated
+
+## Cleanup Details (if applicable)
+- **Cleanup Mode**: Standard/Aggressive/Emergency/Safe
+- **Files Removed**: [number]
+- **Directories Cleaned**: [number]
+- **Size Reclaimed**: [amount]
+- **Cross-Platform Fixes**: [count]
 ```
+
+### Cleanup Modes
+| **Mode** | **File Age Threshold** | **Aggressiveness** | **Use Case** |
+|----------|----------------------|-------------------|--------------|
+| Safe | 90 days | Low | Cautious cleanup, preserve most files |
+| Standard | 30 days | Medium | Regular maintenance cleanup |
+| Aggressive | 7 days | High | Major cleanup, remove recent unused files |
+| Emergency | 1 day | Very High | Crisis cleanup, remove almost everything unused |

@@ -51,11 +51,15 @@ function Invoke-GitControlledPatch {
         [Parameter(Mandatory = $false)]
         [string[]]$AffectedFiles = @(),
         [Parameter(Mandatory = $false)]
-        [string]$BaseBranch = "main",
-        [Parameter(Mandatory = $false)]
+        [string]$BaseBranch = "main",        [Parameter(Mandatory = $false)]
         [switch]$CreatePullRequest,
         [Parameter(Mandatory = $false)]
-        [switch]$Force
+        [switch]$Force,
+        [Parameter(Mandatory = $false)]
+        [ValidateSet("Standard", "Aggressive", "Emergency", "Safe")]
+        [string]$CleanupMode = "Standard",
+        [Parameter(Mandatory = $false)]
+        [switch]$SkipCleanup
     )
     begin {
         Write-Host "Starting Git-controlled patch process..." -ForegroundColor Cyan
@@ -114,10 +118,36 @@ function Invoke-GitControlledPatch {
             git checkout $BaseBranch --force
             if ($LASTEXITCODE -ne 0) {
                 Write-Warning "Base branch checkout had issues, continuing..."
-            }
-            # Clean any problematic directories or files
+            }            # Clean any problematic directories or files
             Write-Host "Cleaning repository state..." -ForegroundColor Blue
-            git clean -fd
+            try {
+                # Use PowerShell cleanup instead of git clean to avoid interactive prompts
+                $itemsToClean = @('*.tmp', '*.log', '*.bak', '*.orig')
+                foreach ($pattern in $itemsToClean) {
+                    Get-ChildItem -Path "." -Recurse -Include $pattern -Force -ErrorAction SilentlyContinue | 
+                        Remove-Item -Force -Recurse -ErrorAction SilentlyContinue
+                }
+                
+                # Remove problematic directories manually without prompts
+                @('assets', 'node_modules', '.vs', 'build', 'coverage') | ForEach-Object {
+                    if (Test-Path $_) {
+                        try {
+                            Remove-Item $_ -Recurse -Force -ErrorAction SilentlyContinue
+                            Write-Host "Removed directory: $_" -ForegroundColor Green
+                        } catch {
+                            Write-Host "Could not remove directory: $_ (continuing...)" -ForegroundColor Yellow
+                        }
+                    }
+                }
+                
+                # Only use git clean for untracked files (non-interactive)
+                $env:GIT_TERMINAL_PROMPT = "0"
+                git clean -f 2>$null
+                Remove-Item env:GIT_TERMINAL_PROMPT -ErrorAction SilentlyContinue
+                
+            } catch {
+                Write-Host "Repository cleanup completed with warnings (continuing...)" -ForegroundColor Yellow
+            }
             # Pull latest changes
             git pull origin $BaseBranch
             if ($LASTEXITCODE -ne 0) {
@@ -140,9 +170,25 @@ function Invoke-GitControlledPatch {
                 }
                 Write-Host "Created backup at: $backupPath" -ForegroundColor Cyan
             }
-            
-            # Apply the patch operation
+              # Apply the patch operation
             Write-Host "Applying patch operation..." -ForegroundColor Yellow
+            
+            # Run comprehensive cleanup before applying patches (unless skipped)
+            if (-not $SkipCleanup) {
+                Write-Host "Running comprehensive cleanup before patch..." -ForegroundColor Blue
+                try {
+                    $cleanupResult = Invoke-ComprehensiveCleanup -CleanupMode $CleanupMode
+                    if ($cleanupResult.Success) {
+                        Write-Host "Cleanup completed: $($cleanupResult.FilesRemoved) files removed, $($cleanupResult.SizeReclaimed) bytes reclaimed" -ForegroundColor Green
+                    } else {
+                        Write-Warning "Cleanup had issues: $($cleanupResult.Message)"
+                    }
+                } catch {
+                    Write-Warning "Cleanup failed: $($_.Exception.Message), continuing with patch..."
+                }
+            } else {
+                Write-Host "Cleanup skipped as requested" -ForegroundColor Yellow
+            }
             
             if ($PSCmdlet.ShouldProcess("Patch operation", "Execute")) {
                 & $PatchOperation

@@ -9,7 +9,7 @@ Param([object]$Config)
 
 
 # Import necessary modules
-Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation//pwsh/modules/LabRunner/" -Force -Force -Force -Force -Force -Force -ForceWrite-CustomLog "Starting $MyInvocation.MyCommand"
+Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\pwsh/modules/LabRunner/" -ForceWrite-CustomLog "Starting $MyInvocation.MyCommand"
 
 function Install-NodeCore {
     [CmdletBinding(SupportsShouldProcess = $true)]
@@ -82,6 +82,7 @@ Start-Process msiexec.exe -ArgumentList "/i `"$installerPath`" /quiet /norestart
 # Start the NodeCore installation if the script is directly invoked
 if ($MyInvocation.InvocationName -ne '.') { Install-NodeCore @PSBoundParameters }
 Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
+
 
 
 

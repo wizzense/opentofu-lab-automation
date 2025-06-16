@@ -6,7 +6,7 @@ Param([object]$Config)
 
 
 
-Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation//pwsh/modules/LabRunner/" -Force -Force -Force -Force -Force -Force -ForceWrite-CustomLog "Starting $MyInvocation.MyCommand"
+Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\pwsh/modules/LabRunner/" -ForceWrite-CustomLog "Starting $MyInvocation.MyCommand"
 
 if (-not (Get-Command Convert-CerToPem -ErrorAction SilentlyContinue)) {
 function Convert-CerToPem {
@@ -447,6 +447,7 @@ You can now run 'tofu plan'/'tofu apply' in $infraRepoPath.
 Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
 }
 }
+
 
 
 

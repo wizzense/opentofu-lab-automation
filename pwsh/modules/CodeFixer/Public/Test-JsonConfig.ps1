@@ -229,7 +229,7 @@ $issues = @()
  Line = 1
  Column = 1
  Severity = "Warning"
- Message = "RepoUrl should start with http:// or https://"
+ Message = "RepoUrl should start with http:/ or https:/"
  RuleName = "InvalidUrl"
  ScriptName = Split-Path -Path $FilePath -Leaf
  }
@@ -238,6 +238,7 @@ $issues = @()
  
  return $issues
 }
+
 
 
 

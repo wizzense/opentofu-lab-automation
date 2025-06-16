@@ -38,8 +38,7 @@ Write-Host "=================================" -ForegroundColor Cyan
 # Test 1: CodeFixer module loading
 Write-Host "`n1⃣ Testing CodeFixer Module Loading..." -ForegroundColor Yellow
 try {
- Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation//pwsh/modules/CodeFixer/" -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force
- $module = Get-Module CodeFixer
+ Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\pwsh/modules/CodeFixer/" -Force$module = Get-Module CodeFixer
  $functions = Get-Command -Module CodeFixer
  
  Write-TestResult "CodeFixer module loads" ($module -ne $null) "Version: $($module.Version)"
@@ -102,8 +101,7 @@ try {
 Write-Host "`n4⃣ Testing LabRunner Integration..." -ForegroundColor Yellow
 try {
  # Test that LabRunner loads from new location
- Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation//pwsh/modules/LabRunner/" -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force
- $labRunner = Get-Module LabRunner
+ Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\pwsh/modules/LabRunner/" -Force$labRunner = Get-Module LabRunner
  
  Write-TestResult "LabRunner loads from new location" ($labRunner -ne $null) "Path: $($labRunner.Path)"
  
@@ -191,6 +189,7 @@ Write-Host "`nNext steps:" -ForegroundColor Cyan
 Write-Host "1. Run 'Invoke-ImportAnalysis -AutoFix' to fix any remaining import issues" -ForegroundColor White
 Write-Host "2. Run 'Invoke-Pester tests/' to verify all tests pass" -ForegroundColor White
 Write-Host "3. Run 'Invoke-PowerShellLint .' to lint the entire project" -ForegroundColor White
+
 
 
 

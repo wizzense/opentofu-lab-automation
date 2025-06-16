@@ -7,7 +7,7 @@ Param([object]$Config)
 
 
 
-Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation//pwsh/modules/LabRunner/" -Force -Force -Force -Force -Force -Force -ForceWrite-CustomLog "Starting $MyInvocation.MyCommand"
+Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\pwsh/modules/LabRunner/" -ForceWrite-CustomLog "Starting $MyInvocation.MyCommand"
 
 function Install-GlobalPackage {
     [CmdletBinding(SupportsShouldProcess)]
@@ -132,6 +132,7 @@ Write-CustomLog "==== Global npm package installation complete ===="
 }
 if ($MyInvocation.InvocationName -ne '.') { Install-NodeGlobalPackages @PSBoundParameters }
 Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
+
 
 
 

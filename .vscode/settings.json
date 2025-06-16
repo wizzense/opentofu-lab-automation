@@ -38,65 +38,10 @@
     {
       "text": "Highlight new features or bug fixes in the description."
     }
-  ],
-  "github.copilot.instructionFiles": [
+  ],  "github.copilot.instructionFiles": [
     {
       "pattern": "**/*",
-      "instructionFile": ".github/copilot-instructions.md"
-    },
-    {
-      "pattern": "pwsh/modules/**/*.ps1",
-      "instructionFile": ".github/instructions/powershell-standards.instructions.md"
-    },
-    {
-      "pattern": "scripts/**/*.ps1",
-      "instructionFile": ".github/instructions/powershell-standards.instructions.md"
-    },
-    {
-      "pattern": "**/*Tests.ps1",
-      "instructionFile": ".github/instructions/testing-standards.instructions.md" 
-    },
-    {
-      "pattern": ".github/workflows/**/*.{yml,yaml}",
-      "instructionFile": ".github/instructions/yaml-standards.instructions.md"
-    },
-    {
-      "pattern": "configs/**/*.{yml,yaml}",
-      "instructionFile": ".github/instructions/yaml-standards.instructions.md"
-    },
-    {
-      "pattern": "docs/**/*.{md,markdown}",
-      "instructionFile": ".github/instructions/documentation-standards.instructions.md"
-    },
-    {
-      "pattern": "scripts/maintenance/**/*.ps1",
-      "instructionFile": [
-        ".github/instructions/powershell-standards.instructions.md",
-        ".github/instructions/maintenance-standards.instructions.md"
-      ]
-    },
-    {
-      "pattern": "**/config*.json",
-      "instructionFile": ".github/instructions/configuration-standards.instructions.md"
-    },
-    {
-      "pattern": "**/*.{js,ts,jsx,tsx}",
-      "instructionFile": ".github/instructions/javascript-standards.instructions.md"
-    },
-    {
-      "pattern": "**/*.{py,pyw}",
-      "instructionFile": ".github/instructions/python-standards.instructions.md"
-    },
-    {
-      "pattern": "**/PROJECT-MANIFEST.json",
-      "instructionFile": [
-        ".github/instructions/configuration-standards.instructions.md",
-        ".github/instructions/maintenance-standards.instructions.md"
-      ]
-    },
-    {
-      "pattern": "**/*.git*",
-      "instructionFile": ".github/instructions/git-collaboration.instructions.md"
+      "instructionFile": ".github/UNIFIED-PROJECT-GUIDELINES.md"
     }
   ],
   "python.testing.pytestArgs": [

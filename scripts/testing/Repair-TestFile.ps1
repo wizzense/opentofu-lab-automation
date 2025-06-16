@@ -4,9 +4,7 @@ Param(
 )
 
 $ErrorActionPreference = "Stop"
-Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation//pwsh/modules/CodeFixer/" -Force -Force -Force -Force -Force -Force -Force
-
-function Test-PesterStructure {
+Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\pwsh/modules/CodeFixer/" -Forcefunction Test-PesterStructure {
     param([string]$Content)
     
     $hasDescribe = $Content -match '^\s*Describe\s+.+'
@@ -38,10 +36,7 @@ function Add-PesterStructure {
 Describe '$scriptName' {
     BeforeAll {
         # Setup test environment
-        Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation//pwsh/modules/LabRunner/" -Force -Force -Force -Force -Force -Force -Force
-        Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation//pwsh/modules/CodeFixer/" -Force -Force -Force -Force -Force -Force -Force
-        
-        `$script:TestConfig = [pscustomobject]@{
+        Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\pwsh/modules/LabRunner/" -ForceImport-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\pwsh/modules/CodeFixer/" -Force`$script:TestConfig = [pscustomobject]@{
             TestProperty = "TestValue"
         }
     }
@@ -94,6 +89,7 @@ try {
     Write-Host "❌ Test file validation failed: $($_.Exception.Message)" -ForegroundColor Red
     throw
 }
+
 
 
 

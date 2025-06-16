@@ -32,8 +32,7 @@ function Invoke-BackupConsolidation {
     $ErrorActionPreference = "Stop"
     
     # Import required modules
-    Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation//pwsh/modules/LabRunner/" -Force -Force -Force -Force -Force -Force -Force
-    Import-Module "//pwsh/modules/CodeFixerLogging/" -Force
+    Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\pwsh/modules/LabRunner/" -ForceImport-Module "/pwsh/modules/CodeFixerLogging/" -Force
 
     # Fallback definition for Write-CustomLog if not available
     if (-not (Get-Command "Write-CustomLog" -ErrorAction SilentlyContinue)) {
@@ -176,6 +175,7 @@ function Invoke-BackupConsolidation {
         }
     }
 }
+
 
 
 

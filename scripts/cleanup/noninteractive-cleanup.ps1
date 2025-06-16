@@ -1,19 +1,38 @@
 # Non-interactive repository cleanup script
-
-# Define the root directory for cleanup
-$RootDirectory = "c:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation"
-
-# Directories to clean
-$DirectoriesToClean = @(
-    "$RootDirectory\assets",
-    "$RootDirectory\backups",
-    "$RootDirectory\build",
-    "$RootDirectory\configs",
-    "$RootDirectory\logs"
+[CmdletBinding()]
+param(
+    [Parameter(Mandatory = $false)]
+    [string]$RootDirectory = (Get-Location).Path
 )
 
-# Log file for cleanup
-$LogFile = "$RootDirectory\cleanup-log.txt"
+# Cross-platform path resolution
+function Get-ProjectRoot {
+    param([string]$StartPath = (Get-Location).Path)
+    
+    $current = $StartPath
+    while ($current -and (Split-Path $current -Parent)) {
+        if (Test-Path (Join-Path $current "PROJECT-MANIFEST.json")) {
+            return $current
+        }
+        $current = Split-Path $current -Parent
+    }
+    return $StartPath
+}
+
+# Use cross-platform path resolution
+$RootDirectory = Get-ProjectRoot
+
+# Directories to clean (using cross-platform Join-Path)
+$DirectoriesToClean = @(
+    (Join-Path $RootDirectory "assets"),
+    (Join-Path $RootDirectory "backups"), 
+    (Join-Path $RootDirectory "build"),
+    (Join-Path $RootDirectory "configs"),
+    (Join-Path $RootDirectory "logs")
+)
+
+# Log file for cleanup (cross-platform)
+$LogFile = Join-Path $RootDirectory "cleanup-log.txt"
 
 # Initialize log
 "Cleanup started at $(Get-Date)" | Out-File -FilePath $LogFile -Encoding UTF8

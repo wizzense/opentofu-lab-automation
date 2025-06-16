@@ -40,8 +40,7 @@ try {
 # Test 3: LabRunner Module Loading
 Write-Host "`n3. Testing LabRunner module..." -ForegroundColor Yellow
 try {
- Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation//pwsh/modules/LabRunner/" -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force
- $labRunnerModule = Get-Module LabRunner
+ Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\pwsh/modules/LabRunner/" -Force$labRunnerModule = Get-Module LabRunner
  if ($labRunnerModule) {
  Write-Host "[PASS] LabRunner module loaded successfully" -ForegroundColor Green
  $commands = Get-Command -Module LabRunner | Measure-Object
@@ -73,8 +72,7 @@ try {
  $pesterTest = @"
 Describe 'LabRunner Integration' {
  It 'should load LabRunner module' {
- Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation//pwsh/modules/LabRunner/" -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force -Force
- Get-Module LabRunner | Should -Not -BeNullOrEmpty
+ Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\pwsh/modules/LabRunner/" -ForceGet-Module LabRunner | Should -Not -BeNullOrEmpty
  }
 }
 "@
@@ -102,6 +100,7 @@ Write-Host "- CodeFixer linting functions can be loaded and executed" -Foregroun
 Write-Host "- LabRunner has been successfully moved to pwsh/modules/LabRunner" -ForegroundColor White
 Write-Host "- Test infrastructure can find and use LabRunner from the new location" -ForegroundColor White
 Write-Host "- Pester tests work with the new LabRunner module path" -ForegroundColor White
+
 
 
 
