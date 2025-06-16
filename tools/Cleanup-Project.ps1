@@ -222,7 +222,7 @@ try {
  
  # Confirm execution
  if (-not $Force -and -not $WhatIf) {
- Write-Host "`n❓ Proceed with cleanup?" -ForegroundColor Yellow
+ Write-Host "`n Proceed with cleanup?" -ForegroundColor Yellow
  $options = @(
  @{ Label = "&Yes"; HelpMessage = "Execute the cleanup" }
  @{ Label = "&No"; HelpMessage = "Cancel cleanup" }

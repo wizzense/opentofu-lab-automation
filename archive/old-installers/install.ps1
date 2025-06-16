@@ -106,14 +106,14 @@ function Download-File {
         }
         
         if (Test-Path $DestinationPath) {
-            Write-ColorOutput "✅ Downloaded successfully: $DestinationPath" 'Green'
+            Write-ColorOutput "[PASS] Downloaded successfully: $DestinationPath" 'Green'
             return $true
         } else {
             throw "File not found after download"
         }
     }
     catch {
-        Write-ColorOutput "❌ Download failed: $_" 'Red'
+        Write-ColorOutput "[FAIL] Download failed: $_" 'Red'
         return $false
     }
 }
@@ -166,7 +166,7 @@ function Install-Components {
     $componentUrls = $urls[$ComponentType]
     
     if (-not $componentUrls) {
-        Write-ColorOutput "❌ Unknown component: $ComponentType" 'Red'
+        Write-ColorOutput "[FAIL] Unknown component: $ComponentType" 'Red'
         return $false
     }
     
@@ -188,7 +188,7 @@ function Test-PythonAvailability {
         try {
             $version = & $cmd --version 2>&1
             if ($LASTEXITCODE -eq 0 -and $version -match 'Python 3\.\d+') {
-                Write-ColorOutput "✅ Python found: $version" 'Green'
+                Write-ColorOutput "[PASS] Python found: $version" 'Green'
                 return $cmd
             }
         }
@@ -197,7 +197,7 @@ function Test-PythonAvailability {
         }
     }
     
-    Write-ColorOutput "⚠️  Python 3.7+ not found" 'Yellow'
+    Write-ColorOutput "[WARN]️  Python 3.7+ not found" 'Yellow'
     return $null
 }
 
@@ -240,21 +240,21 @@ function main {
     # Check internet connectivity
     Write-ColorOutput "🌐 Checking internet connectivity..." 'Blue'
     if (-not (Test-InternetConnectivity)) {
-        Write-ColorOutput "❌ No internet connection. Please check your network." 'Red'
+        Write-ColorOutput "[FAIL] No internet connection. Please check your network." 'Red'
         return 1
     }
-    Write-ColorOutput "✅ Internet connection confirmed" 'Green'
+    Write-ColorOutput "[PASS] Internet connection confirmed" 'Green'
     Write-ColorOutput "" 'White'
     
     # Download components
     Write-ColorOutput "📦 Downloading components..." 'Blue'
     if (-not (Install-Components -ComponentType $Component)) {
-        Write-ColorOutput "❌ Download failed. Please try again later." 'Red'
+        Write-ColorOutput "[FAIL] Download failed. Please try again later." 'Red'
         return 1
     }
     
     Write-ColorOutput "" 'White'
-    Write-ColorOutput "✅ Download completed successfully!" 'Green'
+    Write-ColorOutput "[PASS] Download completed successfully!" 'Green'
     
     # Check Python
     $pythonCmd = Test-PythonAvailability

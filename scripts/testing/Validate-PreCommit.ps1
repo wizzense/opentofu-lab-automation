@@ -10,9 +10,9 @@ $config.Output.Verbosity = "Detailed"
 $result = Invoke-Pester -Configuration $config
 
 if ($result.FailedCount -gt 0) {
-    Write-Host "❌ Test validation failed! Cannot commit." -ForegroundColor Red
+    Write-Host "[FAIL] Test validation failed! Cannot commit." -ForegroundColor Red
     Write-Host "Please fix the failing tests before committing." -ForegroundColor Yellow
     exit 1
 }
 
-Write-Host "✅ All tests validated successfully!" -ForegroundColor Green
+Write-Host "[PASS] All tests validated successfully!" -ForegroundColor Green

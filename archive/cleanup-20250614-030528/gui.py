@@ -218,7 +218,7 @@ class DeploymentManager:
         self.deploy_btn = ttk.Button(button_frame, text="🚀 Deploy Lab", command=self.start_deployment)
         self.deploy_btn.pack(side="left", padx=5)
         
-        self.quick_btn = ttk.Button(button_frame, text="⚡ Quick Deploy", command=self.quick_deployment)
+        self.quick_btn = ttk.Button(button_frame, text=" Quick Deploy", command=self.quick_deployment)
         self.quick_btn.pack(side="left", padx=5)
         
         self.check_btn = ttk.Button(button_frame, text="🔍 Check Prerequisites", command=self.check_prerequisites)
@@ -286,13 +286,13 @@ class DeploymentManager:
             
             if not deploy_script:
                 # Try to download deploy.py if not found
-                self.log_output("⚠️ deploy.py not found locally, attempting to download...")
+                self.log_output("[WARN]️ deploy.py not found locally, attempting to download...")
                 try:
                     import urllib.request
                     deploy_url = "https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/feature/deployment-wrapper-gui/deploy.py"
                     deploy_script = Path.cwd() / "deploy.py"
                     urllib.request.urlretrieve(deploy_url, deploy_script)
-                    self.log_output(f"✅ Downloaded deploy.py to {deploy_script}")
+                    self.log_output(f"[PASS] Downloaded deploy.py to {deploy_script}")
                 except Exception as e:
                     self.output_queue.put(('error', f"Could not find or download deploy.py: {str(e)}"))
                     return
@@ -367,7 +367,7 @@ class DeploymentManager:
             messagebox.showinfo("Success", "Lab deployment completed successfully!")
         else:
             self.update_status("Deployment failed", "red")
-            self.log_output(f"❌ Deployment failed with exit code {return_code}")
+            self.log_output(f"[FAIL] Deployment failed with exit code {return_code}")
             messagebox.showerror("Error", f"Deployment failed with exit code {return_code}")
     
     def deployment_error(self, error: str):

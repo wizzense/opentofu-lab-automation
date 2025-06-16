@@ -84,9 +84,9 @@ if ($results) {
 # Test if the file can be imported by Pester
 try {
     $null = Invoke-Pester -Path $FilePath -PassThru
-    Write-Host "✅ Test file structure validated successfully" -ForegroundColor Green
+    Write-Host "[PASS] Test file structure validated successfully" -ForegroundColor Green
 } catch {
-    Write-Host "❌ Test file validation failed: $($_.Exception.Message)" -ForegroundColor Red
+    Write-Host "[FAIL] Test file validation failed: $($_.Exception.Message)" -ForegroundColor Red
     throw
 }
 

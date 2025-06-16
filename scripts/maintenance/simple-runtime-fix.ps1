@@ -146,7 +146,7 @@ try {
  exit 1
 }
 
-Write-Host "`n✨ Simple runtime execution fixes completed successfully!" -ForegroundColor Green
+Write-Host "`n Simple runtime execution fixes completed successfully!" -ForegroundColor Green
 
 
 

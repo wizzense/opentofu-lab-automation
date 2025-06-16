@@ -143,7 +143,7 @@ def generate_dashboard():
  elif status == 'in_progress':
  emoji = '�'
  else:
- emoji = '⚪'
+ emoji = ''
  
  print(f"{emoji} {workflow:<25} | {status:<12} | {time_str}")
  
@@ -228,7 +228,7 @@ def main():
  print("[WARN] GitHub CLI not available - some features will be limited")
  
  generate_dashboard()
- print("\n✨ Dashboard generation complete!")
+ print("\n Dashboard generation complete!")
 
 if __name__ == "__main__":
  main()

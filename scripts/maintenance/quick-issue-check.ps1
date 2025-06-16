@@ -77,7 +77,7 @@ function Test-KnownCommands {
  if (Test-Path $testHelpersPath) {
  try {
  . $testHelpersPath
- Write-QuickLog "✓ TestHelpers.ps1 sourced for mock functions" "SUCCESS"
+ Write-QuickLog " TestHelpers.ps1 sourced for mock functions" "SUCCESS"
  }
  catch {
  Write-QuickLog "[WARN] Failed to source TestHelpers.ps1: $($_.Exception.Message)" "WARNING"
@@ -88,11 +88,11 @@ function Test-KnownCommands {
  foreach ($cmd in $KnownIssues.MissingCommands) {
  try {
  Get-Command $cmd -ErrorAction Stop | Out-Null
- Write-QuickLog "✓ Command '$cmd' is available" "SUCCESS"
+ Write-QuickLog " Command '$cmd' is available" "SUCCESS"
  }
  catch {
  $issues += "Missing command: $cmd"
- Write-QuickLog "✗ Command '$cmd' is missing" "ERROR"
+ Write-QuickLog " Command '$cmd' is missing" "ERROR"
  }
  }
  
@@ -107,11 +107,11 @@ function Test-SyntaxErrors {
  if (Test-Path $file) {
  try {
  $null = [System.Management.Automation.PSParser]::Tokenize((Get-Content $file -Raw), [ref]$null)
- Write-QuickLog "✓ Syntax OK: $(Split-Path $file -Leaf)" "SUCCESS"
+ Write-QuickLog " Syntax OK: $(Split-Path $file -Leaf)" "SUCCESS"
  }
  catch {
  $issues += "Syntax error in: $file"
- Write-QuickLog "✗ Syntax error: $(Split-Path $file -Leaf)" "ERROR"
+ Write-QuickLog " Syntax error: $(Split-Path $file -Leaf)" "ERROR"
  }
  }
  }
@@ -129,10 +129,10 @@ function Test-ImportPaths {
  $content = Get-Content $file.FullName -Raw
  if ($content -match 'Import-Module.*lab_utils') {
  $issues += "Outdated import path in: $($file.Name)"
- Write-QuickLog "✗ Outdated import: $($file.Name)" "ERROR"
+ Write-QuickLog " Outdated import: $($file.Name)" "ERROR"
  }
  else {
- Write-QuickLog "✓ Import paths OK: $($file.Name)" "SUCCESS"
+ Write-QuickLog " Import paths OK: $($file.Name)" "SUCCESS"
  }
  }
  
@@ -152,10 +152,10 @@ function Test-CriticalComponents {
  foreach ($file in $criticalFiles) {
  if (-not (Test-Path $file)) {
  $issues += "Missing critical file: $file"
- Write-QuickLog "✗ Missing: $(Split-Path $file -Leaf)" "ERROR"
+ Write-QuickLog " Missing: $(Split-Path $file -Leaf)" "ERROR"
  }
  else {
- Write-QuickLog "✓ Present: $(Split-Path $file -Leaf)" "SUCCESS"
+ Write-QuickLog " Present: $(Split-Path $file -Leaf)" "SUCCESS"
  }
  }
  
@@ -278,7 +278,7 @@ try {
  }
  
  if ($allIssues.Count -eq 0) {
- Write-QuickLog "✓ No issues found in $Target check!" "SUCCESS"
+ Write-QuickLog " No issues found in $Target check!" "SUCCESS"
  }
  else {
  Write-QuickLog "Found $($allIssues.Count) issues:" "WARNING"

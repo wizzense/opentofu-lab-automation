@@ -342,7 +342,7 @@ Write-Host " 2. Monitor for 'Param is not recognized' errors" -ForegroundColor W
 Write-Host " 3. Verify parameter binding works correctly" -ForegroundColor White
 Write-Host " 4. Check fallback execution method effectiveness" -ForegroundColor White
 
-Write-Host "`n✨ Runner script fixes completed successfully!" -ForegroundColor Green
+Write-Host "`n Runner script fixes completed successfully!" -ForegroundColor Green
 
 
 

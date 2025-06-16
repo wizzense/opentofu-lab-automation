@@ -349,7 +349,7 @@ Write-ValidationMessage "Validating: $FilePath" "Info"
     $errorIssues = $allIssues | Where-Object { $_.Severity -eq "Error" }
     if ($errorIssues.Count -eq 0) {
         if (-not $wasFixed) {
-            Write-ValidationMessage "  ✓ Valid" "Success"
+            Write-ValidationMessage "   Valid" "Success"
         }
         $script:Results.ValidFiles++
     } else {

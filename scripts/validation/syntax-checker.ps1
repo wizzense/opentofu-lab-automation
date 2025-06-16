@@ -225,7 +225,7 @@ Write-Host ""
 Write-Host "=== RESULTS ===" -ForegroundColor Cyan
 
 if ($issuesFound.Count -eq 0) {
-    Write-Host "✓ No syntax issues found!" -ForegroundColor Green
+    Write-Host " No syntax issues found!" -ForegroundColor Green
 } else {
     Write-Host "Found $($issuesFound.Count) issues:" -ForegroundColor Red
     

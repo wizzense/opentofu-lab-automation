@@ -53,9 +53,9 @@ try {
     $testFunctions = @('Invoke-Pester', 'Describe', 'It', 'Should')
     foreach ($func in $testFunctions) {
         if (Get-Command $func -ErrorAction SilentlyContinue) {
-            Write-Host "  ✓ $func available" -ForegroundColor Green
+            Write-Host "   $func available" -ForegroundColor Green
         } else {
-            Write-Warning "  ✗ $func not available"
+            Write-Warning "   $func not available"
         }
     }
     

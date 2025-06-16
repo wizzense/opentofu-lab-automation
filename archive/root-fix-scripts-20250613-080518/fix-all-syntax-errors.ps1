@@ -148,7 +148,7 @@ foreach ($file in $allFiles) {
         $content = Get-Content -Path $file.FullName -Raw -ErrorAction Stop
         
         if ([string]::IsNullOrWhiteSpace($content)) {
-            Write-Host "  ⚠️  Empty file, skipping" -ForegroundColor Yellow
+            Write-Host "  [WARN]️  Empty file, skipping" -ForegroundColor Yellow
             continue
         }
         
@@ -161,11 +161,11 @@ foreach ($file in $allFiles) {
         )
         
         if ($parseErrors.Count -eq 0) {
-            Write-Host "  ✅ No syntax errors" -ForegroundColor Green
+            Write-Host "  [PASS] No syntax errors" -ForegroundColor Green
             continue
         }
         
-        Write-Host "  ❌ Found $($parseErrors.Count) syntax error(s)" -ForegroundColor Red
+        Write-Host "  [FAIL] Found $($parseErrors.Count) syntax error(s)" -ForegroundColor Red
         
         $issuesFound += @{
             File = $file.FullName
@@ -206,7 +206,7 @@ foreach ($file in $allFiles) {
             # Save fixed content
             Set-Content -Path $file.FullName -Value $currentContent -Encoding UTF8
             
-            Write-Host "  ✅ FIXED: Applied $($allChanges.Count) fix(es)" -ForegroundColor Green
+            Write-Host "  [PASS] FIXED: Applied $($allChanges.Count) fix(es)" -ForegroundColor Green
             foreach ($change in $allChanges) {
                 Write-Host "    • $change" -ForegroundColor Cyan
             }
@@ -222,19 +222,19 @@ foreach ($file in $allFiles) {
                     [ref]$verifyErrors
                 )
                 if ($verifyErrors.Count -eq 0) {
-                    Write-Host "  ✅ Verification: Syntax is now valid" -ForegroundColor Green
+                    Write-Host "  [PASS] Verification: Syntax is now valid" -ForegroundColor Green
                 } else {
-                    Write-Host "  ⚠️  Verification: $($verifyErrors.Count) errors remain" -ForegroundColor Yellow
+                    Write-Host "  [WARN]️  Verification: $($verifyErrors.Count) errors remain" -ForegroundColor Yellow
                 }
             } catch {
-                Write-Host "  ❌ Verification failed: $($_.Exception.Message)" -ForegroundColor Red
+                Write-Host "  [FAIL] Verification failed: $($_.Exception.Message)" -ForegroundColor Red
             }
         } else {
-            Write-Host "  ⚠️  No automatic fixes available" -ForegroundColor Yellow
+            Write-Host "  [WARN]️  No automatic fixes available" -ForegroundColor Yellow
         }
         
     } catch {
-        Write-Host "  ❌ Error processing file: $($_.Exception.Message)" -ForegroundColor Red
+        Write-Host "  [FAIL] Error processing file: $($_.Exception.Message)" -ForegroundColor Red
     }
 }
 
@@ -254,10 +254,10 @@ if ($WhatIf) {
     }
 } else {
     if ($totalFixed -gt 0) {
-        Write-Host "`n✅ Successfully fixed $totalFixed files!" -ForegroundColor Green
+        Write-Host "`n[PASS] Successfully fixed $totalFixed files!" -ForegroundColor Green
         Write-Host "💡 Backup files created with .backup-* extension" -ForegroundColor Yellow
     } else {
-        Write-Host "`n✅ No fixes were needed!" -ForegroundColor Green
+        Write-Host "`n[PASS] No fixes were needed!" -ForegroundColor Green
     }
 }
 

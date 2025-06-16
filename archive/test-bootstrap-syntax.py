@@ -45,9 +45,9 @@ def check_bootstrap_syntax():
             break
     
     if found_escaping:
-        print("✓ Found proper variable escaping with ${}")
+        print(" Found proper variable escaping with ${}")
     
-    print("✓ Bootstrap script syntax looks good!")
+    print(" Bootstrap script syntax looks good!")
     return True
 
 if __name__ == '__main__':

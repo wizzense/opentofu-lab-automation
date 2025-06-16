@@ -38,7 +38,7 @@ foreach ($testFile in $testFiles) {
         
         # Write the changes
         Set-Content -Path $filePath -Value $content -Encoding UTF8
-        Write-Host "  ✓ Applied basic fixes to: $testFile" -ForegroundColor Green
+        Write-Host "   Applied basic fixes to: $testFile" -ForegroundColor Green
     }
 }
 

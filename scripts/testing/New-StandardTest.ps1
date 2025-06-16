@@ -78,16 +78,16 @@ function New-StandardTest {
     # Write test file
     try {
         $testContent | Set-Content -Path $testFilePath -Encoding UTF8
-        Write-Host "✅ Generated test file: $testFilePath" -ForegroundColor Green
+        Write-Host "[PASS] Generated test file: $testFilePath" -ForegroundColor Green
         
         # Validate the generated test
         if ($Validate) {
             Write-Host "Validating generated test..." -ForegroundColor Yellow
             $validation = Test-GeneratedTest -Path $testFilePath
             if ($validation.IsValid) {
-                Write-Host "✅ Test validation passed" -ForegroundColor Green
+                Write-Host "[PASS] Test validation passed" -ForegroundColor Green
             } else {
-                Write-Error "❌ Test validation failed: $($validation.Errors -join '; ')"
+                Write-Error "[FAIL] Test validation failed: $($validation.Errors -join '; ')"
                 return $false
             }
         }
@@ -180,9 +180,9 @@ function Repair-ExistingTests {
             $success = New-StandardTest -ScriptName $scriptName -ScriptType $scriptType -OutputPath $TestsPath -OverwriteExisting $true
             
             if ($success) {
-                Write-Host "  ✅ Repaired: $($testFile.Name)" -ForegroundColor Green
+                Write-Host "  [PASS] Repaired: $($testFile.Name)" -ForegroundColor Green
             } else {
-                Write-Host "  ❌ Failed to repair: $($testFile.Name)" -ForegroundColor Red
+                Write-Host "  [FAIL] Failed to repair: $($testFile.Name)" -ForegroundColor Red
             }
         }
     }
@@ -193,11 +193,11 @@ if ($ScriptName) {
     $success = New-StandardTest -ScriptName $ScriptName -ScriptType $ScriptType -OutputPath $OutputPath -OverwriteExisting $OverwriteExisting
     
     if ($success) {
-        Write-Host "✅ Test generation completed successfully!" -ForegroundColor Green
+        Write-Host "[PASS] Test generation completed successfully!" -ForegroundColor Green
         Write-Host "Run the following to test your new test file:" -ForegroundColor Cyan
         Write-Host "Invoke-Pester -Path `"$OutputPath$ScriptName.Tests.ps1`" -PassThru" -ForegroundColor Gray
     } else {
-        Write-Error "❌ Test generation failed!"
+        Write-Error "[FAIL] Test generation failed!"
         exit 1
     }
 } else {

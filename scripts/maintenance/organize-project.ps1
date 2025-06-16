@@ -198,7 +198,7 @@ foreach ($dir in $directories) {
  }
  }
  } else {
- Write-Host " ✓ Directory already exists: $dir" -ForegroundColor Gray
+ Write-Host "  Directory already exists: $dir" -ForegroundColor Gray
  }
 }
 

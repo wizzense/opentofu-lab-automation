@@ -43,7 +43,7 @@ def validate_powershell_file(file_path):
         if re.search(pattern, content, re.MULTILINE):
             print(f"WARNING: Potential syntax issue - {description}")
     
-    print(f"✓ {file_path} passed basic syntax validation")
+    print(f" {file_path} passed basic syntax validation")
     return True
 
 def main():
@@ -69,10 +69,10 @@ def main():
             all_valid = False
     
     if all_valid:
-        print(f"\n✓ All {len(ps_files)} PowerShell files passed basic syntax validation")
+        print(f"\n All {len(ps_files)} PowerShell files passed basic syntax validation")
         return 0
     else:
-        print(f"\n✗ Some PowerShell files failed validation")
+        print(f"\n Some PowerShell files failed validation")
         return 1
 
 if __name__ == '__main__':

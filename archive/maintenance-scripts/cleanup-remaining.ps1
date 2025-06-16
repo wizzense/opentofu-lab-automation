@@ -107,7 +107,7 @@ foreach ($testFile in $testDataFiles) {
     }
 }
 
-Write-Host "`n✅ Remaining files organized!" -ForegroundColor Green
+Write-Host "`n[PASS] Remaining files organized!" -ForegroundColor Green
 
 
 

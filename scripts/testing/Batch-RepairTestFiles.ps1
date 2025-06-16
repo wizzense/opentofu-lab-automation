@@ -121,9 +121,9 @@ if (-not $WhatIf) {
         try {
             $errors = @(Get-ScriptAnalyzerResult -Path $testFile.FullName -Severity Error)
             if ($errors.Count -eq 0) {
-                Write-CustomLog "✓ $($testFile.Name) - No errors" "INFO"
+                Write-CustomLog " $($testFile.Name) - No errors" "INFO"
             } else {
-                Write-CustomLog "✗ $($testFile.Name) - $($errors.Count) errors" "WARN"
+                Write-CustomLog " $($testFile.Name) - $($errors.Count) errors" "WARN"
             }
         } catch {
             Write-CustomLog "Validation failed for $($testFile.Name): $($_.Exception.Message)" "ERROR"

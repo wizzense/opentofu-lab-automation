@@ -55,16 +55,16 @@ foreach ($file in $files) {
     if ($modified) {
         if (-not $WhatIf) {
             Set-Content -Path $file.FullName -Value $content -NoNewline
-            Write-Host " ✅ Fixed!" -ForegroundColor Green
+            Write-Host " [PASS] Fixed!" -ForegroundColor Green
         } else {
-            Write-Host " ✅ Would fix (WhatIf mode)" -ForegroundColor Yellow
+            Write-Host " [PASS] Would fix (WhatIf mode)" -ForegroundColor Yellow
         }
     } else {
         Write-Host " No issues found" -ForegroundColor Green
     }
 }
 
-Write-Host "✅ Completed syntax fixes!" -ForegroundColor Green
+Write-Host "[PASS] Completed syntax fixes!" -ForegroundColor Green
 
 
 

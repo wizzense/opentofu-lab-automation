@@ -363,13 +363,13 @@ Import-Module PSScriptAnalyzer -Force
     # Overall assessment
     Write-Host "`nOverall Assessment:" -ForegroundColor Cyan
     if ($invalidSyntax -eq 0 -and ($Results.Lint.Total -eq 0 -or ($Results.Lint.Issues | Where-Object { $_.Severity -eq 'Error' }).Count -eq 0) -and $Results.Tests.Failures.Count -eq 0) {
-        Write-Host "  ✅ PASSED - All validation checks successful" -ForegroundColor Green
+        Write-Host "  [PASS] PASSED - All validation checks successful" -ForegroundColor Green
     } else {
         $hasErrors = $invalidSyntax -gt 0 -or ($Results.Lint.Issues | Where-Object { $_.Severity -eq 'Error' }).Count -gt 0
         if ($hasErrors) {
-            Write-Host "  ❌ FAILED - Critical issues found that need to be fixed" -ForegroundColor Red
+            Write-Host "  [FAIL] FAILED - Critical issues found that need to be fixed" -ForegroundColor Red
         } else {
-            Write-Host "  ⚠️ WARNINGS - Non-critical issues found that should be addressed" -ForegroundColor Yellow
+            Write-Host "  [WARN]️ WARNINGS - Non-critical issues found that should be addressed" -ForegroundColor Yellow
         }
         
         # Suggest fixes

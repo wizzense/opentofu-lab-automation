@@ -118,9 +118,9 @@ Project now uses environment variables for cross-platform compatibility:
 
 | **Variable** | **Description** | **Auto-Set** |
 |--------------|-----------------|-------------|
-| `PROJECT_ROOT` | Project root directory | ✅ |
-| `PWSH_MODULES_PATH` | PowerShell modules path | ✅ |
-| `PLATFORM` | Current platform (Windows/Linux/macOS) | ✅ |
+| `PROJECT_ROOT` | Project root directory | [PASS] |
+| `PWSH_MODULES_PATH` | PowerShell modules path | [PASS] |
+| `PLATFORM` | Current platform (Windows/Linux/macOS) | [PASS] |
 
 ### Enhanced Comprehensive Cleanup
 ```powershell

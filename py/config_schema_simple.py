@@ -131,20 +131,20 @@ if __name__ == "__main__":
     print("Testing ConfigSchema...")
     try:
         schema = ConfigSchema()
-        print(f"✓ Schema created with {len(schema.sections)} sections")
+        print(f" Schema created with {len(schema.sections)} sections")
         
         defaults = schema.get_defaults()
-        print(f"✓ Got {len(defaults)} default values")
+        print(f" Got {len(defaults)} default values")
         
         # Test validation
         test_config = {"RepoUrl": "https://example.com", "LocalPath": "/tmp"}
         errors = schema.validate_config(test_config)
-        print(f"✓ Validation test: {len(errors)} errors")
+        print(f" Validation test: {len(errors)} errors")
         
-        print("✓ ConfigSchema test completed successfully")
+        print(" ConfigSchema test completed successfully")
         
     except Exception as e:
-        print(f"✗ Error: {e}")
+        print(f" Error: {e}")
         import traceback
         traceback.print_exc()
 

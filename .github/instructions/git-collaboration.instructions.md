@@ -95,12 +95,12 @@ Brief description of changes.
 #### DirectCommit vs Branch Workflow
 | **DirectCommit** | **Branch Workflow** |
 |------------------|-------------------|
-| `✓` Quick fixes and maintenance | `✓` Feature development |
-| `✓` Documentation updates | `✓` Major changes requiring review |
-| `✓` Emergency fixes | `✓` Breaking changes |
-| `✓` Automated cleanup operations | `✓` Collaborative development |
-| `✗` No peer review | `✓` Full peer review process |
-| `✗` No CI validation | `✓` Complete CI/CD validation |
+| `` Quick fixes and maintenance | `` Feature development |
+| `` Documentation updates | `` Major changes requiring review |
+| `` Emergency fixes | `` Breaking changes |
+| `` Automated cleanup operations | `` Collaborative development |
+| `` No peer review | `` Full peer review process |
+| `` No CI validation | `` Complete CI/CD validation |
 
 #### When to Use DirectCommit
 ```powershell

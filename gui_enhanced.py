@@ -435,11 +435,11 @@ class DeploymentManager:
  capture_output=True, text=True, timeout=10)
  if result.returncode == 0:
  version = result.stdout.strip()
- self.log_output(f"✓ PowerShell 7+ found (version {version})")
+ self.log_output(f" PowerShell 7+ found (version {version})")
  else:
- self.log_output("✗ PowerShell 7+ not found", "WARNING")
+ self.log_output(" PowerShell 7+ not found", "WARNING")
  except Exception as e:
- self.log_output(f"✗ PowerShell check failed: {e}", "ERROR")
+ self.log_output(f" PowerShell check failed: {e}", "ERROR")
  
  # Check Git
  self.log_output("Checking Git installation...")
@@ -447,11 +447,11 @@ class DeploymentManager:
  result = subprocess.run(['git', '--version'], capture_output=True, text=True, timeout=5)
  if result.returncode == 0:
  version = result.stdout.strip()
- self.log_output(f"✓ Git found: {version}")
+ self.log_output(f" Git found: {version}")
  else:
- self.log_output("✗ Git not found", "WARNING")
+ self.log_output(" Git not found", "WARNING")
  except Exception as e:
- self.log_output(f"✗ Git check failed: {e}", "ERROR")
+ self.log_output(f" Git check failed: {e}", "ERROR")
  
  # Check Python
  self.log_output("Checking Python installation...")
@@ -459,20 +459,20 @@ class DeploymentManager:
  result = subprocess.run([sys.executable, '--version'], capture_output=True, text=True, timeout=5)
  if result.returncode == 0:
  version = result.stdout.strip()
- self.log_output(f"✓ Python found: {version}")
+ self.log_output(f" Python found: {version}")
  else:
- self.log_output("✗ Python check failed", "WARNING")
+ self.log_output(" Python check failed", "WARNING")
  except Exception as e:
- self.log_output(f"✗ Python check failed: {e}", "ERROR")
+ self.log_output(f" Python check failed: {e}", "ERROR")
  
  # Check working directory
  self.log_output(f"Working directory: {WORK_DIR}")
  if WORK_DIR.exists():
- self.log_output("✓ Working directory exists")
+ self.log_output(" Working directory exists")
  else:
  self.log_output("Creating working directory...")
  WORK_DIR.mkdir(parents=True, exist_ok=True)
- self.log_output("✓ Working directory created")
+ self.log_output(" Working directory created")
  
  self.log_output("Prerequisites check completed.")
  self.status_var.set("Prerequisites check completed")
@@ -559,10 +559,10 @@ class DeploymentManager:
  
  if self.process.returncode == 0:
  self.output_queue.put(("status", "Deployment completed successfully"))
- self.output_queue.put(("log", "✓ Deployment completed successfully"))
+ self.output_queue.put(("log", " Deployment completed successfully"))
  else:
  self.output_queue.put(("status", "Deployment failed"))
- self.output_queue.put(("log_error", f"✗ Deployment failed with exit code {self.process.returncode}"))
+ self.output_queue.put(("log_error", f" Deployment failed with exit code {self.process.returncode}"))
  
  except Exception as e:
  self.output_queue.put(("log_error", f"Deployment error: {e}"))

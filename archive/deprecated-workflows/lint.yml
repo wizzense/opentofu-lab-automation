@@ -135,12 +135,12 @@ jobs:
             $validationResult | Out-File -FilePath $env:LOG_FILE -Append
 
             if ($exitCode -ne 0) {
-              Write-Host "❌ PowerShell validation failed" -ForegroundColor Red
+              Write-Host "[FAIL] PowerShell validation failed" -ForegroundColor Red
               Write-Host "Run 'pwsh tools/Validate-PowerShellScripts.ps1 -Path . -AutoFix' to fix issues" -ForegroundColor Yellow
               exit 1
             }
 
-            Write-Host "✅ All PowerShell files passed comprehensive validation" -ForegroundColor Green
+            Write-Host "[PASS] All PowerShell files passed comprehensive validation" -ForegroundColor Green
 
           } catch {
             Write-Error "PowerShell validation failed: $_"
@@ -155,7 +155,7 @@ jobs:
                 $content = Get-Content $file.FullName -Raw
                 [System.Management.Automation.PSParser]::Tokenize($content, [ref]$null) | Out-Null
               } catch {
-                $syntaxErrors += "❌ $($file.Name): $($_.Exception.Message)"
+                $syntaxErrors += "[FAIL] $($file.Name): $($_.Exception.Message)"
               }
             }
 

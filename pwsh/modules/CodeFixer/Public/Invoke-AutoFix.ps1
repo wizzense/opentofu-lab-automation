@@ -85,7 +85,7 @@ $ErrorActionPreference = "Stop"
  )
  
  if ($parseErrors.Count -eq 0) {
- Write-Host " ✓ No syntax errors found" -ForegroundColor Green
+ Write-Host "  No syntax errors found" -ForegroundColor Green
  continue
  }
  

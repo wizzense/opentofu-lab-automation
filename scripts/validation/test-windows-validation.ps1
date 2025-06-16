@@ -15,7 +15,7 @@ Write-Host "=== Windows Functionality Validation Test ===" -ForegroundColor Gree
 # Test 1: Check if running on Windows-compatible environment
 Write-Host "1. Testing OS Detection..." -ForegroundColor Yellow
 if ($IsWindows -or $env:OS -eq "Windows_NT") {
- Write-Host " ✓ Windows environment detected" -ForegroundColor Green
+ Write-Host "  Windows environment detected" -ForegroundColor Green
 } else {
  Write-Host " [INFO] Non-Windows environment (expected in Codespaces)" -ForegroundColor Cyan
 }
@@ -33,7 +33,7 @@ try {
  $modulePath = "$ProjectRoot/pwsh/modules/LabRunner"
  if (Test-Path $modulePath) {
  Import-Module $modulePath -Force
- Write-Host " ✓ LabRunner module loaded successfully" -ForegroundColor Green
+ Write-Host "  LabRunner module loaded successfully" -ForegroundColor Green
  } else {
  Write-Host " [WARN] LabRunner module path not found: $modulePath" -ForegroundColor Yellow
  }
@@ -47,7 +47,7 @@ try {
  $configPath = "$ProjectRoot/configs/config_files/default-config.json"
  if (Test-Path $configPath) {
  $config = Get-Content $configPath | ConvertFrom-Json
- Write-Host " ✓ Configuration loaded successfully" -ForegroundColor Green
+ Write-Host "  Configuration loaded successfully" -ForegroundColor Green
  Write-Host " [INFO] Computer Name: $($config.ComputerName)" -ForegroundColor Cyan
  } else {
  Write-Host " [WARN] Configuration file not found: $configPath" -ForegroundColor Yellow
@@ -83,7 +83,7 @@ $deployScripts = @( "$ProjectRoot/deploy.py",
 
 foreach ($script in $deployScripts) {
  if (Test-Path $script) {
- Write-Host " ✓ Found: $(Split-Path $script -Leaf)" -ForegroundColor Green
+ Write-Host "  Found: $(Split-Path $script -Leaf)" -ForegroundColor Green
  } else {
  Write-Host " [WARN] Missing: $(Split-Path $script -Leaf)" -ForegroundColor Yellow
  }

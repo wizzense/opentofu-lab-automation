@@ -82,7 +82,7 @@ foreach ($fileInfo in $filesToFix) {
             try {
                 Set-Content -Path $fileInfo.File -Value $content -Encoding UTF8
                 $updatedCount++
-                Write-Host "    ✅ Updated file" -ForegroundColor Green
+                Write-Host "    [PASS] Updated file" -ForegroundColor Green
             } catch {
                 Write-Warning "Failed to update $($fileInfo.File): $($_.Exception.Message)"
             }
@@ -105,7 +105,7 @@ if (-not $WhatIf) {
             Import-Module /workspaces/opentofu-lab-automation/pwsh/modules/CodeFixer -Force
             Invoke-PowerShellLint -Path /workspaces/opentofu-lab-automation/pwsh/runner.ps1 -OutputFormat Text
         "
-        Write-Host "✅ CodeFixer test passed" -ForegroundColor Green
+        Write-Host "[PASS] CodeFixer test passed" -ForegroundColor Green
     } catch {
         Write-Warning "CodeFixer test failed: $($_.Exception.Message)"
     }
@@ -117,7 +117,7 @@ if (-not $WhatIf) {
             Get-Module LabRunner
         "
         if ($labRunnerTest) {
-            Write-Host "✅ LabRunner loads correctly in tests" -ForegroundColor Green
+            Write-Host "[PASS] LabRunner loads correctly in tests" -ForegroundColor Green
         } else {
             Write-Warning "LabRunner may not be loading correctly"
         }

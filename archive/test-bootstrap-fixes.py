@@ -32,23 +32,23 @@ def test_bootstrap_fixes():
                 print(f"   {config_file.name}: {runner_script_name}")
                 
                 if runner_script_name != 'pwsh/runner.ps1':
-                    print(f"   ❌ ERROR: Expected 'pwsh/runner.ps1', got '{runner_script_name}'")
+                    print(f"   [FAIL] ERROR: Expected 'pwsh/runner.ps1', got '{runner_script_name}'")
                     return False
                 
                 # Verify the runner script exists
                 runner_path = repo_root / runner_script_name
                 if not runner_path.exists():
-                    print(f"   ❌ ERROR: Runner script not found at {runner_path}")
+                    print(f"   [FAIL] ERROR: Runner script not found at {runner_path}")
                     return False
                 
-                print(f"   ✅ Config correct and runner script exists")
+                print(f"   [PASS] Config correct and runner script exists")
     
     # Test 2: Verify bootstrap script syntax
     print("\n2. Testing bootstrap script syntax...")
     bootstrap_script = repo_root / 'pwsh' / 'kicker-bootstrap.ps1'
     
     if not bootstrap_script.exists():
-        print(f"   ❌ ERROR: Bootstrap script not found at {bootstrap_script}")
+        print(f"   [FAIL] ERROR: Bootstrap script not found at {bootstrap_script}")
         return False
     
     with open(bootstrap_script, 'r', encoding='utf-8') as f:
@@ -56,18 +56,18 @@ def test_bootstrap_fixes():
     
     # Check for the specific syntax issue we fixed
     if '$repoPath:' in content and '${repoPath}' not in content:
-        print("   ❌ ERROR: Found unescaped $repoPath: without proper escaping")
+        print("   [FAIL] ERROR: Found unescaped $repoPath: without proper escaping")
         return False
     
     if '${repoPath}' in content:
-        print("   ✅ Found proper variable escaping with ${repoPath}")
+        print("   [PASS] Found proper variable escaping with ${repoPath}")
     
     # Test 3: Verify Pester tests exist
     print("\n3. Testing Pester test coverage...")
     bootstrap_tests = repo_root / 'tests' / 'Kicker-Bootstrap.Tests.ps1'
     
     if not bootstrap_tests.exists():
-        print(f"   ❌ ERROR: Bootstrap tests not found at {bootstrap_tests}")
+        print(f"   [FAIL] ERROR: Bootstrap tests not found at {bootstrap_tests}")
         return False
     
     with open(bootstrap_tests, 'r', encoding='utf-8') as f:
@@ -81,9 +81,9 @@ def test_bootstrap_fixes():
     
     for test_name in required_tests:
         if test_name in test_content:
-            print(f"   ✅ Found test: {test_name}")
+            print(f"   [PASS] Found test: {test_name}")
         else:
-            print(f"   ❌ Missing test: {test_name}")
+            print(f"   [FAIL] Missing test: {test_name}")
             return False
     
     print("\n🎉 All bootstrap script fixes verified successfully!")
@@ -94,7 +94,7 @@ def main():
     success = test_bootstrap_fixes()
     
     if success:
-        print("\n✅ Bootstrap script is ready for production use!")
+        print("\n[PASS] Bootstrap script is ready for production use!")
         print("\nThe following issues have been resolved:")
         print("- PowerShell syntax errors with variable interpolation")
         print("- Incorrect runner script path in configuration files")
@@ -102,7 +102,7 @@ def main():
         print("- Inadequate test coverage for bootstrap functionality")
         return 0
     else:
-        print("\n❌ Some bootstrap script issues remain unresolved")
+        print("\n[FAIL] Some bootstrap script issues remain unresolved")
         return 1
 
 if __name__ == '__main__':

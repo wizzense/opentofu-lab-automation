@@ -19,9 +19,9 @@ try {
     Write-Host "Testing Pester availability..." -ForegroundColor Yellow
     
     if (Get-Module -ListAvailable -Name Pester | Where-Object { $_.Version -ge [version]'5.0.0' }) {
-        Write-Host "✅ Pester 5.x is available" -ForegroundColor Green
+        Write-Host "[PASS] Pester 5.x is available" -ForegroundColor Green
     } else {
-        Write-Host "❌ Pester 5.x not found" -ForegroundColor Red
+        Write-Host "[FAIL] Pester 5.x not found" -ForegroundColor Red
         throw "Pester 5.x is required"
     }
     
@@ -30,7 +30,7 @@ try {
     
     if (Test-Path 'tests/PesterConfiguration.psd1') {
         $cfg = Import-PowerShellDataFile 'tests/PesterConfiguration.psd1'
-        Write-Host "✅ Pester configuration loaded" -ForegroundColor Green
+        Write-Host "[PASS] Pester configuration loaded" -ForegroundColor Green
         Write-Host "   Test path: $($cfg.Run.Path)" -ForegroundColor Cyan
         Write-Host "   Coverage enabled: $($cfg.CodeCoverage.Enabled)" -ForegroundColor Cyan
     } else {
@@ -43,7 +43,7 @@ try {
     if (Test-Path 'tests/helpers/Get-ScriptAst.ps1') {
         . ./tests/helpers/Get-ScriptAst.ps1
         if (Get-Command Get-ScriptAst -ErrorAction SilentlyContinue) {
-            Write-Host "✅ Test helpers loaded successfully" -ForegroundColor Green
+            Write-Host "[PASS] Test helpers loaded successfully" -ForegroundColor Green
         } else {
             throw "Get-ScriptAst function not available after loading"
         }
@@ -60,7 +60,7 @@ try {
         $testCfg.Output.Verbosity = 'Minimal'
         $testCfg.CodeCoverage.Enabled = $false
         $testCfg.TestResult.Enabled = $false
-        Write-Host "✅ Pester configuration created successfully" -ForegroundColor Green
+        Write-Host "[PASS] Pester configuration created successfully" -ForegroundColor Green
     } catch {
         throw "Failed to create Pester configuration: $_"
     }
@@ -69,7 +69,7 @@ try {
     Write-Host "Checking test files..." -ForegroundColor Yellow
     
     $testFiles = Get-ChildItem -Path 'tests' -Filter '*.Tests.ps1' -File
-    Write-Host "✅ Found $($testFiles.Count) test files" -ForegroundColor Green
+    Write-Host "[PASS] Found $($testFiles.Count) test files" -ForegroundColor Green
     
     foreach ($testFile in $testFiles | Select-Object -First 3) {
         Write-Host "   - $($testFile.Name)" -ForegroundColor Cyan
@@ -86,7 +86,7 @@ try {
     if ($sampleTest) {
         try {
             $ast = Get-ScriptAst -Path $sampleTest.FullName
-            Write-Host "✅ Sample test syntax is valid: $($sampleTest.Name)" -ForegroundColor Green
+            Write-Host "[PASS] Sample test syntax is valid: $($sampleTest.Name)" -ForegroundColor Green
         } catch {
             Write-Warning "Sample test syntax validation failed: $_"
         }
@@ -96,7 +96,7 @@ try {
     exit 0
     
 } catch {
-    Write-Host "`n❌ Workflow setup test failed: $_" -ForegroundColor Red
+    Write-Host "`n[FAIL] Workflow setup test failed: $_" -ForegroundColor Red
     Write-Host "Stack trace: $($_.ScriptStackTrace)" -ForegroundColor Red
     exit 1
 }

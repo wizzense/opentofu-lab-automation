@@ -126,7 +126,7 @@ start.bat           # Windows
 ### Core Components
 - **🚀 Unified Launcher** (`launcher.py`) - Single entry point for all operations
 - **🎮 GUI Interface** (`gui.py`) - Visual configuration and monitoring
-- **⚙️  Deploy Script** (`deploy.py`) - Core deployment engine
+- **️  Deploy Script** (`deploy.py`) - Core deployment engine
 - **🔧 PowerShell Modules** - Advanced automation and validation
 - **📋 Configuration Templates** - Pre-built lab configurations
 
@@ -167,7 +167,7 @@ Full repository clone for development and advanced usage:
 - Testing frameworks and validation scripts
 - Documentation and examples
 
-## 🏃‍♂️ Usage Examples
+## 🏃‍️ Usage Examples
 
 ### Quick Deployment
 ```bash

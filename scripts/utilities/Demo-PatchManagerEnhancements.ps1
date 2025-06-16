@@ -143,11 +143,11 @@ try {
                 Write-Host "  No manual backup needed - Git provides full history" -ForegroundColor Cyan
                 
                 Write-Host "FULL DEMONSTRATION COMPLETED!" -ForegroundColor Green
-                Write-Host "✓ Auto-commit eliminates manual Git steps" -ForegroundColor White
-                Write-Host "✓ Comprehensive cleanup integrated" -ForegroundColor White
-                Write-Host "✓ Instant rollback available" -ForegroundColor White
-                Write-Host "✓ Reduced backup dependencies" -ForegroundColor White
-                Write-Host "✓ Complete change control workflow" -ForegroundColor White
+                Write-Host " Auto-commit eliminates manual Git steps" -ForegroundColor White
+                Write-Host " Comprehensive cleanup integrated" -ForegroundColor White
+                Write-Host " Instant rollback available" -ForegroundColor White
+                Write-Host " Reduced backup dependencies" -ForegroundColor White
+                Write-Host " Complete change control workflow" -ForegroundColor White
             }
         }
     }

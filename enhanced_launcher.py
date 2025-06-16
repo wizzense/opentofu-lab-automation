@@ -69,12 +69,12 @@ def check_dependencies():
  if sys.version_info < (3, 7):
  issues.append("Python 3.7+ is required")
  else:
- print(f" ✓ Python {sys.version.split()[0]}")
+ print(f"  Python {sys.version.split()[0]}")
  
  # Check tkinter for GUI
  try:
  import tkinter
- print(" ✓ Tkinter (GUI support)")
+ print("  Tkinter (GUI support)")
  except ImportError:
  issues.append("Tkinter not available (GUI features disabled)")
  print(" Tkinter not available (GUI features disabled)")
@@ -86,7 +86,7 @@ def check_dependencies():
  result = subprocess.run([cmd, '-Command', 'Write-Host "OK"'], 
  capture_output=True, timeout=5)
  if result.returncode == 0:
- print(f" ✓ PowerShell ({cmd})")
+ print(f"  PowerShell ({cmd})")
  pwsh_available = True
  break
  except:
@@ -94,7 +94,7 @@ def check_dependencies():
  
  if not pwsh_available:
  issues.append("PowerShell not found (required for deployment)")
- print(" ✗ PowerShell not found")
+ print("  PowerShell not found")
  
  return issues
 
@@ -111,14 +111,14 @@ def launch_enhanced_gui():
  try:
  gui_script = Path(__file__).parent / "gui_enhanced.py"
  if not gui_script.exists():
- print(f"✗ Enhanced GUI script not found: {gui_script}")
+ print(f" Enhanced GUI script not found: {gui_script}")
  return False
  
  subprocess.run([sys.executable, str(gui_script)], cwd=str(work_dir))
  return True
  
  except Exception as e:
- print(f"✗ Failed to launch enhanced GUI: {e}")
+ print(f" Failed to launch enhanced GUI: {e}")
  return False
 
 def launch_config_builder():
@@ -135,7 +135,7 @@ def launch_config_builder():
  from config_schema_simple import ConfigSchema
  
  schema = ConfigSchema()
- print(f"✓ Loaded configuration schema with {len(schema.sections)} sections")
+ print(f" Loaded configuration schema with {len(schema.sections)} sections")
  
  # Interactive configuration
  config = {}
@@ -189,14 +189,14 @@ def launch_config_builder():
  with open(config_file, 'w', encoding='utf-8') as f:
  json.dump(config, f, indent=2)
  
- print(f"\n✓ Configuration saved to: {config_file}")
+ print(f"\n Configuration saved to: {config_file}")
  print(f"\nTo deploy with this configuration:")
  print(f" python deploy.py --config {config_file}")
  
  return True
  
  except Exception as e:
- print(f"✗ Configuration builder error: {e}")
+ print(f" Configuration builder error: {e}")
  return False
 
 def launch_enhanced_deploy():
@@ -213,7 +213,7 @@ def launch_enhanced_deploy():
  # Use the enhanced deploy script
  deploy_script = Path(__file__).parent / "deploy.py"
  if not deploy_script.exists():
- print(f"✗ Deploy script not found: {deploy_script}")
+ print(f" Deploy script not found: {deploy_script}")
  return False
  
  print(f"Working directory: {work_dir}")
@@ -244,14 +244,14 @@ def launch_enhanced_deploy():
  return True
  
  except Exception as e:
- print(f"✗ Deployment error: {e}")
+ print(f" Deployment error: {e}")
  return False
 
 def ensure_project_files(work_dir: Path):
  """Ensure project files are available in working directory"""
  
  if (work_dir / "configs").exists() and (work_dir / "pwsh").exists():
- print(f"✓ Project files found in {work_dir}")
+ print(f" Project files found in {work_dir}")
  return True
  
  print(f"� Setting up project files in {work_dir}...")
@@ -270,20 +270,20 @@ def ensure_project_files(work_dir: Path):
  if dest_dir.exists():
  shutil.rmtree(dest_dir)
  shutil.copytree(source_dir, dest_dir)
- print(f" ✓ Copied {dir_name}/")
+ print(f"  Copied {dir_name}/")
  
  # Copy essential files
  for file_name in ["deploy.py", "gui_enhanced.py"]:
  source_file = script_dir / file_name
  if source_file.exists():
  shutil.copy2(source_file, work_dir / file_name)
- print(f" ✓ Copied {file_name}")
+ print(f"  Copied {file_name}")
  
- print(f"✓ Project setup complete")
+ print(f" Project setup complete")
  return True
  
  except Exception as e:
- print(f"✗ Failed to setup project files: {e}")
+ print(f" Failed to setup project files: {e}")
  return False
 
 def interactive_menu():
@@ -310,7 +310,7 @@ def interactive_menu():
  elif choice == "4":
  issues = check_dependencies()
  if not issues:
- print("✓ All dependencies are available")
+ print(" All dependencies are available")
  else:
  print(" Issues found:")
  for issue in issues:
@@ -348,7 +348,7 @@ def main():
  if args.check:
  issues = check_dependencies()
  if not issues:
- print("✓ All dependencies are available")
+ print(" All dependencies are available")
  else:
  print(" Issues found:")
  for issue in issues:
@@ -374,5 +374,5 @@ if __name__ == "__main__":
  print("\n� Goodbye!")
  sys.exit(0)
  except Exception as e:
- print(f"\n✗ Unexpected error: {e}")
+ print(f"\n Unexpected error: {e}")
  sys.exit(1)

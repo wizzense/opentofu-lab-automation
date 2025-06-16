@@ -64,14 +64,14 @@ def check_dependencies():
     if python_version < (3, 7):
         print_status(f"Python 3.7+ required, found {python_version.major}.{python_version.minor}", "ERROR")
         return False
-    print_status(f"✓ Python {python_version.major}.{python_version.minor}.{python_version.micro}", "SUCCESS")
+    print_status(f" Python {python_version.major}.{python_version.minor}.{python_version.micro}", "SUCCESS")
     
     # Check git
     git_result = run_command("git --version", check=False)
     if not git_result or git_result.returncode != 0:
         print_status("Git not found. Installing git is recommended but not required.", "WARNING")
         return "no-git"
-    print_status("✓ Git available", "SUCCESS")
+    print_status(" Git available", "SUCCESS")
     
     return True
 
@@ -96,7 +96,7 @@ def download_project():
     )
     
     if git_result and git_result.returncode == 0:
-        print_status("✓ Downloaded via git clone", "SUCCESS")
+        print_status(" Downloaded via git clone", "SUCCESS")
         return project_dir
     
     # Git failed, try wget or curl
@@ -140,7 +140,7 @@ def download_project():
         # Clean up
         Path(zip_file).unlink()
         
-        print_status("✓ Downloaded and extracted", "SUCCESS")
+        print_status(" Downloaded and extracted", "SUCCESS")
         return project_dir
         
     except Exception as e:

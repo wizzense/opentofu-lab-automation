@@ -220,7 +220,7 @@ def run_kicker_bootstrap(config_path: Optional[str] = None, quiet: bool = False,
  print(f"{Colors.YELLOW}Forcing change to: {PROJECT_ROOT}{Colors.RESET}")
  try:
  os.chdir(PROJECT_ROOT)
- print(f"{Colors.GREEN}✓ Changed to proper working directory{Colors.RESET}")
+ print(f"{Colors.GREEN} Changed to proper working directory{Colors.RESET}")
  except Exception as e:
  print(f"{Colors.RED}ERROR: Could not change directory: {e}{Colors.RESET}")
  return False
@@ -282,9 +282,9 @@ def run_kicker_bootstrap(config_path: Optional[str] = None, quiet: bool = False,
  )
  
  if result.returncode == 0:
- print(f"{Colors.GREEN}✓ Deployment completed successfully{Colors.RESET}")
+ print(f"{Colors.GREEN} Deployment completed successfully{Colors.RESET}")
  else:
- print(f"{Colors.RED}✗ Deployment failed with exit code {result.returncode}{Colors.RESET}")
+ print(f"{Colors.RED} Deployment failed with exit code {result.returncode}{Colors.RESET}")
  
  return result.returncode == 0
  
@@ -339,7 +339,7 @@ def ensure_project_files():
  
  # Check if we already have the project structure
  if (PROJECT_ROOT / "pwsh").exists() and (PROJECT_ROOT / "configs").exists():
- print(f"{Colors.GREEN}✓ Project files found in {PROJECT_ROOT}{Colors.RESET}")
+ print(f"{Colors.GREEN} Project files found in {PROJECT_ROOT}{Colors.RESET}")
  return True
  
  print(f"{Colors.YELLOW}� Project files not found in {PROJECT_ROOT}. Setting up...{Colors.RESET}")
@@ -395,20 +395,20 @@ def ensure_project_files():
  if dest_dir.exists():
  shutil.rmtree(dest_dir)
  shutil.copytree(source_dir, dest_dir)
- print(f" ✓ Copied {dir_name}/")
+ print(f"  Copied {dir_name}/")
  
  # Copy essential files
  for file_name in ["README.md", "LICENSE", "launcher.py", "gui.py"]:
  source_file = source / file_name
  if source_file.exists():
  shutil.copy2(source_file, PROJECT_ROOT / file_name)
- print(f" ✓ Copied {file_name}")
+ print(f"  Copied {file_name}")
  
- print(f"{Colors.GREEN}✓ Project setup complete in {PROJECT_ROOT}{Colors.RESET}")
+ print(f"{Colors.GREEN} Project setup complete in {PROJECT_ROOT}{Colors.RESET}")
  return True
  
  except Exception as e:
- print(f"{Colors.RED}✗ Failed to copy project files: {e}{Colors.RESET}")
+ print(f"{Colors.RED} Failed to copy project files: {e}{Colors.RESET}")
  
  # Last resort: try to download
  print(f"{Colors.YELLOW}⬇ Attempting to download project files...{Colors.RESET}")
@@ -422,7 +422,7 @@ def ensure_project_files():
  ], capture_output=True, text=True, timeout=60)
  
  if result.returncode == 0:
- print(f"{Colors.GREEN}✓ Downloaded project via git{Colors.RESET}")
+ print(f"{Colors.GREEN} Downloaded project via git{Colors.RESET}")
  return True
  else:
  print(f"{Colors.YELLOW}Git clone failed, trying alternative download...{Colors.RESET}")
@@ -440,11 +440,11 @@ def ensure_project_files():
  config_url = "https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/main/configs/config_files/default-config.json"
  urllib.request.urlretrieve(config_url, DEFAULT_CONFIG)
  
- print(f"{Colors.GREEN}✓ Downloaded essential configuration files{Colors.RESET}")
+ print(f"{Colors.GREEN} Downloaded essential configuration files{Colors.RESET}")
  return True
  
  except Exception as e:
- print(f"{Colors.RED}✗ Failed to download project files: {e}{Colors.RESET}")
+ print(f"{Colors.RED} Failed to download project files: {e}{Colors.RESET}")
  print(f"{Colors.YELLOW}Manual setup required. Please clone the repository to {PROJECT_ROOT}{Colors.RESET}")
  return False
 
@@ -493,7 +493,7 @@ Examples:
  
  # Change to working directory
  os.chdir(PROJECT_ROOT)
- print(f"{Colors.GREEN}✓ Working directory: {PROJECT_ROOT}{Colors.RESET}")
+ print(f"{Colors.GREEN} Working directory: {PROJECT_ROOT}{Colors.RESET}")
  
  # Prerequisites check
  print(f"\n{Colors.BOLD} Checking Prerequisites{Colors.RESET}")

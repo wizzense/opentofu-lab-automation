@@ -163,7 +163,7 @@ Write-Host "Generated test file: $OutputPath" -ForegroundColor Green
 # Validate the generated file by running a syntax check
 try {
     $null = [System.Management.Automation.PSParser]::Tokenize($testContent, [ref]$null)
-    Write-Host "✓ Syntax validation passed" -ForegroundColor Green
+    Write-Host " Syntax validation passed" -ForegroundColor Green
 } catch {
     Write-Warning "Syntax validation failed: $_"
 }

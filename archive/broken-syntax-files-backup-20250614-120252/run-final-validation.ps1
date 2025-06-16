@@ -78,16 +78,16 @@ function Add-CheckResult {
     switch ($Status) {
         "Passed" { 
             $results.Summary.Passed++
-            Write-Host "  ✅ $Name" -ForegroundColor Green
+            Write-Host "  [PASS] $Name" -ForegroundColor Green
         }        "Failed" { 
             $results.Summary.Failed++
             $results.Errors += "${Name}: ${Message}"
-            Write-Host "  ❌ $Name - $Message" -ForegroundColor Red
+            Write-Host "  [FAIL] $Name - $Message" -ForegroundColor Red
         }
         "Warning" { 
             $results.Summary.Warnings++
             $results.Warnings += "${Name}: ${Message}"
-            Write-Host "  ⚠️  $Name - $Message" -ForegroundColor Yellow
+            Write-Host "  [WARN]️  $Name - $Message" -ForegroundColor Yellow
         }
     }
     
@@ -191,7 +191,7 @@ try {
 }
 
 # Check 4: Workflow Health (Quick check)
-Write-Host "⚡ Checking Workflow Health..." -ForegroundColor Blue
+Write-Host " Checking Workflow Health..." -ForegroundColor Blue
 try {
     $workflowPath = Join-Path $basePath ".github/workflows"
     if (Test-Path $workflowPath) {
@@ -221,7 +221,7 @@ try {
 }
 
 # Check 5: Configuration Files
-Write-Host "⚙️  Checking Configuration..." -ForegroundColor Blue
+Write-Host "️  Checking Configuration..." -ForegroundColor Blue
 try {
     $configChecks = @()
     
@@ -306,15 +306,15 @@ if ($CI) {
         default { exit 1 }
     }
 } else {
-    Write-Host "`n✅ Final validation completed!" -ForegroundColor Green
+    Write-Host "`n[PASS] Final validation completed!" -ForegroundColor Green
     if ($results.Errors.Count -gt 0) {
-        Write-Host "`n❌ Errors found:" -ForegroundColor Red
+        Write-Host "`n[FAIL] Errors found:" -ForegroundColor Red
         foreach ($error in $results.Errors) {
             Write-Host "  - $error" -ForegroundColor Red
         }
     }
     if ($results.Warnings.Count -gt 0) {
-        Write-Host "`n⚠️  Warnings:" -ForegroundColor Yellow
+        Write-Host "`n[WARN]️  Warnings:" -ForegroundColor Yellow
         foreach ($warning in $results.Warnings) {
             Write-Host "  - $warning" -ForegroundColor Yellow
         }

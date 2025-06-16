@@ -41,11 +41,11 @@ python deploy.py --quick
 ## 🛠️ What This Does
 
 This automation framework:
-- ✅ **Installs prerequisites** (PowerShell, Git, OpenTofu, etc.)
-- ✅ **Sets up lab infrastructure** (Hyper-V, networking, certificates)
-- ✅ **Configures development tools** (VS Code, Python, Node.js)
-- ✅ **Deploys OpenTofu modules** for infrastructure as code
-- ✅ **Creates ready-to-use lab environment** in minutes
+- [PASS] **Installs prerequisites** (PowerShell, Git, OpenTofu, etc.)
+- [PASS] **Sets up lab infrastructure** (Hyper-V, networking, certificates)
+- [PASS] **Configures development tools** (VS Code, Python, Node.js)
+- [PASS] **Deploys OpenTofu modules** for infrastructure as code
+- [PASS] **Creates ready-to-use lab environment** in minutes
 
 ## 🔧 Prerequisites
 

@@ -80,7 +80,7 @@ try {
     Write-Warning "Comprehensive auto-fix error: $_"
 }
 
-Write-Host "✅ Auto-fix operations completed" -ForegroundColor Green
+Write-Host "[PASS] Auto-fix operations completed" -ForegroundColor Green
 
 
 

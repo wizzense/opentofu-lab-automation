@@ -90,16 +90,16 @@ class BootstrapInstaller:
         print(f"{Colors.NC}")
     
     def _print_success(self, message: str):
-        print(f"{Colors.GREEN}✅ {message}{Colors.NC}")
+        print(f"{Colors.GREEN}[PASS] {message}{Colors.NC}")
     
     def _print_error(self, message: str):
-        print(f"{Colors.RED}❌ {message}{Colors.NC}")
+        print(f"{Colors.RED}[FAIL] {message}{Colors.NC}")
     
     def _print_info(self, message: str):
-        print(f"{Colors.BLUE}ℹ️  {message}{Colors.NC}")
+        print(f"{Colors.BLUE}[INFO]️  {message}{Colors.NC}")
     
     def _print_warning(self, message: str):
-        print(f"{Colors.YELLOW}⚠️  {message}{Colors.NC}")
+        print(f"{Colors.YELLOW}[WARN]️  {message}{Colors.NC}")
     
     def create_config_file(self) -> bool:
         """Create default configuration file"""
@@ -154,9 +154,9 @@ def main():
     if config_file.exists():
         with open(config_file) as f:
             config = json.load(f)
-        print(f"✅ Loaded config: {config_file}")
+        print(f"[PASS] Loaded config: {config_file}")
     else:
-        print("❌ No configuration found. Run bootstrap.py first.")
+        print("[FAIL] No configuration found. Run bootstrap.py first.")
         return 1
     
     # Basic deployment simulation
@@ -256,11 +256,11 @@ class SimpleGUI:
         self.log("🔍 Running health check...")
         config_file = Path("configs/default-config.json")
         if config_file.exists():
-            self.log("✅ Configuration file found")
+            self.log("[PASS] Configuration file found")
         else:
-            self.log("❌ Configuration file missing")
-        self.log("✅ Python environment OK")
-        self.log("✅ GUI components working")
+            self.log("[FAIL] Configuration file missing")
+        self.log("[PASS] Python environment OK")
+        self.log("[PASS] GUI components working")
     
     def show_settings(self):
         messagebox.showinfo("Settings", "Settings configuration coming soon!\\nFor now, edit configs/default-config.json manually.")
@@ -275,7 +275,7 @@ def main():
     try:
         import tkinter
     except ImportError:
-        print("❌ tkinter not available. GUI mode requires tkinter.")
+        print("[FAIL] tkinter not available. GUI mode requires tkinter.")
         print("Install instructions:")
         print("  Ubuntu/Debian: sudo apt install python3-tk")
         print("  CentOS/RHEL: sudo yum install tkinter") 

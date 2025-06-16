@@ -168,10 +168,10 @@ function Invoke-EmojiCleanup {
     
     # Use simple emoji patterns that PowerShell can handle reliably
     $simpleEmojiPatterns = @(
-        '[\u2705]',         # ✅ (checkmark)
-        '[\u274C]',         # ❌ (cross mark)
-        '[\u26A0]',         # ⚠️ (warning)
-        '[\u2139]',         # ℹ️ (info)
+        '[\u2705]',         # [PASS] (checkmark)
+        '[\u274C]',         # [FAIL] (cross mark)
+        '[\u26A0]',         # [WARN]️ (warning)
+        '[\u2139]',         # [INFO]️ (info)
         '[\u2600-\u26FF]',  # Miscellaneous symbols
         '[\u2700-\u27BF]'   # Dingbats
     )
@@ -198,10 +198,10 @@ function Invoke-EmojiCleanup {
                             if (-not $DryRun) {
                                 # Remove emojis with text replacements
                                 $cleanContent = $content
-                                $cleanContent = $cleanContent -replace '[\u2705]', '[PASS]'   # ✅ -> [PASS]
-                                $cleanContent = $cleanContent -replace '[\u274C]', '[FAIL]'   # ❌ -> [FAIL]
-                                $cleanContent = $cleanContent -replace '[\u26A0]', '[WARN]'   # ⚠️ -> [WARN]
-                                $cleanContent = $cleanContent -replace '[\u2139]', '[INFO]'   # ℹ️ -> [INFO]
+                                $cleanContent = $cleanContent -replace '[\u2705]', '[PASS]'   # [PASS] -> [PASS]
+                                $cleanContent = $cleanContent -replace '[\u274C]', '[FAIL]'   # [FAIL] -> [FAIL]
+                                $cleanContent = $cleanContent -replace '[\u26A0]', '[WARN]'   # [WARN]️ -> [WARN]
+                                $cleanContent = $cleanContent -replace '[\u2139]', '[INFO]'   # [INFO]️ -> [INFO]
                                 $cleanContent = $cleanContent -replace '[\u2600-\u26FF]', ''  # Remove misc symbols
                                 $cleanContent = $cleanContent -replace '[\u2700-\u27BF]', ''  # Remove dingbats
                                 

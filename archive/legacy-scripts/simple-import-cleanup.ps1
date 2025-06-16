@@ -30,13 +30,13 @@ foreach ($file in $files) {
         $content = $content -replace "(\r?\n)?", ""
         
         Set-Content -Path $file.FullName -Value $content -NoNewline
-        Write-Host "✅ Fixed: $($file.Name)" -ForegroundColor Green
+        Write-Host "[PASS] Fixed: $($file.Name)" -ForegroundColor Green
     }
     catch {
         Write-Warning "Failed to fix $($file.FullName): $_"
     }
 }
 
-Write-Host "✅ Simple cleanup complete!" -ForegroundColor Green
+Write-Host "[PASS] Simple cleanup complete!" -ForegroundColor Green
 
 

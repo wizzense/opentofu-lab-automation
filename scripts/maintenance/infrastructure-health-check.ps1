@@ -78,20 +78,20 @@ function Test-ProjectStructure {
     foreach ($dirName in $requiredDirs.Keys) {
         $dirPath = Join-Path $projectRoot $dirName
         if (Test-Path $dirPath) {
-            Write-HealthLog "✓ Directory exists: $dirName" "SUCCESS"
+            Write-HealthLog " Directory exists: $dirName" "SUCCESS"
             $structureCheck.Details[$dirName] = "EXISTS"
         } else {
-            Write-HealthLog "✗ Directory missing: $dirName" "ERROR"
+            Write-HealthLog " Directory missing: $dirName" "ERROR"
             $structureCheck.Issues += "Missing directory: $dirName"
             $structureCheck.Passed = $false
 
             if ($AutoFix) {
                 try {
                     New-Item -ItemType Directory -Path $dirPath -Force | Out-Null
-                    Write-HealthLog "✓ Created missing directory: $dirName" "FIX"
+                    Write-HealthLog " Created missing directory: $dirName" "FIX"
                     $structureCheck.Details[$dirName] = "CREATED"
                 } catch {
-                    Write-HealthLog "✗ Failed to create directory: $dirName - $_" "ERROR"
+                    Write-HealthLog " Failed to create directory: $dirName - $_" "ERROR"
                     $structureCheck.Details[$dirName] = "FAILED"
                 }
             } else {
@@ -122,10 +122,10 @@ function Test-ModuleHealth {
     foreach ($moduleDir in $modulesDirs) {
         $modulePath = Join-Path $projectRoot $moduleDir
         if (Test-Path $modulePath) {
-            Write-HealthLog "✓ Module directory exists: $moduleDir" "SUCCESS"
+            Write-HealthLog " Module directory exists: $moduleDir" "SUCCESS"
             $moduleCheck.Details[$moduleDir] = "EXISTS"
         } else {
-            Write-HealthLog "✗ Module directory missing: $moduleDir" "ERROR"
+            Write-HealthLog " Module directory missing: $moduleDir" "ERROR"
             $moduleCheck.Issues += "Missing module directory: $moduleDir"
             $moduleCheck.Passed = $false
             $moduleCheck.Details[$moduleDir] = "MISSING"
@@ -154,10 +154,10 @@ function Test-ConfigurationFiles {
     foreach ($file in $configFiles.Keys) {
         $filePath = Join-Path $projectRoot $file
         if (Test-Path $filePath) {
-            Write-HealthLog "✓ Configuration file exists: $file" "SUCCESS"
+            Write-HealthLog " Configuration file exists: $file" "SUCCESS"
             $configCheck.Details[$file] = "EXISTS"
         } else {
-            Write-HealthLog "✗ Missing configuration file: $file" "ERROR"
+            Write-HealthLog " Missing configuration file: $file" "ERROR"
             $configCheck.Issues += "Missing configuration file: $file"
             $configCheck.Passed = $false
             $configCheck.Details[$file] = "MISSING"
@@ -193,22 +193,22 @@ function Test-GitHubWorkflows {
                 $content = Get-Content $workflow.FullName -Raw
                 if ($content.Contains("name:") -and $content.Contains("on:") -and $content.Contains("jobs:")) {
                     $workflowCheck.Details.ValidWorkflows++
-                    Write-HealthLog "✓ Workflow structure valid: $($workflow.Name)" "SUCCESS"
+                    Write-HealthLog " Workflow structure valid: $($workflow.Name)" "SUCCESS"
                 } else {
                     $workflowCheck.Details.InvalidWorkflows++
                     $workflowCheck.Issues += "Invalid workflow structure: $($workflow.Name)"
                     $workflowCheck.Passed = $false
-                    Write-HealthLog "✗ Invalid workflow structure: $($workflow.Name)" "ERROR"
+                    Write-HealthLog " Invalid workflow structure: $($workflow.Name)" "ERROR"
                 }
             } catch {
                 $workflowCheck.Details.InvalidWorkflows++
                 $workflowCheck.Issues += "Workflow parse error: $($workflow.Name)"
                 $workflowCheck.Passed = $false
-                Write-HealthLog "✗ Workflow parse error: $($workflow.Name)" "ERROR"
+                Write-HealthLog " Workflow parse error: $($workflow.Name)" "ERROR"
             }
         }
     } else {
-        Write-HealthLog "✗ GitHub workflows directory missing" "ERROR"
+        Write-HealthLog " GitHub workflows directory missing" "ERROR"
         $workflowCheck.Passed = $false
         $workflowCheck.Issues += "GitHub workflows directory missing"
     }
@@ -242,7 +242,7 @@ function Test-PowerShellSyntax {
             $syntaxCheck.Details.ErrorScripts++
             $syntaxCheck.Issues += "Syntax error in $($script.Name): $($_.Exception.Message)"
             $syntaxCheck.Passed = $false
-            Write-HealthLog "✗ Syntax error in $($script.Name)" "ERROR"
+            Write-HealthLog " Syntax error in $($script.Name)" "ERROR"
         }
     }
     

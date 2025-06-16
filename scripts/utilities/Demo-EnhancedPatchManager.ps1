@@ -200,12 +200,12 @@ switch ($Mode) {
         Write-Host "`n=== Complete PatchManager Feature Demo ===" -ForegroundColor Cyan
         
         Write-Host "`n1. Modern Change Control Benefits:" -ForegroundColor Yellow
-        Write-Host "   ✓ Git-based versioning eliminates backup dependencies" -ForegroundColor Green
-        Write-Host "   ✓ Instant rollback capabilities" -ForegroundColor Green
-        Write-Host "   ✓ Complete audit trail of all changes" -ForegroundColor Green
-        Write-Host "   ✓ Automated safety checks and validation" -ForegroundColor Green
-        Write-Host "   ✓ DirectCommit for quick fixes" -ForegroundColor Green
-        Write-Host "   ✓ Emergency recovery procedures" -ForegroundColor Green
+        Write-Host "    Git-based versioning eliminates backup dependencies" -ForegroundColor Green
+        Write-Host "    Instant rollback capabilities" -ForegroundColor Green
+        Write-Host "    Complete audit trail of all changes" -ForegroundColor Green
+        Write-Host "    Automated safety checks and validation" -ForegroundColor Green
+        Write-Host "    DirectCommit for quick fixes" -ForegroundColor Green
+        Write-Host "    Emergency recovery procedures" -ForegroundColor Green
         
         Write-Host "`n2. Available Operations:" -ForegroundColor Yellow
         Write-Host "   • DirectCommit: Quick fixes without branch overhead" -ForegroundColor White
@@ -238,12 +238,12 @@ switch ($Mode) {
         Write-Host "       -PatchOperation { Remove-UnnecessaryFiles }" -ForegroundColor Gray
         
         Write-Host "`n5. Safety Features:" -ForegroundColor Yellow
-        Write-Host "   ✓ Pre-operation safety checks" -ForegroundColor Green
-        Write-Host "   ✓ Automatic stash management" -ForegroundColor Green
-        Write-Host "   ✓ Protected branch detection" -ForegroundColor Green
-        Write-Host "   ✓ Post-operation validation" -ForegroundColor Green
-        Write-Host "   ✓ Complete operation logging" -ForegroundColor Green
-        Write-Host "   ✓ Multiple rollback strategies" -ForegroundColor Green
+        Write-Host "    Pre-operation safety checks" -ForegroundColor Green
+        Write-Host "    Automatic stash management" -ForegroundColor Green
+        Write-Host "    Protected branch detection" -ForegroundColor Green
+        Write-Host "    Post-operation validation" -ForegroundColor Green
+        Write-Host "    Complete operation logging" -ForegroundColor Green
+        Write-Host "    Multiple rollback strategies" -ForegroundColor Green
         
         Write-Host "`nTo see specific demonstrations:" -ForegroundColor Cyan
         Write-Host "  .\Demo-EnhancedPatchManager.ps1 -Mode DirectCommit" -ForegroundColor White

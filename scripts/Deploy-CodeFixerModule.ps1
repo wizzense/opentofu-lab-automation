@@ -29,7 +29,7 @@ if (-not (Test-Path $modulePath)) {
     exit 1
 }
 
-Write-Host "✓ CodeFixer module found at $modulePath" -ForegroundColor Green
+Write-Host " CodeFixer module found at $modulePath" -ForegroundColor Green
 
 # Function to run a script with parameters
 function Invoke-DeploymentScript {
@@ -148,7 +148,7 @@ if (-not $WhatIf) {
                 Write-Host "WARNING: Validation test returned exit code $LASTEXITCODE. There may be issues that need fixing." -ForegroundColor Yellow
             }
             else {
-                Write-Host "✓ Validation test completed successfully" -ForegroundColor Green
+                Write-Host " Validation test completed successfully" -ForegroundColor Green
             }
         }
         else {
@@ -171,7 +171,7 @@ if ($WhatIf) {
     Write-Host "Run without -WhatIf parameter to apply the changes." -ForegroundColor Yellow
 }
 else {
-    Write-Host "✓ CodeFixer module has been deployed and integrated" -ForegroundColor Green
+    Write-Host " CodeFixer module has been deployed and integrated" -ForegroundColor Green
     Write-Host "`nThe following components have been deployed:" -ForegroundColor White
     Write-Host "- CodeFixer PowerShell module" -ForegroundColor White
     Write-Host "- Integration with runner scripts" -ForegroundColor White

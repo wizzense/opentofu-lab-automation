@@ -96,23 +96,23 @@ Custom config file:
 
 | Component | Status | Count | Health Score |
 |-----------|--------|-------|--------------|
-| **🔧 PowerShell Scripts** | ✅ Healthy | 37 validated | 100% |
-| **📋 Workflow Files** | ✅ Healthy | 22 workflows | 100% |
-| **🧪 Test Coverage** | ✅ Healthy | 85+ test files | 95% |
-| **🔍 Validation Tools** | ✅ Operational | 6 tools active | 100% |
-| **📊 Automation System** | ✅ Operational | 6/6 tests pass | 100% |
+| **🔧 PowerShell Scripts** | [PASS] Healthy | 37 validated | 100% |
+| **📋 Workflow Files** | [PASS] Healthy | 22 workflows | 100% |
+| **🧪 Test Coverage** | [PASS] Healthy | 85+ test files | 95% |
+| **🔍 Validation Tools** | [PASS] Operational | 6 tools active | 100% |
+| **📊 Automation System** | [PASS] Operational | 6/6 tests pass | 100% |
 
 ### 📈 Recent Validation Results
 
 ```bash
 🏆 AUTOMATION SYSTEM VALIDATION RESULTS
 ═══════════════════════════════════════
-✅ PowerShellValidation : PASS (37/37 scripts validated)
-✅ PreCommitHook        : PASS (Git hooks operational)  
-✅ BootstrapScript      : PASS (Non-interactive mode working)
-✅ RunnerScript         : PASS (Enhanced error detection)
-✅ WorkflowFiles        : PASS (All 22 workflows valid)
-✅ TemplateScript       : PASS (Parameter ordering correct)
+[PASS] PowerShellValidation : PASS (37/37 scripts validated)
+[PASS] PreCommitHook        : PASS (Git hooks operational)  
+[PASS] BootstrapScript      : PASS (Non-interactive mode working)
+[PASS] RunnerScript         : PASS (Enhanced error detection)
+[PASS] WorkflowFiles        : PASS (All 22 workflows valid)
+[PASS] TemplateScript       : PASS (Parameter ordering correct)
 
 Overall Score: 6/6 tests passed
 Status: 🎉 AUTOMATION SYSTEM FULLY OPERATIONAL!
@@ -131,7 +131,7 @@ Status: 🎉 AUTOMATION SYSTEM FULLY OPERATIONAL!
 
 ### 💡 Current Recommendations
 
-- ✅ **System Health:** All core components are operational
+- [PASS] **System Health:** All core components are operational
 - 🔄 **Monitoring:** Continue regular automated validation
 - 📈 **Quality:** Maintain 95%+ test success rate  
 - 🛡️ **Security:** Pre-commit hooks preventing syntax errors

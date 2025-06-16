@@ -105,7 +105,7 @@ foreach ($testFile in $testFiles) {
  }
 }
 
-Write-Host "`n✨ Pester test fixes are complete!" -ForegroundColor Green
+Write-Host "`n Pester test fixes are complete!" -ForegroundColor Green
 
 
 

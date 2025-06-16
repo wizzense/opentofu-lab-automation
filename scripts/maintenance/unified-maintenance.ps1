@@ -195,9 +195,9 @@ function Step-ValidateYaml {
  try {
  $content = Get-Content $_.FullName -Raw
  $null = ConvertFrom-Yaml $content -ErrorAction Stop
- Write-MaintenanceLog "✓ $($_.Name) syntax is valid" "SUCCESS"
+ Write-MaintenanceLog " $($_.Name) syntax is valid" "SUCCESS"
  } catch {
- Write-MaintenanceLog "✗ $($_.Name) has syntax issues: $($_.Exception.Message)" "ERROR"
+ Write-MaintenanceLog " $($_.Name) has syntax issues: $($_.Exception.Message)" "ERROR"
  }
  }
  }
@@ -462,7 +462,7 @@ function Test-AllMaintenanceTools {
             
             if ($parseErrors.Count -eq 0) {
                 $results.Working += $tool
-                Write-MaintenanceLog "✓ $($tool.Name) - Syntax OK" "SUCCESS"
+                Write-MaintenanceLog " $($tool.Name) - Syntax OK" "SUCCESS"
             } else {
                 $results.Broken += $tool
                 $results.SyntaxErrors += @{
@@ -470,11 +470,11 @@ function Test-AllMaintenanceTools {
                     Path = $relPath
                     Errors = $parseErrors
                 }
-                Write-MaintenanceLog "✗ $($tool.Name) - $($parseErrors.Count) syntax errors" "ERROR"
+                Write-MaintenanceLog " $($tool.Name) - $($parseErrors.Count) syntax errors" "ERROR"
             }
         } catch {
             $results.Broken += $tool
-            Write-MaintenanceLog "✗ $($tool.Name) - Parse failed: $($_.Exception.Message)" "ERROR"
+            Write-MaintenanceLog " $($tool.Name) - Parse failed: $($_.Exception.Message)" "ERROR"
         }
     }
     

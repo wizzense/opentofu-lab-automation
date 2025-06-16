@@ -64,7 +64,7 @@ if (-not (Test-Path $Source)) {
             Write-Host "  📋 Would move: $Source -> $Destination" -ForegroundColor Yellow
         } else {
             Move-Item -Path $Source -Destination $Destination -Force:$Force
-            Write-Host "  ✅ Moved: $Source -> $Destination" -ForegroundColor Green
+            Write-Host "  [PASS] Moved: $Source -> $Destination" -ForegroundColor Green
         }
         return $true
     } catch {
@@ -108,7 +108,7 @@ if (-not (Test-Path $Source)) {
             Write-Host "  📋 Would copy: $Source -> $Destination" -ForegroundColor Yellow
         } else {
             Copy-Item -Path $Source -Destination $Destination -Force:$Force
-            Write-Host "  ✅ Copied: $Source -> $Destination" -ForegroundColor Green
+            Write-Host "  [PASS] Copied: $Source -> $Destination" -ForegroundColor Green
         }
         return $true
     } catch {
@@ -198,7 +198,7 @@ foreach ($dir in $directories) {
             }
         }
     } else {
-        Write-Host "  ✓ Directory already exists: $dir" -ForegroundColor Gray
+        Write-Host "   Directory already exists: $dir" -ForegroundColor Gray
     }
 }
 
@@ -290,7 +290,7 @@ foreach ($file in $archiveFiles) {
        }
     
     if (-not (Test-Path $source)) {
-        Write-Host "  ⚠️ File not found: $file" -ForegroundColor Yellow
+        Write-Host "  [WARN]️ File not found: $file" -ForegroundColor Yellow
         continue
     }
 
@@ -363,7 +363,7 @@ The project has been organized into the following structure:
 
 ## 🔄 Scripts Cleanup Summary
 
-### ✅ Scripts Consolidated into CodeFixer Module
+### [PASS] Scripts Consolidated into CodeFixer Module
 
 The following scripts have been incorporated into the CodeFixer module:
 
@@ -375,7 +375,7 @@ The following scripts have been incorporated into the CodeFixer module:
 | comprehensive-lint.ps1 | Invoke-ComprehensiveValidation | Run comprehensive validation |
 | enhanced-fix-labrunner.ps1 | Invoke-ImportAnalysis | Fix import paths and dependencies |
 
-### ✅ Scripts Moved to Operational Directories
+### [PASS] Scripts Moved to Operational Directories
 
 The following scripts have been moved to appropriate operational directories:
 
@@ -393,7 +393,7 @@ The following scripts have been moved to appropriate operational directories:
 | fix-runtime-execution-simple.ps1 | scripts/maintenance/simple-runtime-fix.ps1 | Simple runtime fixes |
 | update-labrunner-imports.ps1 | scripts/maintenance/update-imports.ps1 | Update import paths |
 
-### ✅ Scripts Archived
+### [PASS] Scripts Archived
 
 The following obsolete or redundant scripts have been archived:
 
@@ -438,14 +438,14 @@ if ($WhatIf) {
 } else {
     try {
         Set-Content -Path (Join-Path $rootDir "CLEANUP-SUMMARY.md") -Value $cleanupSummary -Force
-        Write-Host "  ✅ Updated CLEANUP-SUMMARY.md" -ForegroundColor Green
+        Write-Host "  [PASS] Updated CLEANUP-SUMMARY.md" -ForegroundColor Green
     } catch {
         Write-Warning "Failed to update CLEANUP-SUMMARY.md`: $_"
     }
 }
 
 # Summary
-Write-Host "`n✅ Project organization and cleanup completed!" -ForegroundColor Green
+Write-Host "`n[PASS] Project organization and cleanup completed!" -ForegroundColor Green
 Write-Host "=============================================================" -ForegroundColor Cyan
 
 if ($WhatIf) {

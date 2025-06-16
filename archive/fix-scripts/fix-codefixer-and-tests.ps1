@@ -34,7 +34,7 @@ Write-Progress "📦 Installing PSScriptAnalyzer for CodeFixer..."
 try {
     # Install PSScriptAnalyzer
     $result = pwsh -c "Install-Module PSScriptAnalyzer -Force -Scope CurrentUser -Repository PSGallery -ErrorAction Stop; Import-Module PSScriptAnalyzer -Force; Get-Module PSScriptAnalyzer"
-    Write-Progress "✅ PSScriptAnalyzer installed successfully" "Green"
+    Write-Progress "[PASS] PSScriptAnalyzer installed successfully" "Green"
 } catch {
     Write-Warning "Failed to install PSScriptAnalyzer: $($_.Exception.Message)"
 }
@@ -47,7 +47,7 @@ try {
         Import-Module /workspaces/opentofu-lab-automation/pwsh/modules/CodeFixer -Force
         Invoke-PowerShellLint -Path /workspaces/opentofu-lab-automation/pwsh/runner.ps1 -OutputFormat Text
     "
-    Write-Progress "✅ CodeFixer linting test completed" "Green"
+    Write-Progress "[PASS] CodeFixer linting test completed" "Green"
 } catch {
     Write-Warning "CodeFixer test failed: $($_.Exception.Message)"
 }
@@ -106,7 +106,7 @@ foreach ($file in $filesToUpdate) {
             if (-not $WhatIf) {
                 Set-Content -Path $file.FullName -Value $content -Encoding UTF8
                 $updatedCount++
-                Write-Progress "    ✅ Updated" "Green"
+                Write-Progress "    [PASS] Updated" "Green"
             } else {
                 Write-Progress "    📋 Would update" "Yellow"
             }
@@ -127,7 +127,7 @@ if (Test-Path $testHelperPath) {
     try {
         $testResult = pwsh -c ". '$testHelperPath'; Get-Module LabRunner"
         if ($testResult) {
-            Write-Progress "✅ TestHelpers can now load LabRunner from new path" "Green"
+            Write-Progress "[PASS] TestHelpers can now load LabRunner from new path" "Green"
         } else {
             Write-Warning "TestHelpers may still have issues loading LabRunner"
         }
@@ -160,7 +160,7 @@ Describe 'LabRunner Module Loading' {
     "
     
     Remove-Item $tempTestFile -ErrorAction SilentlyContinue
-    Write-Progress "✅ Pester test completed" "Green"
+    Write-Progress "[PASS] Pester test completed" "Green"
     
 } catch {
     Write-Warning "Pester test failed: $($_.Exception.Message)"
@@ -170,10 +170,10 @@ Describe 'LabRunner Module Loading' {
 Write-Progress "`n📊 Summary:" "Cyan"
 Write-Progress "============" "Cyan"
 if (-not $WhatIf) {
-    Write-Progress "✅ PSScriptAnalyzer installation: Attempted" "Green"
-    Write-Progress "✅ CodeFixer functionality: Tested" "Green"
-    Write-Progress "✅ Test files updated: $updatedCount" "Green"
-    Write-Progress "✅ LabRunner path fixes: Applied" "Green"
+    Write-Progress "[PASS] PSScriptAnalyzer installation: Attempted" "Green"
+    Write-Progress "[PASS] CodeFixer functionality: Tested" "Green"
+    Write-Progress "[PASS] Test files updated: $updatedCount" "Green"
+    Write-Progress "[PASS] LabRunner path fixes: Applied" "Green"
 } else {
     Write-Progress "📋 WhatIf mode - no changes applied" "Yellow"
     Write-Progress "📄 Test files that would be updated: $($filesToUpdate.Count)" "Yellow"

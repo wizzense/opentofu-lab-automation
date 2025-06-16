@@ -237,11 +237,11 @@ Write-Host "Platform: $($PSVersionTable.Platform)"
         success, stdout, stderr = self.execute_script(test_script)
         
         if success:
-            print("✓ PowerShell execution test passed")
+            print(" PowerShell execution test passed")
             print(f"Output: {stdout.strip()}")
             return True
         else:
-            print("✗ PowerShell execution test failed")
+            print(" PowerShell execution test failed")
             print(f"Error: {stderr}")
             return False
     
@@ -277,16 +277,16 @@ def main():
     
     try:
         executor = EnhancedPowerShellExecutor()
-        print(f"✓ Executor initialized")
+        print(f" Executor initialized")
         print(f"  PowerShell Command: {executor.powershell_cmd}")
         print(f"  Working Directory: {executor.working_directory}")
         print(f"  Executor Script: {executor.executor_script}")
         
         # Test execution
         if executor.test_execution():
-            print("\n✓ Basic execution test passed")
+            print("\n Basic execution test passed")
         else:
-            print("\n✗ Basic execution test failed")
+            print("\n Basic execution test failed")
             return 1
         
         # Get system info
@@ -295,11 +295,11 @@ def main():
         for key, value in system_info.items():
             print(f"  {key}: {value}")
         
-        print("\n✓ Enhanced PowerShell Executor is working correctly")
+        print("\n Enhanced PowerShell Executor is working correctly")
         return 0
         
     except Exception as e:
-        print(f"\n✗ Error: {e}")
+        print(f"\n Error: {e}")
         return 1
 
 if __name__ == "__main__":

@@ -103,7 +103,7 @@ foreach ($file in $psFiles) {
         $fixedFiles += $file.FullName
         $totalFixes += $fileFixes
         
-        Write-Host "  ✅ Fixed $fileFixes here-string issues in $($file.Name)" -ForegroundColor Green
+        Write-Host "  [PASS] Fixed $fileFixes here-string issues in $($file.Name)" -ForegroundColor Green
         
         if (-not $WhatIf) {
             Set-Content -Path $file.FullName -Value $content -Encoding UTF8
@@ -117,9 +117,9 @@ Write-Host "  Files fixed: $($fixedFiles.Count)" -ForegroundColor Green
 Write-Host "  Total fixes applied: $totalFixes" -ForegroundColor Green
 
 if ($WhatIf) {
-    Write-Host "`n⚠️  WhatIf mode - no changes were made" -ForegroundColor Yellow
+    Write-Host "`n[WARN]️  WhatIf mode - no changes were made" -ForegroundColor Yellow
 } elseif ($fixedFiles.Count -gt 0) {
-    Write-Host "`n✅ Here-string syntax fixes completed!" -ForegroundColor Green
+    Write-Host "`n[PASS] Here-string syntax fixes completed!" -ForegroundColor Green
     Write-Host "Fixed files:" -ForegroundColor Gray
     foreach ($file in $fixedFiles) {
         Write-Host "  - $file" -ForegroundColor Gray

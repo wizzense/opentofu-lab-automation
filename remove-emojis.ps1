@@ -3,7 +3,7 @@ $ErrorActionPreference = "Stop"
 
 # Define emoji patterns to remove
 $emojiPatterns = @(
-    '🔍', '🏥', '❌', '✅', '⚠️', '🌿', '🛠️', '🧹', '🚀'
+    '🔍', '🏥', '[FAIL]', '[PASS]', '[WARN]️', '🌿', '🛠️', '🧹', '🚀'
 )
 
 # Get all markdown files in .github directory
@@ -31,7 +31,7 @@ foreach ($file in $files) {
             # Only update if content changed
             if ($content -ne $originalContent) {
                 Set-Content $file.FullName $content -Encoding UTF8 -NoNewline
-                Write-Host "  ✓ Cleaned emojis from file" -ForegroundColor Green
+                Write-Host "   Cleaned emojis from file" -ForegroundColor Green
             } else {
                 Write-Host "  - No emojis found" -ForegroundColor Gray
             }

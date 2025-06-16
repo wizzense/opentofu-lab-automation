@@ -377,9 +377,9 @@ function Write-BackupMaintenanceResults {
             
             foreach ($operation in $Results.Operations) {
                 if ($operation.Status -eq "Success") {
-                    Write-Host "✓ $($operation.Operation)" -ForegroundColor Green
+                    Write-Host " $($operation.Operation)" -ForegroundColor Green
                 } else {
-                    Write-Host "✗ $($operation.Operation): $($operation.Error)" -ForegroundColor Red
+                    Write-Host " $($operation.Operation): $($operation.Error)" -ForegroundColor Red
                 }
             }
             Write-Host "::endgroup::"
@@ -394,9 +394,9 @@ function Write-BackupMaintenanceResults {
                 Write-Host "`nOperations:" -ForegroundColor Yellow
                 foreach ($operation in $Results.Operations) {
                     if ($operation.Status -eq "Success") {
-                        Write-Host "  ✓ $($operation.Operation)" -ForegroundColor Green
+                        Write-Host "   $($operation.Operation)" -ForegroundColor Green
                     } else {
-                        Write-Host "  ✗ $($operation.Operation): $($operation.Error)" -ForegroundColor Red
+                        Write-Host "   $($operation.Operation): $($operation.Error)" -ForegroundColor Red
                     }
                 }
             }

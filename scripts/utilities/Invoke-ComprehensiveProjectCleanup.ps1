@@ -89,7 +89,7 @@ try {
         Write-Host "Phase 2: Removing emoji violations..." -ForegroundColor Green
         
         # Use a simpler emoji detection pattern that works in PowerShell
-        $emojiPattern = '[🔥💪🚀🎯✨🌟💯🔧🛠️📋📊📈📉🎉🎊🏆🥇🎖️🔒🔓⚡🌈🎨🖼️📸🎭🎪🎨🎯🚩🏁]|[\u2600-\u26FF]|[\u2700-\u27BF]'
+        $emojiPattern = '[🔥💪🚀🎯🌟💯🔧🛠️📋📊📈📉🎉🎊🏆🥇🎖️🔒🔓🌈🎨🖼️📸🎭🎪🎨🎯🚩🏁]|[\u2600-\u26FF]|[\u2700-\u27BF]'
         $textFiles = Get-ChildItem -Path "." -Recurse -Include "*.ps1", "*.md", "*.yml", "*.yaml", "*.json" -ErrorAction SilentlyContinue |
             Where-Object { $_.FullName -notmatch '\.git|backups|archive' }
         

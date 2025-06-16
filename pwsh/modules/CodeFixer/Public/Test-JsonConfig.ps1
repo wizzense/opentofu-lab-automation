@@ -72,7 +72,7 @@ function Test-JsonConfig {
  # Test JSON parsing
  try {
  $jsonObj = $content | ConvertFrom-Json -ErrorAction Stop
- Write-Host " ✓ Valid JSON syntax" -ForegroundColor Green
+ Write-Host "  Valid JSON syntax" -ForegroundColor Green
  
  # Additional validation for config files
  if ($file.Name -like "*config*") {
@@ -81,7 +81,7 @@ function Test-JsonConfig {
  $allResults += $configIssues
  Write-Host " [WARN] $($configIssues.Count) configuration issue(s)" -ForegroundColor Yellow
  } else {
- Write-Host " ✓ Valid configuration structure" -ForegroundColor Green
+ Write-Host "  Valid configuration structure" -ForegroundColor Green
  }
  }
  

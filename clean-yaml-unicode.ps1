@@ -25,7 +25,7 @@ foreach ($file in $files) {
             # Only update if content changed
             if ($content -ne $originalContent) {
                 Set-Content $file.FullName $content -Encoding UTF8 -NoNewline
-                Write-Host "  ✓ Cleaned unicode characters from file" -ForegroundColor Green
+                Write-Host "   Cleaned unicode characters from file" -ForegroundColor Green
             } else {
                 Write-Host "  - No unicode characters found" -ForegroundColor Gray
             }

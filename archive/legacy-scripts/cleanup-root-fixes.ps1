@@ -83,7 +83,7 @@ Invoke-ComprehensiveAutoFix -Path $Path -WhatIf:$WhatIf -SkipValidation:$SkipVal
 
 if (-not $WhatIf) {
     Set-Content -Path "auto-fix.ps1" -Value $newAutoFix
-    Write-Host "  ✅ Updated auto-fix.ps1 to use CodeFixer module" -ForegroundColor Green
+    Write-Host "  [PASS] Updated auto-fix.ps1 to use CodeFixer module" -ForegroundColor Green
 }
 
 Write-Host "`n📊 Cleanup Summary:" -ForegroundColor Cyan
@@ -91,7 +91,7 @@ Write-Host "  Files moved to archive: $moved" -ForegroundColor White
 Write-Host "  Updated auto-fix.ps1 to use module" -ForegroundColor Green
 
 if ($WhatIf) {
-    Write-Host "  ⚠️  WhatIf mode - no changes made" -ForegroundColor Yellow
+    Write-Host "  [WARN]️  WhatIf mode - no changes made" -ForegroundColor Yellow
 } else {
     Write-Host "  📁 Archive created: $archiveDir" -ForegroundColor Yellow
 }

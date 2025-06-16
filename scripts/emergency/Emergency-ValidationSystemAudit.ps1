@@ -169,12 +169,12 @@ foreach ($file in $worstFiles) {
 
 # Critical findings summary
 $AuditResults.CriticalFindings = @(
-    "❌ $($forcePattern.Count) files with repeated -Force parameters",
-    "❌ $($pathPattern.Count) files with malformed paths", 
-    "❌ $($catastrophicImports.Count) catastrophic import statements",
-    "❌ Validation systems lack proper pattern detection",
-    "❌ No automated corruption prevention in place",
-    "❌ Auto-fix systems are actively making problems WORSE"
+    "[FAIL] $($forcePattern.Count) files with repeated -Force parameters",
+    "[FAIL] $($pathPattern.Count) files with malformed paths", 
+    "[FAIL] $($catastrophicImports.Count) catastrophic import statements",
+    "[FAIL] Validation systems lack proper pattern detection",
+    "[FAIL] No automated corruption prevention in place",
+    "[FAIL] Auto-fix systems are actively making problems WORSE"
 )
 
 Write-Host "`n💀 CRITICAL FINDINGS SUMMARY" -ForegroundColor Red

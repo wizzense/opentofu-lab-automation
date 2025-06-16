@@ -322,14 +322,14 @@ $(
 ### Configuration Issues
 $(
     foreach ($issue in $ReportData.Categories.Configuration) {
-        "- **$($issue.File)**: $($issue.Issue) $(if ($issue.IsCritical) {"⚠️ CRITICAL"})`n"
+        "- **$($issue.File)**: $($issue.Issue) $(if ($issue.IsCritical) {"[WARN]️ CRITICAL"})`n"
     }
 )
 
 ### Project Structure Issues
 $(
     foreach ($issue in $ReportData.Categories.ProjectStructure) {
-        "- **$($issue.Path)**: $($issue.Issue) $(if ($issue.IsCritical) {"⚠️ CRITICAL"})`n"
+        "- **$($issue.Path)**: $($issue.Issue) $(if ($issue.IsCritical) {"[WARN]️ CRITICAL"})`n"
     }
 )
 

@@ -53,9 +53,9 @@ jobs:
           echo "| Validation | ${{ needs.validate.result }} |" >> $GITHUB_STEP_SUMMARY
 
           if ["${{ needs.validate.result }}" = "failure"]; then
-            echo "❌ Validation failed - check logs for details"
+            echo "[FAIL] Validation failed - check logs for details"
             exit 1
           else
-            echo "✅ Quick validation completed successfully"
+            echo "[PASS] Quick validation completed successfully"
             echo "Other workflows (lint, pester, pytest, test) will run independently"
           fi
