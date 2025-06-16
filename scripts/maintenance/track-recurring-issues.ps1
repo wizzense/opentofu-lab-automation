@@ -235,7 +235,7 @@ function Save-IssueTracking {
 
 # Ensure issue tracking directory exists
  if (-not (Test-Path $IssueTrackingPath)) {
- New-Item -ItemType Directory -Path $IssueTrackingPath -Force  Out-Null
+ New-Item -ItemType Directory -Path $IssueTrackingPath -Force | Out-Null
  }
  
  # Save current summary

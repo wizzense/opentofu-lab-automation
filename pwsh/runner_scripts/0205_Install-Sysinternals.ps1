@@ -17,7 +17,7 @@ Invoke-LabStep -Config $Config -Body {
 
     $destDir = if ($Config.SysinternalsPath) { $Config.SysinternalsPath    } else { 'C:\\Sysinternals'    }
     if (-not (Test-Path $destDir)) {
-        New-Item -ItemType Directory -Path $destDir -Force  Out-Null
+        New-Item -ItemType Directory -Path $destDir -Force | Out-Null
     }
 
     $zipUrl  = 'https:\download.sysinternals.com/files/SysinternalsSuite.zip'

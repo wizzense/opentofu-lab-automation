@@ -49,7 +49,7 @@ function Watch-ScriptDirectory {
     
     if (-not $fullOutputDir) {
         if (-not (Test-Path $OutputDirectory)) {
-            New-Item -ItemType Directory -Path $OutputDirectory -Force  Out-Null
+            New-Item -ItemType Directory -Path $OutputDirectory -Force | Out-Null
         }
         $fullOutputDir = Resolve-Path $OutputDirectory
     }

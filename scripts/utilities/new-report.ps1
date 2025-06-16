@@ -33,7 +33,7 @@ $filePath = Join-Path $PSScriptRoot "../../docs/reports/$Type" $fileName
 # Ensure directory exists
 $dir = Split-Path $filePath -Parent
 if (-not (Test-Path $dir)) {
- New-Item -ItemType Directory -Path $dir -Force  Out-Null
+ New-Item -ItemType Directory -Path $dir -Force | Out-Null
 }
 
 # Template based on type

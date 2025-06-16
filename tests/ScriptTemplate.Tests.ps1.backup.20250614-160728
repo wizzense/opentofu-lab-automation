@@ -1,0 +1,41 @@
+# filepath: tests/ScriptTemplate.Tests.ps1
+. (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
+
+Describe 'Script Template Tests' {
+    BeforeAll {
+        Import-Module "/pwsh/modules/LabRunner/LabRunner.psd1" -Force
+        Import-Module "/pwsh/modules/CodeFixer/CodeFixer.psd1" -Force
+    }
+
+    Context 'Script Structure Validation' {
+        It 'should have valid PowerShell syntax' {
+            $scriptPath | Should -Exist
+            { . $scriptPath } | Should -Not -Throw
+        }
+
+        It 'should follow naming conventions' {
+            $scriptName = [System.IO.Path]::GetFileName($scriptPath)
+            $scriptName | Should -Match '^[0-9]{4}_[A-Z][a-zA-Z0-9-]+\.ps1$|^[A-Z][a-zA-Z0-9-]+\.ps1$'
+        }
+
+        It 'should define expected functions' {
+            $scriptContent = Get-Content $script:ScriptPath -Raw
+            $scriptContent | Should -Match 'function\s+Invoke-LabStep'
+        }
+    }
+
+    Context 'Parameter Validation' {
+        It 'should accept Body parameter' {
+            { & $scriptPath -Body 'TestValue' -WhatIf } | Should -Not -Throw
+        }
+
+        It 'should accept Config parameter' {
+            { & $scriptPath -Config 'TestValue' -WhatIf } | Should -Not -Throw
+        }
+    }
+}
+
+
+
+
+

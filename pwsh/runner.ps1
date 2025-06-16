@@ -127,7 +127,7 @@ if (-not (Get-Variable -Name LogFilePath -Scope Script -ErrorAction SilentlyCont
     if (-not $logDir) {
         if ($IsWindows) { $logDir = 'C:\temp' } else { $logDir = System.IO.Path::GetTempPath() }
     }
-    if (-not (Test-Path $logDir)) { New-Item -ItemType Directory -Path $logDir -Force  Out-Null }
+    if (-not (Test-Path $logDir)) { New-Item -ItemType Directory -Path $logDir -Force | Out-Null }
     $script:LogFilePath = Join-Path $logDir 'lab.log'
 }
 
@@ -531,7 +531,7 @@ if (-not (Get-Variable -Name LogFilePath -Scope Script -ErrorAction SilentlyCont
     if (-not $logDir) {
         if ($IsWindows) { $logDir = 'C:\temp' } else { $logDir = System.IO.Path::GetTempPath() }
     }
-    if (-not (Test-Path $logDir)) { New-Item -ItemType Directory -Path $logDir -Force  Out-Null }
+    if (-not (Test-Path $logDir)) { New-Item -ItemType Directory -Path $logDir -Force | Out-Null }
     $script:LogFilePath = Join-Path $logDir 'lab.log'
 }
 

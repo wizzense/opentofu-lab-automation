@@ -252,7 +252,7 @@ if (-not $Force -and -not $WhatIf) {
  try {
  # Create target directory if it doesn't exist
  if (-not (Test-Path $targetDir)) {
- New-Item -ItemType Directory -Path $targetDir -Force  Out-Null
+ New-Item -ItemType Directory -Path $targetDir -Force | Out-Null
  Write-Host "PASS Created directory: $targetDir" -ForegroundColor Green
  }
  

@@ -98,7 +98,7 @@ function Create-Backup {
 Write-Host "`n� Creating backup..." -ForegroundColor Yellow
  
  # Create backup directory
- New-Item -ItemType Directory -Path $BackupPath -Force  Out-Null
+ New-Item -ItemType Directory -Path $BackupPath -Force | Out-Null
  
  # Copy root files to backup
  $rootFiles = Get-ChildItem -Path . -File  Where-Object { -not $_.Name.StartsWith('.') }
@@ -150,7 +150,7 @@ Write-Host "`n Executing cleanup..." -ForegroundColor Yellow
  } else {
  # Create target directory
  if (-not (Test-Path $targetDir)) {
- New-Item -ItemType Directory -Path $targetDir -Force  Out-Null
+ New-Item -ItemType Directory -Path $targetDir -Force | Out-Null
  $createdDirs += $targetDir
  Write-Host " � Created: $targetDir" -ForegroundColor Green
  }

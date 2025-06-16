@@ -401,7 +401,7 @@ Expand-Archive -Path $zipPath -DestinationPath $tempDir -Force
 $provider
 $hypervProviderDir = Join-Path $infraRepoPath ".terraform\providers\registry.opentofu.org\taliesins\hyperv\$providerVersion\${os}_${arch}"
 if (!(Test-Path $hypervProviderDir)) {
-    New-Item -ItemType Directory -Force -Path hypervProviderDir | Out-Null
+    New-Item -ItemType Directory -Force -Path hypervProviderDir | | Out-Null
 }
 
 Write-CustomLog "Copying provider exe -> $hypervProviderDir"

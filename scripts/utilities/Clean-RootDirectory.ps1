@@ -10,8 +10,8 @@ Write-Host "=================================" -ForegroundColor Cyan
 $reportsArchive = "reports/archive-$timestamp"
 $tempArchive = "archive/temp-files-$timestamp"
 
-New-Item -ItemType Directory -Path $reportsArchive -Force  Out-Null
-New-Item -ItemType Directory -Path $tempArchive -Force  Out-Null
+New-Item -ItemType Directory -Path $reportsArchive -Force | Out-Null
+New-Item -ItemType Directory -Path $tempArchive -Force | Out-Null
 
 # Files to move to reports archive
 $reportFiles = @(

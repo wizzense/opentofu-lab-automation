@@ -148,7 +148,7 @@ $loggerDir  = Join-Path (Join-Path $scriptRoot 'lab_utils') 'LabRunner'
 $loggerPath = Join-Path $loggerDir 'Logger.ps1'
 if (-not (Test-Path $loggerPath)) {
     if (-not (Test-Path $loggerDir)) {
-        New-Item -ItemType Directory -Path $loggerDir -Force  Out-Null
+        New-Item -ItemType Directory -Path $loggerDir -Force | Out-Null
     }
     $loggerUrl = "${baseUrl}${targetBranch}/pwsh/modules/LabRunner/Logger.ps1"
     Invoke-WebRequest -Uri $loggerUrl -OutFile $loggerPath
@@ -167,7 +167,7 @@ if (-not (Get-Variable -Name LogFilePath -Scope Script -ErrorAction SilentlyCont
     if (-not $logDir) {
         if ($isWindowsOS) { $logDir = 'C:\\temp' } else { $logDir = System.IO.Path::GetTempPath() }
     }
-    if (-not (Test-Path $logDir)) { New-Item -ItemType Directory -Path $logDir -Force  Out-Null }
+    if (-not (Test-Path $logDir)) { New-Item -ItemType Directory -Path $logDir -Force | Out-Null }
     $script:LogFilePath = Join-Path $logDir 'lab.log'
 }
 
@@ -244,14 +244,14 @@ $labConfigScript = Join-Path $labUtilsDir 'Get-LabConfig.ps1'
 $formatScript    = Join-Path $labUtilsDir 'Format-Config.ps1'
 if (-not (Test-Path $labConfigScript)) {
     if (-not (Test-Path $labUtilsDir)) {
-        New-Item -ItemType Directory -Path $labUtilsDir -Force  Out-Null
+        New-Item -ItemType Directory -Path $labUtilsDir -Force | Out-Null
     }
     $labConfigUrl = 'https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/main/pwsh/modules/LabRunner/Get-LabConfig.ps1'
     Invoke-WebRequest -Uri $labConfigUrl -OutFile $labConfigScript
 }
 if (-not (Test-Path $formatScript)) {
     if (-not (Test-Path $labUtilsDir)) {
-        New-Item -ItemType Directory -Path $labUtilsDir -Force  Out-Null
+        New-Item -ItemType Directory -Path $labUtilsDir -Force | Out-Null
     }
     $formatUrl = 'https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/main/pwsh/modules/CodeFixerFormat-Config.ps1'
     Invoke-WebRequest -Uri $formatUrl -OutFile $formatScript
@@ -310,7 +310,7 @@ if ($configOption -match "https://") {
 } else {
     $localConfigDir = Join-Path (Join-Path $scriptRoot "configs") "config_files"
     if (!(Test-Path $localConfigDir)) {
-        New-Item -ItemType Directory -Path localConfigDir | Out-Null
+        New-Item -ItemType Directory -Path localConfigDir | | Out-Null
     }
     $configFiles = Get-ChildItem -Path $localConfigDir -Filter '*.json' -File
     if ($configFiles.Count -gt 1) {
@@ -601,7 +601,7 @@ $localPath = System.Environment::ExpandEnvironmentVariables($localPath)
 # Ensure local directory exists
 Write-CustomLog "Ensuring local path '$localPath' exists..."
 if (!(Test-Path $localPath)) {
-    New-Item -ItemType Directory -Path $localPath -Force  Out-Null
+    New-Item -ItemType Directory -Path $localPath -Force | Out-Null
 }
 
 # Define repo path

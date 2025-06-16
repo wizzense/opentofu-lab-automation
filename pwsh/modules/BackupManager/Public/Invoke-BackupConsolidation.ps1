@@ -66,7 +66,7 @@ function Invoke-BackupConsolidation {
             
             # Create backup destination
             if (-not (Test-Path $BackupDestination)) {
-                New-Item -ItemType Directory -Path $BackupDestination -Force  Out-Null
+                New-Item -ItemType Directory -Path $BackupDestination -Force | Out-Null
                 Write-CustomLog "Created backup destination directory" "INFO"
             }
             
@@ -139,7 +139,7 @@ function Invoke-BackupConsolidation {
                     $DestinationDir = Split-Path $DestinationPath -Parent
 
                     if (-not (Test-Path $DestinationDir)) {
-                        New-Item -ItemType Directory -Path $DestinationDir -Force  Out-Null
+                        New-Item -ItemType Directory -Path $DestinationDir -Force | Out-Null
                     }
 
                     Move-Item -Path $File.FullName -Destination $DestinationPath -Force

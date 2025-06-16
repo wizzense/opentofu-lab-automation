@@ -50,7 +50,7 @@ $demo1Result = Invoke-GitControlledPatch -PatchDescription "Fix critical validat
 # Testing: Validated with comprehensive test suite
 "@
     
-    New-Item -Path "logs" -ItemType Directory -Force -ErrorAction SilentlyContinue | Out-Null
+    New-Item -Path "logs" -ItemType Directory -Force -ErrorAction SilentlyContinue | | Out-Null
     $bugFixContent | Out-File "logs/bug-fix-$(Get-Date -Format 'yyyyMMdd-HHmmss').log" -Force
     
     Write-Host "    Bug fix applied and logged" -ForegroundColor Green
@@ -93,7 +93,7 @@ $demo2Result = Invoke-GitControlledPatch -PatchDescription "Add enhanced logging
 # Compatibility: Backward compatible with existing log consumers
 "@
     
-    New-Item -Path "logs" -ItemType Directory -Force -ErrorAction SilentlyContinue | Out-Null
+    New-Item -Path "logs" -ItemType Directory -Force -ErrorAction SilentlyContinue | | Out-Null
     $enhancementContent | Out-File "logs/enhancement-$(Get-Date -Format 'yyyyMMdd-HHmmss').log" -Force
     
     Write-Host "    Enhancement implemented and documented" -ForegroundColor Green
@@ -124,7 +124,7 @@ $demo3Result = Invoke-GitControlledPatch -PatchDescription "Emergency security u
 # Testing: Validated against security test suite
 "@
     
-    New-Item -Path "logs" -ItemType Directory -Force -ErrorAction SilentlyContinue | Out-Null
+    New-Item -Path "logs" -ItemType Directory -Force -ErrorAction SilentlyContinue | | Out-Null
     $securityFixContent | Out-File "logs/security-fix-$(Get-Date -Format 'yyyyMMdd-HHmmss').log" -Force
     
     Write-Host "    Security fix applied and documented" -ForegroundColor Green

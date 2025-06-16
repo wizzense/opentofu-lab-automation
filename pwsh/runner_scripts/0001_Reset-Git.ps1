@@ -18,7 +18,7 @@ Invoke-LabStep -Config $Config -Body {
     Write-CustomLog "Ensuring local path '$InfraPath' exists..."
     if (-not (Test-Path $InfraPath)) {
         Write-CustomLog "Path not found. Creating directory..."
-        New-Item -ItemType Directory -Path $InfraPath -Force  Out-Null
+        New-Item -ItemType Directory -Path $InfraPath -Force | Out-Null
     }
 
     # Clone or update repo

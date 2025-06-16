@@ -74,7 +74,7 @@ if (Test-Path $WorkflowDir) {
  # Create archive directory
  $ArchiveDir = ".github/archived_workflows"
  if (-not (Test-Path $ArchiveDir)) {
- New-Item -ItemType Directory -Path $ArchiveDir -Force  Out-Null
+ New-Item -ItemType Directory -Path $ArchiveDir -Force | Out-Null
  Write-Host "Created archive directory: $ArchiveDir" -ForegroundColor Green
  }
  

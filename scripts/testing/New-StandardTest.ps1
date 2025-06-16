@@ -72,7 +72,7 @@ function New-StandardTest {
     
     # Ensure output directory exists
     if (-not (Test-Path $OutputPath)) {
-        New-Item -ItemType Directory -Path $OutputPath -Force  Out-Null
+        New-Item -ItemType Directory -Path $OutputPath -Force | Out-Null
     }
     
     # Write test file

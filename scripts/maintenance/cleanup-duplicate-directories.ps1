@@ -42,7 +42,7 @@ $reportFile = "$reportPath/$timestamp-duplicate-cleanup.md"
 
 # Ensure report directory exists
 if (-not (Test-Path $reportPath)) {
-    New-Item -Path $reportPath -ItemType Directory -Force  Out-Null
+    New-Item -Path $reportPath -ItemType Directory -Force | Out-Null
 }
 
 function Write-Log {
@@ -141,7 +141,7 @@ function Cleanup-DuplicateModules {
                 
                 if (-not $DryRun) {
                     if (-not (Test-Path (Split-Path $archivePath))) {
-                        New-Item -Path (Split-Path $archivePath) -ItemType Directory -Force  Out-Null
+                        New-Item -Path (Split-Path $archivePath) -ItemType Directory -Force | Out-Null
                     }
                     Move-Item -Path $legacyModules -Destination $archivePath -Force
                 }
@@ -193,7 +193,7 @@ function Cleanup-FixesDirectory {
                 
                 if (-not $DryRun) {
                     if (-not (Test-Path (Split-Path $archivePath))) {
-                        New-Item -Path (Split-Path $archivePath) -ItemType Directory -Force  Out-Null
+                        New-Item -Path (Split-Path $archivePath) -ItemType Directory -Force | Out-Null
                     }
                     Move-Item -Path $fixesDir -Destination $archivePath -Force
                 }

@@ -51,7 +51,7 @@ if (-not (Test-Path $Source)) {
  $destDir = Split-Path -Parent $Destination
  if ($CreateDirectory -and -not (Test-Path $destDir)) {
  try {
- New-Item -Path $destDir -ItemType Directory -Force  Out-Null
+ New-Item -Path $destDir -ItemType Directory -Force | Out-Null
  Write-Host " � Created directory: $destDir" -ForegroundColor Gray
  } catch {
  Write-Warning "Failed to create directory $destDir`: $_"
@@ -95,7 +95,7 @@ if (-not (Test-Path $Source)) {
  $destDir = Split-Path -Parent $Destination
  if ($CreateDirectory -and -not (Test-Path $destDir)) {
  try {
- New-Item -Path $destDir -ItemType Directory -Force  Out-Null
+ New-Item -Path $destDir -ItemType Directory -Force | Out-Null
  Write-Host " � Created directory: $destDir" -ForegroundColor Gray
  } catch {
  Write-Warning "Failed to create directory $destDir`: $_"
@@ -140,7 +140,7 @@ if (-not (Test-Path $Source)) {
  
  if (-not (Test-Path $ArchiveDir)) {
  try {
- New-Item -Path $ArchiveDir -ItemType Directory -Force  Out-Null
+ New-Item -Path $ArchiveDir -ItemType Directory -Force | Out-Null
  Write-Host " � Created archive directory: $ArchiveDir" -ForegroundColor Gray
  } catch {
  Write-Warning "Failed to create archive directory $ArchiveDir`: $_"
@@ -191,7 +191,7 @@ foreach ($dir in $directories) {
  Write-Host " Would create directory: $dir" -ForegroundColor Yellow
  } else {
  try {
- New-Item -Path $dirPath -ItemType Directory -Force  Out-Null
+ New-Item -Path $dirPath -ItemType Directory -Force | Out-Null
  Write-Host " � Created directory: $dir" -ForegroundColor Green
  } catch {
  Write-Warning "Failed to create directory $dir`: $_"
@@ -295,7 +295,7 @@ foreach ($file in $archiveFiles) {
  }
 
  if (-not (Test-Path $archiveDir)) {
- New-Item -Path $archiveDir -ItemType Directory -Force  Out-Null
+ New-Item -Path $archiveDir -ItemType Directory -Force | Out-Null
  }
  
  $destination = Join-Path $archiveDir $file

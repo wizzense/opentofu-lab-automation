@@ -104,7 +104,7 @@ Please review the original scripts if you encounter issues not addressed by the 
         $archiveFolder = "/workspaces/opentofu-lab-automation/archive/fix-scripts-archive"
         
         if (-not (Test-Path $archiveFolder)) {
-            New-Item -Path $archiveFolder -ItemType Directory -Force  Out-Null
+            New-Item -Path $archiveFolder -ItemType Directory -Force | Out-Null
         }
         
         foreach ($script in $fixScripts) {

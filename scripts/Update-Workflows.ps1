@@ -34,7 +34,7 @@ if ($SkipBackup) {
 
     $backupDir = Join-Path $PSScriptRoot ".." "backups" "workflows" (Get-Date -Format "yyyyMMdd-HHmmss")
     if (-not (Test-Path $backupDir)) {
-        New-Item -Path $backupDir -ItemType Directory -Force  Out-Null
+        New-Item -Path $backupDir -ItemType Directory -Force | Out-Null
     }
 
     $fileName = Split-Path -Path $FilePath -Leaf

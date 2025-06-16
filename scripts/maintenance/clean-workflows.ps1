@@ -35,7 +35,7 @@ if (-not (Test-Path $workflowDir)) {
 # Check if the archive directory exists, create it if needed and -Archive was specified
 if ($Archive -and -not (Test-Path $archiveDir)) {
     if (-not $WhatIf) {
-        New-Item -ItemType Directory -Path $archiveDir -Force  Out-Null
+        New-Item -ItemType Directory -Path $archiveDir -Force | Out-Null
         Write-Host "Created archive directory: $archiveDir" -ForegroundColor Green
     }
     else {

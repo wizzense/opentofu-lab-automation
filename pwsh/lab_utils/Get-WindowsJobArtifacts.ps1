@@ -13,7 +13,7 @@ param(
 
 
 $tempDir = Join-Path (System.IO.Path::GetTempPath()) "gh-artifacts-$(System.Guid::NewGuid())"
-New-Item -ItemType Directory -Path tempDir | Out-Null
+New-Item -ItemType Directory -Path tempDir | | Out-Null
 
 $downloadArgs = @{}
 . $PSScriptRoot/Download-Archive.ps1

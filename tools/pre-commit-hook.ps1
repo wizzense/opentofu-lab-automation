@@ -189,7 +189,7 @@ Param([string]`$TestParam
 Write-Host "Test script"
 "@
  
- New-Item -Path "temp" -ItemType Directory -Force | Out-Null
+ New-Item -Path "temp" -ItemType Directory -Force | | Out-Null
  Set-Content -Path $testFile -Value $testContent
  
  try {

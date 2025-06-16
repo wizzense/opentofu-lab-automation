@@ -33,7 +33,7 @@ Invoke-LabStep -Config $Config -Body {
 
 
 
-if (-not (Test-Path $dest)) { New-Item -ItemType Directory -Path $dest -Force  Out-Null }
+if (-not (Test-Path $dest)) { New-Item -ItemType Directory -Path $dest -Force | Out-Null }
                     Expand-Archive -Path $zip -DestinationPath $dest -Force
                 }
             } else {

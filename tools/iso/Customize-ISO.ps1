@@ -64,10 +64,10 @@ if (Test-Path $MountPath) {
     Remove-Item -Recurse -Force $MountPath
 }
 if (-not (Test-Path $ExtractPath)) {
-    New-Item -Path $ExtractPath -ItemType Directory  Out-Null
+    New-Item -Path $ExtractPath -ItemType Directory | Out-Null
 }
 if (-not (Test-Path $MountPath)) {
-    New-Item -Path $MountPath -ItemType Directory  Out-Null
+    New-Item -Path $MountPath -ItemType Directory | Out-Null
 }
 
 # Derived path to the WIM file inside the extracted ISO
@@ -110,7 +110,7 @@ $DriveLetter = (Get-Volume -DiskImage $ISO).DriveLetter + ":"
 
 # Step 2: Extract ISO contents
 Write-CustomLog "Extracting ISO contents to $ExtractPath..."
-if (-Not (Test-Path $ExtractPath)) { New-Item -Path $ExtractPath -ItemType Directory  Out-Null }
+if (-Not (Test-Path $ExtractPath)) { New-Item -Path $ExtractPath -ItemType Directory | Out-Null }
 robocopy "$DriveLetter\" $ExtractPath /E /NFL /NDL /NJH /NJS /NC /NS
 
 # Step 3: Dismount the ISO
@@ -119,7 +119,7 @@ Dismount-DiskImage -ImagePath $ISOPath
 
 # Step 4: Mount the Install.wim Image
 Write-CustomLog "Mounting install.wim..."
-if (-Not (Test-Path $MountPath)) { New-Item -Path $MountPath -ItemType Directory  Out-Null }
+if (-Not (Test-Path $MountPath)) { New-Item -Path $MountPath -ItemType Directory | Out-Null }
 dism /Mount-Image /ImageFile:$WIMFile /Index:$WIMIndex /MountDir:$MountPath
 
 # Step 5: Copy bootstrap.ps1 into Windows

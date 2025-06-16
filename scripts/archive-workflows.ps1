@@ -28,7 +28,7 @@ if (!(Test-Path -Path "$repoRoot/.github/workflows")) {
 # Create archive directory if it doesn't exist
 $archiveDir = "$repoRoot/.github/archived_workflows"
 if (!(Test-Path -Path $archiveDir)) {
- New-Item -Path $archiveDir -ItemType Directory  Out-Null
+ New-Item -Path $archiveDir -ItemType Directory | Out-Null
  Write-Host "� Created archive directory: $archiveDir"
 }
 

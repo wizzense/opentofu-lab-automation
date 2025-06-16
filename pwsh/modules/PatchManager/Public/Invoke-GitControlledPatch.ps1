@@ -73,6 +73,10 @@ function Invoke-GitControlledPatch {
         Write-Host "Starting Git-controlled patch process..." -ForegroundColor Cyan
         Write-Host "CRITICAL: NO EMOJIS ALLOWED - they break workflows" -ForegroundColor Red
         
+        # Initialize cross-platform environment variables
+        Initialize-CrossPlatformEnvironment | Out-Null
+        Write-Verbose "Cross-platform environment initialized: $env:PLATFORM"
+        
         # Initialize tracking variables
         $script:IssueTracker = @{
             IssueNumber = $null
@@ -246,7 +250,8 @@ function Invoke-GitControlledPatch {
         $script:PatchInitialCommit = (git rev-parse HEAD)
         $script:PatchBranchName = $branchName
     }    process {
-        try {            # Handle DirectCommit mode
+        try {
+            # Handle DirectCommit mode
             if ($DirectCommit) {
                 Write-Host "Direct commit mode: Applying changes to current branch..." -ForegroundColor Green
                 Update-IssueProgress "Using DirectCommit mode - applying changes directly to current branch"

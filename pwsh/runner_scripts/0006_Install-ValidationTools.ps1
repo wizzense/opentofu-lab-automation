@@ -29,7 +29,7 @@ function Install-Cosign {
         # Create the installation folder if it doesn't exist
         if (-not (Test-Path $installDir)) {
             if ($PSCmdlet.ShouldProcess($installDir, 'Create directory')) {
-                New-Item -ItemType Directory -Path $installDir -Force  Out-Null
+                New-Item -ItemType Directory -Path $installDir -Force | Out-Null
             }
         }
 

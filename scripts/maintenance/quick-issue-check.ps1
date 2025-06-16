@@ -297,7 +297,7 @@ try {
  
  $cacheDir = "$ProjectRoot/docs/reports/issue-tracking"
  if (-not (Test-Path $cacheDir)) {
- New-Item -Path $cacheDir -ItemType Directory -Force  Out-Null
+ New-Item -Path $cacheDir -ItemType Directory -Force | Out-Null
  }
  
  results | ConvertTo-Json -Depth 3  Out-File "$cacheDir/last-quick-check.json" -Encoding UTF8

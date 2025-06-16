@@ -222,7 +222,7 @@ function global:New-StandardMocks {
                     param($Uri, $Prefix, $Extension, $Action)
                     
                     $tempFile = Join-Path (System.IO.Path::GetTempPath()) "mock_$Prefix$Extension"
-                    New-Item -ItemType File -Path $tempFile -Force  Out-Null
+                    New-Item -ItemType File -Path $tempFile -Force | Out-Null
                     try { 
                         if ($Action) { & $Action $tempFile }
                     } finally { 
@@ -234,7 +234,7 @@ function global:New-StandardMocks {
                     param($Uri, $Prefix, $Extension, $Action)
                     
                     $tempFile = Join-Path (System.IO.Path::GetTempPath()) "mock_$Prefix$Extension"
-                    New-Item -ItemType File -Path $tempFile -Force  Out-Null
+                    New-Item -ItemType File -Path $tempFile -Force | Out-Null
                     try { 
                         if ($Action) { & $Action $tempFile }
                     } finally { 

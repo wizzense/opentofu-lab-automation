@@ -62,20 +62,38 @@ function Invoke-ComprehensiveCleanup {
             SizeReclaimed = 0
             Errors = @()
         }
-        
-        # Standard exclusion patterns (critical files to never touch)
+          # Standard exclusion patterns (critical files to never touch)
         $script:CriticalExclusions = @(
+            # Core project files
             "PROJECT-MANIFEST.json"
-            ".git/*"
-            ".github/*"
-            "pwsh/modules/*/*"
-            "configs/*"
             "README.md"
             "LICENSE"
-            ".vscode/settings.json"
-            ".vscode/tasks.json"
-            "pyproject.toml"
+            "CHANGELOG.md"
             "mkdocs.yml"
+            "pyproject.toml"
+            
+            # Module directories (complete protection)
+            "pwsh/modules/*"
+            "pwsh/modules/*/*"
+            "pwsh/modules/*/*/*"
+            
+            # Configuration and tooling
+            ".git/*"
+            ".github/*"
+            ".vscode/*"
+            "configs/*"
+            
+            # Specific module files that must be protected
+            "pwsh/modules/PatchManager/PatchManager.psm1"
+            "pwsh/modules/PatchManager/PatchManager.psd1"
+            "pwsh/modules/PatchManager/Public/*"
+            "pwsh/modules/PatchManager/Private/*"
+            "pwsh/modules/CodeFixer/CodeFixer.psm1"
+            "pwsh/modules/CodeFixer/CodeFixer.psd1"
+            "pwsh/modules/LabRunner/LabRunner.psm1"
+            "pwsh/modules/LabRunner/LabRunner.psd1"
+            "pwsh/modules/BackupManager/BackupManager.psm1"
+            "pwsh/modules/BackupManager/BackupManager.psd1"
         ) + $ExcludePatterns
         
         Write-Host "Critical exclusions: $($script:CriticalExclusions.Count) patterns" -ForegroundColor Blue

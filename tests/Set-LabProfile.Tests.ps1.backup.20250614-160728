@@ -1,0 +1,27 @@
+. (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
+
+Describe 'Set Lab Profile Tests' {
+    BeforeAll {
+        Import-Module "/pwsh/modules/LabRunner/LabRunner.psd1" -Force
+        Import-Module "/pwsh/modules/CodeFixer/CodeFixer.psd1" -Force
+    }
+
+    Context 'Profile Writing' {
+        It 'writes profile when flag enabled' {
+            $cfg = [pscustomobject]@{ SetupLabProfile = $true }
+            Mock Set-Content {}
+            & $script:ScriptPath -Config $cfg
+            Should -Invoke -CommandName Set-Content -Times 1
+        }
+
+        It 'skips when flag disabled' {
+            $cfg = [pscustomobject]@{ SetupLabProfile = $false }
+            Mock Set-Content {}
+            & $script:ScriptPath -Config $cfg
+            Should -Invoke -CommandName Set-Content -Times 0
+        }
+    }
+}
+
+
+

@@ -7,6 +7,27 @@
   },
   "core": {
     "modules": {
+      "PatchManager": {
+        "keyFunctions": [
+          "Invoke-GitControlledPatch",
+          "Invoke-QuickRollback",
+          "Invoke-PatchRollback",
+          "Invoke-ComprehensiveCleanup",
+          "Initialize-CrossPlatformEnvironment",
+          "Invoke-GitHubIssueIntegration",
+          "Invoke-TieredPesterTests",
+          "Invoke-UnifiedMaintenance",
+          "Invoke-MassFileFix",
+          "Test-PatchingRequirements"
+        ],
+        "version": "2.0.0",
+        "dependencies": [],
+        "path": "/pwsh/modules/PatchManager/",
+        "entryPoint": "PatchManager.psd1",
+        "lastUpdated": "2025-06-16",
+        "type": "PowerShell Module",
+        "purpose": "Git-controlled patch management, comprehensive cleanup, and cross-platform environment standardization"
+      },
       "CodeFixer": {
         "keyFunctions": [
           "Invoke-AutoFix",
@@ -51,25 +72,6 @@
         "lastUpdated": "2025-06-14",
         "type": "PowerShell Module",
         "purpose": "Lab environment automation and management"
-      },
-      "PatchManager": {
-        "keyFunctions": [
-          "Invoke-GitControlledPatch",
-          "Invoke-QuickRollback",
-          "Invoke-ComprehensiveCleanup",
-          "Invoke-CopilotSuggestionHandler",
-          "Initialize-CrossPlatformEnvironment",
-          "Invoke-PatchRollback",
-          "Invoke-TieredPesterTests",
-          "Invoke-UnifiedMaintenance"
-        ],
-        "version": "2.0.0",
-        "dependencies": [],
-        "path": "/pwsh/modules/PatchManager/",
-        "entryPoint": "PatchManager.psd1",
-        "lastUpdated": "2025-06-16",
-        "type": "PowerShell Module",
-        "purpose": "Unified patch management with Git-controlled workflows, comprehensive cleanup, and rollback capabilities"
       },
       "BackupManager": {
         "keyFunctions": [
@@ -379,6 +381,59 @@
           "lastUpdated": "2025-06-14 11:13:41"
         }
       ]
+    }
+  },
+  "coreFiles": {
+    "README.md": {
+      "description": "Project overview and instructions",
+      "lastUpdated": "2025-06-16"
+    },
+    "LICENSE": {
+      "description": "Project license information",
+      "lastUpdated": "2025-06-16"
+    },
+    "PROJECT-MANIFEST.json": {
+      "description": "Project manifest file",
+      "lastUpdated": "2025-06-16"
+    },
+    "mkdocs.yml": {
+      "description": "Documentation configuration",
+      "lastUpdated": "2025-06-16"
+    }
+  },
+  "versioning": {
+    "tools": {
+      "PatchManager": "2.0.0",
+      "CodeFixer": "0.1.0",
+      "LabRunner": "0.1.0",
+      "BackupManager": "1.0.0"
+    },
+    "lastUpdated": "2025-06-16"
+  },
+  "additionalFiles": {
+    "docs/reports/project-status/2025-06-12-codefixer-improvements-summary.md": {
+      "description": "Summary of CodeFixer improvements",
+      "lastUpdated": "2025-06-12"
+    },
+    "docs/reports/project-status/2025-06-12-integration-summary.md": {
+      "description": "Integration summary for workflows and fixes",
+      "lastUpdated": "2025-06-12"
+    },
+    "docs/reports/project-status/2025-06-13-infrastructure-health.md": {
+      "description": "Infrastructure health report",
+      "lastUpdated": "2025-06-13"
+    },
+    "docs/reports/project-status/duplicate-cleanup-summary.md": {
+      "description": "Duplicate directory cleanup summary",
+      "lastUpdated": "2025-06-13"
+    },
+    "docs/reports/test-analysis/2025-06-13-comprehensive-infrastructure-fixes-complete.md": {
+      "description": "Comprehensive infrastructure fixes report",
+      "lastUpdated": "2025-06-13"
+    },
+    "docs/Unified-Project-Guidelines.md": {
+      "description": "Unified project guidelines",
+      "lastUpdated": "2025-06-16"
     }
   }
 }

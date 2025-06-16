@@ -569,7 +569,7 @@ $scriptName = System.IO.Path::GetFileName($ScriptPath)
     # Ensure output directory exists
     $outputDir = Split-Path $OutputPath -Parent
     if (-not (Test-Path $outputDir)) {
-        New-Item -ItemType Directory -Path $outputDir -Force  Out-Null
+        New-Item -ItemType Directory -Path $outputDir -Force | Out-Null
     }
     
     Set-Content -Path $OutputPath -Value $template -Encoding UTF8

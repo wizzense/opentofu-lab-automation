@@ -51,8 +51,7 @@ function Invoke-TieredPesterTests {
         [Parameter()]
         [switch]$PassThru
     )
-    
-    # Ensure output directory exists
+      # Ensure output directory exists
     if (-not (Test-Path $OutputPath)) {
         New-Item -ItemType Directory -Path $OutputPath -Force | Out-Null
     }

@@ -37,7 +37,7 @@ $testDir = Join-Path $PSScriptRoot "test-output"
 if (Test-Path $testDir) {
  Remove-Item $testDir -Recurse -Force
 }
-New-Item -ItemType Directory -Path $testDir -Force  Out-Null
+New-Item -ItemType Directory -Path $testDir -Force | Out-Null
 
 Write-Host "`n� Created test directory: $testDir" -ForegroundColor Green
 

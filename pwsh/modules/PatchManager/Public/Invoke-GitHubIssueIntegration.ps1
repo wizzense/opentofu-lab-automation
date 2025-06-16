@@ -126,109 +126,59 @@ function Invoke-GitHubIssueIntegration {
             # Combine all labels
             $allLabels = $Labels + $priorityLabels + @("automated")
             
-            # Create issue title
-            $issueTitle = "Automated Fix: $($PatchDescription -replace '^(fix:|bug:)\s*', '')"
-            
-            # Create comprehensive issue body
-            $issueBody = @"
-## 🤖 Automated Bug Fix Applied
-
-**Description**: $PatchDescription  
-**Priority**: $Priority  
-**Generated**: $(Get-Date -Format "yyyy-MM-dd HH:mm:ss UTC")  
-**Patch Manager**: v2.0 with automated issue tracking
-
-## 📋 Fix Details
-
-### What Was Fixed
-This automated patch addresses a bug or issue identified in the codebase. The fix has been applied automatically using PatchManager with comprehensive validation.
-
-### Files Affected
-$($AffectedFiles | ForEach-Object { "- $_" } | Out-String)
-
-### Pull Request
-$(if ($PullRequestUrl) { "🔗 **Associated PR**: $PullRequestUrl" } else { "[WARN]️ **No PR**: This was a direct commit fix" })
-
-## 🔍 Validation Status
-
-- [x] **Syntax Validation**: PowerShell syntax validated
-- [x] **Import Analysis**: Module imports verified  
-- [x] **Path Compatibility**: Cross-platform paths checked
-- [x] **Automated Testing**: Basic validation completed
-- [ ] **Manual Review**: **REQUIRED** - Human verification needed
-- [ ] **Integration Testing**: **REQUIRED** - Full testing in clean environment
-
-## 🚨 Action Required
-
-### For Maintainers
-1. **Review the fix**: Verify the automated changes are correct
-2. **Test thoroughly**: Ensure the fix doesn't introduce new issues
-3. **Validate impact**: Check for any unintended side effects
-4. **Close when confirmed**: Mark as resolved after validation
-
-### For Developers
-- **Monitor for issues**: Watch for any problems related to this fix
-- **Report regressions**: Create new issues if problems arise
-- **Provide feedback**: Comment on effectiveness of the automated fix
-
-## 📊 Priority: $Priority
-
-$(switch ($Priority) {
-    "Critical" { "🔴 **CRITICAL**: Immediate attention required - potential system impact" }
-    "High" { "🟠 **HIGH**: Should be reviewed within 24 hours" }
-    "Medium" { "🟡 **MEDIUM**: Standard review process applies" }
-    "Low" { "🟢 **LOW**: Review when convenient" }
-})
-
-## 🏷️ Labels Applied
-$($allLabels | ForEach-Object { "- ``$_``" } | Out-String)
-
----
-
-**🤖 This issue was created automatically by PatchManager v2.0**  
-** Automated fixes help maintain code quality and reduce manual work**  
-**👥 Human review and approval still required for all changes**
-"@
-
-            # Create the issue using GitHub CLI
-            $labelsArg = $allLabels -join ","
-            Write-Host "  Executing: gh issue create..." -ForegroundColor Gray
-            
-            $issueUrl = gh issue create --title $issueTitle --body $issueBody --label $labelsArg 2>&1
-            
-            if ($LASTEXITCODE -eq 0) {
-                # Extract issue number from URL
-                $issueNumber = if ($issueUrl -match '/(\d+)$') { $matches[1] } else { $null }
+            # First try to create any missing labels
+            foreach ($label in $allLabels) {
+                Write-Host "  Checking if label '$label' exists..." -ForegroundColor Gray
+                $labelExists = gh label list | Select-String -Pattern "^$label\s" -Quiet
                 
-                Write-Host "  [PASS] GitHub issue created successfully!" -ForegroundColor Green
-                Write-Host "  📎 Issue URL: $issueUrl" -ForegroundColor Cyan
-                Write-Host "  🔢 Issue Number: #$issueNumber" -ForegroundColor Cyan
-                Write-Host "  🏷️  Priority: $Priority" -ForegroundColor Cyan
-                
-                # Link to PR if available
-                if ($PullRequestUrl -and $issueNumber) {
+                if (-not $labelExists) {
                     try {
-                        Write-Host "  🔗 Linking to pull request..." -ForegroundColor Blue
-                        $prNumber = ($PullRequestUrl -split '/')[-1]
-                        $linkComment = "🔗 **Linked Pull Request**: #$prNumber`n`nThis issue is automatically linked to the pull request that implements the fix."
-                        gh issue comment $issueNumber --body $linkComment | Out-Null
-                        Write-Host "  [PASS] Successfully linked to PR #$prNumber" -ForegroundColor Green
-                    } catch {
-                        Write-Warning "  Failed to link to PR: $($_.Exception.Message)"
+                        Write-Host "  Creating missing label: $label" -ForegroundColor Yellow
+                        # Default color for new labels
+                        $labelColor = switch ($label) {
+                            "bug" { "d73a4a" }  # red
+                            "automated" { "0075ca" }  # blue
+                            "high-priority" { "b60205" }  # dark red
+                            "priority" { "d93f0b" }  # orange
+                            "minor" { "c2e0c6" }  # light green
+                            default { "fbca04" }  # yellow
+                        }
+                        
+                        gh label create $label --color $labelColor --description "Auto-created by PatchManager" 2>&1 | Out-Null
+                        
+                        if ($LASTEXITCODE -ne 0) {
+                            Write-Warning "  Could not create label '$label', will continue without it"
+                            # Remove the label from our list so we don't try to use it
+                            $allLabels = $allLabels | Where-Object { $_ -ne $label }
+                        }
+                    }
+                    catch {
+                        Write-Warning "  Failed to create label '$label': $_"
                     }
                 }
-                
+            }            # Create GitHub issue
+            $title = $PatchDescription
+            $body = "Affected files: $($AffectedFiles -join ', ')"
+            $labelString = $allLabels -join ','
+
+            $issueResult = gh issue create --title $title --body $body --label $labelString
+
+            if ($LASTEXITCODE -eq 0) {
+                Write-Host "  GitHub issue created successfully" -ForegroundColor Green
                 return @{
                     Success = $true
                     Message = "GitHub issue created successfully"
-                    IssueUrl = $issueUrl
-                    IssueNumber = $issueNumber
-                    Priority = $Priority
-                    Labels = $allLabels
+                    IssueUrl = $issueResult
+                    IssueNumber = ($issueResult -match "#(\d+)") ? $matches[1] : $null
                 }
-                
             } else {
-                throw "GitHub CLI failed: $issueUrl"
+                Write-Warning "  Failed to create GitHub issue: $issueResult"
+                return @{
+                    Success = $false
+                    Message = "Failed to create GitHub issue"
+                    IssueUrl = $null
+                    IssueNumber = $null
+                }
             }
             
         } catch {

@@ -37,7 +37,7 @@ Write-Host " Generating Comprehensive Dashboard Report..." -ForegroundColor Cyan
 # Ensure reports directory exists
 $reportsDir = Split-Path $OutputPath -Parent
 if ($reportsDir -and -not (Test-Path $reportsDir)) {
- New-Item -ItemType Directory -Path $reportsDir -Force  Out-Null
+ New-Item -ItemType Directory -Path $reportsDir -Force | Out-Null
 }
 
 # Get current timestamp

@@ -15,7 +15,7 @@ Write-Host " Testing workflow components for $Platform..." -ForegroundColor Yell
 
 # Ensure coverage directory exists
 if (-not (Test-Path coverage)) {
- New-Item -ItemType Directory -Path coverage  Out-Null
+ New-Item -ItemType Directory -Path coverage | Out-Null
  Write-Host "PASS Created coverage directory" -ForegroundColor Green
 }
 

@@ -103,7 +103,7 @@ Write-CustomLog "Running $($MyInvocation.MyCommand.Name)"
             if ($createPath) {
                 Write-CustomLog "Creating missing frontend folder at: $frontendPath"
                 if ($PSCmdlet.ShouldProcess($frontendPath,'Create NpmPath')) {
-                    New-Item -ItemType Directory -Path $frontendPath -Force  Out-Null
+                    New-Item -ItemType Directory -Path $frontendPath -Force | Out-Null
                 }
             } else {
                 throw "Frontend folder not found at: $frontendPath"

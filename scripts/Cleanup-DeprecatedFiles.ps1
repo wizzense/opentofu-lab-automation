@@ -35,7 +35,7 @@ if ($SkipBackup) {
 
     $backupDir = Join-Path $PSScriptRoot ".." "backups" "deprecated" (Get-Date -Format "yyyyMMdd-HHmmss")
     if (-not (Test-Path $backupDir)) {
-        New-Item -Path $backupDir -ItemType Directory -Force  Out-Null
+        New-Item -Path $backupDir -ItemType Directory -Force | Out-Null
     }
 
     foreach ($filePath in $FilePaths) {
@@ -107,7 +107,7 @@ $archiveDir = Join-Path $PSScriptRoot ".." "archive" "deprecated"
             Write-Host "What if: Would create archive directory: $archiveDir" -ForegroundColor Yellow
         }
         else {
-            New-Item -Path $archiveDir -ItemType Directory -Force  Out-Null
+            New-Item -Path $archiveDir -ItemType Directory -Force | Out-Null
             Write-Host "Created archive directory: $archiveDir" -ForegroundColor Cyan
         }
     }
