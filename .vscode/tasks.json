@@ -60,6 +60,89 @@
 			"group": "test",
 			"problemMatcher": ,
 			"isBackground": false
+		},
+		{
+			"label": "PatchManager: Apply Changes with DirectCommit",
+			"type": "shell",
+			"command": "pwsh",
+			"args": [
+				"-Command",
+				"Import-Module './pwsh/modules/PatchManager/' -Force; Invoke-GitControlledPatch -PatchDescription '${input:patchDescription}' -PatchOperation { Write-Host 'Changes applied via VS Code task' } -DirectCommit -AutoCommitUncommitted -Force"
+			],
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"problemMatcher": [],
+			"isBackground": false,
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": false,
+				"panel": "shared",
+				"showReuseMessage": true,
+				"clear": false
+			}
+		},
+		{
+			"label": "PatchManager: Apply Changes with PR",
+			"type": "shell",
+			"command": "pwsh",
+			"args": [
+				"-Command",
+				"Import-Module './pwsh/modules/PatchManager/' -Force; Invoke-GitControlledPatch -PatchDescription '${input:patchDescription}' -PatchOperation { Write-Host 'Changes applied via VS Code task' } -AutoCommitUncommitted -CreatePullRequest"
+			],
+			"group": "build",
+			"problemMatcher": [],
+			"isBackground": false,
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": false,
+				"panel": "shared",
+				"showReuseMessage": true,
+				"clear": false
+			}
+		},
+		{
+			"label": "PatchManager: Consolidate Core App",
+			"type": "shell",
+			"command": "pwsh",
+			"args": [
+				"-Command",
+				"Import-Module './pwsh/modules/PatchManager/' -Force; Invoke-GitControlledPatch -PatchDescription 'feat(core-app): consolidate runner scripts and remove hardcoded paths' -PatchOperation { Remove-Item './pwsh/runner_scripts' -Recurse -Force -ErrorAction SilentlyContinue; Write-Host 'Core app consolidation completed' } -DirectCommit -AutoCommitUncommitted -Force -CleanupMode 'Standard'"
+			],
+			"group": "build",
+			"problemMatcher": [],
+			"isBackground": false,
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": false,
+				"panel": "shared",
+				"showReuseMessage": true,
+				"clear": false
+			}
+		},
+		{
+			"label": "PatchManager: Emergency Rollback",
+			"type": "shell",
+			"command": "pwsh",
+			"args": [
+				"-Command",
+				"Import-Module './pwsh/modules/PatchManager/' -Force; Invoke-QuickRollback -RollbackType 'LastPatch' -CreateBackup"
+			],
+			"group": "build",
+			"problemMatcher": [],
+			"isBackground": false,
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": false,
+				"panel": "shared",
+				"showReuseMessage": true,
+				"clear": false
+			}
 		}
 	
 }

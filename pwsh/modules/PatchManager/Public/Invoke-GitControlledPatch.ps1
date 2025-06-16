@@ -871,7 +871,8 @@ If you need to handle resolution manually:
                 ChangedFiles = $changedFiles
                 Message = "Patch applied successfully with automated monitoring enabled"
             }
-        }
+        
+        } # End of try block that started on line 815
     } catch {
         # Catch any errors in the main process block
         Write-Host "Error in patch operation: $($_.Exception.Message)" -ForegroundColor Red
