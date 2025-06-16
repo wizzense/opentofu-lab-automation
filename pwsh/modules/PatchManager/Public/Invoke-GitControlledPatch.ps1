@@ -87,11 +87,31 @@ function Invoke-GitControlledPatch {
     )
       begin {
         # Import required modules from project
-        $projectRoot = "c:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation"
+        $projectRoot = if ($env:PROJECT_ROOT) { $env:PROJECT_ROOT } else { "c:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation" }
         Import-Module "$projectRoot\pwsh\modules\LabRunner" -Force -ErrorAction SilentlyContinue
         
-        Write-CustomLog "=== Starting Git-Controlled Patch Process ===" -Level INFO
+        # NEW: Import enhanced Git operations for automatic conflict resolution
+        if (Test-Path "$projectRoot\pwsh\modules\PatchManager\Public\Invoke-EnhancedGitOperations.ps1") {
+            . "$projectRoot\pwsh\modules\PatchManager\Public\Invoke-EnhancedGitOperations.ps1"
+        }
+        
+        Write-CustomLog "=== Starting Enhanced Git-Controlled Patch Process ===" -Level INFO
         Write-CustomLog "Patch Description: $PatchDescription" -Level INFO
+        
+        # NEW: Automatic pre-patch Git cleanup and validation
+        Write-CustomLog "Running pre-patch Git operations and validation..." -Level INFO
+        $gitOpResult = Invoke-EnhancedGitOperations -Operation "ResolveConflicts" -ValidateAfter
+        
+        if (-not $gitOpResult.Success) {
+            Write-CustomLog "Pre-patch Git operations failed: $($gitOpResult.Message)" -Level ERROR
+            throw "Pre-patch Git operations failed. Cannot proceed safely."
+        }
+        
+        if ($gitOpResult.ValidationResults -and -not $gitOpResult.AllChecksPassed) {
+            Write-CustomLog "Pre-patch validation found issues - continuing with enhanced monitoring" -Level WARN
+        } else {
+            Write-CustomLog "Pre-patch validation passed successfully" -Level SUCCESS
+        }
         
         if ($DryRun) {
             Write-CustomLog "DRY RUN MODE - No actual changes will be made" -Level WARN
