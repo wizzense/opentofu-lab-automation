@@ -189,24 +189,77 @@ function Invoke-EmojiCleanup {
 }
 
 function Invoke-PathStandardization {
-    # Fix hardcoded Windows paths throughout the codebase
-    $files = Get-ChildItem -Path $script:ProjectRoot -Recurse -Include "*.ps1", "*.py", "*.json" -ErrorAction SilentlyContinue
+    # Fix hardcoded paths throughout the codebase with environment variable support
+    $files = Get-ChildItem -Path $script:ProjectRoot -Recurse -Include "*.ps1", "*.py", "*.json", "*.md", "*.yaml", "*.yml" -ErrorAction SilentlyContinue
     
-    $windowsPathPattern = 'C:\\Users\\alexa\\OneDrive\\Documents\\0\. wizzense\\opentofu-lab-automation'
-    $standardPath = '/workspaces/opentofu-lab-automation'
-      foreach ($file in $files) {
+    # Define standardized replacement paths with environment variables
+    $pathMappings = @{
+        # Windows specific paths
+        'C:\\Users\\alexa\\OneDrive\\Documents\\0\. wizzense\\opentofu-lab-automation' = '$env:PROJECT_ROOT'
+        'C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation' = '$env:PROJECT_ROOT'
+        # Linux/WSL path
+        '/mnt/c/Users/alexa/OneDrive/Documents/0. wizzense/opentofu-lab-automation' = '$env:PROJECT_ROOT'
+        # Container paths
+        '/workspaces/opentofu-lab-automation' = '$env:PROJECT_ROOT'
+        # PowerShell modules path
+        'C:\\Users\\alexa\\OneDrive\\Documents\\0\. wizzense\\opentofu-lab-automation\\pwsh\\modules' = '$env:PWSH_MODULES_PATH'
+        'C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\pwsh\modules' = '$env:PWSH_MODULES_PATH'
+        '/workspaces/opentofu-lab-automation/pwsh/modules' = '$env:PWSH_MODULES_PATH'
+    }
+    
+    # Add dynamically constructed paths based on current environment
+    $currentDir = (Get-Location).Path
+    if (-not [string]::IsNullOrEmpty($currentDir)) {
+        $pathMappings[$currentDir] = '$env:PROJECT_ROOT'
+    }
+    
+    # Counter for changed files
+    $changedFiles = 0
+    
+    foreach ($file in $files) {
         if (-not (Test-CriticalExclusion $file.FullName)) {
             $content = Get-Content $file.FullName -Raw -ErrorAction SilentlyContinue
-            if ($content -and $content -match [regex]::Escape($windowsPathPattern)) {
-                Write-Host "  Fixing hardcoded paths in: $($file.Name)" -ForegroundColor Yellow
-                  if (-not $DryRun) {
-                    $cleanContent = $content -replace [regex]::Escape($windowsPathPattern), $standardPath
+            $contentChanged = $false
+            
+            if ($content) {
+                $cleanContent = $content
+                
+                # Replace each hardcoded path with environment variable
+                foreach ($pattern in $pathMappings.Keys) {
+                    $replacement = $pathMappings[$pattern]
+                    # First try direct string replacement for simpler paths
+                    if ($cleanContent.Contains($pattern)) {
+                        $cleanContent = $cleanContent.Replace($pattern, $replacement)
+                        $contentChanged = $true
+                    }
+                    # Then try regex for more complex path patterns
+                    $escapedPattern = [regex]::Escape($pattern)
+                    if ($cleanContent -match $escapedPattern) {
+                        $cleanContent = $cleanContent -replace $escapedPattern, $replacement
+                        $contentChanged = $true
+                    }
+                }
+                
+                # Fix common path separator issues
+                if ($cleanContent -match '\\\\') {
+                    $cleanContent = $cleanContent -replace '\\\\', '/'
+                    $contentChanged = $true
+                }
+                
+                if ($contentChanged -and -not $DryRun) {
+                    Write-Host "  Fixing paths in: $($file.Name)" -ForegroundColor Yellow
                     Set-Content -Path $file.FullName -Value $cleanContent -NoNewline
-                    $script:CleanupLog.FilesRelocated += @{ File = $file.FullName; Action = "Path standardization" }
+                    $script:CleanupLog.FilesRelocated += @{ 
+                        File = $file.FullName
+                        Action = "Path standardization with environment variables"
+                    }
+                    $changedFiles++
                 }
             }
         }
     }
+    
+    Write-Host "  Standardized paths in $changedFiles files" -ForegroundColor Cyan
 }
 
 function Invoke-DuplicateConsolidation {
@@ -214,19 +267,20 @@ function Invoke-DuplicateConsolidation {
     $fileHashes = @{}
     $duplicates = @()
     
-    $files = Get-ChildItem -Path $script:ProjectRoot -Recurse -File -ErrorAction SilentlyContinue  
+    $files = Get-ChildItem -Path $script:ProjectRoot -Recurse -File -ErrorAction SilentlyContinue | 
         Where-Object { -not (Test-CriticalExclusion $_.FullName) }
     
     foreach ($file in $files) {
         try {
             $hash = Get-FileHash $file.FullName -Algorithm MD5
-            if ($fileHashes.ContainsKey($hash)) {
+            if ($fileHashes.ContainsKey($hash.Hash)) {
                 $duplicates += @{
-                    Original = $fileHashes[$hash]
+                    Original = $fileHashes[$hash.Hash]
                     Duplicate = $file.FullName
+                    Size = $file.Length
                 }
             } else {
-                $fileHashes[$hash] = $file.FullName
+                $fileHashes[$hash.Hash] = $file.FullName
             }
         } catch {
             Write-Warning "Error processing file $($file.FullName): $_"
@@ -238,8 +292,8 @@ function Invoke-DuplicateConsolidation {
         $keepOriginal = $true
         
         # Prefer files in proper directories over root directory
-        if ($dup.Duplicate -match "^$(regex::Escape($script:ProjectRoot))/\\^/\\+$" -and 
-            $dup.Original -match "scriptspwshtestsdocs") {
+        if ($dup.Duplicate -match "^$([regex]::Escape($script:ProjectRoot))[/\\][^/\\]+$" -and 
+            $dup.Original -match "scripts|pwsh|tests|docs") {
             $keepOriginal = $false
         }
         
@@ -272,7 +326,7 @@ function Invoke-FileArchival {
     
     if ($oldFiles.Count -gt 0) {
         if (-not $DryRun) {
-            New-Item -ItemType Directory -Path $archivePath -Force  Out-Null
+            New-Item -ItemType Directory -Path $archivePath -Force | Out-Null
         }
         
         foreach ($file in $oldFiles) {
@@ -326,7 +380,7 @@ function Invoke-FileOrganization {
             $destPath = Join-Path $script:ProjectRoot $destination
             if (-not (Test-Path $destPath)) {
                 if (-not $DryRun) {
-                    New-Item -ItemType Directory -Path $destPath -Force  Out-Null
+                    New-Item -ItemType Directory -Path $destPath -Force | Out-Null
                 }
             }
             
@@ -385,11 +439,30 @@ function Test-CriticalExclusion {
         [string]$Path
     )
     
-    $relativePath = $Path -replace [regex]::Escape($script:ProjectRoot), ''
-    $relativePath = $relativePath -replace '^/\\', ""
+    # Normalize path separators for cross-platform compatibility
+    $normalizedPath = $Path.Replace('\', '/') 
+    $normalizedProjectRoot = $script:ProjectRoot.Replace('\', '/')
     
+    # Create platform-agnostic relative path
+    $relativePath = $normalizedPath -replace [regex]::Escape($normalizedProjectRoot), ''
+    $relativePath = $relativePath -replace '^/', ""
+    
+    # Try multiple matching strategies for maximum compatibility
     foreach ($pattern in $script:CriticalExclusions) {
+        # Strategy 1: Simple wildcard matching (works for basic patterns)
         if ($relativePath -like $pattern) {
+            return $true
+        }
+        
+        # Strategy 2: Normalized regex pattern matching (more powerful)
+        $normalizedPattern = $pattern.Replace('\', '/')
+        $regexPattern = $normalizedPattern -replace '\*', '.*'
+        if ($relativePath -match "^$regexPattern$") {
+            return $true
+        }
+        
+        # Strategy 3: Path-aware matching for directories
+        if ($pattern.EndsWith('/') -and $relativePath.StartsWith($pattern.TrimEnd('/'))) {
             return $true
         }
     }

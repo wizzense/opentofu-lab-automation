@@ -3,7 +3,7 @@
     "description": "Comprehensive automation framework for OpenTofu lab environments with unified maintenance and validation systems",
     "version": "1.0.0",
     "name": "OpenTofu Lab Automation",
-    "lastUpdated": "2025-06-16 17:14:04"
+    "lastUpdated": "2025-06-14 17:14:04"
   },
   "core": {
     "modules": {
@@ -51,25 +51,6 @@
         "lastUpdated": "2025-06-14",
         "type": "PowerShell Module",
         "purpose": "Lab environment automation and management"
-      },
-      "PatchManager": {
-        "keyFunctions": [
-          "Invoke-GitControlledPatch",
-          "Invoke-QuickRollback",
-          "Invoke-ComprehensiveCleanup",
-          "Invoke-CopilotSuggestionHandler",
-          "Initialize-CrossPlatformEnvironment",
-          "Invoke-PatchRollback",
-          "Invoke-TieredPesterTests",
-          "Invoke-UnifiedMaintenance"
-        ],
-        "version": "2.0.0",
-        "dependencies": [],
-        "path": "/pwsh/modules/PatchManager/",
-        "entryPoint": "PatchManager.psd1",
-        "lastUpdated": "2025-06-16",
-        "type": "PowerShell Module",
-        "purpose": "Unified patch management with Git-controlled workflows, comprehensive cleanup, and rollback capabilities"
       },
       "BackupManager": {
         "keyFunctions": [

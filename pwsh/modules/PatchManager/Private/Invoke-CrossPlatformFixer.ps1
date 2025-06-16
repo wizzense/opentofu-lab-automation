@@ -391,14 +391,13 @@ function Test-CriticalPathExclusion {
       $criticalPatterns = @(
         '\.git\\',
         'PROJECT-MANIFEST.json',
-        'LICENSE',
-        'mkdocs.yml',
+        'LICENSE',        'mkdocs.yml',
         'pyproject.toml',
         '\.vscode\\settings.json',
         '\.vscode\\tasks.json',
-        'archive\\',
-        'backups\',
-        'logs\'
+        'archive[/\\\\]',
+        'backups[/\\\\]',
+        'logs[/\\\\]'
     )
     
     foreach ($pattern in $criticalPatterns) {

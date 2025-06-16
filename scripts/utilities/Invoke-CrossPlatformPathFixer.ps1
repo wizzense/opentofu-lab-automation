@@ -91,12 +91,11 @@ function Invoke-CrossPlatformPathFixer {
             
             # Get all PowerShell, JSON, and Markdown files
             $fileExtensions = @('*.ps1', '*.psm1', '*.psd1', '*.json', '*.md', '*.yml', '*.yaml')
-            
-            if (-not $IncludeReports) {
+              if (-not $IncludeReports) {
                 # Exclude report directories from fixing
-                $excludePaths = @('reports\*', 'logs\*', 'backups\*', 'archive\*', '*.backup*')
+                $excludePaths = @('reports/*', 'logs/*', 'backups/*', 'archive/*', '*.backup*')
             } else {
-                $excludePaths = @('backups\*', '*.backup*')
+                $excludePaths = @('backups/*', '*.backup*')
             }
             
             $allFiles = @()

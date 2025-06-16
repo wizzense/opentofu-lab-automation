@@ -220,26 +220,77 @@ function Invoke-EmojiCleanup {
 }
 
 function Invoke-PathStandardization {
-    # Fix hardcoded Windows paths throughout the codebase
-    $files = Get-ChildItem -Path $script:ProjectRoot -Recurse -Include "*.ps1", "*.py", "*.json" -ErrorAction SilentlyContinue
+    # Fix hardcoded paths throughout the codebase with environment variable support
+    $files = Get-ChildItem -Path $script:ProjectRoot -Recurse -Include "*.ps1", "*.py", "*.json", "*.md", "*.yaml", "*.yml" -ErrorAction SilentlyContinue
     
-    $windowsPathPattern = 'C:\\Users\\alexa\\OneDrive\\Documents\\0\. wizzense\\opentofu-lab-automation'
-    $standardPath = '/workspaces/opentofu-lab-automation'
+    # Define standardized replacement paths with environment variables
+    $pathMappings = @{
+        # Windows specific paths
+        'C:\\Users\\alexa\\OneDrive\\Documents\\0\. wizzense\\opentofu-lab-automation' = '$env:PROJECT_ROOT'
+        'C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation' = '$env:PROJECT_ROOT'
+        # Linux/WSL path
+        '/mnt/c/Users/alexa/OneDrive/Documents/0. wizzense/opentofu-lab-automation' = '$env:PROJECT_ROOT'
+        # Container paths
+        '/workspaces/opentofu-lab-automation' = '$env:PROJECT_ROOT'
+        # PowerShell modules path
+        'C:\\Users\\alexa\\OneDrive\\Documents\\0\. wizzense\\opentofu-lab-automation\\pwsh\\modules' = '$env:PWSH_MODULES_PATH'
+        'C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\pwsh\modules' = '$env:PWSH_MODULES_PATH'
+        '/workspaces/opentofu-lab-automation/pwsh/modules' = '$env:PWSH_MODULES_PATH'
+    }
+    
+    # Add dynamically constructed paths based on current environment
+    $currentDir = (Get-Location).Path
+    if (-not [string]::IsNullOrEmpty($currentDir)) {
+        $pathMappings[$currentDir] = '$env:PROJECT_ROOT'
+    }
+    
+    # Counter for changed files
+    $changedFiles = 0
     
     foreach ($file in $files) {
         if (-not (Test-CriticalExclusion $file.FullName)) {
             $content = Get-Content $file.FullName -Raw -ErrorAction SilentlyContinue
-            if ($content -and $content -match [regex]::Escape($windowsPathPattern)) {
-                Write-Host "  Fixing hardcoded paths in: $($file.Name)" -ForegroundColor Yellow
+            $contentChanged = $false
+            
+            if ($content) {
+                $cleanContent = $content
                 
-                if (-not $DryRun) {
-                    $cleanContent = $content -replace [regex]::Escape($windowsPathPattern), $standardPath
+                # Replace each hardcoded path with environment variable
+                foreach ($pattern in $pathMappings.Keys) {
+                    $replacement = $pathMappings[$pattern]
+                    # First try direct string replacement for simpler paths
+                    if ($cleanContent.Contains($pattern)) {
+                        $cleanContent = $cleanContent.Replace($pattern, $replacement)
+                        $contentChanged = $true
+                    }
+                    # Then try regex for more complex path patterns
+                    $escapedPattern = [regex]::Escape($pattern)
+                    if ($cleanContent -match $escapedPattern) {
+                        $cleanContent = $cleanContent -replace $escapedPattern, $replacement
+                        $contentChanged = $true
+                    }
+                }
+                
+                # Fix common path separator issues
+                if ($cleanContent -match '\\\\') {
+                    $cleanContent = $cleanContent -replace '\\\\', '/'
+                    $contentChanged = $true
+                }
+                
+                if ($contentChanged -and -not $DryRun) {
+                    Write-Host "  Fixing paths in: $($file.Name)" -ForegroundColor Yellow
                     Set-Content -Path $file.FullName -Value $cleanContent -NoNewline
-                    $script:CleanupLog.FilesRelocated += @{ File = $file.FullName; Action = "Path standardization" }
+                    $script:CleanupLog.FilesRelocated += @{ 
+                        File = $file.FullName
+                        Action = "Path standardization with environment variables"
+                    }
+                    $changedFiles++
                 }
             }
         }
     }
+    
+    Write-Host "  Standardized paths in $changedFiles files" -ForegroundColor Cyan
 }
 
 function Invoke-DuplicateConsolidation {
@@ -418,10 +469,18 @@ function Test-CriticalExclusion {
     param([string]$Path)
     
     $relativePath = $Path -replace [regex]::Escape($script:ProjectRoot), ""
+    # Properly handle both forward and backslashes at the beginning of the path
     $relativePath = $relativePath -replace '^[/\\]', ""
     
     foreach ($pattern in $script:CriticalExclusions) {
+        # First try simple wildcard matching
         if ($relativePath -like $pattern) {
+            return $true
+        }
+        
+        # Then try regex with path separator normalization for complex patterns
+        $regexPattern = $pattern -replace '/', '[/\\\\]' -replace '\*', '.*'
+        if ($relativePath -match "^$regexPattern$") {
             return $true
         }
     }

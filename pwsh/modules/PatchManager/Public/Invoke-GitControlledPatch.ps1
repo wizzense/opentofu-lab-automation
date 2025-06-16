@@ -65,36 +65,101 @@ function Invoke-GitControlledPatch {
         [Parameter(Mandatory = $false)]
         [string]$RollbackBranch,
         [Parameter(Mandatory = $false)]
-        [switch]$AutoCommitUncommitted
+        [switch]$AutoCommitUncommitted,
+        [Parameter(Mandatory = $false)]
+        [switch]$ForceNewBranch
     )
     begin {
         Write-Host "Starting Git-controlled patch process..." -ForegroundColor Cyan
         Write-Host "CRITICAL: NO EMOJIS ALLOWED - they break workflows" -ForegroundColor Red
         
+        # Initialize tracking variables
+        $script:IssueTracker = @{
+            IssueNumber = $null
+            IssueUrl = $null
+            Success = $false
+            Updates = @()
+        }
+        
+        # CREATE GITHUB ISSUE FIRST THING - External visibility and tracking
+        Write-Host "Creating GitHub issue for external tracking..." -ForegroundColor Blue
+        try {
+            $issueResult = Invoke-GitHubIssueIntegration -PatchDescription $PatchDescription -AffectedFiles $AffectedFiles -Priority "Medium" -ForceCreate
+            if ($issueResult.Success) {
+                $script:IssueTracker.IssueNumber = $issueResult.IssueNumber
+                $script:IssueTracker.IssueUrl = $issueResult.IssueUrl
+                $script:IssueTracker.Success = $true
+                Write-Host "GitHub issue created: $($issueResult.IssueUrl)" -ForegroundColor Green
+                Write-Host "Issue #$($issueResult.IssueNumber) will track this patch progress" -ForegroundColor Cyan
+                
+                # Add initial progress update
+                $script:IssueTracker.Updates += "Patch process started - analyzing environment"
+            } else {
+                Write-Warning "Failed to create GitHub issue: $($issueResult.Message)"
+                Write-Host "Continuing without external issue tracking..." -ForegroundColor Yellow
+            }
+        } catch {
+            Write-Warning "GitHub issue creation failed: $($_.Exception.Message)"
+            Write-Host "Continuing without external issue tracking..." -ForegroundColor Yellow
+        }
+        
+        # Helper function to update GitHub issue with progress
+        function Update-IssueProgress {
+            param([string]$UpdateMessage, [string]$Status = "IN_PROGRESS")
+            
+            if ($script:IssueTracker.Success -and $script:IssueTracker.IssueNumber) {
+                try {
+                    $script:IssueTracker.Updates += $UpdateMessage
+                    $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss UTC"
+                    $progressComment = "**Progress Update** ($timestamp):`n`n$UpdateMessage`n`n**Status**: $Status"
+                    
+                    gh issue comment $script:IssueTracker.IssueNumber --body $progressComment | Out-Null
+                    Write-Host "Updated GitHub issue with progress: $UpdateMessage" -ForegroundColor Gray
+                } catch {
+                    Write-Warning "Failed to update GitHub issue: $($_.Exception.Message)"
+                }
+            }
+        }
+        
         # Initialize cross-platform environment variables
+        Update-IssueProgress "Initializing cross-platform environment..."
         try {
             $envResult = Initialize-CrossPlatformEnvironment
             if (-not $envResult.Success) {
                 Write-Warning "Cross-platform environment initialization failed: $($envResult.Error)"
+                Update-IssueProgress "WARNING: Cross-platform environment initialization failed: $($envResult.Error)" "WARNING"
+            } else {
+                Update-IssueProgress "Cross-platform environment initialized successfully for $($envResult.Platform)"
             }
         } catch {
             Write-Warning "Cross-platform environment initialization failed: $($_.Exception.Message)"
+            Update-IssueProgress "ERROR: Cross-platform environment initialization failed: $($_.Exception.Message)" "ERROR"
         }
         
         # Validate we're in a Git repository
+        Update-IssueProgress "Validating Git repository..."
         if (-not (Test-Path ".git")) {
+            Update-IssueProgress "FATAL: Not in a Git repository - patch cannot proceed" "ERROR"
             throw "Not in a Git repository. Git-controlled patching requires version control."
         }
+        Update-IssueProgress "Git repository validation passed"
+        
         # Ensure we have Git available
         if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
+            Update-IssueProgress "FATAL: Git command not found - patch cannot proceed" "ERROR"
             throw "Git command not found. Please install Git."
         }
         
         # Ensure GitHub CLI is available for automatic PR creation
         if (-not (Get-Command gh -ErrorAction SilentlyContinue)) {
             Write-Warning "GitHub CLI (gh) not found. PR creation will be skipped."
+            Update-IssueProgress "WARNING: GitHub CLI not found - PR creation will be skipped" "WARNING"
+        } else {
+            Update-IssueProgress "GitHub CLI available - PR creation enabled"
         }
-          # Handle uncommitted changes automatically
+          
+        # Handle uncommitted changes automatically
+        Update-IssueProgress "Checking for uncommitted changes..."
         $stashCreated = $false
         $commitCreated = $false
         $gitStatus = git status --porcelain
@@ -147,7 +212,13 @@ function Invoke-GitControlledPatch {
             $sanitizedDescription = $PatchDescription -replace '[^a-zA-Z0-9]', '-' -replace '-+', '-'
             
             $currentBranch = git branch --show-current
-            if ($currentBranch -ne "main" -and $currentBranch -ne "master") {
+            # If ForceNewBranch is specified, always create a new branch
+            if ($ForceNewBranch) {
+                Write-Host "Force creating new branch (ignoring anti-recursive protection)" -ForegroundColor Cyan
+                $branchName = "patch/$timestamp-$sanitizedDescription"
+            }
+            # ANTI-RECURSIVE PROTECTION: Don't create nested branches if already on feature branch
+            elseif ($currentBranch -ne "main" -and $currentBranch -ne "master") {
                 # ANTI-RECURSIVE PROTECTION: Instead of creating nested branches, work directly on current branch
                 Write-Host "ANTI-RECURSIVE PROTECTION: Already on feature branch '$currentBranch'" -ForegroundColor Yellow
                 Write-Host "Working directly on current branch to prevent branch explosion" -ForegroundColor Yellow
@@ -175,13 +246,14 @@ function Invoke-GitControlledPatch {
         $script:PatchInitialCommit = (git rev-parse HEAD)
         $script:PatchBranchName = $branchName
     }    process {
-        try {
-            # Handle DirectCommit mode
+        try {            # Handle DirectCommit mode
             if ($DirectCommit) {
                 Write-Host "Direct commit mode: Applying changes to current branch..." -ForegroundColor Green
+                Update-IssueProgress "Using DirectCommit mode - applying changes directly to current branch"
                 
                 # Apply the patch operation directly
                 Write-Host "Applying patch operation..." -ForegroundColor Yellow
+                Update-IssueProgress "Applying patch operation in DirectCommit mode..."
                 
                 # Run comprehensive cleanup before applying patches (unless skipped)
                 if (-not $SkipCleanup) {
@@ -220,13 +292,44 @@ function Invoke-GitControlledPatch {
                 if ($changedFiles) {
                     Write-Host "Changed files:" -ForegroundColor Green
                     $changedFiles | ForEach-Object { Write-Host "  - $_" -ForegroundColor White }
-                    
-                    # Commit changes directly
+                      # Commit changes directly
                     git add -A
                     git commit -m $PatchDescription
                     
                     Write-Host "Direct commit completed successfully!" -ForegroundColor Green
                     Write-Host "Changes committed to current branch" -ForegroundColor Cyan
+                    Update-IssueProgress "DirectCommit completed successfully - changes committed to current branch"
+                    
+                    # Final issue update for DirectCommit success
+                    if ($script:IssueTracker.Success -and $script:IssueTracker.IssueNumber) {
+                        try {
+                            $directCommitUpdate = @"
+## ✅ DirectCommit Completed Successfully
+
+**Status**: ✅ **COMPLETED** (DirectCommit Mode)
+**Branch**: $(git branch --show-current)
+**Commit**: $(git rev-parse HEAD)
+**Files Changed**: $($changedFiles.Count)
+
+### DirectCommit Summary
+Changes were applied directly to the current branch without creating a pull request.
+
+### Files Modified
+$($changedFiles | ForEach-Object { "- $_" } | Out-String)
+
+### Next Steps
+1. **Monitor the changes** for any issues
+2. **Test functionality** to ensure everything works correctly
+3. **Create additional fixes** if any problems are discovered
+
+**DirectCommit completed** - No pull request required for this change.
+"@
+                            gh issue comment $script:IssueTracker.IssueNumber --body $directCommitUpdate | Out-Null
+                            Write-Host "GitHub issue updated with DirectCommit success status" -ForegroundColor Green
+                        } catch {
+                            Write-Warning "Failed to update GitHub issue with DirectCommit status: $($_.Exception.Message)"
+                        }
+                    }
                     
                     return @{
                         Success = $true
@@ -234,13 +337,44 @@ function Invoke-GitControlledPatch {
                         Branch = (git branch --show-current)
                         ChangedFiles = $changedFiles
                         CommitHash = (git rev-parse HEAD)
-                    }
-                } else {
+                        IssueUrl = $script:IssueTracker.IssueUrl
+                        IssueNumber = $script:IssueTracker.IssueNumber
+                    }                } else {
                     Write-Warning "No changes detected after patch operation"
+                    Update-IssueProgress "WARNING: No changes detected after patch operation - no commit needed" "WARNING"
+                    
+                    # Update issue for no-changes scenario
+                    if ($script:IssueTracker.Success -and $script:IssueTracker.IssueNumber) {
+                        try {
+                            $noChangesUpdate = @"
+## ⚠️ No Changes Detected
+
+**Status**: ⚠️ **NO CHANGES**
+**Result**: Patch operation completed but no files were modified
+
+### Possible Reasons
+1. Changes were already applied previously
+2. Patch operation was a no-op (nothing to fix)
+3. Files were already in the correct state
+
+### Action Required
+Please review the patch operation to determine if this is expected behavior.
+
+**Issue remains open** for investigation.
+"@
+                            gh issue comment $script:IssueTracker.IssueNumber --body $noChangesUpdate | Out-Null
+                            Write-Host "GitHub issue updated with no-changes status" -ForegroundColor Yellow
+                        } catch {
+                            Write-Warning "Failed to update GitHub issue with no-changes status: $($_.Exception.Message)"
+                        }
+                    }
+                    
                     return @{
                         Success = $false
                         Message = "No changes to commit"
                         Branch = (git branch --show-current)
+                        IssueUrl = $script:IssueTracker.IssueUrl
+                        IssueNumber = $script:IssueTracker.IssueNumber
                     }
                 }
             }
@@ -290,16 +424,19 @@ function Invoke-GitControlledPatch {
             # ANTI-RECURSIVE BRANCHING: Never pull from main, work from current state
             Write-Host "SAFETY: Working from current branch state (no main branch operations)" -ForegroundColor Green
             Write-Host "This prevents recursive branch explosion and respects branch protection" -ForegroundColor Cyan
-            
-            # Create and switch to patch branch (unless in anti-recursive mode)
+              # Create and switch to patch branch (unless in anti-recursive mode)
             if (-not $skipBranchCreation) {
                 Write-Host "Creating patch branch: $branchName" -ForegroundColor Green
+                Update-IssueProgress "Creating patch branch: $branchName"
                 git checkout -b $branchName
                 if ($LASTEXITCODE -ne 0) {
+                    Update-IssueProgress "FATAL: Failed to create branch: $branchName" "ERROR"
                     throw "Failed to create branch: $branchName"
                 }
+                Update-IssueProgress "Successfully created and switched to branch: $branchName"
             } else {
                 Write-Host "Anti-recursive mode: Staying on current branch ($branchName)" -ForegroundColor Cyan
+                Update-IssueProgress "Anti-recursive mode: Working on current branch ($branchName)"
             }
             # Create backup before applying patch
             $backupPath = "./backups/pre-patch-$(Get-Date -Format 'yyyyMMdd-HHmmss')"
@@ -314,9 +451,9 @@ function Invoke-GitControlledPatch {
                     }
                 }
                 Write-Host "Created backup at: $backupPath" -ForegroundColor Cyan
-            }
-              # Apply the patch operation
+            }              # Apply the patch operation
             Write-Host "Applying patch operation..." -ForegroundColor Yellow
+            Update-IssueProgress "Applying main patch operation..."
             
             # Run comprehensive cleanup before applying patches (unless skipped)
             if (-not $SkipCleanup) {
@@ -391,15 +528,47 @@ Auto-generated by PatchManager v2.0
             # Push branch
             Write-Host "Pushing patch branch to origin..." -ForegroundColor Blue
             git push -u origin $branchName
-            
-            # Automatically create pull request
+              # Automatically create pull request
             Write-Host "Creating pull request..." -ForegroundColor Blue
+            Update-IssueProgress "Creating pull request for patch review..."
             $prResult = New-PatchPullRequest -BranchName $branchName -BaseBranch $BaseBranch -Description $PatchDescription -ChangedFiles $changedFiles
             if ($prResult.Success) {
                 Write-Host "Pull request created successfully: $($prResult.Url)" -ForegroundColor Green
+                Update-IssueProgress "Pull request created successfully: $($prResult.Url)"
+                
+                # Final issue update with success status and PR link
+                if ($script:IssueTracker.Success -and $script:IssueTracker.IssueNumber) {
+                    try {
+                        $finalUpdate = @"
+## 🎉 Patch Applied Successfully
+
+**Status**: ✅ **COMPLETED**
+**Pull Request**: $($prResult.Url)
+**Branch**: $branchName
+**Files Changed**: $($changedFiles.Count)
+**Backup Created**: $backupPath
+
+### Next Steps
+1. **Review the pull request**: $($prResult.Url)
+2. **Test the changes** in a clean environment
+3. **Approve and merge** if all validations pass
+4. **Close this issue** after successful merge
+
+### Summary
+All patch operations completed successfully. Manual review and approval required via pull request.
+
+**Automated patch tracking completed** - Human review now required.
+"@
+                        gh issue comment $script:IssueTracker.IssueNumber --body $finalUpdate | Out-Null
+                        Write-Host "GitHub issue updated with final success status" -ForegroundColor Green
+                    } catch {
+                        Write-Warning "Failed to update GitHub issue with final status: $($_.Exception.Message)"
+                    }
+                }
             } else {
                 Write-Warning "Failed to create pull request: $($prResult.Message)"
                 Write-Host "Manual pull request creation required for branch: $branchName" -ForegroundColor Yellow
+                Update-IssueProgress "WARNING: Failed to create pull request - manual creation required for branch: $branchName" "WARNING"
             }
             
             return @{
@@ -409,10 +578,43 @@ Auto-generated by PatchManager v2.0
                 ChangedFiles = $changedFiles
                 Backup = $backupPath
                 PullRequest = $prResult.Url
+                IssueUrl = $script:IssueTracker.IssueUrl
+                IssueNumber = $script:IssueTracker.IssueNumber
             }
-            
-        } catch {
+              } catch {
             Write-Error "Patch operation failed: $($_.Exception.Message)"
+            Update-IssueProgress "FATAL: Patch operation failed: $($_.Exception.Message)" "ERROR"
+            
+            # Final issue update with failure status
+            if ($script:IssueTracker.Success -and $script:IssueTracker.IssueNumber) {
+                try {
+                    $failureUpdate = @"
+## ❌ Patch Failed
+
+**Status**: 🔴 **FAILED**
+**Error**: $($_.Exception.Message)
+**Timestamp**: $(Get-Date -Format "yyyy-MM-dd HH:mm:ss UTC")
+
+### Failure Details
+The automated patch process encountered an error and could not complete successfully.
+
+### Manual Intervention Required
+1. **Review the error** message above
+2. **Check the logs** for additional details
+3. **Apply fixes manually** or investigate the root cause
+4. **Re-run the patch** after resolving the issue
+
+### Cleanup Status
+Attempting automatic cleanup of failed patch state...
+
+**This issue remains open** - Manual resolution required.
+"@
+                    gh issue comment $script:IssueTracker.IssueNumber --body $failureUpdate | Out-Null
+                    Write-Host "GitHub issue updated with failure status" -ForegroundColor Red
+                } catch {
+                    Write-Warning "Failed to update GitHub issue with failure status: $($_.Exception.Message)"
+                }
+            }
             
             # Cleanup on failure (SAFE: No main branch checkout)
             try {
