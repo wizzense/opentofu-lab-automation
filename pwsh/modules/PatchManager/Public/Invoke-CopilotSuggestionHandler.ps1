@@ -204,14 +204,14 @@ function Invoke-CopilotSuggestionHandler {
                             if ($implementedFiles -notcontains $filePath) {
                                 $implementedFiles += $filePath
                             }
-                            Write-Host "  ✓ Implemented suggestion at line $($suggestion.Line)" -ForegroundColor Green
+                            Write-Host "   Implemented suggestion at line $($suggestion.Line)" -ForegroundColor Green
                         } else {
                             $failedCount++
-                            Write-Warning "  ✗ Failed to implement suggestion: $($implementationResult.Error)"
+                            Write-Warning "   Failed to implement suggestion: $($implementationResult.Error)"
                         }
                     } catch {
                         $failedCount++
-                        Write-Warning "  ✗ Error implementing suggestion: $_"
+                        Write-Warning "   Error implementing suggestion: $_"
                     }
                 }
             }
@@ -232,7 +232,7 @@ function Invoke-CopilotSuggestionHandler {
                                     Write-Warning "  Line $($error.StartLine): $($error.Message)"
                                 }
                             } else {
-                                Write-Host "  ✓ $file - Syntax validation passed" -ForegroundColor Green
+                                Write-Host "   $file - Syntax validation passed" -ForegroundColor Green
                             }
                         }
                     } catch {
@@ -251,7 +251,7 @@ function Invoke-CopilotSuggestionHandler {
                     } -DirectCommit -WhatIf:$WhatIf
                     
                     if ($patchResult.Success) {
-                        Write-Host "✓ Successfully committed Copilot suggestions" -ForegroundColor Green
+                        Write-Host " Successfully committed Copilot suggestions" -ForegroundColor Green
                     } else {
                         Write-Warning "Failed to commit suggestions: $($patchResult.Message)"
                     }
@@ -270,8 +270,8 @@ function Invoke-CopilotSuggestionHandler {
             }
             
             Write-Host "Copilot suggestion handling completed:" -ForegroundColor Green
-            Write-Host "  ✓ Implemented: $implementedCount" -ForegroundColor Green
-            Write-Host "  ✗ Failed: $failedCount" -ForegroundColor $(if ($failedCount -gt 0) { "Red" } else { "Green" })
+            Write-Host "   Implemented: $implementedCount" -ForegroundColor Green
+            Write-Host "   Failed: $failedCount" -ForegroundColor $(if ($failedCount -gt 0) { "Red" } else { "Green" })
             Write-Host "  📁 Files modified: $($implementedFiles.Count)" -ForegroundColor Cyan
             
             return $result

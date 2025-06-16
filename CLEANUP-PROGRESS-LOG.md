@@ -44,7 +44,7 @@
 
 ## Issues Found and Fixed
 
-### ❌ Critical Path Issues
+### [FAIL] Critical Path Issues
 1. **scripts/cleanup/noninteractive-cleanup.ps1**
    - Issue: Hardcoded `c:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation`
    - Fix: Use standardized path resolution
@@ -55,7 +55,7 @@
    - Fix: Use proper module import syntax
    - Status: PENDING
 
-### ✅ Completed Tasks
+### [PASS] Completed Tasks
 - Created UNIFIED-PROJECT-GUIDELINES.md
 - Updated VS Code settings for project guidelines
 - Created this progress log

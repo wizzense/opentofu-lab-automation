@@ -46,7 +46,7 @@ Write-Host "Mode: $Mode" -ForegroundColor Yellow
 # Import PatchManager with new Copilot functionality
 try {
     Import-Module "$($env:PWSH_MODULES_PATH -replace '\\', '/')/PatchManager" -Force
-    Write-Host "✓ PatchManager module loaded successfully" -ForegroundColor Green
+    Write-Host " PatchManager module loaded successfully" -ForegroundColor Green
 } catch {
     Write-Warning "Failed to load PatchManager module: $($_.Exception.Message)"
     Write-Host "Attempting fallback import..." -ForegroundColor Yellow
