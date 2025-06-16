@@ -17,7 +17,7 @@ Poetry creates a virtual environment with `labctl` and the test tools.
 ## Running the CLI
 
 Invoke the helper commands through Poetry. The CLI loads
-`configs/config_files/default-config.json` automatically:
+`configs/default-config.json` automatically:
 
 ```bash
 poetry run labctl hv facts
@@ -36,4 +36,5 @@ Execute the pytest suite from this directory:
 cd py
 pytest -q
 ```
+
 

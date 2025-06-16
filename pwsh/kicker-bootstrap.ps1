@@ -3,7 +3,7 @@
   Kicker script for a fresh Windows Server Core setup with robust error handling.
 
 $targetBranch = 'main'
-$baseUrl = 'https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/refs/heads/'1) Loads configs/config_files/default-config.json by default (override with -ConfigFile).
+$baseUrl = 'https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/refs/heads/'1) Loads configs/default-config.json by default (override with -ConfigFile).
   2) Checks if command-line Git is installed and in PATH.
      - Installs a minimal version if missing.
      - Updates PATH if installed but not found in PATH.
@@ -101,7 +101,7 @@ $script:ConsoleLevel    = $script:VerbosityLevels$Verbosity
 
 $targetBranch = 'main'
 $baseUrl = 'https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/refs/heads/'
-$defaultConfig = "${baseUrl}${targetBranch}/configs/config_files/default-config.json"
+$defaultConfig = "${baseUrl}${targetBranch}/configs/default-config.json"
 
 
 # example: https://raw.githubusercontent.com/wizzense/tofu-base-lab/refs/heads/main/configs/bootstrap-config.json
@@ -277,7 +277,7 @@ At the time of this writing that feature may be broken... oh well.
 
 The script will do the following if you proceed:
 
-  1) Loads configs/config_files/default-config.json by default (override with -ConfigFile).
+  1) Loads configs/default-config.json by default (override with -ConfigFile).
   2) Checks if command-line Git is installed and in PATH.
      - Installs a minimal version if missing.
      - Updates PATH if installed but not found in PATH.
@@ -762,6 +762,7 @@ if ($exitCode -ne 0) {
 
 Write-CustomLog "`n=== Kicker script finished successfully! ==="
 exit 0
+
 
 
 

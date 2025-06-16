@@ -16,7 +16,7 @@ Key functions in this module include:
 - `Test-JsonConfig`: Validates JSON configuration files
 
 ### LabRunner PowerShell Module (Moved 2025-06-13)
-**IMPORTANT:** LabRunner has been moved from `/pwsh/lab_utils/LabRunner/` to `/pwsh/modules/LabRunner/`
+**IMPORTANT:** LabRunner has been moved from `/pwsh/modules/LabRunner/LabRunner/` to `/pwsh/modules/LabRunner/`
 
 This module provides core lab automation functionality and should be imported as:
 ```powershell
@@ -93,3 +93,4 @@ For more information, refer to:
 - `/docs/TESTING.md`: Detailed testing framework documentation
 - `/docs/CODEFIXER-GUIDE.md`: Comprehensive guide to the CodeFixer module
 - `/docs/copilot_docs/repository-custom-instructions.md`: How Copilot uses `.github/copilot-instructions.md`
+

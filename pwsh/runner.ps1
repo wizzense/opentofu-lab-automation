@@ -14,7 +14,7 @@ param(
     ValidateSet('silent','normal','detailed')
     string$Verbosity = 'normal',
     string$ConfigFile,
-    #string$ConfigFile = (Join-Path $PSScriptRoot 'config_files' 'default-config.json'),
+    #string$ConfigFile = (Join-Path $PSScriptRoot 'default-config.json'),
     switch$Auto,
     string$Scripts,
     switch$Force
@@ -28,7 +28,7 @@ if (Test-Path $indexPath) {
     try { $script:PathIndex = Get-Content -Raw -Path $indexPath  ConvertFrom-Yaml } catch { $script:PathIndex = @{} }
 }
 
-. (Join-Path $repoRoot (Join-Path 'lab_utils' 'PathUtils.ps1'))
+Import-Module "$PSScriptRoot/modules/LabRunner" -Force)
 
 function Resolve-IndexPath {
     param(string$Key)
@@ -48,9 +48,9 @@ if ($script:PathIndex.ContainsKey($Key)) {
 
 # apply default ConfigFile if not provided
 if (-not $PSBoundParameters.ContainsKey('ConfigFile')) {
-    $ConfigFile = Resolve-IndexPath 'configs/config_files/default-config.json'
+    $ConfigFile = Resolve-IndexPath 'configs/default-config.json'
     if (-not $ConfigFile) {
-        $ConfigFile = Join-Path $repoRoot '..' 'configs' 'config_files' 'default-config.json'
+        $ConfigFile = Join-Path $repoRoot '..' 'configs' 'default-config.json'
     }
 }
 
@@ -91,34 +91,11 @@ $script:ConsoleLevel    = $script:VerbosityLevels$Verbosity
 
 
 # ─── Load helpers ──────────────────────────────────────────────────────────────
-$labUtilsDir = Resolve-IndexPath 'lab_utils'
-if (-not $labUtilsDir) { $labUtilsDir = Join-Path $repoRoot 'lab_utils' }
-$runnerScriptsDir = Resolve-IndexPath 'runner_scripts'
-if (-not $runnerScriptsDir) { $runnerScriptsDir = Join-Path $repoRoot 'runner_scripts' }
-$configFilesDir = Resolve-IndexPath 'configs/config_files'
-if (-not $configFilesDir) {
-    $configFilesDir = Join-Path $repoRoot '..' 'configs' 'config_files'
-}
+# Import unified LabRunner module instead of individual lab_utils scripts
+Import-Module "$PSScriptRoot/modules/LabRunner" -Force
 
-if (-not (Get-Command Write-CustomLog -ErrorAction SilentlyContinue)) {
-    . (Join-Path $labUtilsDir (Join-Path 'LabRunner' 'Logger.ps1'))
-}
-$env:LAB_CONSOLE_LEVEL = $script:VerbosityLevels$Verbosity
-. (Join-Path $PSScriptRoot (Join-Path 'lab_utils' 'Get-LabConfig.ps1'))
-. (Join-Path $PSScriptRoot (Join-Path 'lab_utils' 'Format-Config.ps1'))
-. (Join-Path $PSScriptRoot (Join-Path 'lab_utils' 'Get-Platform.ps1'))
-. (Join-Path $PSScriptRoot (Join-Path 'lab_utils' 'Resolve-ProjectPath.ps1'))
-$menuPath = Join-Path $PSScriptRoot (Join-Path 'lab_utils' 'Menu.ps1')
-
-if (-not (Test-Path $menuPath)) {
-    Write-Error "Menu module not found at $menuPath"
-    exit 1
-}
-if (-not (Get-Command Get-MenuSelection -ErrorAction SilentlyContinue)) {
-    . $menuPath
-}
-
-
+# Set console verbosity level for LabRunner
+$env:LAB_CONSOLE_LEVEL = $script:VerbosityLevels[$Verbosity]
 # ─── Default log path ─────────────────────────────────────────────────────────
 if (-not (Get-Variable -Name LogFilePath -Scope Script -ErrorAction SilentlyContinue) -and
     -not (Get-Variable -Name LogFilePath -Scope Global -ErrorAction SilentlyContinue)) {
@@ -416,7 +393,7 @@ param(
     ValidateSet('silent','normal','detailed')
     string$Verbosity = 'normal',
     string$ConfigFile,
-    #string$ConfigFile = (Join-Path $PSScriptRoot 'config_files' 'default-config.json'),
+    #string$ConfigFile = (Join-Path $PSScriptRoot 'default-config.json'),
     switch$Auto,
     string$Scripts,
     switch$Force
@@ -430,7 +407,7 @@ if (Test-Path $indexPath) {
     try { $script:PathIndex = Get-Content -Raw -Path $indexPath  ConvertFrom-Yaml } catch { $script:PathIndex = @{} }
 }
 
-. (Join-Path $repoRoot (Join-Path 'lab_utils' 'PathUtils.ps1'))
+Import-Module "$PSScriptRoot/modules/LabRunner" -Force)
 
 function Resolve-IndexPath {
     param(string$Key)
@@ -450,9 +427,9 @@ if ($script:PathIndex.ContainsKey($Key)) {
 
 # apply default ConfigFile if not provided
 if (-not $PSBoundParameters.ContainsKey('ConfigFile')) {
-    $ConfigFile = Resolve-IndexPath 'configs/config_files/default-config.json'
+    $ConfigFile = Resolve-IndexPath 'configs/default-config.json'
     if (-not $ConfigFile) {
-        $ConfigFile = Join-Path $repoRoot '..' 'configs' 'config_files' 'default-config.json'
+        $ConfigFile = Join-Path $repoRoot '..' 'configs' 'default-config.json'
     }
 }
 
@@ -493,34 +470,11 @@ $script:ConsoleLevel    = $script:VerbosityLevels$Verbosity
 
 
 # ─── Load helpers ──────────────────────────────────────────────────────────────
-$labUtilsDir = Resolve-IndexPath 'lab_utils'
-if (-not $labUtilsDir) { $labUtilsDir = Join-Path $repoRoot 'lab_utils' }
-$runnerScriptsDir = Resolve-IndexPath 'runner_scripts'
-if (-not $runnerScriptsDir) { $runnerScriptsDir = Join-Path $repoRoot 'runner_scripts' }
-$configFilesDir = Resolve-IndexPath 'configs/config_files'
-if (-not $configFilesDir) {
-    $configFilesDir = Join-Path $repoRoot '..' 'configs' 'config_files'
-}
+# Import unified LabRunner module instead of individual lab_utils scripts
+Import-Module "$PSScriptRoot/modules/LabRunner" -Force
 
-if (-not (Get-Command Write-CustomLog -ErrorAction SilentlyContinue)) {
-    . (Join-Path $labUtilsDir (Join-Path 'LabRunner' 'Logger.ps1'))
-}
-$env:LAB_CONSOLE_LEVEL = $script:VerbosityLevels$Verbosity
-. (Join-Path $PSScriptRoot (Join-Path 'lab_utils' 'Get-LabConfig.ps1'))
-. (Join-Path $PSScriptRoot (Join-Path 'lab_utils' 'Format-Config.ps1'))
-. (Join-Path $PSScriptRoot (Join-Path 'lab_utils' 'Get-Platform.ps1'))
-. (Join-Path $PSScriptRoot (Join-Path 'lab_utils' 'Resolve-ProjectPath.ps1'))
-$menuPath = Join-Path $PSScriptRoot (Join-Path 'lab_utils' 'Menu.ps1')
-
-if (-not (Test-Path $menuPath)) {
-    Write-Error "Menu module not found at $menuPath"
-    exit 1
-}
-if (-not (Get-Command Get-MenuSelection -ErrorAction SilentlyContinue)) {
-    . $menuPath
-}
-
-
+# Set console verbosity level for LabRunner
+$env:LAB_CONSOLE_LEVEL = $script:VerbosityLevels[$Verbosity]
 # ─── Default log path ─────────────────────────────────────────────────────────
 if (-not (Get-Variable -Name LogFilePath -Scope Script -ErrorAction SilentlyContinue) -and
     -not (Get-Variable -Name LogFilePath -Scope Global -ErrorAction SilentlyContinue)) {
@@ -1084,6 +1038,8 @@ Write-CustomLog "`nAll done!"
 if (-not $overallSuccess) { $global:LASTEXITCODE = 1 } else { $global:LASTEXITCODE = 0 }
 Remove-Item Env:LAB_CONSOLE_LEVEL -ErrorAction SilentlyContinue
 exit $LASTEXITCODE
+
+
 
 
 

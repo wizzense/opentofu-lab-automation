@@ -853,7 +853,8 @@ If you need to handle resolution manually:
                     gh issue comment $script:IssueTracker.IssueNumber --body $resolutionUpdate | Out-Null
                     Write-Host "Added issue resolution monitoring information to issue" -ForegroundColor Green
                 }
-                  } catch {
+                
+            } catch {
                 Write-Warning "Failed to start issue resolution monitoring: $($_.Exception.Message)"
                 Update-IssueProgress "WARNING: Issue resolution monitoring failed to start - manual resolution required" "WARNING"
             }
@@ -871,6 +872,37 @@ If you need to handle resolution manually:
                 Message = "Patch applied successfully with automated monitoring enabled"
             }
         }
+    } catch {
+        # Catch any errors in the main process block
+        Write-Host "Error in patch operation: $($_.Exception.Message)" -ForegroundColor Red
+        Update-IssueProgress "FATAL ERROR: $($_.Exception.Message)" "ERROR"
+        
+        # Update issue with failure status if we have one
+        if ($script:IssueTracker.Success -and $script:IssueTracker.IssueNumber) {
+            try {
+                $errorUpdate = @"
+## ❌ Patch Operation Failed
+
+**Error**: $($_.Exception.Message)
+
+The patch operation encountered a fatal error and could not be completed.
+
+### Next Steps
+1. Review the error message above
+2. Check logs for additional details
+3. Manually address the issue
+4. Re-run the patch operation
+
+**Status**: Failed - Manual intervention required
+"@
+                gh issue comment $script:IssueTracker.IssueNumber --body $errorUpdate | Out-Null
+                Write-Host "Updated issue with failure status" -ForegroundColor Yellow
+            } catch {
+                Write-Warning "Failed to update issue with error status: $($_.Exception.Message)"
+            }
+        }
+        
+        throw
     }
     
     end {

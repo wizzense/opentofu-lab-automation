@@ -6,7 +6,7 @@ Quick reference for AI agents, developers, and automated systems working on the 
 
 ### FAIL NEVER DO
 - Create `.md` summary files in project root directory
-- Use deprecated `pwsh/lab_utils/` import paths
+- Use deprecated `pwsh/modules/LabRunner/` import paths
 - Edit files without running validation afterwards
 - Skip report generation for significant changes (>5 files)
 
@@ -78,7 +78,7 @@ Invoke-ComprehensiveValidation
 ├── pwsh/modules/ # PASS Current module location
 │ ├── LabRunner/ # PASS Use this path
 │ └── CodeFixer/ # PASS Use this path
-├── pwsh/lab_utils/ # FAIL DEPRECATED - Don't use
+├── pwsh/modules/LabRunner/ # FAIL DEPRECATED - Don't use
 ├── scripts/
 │ ├── utilities/new-report.ps1 # PASS Report generation utility
 │ ├── maintenance/auto-maintenance.ps1 # PASS Automated maintenance
@@ -136,3 +136,4 @@ Change Type?
 ---
 
 *Keep this reference handy for consistent project maintenance! *
+

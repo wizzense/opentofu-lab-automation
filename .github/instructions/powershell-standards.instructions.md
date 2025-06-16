@@ -10,7 +10,7 @@ description: PowerShell coding standards and best practices for the OpenTofu Lab
 ### Module Import Standards
  **Correct**                                **Deprecated**                  
 -----------------------------------------------------------------------------
- `Import-Module "/pwsh/modules/CodeFixer/" -Force`  `Import-Module "pwsh/lab_utils/LabRunner"` 
+ `Import-Module "/pwsh/modules/CodeFixer/" -Force`  `Import-Module "pwsh/modules/LabRunner/LabRunner"` 
 
 ### Script Structure
 Template:
@@ -52,3 +52,4 @@ Describe 'ScriptName Tests' {
     }
 }
 ```
+

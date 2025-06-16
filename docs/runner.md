@@ -1,7 +1,7 @@
 # runner.ps1 Guide
 
 `runner.ps1` orchestrates the numbered scripts under `pwsh/runner_scripts/`.
-It loads `configs/config_files/default-config.json` by default and then prompts for script selection unless told otherwise. When launched from Windows PowerShell it automatically restarts itself using `pwsh` so you can simply run `./pwsh/runner.ps1`.
+It loads `configs/default-config.json` by default and then prompts for script selection unless told otherwise. When launched from Windows PowerShell it automatically restarts itself using `pwsh` so you can simply run `./pwsh/runner.ps1`.
 
 ## Interactive Mode
 
@@ -13,7 +13,7 @@ Simply invoke the script from the repository root:
 
 You will be shown a menu to choose which scripts to run. After the selected scripts complete, the menu will appear again so you can run additional scripts without restarting the runner. Type `exit` at the prompt when you are finished.
 
-When prompted to customize the configuration, a menu lists all available settings. Select one or more entries to edit or choose **Apply recommended defaults** to merge values from `configs/config_files/recommended-config.json`.
+When prompted to customize the configuration, a menu lists all available settings. Select one or more entries to edit or choose **Apply recommended defaults** to merge values from `configs/recommended-config.json`.
 
 ## Non-interactive Mode
 
@@ -42,3 +42,4 @@ You can also specify the output level directly with the `-Verbosity` parameter (
 ---
 
 See pester-test-failures.md(pester-test-failures.md) for a tracked list of current test failures.
+

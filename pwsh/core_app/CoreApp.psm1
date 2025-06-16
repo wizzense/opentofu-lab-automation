@@ -3,9 +3,21 @@
 
 $ErrorActionPreference = "Stop"
 
-# Import required modules
-Import-Module "/pwsh/modules/LabRunner/" -Force
-Import-Module "/pwsh/modules/CodeFixer/" -Force
+# Basic logging function
+function Write-CustomLog {
+    param(
+        [string]$Message,
+        [string]$Level = "INFO"
+    )
+    Write-Host "[$Level] $Message" -ForegroundColor $(
+        switch ($Level) {
+            "ERROR" { "Red" }
+            "WARN" { "Yellow" }
+            "INFO" { "Green" }
+            default { "White" }
+        }
+    )
+}
 
 # Export module functions
 function Invoke-CoreApplication {
@@ -35,28 +47,25 @@ function Invoke-CoreApplication {
             
             $config = Get-Content $ConfigPath | ConvertFrom-Json
             Write-CustomLog "Loaded configuration: $($config.ApplicationName)" "INFO"
+              # Execute lab runner
+            Write-CustomLog "Core application operation started" "INFO"
             
-            # Execute lab runner
-            Invoke-LabStep -Config $config -Body {
-                Write-CustomLog "Core application operation started" "INFO"
-                
-                # Run specified scripts or all scripts
-                if ($Scripts) {
-                    foreach ($script in $Scripts) {
-                        $scriptPath = Join-Path $PSScriptRoot "scripts" $script
-                        if (Test-Path $scriptPath) {
-                            Write-CustomLog "Executing script: $script" "INFO"
-                            & $scriptPath
-                        } else {
-                            Write-CustomLog "Script not found: $script" "WARN"
-                        }
+            # Run specified scripts or all scripts
+            if ($Scripts) {
+                foreach ($script in $Scripts) {
+                    $scriptPath = Join-Path $PSScriptRoot "scripts" $script
+                    if (Test-Path $scriptPath) {
+                        Write-CustomLog "Executing script: $script" "INFO"
+                        & $scriptPath
+                    } else {
+                        Write-CustomLog "Script not found: $script" "WARN"
                     }
-                } else {
-                    Write-CustomLog "No specific scripts specified - running core operations" "INFO"
                 }
-                
-                Write-CustomLog "Core application operation completed successfully" "INFO"
+            } else {
+                Write-CustomLog "No specific scripts specified - running core operations" "INFO"
             }
+            
+            Write-CustomLog "Core application operation completed successfully" "INFO"
             
         } catch {
             Write-CustomLog "Core application operation failed: $($_.Exception.Message)" "ERROR"
@@ -74,11 +83,11 @@ function Start-LabRunner {
         [Parameter()]
         [switch]$Parallel
     )
-    
-    process {
+      process {
         try {
             if ($Parallel) {
-                Invoke-ParallelLabRunner -ConfigPath $ConfigPath
+                Write-CustomLog "Parallel lab runner not implemented yet - using standard runner" "WARN"
+                Invoke-CoreApplication -ConfigPath $ConfigPath
             } else {
                 Invoke-CoreApplication -ConfigPath $ConfigPath
             }
@@ -114,18 +123,8 @@ function Test-CoreApplicationHealth {
     [CmdletBinding()]
     param()
     
-    process {
-        try {
+    process {        try {
             Write-CustomLog "Running core application health check" "INFO"
-            
-            # Check required modules
-            $requiredModules = @('LabRunner', 'CodeFixer')
-            foreach ($module in $requiredModules) {
-                if (-not (Get-Module $module)) {
-                    Write-CustomLog "Required module not loaded: $module" "ERROR"
-                    return $false
-                }
-            }
             
             # Check configuration files
             $configPath = Join-Path $PSScriptRoot "default-config.json"

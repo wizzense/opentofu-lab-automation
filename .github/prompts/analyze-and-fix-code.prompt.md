@@ -121,7 +121,7 @@ Syntax Issues Found:
 - /scripts/validation/test-syntax.ps1: Line 12 - Invalid parameter syntax
 
 Import Issues Found:  
-- /scripts/maintenance/health-check.ps1: Line 3 - Using deprecated path 'pwsh/lab_utils/LabRunner'
+- /scripts/maintenance/health-check.ps1: Line 3 - Using deprecated path 'pwsh/modules/LabRunner/LabRunner'
 - /pwsh/modules/CodeFixer/Private/helper.ps1: Line 8 - Relative import should be absolute
 
 Fixes Applied:
@@ -217,3 +217,4 @@ if (-not $result.Success) {
 ## Keep Chat History Relevant
 
 Focus on the current analysis session. Remove or summarize previous analysis results that aren't directly relevant to the current code issues being addressed.
+

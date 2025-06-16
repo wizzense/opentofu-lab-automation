@@ -67,7 +67,7 @@ Invoke-ScriptOrderFix -Path "${selection}"
 ### 1. Module Import Issues
 ```powershell
 #  Deprecated patterns to fix:
-Import-Module "pwsh/lab_utils/LabRunner"
+Import-Module "pwsh/modules/LabRunner/LabRunner"
 . "$PSScriptRoot/../lab_utils/LabRunner.ps1"
 
 #  Correct patterns:
@@ -231,3 +231,4 @@ Please specify:
 This prompt references:
 - PowerShell Standards(../instructions/powershell-standards.instructions.md)
 - Testing Standards(../instructions/testing-standards.instructions.md)
+

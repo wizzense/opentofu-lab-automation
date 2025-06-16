@@ -95,7 +95,7 @@ Enhancement Path:
 ```
 
 **Technical Approach**:
-- Extend current `pwsh/lab_utils/Customize-ISO.ps1`
+- Extend current `pwsh/modules/LabRunner/Customize-ISO.ps1`
 - Create template-driven autounattend.xml generation
 - Integration with deployment wrapper for seamless ISO → VM workflow
 
@@ -203,3 +203,4 @@ Enterprise Integration:
 
 *Last Updated: June 13, 2025*
 *Status: Foundation Complete - Ready for Tanium Integration Phase*
+

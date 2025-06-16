@@ -34,7 +34,7 @@ Invoke-PowerShellLint -Path "./scripts/" -Parallel
 ### Module Import Standards
  **Correct**                                **Deprecated**                  
 -----------------------------------------------------------------------------
- `Import-Module "/pwsh/modules/CodeFixer/" -Force`  `Import-Module "pwsh/lab_utils/LabRunner"`
+ `Import-Module "/pwsh/modules/CodeFixer/" -Force`  `Import-Module "pwsh/modules/LabRunner/LabRunner"`
 
 ### Script Structure
 Template:
@@ -163,3 +163,4 @@ function Invoke-CIValidation {…}
 ---
 
 *This document serves as the single source of truth for all project guidelines.*
+
