@@ -43,7 +43,7 @@ Invoke-LabStep -Config $Config -Body {
                         pscustomobject@{
                             Partition   = $_.PartitionNumber
                             DriveLetter = $vol.DriveLetter
-                            SizeGB      = math::Round(($vol.Size/1GB),2)
+                            SizeGB      = [Math]::Round(($vol.Size/1GB),2)
                             MediaType   = $disk.MediaType
                         }
                     }
@@ -69,7 +69,7 @@ Invoke-LabStep -Config $Config -Body {
                         pscustomobject@{
                             Partition   = $_.Name
                             DriveLetter = $_.Name
-                            SizeGB      = math::Round(($_.TotalSize/1GB),2)
+                            SizeGB      = [Math]::Round(($_.TotalSize/1GB),2)
                             MediaType   = $_.DriveType
                         }
                     }
@@ -90,7 +90,7 @@ Invoke-LabStep -Config $Config -Body {
                         pscustomobject@{
                             Partition   = $_.Name
                             DriveLetter = $_.Name
-                            SizeGB      = math::Round(($_.TotalSize/1GB),2)
+                            SizeGB      = [Math]::Round(($_.TotalSize/1GB),2)
                             MediaType   = $_.DriveType
                         }
                     }
@@ -121,6 +121,9 @@ if ($MyInvocation.InvocationName -ne '.') {
     Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
 }
 Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
+
+
+
 
 
 

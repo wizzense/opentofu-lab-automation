@@ -139,7 +139,7 @@ Write-CustomLog "Created backup destination directory" "INFO"
             
             Write-Progress -Activity "Backup Consolidation" -Status "Complete" -Completed
             
-            $SummaryMessage = "Backup consolidation completed: $ProcessedCount files moved, $(math::Round($TotalSize / 1MB, 2)) MB total size"
+            $SummaryMessage = "Backup consolidation completed: $ProcessedCount files moved, $([Math]::Round($TotalSize / 1MB, 2)) MB total size"
             Write-CustomLog $SummaryMessage "INFO"
 
             if ($FailedMoves.Count -gt 0) {
@@ -159,6 +159,7 @@ Write-CustomLog "Created backup destination directory" "INFO"
         }
     }
 }
+
 
 
 

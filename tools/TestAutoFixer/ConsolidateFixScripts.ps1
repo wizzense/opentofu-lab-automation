@@ -3,7 +3,7 @@
 
 param(
     Parameter()
-    switch$WhatIf,
+    switchWhatIf,
     
     Parameter()
     switch$Archive
@@ -15,7 +15,7 @@ function Invoke-FixScriptConsolidation {
     Migrate and consolidate all fix scripts into the TestAutoFixer module
     #>
     param(
-        switch$WhatIf,
+        switchWhatIf,
         switch$Archive
     )
     
@@ -127,6 +127,8 @@ if ($MyInvocation.InvocationName -ne '.') {
 if ($MyInvocation.ScriptName -like "*.psm1") {
     Export-ModuleMember -Function Invoke-FixScriptConsolidation
 }
+
+
 
 
 

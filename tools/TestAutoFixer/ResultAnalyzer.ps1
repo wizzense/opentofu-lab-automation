@@ -46,7 +46,7 @@ function Get-TestStatistics {
         $inconclusiveTests = $totalTests - $passedTests - $failedTests - $skippedTests
         
         # Calculate pass rate
-        $passRate = if ($totalTests -gt 0) { math::Round(($passedTests / $totalTests) * 100, 2)    } else { 0    }
+        $passRate = if ($totalTests -gt 0) { [Math]::Round(($passedTests / $totalTests) * 100, 2)    } else { 0    }
         
         # Get execution time information
         $testSuites = $testResults.SelectNodes("//test-suite@type='TestFixture'")
@@ -114,7 +114,7 @@ function Analyze-TestResults {
         string$ResultsPath,
         
         Parameter()
-        switch$IncludePreviousResults,
+        switchIncludePreviousResults,
         
         Parameter()
         string$PreviousResultsDirectory = "$env:TEMP\TestResults"
@@ -464,6 +464,12 @@ function Export-TestResults {
         return $false
     }
 }
+
+
+
+
+
+
 
 
 

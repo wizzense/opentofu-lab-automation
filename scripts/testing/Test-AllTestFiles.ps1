@@ -313,7 +313,7 @@ function Write-ValidationSummary {
     }
     
     $healthScore = if ($Results.TotalFiles -gt 0) { 
-        math::Round(($Results.ValidFiles / $Results.TotalFiles) * 100, 1) 
+        [Math]::Round(($Results.ValidFiles / $Results.TotalFiles) * 100, 1) 
     } else { 100 }
     
     Write-Host "`n� Test Suite Health: $healthScore%" -ForegroundColor $(if ($healthScore -gt 90) { "Green" } elseif ($healthScore -gt 70) { "Yellow" } else { "Red" })
@@ -330,5 +330,6 @@ if ($results.InvalidFiles -gt 0 -and -not $AutoFix) {
 } else {
     exit 0
 }
+
 
 

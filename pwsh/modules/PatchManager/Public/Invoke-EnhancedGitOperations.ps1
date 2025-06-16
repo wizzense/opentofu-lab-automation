@@ -292,3 +292,5 @@ function Invoke-EnhancedGitOperations {
 }
 
 # Export-ModuleMember -Function Invoke-EnhancedGitOperations  # Only export when called as module
+
+

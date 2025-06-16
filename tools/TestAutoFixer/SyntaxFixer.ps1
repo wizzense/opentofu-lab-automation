@@ -42,7 +42,7 @@ function Invoke-SyntaxFix {
         string$FixTypes = @("All"),
         
         Parameter()
-        switch$Recurse,
+        switchRecurse,
         
         Parameter()
         switch$PassThru
@@ -505,6 +505,9 @@ function Fix-RunnerScriptIssues {
     
     return $false
 }
+
+
+
 
 
 

@@ -46,3 +46,4 @@ try {
     Write-Host "Tests failed: $_" -ForegroundColor Red
     exit 1
 }
+

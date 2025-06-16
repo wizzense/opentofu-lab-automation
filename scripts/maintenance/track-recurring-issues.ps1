@@ -207,7 +207,7 @@ $summary = @{
  TotalTests = int$TestResults.'test-results'.total
  TotalFailures = int$TestResults.'test-results'.failures
  TotalSkipped = int$TestResults.'test-results'.skipped
- SuccessRate = math::Round((($TestResults.'test-results'.total - $TestResults.'test-results'.failures) / $TestResults.'test-results'.total) * 100, 2)
+ SuccessRate = [Math]::Round((($TestResults.'test-results'.total - $TestResults.'test-results'.failures) / $TestResults.'test-results'.total) * 100, 2)
  RecurringIssues = $IssuePatterns
  TopIssues = @()
  }
@@ -478,6 +478,8 @@ catch {
  Write-TrackLog "Tracking failed: $($_.Exception.Message)" "ERROR"
  exit 1
 }
+
+
 
 
 

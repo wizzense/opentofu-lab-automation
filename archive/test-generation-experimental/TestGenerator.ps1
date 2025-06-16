@@ -49,7 +49,7 @@ function New-TestFromScript {
         string$TestType = "Auto",
         
         Parameter()
-        switch$Force,
+        switchForce,
         
         Parameter()
         switch$AddAutoFix
@@ -845,6 +845,15 @@ Describe '$scriptBaseName Tests' -Tag '$($Analysis.Category)' {
 }
 
 }
+
+
+
+
+
+
+
+
+
 
 
 

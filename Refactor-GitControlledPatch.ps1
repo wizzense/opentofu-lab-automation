@@ -273,3 +273,8 @@ catch {
     Write-CustomLog "Error during refactoring analysis: $($_.Exception.Message)" -Level ERROR
     throw
 }
+
+
+
+
+

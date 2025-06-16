@@ -456,7 +456,7 @@ function Fix-PowerShellSyntaxErrors {
         'System\.IO\.Path::GetTempPath' = '[System.IO.Path]::GetTempPath'
         'DateTime::Parse' = '[DateTime]::Parse'
         'Environment::ProcessorCount' = '[Environment]::ProcessorCount'
-        'math::Round' = '[math]::Round'
+        '[Math]::Round' = '[math]::Round'
         
         # Variable access fixes
         '\$(\w+)\[(\d+)\]' = '$1[$2]'  # Fix array access like $Items$i to $Items[$i]
@@ -548,3 +548,4 @@ function Fix-PowerShellSyntaxErrors {
         Write-CustomLog "No additional syntax errors found to fix" -Level SUCCESS
     }
 }
+

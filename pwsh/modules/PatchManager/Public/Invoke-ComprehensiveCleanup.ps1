@@ -528,7 +528,7 @@ function New-CleanupReport {
 - **Files Removed**: $($script:CleanupLog.FilesRemoved.Count)
 - **Directories Removed**: $($script:CleanupLog.DirectoriesRemoved.Count)  
 - **Files Relocated**: $($script:CleanupLog.FilesRelocated.Count)
-- **Size Reclaimed**: $(math::Round($script:CleanupLog.SizeReclaimed / 1MB, 2)) MB
+- **Size Reclaimed**: $([Math]::Round($script:CleanupLog.SizeReclaimed / 1MB, 2)) MB
 - **Errors**: $($script:CleanupLog.Errors.Count)
 
 ## Actions Performed
@@ -583,5 +583,6 @@ $($script:CleanupLog.Errors | ForEach-Object{ "- $_" } | Out-String)
     } else {
         Write-Host "Cleanup report would be saved to: $reportPath" -ForegroundColor DarkGray    }
 }
+
 
 
