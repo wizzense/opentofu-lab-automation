@@ -76,12 +76,13 @@ function Invoke-GitControlledPatch {
         [switch]$DirectCommit,        [Parameter(Mandatory = $false)]
         [switch]$EnableRollback,
         [Parameter(Mandatory = $false)]
-        [string]$RollbackBranch,
-        [Parameter(Mandatory = $false)]
+        [string]$RollbackBranch,        [Parameter(Mandatory = $false)]
         [switch]$AutoCommitUncommitted,
         [Parameter(Mandatory = $false)]
         [switch]$ForceNewBranch
-    )    begin {
+    )
+    
+    begin {
         Write-Host "Starting Git-controlled patch process..." -ForegroundColor Cyan
         Write-Host "CRITICAL: NO EMOJIS ALLOWED - they break workflows" -ForegroundColor Red
         # Initialize cross-platform environment variables
@@ -266,8 +267,7 @@ function Invoke-GitControlledPatch {
         }
         
         Write-Host "Patch Details:" -ForegroundColor Yellow
-        Write-Host "  Description: $PatchDescription" -ForegroundColor White
-        Write-Host "  Branch: $branchName" -ForegroundColor White
+        Write-Host "  Description: $PatchDescription" -ForegroundColor White        Write-Host "  Branch: $branchName" -ForegroundColor White
         Write-Host "  Base: $BaseBranch" -ForegroundColor White
         Write-Host "  Affected Files: $($AffectedFiles.Count)" -ForegroundColor White
         
@@ -276,7 +276,9 @@ function Invoke-GitControlledPatch {
         $script:PatchCommitCreated = $commitCreated
         $script:PatchInitialCommit = (git rev-parse HEAD)
         $script:PatchBranchName = $branchName
-    }    process {
+    }
+    
+    process {
         try {
             # Handle DirectCommit mode
             if ($DirectCommit) {
@@ -926,19 +928,17 @@ The patch operation encountered a fatal error and could not be completed.
         }
         
         # Handle stash restoration if needed
-        if ($script:PatchStashCreated -and ($_.Success -ne $false)) {
-            try {
+        if ($script:PatchStashCreated -and ($_.Success -ne $false)) {            try {
                 Write-Host "Patch completed successfully. Stashed changes remain available." -ForegroundColor Blue
                 Write-Host "Use 'git stash pop' manually when ready to restore your working changes." -ForegroundColor Yellow
             } catch {
-                Write-Warning "Note: You have stashed changes that may need manual restoration."        }
-          Write-Host "Git-controlled patch process completed" -ForegroundColor Cyan
+                Write-Warning "Note: You have stashed changes that may need manual restoration."
+            }        }
+        
+        Write-Host "Git-controlled patch process completed" -ForegroundColor Cyan
         Write-Host "REMINDER: Manual review and approval required before merging" -ForegroundColor Red
     }
 }
-
-# Export the main function
-Export-ModuleMember -Function Invoke-GitControlledPatch
 
 
 

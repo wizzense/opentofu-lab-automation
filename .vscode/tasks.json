@@ -647,6 +647,69 @@
                 "showReuseMessage": true,
                 "clear": false
             }
+        },
+        {
+            "label": "Emoji: Remove All Emojis (Auto)",
+            "type": "shell",
+            "command": "pwsh",
+            "args": [
+                "-Command",
+                "Import-Module './pwsh/modules/PatchManager' -Force; Invoke-GitControlledPatch -PatchDescription 'chore: remove emoji violations automatically' -PatchOperation { & './scripts/utilities/purge-emojis-v2.ps1' } -DirectCommit -AutoCommitUncommitted"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "problemMatcher": [],
+            "isBackground": false,
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": true,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false
+            }
+        },
+        {
+            "label": "Emoji: Scan for Emoji Violations",
+            "type": "shell",
+            "command": "pwsh",
+            "args": [
+                "-Command",
+                "& './scripts/utilities/purge-emojis-v2.ps1' -DryRun -Verbose"
+            ],
+            "group": "test",
+            "problemMatcher": [],
+            "isBackground": false,
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": true,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false
+            }
+        },
+        {
+            "label": "Emoji: Real-time Emoji Monitor",
+            "type": "shell",
+            "command": "pwsh",
+            "args": [
+                "-Command",
+                "$watcher = New-Object System.IO.FileSystemWatcher; $watcher.Path = (Get-Location); $watcher.Filter = '*.*'; $watcher.NotifyFilter = 'LastWrite'; $watcher.EnableRaisingEvents = $true; Register-ObjectEvent -InputObject $watcher -EventName Changed -Action { if ($Event.SourceEventArgs.Name -match '\\.(ps1|md|py|json|yml|yaml)$') { Write-Host 'Checking file for emojis: ' $Event.SourceEventArgs.FullPath -ForegroundColor Yellow; $content = Get-Content $Event.SourceEventArgs.FullPath -Raw -ErrorAction SilentlyContinue; if ($content -and $content -cmatch '[\\u{1F300}-\\u{1F9FF}\\u{2600}-\\u{26FF}\\u{2700}-\\u{27BF}]') { Write-Host 'EMOJI VIOLATION DETECTED in ' $Event.SourceEventArgs.Name -ForegroundColor Red; Write-Host 'Run emoji removal task to fix!' -ForegroundColor Yellow } } }; Write-Host 'Monitoring for emoji violations... Press Ctrl+C to stop' -ForegroundColor Green; try { while ($true) { Start-Sleep 1 } } finally { $watcher.Dispose() }"
+            ],
+            "group": "test",
+            "problemMatcher": [],
+            "isBackground": true,
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "dedicated",
+                "showReuseMessage": true,
+                "clear": false
+            }
         }
     ],
     "inputs": [

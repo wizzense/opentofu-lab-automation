@@ -23,8 +23,48 @@ $ErrorActionPreference = "Stop"
 Write-Host "EMOJI PURGE UTILITY" -ForegroundColor Cyan
 Write-Host "Removing all emojis from codebase to prevent parsing issues" -ForegroundColor Yellow
 
-# Define emoji patterns (Unicode ranges for common emojis)
-$emojiRegex = '\u{1F300}-\u{1F5FF}\u{1F600}-\u{1F64F}\u{1F680}-\u{1F6FF}\u{1F700}-\u{1F77F}\u{1F780}-\u{1F7FF}\u{1F800}-\u{1F8FF}\u{1F900}-\u{1F9FF}\u{1FA00}-\u{1FA6F}\u{1FA70}-\u{1FAFF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{FE00}-\u{FE0F}\u{1F1E0}-\u{1F1FF}'
+# Define comprehensive emoji patterns
+$emojiPatterns = @(
+    # Unicode emoji ranges
+    '[\u{1F300}-\u{1F5FF}]',     # Misc Symbols and Pictographs
+    '[\u{1F600}-\u{1F64F}]',     # Emoticons
+    '[\u{1F680}-\u{1F6FF}]',     # Transport and Map Symbols
+    '[\u{1F700}-\u{1F77F}]',     # Alchemical Symbols
+    '[\u{1F780}-\u{1F7FF}]',     # Geometric Shapes Extended
+    '[\u{1F800}-\u{1F8FF}]',     # Supplemental Arrows-C
+    '[\u{1F900}-\u{1F9FF}]',     # Supplemental Symbols and Pictographs
+    '[\u{1FA00}-\u{1FA6F}]',     # Chess Symbols
+    '[\u{1FA70}-\u{1FAFF}]',     # Symbols and Pictographs Extended-A
+    '[\u{2600}-\u{26FF}]',       # Miscellaneous Symbols
+    '[\u{2700}-\u{27BF}]',       # Dingbats
+    '[\u{FE00}-\u{FE0F}]',       # Variation Selectors
+    '[\u{1F1E0}-\u{1F1FF}]',     # Regional Indicator Symbols
+    
+    # Common emoji sequences and text representations
+    ':\w+:',                      # :emoji_name: format
+    '\u{1F44D}',                  # Thumbs up
+    '\u{1F44E}',                  # Thumbs down
+    '\u{2764}',                   # Red heart
+    '\u{2705}',                   # Check mark
+    '\u{274C}',                   # Cross mark
+    '\u{2728}',                   # Sparkles
+    '\u{1F389}',                  # Party popper
+    '\u{1F680}',                  # Rocket
+    '\u{26A0}',                   # Warning sign
+    '\u{2139}',                   # Information
+    '\u{1F4A1}',                  # Light bulb
+    '\u{1F6AB}',                  # Prohibited
+    
+    # Specific problematic emojis found in attachments
+    'emoji',                      # Literal text "emoji" (case-insensitive)
+    'EMOJI',                      # Uppercase version
+    '🚫', '⚠️', '💡', '🎉',       # Specific emojis seen in code
+    '✅', '❌', '🔍', '📝',       # More specific ones
+    '🛡️', '🎯', '⭐', '🔧'        # Additional ones from docs
+)
+
+# Create combined regex pattern
+$emojiRegex = "($($emojiPatterns -join '|'))"
 
 # Get the project root
 $projectRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
@@ -85,17 +125,62 @@ foreach ($pattern in $filePatterns) {
                     Write-Host "Processing: $($file.FullName)" -ForegroundColor Yellow
                     Write-Host "  Found $($emojiMatches.Count) emojis" -ForegroundColor DarkYellow
                 }
+                  # Professional replacements for common emojis
+                $replacements = @{
+                    # Status indicators
+                    '\u{2705}' = 'PASS'           # ✅ Check mark
+                    '\u{274C}' = 'FAIL'           # ❌ Cross mark  
+                    '\u{26A0}\u{FE0F}?' = 'WARNING'  # ⚠️ Warning
+                    '\u{2139}\u{FE0F}?' = 'INFO'     # ℹ️ Information
+                    '\u{1F44D}' = 'SUCCESS'       # 👍 Thumbs up
+                    '\u{1F44E}' = 'FAILURE'       # 👎 Thumbs down
+                    '\u{1F6AB}' = 'BLOCKED'       # 🚫 Prohibited
+                    
+                    # Action indicators  
+                    '\u{1F680}' = 'LAUNCH'        # 🚀 Rocket
+                    '\u{1F4A1}' = 'TIP'           # 💡 Light bulb
+                    '\u{2728}' = 'ENHANCED'       # ✨ Sparkles
+                    '\u{1F389}' = 'COMPLETE'      # 🎉 Party popper
+                    '\u{1F3AF}' = 'TARGET'        # 🎯 Direct hit
+                    '\u{1F527}' = 'TOOL'          # 🔧 Wrench
+                    '\u{1F4DD}' = 'NOTE'          # 📝 Memo
+                    '\u{1F50D}' = 'SEARCH'        # 🔍 Magnifying glass
+                    '\u{1F6E1}\u{FE0F}?' = 'PROTECTED'  # 🛡️ Shield
+                    '\u{2B50}' = 'FEATURED'       # ⭐ Star
+                    
+                    # Hearts and emotions (remove entirely)
+                    '\u{2764}\u{FE0F}?' = ''      # ❤️ Red heart
+                    '\u{1F494}' = ''              # 💔 Broken heart
+                    '\u{1F60A}' = ''              # 😊 Smiling face
+                    '\u{1F62D}' = ''              # 😭 Crying face
+                    
+                    # Literal text patterns
+                    '(?i)\bemoji\b' = ''           # Remove "emoji" text
+                    ':\w+:' = ''                   # Remove :emoji_name: format
+                    
+                    # Markdown emoji shortcuts
+                    ':white_check_mark:' = 'PASS'
+                    ':x:' = 'FAIL'
+                    ':warning:' = 'WARNING'
+                    ':information_source:' = 'INFO'
+                    ':rocket:' = 'LAUNCH'
+                    ':bulb:' = 'TIP'
+                    ':sparkles:' = 'ENHANCED'
+                    ':tada:' = 'COMPLETE'
+                    ':dart:' = 'TARGET'
+                    ':wrench:' = 'TOOL'
+                    ':memo:' = 'NOTE'
+                    ':mag:' = 'SEARCH'
+                    ':shield:' = 'PROTECTED'
+                    ':star:' = 'FEATURED'
+                }
                 
-                # Remove emojis with specific replacements
-                $newContent = $content
+                # Apply professional replacements
+                foreach ($pattern in $replacements.Keys) {
+                    $newContent = $newContent -replace $pattern, $replacements[$pattern]
+                }
                 
-                # Replace common patterns with text equivalents
-                $newContent = $newContent -replace '\u{2705}', 'PASS'  # PASS
-                $newContent = $newContent -replace '\u{274C}', 'FAIL'  # FAIL
-                $newContent = $newContent -replace '\u{26A0}\u{FE0F}?', 'WARN'  # WARN
-                $newContent = $newContent -replace '\u{2139}\u{FE0F}?', 'INFO'  # INFO
-                
-                # Remove any remaining emojis
+                # Remove any remaining emoji patterns
                 $newContent = $newContent -replace $emojiRegex, ""
                 
                 # Clean up multiple spaces and empty sections
