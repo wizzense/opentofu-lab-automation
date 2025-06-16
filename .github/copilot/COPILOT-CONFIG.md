@@ -92,3 +92,4 @@ To validate the entire codebase:
 For more information, refer to:
 - `/docs/TESTING.md`: Detailed testing framework documentation
 - `/docs/CODEFIXER-GUIDE.md`: Comprehensive guide to the CodeFixer module
+- `/docs/copilot_docs/repository-custom-instructions.md`: How Copilot uses `.github/copilot-instructions.md`

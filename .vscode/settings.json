@@ -31,7 +31,19 @@
       "text": "Reference module names in scope when applicable: codefixer, labrunner, backupmanager, etc."
     }
   ],
+  "github.copilot.chat.pullRequestDescriptionGeneration.instructions": [
+    {
+      "text": "Summarize key changes and mention affected modules."
+    },
+    {
+      "text": "Highlight new features or bug fixes in the description."
+    }
+  ],
   "github.copilot.instructionFiles": [
+    {
+      "pattern": "**/*",
+      "instructionFile": ".github/copilot-instructions.md"
+    },
     {
       "pattern": "pwsh/modules/**/*.ps1",
       "instructionFile": ".github/instructions/powershell-standards.instructions.md"

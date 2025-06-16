@@ -18,6 +18,7 @@ The project includes extensive Copilot customization for:
 ### Main Configuration
 - **`.github/copilot-instructions.md`**: Primary Copilot instructions with project context
 - **`.vscode/settings.json`**: VS Code Copilot configuration and instruction file references
+- **`repository-custom-instructions.md`**: Guide to adding repository instructions for Copilot (see `docs/copilot_docs/repository-custom-instructions.md`)
 
 ### Instruction Files (`.github/instructions/`)
 - **`powershell-standards.instructions.md`**: PowerShell coding standards and patterns

@@ -123,6 +123,13 @@ pwsh/modules/
 - Cross-platform launcher scripts maintained
 - Documentation auto-generated from manifest
 
+## Repository Custom Instructions
+Copilot loads `.github/copilot-instructions.md` automatically through the VS Code
+setting `github.copilot.chat.codeGeneration.useInstructionFiles`. Update this
+file to guide Copilot responses for the project. See
+[docs/copilot_docs/repository-custom-instructions.md](docs/copilot_docs/repository-custom-instructions.md)
+for details.
+
 ---
 *This file is automatically updated by the maintenance system*
 *Last auto-update: 2025-06-14 16:45:01*
