@@ -68,9 +68,9 @@ function Invoke-GitControlledPatch {
         [switch]$AutoCommitUncommitted,
         [Parameter(Mandatory = $false)]
         [switch]$ForceNewBranch
-    )
-    begin {
-        Write-Host "Starting Git-controlled patch process..." -ForegroundColor Cyan        Write-Host "CRITICAL: NO EMOJIS ALLOWED - they break workflows" -ForegroundColor Red
+    )    begin {
+        Write-Host "Starting Git-controlled patch process..." -ForegroundColor Cyan
+        Write-Host "CRITICAL: NO EMOJIS ALLOWED - they break workflows" -ForegroundColor Red
         # Initialize cross-platform environment variables
         Initialize-CrossPlatformEnvironment | Out-Null
         Write-Verbose "Cross-platform environment initialized: $env:PLATFORM"
