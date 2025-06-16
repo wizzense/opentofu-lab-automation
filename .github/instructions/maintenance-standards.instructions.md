@@ -13,8 +13,8 @@ description: Project maintenance, health checking, and continuous validation gui
 | `./scripts/maintenance/unified-maintenance.ps1 -Mode "Quick"` | Quick health assessment         |
 | `./scripts/maintenance/unified-maintenance.ps1 -Mode "All" -AutoFix` | Comprehensive health check      |
 | `./scripts/validation/Invoke-YamlValidation.ps1 -Mode "Fix"` | YAML validation and formatting  |
-| `Invoke-PatchRollback -RollbackTarget "Emergency" -Force` | Emergency recovery from breaking changes |
-| `Invoke-GitControlledPatch -DirectCommit -Force` | Quick fixes with proper change control |
+| `Invoke-GitControlledPatch -DirectCommit -AutoCommitUncommitted` | Safe maintenance with proper change control |
+| `Invoke-QuickRollback -RollbackType "Emergency" -Force` | Emergency recovery (respects branch protection) |
 
 ### Validation Sequence
 Run:

@@ -8,12 +8,18 @@ description: Git workflow, branch management, and GitHub collaboration standards
 ## Quick Reference
 
 ### Branch Management
-- **Auto-Commit Mode**: Eliminates manual Git steps: `Invoke-GitControlledPatch -PatchDescription "feature: <description>" -PatchOperation { <your-changes> } -AutoCommitUncommitted -CreatePullRequest`
-- **Direct Commit**: Simple commits without branches: `Invoke-GitControlledPatch -PatchDescription "chore: <description>" -PatchOperation { <changes> } -DirectCommit -AutoCommitUncommitted`
-- **Comprehensive Cleanup**: Use enhanced PatchManager: `Invoke-GitControlledPatch -PatchDescription "chore: comprehensive cleanup" -PatchOperation { <cleanup-code> } -CleanupMode "Standard" -CreatePullRequest -AutoCommitUncommitted`
-- **Emergency Cleanup**: For critical issues: `Invoke-GitControlledPatch -PatchDescription "fix: emergency cleanup" -PatchOperation { <fixes> } -CleanupMode "Emergency" -CreatePullRequest -AutoCommitUncommitted`
-- **Quick Rollback**: Instant recovery: `Invoke-QuickRollback -RollbackType "LastPatch" -CreateBackup`
-- **Emergency Rollback**: Crisis recovery: `Invoke-QuickRollback -RollbackType "Emergency" -Force`
+- **SAFE Auto-Commit Mode**: Works from current branch, never touches main: `Invoke-GitControlledPatch -PatchDescription "feature: <description>" -PatchOperation { <your-changes> } -AutoCommitUncommitted -CreatePullRequest`
+- **Direct Commit (Current Branch)**: Safe commits to current branch: `Invoke-GitControlledPatch -PatchDescription "chore: <description>" -PatchOperation { <changes> } -DirectCommit -AutoCommitUncommitted`
+- **Branch Protection Safe**: PatchManager respects protected main branch and never attempts dangerous operations
+- **Emergency Rollback**: Instant recovery from current branch: `Invoke-QuickRollback -RollbackType "LastPatch" -CreateBackup`
+
+### Safety Features (Protects Main Branch)
+| **Safety Feature** | **Description** | **Benefit** |
+|-------------------|-----------------|-------------|
+| No Main Branch Checkout | Never checks out protected main branch | Prevents accidental main branch modifications |
+| No Force Updates | Never uses `git pull --force` on main | Preserves branch protection integrity |
+| Current Branch Operation | Works from current branch state | Safe for feature branch workflows |
+| Protected Branch Detection | Detects and respects branch protection | Prevents policy violations |
 
 ### Auto-Commit Features (Eliminates Manual Git Steps)
 | **Parameter** | **Effect** | **Use Case** |
