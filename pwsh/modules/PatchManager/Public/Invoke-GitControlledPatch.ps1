@@ -87,7 +87,10 @@ function Invoke-GitControlledPatch {
         $stashCreated = $false
         $commitCreated = $false
         $gitStatus = git status --porcelain
+        # INTELLIGENT UNCOMMITTED CHANGES HANDLING with Anti-Recursive Logic
         if ($gitStatus) {
+            $currentBranch = git branch --show-current
+            
             if ($AutoCommitUncommitted) {
                 Write-Host "Working tree has uncommitted changes - auto-committing..." -ForegroundColor Yellow
                 git add -A
@@ -112,24 +115,39 @@ function Invoke-GitControlledPatch {
                 } else {
                     throw "Failed to stash changes. Manual intervention required."
                 }
+            } elseif ($DirectCommit -and ($currentBranch -ne "main" -and $currentBranch -ne "master")) {
+                # ANTI-RECURSIVE: If we're already on a feature branch and using DirectCommit, just work on current branch
+                Write-Host "Anti-recursive mode: Working directly on current branch ($currentBranch) with uncommitted changes" -ForegroundColor Cyan
+                Write-Host "  This prevents creating nested branches from feature branches" -ForegroundColor Gray
+                # Don't throw error - proceed with current branch without new branch creation
+                $skipBranchCreation = $true
             } else {
-                throw "Working tree is not clean. Use -Force to auto-stash, -AutoCommitUncommitted to auto-commit, or commit changes manually."
+                Write-Warning "Working tree is not clean. Recommendations:"
+                Write-Host "  -AutoCommitUncommitted : Auto-commit changes before creating patch branch" -ForegroundColor Yellow
+                Write-Host "  -Force                 : Auto-stash changes before creating patch branch" -ForegroundColor Yellow  
+                Write-Host "  -DirectCommit          : Work on current branch (anti-recursive mode)" -ForegroundColor Cyan
+                throw "Working tree is not clean. Use one of the above options or commit changes manually."
             }
         }
         
-        # Generate intelligent branch name that prevents recursive explosion
-        $timestamp = Get-Date -Format "yyyyMMdd-HHmmss"
-        $sanitizedDescription = $PatchDescription -replace '[^a-zA-Z0-9]', '-' -replace '-+', '-'
-        
-        # ANTI-RECURSIVE BRANCHING: Include current branch context in new branch name
-        $currentBranch = git branch --show-current
-        if ($currentBranch -ne "main" -and $currentBranch -ne "master") {
-            # Create child branch from current feature branch
-            $branchName = "$currentBranch/sub-$timestamp-$sanitizedDescription"
-            Write-Host "Creating child branch from feature branch: $currentBranch" -ForegroundColor Yellow
+        # ANTI-RECURSIVE BRANCHING: Generate intelligent branch name or skip branch creation
+        if (-not $skipBranchCreation) {
+            $timestamp = Get-Date -Format "yyyyMMdd-HHmmss"
+            $sanitizedDescription = $PatchDescription -replace '[^a-zA-Z0-9]', '-' -replace '-+', '-'
+            
+            $currentBranch = git branch --show-current
+            if ($currentBranch -ne "main" -and $currentBranch -ne "master") {
+                # Create child branch from current feature branch (prevents recursive explosion)
+                $branchName = "$currentBranch/sub-$timestamp-$sanitizedDescription"
+                Write-Host "Creating child branch from feature branch: $currentBranch" -ForegroundColor Yellow
+            } else {
+                # Create top-level patch branch
+                $branchName = "patch/$timestamp-$sanitizedDescription"
+            }
         } else {
-            # Create top-level patch branch
-            $branchName = "patch/$timestamp-$sanitizedDescription"
+            # Anti-recursive mode: use current branch
+            $branchName = git branch --show-current
+            Write-Host "Anti-recursive mode: Using current branch ($branchName)" -ForegroundColor Cyan
         }
         
         Write-Host "Patch Details:" -ForegroundColor Yellow
@@ -259,9 +277,17 @@ function Invoke-GitControlledPatch {
             # ANTI-RECURSIVE BRANCHING: Never pull from main, work from current state
             Write-Host "SAFETY: Working from current branch state (no main branch operations)" -ForegroundColor Green
             Write-Host "This prevents recursive branch explosion and respects branch protection" -ForegroundColor Cyan
-            # Create and switch to patch branch
-            Write-Host "Creating patch branch: $branchName" -ForegroundColor Green
-            git checkout -b $branchName
+            
+            # Create and switch to patch branch (unless in anti-recursive mode)
+            if (-not $skipBranchCreation) {
+                Write-Host "Creating patch branch: $branchName" -ForegroundColor Green
+                git checkout -b $branchName
+                if ($LASTEXITCODE -ne 0) {
+                    throw "Failed to create branch: $branchName"
+                }
+            } else {
+                Write-Host "Anti-recursive mode: Staying on current branch ($branchName)" -ForegroundColor Cyan
+            }
             # Create backup before applying patch
             $backupPath = "./backups/pre-patch-$(Get-Date -Format 'yyyyMMdd-HHmmss')"
             New-Item -ItemType Directory -Path $backupPath -Force | Out-Null
