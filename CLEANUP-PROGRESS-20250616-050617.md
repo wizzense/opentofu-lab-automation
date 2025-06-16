@@ -1,15 +1,15 @@
 # Comprehensive Cleanup Report
 
-**Generated**: 2025-06-16 04:36:23 UTC
+**Generated**: 2025-06-16 05:06:17 UTC
 **Mode**: Standard
-**Duration**: 14.3290878 seconds
+**Duration**: 14.7936604 seconds
 **Dry Run**: False
 
 ## Summary
 
-- **Files Removed**: 0
-- **Directories Removed**: 0  
-- **Files Relocated**: 0
+- **Files Removed**: 1
+- **Directories Removed**: 2  
+- **Files Relocated**: 2
 - **Size Reclaimed**: 0 MB
 - **Errors**: 0
 
@@ -49,6 +49,8 @@
 
 ## Files Relocated
 
+- C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\CHANGELOG.md: Moved to docs
+- C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\test-patchmanager-integration.md: Moved to docs
 
 
 ## Errors
