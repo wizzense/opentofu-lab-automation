@@ -33,7 +33,7 @@ Invoke-LabStep -Config $Config -Body {
 
 
 
-if (-not (Test-Path $dest)) { New-Item -ItemType Directory -Path $dest -Force  Out-Null }
+if (-not (Test-Path $dest)) { New-Item -ItemType Directory -Path $dest -Force | Out-Null}
                     Expand-Archive -Path $zip -DestinationPath $dest -Force
                 }
             } else {
@@ -47,6 +47,7 @@ if (-not (Test-Path $dest)) { New-Item -ItemType Directory -Path $dest -Force  O
 }
 if ($MyInvocation.InvocationName -ne '.') { Install-Packer @PSBoundParameters }
 Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
+
 
 
 

@@ -96,8 +96,8 @@ function Move-FilesToTarget {
  
  # Create target directory if it doesn't exist
  if (-not (Test-Path $targetPath) -and -not $DryRun) {
- New-Item -ItemType Directory -Path $targetPath -Force  Out-Null
- Write-Host " � Created directory: $TargetDir" -ForegroundColor Green
+ New-Item -ItemType Directory -Path $targetPath -Force | Out-Null
+Write-Host " � Created directory: $TargetDir" -ForegroundColor Green
  }
  
  foreach ($file in $Files) {
@@ -181,3 +181,5 @@ if ($DryRun) {
  Write-Host "� Files organized into appropriate directories" -ForegroundColor Green
  Write-Host " Run 'git status' to review changes before committing" -ForegroundColor Cyan
 }
+
+

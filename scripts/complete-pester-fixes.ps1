@@ -78,7 +78,7 @@ if ($finalCount -eq 0) {
  Write-Host "PASS ALL Get-Command patterns have been fixed!" -ForegroundColor Green
 } else {
  Write-Host "INFO Remaining patterns:" -ForegroundColor Yellow
- Select-String -Path "tests/*.Tests.ps1" -Pattern "Get-Command.*Should.*Not.*BeNullOrEmpty"  ForEach-Object { 
+ Select-String -Path "tests/*.Tests.ps1" -Pattern "Get-Command.*Should.*Not.*BeNullOrEmpty" | ForEach-Object{ 
  Write-Host " - $($_.Filename):$($_.LineNumber)" -ForegroundColor Gray 
  }
 }

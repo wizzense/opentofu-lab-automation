@@ -78,8 +78,7 @@ if (-not $PullRequestNumber) {
     Write-Host "Finding recent PRs..." -ForegroundColor Yellow
     
     try {
-        $recentPRs = gh pr list --limit 5 --json number,title,state  ConvertFrom-Json
-        if ($recentPRs) {
+        $recentPRs = gh pr list --limit 5 --json number,title,state | ConvertFrom-Jsonif ($recentPRs) {
             $PullRequestNumber = $recentPRs0.number
             Write-Host "Using PR #$PullRequestNumber`: $($recentPRs0.title)" -ForegroundColor Green
         } else {
@@ -206,7 +205,7 @@ switch ($Mode) {
         $logPath = "logs/demo-copilot-monitor.log"
         if (Test-Path $logPath) {
             Write-Host "`n4. Log output from background monitoring:" -ForegroundColor Cyan
-            Get-Content logPath | Select-Object -Last 10  ForEach-Object {
+            Get-Content logPath | Select-Object-Last 10 | ForEach-Object{
                 Write-Host "  $_" -ForegroundColor Gray
             }
         }
@@ -248,4 +247,5 @@ REAL WORLD WORKFLOW:
 "@ -ForegroundColor Green
 
 Write-Host "`nDemo completed successfully!" -ForegroundColor Cyan
+
 

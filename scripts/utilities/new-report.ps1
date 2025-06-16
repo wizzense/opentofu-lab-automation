@@ -33,8 +33,7 @@ $filePath = Join-Path $PSScriptRoot "../../docs/reports/$Type" $fileName
 # Ensure directory exists
 $dir = Split-Path $filePath -Parent
 if (-not (Test-Path $dir)) {
- New-Item -ItemType Directory -Path $dir -Force  Out-Null
-}
+ New-Item -ItemType Directory -Path $dir -Force | Out-Null}
 
 # Template based on type
 $template = switch ($Type) {
@@ -272,6 +271,7 @@ if ($Open) {
 Write-Host ""
 Write-Host " Don't forget to update the INDEX.md file with your new report!" -ForegroundColor Yellow
 Write-Host "� Location: docs/reports/INDEX.md" -ForegroundColor Cyan
+
 
 
 

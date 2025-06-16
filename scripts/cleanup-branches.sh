@@ -51,8 +51,7 @@ ALWAYS_PRESERVE=(
 # Function to check if a branch should be preserved
 should_preserve_branch() {
  local branch="$1"
- 
- # Remove remotes/origin/ prefix and trim whitespace
+  # Remove remotes/origin/ prefix and trim whitespace
  branch_name=$(echo "$branch" | sed 's|remotes/origin/||g' | sed 's|^[[:space:]]*||;s|[[:space:]]*$||')
  
  # Check against preserve patterns

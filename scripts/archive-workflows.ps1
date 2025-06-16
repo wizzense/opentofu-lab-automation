@@ -28,8 +28,8 @@ if (!(Test-Path -Path "$repoRoot/.github/workflows")) {
 # Create archive directory if it doesn't exist
 $archiveDir = "$repoRoot/.github/archived_workflows"
 if (!(Test-Path -Path $archiveDir)) {
- New-Item -Path $archiveDir -ItemType Directory  Out-Null
- Write-Host "� Created archive directory: $archiveDir"
+ New-Item -Path $archiveDir -ItemType Directory | Out-Null
+Write-Host "� Created archive directory: $archiveDir"
 }
 
 # Create README file for the archive directory
@@ -113,6 +113,8 @@ See the archive README(../archived_workflows/README.md) for details.
 
 Write-Host "`n Archiving complete! Legacy workflows have been moved to $archiveDir"
 Write-Host " See $readmePath for details on which workflows were archived"
+
+
 
 
 

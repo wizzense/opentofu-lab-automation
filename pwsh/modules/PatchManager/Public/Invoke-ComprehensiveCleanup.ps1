@@ -62,20 +62,38 @@ function Invoke-ComprehensiveCleanup {
             SizeReclaimed = 0
             Errors = @()
         }
-        
-        # Standard exclusion patterns (critical files to never touch)
+          # Standard exclusion patterns (critical files to never touch)
         $script:CriticalExclusions = @(
+            # Core project files
             "PROJECT-MANIFEST.json"
-            ".git/*"
-            ".github/*"
-            "pwsh/modules/*/*"
-            "configs/*"
             "README.md"
             "LICENSE"
-            ".vscode/settings.json"
-            ".vscode/tasks.json"
-            "pyproject.toml"
+            "CHANGELOG.md"
             "mkdocs.yml"
+            "pyproject.toml"
+            
+            # Module directories (complete protection)
+            "pwsh/modules/*"
+            "pwsh/modules/*/*"
+            "pwsh/modules/*/*/*"
+            
+            # Configuration and tooling
+            ".git/*"
+            ".github/*"
+            ".vscode/*"
+            "configs/*"
+            
+            # Specific module files that must be protected
+            "pwsh/modules/PatchManager/PatchManager.psm1"
+            "pwsh/modules/PatchManager/PatchManager.psd1"
+            "pwsh/modules/PatchManager/Public/*"
+            "pwsh/modules/PatchManager/Private/*"
+            "pwsh/modules/CodeFixer/CodeFixer.psm1"
+            "pwsh/modules/CodeFixer/CodeFixer.psd1"
+            "pwsh/modules/LabRunner/LabRunner.psm1"
+            "pwsh/modules/LabRunner/LabRunner.psd1"
+            "pwsh/modules/BackupManager/BackupManager.psm1"
+            "pwsh/modules/BackupManager/BackupManager.psd1"
         ) + $ExcludePatterns
         
         Write-Host "Critical exclusions: $($script:CriticalExclusions.Count) patterns" -ForegroundColor Blue
@@ -267,8 +285,7 @@ function Invoke-DuplicateConsolidation {
     $fileHashes = @{}
     $duplicates = @()
     
-    $files = Get-ChildItem -Path $script:ProjectRoot -Recurse -File -ErrorAction SilentlyContinue | 
-        Where-Object { -not (Test-CriticalExclusion $_.FullName) }
+    $files = Get-ChildItem -Path $script:ProjectRoot -Recurse -File -ErrorAction SilentlyContinue | Where-Object{ -not (Test-CriticalExclusion $_.FullName) }
     
     foreach ($file in $files) {
         try {
@@ -317,8 +334,7 @@ function Invoke-FileArchival {
     $archivePath = Join-Path $script:ProjectRoot "archive/cleanup-$(Get-Date -Format 'yyyyMMdd-HHmmss')"
     
     # Find old files in root directory
-    $oldFiles = Get-ChildItem -Path $script:ProjectRoot -File -ErrorAction SilentlyContinue 
-        Where-Object { 
+    $oldFiles = Get-ChildItem -Path $script:ProjectRoot -File -ErrorAction SilentlyContinue | Where-Object{ 
             $_.LastWriteTime -lt $archiveThreshold -and 
             -not (Test-CriticalExclusion $_.FullName) -and
             $_.Name -match '\.(mdps1pylogtxt)$'
@@ -326,8 +342,7 @@ function Invoke-FileArchival {
     
     if ($oldFiles.Count -gt 0) {
         if (-not $DryRun) {
-            New-Item -ItemType Directory -Path $archivePath -Force | Out-Null
-        }
+            New-Item -ItemType Directory -Path $archivePath -Force | Out-Null}
         
         foreach ($file in $oldFiles) {
             Write-Host "  Archiving old file: $($file.Name)" -ForegroundColor Yellow
@@ -342,8 +357,7 @@ function Invoke-FileArchival {
 
 function Invoke-EmptyDirectoryCleanup {
     # Remove empty directories (except critical ones)
-    $directories = Get-ChildItem -Path $script:ProjectRoot -Directory -Recurse -ErrorAction SilentlyContinue 
-        Sort-Object FullName -Descending  # Process deepest first
+    $directories = Get-ChildItem -Path $script:ProjectRoot -Directory -Recurse -ErrorAction SilentlyContinue | Sort-Object FullName -Descending  # Process deepest first
     
     foreach ($dir in $directories) {
         if (-not (Test-CriticalExclusion $dir.FullName)) {
@@ -358,8 +372,7 @@ function Invoke-EmptyDirectoryCleanup {
 
 function Invoke-FileOrganization {
     # Move misplaced files to appropriate directories
-    $rootFiles = Get-ChildItem -Path $script:ProjectRoot -File -ErrorAction SilentlyContinue 
-        Where-Object { -not (Test-CriticalExclusion $_.FullName) }
+    $rootFiles = Get-ChildItem -Path $script:ProjectRoot -File -ErrorAction SilentlyContinue | Where-Object{ -not (Test-CriticalExclusion $_.FullName) }
     
     foreach ($file in $rootFiles) {
         $destination = $null
@@ -380,8 +393,7 @@ function Invoke-FileOrganization {
             $destPath = Join-Path $script:ProjectRoot $destination
             if (-not (Test-Path $destPath)) {
                 if (-not $DryRun) {
-                    New-Item -ItemType Directory -Path $destPath -Force | Out-Null
-                }
+                    New-Item -ItemType Directory -Path $destPath -Force | Out-Null}
             }
             
             Write-Host "  Moving to ${destination}: $($file.Name)" -ForegroundColor Yellow
@@ -555,11 +567,11 @@ function New-CleanupReport {
 
 ## Files Relocated
 
-$($script:CleanupLog.FilesRelocated | ForEach-Object { "- $($_.File): $($_.NewLocation)" } | Out-String)
+$($script:CleanupLog.FilesRelocated | ForEach-Object{ "- $($_.File): $($_.NewLocation)" } | Out-String)
 
 ## Errors
 
-$($script:CleanupLog.Errors | ForEach-Object { "- $_" } | Out-String)
+$($script:CleanupLog.Errors | ForEach-Object{ "- $_" } | Out-String)
 
 ---
 *Generated by PatchManager Comprehensive Cleanup v2.0*
@@ -571,4 +583,5 @@ $($script:CleanupLog.Errors | ForEach-Object { "- $_" } | Out-String)
     } else {
         Write-Host "Cleanup report would be saved to: $reportPath" -ForegroundColor DarkGray    }
 }
+
 

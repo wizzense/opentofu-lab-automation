@@ -255,8 +255,8 @@ $reportData = @{
         Timestamp = Get-Date
         Platform = $script:CurrentPlatform
         TotalTests = $Results.Count
-        PassedTests = (Results | Where-Object { $_.Success -and $_.Result.FailedCount -eq 0 }).Count
-        FailedTests = (Results | Where-Object { -not $_.Success -or $_.Result.FailedCount -gt 0 }).Count
+        PassedTests = (Results | Where-Object{ $_.Success -and $_.Result.FailedCount -eq 0 }).Count
+        FailedTests = (Results | Where-Object{ -not $_.Success -or $_.Result.FailedCount -gt 0 }).Count
         Categories = @{}
         Details = $Results
     }
@@ -361,7 +361,7 @@ $reportData = @{
     
     # Also generate JSON for programmatic consumption
     $jsonPath = Join-Path $OutputPath 'test-report.json'
-    reportData | ConvertTo-Json -Depth 10  Set-Content -Path $jsonPath -Encoding UTF8
+    reportData | ConvertTo-Json-Depth 10  Set-Content -Path $jsonPath -Encoding UTF8
     Write-Host "JSON report generated: $jsonPath" -ForegroundColor Green
 }
 
@@ -388,11 +388,11 @@ try {
     }
     
     # Filter by platform compatibility
-    $selectedTests = selectedTests | Where-Object { Test-PlatformCompatibility $_.Platforms $Platform }
+    $selectedTests = selectedTests | Where-Object{ Test-PlatformCompatibility $_.Platforms $Platform }
     
     # Filter by script pattern
     if ($ScriptPattern -ne '*') {
-        $selectedTests = selectedTests | Where-Object { $_.Name -like $ScriptPattern }
+        $selectedTests = selectedTests | Where-Object{ $_.Name -like $ScriptPattern }
     }
     
     Write-Host "Found $($selectedTests.Count) compatible tests for platform: $Platform" -ForegroundColor Green
@@ -404,8 +404,7 @@ try {
     
     # Ensure output directory exists
     if (-not (Test-Path $OutputPath)) {
-        New-Item -ItemType Directory -Path $OutputPath -Force  Out-Null
-    }
+        New-Item -ItemType Directory -Path $OutputPath -Force | Out-Null}
     
     # Configure Pester
     $pesterConfig = New-PesterConfiguration
@@ -433,7 +432,7 @@ try {
     
     # Summary
     $totalTests = $results.Count
-    $passedTests = (results | Where-Object { $_.Success -and $_.Result.FailedCount -eq 0 }).Count
+    $passedTests = (results | Where-Object{ $_.Success -and $_.Result.FailedCount -eq 0 }).Count
     $failedTests = $totalTests - $passedTests
     
     Write-Host "`nTest Execution Summary:" -ForegroundColor Cyan
@@ -444,7 +443,7 @@ try {
     
     if ($failedTests -gt 0) {
         Write-Host "`nFailed Tests:" -ForegroundColor Red
-        $failedResults = results | Where-Object { -not $_.Success -or $_.Result.FailedCount -gt 0 }
+        $failedResults = results | Where-Object{ -not $_.Success -or $_.Result.FailedCount -gt 0 }
         foreach ($failed in $failedResults) {
             $testName = System.IO.Path::GetFileNameWithoutExtension($failed.Path)
             $error = if ($failed.Error) { $failed.Error    } else { "Test failures: $($failed.Result.FailedCount)"    }
@@ -459,6 +458,7 @@ try {
     Write-Error "Test execution failed: $_"
     exit 1
 }
+
 
 
 

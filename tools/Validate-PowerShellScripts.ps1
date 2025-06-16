@@ -302,7 +302,7 @@ Write-ValidationMessage "Validating: $FilePath" "Info"
     # Auto-fix if requested
     if ($AutoFix) {
         # Fix syntax errors first (placeholder for future implementation)
-        $syntaxErrors = allIssues | Where-Object { $_.Type -eq "SyntaxError" }
+        $syntaxErrors = allIssues | Where-Object{ $_.Type -eq "SyntaxError" }
         if ($syntaxErrors.Count -gt 0) {
             # TODO: Implement Fix-SyntaxErrors function
             Write-ValidationMessage "  SYNTAX ERRORS: $($syntaxErrors.Count) errors found (manual fix required)" "Warning"
@@ -319,10 +319,10 @@ Write-ValidationMessage "Validating: $FilePath" "Info"
                 if (-not $SkipSyntaxCheck) {
                     $syntaxResult = Test-PowerShellSyntax -FilePath $FilePath
                     if ($syntaxResult.IsValid) {
-                        $allIssues = allIssues | Where-Object { $_.Type -ne "SyntaxError" -and $_.Type -ne "ParameterOrderError" }
+                        $allIssues = allIssues | Where-Object{ $_.Type -ne "SyntaxError" -and $_.Type -ne "ParameterOrderError" }
                     }
                 } else {
-                    $allIssues = allIssues | Where-Object { $_.Type -ne "ParameterOrderError" }
+                    $allIssues = allIssues | Where-Object{ $_.Type -ne "ParameterOrderError" }
                 }
             }
         }
@@ -346,7 +346,7 @@ Write-ValidationMessage "Validating: $FilePath" "Info"
         }
     }
     
-    $errorIssues = allIssues | Where-Object { $_.Severity -eq "Error" }
+    $errorIssues = allIssues | Where-Object{ $_.Severity -eq "Error" }
     if ($errorIssues.Count -eq 0) {
         if (-not $wasFixed) {
             Write-ValidationMessage "   Valid" "Success"
@@ -374,7 +374,7 @@ if (Test-Path $Path -PathType Leaf) {
             return @()
         }
     } elseif (Test-Path $Path -PathType Container) {
-        return Get-ChildItem -Path $Path -Recurse -Filter "*.ps1"  ForEach-Object { $_.FullName }
+        return Get-ChildItem -Path $Path -Recurse -Filter "*.ps1" | ForEach-Object{ $_.FullName }
     } else {
         throw "Path not found: $Path"
     }
@@ -469,8 +469,8 @@ try {
     Write-ValidationMessage "Error Files: $($script:Results.ErrorFiles)" "Error"
     Write-ValidationMessage "Total Issues: $($script:Results.Issues.Count)" "Info"
     
-    $errorCount = ($script:Results.Issues  Where-Object { $_.Severity -eq "Error" }).Count
-    $warningCount = ($script:Results.Issues  Where-Object { $_.Severity -eq "Warning" }).Count
+    $errorCount = ($script:Results.Issues | Where-Object{ $_.Severity -eq "Error" }).Count
+    $warningCount = ($script:Results.Issues | Where-Object{ $_.Severity -eq "Warning" }).Count
     
     if ($errorCount -gt 0) {
         Write-ValidationMessage "Errors: $errorCount" "Error"
@@ -568,6 +568,7 @@ $content = Get-Content $FilePath -Raw
     
     return $false
 }
+
 
 
 

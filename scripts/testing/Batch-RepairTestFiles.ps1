@@ -81,9 +81,7 @@ Describe '$($fileName -replace '\.Tests\.ps1$', '') Tests' {
 function Get-TestFiles {
     param(string$Directory)
     
-    $testFiles = Get-ChildItem -Path $Directory -Filter "*.Tests.ps1" -Recurse  
-        Where-Object { $_.Name -ne "TestHelpers.Tests.ps1" -and $_.Name -ne "TestFramework.Tests.ps1" } 
-        Sort-Object Name
+    $testFiles = Get-ChildItem -Path $Directory -Filter "*.Tests.ps1" -Recurse | Where-Object{ $_.Name -ne "TestHelpers.Tests.ps1" -and $_.Name -ne "TestFramework.Tests.ps1" } | Sort-ObjectName
     
     return $testFiles
 }

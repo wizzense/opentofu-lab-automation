@@ -66,9 +66,7 @@ try {
             Write-Host "`n--- DEMO MODE: Showing Copilot Integration Capabilities ---" -ForegroundColor Cyan
             
             Write-Host "`n1. Finding recent pull requests..." -ForegroundColor Yellow
-            $recentPRs = gh api "repos/$Repository/pulls?state=open&per_page=5"  ConvertFrom-Json
-            
-            if ($recentPRs.Count -gt 0) {
+            $recentPRs = gh api "repos/$Repository/pulls?state=open&per_page=5" | ConvertFrom-Jsonif ($recentPRs.Count -gt 0) {
                 Write-Host "Found $($recentPRs.Count) open pull requests:" -ForegroundColor Green
                 foreach ($pr in $recentPRs) {
                     Write-Host "  #$($pr.number): $($pr.title)" -ForegroundColor White

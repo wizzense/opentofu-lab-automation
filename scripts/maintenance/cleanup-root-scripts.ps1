@@ -84,8 +84,8 @@ $sourcePath = Join-Path $ProjectRoot $SourceFile
  if ($WhatIf) {
  Write-CleanupLog "Would create directory: $destDir" "INFO"
  } else {
- New-Item -ItemType Directory -Path $destDir -Force  Out-Null
- Write-CleanupLog "Created directory: $destDir" "SUCCESS"
+ New-Item -ItemType Directory -Path $destDir -Force | Out-Null
+Write-CleanupLog "Created directory: $destDir" "SUCCESS"
  }
  }
  
@@ -223,8 +223,7 @@ foreach ($backupDir in $backupDirs) {
  Write-CleanupLog "Would move backup directory: $backupDir → backups/$backupDir" "INFO"
  } else {
  if (-not (Test-Path (Join-Path $ProjectRoot "backups"))) {
- New-Item -ItemType Directory -Path (Join-Path $ProjectRoot "backups") -Force  Out-Null
- }
+ New-Item -ItemType Directory -Path (Join-Path $ProjectRoot "backups") -Force | Out-Null}
  try {
  Move-Item -Path $sourcePath -Destination $destPath -Force
  Write-CleanupLog "Moved backup directory: $backupDir → backups/$backupDir" "SUCCESS"
@@ -320,6 +319,8 @@ if (-not $WhatIf) {
 
 Write-CleanupLog " Root directory cleanup completed!" "SUCCESS"
 Write-CleanupLog "Use the unified maintenance system for ongoing project maintenance" "INFO"
+
+
 
 
 

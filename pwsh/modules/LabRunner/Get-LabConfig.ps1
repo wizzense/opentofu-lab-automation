@@ -31,14 +31,13 @@ function Get-LabConfig {
             $config = $content  ConvertFrom-Yaml
         }
         else {
-            $config = $content  ConvertFrom-Json
-        }
+            $config = $content | ConvertFrom-Json}
 
         $repoRoot = Resolve-Path (Join-Path $PSScriptRoot '..')
         $dirs     = @{}
         if ($config.PSObject.Properties'Directories') {
             # Preserve any user-defined directory settings
-            $config.Directories.PSObject.Properties  ForEach-Object {
+            $config.Directories.PSObject.Properties | ForEach-Object{
                 $dirs$_.Name = $_.Value
             }
         }

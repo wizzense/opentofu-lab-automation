@@ -68,7 +68,7 @@ if ($demo1Result.Success) {
     if ($demo1Result.PullRequestNumber) {
         Write-Host "    Starting Copilot suggestion monitoring..." -ForegroundColor Blue        try {
             Invoke-CopilotSuggestionHandler -PullRequestNumber $demo1Result.PullRequestNumber -BackgroundMonitor -AutoCommit -LogPath "logs/copilot-monitoring-demo.log" | Out-Null
-            Write-Host "    Copilot monitoring started for PR #$($demo1Result.PullRequestNumber)" -ForegroundColor Green
+Write-Host "    Copilot monitoring started for PR #$($demo1Result.PullRequestNumber)" -ForegroundColor Green
         } catch {
             Write-Host "   [WARN] Copilot monitoring failed: $($_.Exception.Message)" -ForegroundColor Yellow
         }
@@ -178,3 +178,5 @@ Write-Host " Rollback capabilities provide safety net for all operations" -Foreg
 Write-Host " All changes tracked with comprehensive logging and backup" -ForegroundColor Green
 Write-Host ""
 Write-Host "🚀 PatchManager v2.0 - Complete Git-controlled workflow with issue tracking!" -ForegroundColor Green
+
+

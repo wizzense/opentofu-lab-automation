@@ -8,7 +8,7 @@ Write-Host " Migrating to Unified Launcher System" -ForegroundColor Cyan
 Write-Host "=====================================" -ForegroundColor Cyan
 
 # Create archive directory
-New-Item -ItemType Directory -Path $archiveDir -Force  Out-Null
+New-Item -ItemType Directory -Path $archiveDir -Force | Out-Null
 Write-Host "PASS Created archive directory: $archiveDir" -ForegroundColor Green
 
 # List of files to archive
@@ -50,3 +50,5 @@ Write-Host " PowerShell: ./start.ps1" -ForegroundColor White
 
 Write-Host ""
 Write-Host "PASS Migration completed successfully!" -ForegroundColor Green
+
+

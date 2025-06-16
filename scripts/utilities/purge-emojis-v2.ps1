@@ -59,7 +59,7 @@ $changedFiles = 0
 $totalEmojisRemoved = 0
 
 foreach ($pattern in $filePatterns) {
-    $files = Get-ChildItem -Path $projectRoot -Filter $pattern -Recurse  Where-Object {
+    $files = Get-ChildItem -Path $projectRoot -Filter $pattern -Recurse | Where-Object{
         $skip = $false
         foreach ($skipDir in $skipDirs) {
             if ($_.FullName -like "*\$skipDir\*" -or $_.FullName -like "*/$skipDir/*") {
@@ -142,7 +142,7 @@ if (-not $DryRun) {
     
     $remainingEmojis = 0
     foreach ($pattern in $filePatterns) {
-        $files = Get-ChildItem -Path $projectRoot -Filter $pattern -Recurse  Where-Object {
+        $files = Get-ChildItem -Path $projectRoot -Filter $pattern -Recurse | Where-Object{
             $skip = $false
             foreach ($skipDir in $skipDirs) {
                 if ($_.FullName -like "*\$skipDir\*" -or $_.FullName -like "*/$skipDir/*") {

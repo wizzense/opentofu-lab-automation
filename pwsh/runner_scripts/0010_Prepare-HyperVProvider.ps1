@@ -151,8 +151,8 @@ if ($hvFeature.State -ne "Enabled") {
 
 # Check if WinRM is enabled by testing the local WSMan endpoint
 try {
-    Test-WSMan -ComputerName localhost -ErrorAction Stop  Out-Null
-    Write-CustomLog "WinRM is already enabled."
+    Test-WSMan -ComputerName localhost -ErrorAction Stop | Out-Null
+Write-CustomLog "WinRM is already enabled."
 }
 catch {
     Write-CustomLog "Enabling WinRM..."
@@ -211,7 +211,7 @@ else {
 $rootCaName = $config.CertificateAuthority.CommonName
 $UserInput = Read-LoggedInput -Prompt "Enter the password for the Root CA certificate" -AsSecureString
 $rootCaPassword = $UserInput
-$rootCaCertificate = Get-ChildItem cert:\LocalMachine\Root  Where-Object {$_.Subject -eq "CN=$rootCaName"}
+$rootCaCertificate = Get-ChildItem cert:\LocalMachine\Root | Where-Object{$_.Subject -eq "CN=$rootCaName"}
 
 if (-not $rootCaCertificate) {
     $cerPath = ".\$rootCaName.cer"
@@ -221,13 +221,12 @@ if (-not $rootCaCertificate) {
 
     if ($cerExists -and $pfxExists) {
         Write-CustomLog "Importing existing Root CA certificates..."
-        Get-ChildItem cert:\LocalMachine\My  Where-Object {$_.subject -eq "CN=$rootCaName"}  Remove-Item -Force -ErrorAction SilentlyContinue
-        Import-PfxCertificate -FilePath $pfxPath -CertStoreLocation Cert:\LocalMachine\Root -Password $rootCaPassword -Exportable -Verbose  Out-Null
-        Import-PfxCertificate -FilePath $pfxPath -CertStoreLocation Cert:\LocalMachine\My -Password $rootCaPassword -Exportable -Verbose  Out-Null
-        $rootCaCertificate = Get-ChildItem cert:\LocalMachine\My  Where-Object {$_.subject -eq "CN=$rootCaName"}
+        Get-ChildItem cert:\LocalMachine\My | Where-Object{$_.subject -eq "CN=$rootCaName"}  Remove-Item -Force -ErrorAction SilentlyContinue
+        Import-PfxCertificate -FilePath $pfxPath -CertStoreLocation Cert:\LocalMachine\Root -Password $rootCaPassword -Exportable -Verbose | Out-Null
+Import-PfxCertificate -FilePath $pfxPath -CertStoreLocation Cert:\LocalMachine\My -Password $rootCaPassword -Exportable -Verbose | Out-Null$rootCaCertificate = Get-ChildItem cert:\LocalMachine\My | Where-Object{$_.subject -eq "CN=$rootCaName"}
     } else {
         # Cleanup if present
-        Get-ChildItem cert:\LocalMachine\My  Where-Object {$_.subject -eq "CN=$rootCaName"}  Remove-Item -Force -ErrorAction SilentlyContinue
+        Get-ChildItem cert:\LocalMachine\My | Where-Object{$_.subject -eq "CN=$rootCaName"}  Remove-Item -Force -ErrorAction SilentlyContinue
         if ($cerExists) { Remove-Item $cerPath -Force -ErrorAction SilentlyContinue }
         if ($pfxExists) { Remove-Item $pfxPath -Force -ErrorAction SilentlyContinue }
 
@@ -254,11 +253,9 @@ if (-not $rootCaCertificate) {
         Export-PfxCertificate -Cert $rootCaCertificate -FilePath $pfxPath -Password $rootCaPassword -Verbose
 
         # Re-import to Root store & My store
-        Get-ChildItem cert:\LocalMachine\My  Where-Object {$_.subject -eq "CN=$rootCaName"}  Remove-Item -Force -ErrorAction SilentlyContinue
-        Import-PfxCertificate -FilePath $pfxPath -CertStoreLocation Cert:\LocalMachine\Root -Password $rootCaPassword -Exportable -Verbose  Out-Null
-        Import-PfxCertificate -FilePath $pfxPath -CertStoreLocation Cert:\LocalMachine\My -Password $rootCaPassword -Exportable -Verbose  Out-Null
-
-        $rootCaCertificate = Get-ChildItem cert:\LocalMachine\My  Where-Object {$_.subject -eq "CN=$rootCaName"}
+        Get-ChildItem cert:\LocalMachine\My | Where-Object{$_.subject -eq "CN=$rootCaName"}  Remove-Item -Force -ErrorAction SilentlyContinue
+        Import-PfxCertificate -FilePath $pfxPath -CertStoreLocation Cert:\LocalMachine\Root -Password $rootCaPassword -Exportable -Verbose | Out-Null
+Import-PfxCertificate -FilePath $pfxPath -CertStoreLocation Cert:\LocalMachine\My -Password $rootCaPassword -Exportable -Verbose | Out-Null$rootCaCertificate = Get-ChildItem cert:\LocalMachine\My | Where-Object{$_.subject -eq "CN=$rootCaName"}
     }
 } else {
     Export-Certificate -Cert $rootCaCertificate -FilePath ".\$rootCaName.cer" -Force -Verbose
@@ -269,11 +266,11 @@ if (-not $rootCaCertificate) {
 $hostName      = System.Net.Dns::GetHostName()
 $UserInput = Read-LoggedInput -Prompt "Enter the password for the host." -AsSecureString
 $hostPassword = $UserInput
-$hostCertificate = Get-ChildItem cert:\LocalMachine\My  Where-Object {$_.Subject -eq "CN=$hostName"}
+$hostCertificate = Get-ChildItem cert:\LocalMachine\My | Where-Object{$_.Subject -eq "CN=$hostName"}
 
 if (-not $hostCertificate) {
     # Cleanup if present
-    Get-ChildItem cert:\LocalMachine\My  Where-Object {$_.subject -eq "CN=$hostName"}  Remove-Item -Force -ErrorAction SilentlyContinue
+    Get-ChildItem cert:\LocalMachine\My | Where-Object{$_.subject -eq "CN=$hostName"}  Remove-Item -Force -ErrorAction SilentlyContinue
     Remove-Item ".\$hostName.cer" -Force -ErrorAction SilentlyContinue
     Remove-Item ".\$hostName.pfx" -Force -ErrorAction SilentlyContinue
 
@@ -302,10 +299,10 @@ if (-not $hostCertificate) {
     Export-Certificate -Cert $hostCertificate -FilePath ".\$hostName.cer" -Verbose
     Export-PfxCertificate -Cert $hostCertificate -FilePath ".\$hostName.pfx" -Password $hostPassword -Verbose
 
-    Get-ChildItem cert:\LocalMachine\My  Where-Object {$_.Subject -eq "CN=$hostName"}  Remove-Item -Force -ErrorAction SilentlyContinue
+    Get-ChildItem cert:\LocalMachine\My | Where-Object{$_.Subject -eq "CN=$hostName"}  Remove-Item -Force -ErrorAction SilentlyContinue
     Import-PfxCertificate -FilePath ".\$hostName.pfx" -CertStoreLocation Cert:\LocalMachine\My -Password $hostPassword -Exportable -Verbose
 
-    $hostCertificate = Get-ChildItem cert:\LocalMachine\My  Where-Object {$_.subject -eq "CN=$hostName"}
+    $hostCertificate = Get-ChildItem cert:\LocalMachine\My | Where-Object{$_.subject -eq "CN=$hostName"}
 } else {
     Export-Certificate -Cert $hostCertificate -FilePath ".\$hostName.cer" -Force -Verbose
     Export-PfxCertificate -Cert $hostCertificate -FilePath ".\$hostName.pfx" -Password $hostPassword -Force -Verbose
@@ -327,7 +324,7 @@ if (-not $hostCertificate) {
     Copy-Item ".\$hostName-key.pem" -Destination $dest -Force
 
 Write-CustomLog "Configuring WinRM HTTPS listener..."
-Get-ChildItem wsman:\localhost\Listener\  Where-Object -Property Keys -eq 'Transport=HTTPS'  Remove-Item -Recurse -ErrorAction SilentlyContinue
+Get-ChildItem wsman:\localhost\Listener\ | Where-Object-Property Keys -eq 'Transport=HTTPS'  Remove-Item -Recurse -ErrorAction SilentlyContinue
 New-Item -Path WSMan:\localhost\Listener -Transport HTTPS -Address * -CertificateThumbPrint $($hostCertificate.Thumbprint) -Force -Verbose
 Restart-Service WinRM -Verbose -Force
 
@@ -349,7 +346,7 @@ foreach ($PubNet in $PubNets) {
     Set-NetConnectionProfile -InterfaceIndex $PubNet.InterfaceIndex -NetworkCategory Public
 }
 
-Get-ChildItem wsman:\localhost\Listener\  Where-Object -Property Keys -eq 'Transport=HTTP'  Remove-Item -Recurse -ErrorAction SilentlyContinue
+Get-ChildItem wsman:\localhost\Listener\ | Where-Object-Property Keys -eq 'Transport=HTTP'  Remove-Item -Recurse -ErrorAction SilentlyContinue
 New-Item -Path WSMan:\localhost\Listener -Transport HTTP -Address * -Force -Verbose
 Restart-Service WinRM -Verbose -Force
 
@@ -401,7 +398,7 @@ Expand-Archive -Path $zipPath -DestinationPath $tempDir -Force
 $provider
 $hypervProviderDir = Join-Path $infraRepoPath ".terraform\providers\registry.opentofu.org\taliesins\hyperv\$providerVersion\${os}_${arch}"
 if (!(Test-Path $hypervProviderDir)) {
-    New-Item -ItemType Directory -Force -Path hypervProviderDir | Out-Null
+    New-Item -ItemType Directory -Force -Path $hypervProviderDir | Out-Null
 }
 
 Write-CustomLog "Copying provider exe -> $hypervProviderDir"
@@ -447,6 +444,8 @@ You can now run 'tofu plan'/'tofu apply' in $infraRepoPath.
 Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
 }
 }
+
+
 
 
 

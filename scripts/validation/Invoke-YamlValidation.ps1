@@ -50,8 +50,7 @@ function Get-PythonCommand {
  $programFiles = @($env:ProgramFiles, ${env:ProgramFiles(x86)}, $env:LocalAppData)
  foreach ($pf in $programFiles) {
  if ($pf) {
- Get-ChildItem -Path $pf -Filter "Python*" -Directory -ErrorAction SilentlyContinue  
- ForEach-Object {
+ Get-ChildItem -Path $pf -Filter "Python*" -Directory -ErrorAction SilentlyContinue | ForEach-Object{
  $pythonExe = Join-Path $_.FullName "python.exe"
  if (Test-Path $pythonExe) {
  $pythonCommands += $pythonExe
@@ -111,7 +110,7 @@ function Get-YamlFiles {
  
  $yamlFiles = @()
  if (Test-Path $SearchPath) {
- $yamlFiles = Get-ChildItem -Path $SearchPath -Recurse -Include "*.yml", "*.yaml"  Where-Object { 
+ $yamlFiles = Get-ChildItem -Path $SearchPath -Recurse -Include "*.yml", "*.yaml" | Where-Object{ 
      !$_.PSIsContainer -and 
      $_.Name -notlike "*.backup*" -and 
      $_.Name -notlike "*archive*" -and

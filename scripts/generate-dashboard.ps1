@@ -37,8 +37,7 @@ Write-Host " Generating Comprehensive Dashboard Report..." -ForegroundColor Cyan
 # Ensure reports directory exists
 $reportsDir = Split-Path $OutputPath -Parent
 if ($reportsDir -and -not (Test-Path $reportsDir)) {
- New-Item -ItemType Directory -Path $reportsDir -Force  Out-Null
-}
+ New-Item -ItemType Directory -Path $reportsDir -Force | Out-Null}
 
 # Get current timestamp
 $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss UTC"
@@ -58,7 +57,7 @@ $dashboardData = @{
 Write-Host " Analyzing Pester test results..." -ForegroundColor Yellow
 
 # Check for recent Pester test results
-$testResultFiles = Get-ChildItem -Path "." -Filter "*TestResults*.xml" -Recurse  Sort-Object LastWriteTime -Descending  Select-Object -First 5
+$testResultFiles = Get-ChildItem -Path "." -Filter "*TestResults*.xml" -Recurse | Sort-ObjectLastWriteTime -Descending | Select-Object -First 5
 
 $pesterSummary = @{
  TotalTests = 0
@@ -223,7 +222,7 @@ if ($pesterSummary.TotalTests -eq 0) {
  $recommendations += " Set up Pester tests for better code quality monitoring"
 }
 
-$failingComponents = $systemChecks.Keys  Where-Object { $systemChecks$_.Status -notlike "*PASS*" }
+$failingComponents = $systemChecks.Keys | Where-Object{ $systemChecks$_.Status -notlike "*PASS*" }
 if ($failingComponents) {
  $recommendations += " Address issues with: $($failingComponents -join ', ')"
 }
@@ -346,6 +345,8 @@ Write-Host "Overall Health: $($dashboardData.OverallHealth) ($($dashboardData.He
 if ($dashboardData.HealthScore -lt 85) {
  Write-Host "`nWARN Health score is below 85% - consider reviewing the recommendations above" -ForegroundColor Yellow
 }
+
+
 
 
 

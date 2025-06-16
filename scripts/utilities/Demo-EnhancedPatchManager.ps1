@@ -74,10 +74,9 @@ switch ($Mode) {
                     Write-Host "Updating project manifest..." -ForegroundColor Blue
                     
                     if (Test-Path "PROJECT-MANIFEST.json") {
-                        $manifest = Get-Content "PROJECT-MANIFEST.json"  ConvertFrom-Json
-                        $manifest.project.lastUpdated = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+                        $manifest = Get-Content "PROJECT-MANIFEST.json" | ConvertFrom-Json$manifest.project.lastUpdated = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
                         $manifest.project.lastDemo = "Enhanced PatchManager DirectCommit Demo"
-                        manifest | ConvertTo-Json -Depth 10  Set-Content "PROJECT-MANIFEST.json"
+                        manifest | ConvertTo-Json-Depth 10  Set-Content "PROJECT-MANIFEST.json"
                         Write-Host "Project manifest updated successfully" -ForegroundColor Green
                     } else {
                         Write-Warning "PROJECT-MANIFEST.json not found"
@@ -254,4 +253,5 @@ switch ($Mode) {
 
 Write-Host "`n=== Enhanced PatchManager Demo Complete ===" -ForegroundColor Green
 Write-Host "Modern change control reduces backup dependencies while improving reliability!" -ForegroundColor Cyan
+
 

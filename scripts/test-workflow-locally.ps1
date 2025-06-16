@@ -15,8 +15,8 @@ Write-Host " Testing workflow components for $Platform..." -ForegroundColor Yell
 
 # Ensure coverage directory exists
 if (-not (Test-Path coverage)) {
- New-Item -ItemType Directory -Path coverage  Out-Null
- Write-Host "PASS Created coverage directory" -ForegroundColor Green
+ New-Item -ItemType Directory -Path coverage | Out-Null
+Write-Host "PASS Created coverage directory" -ForegroundColor Green
 }
 
 # Test Pester configuration loading
@@ -70,6 +70,8 @@ if ($DryRun) {
  Write-Host "PASS All workflow components validated successfully!" -ForegroundColor Green
  Write-Host " Run with -DryRun to test Pester execution" -ForegroundColor Cyan
 }
+
+
 
 
 

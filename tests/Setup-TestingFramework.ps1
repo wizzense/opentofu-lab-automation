@@ -56,7 +56,7 @@ function Install-RequiredModules {
  try {
  $installed = Get-Module -ListAvailable -Name $module.Name
  if ($module.Version) {
- $installed = installed | Where-Object { $_.Version -ge version$module.Version }
+ $installed = installed | Where-Object{ $_.Version -ge version$module.Version }
  }
  
  if ($installed) {
@@ -152,8 +152,7 @@ function Initialize-TestGeneration {
  if (Test-Path $dir) {
  Write-Host " � Processing directory: $dir" -ForegroundColor Cyan
  
- $scripts = Get-ChildItem $dir -Filter "*.ps1" -Recurse  
- Where-Object { -not $_.Name.EndsWith('.Tests.ps1') -and $_.Name -ne 'Setup-TestingFramework.ps1' }
+ $scripts = Get-ChildItem $dir -Filter "*.ps1" -Recurse | Where-Object{ -not $_.Name.EndsWith('.Tests.ps1') -and $_.Name -ne 'Setup-TestingFramework.ps1' }
  
  $totalScripts += $scripts.Count
  Write-Host " Found $($scripts.Count) scripts" -ForegroundColor Gray
@@ -339,6 +338,7 @@ try {
  Write-Host "Check the error above and try again" -ForegroundColor Gray
  exit 1
 }
+
 
 
 

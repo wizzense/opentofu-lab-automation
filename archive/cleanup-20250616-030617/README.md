@@ -226,7 +226,7 @@ Full repository clone for development and advanced usage:
 - Testing frameworks and validation scripts
 - Documentation and examples
 
-## �‍♂ Usage Examples
+## �‍ Usage Examples
 
 ### Quick Deployment
 ```bash

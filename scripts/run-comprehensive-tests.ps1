@@ -13,7 +13,7 @@ $ErrorActionPreference = "Stop"
 $projectRoot = if ($PSScriptRoot) {
     Split-Path $PSScriptRoot -Parent
 } else {
-    Get-Location  Select-Object -ExpandProperty Path
+    Get-Location | Select-Object-ExpandProperty Path
 }
 
 # Import required modules

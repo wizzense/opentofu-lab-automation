@@ -138,7 +138,7 @@ $issues = @()
     
     try {
         $content = Get-Content -Path $FilePath -Raw
-        $null = ConvertFrom-Json $content -ErrorAction Stop
+        $null = | ConvertFrom-Json$content -ErrorAction Stop
     } catch {
         $issues += PSCustomObject@{
             File = $FilePath
@@ -183,8 +183,7 @@ if ($Issue.Type -eq "Variable in String" -and $Issue.File -match '\.ps1$') {
 
 # Scan PowerShell files
 Write-Host "Scanning PowerShell files..." -ForegroundColor Yellow
-$psFiles = Get-ChildItem -Path $RootPath -Recurse -Include "*.ps1", "*.psm1", "*.psd1" 
-    Where-Object { 
+$psFiles = Get-ChildItem -Path $RootPath -Recurse -Include "*.ps1", "*.psm1", "*.psd1" | Where-Object{ 
         $_.FullName -notlike "*backup*" -and 
         $_.FullName -notlike "*archive*" -and
         $_.FullName -notlike "*cleanup-backup*"
@@ -207,8 +206,7 @@ foreach ($file in $psFiles) {
 
 # Scan JSON files
 Write-Host "Scanning JSON files..." -ForegroundColor Yellow
-$jsonFiles = Get-ChildItem -Path $RootPath -Recurse -Include "*.json" 
-    Where-Object { 
+$jsonFiles = Get-ChildItem -Path $RootPath -Recurse -Include "*.json" | Where-Object{ 
         $_.FullName -notlike "*backup*" -and 
         $_.FullName -notlike "*archive*" -and
         $_.FullName -notlike "*node_modules*"
@@ -229,7 +227,7 @@ if ($issuesFound.Count -eq 0) {
 } else {
     Write-Host "Found $($issuesFound.Count) issues:" -ForegroundColor Red
     
-    $grouped = issuesFound | Group-Object Severity
+    $grouped = issuesFound | Group-ObjectSeverity
     foreach ($group in $grouped) {
         Write-Host ""
         Write-Host "$($group.Name) Issues ($($group.Count)):" -ForegroundColor $(
@@ -264,6 +262,7 @@ Write-Host "JSON files: $($jsonFiles.Count)" -ForegroundColor White
 Write-Host "Issues found: $($issuesFound.Count)" -ForegroundColor White
 
 return $issuesFound.Count
+
 
 
 

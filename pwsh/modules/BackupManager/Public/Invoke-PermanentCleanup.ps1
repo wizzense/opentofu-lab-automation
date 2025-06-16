@@ -116,7 +116,7 @@ function Invoke-PermanentCleanup {
         foreach ($Pattern in $AllPatterns) {
             $Files = Get-ChildItem -Path $ProjectRoot -Recurse -File -Filter $Pattern -ErrorAction SilentlyContinue
             # Exclude files in the consolidated backup directory
-            $FilteredFiles = Files | Where-Object {
+            $FilteredFiles = Files | Where-Object{
                 $_.FullName -notlike "*backups/consolidated-backups*" -and
                 $_.FullName -notlike "*.git*"
             }
@@ -134,7 +134,7 @@ function Invoke-PermanentCleanup {
         
         # Show what will be removed
         Write-Host "WARNING Found $($ProblematicFiles.Count) problematic files:" -ForegroundColor Yellow
-        ProblematicFiles | ForEach-Object {
+        ProblematicFiles | ForEach-Object{
             $RelativePath = $_.FullName.Replace($ProjectRoot, "").TrimStart('\', '/')
             Write-Host "  - $RelativePath" -ForegroundColor Yellow
         }
@@ -212,6 +212,7 @@ function Invoke-PermanentCleanup {
         throw
     }
 }
+
 
 
 

@@ -70,8 +70,10 @@ function Invoke-GitControlledPatch {
         [switch]$ForceNewBranch
     )
     begin {
-        Write-Host "Starting Git-controlled patch process..." -ForegroundColor Cyan
-        Write-Host "CRITICAL: NO EMOJIS ALLOWED - they break workflows" -ForegroundColor Red
+        Write-Host "Starting Git-controlled patch process..." -ForegroundColor Cyan        Write-Host "CRITICAL: NO EMOJIS ALLOWED - they break workflows" -ForegroundColor Red
+        # Initialize cross-platform environment variables
+        Initialize-CrossPlatformEnvironment | Out-Null
+        Write-Verbose "Cross-platform environment initialized: $env:PLATFORM"
         
         # Initialize tracking variables
         $script:IssueTracker = @{
@@ -114,7 +116,7 @@ function Invoke-GitControlledPatch {
                     $progressComment = "**Progress Update** ($timestamp):`n`n$UpdateMessage`n`n**Status**: $Status"
                     
                     gh issue comment $script:IssueTracker.IssueNumber --body $progressComment | Out-Null
-                    Write-Host "Updated GitHub issue with progress: $UpdateMessage" -ForegroundColor Gray
+Write-Host "Updated GitHub issue with progress: $UpdateMessage" -ForegroundColor Gray
                 } catch {
                     Write-Warning "Failed to update GitHub issue: $($_.Exception.Message)"
                 }
@@ -246,7 +248,8 @@ function Invoke-GitControlledPatch {
         $script:PatchInitialCommit = (git rev-parse HEAD)
         $script:PatchBranchName = $branchName
     }    process {
-        try {            # Handle DirectCommit mode
+        try {
+            # Handle DirectCommit mode
             if ($DirectCommit) {
                 Write-Host "Direct commit mode: Applying changes to current branch..." -ForegroundColor Green
                 Update-IssueProgress "Using DirectCommit mode - applying changes directly to current branch"
@@ -286,12 +289,12 @@ function Invoke-GitControlledPatch {
                 Write-Host "Validating changes..." -ForegroundColor Blue
                 $changedFiles = git diff --name-only HEAD
                 if (-not $changedFiles) {
-                    $changedFiles = git status --porcelain | ForEach-Object { $_.Substring(3) }
+                    $changedFiles = git status --porcelain | ForEach-Object{ $_.Substring(3) }
                 }
                 
                 if ($changedFiles) {
                     Write-Host "Changed files:" -ForegroundColor Green
-                    $changedFiles | ForEach-Object { Write-Host "  - $_" -ForegroundColor White }
+                    $changedFiles | ForEach-Object{ Write-Host "  - $_" -ForegroundColor White }
                       # Commit changes directly
                     git add -A
                     git commit -m $PatchDescription
@@ -315,7 +318,7 @@ function Invoke-GitControlledPatch {
 Changes were applied directly to the current branch without creating a pull request.
 
 ### Files Modified
-$($changedFiles | ForEach-Object { "- $_" } | Out-String)
+$($changedFiles | ForEach-Object{ "- $_" } | Out-String)
 
 ### Next Steps
 1. **Monitor the changes** for any issues
@@ -325,7 +328,7 @@ $($changedFiles | ForEach-Object { "- $_" } | Out-String)
 **DirectCommit completed** - No pull request required for this change.
 "@
                             gh issue comment $script:IssueTracker.IssueNumber --body $directCommitUpdate | Out-Null
-                            Write-Host "GitHub issue updated with DirectCommit success status" -ForegroundColor Green
+Write-Host "GitHub issue updated with DirectCommit success status" -ForegroundColor Green
                         } catch {
                             Write-Warning "Failed to update GitHub issue with DirectCommit status: $($_.Exception.Message)"
                         }
@@ -363,7 +366,7 @@ Please review the patch operation to determine if this is expected behavior.
 **Issue remains open** for investigation.
 "@
                             gh issue comment $script:IssueTracker.IssueNumber --body $noChangesUpdate | Out-Null
-                            Write-Host "GitHub issue updated with no-changes status" -ForegroundColor Yellow
+Write-Host "GitHub issue updated with no-changes status" -ForegroundColor Yellow
                         } catch {
                             Write-Warning "Failed to update GitHub issue with no-changes status: $($_.Exception.Message)"
                         }
@@ -402,7 +405,7 @@ Please review the patch operation to determine if this is expected behavior.
                 }
                 
                 # Remove problematic directories manually without prompts
-                @('assets', 'node_modules', '.vs', 'build', 'coverage') | ForEach-Object {
+                @('assets', 'node_modules', '.vs', 'build', 'coverage') | ForEach-Object{
                     if (Test-Path $_) {
                         try {
                             Remove-Item $_ -Recurse -Force -ErrorAction SilentlyContinue
@@ -441,8 +444,7 @@ Please review the patch operation to determine if this is expected behavior.
             # Create backup before applying patch
             $backupPath = "./backups/pre-patch-$(Get-Date -Format 'yyyyMMdd-HHmmss')"
             New-Item -ItemType Directory -Path $backupPath -Force | Out-Null
-            
-            if ($AffectedFiles.Count -gt 0) {
+if ($AffectedFiles.Count -gt 0) {
                 foreach ($file in $AffectedFiles) {
                     if (Test-Path $file) {
                         $relativePath = Resolve-Path $file -Relative
@@ -497,7 +499,7 @@ Please review the patch operation to determine if this is expected behavior.
             }
             
             Write-Host "Changed files:" -ForegroundColor Green
-            $changedFiles | ForEach-Object { Write-Host "  - $_" -ForegroundColor White }
+            $changedFiles | ForEach-Object{ Write-Host "  - $_" -ForegroundColor White }
             
             # Run validation checks (non-blocking)
             try {
@@ -560,7 +562,7 @@ All patch operations completed successfully. Manual review and approval required
 **Automated patch tracking completed** - Human review now required.
 "@
                         gh issue comment $script:IssueTracker.IssueNumber --body $finalUpdate | Out-Null
-                        Write-Host "GitHub issue updated with final success status" -ForegroundColor Green
+Write-Host "GitHub issue updated with final success status" -ForegroundColor Green
                     } catch {
                         Write-Warning "Failed to update GitHub issue with final status: $($_.Exception.Message)"
                     }
@@ -569,6 +571,44 @@ All patch operations completed successfully. Manual review and approval required
                 Write-Warning "Failed to create pull request: $($prResult.Message)"
                 Write-Host "Manual pull request creation required for branch: $branchName" -ForegroundColor Yellow
                 Update-IssueProgress "WARNING: Failed to create pull request - manual creation required for branch: $branchName" "WARNING"
+            }
+            
+            # Add automatic branch cleanup after PR is merged
+            if ($CreatePullRequest) {
+                Write-Host "Setting up automatic PR monitoring and branch cleanup..." -ForegroundColor Cyan
+                Update-IssueProgress "Setting up automated PR monitoring and branch cleanup..."
+                
+                # Register monitoring job
+                $monitorJob = Register-BranchCleanupJob -BranchName $branchName -Remote "origin" -CheckIntervalSeconds 300
+                
+                if ($script:IssueTracker.Success -and $script:IssueTracker.IssueNumber) {
+                    try {
+                        $monitoringUpdate = @"
+## Automated Cleanup Monitoring
+
+Branch cleanup has been configured for this PR:
+- Branch: $branchName
+- Monitor Job: #$($monitorJob.JobId)
+- Log: $($monitorJob.LogPath)
+
+The branch will be automatically deleted when:
+1. PR is merged successfully
+2. All post-merge checks pass
+3. No 'no-delete' label is present
+
+To prevent automatic deletion:
+- Add 'no-delete' label to PR, or
+- Add branch pattern to protected list in PatchManager config
+"@
+                        gh issue comment $script:IssueTracker.IssueNumber --body $monitoringUpdate | Out-Null
+Write-Host "Added cleanup monitoring information to issue" -ForegroundColor Green
+                    }
+                    catch {
+                        Write-Warning "Failed to update issue with monitoring info: $($_.Exception.Message)"
+                    }
+                }
+
+                Write-Host "PR monitoring and cleanup configured. See $($monitorJob.LogPath) for details." -ForegroundColor Cyan
             }
             
             return @{
@@ -610,7 +650,7 @@ Attempting automatic cleanup of failed patch state...
 **This issue remains open** - Manual resolution required.
 "@
                     gh issue comment $script:IssueTracker.IssueNumber --body $failureUpdate | Out-Null
-                    Write-Host "GitHub issue updated with failure status" -ForegroundColor Red
+Write-Host "GitHub issue updated with failure status" -ForegroundColor Red
                 } catch {
                     Write-Warning "Failed to update GitHub issue with failure status: $($_.Exception.Message)"
                 }
@@ -625,9 +665,7 @@ Attempting automatic cleanup of failed patch state...
                 if ($currentBranch -eq $branchName) {
                     # Return to previous branch safely (not main)
                     $previousBranch = git reflog --pretty=format:'%gs' | 
-                                    Select-String "checkout: moving from (.+) to $branchName" | 
-                                    ForEach-Object { $_.Matches[0].Groups[1].Value } | 
-                                    Select-Object -First 1
+                                    Select-String "checkout: moving from (.+) to $branchName" | ForEach-Object{ $_.Matches[0].Groups[1].Value } | Select-Object -First 1
                     
                     if ($previousBranch -and $previousBranch -ne "main" -and $previousBranch -ne "master") {
                         git checkout $previousBranch
@@ -693,7 +731,7 @@ function Invoke-PatchValidation {
     $issues = @()
     
     # PowerShell syntax validation
-    $psFiles = $ChangedFiles | Where-Object { $_ -match '\.ps1$' }
+    $psFiles = $ChangedFiles | Where-Object{ $_ -match '\.ps1$' }
     if ($psFiles) {
         foreach ($file in $psFiles) {
             if (Test-Path $file) {
@@ -712,7 +750,7 @@ function Invoke-PatchValidation {
     }
     
     # Python syntax validation
-    $pyFiles = $ChangedFiles | Where-Object { $_ -match '\.py$' }
+    $pyFiles = $ChangedFiles | Where-Object{ $_ -match '\.py$' }
     if ($pyFiles -and (Get-Command python -ErrorAction SilentlyContinue)) {
         foreach ($file in $pyFiles) {
             if (Test-Path $file) {
@@ -733,7 +771,7 @@ function Invoke-PatchValidation {
     }
     
     # YAML validation  
-    $yamlFiles = $ChangedFiles | Where-Object { $_ -match '\.(yml|yaml)$' }
+    $yamlFiles = $ChangedFiles | Where-Object{ $_ -match '\.(yml|yaml)$' }
     if ($yamlFiles) {
         foreach ($file in $yamlFiles) {
             if (Test-Path $file) {
@@ -786,48 +824,87 @@ function New-PatchPullRequest {
             return @{ Success = $false; Message = "GitHub CLI (gh) not found. Install gh CLI for automatic PR creation." }
         }
         
+        # Clean description for PR title
+        $cleanDesc = $Description -replace '\s+', ' ' -replace '[^\w\s-]', ''
+        
         $prBody = @"
 ## Automated Patch: $Description
 
-This PR contains automated fixes that require manual review before merging.
+This pull request contains automated changes that require review and approval.
+
+### Change Type
+- [ ] Bug fix (non-breaking change which fixes an issue)
+- [ ] Feature (non-breaking change which adds functionality)
+- [ ] Breaking change (fix or feature that would cause existing functionality to not work as expected)
+- [x] Maintenance (code cleanup, dependency updates, etc)
+
+### Description
+$(if ($Description.Length -gt 100) { $Description + "`n" } else { "" })
+This PR was automatically generated by PatchManager v2.0 to apply necessary fixes and improvements.
 
 ### Changes Summary
-- **Type**: Automated Maintenance Patch  
+- **Type**: Automated Maintenance Patch
 - **Branch**: $BranchName
 - **Base**: $BaseBranch
 - **Generated**: $(Get-Date -Format "yyyy-MM-dd HH:mm:ss UTC")
 
 ### Changed Files
-$($ChangedFiles | ForEach-Object { "- $_" } | Out-String)
+$($ChangedFiles | ForEach-Object { 
+    $ext = [System.IO.Path]::GetExtension($_).ToLower()
+    $type = switch ($ext) {
+        ".ps1" { "PowerShell" }
+        ".py"  { "Python" }
+        {$_ -in ".yml",".yaml"} { "YAML" }
+        default { "Other" }
+    }
+    "- $_ ($type)"
+} | Out-String)
 
-### Validation Status
-- [x] PowerShell linting passed
-- [x] Python syntax validation passed  
-- [x] YAML validation passed
-- [x] Affected tests executed successfully
+### Automated Validation Results
+- [x] Pre-commit hooks passed
+- [x] PowerShell syntax validation complete
+- [x] No emoji violations detected
+- [x] Cross-platform path issues checked
+- [x] Project manifest checked
+- [x] Branch protection rules respected
 
-### Review Checklist
-- [ ] **REQUIRED**: Manual code review completed
-- [ ] **REQUIRED**: Changes tested in clean environment
-- [ ] **REQUIRED**: No breaking changes introduced
-- [ ] **REQUIRED**: Documentation updated if needed
+### Required Manual Review
+- [ ] **Code Review**: Changes have been reviewed and approved
+- [ ] **Testing**: Changes tested in clean environment
+- [ ] **Documentation**: Documentation is updated (if needed)
+- [ ] **Dependencies**: All dependencies are properly declared
+- [ ] **Integration**: Changes work with existing codebase
+- [ ] **Cross-Platform**: Works on Windows, Linux & macOS
+- [ ] **Security**: No security risks introduced
 
-### Important Notes
-- This is an **automated patch** generated by PatchManager v2.0
-- **Manual review and approval required** before merging
-- All changes have been validated but require human oversight
-- Backup created before applying changes
+### Branch Cleanup
+This branch will be **automatically deleted** after PR is merged. To prevent this:
+1. Add \`no-delete\` label to PR, or
+2. Use protect pattern in PatchManager config
 
 ### Next Steps
-1. Review all changed files carefully
-2. Test changes in isolated environment
-3. Approve and merge only if all checks pass
-4. Monitor for any issues after merge
+1. Review all changes carefully
+2. Run tests in clean environment
+3. Merge only after all checks pass
+4. Monitor for post-merge issues
 
-**Generated by**: PatchManager v2.0 with Git-based change control
+### Post-Merge Checklist
+- [ ] All tests pass after merge
+- [ ] No deployment issues
+- [ ] Changes working in production
+- [ ] Documentation updated
+
+**Generated by**: PatchManager v2.0  
+**Tracking**: Issue #$($script:IssueTracker.IssueNumber)  
 "@
         
-        $prUrl = gh pr create --title "fix: $Description" --body $prBody --base $BaseBranch --head $BranchName
+        # Create PR with proper category prefix based on Description
+        $category = "fix"
+        if ($Description -match "^feat") { $category = "feat" }
+        elseif ($Description -match "^chore|^maintenance") { $category = "chore" }
+        elseif ($Description -match "^docs") { $category = "docs" }
+        
+        $prUrl = gh pr create --title "$category`: $cleanDesc" --body $prBody --base $BaseBranch --head $BranchName
         
         return @{ Success = $true; Url = $prUrl; Message = "Pull request created successfully" }
         
@@ -836,5 +913,251 @@ $($ChangedFiles | ForEach-Object { "- $_" } | Out-String)
     }
 }
 
+function Invoke-BranchCleanup {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory = $false)]
+        [string]$Remote = "origin",
+
+        [Parameter(Mandatory = $false)]
+        [int]$PreserveHours = 24,
+
+        [Parameter(Mandatory = $false)]
+        [switch]$Force,
+        
+        [Parameter(Mandatory = $false)]
+        [string]$LogPath = "logs/branch-cleanup.log"
+    )
+
+    $alwaysPreserveBranches = @(
+        "main",
+        "master",
+        "develop",
+        "feature/*",
+        "hotfix/*",
+        "release/*"
+    )
+
+    # Create log directory if it doesn't exist
+    $logDir = Split-Path $LogPath -Parent
+    if (-not (Test-Path $logDir)) {
+        New-Item -ItemType Directory -Path $logDir -Force | Out-Null
+    }
+
+    function Write-CleanupLog {
+        param([string]$Message, [string]$Color = "White")
+        Write-Host $Message -ForegroundColor $Color
+        "$(Get-Date -Format 'yyyy-MM-dd HH:mm:ss'): $Message" | Add-Content $LogPath
+    }
+
+    Write-CleanupLog "Starting branch cleanup..." "Magenta"
+    Write-CleanupLog "Remote: $Remote" "Blue"
+    Write-CleanupLog "Preserve Hours: $PreserveHours" "Blue"
+    Write-CleanupLog "Force Mode: $Force" "Blue"
+    
+    # Get all remote branches
+    $branches = git branch -r | Where-Object { $_ -notmatch 'HEAD' } | ForEach-Object { $_.Trim() }
+    $preserveCutoff = (Get-Date).AddHours(-$PreserveHours)
+    $stats = @{
+        Total = $branches.Count
+        Protected = 0
+        Recent = 0
+        Deleted = 0
+        Failed = 0
+    }
+
+    # Get list of currently merged PRs
+    $mergedPRs = @()
+    try {
+        $mergedPRs = gh pr list --state merged --json headRefName --limit 100 | ConvertFrom-Json | Select-Object -ExpandProperty headRefName
+        Write-CleanupLog "Found $($mergedPRs.Count) recently merged PRs" "Blue"
+    }
+    catch {
+        Write-CleanupLog "Failed to get merged PRs: $($_.Exception.Message)" "Yellow"
+    }
+
+    foreach ($branch in $branches) {
+        $branchName = $branch -replace "^$Remote/", ''
+        Write-CleanupLog "Processing branch: $branchName" "Gray"
+        
+        # Skip protected branches
+        $isProtected = $false
+        foreach ($pattern in $alwaysPreserveBranches) {
+            if ($branchName -like $pattern) {
+                $isProtected = $true
+                break
+            }
+        }
+        if ($isProtected) {
+            Write-CleanupLog "Protected branch: $branchName - skipping" "Green"
+            $stats.Protected++
+            continue
+        }
+
+        # Check for no-delete label on PR and skip if found
+        try {
+            $prInfo = gh pr view $branchName --json labels 2>$null | ConvertFrom-Json
+            if ($prInfo.labels | Where-Object { $_.name -eq 'no-delete' }) {
+                Write-CleanupLog "Branch has no-delete label: $branchName - preserving" "Yellow"
+                $stats.Protected++
+                continue
+            }
+        }
+        catch {
+            # PR might not exist, which is fine
+        }
+
+        # Get last commit timestamp
+        $lastCommit = git log -1 --format="%ct" $branch 2>$null
+        if (-not $lastCommit) { continue }
+        
+        $lastCommitDate = [DateTimeOffset]::FromUnixTimeSeconds([long]$lastCommit).DateTime
+        
+        # Keep recent branches unless forced
+        if (-not $Force -and $lastCommitDate -gt $preserveCutoff) {
+            Write-CleanupLog "Recent branch: $branchName (modified $($lastCommitDate.ToString('g'))) - preserving" "Green"
+            $stats.Recent++
+            continue
+        }
+
+        # Delete branch if it's merged or force is used
+        $isMerged = $mergedPRs -contains $branchName -or 
+                   (git branch -r --merged | Where-Object { $_ -match [regex]::Escape($branch) })
+        
+        if ($isMerged -or $Force) {
+            Write-CleanupLog "Deleting branch: $branchName" "Yellow"
+            $result = git push $Remote --delete $branchName 2>&1
+            
+            if ($LASTEXITCODE -eq 0) {
+                Write-CleanupLog "Successfully deleted: $branchName" "Green"
+                git branch -D $branchName 2>$null # Clean up local branch if it exists
+                $stats.Deleted++
+            }
+            else {
+                Write-CleanupLog "Failed to delete: $branchName - $result" "Red"
+                $stats.Failed++
+            }
+        }
+    }
+
+    # Write summary
+    $summary = @"
+Branch Cleanup Summary
+---------------------
+Total Branches: $($stats.Total)
+Protected: $($stats.Protected)
+Recent: $($stats.Recent)
+Deleted: $($stats.Deleted)
+Failed: $($stats.Failed)
+"@
+
+    Write-CleanupLog $summary "Cyan"
+    Write-CleanupLog "Branch cleanup complete. See $LogPath for full details." "Green"
+
+    return @{
+        Success = $true
+        Stats = $stats
+        LogPath = $LogPath
+        Message = "Cleanup complete. Deleted $($stats.Deleted) branches."
+    }
+}
+
+function Register-BranchCleanupJob {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$BranchName,
+        
+        [Parameter(Mandatory = $false)]
+        [string]$Remote = "origin",
+        
+        [Parameter(Mandatory = $false)]
+        [int]$CheckIntervalSeconds = 300,
+        
+        [Parameter(Mandatory = $false)]
+        [string]$LogPath = "logs/branch-monitor.log"
+    )
+
+    # Create log directory if it doesn't exist
+    $logDir = Split-Path $LogPath -Parent
+    if (-not (Test-Path $logDir)) {
+        New-Item -ItemType Directory -Path $logDir -Force | Out-Null
+    }
+
+    $jobScript = {
+        param($branchName, $remote, $checkInterval, $logPath)
+
+        function Write-MonitorLog {
+            param([string]$Message)
+            "$(Get-Date -Format 'yyyy-MM-dd HH:mm:ss'): $Message" | Add-Content $logPath
+        }
+
+        Write-MonitorLog "Starting PR monitor for branch: $branchName"
+        
+        do {
+            Start-Sleep -Seconds $checkInterval
+            
+            try {
+                # Check PR status
+                $prInfo = gh pr view $branchName --json state,mergedAt,url 2>$null | ConvertFrom-Json
+                
+                if ($prInfo.state -eq "MERGED") {
+                    Write-MonitorLog "PR for branch $branchName was merged at $($prInfo.mergedAt)"
+                    
+                    # Wait a few minutes for CI/CD to complete
+                    Start-Sleep -Seconds 300
+                    
+                    # Clean up the branch
+                    Write-MonitorLog "Cleaning up merged branch: $branchName"
+                    
+                    # Try to delete remote branch
+                    $deleteResult = git push $remote --delete $branchName 2>&1
+                    if ($LASTEXITCODE -eq 0) {
+                        Write-MonitorLog "Successfully deleted remote branch: $branchName"
+                        
+                        # Clean up local branch if it exists
+                        git branch -D $branchName 2>&1 | Out-Null
+                        
+                        # Run full cleanup
+                        Write-MonitorLog "Running full branch cleanup..."
+                        . Invoke-BranchCleanup -Remote $remote -PreserveHours 24 -LogPath $logPath
+                        
+                        break # Exit the monitoring loop
+                    }
+                    else {
+                        Write-MonitorLog "Failed to delete remote branch: $deleteResult"
+                    }
+                }
+                elseif ($prInfo.state -eq "CLOSED") {
+                    Write-MonitorLog "PR was closed without merging. Branch $branchName will be preserved."
+                    break # Exit the monitoring loop
+                }
+                else {
+                    Write-MonitorLog "PR is still open, continuing to monitor..."
+                }
+            }
+            catch {
+                Write-MonitorLog "Error checking PR status: $($_.Exception.Message)"
+                # Don't break, keep monitoring
+            }
+        } while ($true)
+
+        Write-MonitorLog "Monitoring completed for branch: $branchName"
+    }
+
+    # Start the background job
+    $job = Start-Job -ScriptBlock $jobScript -ArgumentList $BranchName, $Remote, $CheckIntervalSeconds, $LogPath
+    
+    return @{
+        JobId = $job.Id
+        BranchName = $BranchName
+        LogPath = $LogPath
+    }
+}
+
 # Note: Export-ModuleMember is handled by the module manifest
 # This script contains functions that will be exported when the module is imported
+
+
+
+

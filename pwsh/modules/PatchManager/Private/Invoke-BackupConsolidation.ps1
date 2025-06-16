@@ -89,7 +89,7 @@ function Invoke-BackupConsolidation {
                     $Files = Get-ChildItem -Path $ProjectRoot -Recurse -File -Filter $Pattern
                     
                     # Filter files by date
-                    $FilteredFiles = $Files | Where-Object {
+                    $FilteredFiles = $Files | Where-Object{
                         $_.LastWriteTime -lt $CutoffDate
                     }
                     
@@ -117,7 +117,7 @@ function Invoke-BackupConsolidation {
             
             # Update the consolidation manifest
             $ManifestPath = Join-Path $ProjectRoot "consolidation-manifest.json"
-            $script:ConsolidationResults | ConvertTo-Json -Depth 3 | Set-Content -Path $ManifestPath -Encoding UTF8
+            $script:ConsolidationResults | ConvertTo-Json-Depth 3 | Set-Content -Path $ManifestPath -Encoding UTF8
             
             Write-CustomLog "Consolidation completed. Files consolidated: $($script:ConsolidationResults.FilesConsolidated), Size reclaimed: $($script:ConsolidationResults.TotalSizeReclaimed) bytes"
         }
@@ -131,4 +131,5 @@ function Invoke-BackupConsolidation {
         return $script:ConsolidationResults
     }
 }
+
 

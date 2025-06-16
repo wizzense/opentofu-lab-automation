@@ -54,11 +54,9 @@ function Get-TestStatistics {
         
         # Find longest running tests
         $testCases = $testResults.SelectNodes("//test-case")
-        $longestRunningTests = testCases | Select-Object @{Name="Name"; Expression={$_.name}}, 
+        $longestRunningTests = testCases | Select-Object@{Name="Name"; Expression={$_.name}}, 
                           @{Name="Time"; Expression={double$_.time}},
-                          @{Name="Result"; Expression={$_.result}} 
-            Sort-Object -Property Time -Descending 
-            Select-Object -First 5
+                          @{Name="Result"; Expression={$_.result}} | Sort-Object-Property Time -Descending | Select-Object -First 5
         
         # Return statistics object
         return PSCustomObject@{
@@ -132,22 +130,22 @@ function Analyze-TestResults {
         $failures = Get-TestFailures -ResultsPath $ResultsPath
         
         # Group failures by pattern type
-        $syntaxFailures = failures | Where-Object { $_.ErrorType -eq "SyntaxError" }
-        $parameterFailures = failures | Where-Object { $_.ErrorType -eq "ParameterBindingError" }
-        $runtimeFailures = failures | Where-Object { $_.ErrorType -eq "RuntimeException" }
-        $assertionFailures = failures | Where-Object { $_.ErrorType -eq "AssertionFailure" }
+        $syntaxFailures = failures | Where-Object{ $_.ErrorType -eq "SyntaxError" }
+        $parameterFailures = failures | Where-Object{ $_.ErrorType -eq "ParameterBindingError" }
+        $runtimeFailures = failures | Where-Object{ $_.ErrorType -eq "RuntimeException" }
+        $assertionFailures = failures | Where-Object{ $_.ErrorType -eq "AssertionFailure" }
         
         # Look for common patterns in error messages
         $failurePatterns = @{
-            TernarySyntax = (failures | Where-Object { $_.ErrorMessage -match "Unexpected token '?'" }).Count
-            MissingClosingBrace = (failures | Where-Object { $_.ErrorMessage -match "Missing closing '}'" }).Count
-            IncorrectParameterFormat = (failures | Where-Object { $_.ErrorMessage -match "Parameter attribute" }).Count
-            FileNotFound = (failures | Where-Object { $_.ErrorMessage -match "Cannot find path" }).Count
-            MissingFunction = (failures | Where-Object { $_.ErrorMessage -match "The term .* is not recognized" }).Count
+            TernarySyntax = (failures | Where-Object{ $_.ErrorMessage -match "Unexpected token '?'" }).Count
+            MissingClosingBrace = (failures | Where-Object{ $_.ErrorMessage -match "Missing closing '}'" }).Count
+            IncorrectParameterFormat = (failures | Where-Object{ $_.ErrorMessage -match "Parameter attribute" }).Count
+            FileNotFound = (failures | Where-Object{ $_.ErrorMessage -match "Cannot find path" }).Count
+            MissingFunction = (failures | Where-Object{ $_.ErrorMessage -match "The term .* is not recognized" }).Count
         }
         
         # Analyze file patterns
-        $filePatterns = failures | Group-Object -Property SourceFile  Select-Object Name, Count, Group
+        $filePatterns = failures | Group-Object-Property SourceFile | Select-ObjectName, Count, Group
         
         # Build fix recommendations
         $fixRecommendations = @()
@@ -160,15 +158,14 @@ function Analyze-TestResults {
             $fixRecommendations += "Run Fix-ParamSyntax to fix parameter declaration issues"
         }
         
-        if (filePatterns | Where-Object { $_.Name -match "Tests.ps1" -and $_.Count -gt 2 }) {
+        if (filePatterns | Where-Object{ $_.Name -match "Tests.ps1" -and $_.Count -gt 2 }) {
             $fixRecommendations += "Run Fix-TestSyntax to fix Pester test syntax issues"
         }
         
         # Get trend information if requested
         $trends = $null
         if ($IncludePreviousResults -and (Test-Path $PreviousResultsDirectory)) {
-            $previousResults = Get-ChildItem -Path $PreviousResultsDirectory -Filter "*.xml" 
-                               Where-Object { $_.FullName -ne $ResultsPath }
+            $previousResults = Get-ChildItem -Path $PreviousResultsDirectory -Filter "*.xml" | Where-Object{ $_.FullName -ne $ResultsPath }
                                
             if ($previousResults.Count -gt 0) {
                 $trends = @{
@@ -198,7 +195,7 @@ function Analyze-TestResults {
             RuntimeFailures = $runtimeFailures.Count
             AssertionFailures = $assertionFailures.Count
             FailurePatterns = $failurePatterns
-            ProblemFiles = filePatterns | Sort-Object -Property Count -Descending  Select-Object -First 5
+            ProblemFiles = filePatterns | Sort-Object-Property Count -Descending | Select-Object -First 5
             FixRecommendations = $fixRecommendations
             Trends = $trends
             DetailedFailures = $failures
@@ -270,13 +267,13 @@ Summary:
 - Assertion Failures: $($Analysis.AssertionFailures)
 
 Failure Patterns:
-$($Analysis.FailurePatterns  ForEach-Object { "- $($_.Key): $($_.Value)" }  Out-String)
+$($Analysis.FailurePatterns | ForEach-Object{ "- $($_.Key): $($_.Value)" }  Out-String)
 
 Problem Files:
-$($Analysis.ProblemFiles  ForEach-Object { "- $($_.Name): $($_.Count) failures" }  Out-String)
+$($Analysis.ProblemFiles | ForEach-Object{ "- $($_.Name): $($_.Count) failures" }  Out-String)
 
 Fix Recommendations:
-$($Analysis.FixRecommendations  ForEach-Object { "- $_" }  Out-String)
+$($Analysis.FixRecommendations | ForEach-Object{ "- $_" }  Out-String)
 
 "@
         }
@@ -342,7 +339,7 @@ $($Analysis.FixRecommendations  ForEach-Object { "- $_" }  Out-String)
         
         "JSON" {
             # Generate JSON report
-            $report = ConvertTo-Json -InputObject $Analysis -Depth 5
+            $report = | ConvertTo-Json-InputObject $Analysis -Depth 5
         }
         
         "Markdown" {
@@ -449,7 +446,7 @@ function Export-TestResults {
         # Export based on format
         switch ($Format) {
             "JSON" {
-                exportData | ConvertTo-Json -Depth 5  Out-File -FilePath $OutputPath -Encoding utf8 -Force
+                exportData | ConvertTo-Json-Depth 5  Out-File -FilePath $OutputPath -Encoding utf8 -Force
             }
             "CSV" {
                 $failures  Export-Csv -Path $OutputPath -NoTypeInformation -Force
@@ -467,6 +464,8 @@ function Export-TestResults {
         return $false
     }
 }
+
+
 
 
 

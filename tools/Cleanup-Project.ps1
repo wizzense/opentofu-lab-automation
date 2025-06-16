@@ -23,20 +23,20 @@ function Show-CleanupPlan {
  
  # 1. Root directory analysis
  Write-Host "`n1⃣ Root Directory Cleanup:" -ForegroundColor Yellow
- $rootFiles = Get-ChildItem -Path . -File  Where-Object { -not $_.Name.StartsWith('.') }
+ $rootFiles = Get-ChildItem -Path . -File | Where-Object{ -not $_.Name.StartsWith('.') }
  Write-Host " � Current root files: $($rootFiles.Count)" -ForegroundColor White
  
  # Categories
  $categories = @{
- "Legacy Fix Scripts" = rootFiles | Where-Object { $_.Name -like "fix_*.ps1" }
- "Test Scripts" = rootFiles | Where-Object { $_.Name -like "test-*.ps1" -or $_.Name -like "test-*.py" }
- "Documentation" = rootFiles | Where-Object { $_.Name -like "*.md" -and $_.Name -ne "README.md" }
- "Configuration" = rootFiles | Where-Object { $_.Name -like "*.yml" -or $_.Name -like "*.yaml" -or $_.Name -like "*.toml" }
- "Reports/Results" = rootFiles | Where-Object { $_.Name -like "*Results*.xml" -or $_.Name -like "*report*.json" }
- "Infrastructure" = rootFiles | Where-Object { $_.Name -like "*.tf" }
- "Temporary/Unknown" = rootFiles | Where-Object { $_.Name -eq "a" -or $_.Name -like "tmp_*" }
- "Utilities" = rootFiles | Where-Object { $_.Name -like "*.ps1" -and $_.Name -notlike "fix_*" -and $_.Name -notlike "test-*" }
- "Keep in Root" = rootFiles | Where-Object { $_.Name -in @("README.md", "LICENSE") }
+ "Legacy Fix Scripts" = rootFiles | Where-Object{ $_.Name -like "fix_*.ps1" }
+ "Test Scripts" = rootFiles | Where-Object{ $_.Name -like "test-*.ps1" -or $_.Name -like "test-*.py" }
+ "Documentation" = rootFiles | Where-Object{ $_.Name -like "*.md" -and $_.Name -ne "README.md" }
+ "Configuration" = rootFiles | Where-Object{ $_.Name -like "*.yml" -or $_.Name -like "*.yaml" -or $_.Name -like "*.toml" }
+ "Reports/Results" = rootFiles | Where-Object{ $_.Name -like "*Results*.xml" -or $_.Name -like "*report*.json" }
+ "Infrastructure" = rootFiles | Where-Object{ $_.Name -like "*.tf" }
+ "Temporary/Unknown" = rootFiles | Where-Object{ $_.Name -eq "a" -or $_.Name -like "tmp_*" }
+ "Utilities" = rootFiles | Where-Object{ $_.Name -like "*.ps1" -and $_.Name -notlike "fix_*" -and $_.Name -notlike "test-*" }
+ "Keep in Root" = rootFiles | Where-Object{ $_.Name -in @("README.md", "LICENSE") }
  }
  
  foreach ($category in $categories.Keys) {
@@ -98,10 +98,8 @@ function Create-Backup {
 Write-Host "`n� Creating backup..." -ForegroundColor Yellow
  
  # Create backup directory
- New-Item -ItemType Directory -Path $BackupPath -Force  Out-Null
- 
- # Copy root files to backup
- $rootFiles = Get-ChildItem -Path . -File  Where-Object { -not $_.Name.StartsWith('.') }
+ New-Item -ItemType Directory -Path $BackupPath -Force | Out-Null# Copy root files to backup
+ $rootFiles = Get-ChildItem -Path . -File | Where-Object{ -not $_.Name.StartsWith('.') }
  foreach ($file in $rootFiles) {
  Copy-Item $file.FullName -Destination $BackupPath
  }
@@ -150,8 +148,7 @@ Write-Host "`n Executing cleanup..." -ForegroundColor Yellow
  } else {
  # Create target directory
  if (-not (Test-Path $targetDir)) {
- New-Item -ItemType Directory -Path $targetDir -Force  Out-Null
- $createdDirs += $targetDir
+ New-Item -ItemType Directory -Path $targetDir -Force | Out-Null$createdDirs += $targetDir
  Write-Host " � Created: $targetDir" -ForegroundColor Green
  }
  
@@ -182,14 +179,14 @@ function Show-PostCleanupSummary {
  Write-Host "=======================" -ForegroundColor Yellow
  
  # Show new root directory state
- $remainingFiles = Get-ChildItem -Path . -File  Where-Object { -not $_.Name.StartsWith('.') }
+ $remainingFiles = Get-ChildItem -Path . -File | Where-Object{ -not $_.Name.StartsWith('.') }
  Write-Host "`n� Root directory now contains:" -ForegroundColor Cyan
  foreach ($file in $remainingFiles) {
  Write-Host " $($file.Name)" -ForegroundColor Green
  }
  
  # Show created directories
- $newDirs = Get-ChildItem -Path . -Directory  Where-Object { 
+ $newDirs = Get-ChildItem -Path . -Directory | Where-Object{ 
  $_.Name -in @("archive", "docs", "configs", "infrastructure", "reports", "tools", "temp") 
  }
  
@@ -260,6 +257,7 @@ try {
  Write-Host "� Backup is available at: $BackupPath" -ForegroundColor Cyan
  }
 }
+
 
 
 

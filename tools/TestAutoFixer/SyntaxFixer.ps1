@@ -405,8 +405,7 @@ $prompt = "`n<press any key to continue>`n"
 
 function Write-Continue($prompt) {
   Console::Write($prompt + '  ')
-  Read-LoggedInput -Prompt prompt | Out-Null
-}
+  Read-LoggedInput -Prompt prompt | Out-Null}
 '@
 
     $newPromptSection = @'
@@ -506,6 +505,7 @@ function Fix-RunnerScriptIssues {
     
     return $false
 }
+
 
 
 

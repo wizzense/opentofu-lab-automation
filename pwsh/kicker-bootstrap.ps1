@@ -75,12 +75,11 @@ function Get-SafeLabConfig {
         if ($_.Exception.Message -match 'positional parameter') {
             Write-CustomLog 'Falling back to PowerShell 5.1 config loader.' 'WARN'
             $content = Get-Content -Raw -LiteralPath $Path
-            $cfg = $content  ConvertFrom-Json
-            $labDir = Split-Path -Parent $labConfigScript
+            $cfg = $content | ConvertFrom-Json$labDir = Split-Path -Parent $labConfigScript
             $repoRoot = Resolve-Path (Join-PathRobust $labDir '..')
             $dirs = @{}
             if ($cfg.PSObject.Properties'Directories') {
-                $cfg.Directories.PSObject.Properties  ForEach-Object { $dirs$_.Name = $_.Value }
+                $cfg.Directories.PSObject.Properties | ForEach-Object{ $dirs$_.Name = $_.Value }
             }
             $dirs'RepoRoot'       = $repoRoot.Path
             $dirs'RunnerScripts'  = Join-PathRobust $repoRoot.Path @('runner_scripts')
@@ -148,8 +147,7 @@ $loggerDir  = Join-Path (Join-Path $scriptRoot 'lab_utils') 'LabRunner'
 $loggerPath = Join-Path $loggerDir 'Logger.ps1'
 if (-not (Test-Path $loggerPath)) {
     if (-not (Test-Path $loggerDir)) {
-        New-Item -ItemType Directory -Path $loggerDir -Force  Out-Null
-    }
+        New-Item -ItemType Directory -Path $loggerDir -Force | Out-Null}
     $loggerUrl = "${baseUrl}${targetBranch}/pwsh/modules/LabRunner/Logger.ps1"
     Invoke-WebRequest -Uri $loggerUrl -OutFile $loggerPath
 }
@@ -167,7 +165,7 @@ if (-not (Get-Variable -Name LogFilePath -Scope Script -ErrorAction SilentlyCont
     if (-not $logDir) {
         if ($isWindowsOS) { $logDir = 'C:\\temp' } else { $logDir = System.IO.Path::GetTempPath() }
     }
-    if (-not (Test-Path $logDir)) { New-Item -ItemType Directory -Path $logDir -Force  Out-Null }
+    if (-not (Test-Path $logDir)) { New-Item -ItemType Directory -Path $logDir -Force | Out-Null}
     $script:LogFilePath = Join-Path $logDir 'lab.log'
 }
 
@@ -244,15 +242,13 @@ $labConfigScript = Join-Path $labUtilsDir 'Get-LabConfig.ps1'
 $formatScript    = Join-Path $labUtilsDir 'Format-Config.ps1'
 if (-not (Test-Path $labConfigScript)) {
     if (-not (Test-Path $labUtilsDir)) {
-        New-Item -ItemType Directory -Path $labUtilsDir -Force  Out-Null
-    }
+        New-Item -ItemType Directory -Path $labUtilsDir -Force | Out-Null}
     $labConfigUrl = 'https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/main/pwsh/modules/LabRunner/Get-LabConfig.ps1'
     Invoke-WebRequest -Uri $labConfigUrl -OutFile $labConfigScript
 }
 if (-not (Test-Path $formatScript)) {
     if (-not (Test-Path $labUtilsDir)) {
-        New-Item -ItemType Directory -Path $labUtilsDir -Force  Out-Null
-    }
+        New-Item -ItemType Directory -Path $labUtilsDir -Force | Out-Null}
     $formatUrl = 'https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/main/pwsh/modules/CodeFixerFormat-Config.ps1'
     Invoke-WebRequest -Uri $formatUrl -OutFile $formatScript
 }
@@ -310,7 +306,7 @@ if ($configOption -match "https://") {
 } else {
     $localConfigDir = Join-Path (Join-Path $scriptRoot "configs") "config_files"
     if (!(Test-Path $localConfigDir)) {
-        New-Item -ItemType Directory -Path localConfigDir | Out-Null
+        New-Item -ItemType Directory -Path $localConfigDir | Out-Null
     }
     $configFiles = Get-ChildItem -Path $localConfigDir -Filter '*.json' -File
     if ($configFiles.Count -gt 1) {
@@ -553,15 +549,13 @@ Push-Location $RepoPath
         Write-CustomLog "Backing up local config changes to $backupDir" 'INFO'
         if (Test-Path $backupDir) { Remove-Item -Recurse -Force $backupDir }
         Copy-Item -Path 'configs/config_files' -Destination $backupDir -Recurse -Force
-        & $GitPath stash push -u -- 'configs/config_files'  Out-Null
-    }
+        & $GitPath stash push -u -- 'configs/config_files' | Out-Null}
     & $GitPath pull origin $Branch --quiet 2>&1 >> "$(Get-CrossPlatformTempPath)\git.log"
     if ($configChanges -and (Test-Path $backupDir)) {
         Write-CustomLog 'Restoring backed up config files' 'INFO'
         Copy-Item -Path (Join-Path $backupDir '*') -Destination 'configs/config_files' -Recurse -Force
         Remove-Item -Recurse -Force $backupDir -ErrorAction SilentlyContinue
-        & $GitPath stash drop --quiet  Out-Null
-    }
+        & $GitPath stash drop --quiet | Out-Null}
     Pop-Location
 }
 
@@ -571,8 +565,7 @@ Push-Location $RepoPath
 Write-CustomLog "==== Cloning or updating the target repository ===="
 
 try {
-    & "$ghExePath" auth status 2>&1  Out-Null
-} catch {
+    & "$ghExePath" auth status 2>&1 | Out-Null} catch {
     Write-Error "GitHub CLI is not authenticated. Please run '$ghExePath auth login' and re-run this script."
     exit 1
 }
@@ -601,8 +594,7 @@ $localPath = System.Environment::ExpandEnvironmentVariables($localPath)
 # Ensure local directory exists
 Write-CustomLog "Ensuring local path '$localPath' exists..."
 if (!(Test-Path $localPath)) {
-    New-Item -ItemType Directory -Path $localPath -Force  Out-Null
-}
+    New-Item -ItemType Directory -Path $localPath -Force | Out-Null}
 
 # Define repo path
 $repoName = ($config.RepoUrl -split '/')-1 -replace "\.git$", ""
@@ -650,8 +642,8 @@ if (!(Test-Path $repoPath)) {
             Push-Location $repoPath
             try {
                 # Restore files that can be checked out on Windows
-                & "$gitPath" restore --source=HEAD :/ 2>&1  Out-Null
-                Write-CustomLog "Attempted file restoration. Repository may be partially functional."
+                & "$gitPath" restore --source=HEAD :/ 2>&1 | Out-Null
+Write-CustomLog "Attempted file restoration. Repository may be partially functional."
                 $gitExit = 0  # Consider this a success for Windows
             } catch {
                 Write-CustomLog "File restoration failed: $_"
@@ -735,7 +727,7 @@ Write-Host "DEBUG runnerScriptName: $runnerScriptName" -ForegroundColor Cyan
 Write-Host "DEBUG runnerScriptPath: $runnerScriptPath" -ForegroundColor Cyan
 if ($ConsoleLevel -ge $script:VerbosityLevels'detailed') {
     Write-Host "DEBUG Directory contents of repoPath (${repoPath}):" -ForegroundColor Cyan
-    Get-ChildItem -Path $repoPath -Recurse  Select-Object FullName
+    Get-ChildItem -Path $repoPath -Recurse | Select-ObjectFullName
 }
 
 if (!(Test-Path $runnerScriptPath)) {
@@ -770,6 +762,8 @@ if ($exitCode -ne 0) {
 
 Write-CustomLog "`n=== Kicker script finished successfully! ==="
 exit 0
+
+
 
 
 

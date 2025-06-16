@@ -51,8 +51,8 @@ if (-not (Test-Path $Source)) {
  $destDir = Split-Path -Parent $Destination
  if ($CreateDirectory -and -not (Test-Path $destDir)) {
  try {
- New-Item -Path $destDir -ItemType Directory -Force  Out-Null
- Write-Host " � Created directory: $destDir" -ForegroundColor Gray
+ New-Item -Path $destDir -ItemType Directory -Force | Out-Null
+Write-Host " � Created directory: $destDir" -ForegroundColor Gray
  } catch {
  Write-Warning "Failed to create directory $destDir`: $_"
  return $false
@@ -95,8 +95,8 @@ if (-not (Test-Path $Source)) {
  $destDir = Split-Path -Parent $Destination
  if ($CreateDirectory -and -not (Test-Path $destDir)) {
  try {
- New-Item -Path $destDir -ItemType Directory -Force  Out-Null
- Write-Host " � Created directory: $destDir" -ForegroundColor Gray
+ New-Item -Path $destDir -ItemType Directory -Force | Out-Null
+Write-Host " � Created directory: $destDir" -ForegroundColor Gray
  } catch {
  Write-Warning "Failed to create directory $destDir`: $_"
  return $false
@@ -140,8 +140,8 @@ if (-not (Test-Path $Source)) {
  
  if (-not (Test-Path $ArchiveDir)) {
  try {
- New-Item -Path $ArchiveDir -ItemType Directory -Force  Out-Null
- Write-Host " � Created archive directory: $ArchiveDir" -ForegroundColor Gray
+ New-Item -Path $ArchiveDir -ItemType Directory -Force | Out-Null
+Write-Host " � Created archive directory: $ArchiveDir" -ForegroundColor Gray
  } catch {
  Write-Warning "Failed to create archive directory $ArchiveDir`: $_"
  return $false
@@ -191,8 +191,8 @@ foreach ($dir in $directories) {
  Write-Host " Would create directory: $dir" -ForegroundColor Yellow
  } else {
  try {
- New-Item -Path $dirPath -ItemType Directory -Force  Out-Null
- Write-Host " � Created directory: $dir" -ForegroundColor Green
+ New-Item -Path $dirPath -ItemType Directory -Force | Out-Null
+Write-Host " � Created directory: $dir" -ForegroundColor Green
  } catch {
  Write-Warning "Failed to create directory $dir`: $_"
  }
@@ -295,8 +295,7 @@ foreach ($file in $archiveFiles) {
  }
 
  if (-not (Test-Path $archiveDir)) {
- New-Item -Path $archiveDir -ItemType Directory -Force  Out-Null
- }
+ New-Item -Path $archiveDir -ItemType Directory -Force | Out-Null}
  
  $destination = Join-Path $archiveDir $file
  
@@ -460,6 +459,8 @@ Write-Host "`nNext steps:" -ForegroundColor Cyan
 Write-Host "1. Update GitHub Actions workflows to reference new script paths" -ForegroundColor White
 Write-Host "2. Run validation to ensure all scripts work in their new locations" -ForegroundColor White
 Write-Host "3. Update documentation to reflect new structure" -ForegroundColor White
+
+
 
 
 

@@ -1,0 +1,337 @@
+#Requires -Version 7.0
+<#
+.SYNOPSIS
+    Comprehensive validation system built from emergency audit findings
+    
+.DESCRIPTION
+    New validation framework designed to catch the failures identified in the emergency audit:
+    1. Repeated parameter detection
+    2. Malformed path validation
+    3. Import statement integrity checks
+    4. Auto-fix safeguards
+    5. Pattern-based corruption detection
+    
+    This is our response to the validation system failure crisis.
+#>
+
+param(
+    [Parameter(Mandatory = $false)]
+    [ValidateSet("Scan", "Fix", "Monitor", "All")]
+    [string]$Mode = "Scan",
+    
+    [Parameter(Mandatory = $false)]
+    [switch]$StrictMode,
+    
+    [Parameter(Mandatory = $false)]
+    [switch]$GenerateReport
+)
+
+$ErrorActionPreference = "Continue"
+
+# Validation patterns learned from the emergency audit
+$ValidationPatterns = @{
+    RepeatedParameters = @{
+        Pattern = '(-\w+)\s+\1'
+        Description = "Detects repeated parameters like -Force -Force"
+        Severity = "CRITICAL"
+    }
+    
+    CatastrophicImports = @{
+        Pattern = 'Import-Module.*(-Force\s*){3,}'
+        Description = "Detects imports with 3+ repeated -Force parameters"
+        Severity = "CRITICAL"
+    }
+    
+    MalformedPaths = @{
+        Pattern = '([A-Za-z]:\\.*//|//.*//)'
+        Description = "Detects malformed paths with mixed separators"
+        Severity = "HIGH"
+    }
+    
+    ExcessiveForceParameters = @{
+        Pattern = '(-Force\s*){5,}'
+        Description = "Detects 5+ consecutive -Force parameters"
+        Severity = "CRITICAL"
+    }
+    
+    InvalidModulePaths = @{
+        Pattern = 'Import-Module\s+"[^"]*//[^"]*"'
+        Description = "Detects Import-Module with double slashes in paths"
+        Severity = "HIGH"
+    }
+    
+    ParameterEscalation = @{
+        Pattern = '(-\w+\s+){10,}'
+        Description = "Detects parameter escalation (10+ repeated parameters)"
+        Severity = "CRITICAL"
+    }
+}
+
+# Initialize results
+$ValidationResults = @{
+    FilesScanned = 0
+    IssuesFound = @()
+    CriticalIssues = 0
+    HighIssues = 0
+    MediumIssues = 0
+    FixesApplied = 0
+    FailedFixes = 0
+    CleanFiles = 0
+}
+
+Write-Host "🛡️ COMPREHENSIVE VALIDATION SYSTEM v2.0" -ForegroundColor Green
+Write-Host "============================================" -ForegroundColor Green
+Write-Host "Built from emergency audit findings to prevent validation failures" -ForegroundColor Cyan
+
+function Test-FileIntegrity {
+    param(
+        [string]$FilePath,
+        [hashtable]$Patterns
+    )
+    
+    if (-not (Test-Path $FilePath)) {
+        return @()
+    }
+    
+    $content = Get-Content $FilePath -Raw -ErrorAction SilentlyContinue
+    if (-not $content) {
+        return @()
+    }
+    
+    $issues = @()
+    
+    foreach ($patternName in $Patterns.Keys) {
+        $pattern = $Patterns[$patternName]
+        
+        if ($content -match $pattern.Pattern) {            $regexMatches = [regex]::Matches($content, $pattern.Pattern)
+            
+            foreach ($match in $regexMatches) {
+                $lineNumber = ($content.Substring(0, $match.Index) -split "`n").Count
+                
+                $issue = @{
+                    File = $FilePath
+                    Pattern = $patternName
+                    Description = $pattern.Description
+                    Severity = $pattern.Severity
+                    LineNumber = $lineNumber
+                    MatchedText = $match.Value
+                    Context = $content -split "`n" | Select-Object -Skip ([math]::Max(0, $lineNumber - 2)) -First 3 | Out-String
+                }
+                
+                $issues += $issue
+            }
+        }
+    }
+    
+    return $issues
+}
+
+function Repair-FileCorruption {
+    param(
+        [string]$FilePath,
+        [array]$Issues
+    )
+    
+    if (-not (Test-Path $FilePath)) {
+        return $false
+    }
+    
+    $content = Get-Content $FilePath -Raw
+    $originalContent = $content
+    $fixesApplied = 0
+    
+    try {
+        # Fix 1: Remove excessive -Force parameters (keep only one)
+        $content = $content -replace '(-Force\s*)(-Force\s*)+', '-Force'
+        
+        # Fix 2: Fix malformed paths
+        $content = $content -replace 'C:\\([^"]*)//', 'C:\$1\'
+        $content = $content -replace '//([^/"]*)//', '/$1/'
+        
+        # Fix 3: Clean up Import-Module statements
+        $content = $content -replace 'Import-Module\s+"([^"]*)//', 'Import-Module "$1/'
+        
+        # Fix 4: Remove parameter escalation
+        $content = $content -replace '(\s+-\w+)(\s+-\w+){10,}', '$1'
+        
+        if ($content -ne $originalContent) {
+            # Create backup
+            $backupPath = "$FilePath.backup-$(Get-Date -Format 'yyyyMMdd-HHmmss')"
+            Copy-Item $FilePath $backupPath
+            
+            # Apply fix
+            Set-Content -Path $FilePath -Value $content -Encoding UTF8
+            $fixesApplied++
+            
+            Write-Host "   ✅ Fixed $FilePath (backup: $(Split-Path $backupPath -Leaf))" -ForegroundColor Green
+            return $true
+        }
+    } catch {
+        Write-Host "   ❌ Failed to fix $FilePath`: $($_.Exception.Message)" -ForegroundColor Red
+        return $false
+    }
+    
+    return $false
+}
+
+# Scan all PowerShell files
+Write-Host "`n📊 SCANNING FILES FOR CORRUPTION PATTERNS" -ForegroundColor Cyan
+$allFiles = Get-ChildItem -Path "." -Recurse -Include "*.ps1" | Where-Object { 
+    $_.FullName -notmatch '\\archive\\|\\backups\\|\\coverage\\' 
+}
+
+Write-Host "   Scanning $($allFiles.Count) PowerShell files..." -ForegroundColor Yellow
+
+foreach ($file in $allFiles) {
+    $ValidationResults.FilesScanned++
+    
+    $issues = Test-FileIntegrity -FilePath $file.FullName -Patterns $ValidationPatterns
+    
+    if ($issues.Count -gt 0) {
+        $ValidationResults.IssuesFound += $issues
+        
+        foreach ($issue in $issues) {
+            switch ($issue.Severity) {
+                "CRITICAL" { $ValidationResults.CriticalIssues++ }
+                "HIGH" { $ValidationResults.HighIssues++ }
+                "MEDIUM" { $ValidationResults.MediumIssues++ }
+            }
+        }
+        
+        $fileName = Split-Path $file.FullName -Leaf
+        $criticalCount = ($issues | Where-Object Severity -eq "CRITICAL").Count
+        $highCount = ($issues | Where-Object Severity -eq "HIGH").Count
+        
+        if ($criticalCount -gt 0) {
+            Write-Host "   🚨 $fileName`: $criticalCount critical, $highCount high severity issues" -ForegroundColor Red
+        } elseif ($highCount -gt 0) {
+            Write-Host "   ⚠️  $fileName`: $highCount high severity issues" -ForegroundColor Yellow
+        }
+        
+        # Apply fixes if in Fix mode
+        if ($Mode -eq "Fix" -or $Mode -eq "All") {
+            if (Repair-FileCorruption -FilePath $file.FullName -Issues $issues) {
+                $ValidationResults.FixesApplied++
+            } else {
+                $ValidationResults.FailedFixes++
+            }
+        }
+    } else {
+        $ValidationResults.CleanFiles++
+    }
+    
+    # Progress indicator
+    if ($ValidationResults.FilesScanned % 50 -eq 0) {
+        Write-Host "   Progress: $($ValidationResults.FilesScanned)/$($allFiles.Count) files scanned" -ForegroundColor Gray
+    }
+}
+
+# Display results
+Write-Host "`n📈 VALIDATION RESULTS SUMMARY" -ForegroundColor Cyan
+Write-Host "Files Scanned: $($ValidationResults.FilesScanned)" -ForegroundColor White
+Write-Host "Clean Files: $($ValidationResults.CleanFiles)" -ForegroundColor Green
+Write-Host "Files with Issues: $($ValidationResults.FilesScanned - $ValidationResults.CleanFiles)" -ForegroundColor Yellow
+
+Write-Host "`nIssue Severity Breakdown:" -ForegroundColor White
+Write-Host "🚨 CRITICAL: $($ValidationResults.CriticalIssues)" -ForegroundColor Red
+Write-Host "⚠️  HIGH: $($ValidationResults.HighIssues)" -ForegroundColor Yellow
+Write-Host "ℹ️  MEDIUM: $($ValidationResults.MediumIssues)" -ForegroundColor Cyan
+
+if ($Mode -eq "Fix" -or $Mode -eq "All") {
+    Write-Host "`nFix Results:" -ForegroundColor White
+    Write-Host "✅ Fixes Applied: $($ValidationResults.FixesApplied)" -ForegroundColor Green
+    Write-Host "❌ Failed Fixes: $($ValidationResults.FailedFixes)" -ForegroundColor Red
+}
+
+# Show top issues by pattern
+Write-Host "`n🔍 TOP ISSUES BY PATTERN" -ForegroundColor Cyan
+$issuesByPattern = $ValidationResults.IssuesFound | Group-Object Pattern | Sort-Object Count -Descending | Select-Object -First 5
+
+foreach ($group in $issuesByPattern) {
+    $pattern = $ValidationPatterns[$group.Name]
+    Write-Host "   $($group.Name): $($group.Count) occurrences" -ForegroundColor White
+    Write-Host "     $($pattern.Description)" -ForegroundColor Gray
+}
+
+# Critical file list
+if ($ValidationResults.CriticalIssues -gt 0) {
+    Write-Host "`n🚨 FILES REQUIRING IMMEDIATE ATTENTION" -ForegroundColor Red
+    $criticalFiles = $ValidationResults.IssuesFound | 
+        Where-Object Severity -eq "CRITICAL" | 
+        Group-Object File | 
+        Sort-Object Count -Descending | 
+        Select-Object -First 10
+    
+    foreach ($file in $criticalFiles) {
+        $fileName = Split-Path $file.Name -Leaf
+        Write-Host "   $fileName`: $($file.Count) critical issues" -ForegroundColor Red
+    }
+}
+
+# Generate report if requested
+if ($GenerateReport) {
+    $reportPath = ".\COMPREHENSIVE-VALIDATION-REPORT-$(Get-Date -Format 'yyyyMMdd-HHmmss').md"
+    
+    $reportContent = @"
+# Comprehensive Validation Report
+Generated: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')
+Mode: $Mode
+
+## Summary
+- **Files Scanned**: $($ValidationResults.FilesScanned)
+- **Clean Files**: $($ValidationResults.CleanFiles)
+- **Files with Issues**: $($ValidationResults.FilesScanned - $ValidationResults.CleanFiles)
+
+## Issue Severity
+- **CRITICAL**: $($ValidationResults.CriticalIssues)
+- **HIGH**: $($ValidationResults.HighIssues)
+- **MEDIUM**: $($ValidationResults.MediumIssues)
+
+## Fix Results
+- **Fixes Applied**: $($ValidationResults.FixesApplied)
+- **Failed Fixes**: $($ValidationResults.FailedFixes)
+
+## Validation Patterns Used
+$($ValidationPatterns.Keys | ForEach-Object { "- **$_**: $($ValidationPatterns[$_].Description)" } | Out-String)
+
+## Critical Files
+$($criticalFiles | ForEach-Object { "- $(Split-Path $_.Name -Leaf): $($_.Count) critical issues" } | Out-String)
+
+## Recommendations
+1. **IMMEDIATE**: Fix all CRITICAL severity issues
+2. **URGENT**: Address HIGH severity issues
+3. **IMPORTANT**: Implement continuous validation monitoring
+4. **ESSENTIAL**: Add pre-commit hooks to prevent future corruption
+"@
+
+    Set-Content -Path $reportPath -Value $reportContent
+    Write-Host "`n📄 Report generated: $reportPath" -ForegroundColor Green
+}
+
+# Validation system health check
+Write-Host "`n🏥 VALIDATION SYSTEM HEALTH CHECK" -ForegroundColor Magenta
+$systemHealth = @{
+    PatternCoverage = $ValidationPatterns.Count
+    DetectionAccuracy = if ($ValidationResults.FilesScanned -gt 0) { 
+        [math]::Round((($ValidationResults.FilesScanned - $ValidationResults.CleanFiles) / $ValidationResults.FilesScanned) * 100, 2) 
+    } else { 0 }
+    FixSuccessRate = if ($ValidationResults.FixesApplied + $ValidationResults.FailedFixes -gt 0) {
+        [math]::Round(($ValidationResults.FixesApplied / ($ValidationResults.FixesApplied + $ValidationResults.FailedFixes)) * 100, 2)
+    } else { 0 }
+}
+
+Write-Host "   Pattern Coverage: $($systemHealth.PatternCoverage) validation patterns" -ForegroundColor Green
+Write-Host "   Detection Rate: $($systemHealth.DetectionAccuracy)% of files had issues" -ForegroundColor Yellow
+if ($Mode -eq "Fix" -or $Mode -eq "All") {
+    Write-Host "   Fix Success Rate: $($systemHealth.FixSuccessRate)%" -ForegroundColor $(if ($systemHealth.FixSuccessRate -gt 80) { "Green" } else { "Red" })
+}
+
+Write-Host "`n✅ COMPREHENSIVE VALIDATION COMPLETE" -ForegroundColor Green
+if ($ValidationResults.CriticalIssues -gt 0) {
+    Write-Host "⚠️  WARNING: $($ValidationResults.CriticalIssues) CRITICAL issues require immediate attention!" -ForegroundColor Red
+    exit 1
+} else {
+    Write-Host "🎉 No critical issues detected - validation system is working!" -ForegroundColor Green
+}
+
+return $ValidationResults

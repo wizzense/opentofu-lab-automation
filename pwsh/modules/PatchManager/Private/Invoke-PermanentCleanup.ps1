@@ -74,11 +74,9 @@ function Invoke-PermanentCleanup {
         }
     }
     
-    process {
-        try {
+    process {        try {
             # Parse the cleanup targets
             $targets = $CleanupTargets | ConvertFrom-Json
-            
             foreach ($target in $targets) {
                 if (-not $target.Path -or -not $target.MaxAge) {
                     Write-CustomLog "Invalid target configuration: Missing Path or MaxAge" "ERROR"
@@ -105,7 +103,7 @@ function Invoke-PermanentCleanup {
             
             # Update the cleanup manifest
             $manifestPath = Join-Path $PWD "cleanup-manifest.json"
-            $script:CleanupResults | ConvertTo-Json -Depth 4 | Set-Content -Path $manifestPath -Encoding UTF8
+            $script:CleanupResults | ConvertTo-Json-Depth 4 | Set-Content -Path $manifestPath -Encoding UTF8
             
             Write-CustomLog "Cleanup operation completed. Total size reclaimed: $($script:CleanupResults.TotalSizeReclaimed) bytes"
         }
@@ -143,8 +141,7 @@ function Remove-OldFiles {
     }
     
     # Get all files older than cutoff date
-    $files = Get-ChildItem -Path $Path -Recurse -File | 
-        Where-Object { $_.LastWriteTime -lt $CutoffDate }
+    $files = Get-ChildItem -Path $Path -Recurse -File | Where-Object{ $_.LastWriteTime -lt $CutoffDate }
     
     if ($files) {
         $totalSize = ($files | Measure-Object Length -Sum).Sum ?? 0
@@ -164,8 +161,7 @@ function Remove-OldFiles {
     }
     
     # Clean empty directories
-    $emptyDirs = Get-ChildItem -Path $Path -Directory -Recurse | 
-        Where-Object { -not (Get-ChildItem $_.FullName -Force -ErrorAction SilentlyContinue) }
+    $emptyDirs = Get-ChildItem -Path $Path -Directory -Recurse | Where-Object{ -not (Get-ChildItem $_.FullName -Force -ErrorAction SilentlyContinue) }
     
     if ($emptyDirs -and -not $DryRun) {
         foreach ($dir in $emptyDirs) {
@@ -181,4 +177,5 @@ function Remove-OldFiles {
     
     return $result
 }
+
 

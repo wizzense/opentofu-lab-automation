@@ -14,7 +14,7 @@ function Invoke-AutomaticFixCapture {
  $issues = @()
  
  # 1. Check for corrupted parameter syntax (like we just fixed)
- $corruptedParams = Get-ChildItem -Path $ProjectRoot -Recurse -Include "*.ps1"  ForEach-Object {
+ $corruptedParams = Get-ChildItem -Path $ProjectRoot -Recurse -Include "*.ps1" | ForEach-Object{
  $content = Get-Content $_.FullName -Raw -ErrorAction SilentlyContinue
  if ($content -match '\Parameter\(^\*\n.*?if \(-not \(Get-Module.*?PSScriptAnalyzer.*?\\') {
  PSCustomObject@{
@@ -27,7 +27,7 @@ function Invoke-AutomaticFixCapture {
  $issues += $corruptedParams
  
  # 2. Check for missing module imports in tests
- $missingImports = Get-ChildItem -Path "$ProjectRoot/tests" -Recurse -Include "*.Tests.ps1"  ForEach-Object {
+ $missingImports = Get-ChildItem -Path "$ProjectRoot/tests" -Recurse -Include "*.Tests.ps1" | ForEach-Object{
  $content = Get-Content $_.FullName -Raw -ErrorAction SilentlyContinue
  if ($content -match 'pwsh/modules' -and $content -notmatch 'pwsh/modules/LabRunner') {
  PSCustomObject@{
@@ -40,7 +40,7 @@ function Invoke-AutomaticFixCapture {
  $issues += $missingImports
  
  # 3. Check for undefined commands (like 'errors')
- $undefinedCommands = Get-ChildItem -Path $ProjectRoot -Recurse -Include "*.ps1"  ForEach-Object {
+ $undefinedCommands = Get-ChildItem -Path $ProjectRoot -Recurse -Include "*.ps1" | ForEach-Object{
  $content = Get-Content $_.FullName -Raw -ErrorAction SilentlyContinue
  if ($content -match '\$errors\s*=\s*errors\b' -or $content -match '^errors\b') {
  PSCustomObject@{
@@ -53,7 +53,7 @@ function Invoke-AutomaticFixCapture {
  $issues += $undefinedCommands
  
  # 4. Check for missing closing braces/brackets
- $syntaxErrors = Get-ChildItem -Path $ProjectRoot -Recurse -Include "*.ps1"  ForEach-Object {
+ $syntaxErrors = Get-ChildItem -Path $ProjectRoot -Recurse -Include "*.ps1" | ForEach-Object{
  try {
  $tokens = $null
  $parseErrors = $null
@@ -77,9 +77,9 @@ function Invoke-AutomaticFixCapture {
  Write-Host " Found $($issues.Count) issues to address" -ForegroundColor Yellow
  
  if ($AnalyzeOnly) {
- return issues | Group-Object Type  ForEach-Object {
+ return issues | Group-ObjectType | ForEach-Object{
  Write-Host "`n$($_.Name): $($_.Count) files" -ForegroundColor Magenta
- $_.Group  ForEach-Object { Write-Host " - $($_.File): $($_.Issue)" }
+ $_.Group | ForEach-Object{ Write-Host " - $($_.File): $($_.Issue)" }
  }
  }
  
@@ -87,7 +87,7 @@ function Invoke-AutomaticFixCapture {
  Write-Host " Applying automatic fixes..." -ForegroundColor Green
  
  # Fix corrupted parameters
- corruptedParams | ForEach-Object {
+ corruptedParams | ForEach-Object{
  Write-Host "Fixing corrupted parameter in $($_.File)" -ForegroundColor Yellow
  $content = Get-Content $_.File -Raw
  # Remove the PSScriptAnalyzer import that got inserted into parameter blocks
@@ -97,7 +97,7 @@ function Invoke-AutomaticFixCapture {
  }
  
  # Fix outdated imports
- missingImports | ForEach-Object {
+ missingImports | ForEach-Object{
  Write-Host "Updating import path in $($_.File)" -ForegroundColor Yellow
  $content = Get-Content $_.File -Raw
  $fixed = $content -replace 'pwsh/modules', 'pwsh/modules/LabRunner'
@@ -105,7 +105,7 @@ function Invoke-AutomaticFixCapture {
  }
  
  # Fix undefined commands
- undefinedCommands | ForEach-Object {
+ undefinedCommands | ForEach-Object{
  Write-Host "Fixing undefined 'errors' command in $($_.File)" -ForegroundColor Yellow
  $content = Get-Content $_.File -Raw
  # Replace undefined 'errors' with proper error handling
@@ -145,17 +145,17 @@ function New-AutoFixRule {
  }
  
  if (Test-Path $ruleFile) {
- $rules = Get-Content $ruleFile  ConvertFrom-Json
- $rules = @($rules) + $rule
+ $rules = Get-Content $ruleFile | ConvertFrom-Json$rules = @($rules) + $rule
  } else {
  $rules = @($rule)
  }
  
- rules | ConvertTo-Json -Depth 10  Set-Content $ruleFile
+ rules | ConvertTo-Json-Depth 10  Set-Content $ruleFile
  Write-Host "PASS Auto-fix rule '$RuleName' created" -ForegroundColor Green
 }
 
 # Export functions
 Export-ModuleMember -Function Invoke-AutomaticFixCapture, New-AutoFixRule
+
 
 

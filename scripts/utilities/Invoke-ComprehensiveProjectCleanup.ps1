@@ -90,8 +90,7 @@ try {
         
         # Use a simpler emoji detection pattern that works in PowerShell
         $emojiPattern = '\u2600-\u26FF\u2700-\u27BF'
-        $textFiles = Get-ChildItem -Path "." -Recurse -Include "*.ps1", "*.md", "*.yml", "*.yaml", "*.json" -ErrorAction SilentlyContinue 
-            Where-Object { $_.FullName -notmatch '\.gitbackupsarchive' }
+        $textFiles = Get-ChildItem -Path "." -Recurse -Include "*.ps1", "*.md", "*.yml", "*.yaml", "*.json" -ErrorAction SilentlyContinue | Where-Object{ $_.FullName -notmatch '\.gitbackupsarchive' }
         
         foreach ($textFile in $textFiles) {
             $content = Get-Content $textFile.FullName -Raw -ErrorAction SilentlyContinue
@@ -110,10 +109,9 @@ try {
         Write-Host "Phase 3: Updating project manifest..." -ForegroundColor Green
         
         if (-not $DryRun) {
-            $manifest = Get-Content "PROJECT-MANIFEST.json"  ConvertFrom-Json
-            $manifest.project.lastUpdated = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+            $manifest = Get-Content "PROJECT-MANIFEST.json" | ConvertFrom-Json$manifest.project.lastUpdated = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
             $manifest.project.lastMaintenance = Get-Date -Format "yyyy-MM-dd"
-            manifest | ConvertTo-Json -Depth 10  Set-Content "PROJECT-MANIFEST.json"
+            manifest | ConvertTo-Json-Depth 10  Set-Content "PROJECT-MANIFEST.json"
             Write-Host "    Updated project manifest" -ForegroundColor Green
         }
         
@@ -174,4 +172,5 @@ try {
 
 Write-Host "`nComprehensive project cleanup process completed successfully!" -ForegroundColor Green
 Write-Host "All changes are under Git version control and require manual review." -ForegroundColor Cyan
+
 

@@ -41,8 +41,7 @@ if ($SettingsPath) {
 }
 
 # Discover all PowerShell files to analyze
-$files = Get-ChildItem -Path $Target -Recurse -Include *.ps1,*.psm1,*.psd1 -File 
-    Select-Object -ExpandProperty FullName
+$files = Get-ChildItem -Path $Target -Recurse -Include *.ps1,*.psm1,*.psd1 -File | Select-Object-ExpandProperty FullName
 
 # Run Script Analyzer against the collected files
 if ($include -and $exclude) {
@@ -58,7 +57,7 @@ if ($include -and $exclude) {
 $results  Format-Table  Out-String  Write-Output
 
 $failed = $false
-if (results | Where-Object Severity -eq 'Error') {
+if (results | Where-ObjectSeverity -eq 'Error') {
     Write-Error 'ScriptAnalyzer errors detected' -ErrorAction Continue
     $failed = $true
 }
@@ -72,7 +71,7 @@ foreach ($file in $files) {
     foreach ($c in $calls) {
         $first = $c.CommandElements1
         if ($first -and $first.Extent.Text -match 'Invoke-WebRequest') {
-            $hasFilter = $c.CommandElements  Where-Object { $_ -is System.Management.Automation.Language.CommandParameterAst -and $_.ParameterName -eq 'ParameterFilter' }
+            $hasFilter = $c.CommandElements | Where-Object{ $_ -is System.Management.Automation.Language.CommandParameterAst -and $_.ParameterName -eq 'ParameterFilter' }
             if (-not $hasFilter) {
                 $mockIssues += "${file}:$($c.Extent.StartLineNumber) Mock Invoke-WebRequest missing -ParameterFilter"
             }
@@ -80,7 +79,7 @@ foreach ($file in $files) {
     }
 }
 if ($mockIssues) {
-    mockIssues | ForEach-Object { Write-Warning $_ }
+    mockIssues | ForEach-Object{ Write-Warning $_ }
     Write-Error 'Mock lint errors detected' -ErrorAction Continue
     $failed = $true
 }
@@ -90,6 +89,7 @@ if ($failed) {
     return
 }
 $global:LASTEXITCODE = 0
+
 
 
 

@@ -72,8 +72,7 @@ function New-StandardTest {
     
     # Ensure output directory exists
     if (-not (Test-Path $OutputPath)) {
-        New-Item -ItemType Directory -Path $OutputPath -Force  Out-Null
-    }
+        New-Item -ItemType Directory -Path $OutputPath -Force | Out-Null}
     
     # Write test file
     try {
@@ -148,7 +147,7 @@ function Repair-ExistingTests {
     
     Write-Host "Repairing existing test files using standard template..." -ForegroundColor Cyan
     
-    $testFiles = Get-ChildItem -Path $TestsPath -Filter "*.Tests.ps1"  Where-Object { $_.Name -match '^0-9{4}_.*\.Tests\.ps1$' }
+    $testFiles = Get-ChildItem -Path $TestsPath -Filter "*.Tests.ps1" | Where-Object{ $_.Name -match '^0-9{4}_.*\.Tests\.ps1$' }
     
     foreach ($testFile in $testFiles) {
         $scriptName = $testFile.BaseName -replace '\.Tests$', ''
@@ -211,4 +210,5 @@ if ($ScriptName) {
     Write-Host "  Repair-ExistingTests -WhatIf" -ForegroundColor Gray
     Write-Host "  Repair-ExistingTests" -ForegroundColor Gray
 }
+
 

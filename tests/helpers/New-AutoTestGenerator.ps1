@@ -79,7 +79,7 @@ if (-not (Test-Path $ScriptPath)) {
     }
     
     # Find script parameters
-    $paramBlock = $ast.FindAll({ $args0 -is System.Management.Automation.Language.ParamBlockAst }, $true)  Select-Object -First 1
+    $paramBlock = $ast.FindAll({ $args0 -is System.Management.Automation.Language.ParamBlockAst }, $true) | Select-Object -First 1
     if ($paramBlock) {
         $analysis.Parameters = $paramBlock.Parameters.Name.VariablePath.UserPath
     }
@@ -418,7 +418,7 @@ function Format-ScriptName {
     }
     
     # Split and convert to proper case
-    $parts = $baseName -split '-_\s'  Where-Object { $_.Length -gt 0 }  ForEach-Object {
+    $parts = $baseName -split '-_\s' | Where-Object{ $_.Length -gt 0 } | ForEach-Object{
         $_.Substring(0,1).ToUpper() + $_.Substring(1).ToLower()
     }
     
@@ -460,12 +460,7 @@ function Format-ScriptName {
         # Find next available sequence number
         $runnerScriptsPath = Join-Path $PSScriptRoot ".." ".." "pwsh" "runner_scripts"
         if (Test-Path $runnerScriptsPath) {
-            $existingScripts = Get-ChildItem $runnerScriptsPath -Filter "*.ps1"  
-                Where-Object { $_.Name -match '^0-9{4}_' } 
-                ForEach-Object { int($_.Name.Substring(0,4)) } 
-                Sort-Object
-            
-            $nextNumber = if ($existingScripts.Count -gt 0) { $existingScripts-1 + 1    } else { 100    }
+            $existingScripts = Get-ChildItem $runnerScriptsPath -Filter "*.ps1" | Where-Object{ $_.Name -match '^0-9{4}_' } | ForEach-Object{ int($_.Name.Substring(0,4)) } | Sort-Object$nextNumber = if ($existingScripts.Count -gt 0) { $existingScripts-1 + 1    } else { 100    }
         } else {
             $nextNumber = 100
         }
@@ -496,8 +491,7 @@ Write-Host "Starting script directory watcher for: $Directory" -ForegroundColor 
     
     while ($true) {
         try {
-            $scriptFiles = Get-ChildItem $Directory -Filter "*.ps1" -Recurse  
-                Where-Object { -not $_.Name.EndsWith('.Tests.ps1') }
+            $scriptFiles = Get-ChildItem $Directory -Filter "*.ps1" -Recurse | Where-Object{ -not $_.Name.EndsWith('.Tests.ps1') }
             
             foreach ($script in $scriptFiles) {
                 $key = $script.FullName
@@ -569,8 +563,7 @@ $scriptName = System.IO.Path::GetFileName($ScriptPath)
     # Ensure output directory exists
     $outputDir = Split-Path $OutputPath -Parent
     if (-not (Test-Path $outputDir)) {
-        New-Item -ItemType Directory -Path $outputDir -Force  Out-Null
-    }
+        New-Item -ItemType Directory -Path $outputDir -Force | Out-Null}
     
     Set-Content -Path $OutputPath -Value $template -Encoding UTF8
     Write-Host "Generated test file: $OutputPath" -ForegroundColor Green
@@ -578,8 +571,7 @@ $scriptName = System.IO.Path::GetFileName($ScriptPath)
     # Update test index if it exists
     $indexPath = Join-Path (Split-Path $OutputPath -Parent) 'test-index.json'
     if (Test-Path $indexPath) {
-        $index = Get-Content $indexPath  ConvertFrom-Json
-    } else {
+        $index = Get-Content $indexPath | ConvertFrom-Json} else {
         $index = @{
             Tests = @()
             LastUpdated = Get-Date
@@ -596,11 +588,11 @@ $scriptName = System.IO.Path::GetFileName($ScriptPath)
     }
     
     # Remove existing entry for this script if present
-    $index.Tests = $index.Tests  Where-Object { $_.SourceScript -ne $scriptName }
+    $index.Tests = $index.Tests | Where-Object{ $_.SourceScript -ne $scriptName }
     $index.Tests += $testInfo
     $index.LastUpdated = Get-Date
     
-    index | ConvertTo-Json -Depth 10  Set-Content $indexPath -Encoding UTF8
+    index | ConvertTo-Json-Depth 10  Set-Content $indexPath -Encoding UTF8
 }
 
 # Main execution
@@ -639,8 +631,7 @@ if ($ScriptPath) {
         exit 1
     }
     
-    $scriptFiles = Get-ChildItem $fullWatchPath -Filter "*.ps1" -Recurse  
-        Where-Object { -not $_.Name.EndsWith('.Tests.ps1') }
+    $scriptFiles = Get-ChildItem $fullWatchPath -Filter "*.ps1" -Recurse | Where-Object{ -not $_.Name.EndsWith('.Tests.ps1') }
     
     Write-Host "Found $($scriptFiles.Count) scripts to process" -ForegroundColor Green
     
@@ -659,6 +650,8 @@ if ($ScriptPath) {
         }
     }
 }
+
+
 
 
 
