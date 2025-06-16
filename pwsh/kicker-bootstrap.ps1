@@ -16,21 +16,20 @@ $baseUrl = 'https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/r
 #>
 
 param(
-    string$ConfigFile,
-    switch$Quiet,
-    switch$WhatIf,
-    switch$NonInteractive,
-    ValidateSet('silent','normal','detailed')
-    string$Verbosity = 'normal'
+    [string]$ConfigFile,
+    [switch]$Quiet,
+    [switch]$WhatIf,
+    [switch]$NonInteractive,
+    [ValidateSet('silent','normal','detailed')]
+    [string]$Verbosity = 'normal'
 )
 
 # Auto-detect non-interactive mode if not explicitly set
-if (-not $NonInteractive) {
-    # Check if PowerShell was started with -NonInteractive
-    $commandLine = Environment::GetCommandLineArgs() -join ' '
+if (-not $NonInteractive) {    # Check if PowerShell was started with -NonInteractive
+    $commandLine = [Environment]::GetCommandLineArgs() -join ' '
     if ($commandLine -match '-NonInteractive' -or 
         $Host.Name -eq 'Default Host' -or
-        (Environment::UserInteractive -eq $false)) {
+        ([Environment]::UserInteractive -eq $false)) {
         $NonInteractive = $true
         Write-Verbose "Auto-detected non-interactive mode"
     }
@@ -44,18 +43,17 @@ function Get-CrossPlatformTempPath {
     .DESCRIPTION
     Provides a cross-platform way to get the temporary directory, handling cases where
     $env:TEMP might not be set (e.g., on Linux/macOS).
-    #>
-    if ($env:TEMP) {
+    #>    if ($env:TEMP) {
         return $env:TEMP
     } else {
-        return System.IO.Path::GetTempPath()
+        return [System.IO.Path]::GetTempPath()
     }
 }
 
 function Join-PathRobust {
     param(
-        string$Path,
-        string$ChildPaths
+        [string]$Path,
+        [string[]]$ChildPaths
     )
     try {
         return Join-Path -Path $Path -ChildPath $ChildPaths -ErrorAction Stop
@@ -68,7 +66,7 @@ function Join-PathRobust {
 }
 
 function Get-SafeLabConfig {
-    param(string$Path)
+    param([string]$Path)
     try {
         return Get-LabConfig -Path $Path
     } catch {
@@ -248,9 +246,16 @@ if (-not (Test-Path $labConfigScript)) {
 }
 if (-not (Test-Path $formatScript)) {
     if (-not (Test-Path $labUtilsDir)) {
-        New-Item -ItemType Directory -Path $labUtilsDir -Force | Out-Null}
-    $formatUrl = 'https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/main/pwsh/modules/CodeFixerFormat-Config.ps1'
-    Invoke-WebRequest -Uri $formatUrl -OutFile $formatScript
+        New-Item -ItemType Directory -Path $labUtilsDir -Force | Out-Null
+    }
+    # DEPRECATED: CodeFixer module removed due to corruption issues
+    # Create basic format config locally instead of downloading deprecated CodeFixer
+    $basicFormatConfig = @'
+# Basic formatting configuration
+# CodeFixer functionality replaced by PatchManager
+Write-Host "Format validation handled by PatchManager module" -ForegroundColor Green
+'@
+    Set-Content -Path $formatScript -Value $basicFormatConfig
 }
 . "$labConfigScript"
 . "$formatScript"

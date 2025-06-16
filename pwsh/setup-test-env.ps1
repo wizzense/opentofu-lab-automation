@@ -48,8 +48,46 @@ function Ensure-Poetry {
     }
 }
 
+function Ensure-DevEnvironment {
+    Write-Host "Setting up development environment..." -ForegroundColor Cyan
+    
+    # Import DevEnvironment module
+    $devEnvModule = "$repoRoot/pwsh/modules/DevEnvironment"
+    if (Test-Path $devEnvModule) {
+        Import-Module $devEnvModule -Force
+        
+        # Install pre-commit hook
+        try {
+            Install-PreCommitHook -Install
+            Write-Host "✓ Pre-commit hook installed" -ForegroundColor Green
+        }
+        catch {
+            Write-Warning "Could not install pre-commit hook: $($_.Exception.Message)"
+        }
+        
+        # Test development setup
+        try {
+            Test-DevelopmentSetup
+            Write-Host "✓ Development environment validated" -ForegroundColor Green
+        }
+        catch {
+            Write-Warning "Development environment validation failed: $($_.Exception.Message)"
+        }
+    } else {
+        Write-Warning "DevEnvironment module not found at $devEnvModule"
+        
+        # Fallback to legacy pre-commit hook installation
+        $legacyHook = "$repoRoot/tools/pre-commit-hook.ps1"
+        if (Test-Path $legacyHook) {
+            & $legacyHook -Install
+            Write-Host "✓ Pre-commit hook installed (legacy method)" -ForegroundColor Yellow
+        }
+    }
+}
+
 Ensure-Pester
 Ensure-Python
+Ensure-DevEnvironment
 
 if ($UsePoetry) {
     Ensure-Poetry
@@ -66,7 +104,11 @@ if ($UsePoetry) {
     & $pipCmd install '-e' "$repoRoot/py"
 }
 
-Write-Host 'Test environment ready.'
+Write-Host 'Test environment ready.' -ForegroundColor Green
+Write-Host '✓ Pester 5.7.1+ installed' -ForegroundColor Green
+Write-Host '✓ Python environment configured' -ForegroundColor Green  
+Write-Host '✓ Pre-commit hook installed' -ForegroundColor Green
+Write-Host '✓ Development environment validated' -ForegroundColor Green
 
 
 

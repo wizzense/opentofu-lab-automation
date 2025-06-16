@@ -1,8 +1,38 @@
-#. dot-source utilities
-. $PSScriptRoot/Logger.ps1
+#Requires -Version 7.0
+
+# Import the centralized Logging module
+$loggingModulePath = $null
+if ($env:PWSH_MODULES_PATH -and (Test-Path $env:PWSH_MODULES_PATH)) {
+    $loggingModulePath = Join-Path $env:PWSH_MODULES_PATH "Logging"
+}
+if (-not $loggingModulePath -or -not (Test-Path $loggingModulePath)) {
+    $loggingModulePath = Join-Path (Split-Path $PSScriptRoot -Parent) "Logging"
+}
+if (Test-Path $loggingModulePath) {
+    Import-Module $loggingModulePath -Force -Global
+    Write-Verbose "Successfully imported centralized Logging module"
+} else {
+    Write-Warning "Could not find centralized Logging module at $loggingModulePath"
+    # Fallback: dot-source local logger if centralized not available
+    . $PSScriptRoot/Logger.ps1
+}
+
+# Dot-source utility modules
 . $PSScriptRoot/Get-Platform.ps1
 . $PSScriptRoot/Network.ps1
 . $PSScriptRoot/InvokeOpenTofuInstaller.ps1
+. $PSScriptRoot/Format-Config.ps1
+. $PSScriptRoot/Expand-All.ps1
+. $PSScriptRoot/Menu.ps1
+. $PSScriptRoot/Download-Archive.ps1
+
+# Temporary Get-Platform function
+function Get-Platform {
+    if ($IsWindows) { return 'Windows' }
+    elseif ($IsLinux) { return 'Linux' }
+    elseif ($IsMacOS) { return 'MacOS' }
+    else { return 'Unknown' }
+}
 
 function Get-CrossPlatformTempPath {
     <#
@@ -16,7 +46,7 @@ function Get-CrossPlatformTempPath {
     if ($env:TEMP) { 
         return $env:TEMP 
     } else { 
-        return System.IO.Path::GetTempPath() 
+        return [System.IO.Path]::GetTempPath() 
     }
 }
 
@@ -41,22 +71,16 @@ function Invoke-CrossPlatformCommand {
     .PARAMETER SkipOnUnavailable
     If true, silently skip execution when cmdlet is unavailable instead of throwing
     #>
+    [CmdletBinding()]
     param(
-        Parameter(Mandatory)
-
-
-
-
-
-
-
-        string$CommandName,
+        [Parameter(Mandatory)]
+        [string]$CommandName,
         
-        hashtable$Parameters = @{},
+        [hashtable]$Parameters = @{},
         
-        object$MockResult = $null,
+        [object]$MockResult = $null,
         
-        switch$SkipOnUnavailable
+        [switch]$SkipOnUnavailable
     )
     
     if (Get-Command $CommandName -ErrorAction SilentlyContinue) {
@@ -72,29 +96,19 @@ function Invoke-CrossPlatformCommand {
     }
 }
 
-. $PSScriptRoot/Format-Config.ps1
-. $PSScriptRoot/Expand-All.ps1
-. $PSScriptRoot/Menu.ps1
-. $PSScriptRoot/Download-Archive.ps1
-
 function Invoke-LabStep {
+    [CmdletBinding()]
     param(
-        scriptblock$Body,
-        object$Config
+        [scriptblock]$Body,
+        [object]$Config
     )
 
-    
-
-
-
-
-
-
-if ($Config -is string) {
+    # Handle config parameter - can be string path, JSON string, or object
+    if ($Config -is [string]) {
         if (Test-Path $Config) {
-            $Config = Get-Content -Raw -Path $Config  ConvertFrom-Json
+            $Config = Get-Content -Raw -Path $Config | ConvertFrom-Json
         } else {
-            try { $Config = $Config  ConvertFrom-Json } catch {}
+            try { $Config = $Config | ConvertFrom-Json } catch {}
         }
     }
 
@@ -118,37 +132,39 @@ if ($Config -is string) {
     try {
         & $Body $Config
     } catch {
-        if (-not $suppress) { Write-CustomLog "ERROR: $_" 'ERROR' }
+        if (-not $suppress) { 
+            Write-CustomLog "ERROR: $_" 'ERROR' 
+        }
         throw
     } finally {
         $ErrorActionPreference = $prevEAP
-        if ($suppress -and $null -ne $prevConsole) { $script:ConsoleLevel = $prevConsole }
+        if ($suppress -and $null -ne $prevConsole) { 
+            $script:ConsoleLevel = $prevConsole 
+        }
     }
 }
 
 function Invoke-LabDownload {
-    CmdletBinding()
+    [CmdletBinding()]
     param(
-        Parameter(Mandatory)
-
-
-
-
-
-
-string$Uri,
-        Parameter(Mandatory)scriptblock$Action,
-        string$Prefix = 'download',
-        string$Extension
+        [Parameter(Mandatory)]
+        [string]$Uri,
+        [Parameter(Mandatory)]
+        [scriptblock]$Action,
+        [string]$Prefix = 'download',
+        [string]$Extension
     )
 
     $ext = if ($Extension) {
         if ($Extension.StartsWith('.')) { $Extension } else { ".$Extension" }
     } else {
-        try { System.IO.Path::GetExtension($Uri).Split('?')0 } catch { '' }
-    }    $tempDir = Get-CrossPlatformTempPath
-    $path = Join-Path $tempDir ("{0}_{1}{2}" -f $Prefix, guid::NewGuid(), $ext)
+        try { [System.IO.Path]::GetExtension($Uri).Split('?')[0] } catch { '' }
+    }
+    
+    $tempDir = Get-CrossPlatformTempPath
+    $path = Join-Path $tempDir ("{0}_{1}{2}" -f $Prefix, [guid]::NewGuid(), $ext)
     Write-CustomLog "Downloading $Uri to $path"
+    
     try {
         Invoke-LabWebRequest -Uri $Uri -OutFile $path -UseBasicParsing
         & $Action $path
@@ -157,18 +173,142 @@ string$Uri,
     }
 }
 
-# Import nested module for Resolve-ProjectPath
+function Read-LoggedInput {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)]
+        [string]$Prompt,
+        [switch]$AsSecureString
+    )
+    
+    if ($AsSecureString) {
+        Write-CustomLog "$Prompt (secure input)"
+        return Read-Host -Prompt $Prompt -AsSecureString
+    }
+    
+    $answer = Read-Host -Prompt $Prompt
+    Write-CustomLog "$($Prompt): $answer"
+    return $answer
+}
+
+function Invoke-LabWebRequest {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)]
+        [string]$Uri,
+        [string]$OutFile,
+        [switch]$UseBasicParsing
+    )
+    
+    try {
+        Invoke-WebRequest @PSBoundParameters
+    } catch {
+        Write-CustomLog "Web request failed for $Uri : $_" 'ERROR'
+        throw
+    }
+}
+
+function Invoke-LabNpm {
+    [CmdletBinding()]
+    param(
+        [Parameter(ValueFromRemainingArguments=$true)]
+        [string[]]$Args
+    )
+    
+    Write-CustomLog "Running npm $($Args -join ' ')" 'INFO'
+    npm @Args
+}
+
+function Resolve-ProjectPath {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)]
+        [string]$RelativePath
+    )
+    
+    $projectRoot = $env:PROJECT_ROOT
+    if (-not $projectRoot) {
+        $projectRoot = (Get-Item $PSScriptRoot).Parent.Parent.FullName
+    }
+    
+    return Join-Path $projectRoot $RelativePath
+}
+
+function Get-LabConfig {
+    [CmdletBinding()]
+    param(
+        [string]$Path = 'configs/lab_config.yaml'
+    )
+    
+    $fullPath = if ([System.IO.Path]::IsPathRooted($Path)) { 
+        $Path 
+    } else { 
+        Resolve-ProjectPath $Path 
+    }
+    
+    if (-not (Test-Path $fullPath)) {
+        Write-CustomLog "Config file not found: $fullPath" 'WARN'
+        return $null
+    }
+    
+    try {
+        # Simple YAML-like parsing for basic config files
+        $content = Get-Content $fullPath -Raw
+        $config = @{}
+        
+        $content -split "`n" | ForEach-Object {
+            $line = $_.Trim()
+            if ($line -and -not $line.StartsWith('#')) {
+                if ($line -match '^(\w+):\s*(.+)$') {
+                    $config[$matches[1]] = $matches[2].Trim('"''')
+                }
+            }
+        }
+        
+        return $config
+    } catch {
+        Write-CustomLog "Failed to parse config file $fullPath : $_" 'ERROR'
+        throw
+    }
+}
+
+# Import nested module for additional functions if available
 try {
-    Import-Module (Join-Path $PSScriptRoot '../Resolve-ProjectPath.psm1') -Force -ErrorAction Stop
+    Import-Module (Join-Path $PSScriptRoot 'Resolve-ProjectPath.psm1') -Force -ErrorAction Stop
 } catch {
     Write-Verbose "Failed to import Resolve-ProjectPath.psm1: $_"
 }
 
-# Import all public functions
-Get-ChildItem -Path "$PSScriptRoot/Public/*.ps1"  ForEach-Object {
-    . $_.FullName
+# Import all public functions if they exist (temporarily disabled for debugging)
+# Import public functions
+$publicFunctionsPath = Join-Path $PSScriptRoot "Public"
+if (Test-Path $publicFunctionsPath) {
+    Get-ChildItem -Path "$publicFunctionsPath/*.ps1" -ErrorAction SilentlyContinue | ForEach-Object {
+        try {
+            . $_.FullName
+        } catch {
+            Write-Warning "Failed to import $($_.Name): $_"
+        }
+    }
 }
 
-Export-ModuleMember -Function Invoke-LabStep, Invoke-LabDownload, Write-CustomLog, Read-LoggedInput, Get-Platform, Invoke-LabWebRequest, Invoke-LabNpm, Resolve-ProjectPath, Format-Config, Expand-All, Get-MenuSelection, Get-GhDownloadArgs, Invoke-ArchiveDownload, Get-CrossPlatformTempPath, Invoke-CrossPlatformCommand, Invoke-CrossPlatformCommand
-
-
+# Export module members
+Export-ModuleMember -Function @(
+    'Get-CrossPlatformTempPath',
+    'Invoke-CrossPlatformCommand', 
+    'Invoke-LabStep',
+    'Invoke-LabDownload',
+    'Read-LoggedInput',
+    'Invoke-LabWebRequest',
+    'Invoke-LabNpm',
+    'Resolve-ProjectPath',
+    'Get-LabConfig',
+    'Format-Config',
+    'Expand-All',
+    'Get-MenuSelection',
+    'Get-GhDownloadArgs',
+    'Invoke-ArchiveDownload',
+    'Get-Platform',
+    'Invoke-OpenTofuInstaller',
+    'Invoke-ParallelLabRunner'
+)

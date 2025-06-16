@@ -1,0 +1,10 @@
+{
+  "InstallGo": true,
+  "InstallOpenTofu": true,
+  "InitializeOpenTofu": true,
+  "PrepareHyperVHost": true,
+  "InstallHyperV": true,
+  "InstallCA": true,
+  "InstallCosign": true,
+  "InstallGPG": true
+}

@@ -3,7 +3,8 @@
 
 Describe 'Download-Archive Tests' {
     BeforeAll {
-        Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\pwsh/modules/LabRunner/" -ForceImport-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\pwsh/modules/CodeFixer/" -Force}
+        Import-Module "$env:PWSH_MODULES_PATH/LabRunner/" -Force
+        Import-Module "$env:PWSH_MODULES_PATH/LabRunner/" -Force}
 
     Context 'Module Loading' {
         It 'should load required modules' {

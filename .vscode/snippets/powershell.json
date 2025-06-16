@@ -1,0 +1,187 @@
+{
+    "PowerShell Function Template": {
+        "prefix": "psfunction",
+        "body": [
+            "#Requires -Version 7.0",
+            "",
+            "function ${1:FunctionName} {",
+            "    [CmdletBinding(SupportsShouldProcess)]",
+            "    param(",
+            "        [Parameter(Mandatory)]",
+            "        [string]$${2:RequiredParam},",
+            "        ",
+            "        [Parameter()]",
+            "        [switch]$${3:OptionalSwitch}",
+            "    )",
+            "    ",
+            "    begin {",
+            "        Write-CustomLog \"Starting \\$($MyInvocation.MyCommand)\"",
+            "        ${4:# Initialization logic}",
+            "    }",
+            "    ",
+            "    process {",
+            "        try {",
+            "            if (\\$PSCmdlet.ShouldProcess(\\$${2:RequiredParam}, \"${5:Operation Description}\")) {",
+            "                ${6:# Main logic here}",
+            "                Write-CustomLog \"Processing \\$${2:RequiredParam}\"",
+            "            }",
+            "        }",
+            "        catch {",
+            "            Write-CustomLog \"Error in \\$($MyInvocation.MyCommand): \\$($_.Exception.Message)\" -Level ERROR",
+            "            throw",
+            "        }",
+            "    }",
+            "    ",
+            "    end {",
+            "        Write-CustomLog \"Completed \\$($MyInvocation.MyCommand)\"",
+            "    }",
+            "}"
+        ],
+        "description": "Standard PowerShell function template for OpenTofu Lab Automation"
+    },
+    "Module Import Standard": {
+        "prefix": "psimport",
+        "body": [
+            "#Requires -Version 7.0",
+            "Import-Module \"/workspaces/opentofu-lab-automation/pwsh/modules/${1:ModuleName}/\" -Force"
+        ],
+        "description": "Standard module import for cross-platform compatibility"
+    },
+    "Error Handling Block": {
+        "prefix": "pstryeatch",
+        "body": [
+            "try {",
+            "    ${1:# Operation that might fail}",
+            "    \\$result = ${2:Invoke-SomeOperation}",
+            "    Write-CustomLog \"Operation successful: \\$result\" -Level SUCCESS",
+            "}",
+            "catch {",
+            "    \\$errorMsg = \"Failed to ${3:complete operation}: \\$($_.Exception.Message)\"",
+            "    Write-CustomLog \\$errorMsg -Level ERROR",
+            "    ",
+            "    # Determine if this is recoverable",
+            "    if (\\$_.Exception -is [System.IO.FileNotFoundException]) {",
+            "        Write-CustomLog \"Attempting recovery...\" -Level WARN",
+            "        ${4:# Recovery logic}",
+            "    }",
+            "    else {",
+            "        throw  # Re-throw if not recoverable",
+            "    }",
+            "}"
+        ],
+        "description": "Comprehensive error handling pattern"
+    },
+    "Pester Test Template": {
+        "prefix": "pestertest",
+        "body": [
+            "#Requires -Module Pester",
+            "#Requires -Version 7.0",
+            "",
+            "Describe \"${1:ModuleName} Tests\" {",
+            "    BeforeAll {",
+            "        # Setup - import modules, create test data",
+            "        Import-Module \"/workspaces/opentofu-lab-automation/pwsh/modules/${1:ModuleName}/\" -Force",
+            "        ${2:# Additional setup}",
+            "    }",
+            "    ",
+            "    Context \"When testing ${3:basic functionality}\" {",
+            "        It \"Should ${4:perform expected operation}\" {",
+            "            # Arrange",
+            "            \\$testParam = \"${5:TestValue}\"",
+            "            ",
+            "            # Act",
+            "            \\$result = ${6:Invoke-TestFunction} -Parameter \\$testParam",
+            "            ",
+            "            # Assert",
+            "            \\$result | Should -Not -BeNullOrEmpty",
+            "            \\$result.Success | Should -Be \\$true",
+            "        }",
+            "        ",
+            "        It \"Should handle errors gracefully\" {",
+            "            # Arrange",
+            "            \\$invalidParam = \"\"",
+            "            ",
+            "            # Act & Assert",
+            "            { ${6:Invoke-TestFunction} -Parameter \\$invalidParam } | Should -Throw",
+            "        }",
+            "    }",
+            "    ",
+            "    AfterAll {",
+            "        ${7:# Cleanup}",
+            "    }",
+            "}"
+        ],
+        "description": "Standard Pester test template"
+    },
+    "Write-CustomLog": {
+        "prefix": "pslog",
+        "body": [
+            "Write-CustomLog \"${1:Log message}\" -Level ${2|INFO,WARN,ERROR,SUCCESS|}"
+        ],
+        "description": "Standard logging call"
+    },
+    "Invoke-LabStep Wrapper": {
+        "prefix": "pslabstep",
+        "body": [
+            "Invoke-LabStep -Config \\$Config -Body {",
+            "    Write-CustomLog \"Running \\$($MyInvocation.MyCommand.Name)\"",
+            "    ",
+            "    ${1:# Lab step logic here}",
+            "    ",
+            "    Write-CustomLog \"Completed \\$($MyInvocation.MyCommand.Name)\"",
+            "}"
+        ],
+        "description": "Standard lab step wrapper"
+    },
+    "Cross-Platform Path": {
+        "prefix": "pspath",
+        "body": [
+            "\\$${1:variableName} = Join-Path -Path \"/workspaces/opentofu-lab-automation\" -ChildPath \"${2:relativePath}\""
+        ],
+        "description": "Cross-platform path construction"
+    },
+    "Parameter Validation": {
+        "prefix": "psvalidate",
+        "body": [
+            "[Parameter(${1|Mandatory,})]",
+            "[ValidateNotNullOrEmpty()]",
+            "[${2|string,int,switch,object|}]\\$${3:ParameterName}"
+        ],
+        "description": "Parameter with validation"
+    },
+    "Module Header": {
+        "prefix": "psmoduleheader",
+        "body": [
+            "#Requires -Version 7.0",
+            "",
+            "<#",
+            ".SYNOPSIS",
+            "    ${1:Brief description}",
+            "",
+            ".DESCRIPTION",
+            "    ${2:Detailed description}",
+            "",
+            ".PARAMETER ${3:ParameterName}",
+            "    ${4:Parameter description}",
+            "",
+            ".EXAMPLE",
+            "    ${5:Example usage}",
+            "",
+            ".NOTES",
+            "    - ${6:Additional notes}",
+            "    - Part of OpenTofu Lab Automation",
+            "    - Follows project PowerShell standards",
+            "#>"
+        ],
+        "description": "Standard module header with help"
+    },
+    "Environment Variable Check": {
+        "prefix": "psenvcheck",
+        "body": [
+            "if (-not \\$env:${1:VARIABLE_NAME}) {",
+            "    throw \"Environment variable ${1:VARIABLE_NAME} is not set. Please ensure the environment is properly initialized.\"",
+            "}"
+        ],
+        "description": "Environment variable validation"
+    }
+}

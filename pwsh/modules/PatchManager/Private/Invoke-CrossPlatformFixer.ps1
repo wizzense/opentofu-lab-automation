@@ -71,7 +71,7 @@ function Invoke-CrossPlatformFixer {
         # Define import patterns to fix
         $script:ImportPatterns = @{
             # Old import patterns
-            'Import-Module "pwsh/lab_utils/LabRunner"' = 'Import-Module "/pwsh/modules/LabRunner/" -Force'
+            'Import-Module "pwsh/modules/LabRunner/LabRunner"' = 'Import-Module "/pwsh/modules/LabRunner/" -Force'
             'Import-Module "pwsh/modules/LabRunner"' = 'Import-Module "/pwsh/modules/LabRunner/" -Force'
             'Import-Module "./pwsh/modules/LabRunner"' = 'Import-Module "/pwsh/modules/LabRunner/" -Force'
             'Import-Module ".\pwsh\modules\LabRunner"' = 'Import-Module "/pwsh/modules/LabRunner/" -Force'
@@ -476,4 +476,5 @@ $($script:FixLog.Errors | ForEach-Object{ "- $_" } | Out-String)
 
     return $report
 }
+
 

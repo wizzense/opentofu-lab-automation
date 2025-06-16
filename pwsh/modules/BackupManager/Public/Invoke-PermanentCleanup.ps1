@@ -41,8 +41,7 @@ function Invoke-PermanentCleanup {
     $ErrorActionPreference = "Stop"
     
     try {
-        # Import LabRunner for logging
-        if (Get-Module LabRunner -ErrorAction SilentlyContinue) {
+        # Import LabRunner for logging        if (Get-Module LabRunner -ErrorAction SilentlyContinue) {
             Write-CustomLog "Starting permanent cleanup process" "INFO"
         } else {
             Write-Host "INFO Starting permanent cleanup process" -ForegroundColor Green
@@ -50,21 +49,6 @@ function Invoke-PermanentCleanup {
         
         # Import Logging module for enhanced logging capabilities
         Import-Module "/pwsh/modules/CodeFixerLogging/" -Force
-        
-        # Fallback definition for Write-CustomLog if not available
-        if (-not (Get-Command "Write-CustomLog" -ErrorAction SilentlyContinue)) {
-            function Write-CustomLog {
-                param(string$Message, string$Level = "INFO")
-                $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
-                $color = switch ($Level) {
-                    "ERROR" { "Red" }
-                    "WARN" { "Yellow" }
-                    "INFO" { "Green" }
-                    default { "White" }
-                }
-                Write-Host "$timestamp $Level $Message" -ForegroundColor $color
-            }
-        }
         
         # Default problematic patterns based on common issues
         $DefaultProblematicPatterns = @(

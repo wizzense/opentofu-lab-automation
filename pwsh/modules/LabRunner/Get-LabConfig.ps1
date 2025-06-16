@@ -2,7 +2,7 @@ function Get-LabConfig {
     CmdletBinding()
     param(
 
-        string$Path = (Join-Path $PSScriptRoot '..\config_files\default-config.json')
+        string$Path = (Join-Path $PSScriptRoot '..\default-config.json')
     
 
 
@@ -57,6 +57,8 @@ function Get-LabConfig {
 
     }
 }
+
+
 
 
 

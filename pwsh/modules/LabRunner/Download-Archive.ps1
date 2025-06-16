@@ -1,15 +1,9 @@
 # ...existing code from /pwsh/modules/CodeFixerDownload-Archive.ps1...
 function Get-GhDownloadArgs {
-    CmdletBinding()
+    [CmdletBinding()]
     param()
     
-
-
-
-
-
-
-if (Get-Command gh -ErrorAction SilentlyContinue) {
+    if (Get-Command gh -ErrorAction SilentlyContinue) {
         try {
             gh auth status --hostname github.com *> $null
             return @{ UseGh = $true }
@@ -22,19 +16,14 @@ if (Get-Command gh -ErrorAction SilentlyContinue) {
 }
 
 function Invoke-ArchiveDownload {
-    CmdletBinding()
+    [CmdletBinding()]
     param(
-        Parameter(Mandatory)
-
-
-
-
-
-
-string$Url,
-        Parameter(Mandatory)string$Destination,
-        switch$Required,
-        switch$UseGh
+        [Parameter(Mandatory)]
+        [string]$Url,
+        [Parameter(Mandatory)]
+        [string]$Destination,
+        [switch]$Required,
+        [switch]$UseGh
     )
     if ($UseGh) {
         gh api $Url --output $Destination

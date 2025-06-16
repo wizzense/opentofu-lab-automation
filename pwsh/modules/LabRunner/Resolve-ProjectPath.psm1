@@ -1,15 +1,9 @@
 function Resolve-ProjectPath {
-    CmdletBinding()
+    [CmdletBinding()]
     param(
-        Parameter(Mandatory=$true)
-
-
-
-
-
-
-string$Name,
-        string$Root
+        [Parameter(Mandatory=$true)]
+        [string]$Name,
+        [string]$Root
     )
     if (-not $Root) {
         $Root = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path

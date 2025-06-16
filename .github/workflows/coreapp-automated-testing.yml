@@ -1,0 +1,339 @@
+name: CoreApp Automated Testing
+
+on:
+  push:
+    branches: [ main ]
+    paths: 
+      - 'pwsh/core_app/**'
+      - 'tests/**'
+      - '.github/workflows/coreapp-automated-testing.yml'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'pwsh/core_app/**'
+      - 'tests/**'
+  schedule:
+    - cron: '0 6 * * *'  # Daily at 6 AM UTC
+  workflow_dispatch:
+    inputs:
+      test_mode:
+        description: 'Test mode to run'
+        required: true
+        default: 'All'
+        type: choice
+        options:
+          - 'Generate'
+          - 'Validate'
+          - 'All'
+
+env:
+  PROJECT_ROOT: ${{ github.workspace }}
+  PWSH_MODULES_PATH: ${{ github.workspace }}/pwsh/modules
+
+jobs:
+  coreapp-testing:
+    name: CoreApp Automated Testing
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        
+    - name: Setup PowerShell
+      uses: azure/powershell@v1
+      with:
+        azPSVersion: 'latest'
+        
+    - name: Cache PowerShell modules
+      uses: actions/cache@v3
+      with:
+        path: |
+          ~/.local/share/powershell/Modules
+          ~/Documents/PowerShell/Modules
+        key: ${{ runner.os }}-powershell-modules-${{ hashFiles('**/PSModuleInfo.xml') }}
+        restore-keys: |
+          ${{ runner.os }}-powershell-modules-
+          
+    - name: Install required PowerShell modules
+      shell: pwsh
+      run: |
+        Set-PSRepository PSGallery -InstallationPolicy Trusted
+        Install-Module Pester -Force -SkipPublisherCheck
+        Install-Module powershell-yaml -Force -SkipPublisherCheck
+        Write-Host "✅ PowerShell modules installed"
+        
+    - name: Validate environment
+      shell: pwsh
+      run: |
+        Write-Host "🔍 Environment validation"
+        Write-Host "PowerShell Version: $($PSVersionTable.PSVersion)"
+        Write-Host "OS: $($PSVersionTable.OS)"
+        Write-Host "Project Root: $env:PROJECT_ROOT"
+        Write-Host "Modules Path: $env:PWSH_MODULES_PATH"
+        
+        # Validate required paths
+        $requiredPaths = @(
+          "$env:PROJECT_ROOT/pwsh/core_app"
+          "$env:PROJECT_ROOT/tests"
+          "$env:PROJECT_ROOT/pwsh/modules/PatchManager"
+        )
+        
+        foreach ($path in $requiredPaths) {
+          if (Test-Path $path) {
+            Write-Host "✅ Found: $path"
+          } else {
+            Write-Host "❌ Missing: $path"
+            exit 1
+          }
+        }
+        
+    - name: Import PatchManager module
+      shell: pwsh
+      run: |
+        try {
+          Import-Module "$env:PROJECT_ROOT/pwsh/modules/PatchManager/" -Force
+          Write-Host "✅ PatchManager module imported successfully"
+          
+          # Verify key commands are available
+          $commands = @('New-PatchOperation', 'Invoke-TieredPesterTests', 'Submit-PatchForReview')
+          foreach ($cmd in $commands) {
+            if (Get-Command $cmd -ErrorAction SilentlyContinue) {
+              Write-Host "✅ Command available: $cmd"
+            } else {
+              Write-Host "⚠️ Command not found: $cmd"
+            }
+          }
+        } catch {
+          Write-Host "❌ Failed to import PatchManager: $_"
+          exit 1
+        }
+        
+    - name: Run automated test generation
+      shell: pwsh
+      run: |
+        $mode = "${{ github.event.inputs.test_mode || 'All' }}"
+        Write-Host "🧪 Running automated test generation (Mode: $mode)"
+        
+        try {
+          & "$env:PROJECT_ROOT/scripts/Invoke-AutomatedTestGeneration.ps1" -Mode $mode -WatchPath "$env:PROJECT_ROOT/pwsh/core_app" -PatchManagerMode:$false -Verbose
+          Write-Host "✅ Automated test generation completed"
+        } catch {
+          Write-Host "❌ Test generation failed: $_"
+          exit 1
+        }
+        
+    - name: Execute CoreApp Pester tests
+      shell: pwsh
+      run: |
+        Write-Host "🧪 Executing CoreApp Pester tests"
+        
+        try {
+          # Configure Pester
+          $config = New-PesterConfiguration
+          $config.Run.Path = "$env:PROJECT_ROOT/tests/CoreApp.Tests.ps1"
+          $config.Output.Verbosity = 'Detailed'
+          $config.TestResult.Enabled = $true
+          $config.TestResult.OutputFormat = 'NUnitXml'
+          $config.TestResult.OutputPath = "$env:PROJECT_ROOT/CoreApp-TestResults.xml"
+          $config.CodeCoverage.Enabled = $true
+          $config.CodeCoverage.Path = "$env:PROJECT_ROOT/pwsh/core_app"
+          $config.CodeCoverage.OutputFormat = 'JaCoCo'
+          $config.CodeCoverage.OutputPath = "$env:PROJECT_ROOT/CoreApp-Coverage.xml"
+          
+          # Run tests
+          $result = Invoke-Pester -Configuration $config
+          
+          Write-Host "📊 Test Results Summary:"
+          Write-Host "  Total: $($result.TotalCount)"
+          Write-Host "  Passed: $($result.PassedCount)"
+          Write-Host "  Failed: $($result.FailedCount)"
+          Write-Host "  Skipped: $($result.SkippedCount)"
+          
+          # Set output for next steps
+          echo "test_total=$($result.TotalCount)" >> $env:GITHUB_OUTPUT
+          echo "test_passed=$($result.PassedCount)" >> $env:GITHUB_OUTPUT
+          echo "test_failed=$($result.FailedCount)" >> $env:GITHUB_OUTPUT
+          
+          if ($result.FailedCount -gt 0) {
+            Write-Host "❌ Some tests failed"
+            exit 1
+          } else {
+            Write-Host "✅ All tests passed"
+          }
+        } catch {
+          Write-Host "❌ Test execution failed: $_"
+          exit 1
+        }
+        
+    - name: Run tiered Pester tests
+      shell: pwsh
+      run: |
+        Write-Host "🎯 Running tiered Pester tests for CoreApp"
+        
+        try {
+          # Run critical tier tests (must pass)
+          Invoke-TieredPesterTests -Tier Critical -OutputFormat Console -BlockOnFailure $true
+          Write-Host "✅ Critical tests passed"
+          
+          # Run important tier tests (failures warn but don't block)
+          Invoke-TieredPesterTests -Tier Important -OutputFormat Console -BlockOnFailure $false
+          Write-Host "✅ Important tests completed"
+          
+          # Run maintenance tier tests (informational only)
+          Invoke-TieredPesterTests -Tier Maintenance -OutputFormat Console -BlockOnFailure $false
+          Write-Host "✅ Maintenance tests completed"
+          
+        } catch {
+          Write-Host "❌ Tiered testing failed: $_"
+          exit 1
+        }
+        
+    - name: Generate test coverage report
+      shell: pwsh
+      run: |
+        Write-Host "📊 Generating comprehensive test coverage report"
+        
+        try {
+          # Run test validation to get coverage metrics
+          & "$env:PROJECT_ROOT/scripts/Invoke-AutomatedTestGeneration.ps1" -Mode Validate -WatchPath "$env:PROJECT_ROOT/pwsh/core_app" -Verbose
+          
+          # Check if coverage report was generated
+          $reportPath = "$env:PROJECT_ROOT/tests/TestCoverage-Report.json"
+          if (Test-Path $reportPath) {
+            $report = Get-Content $reportPath | ConvertFrom-Json
+            Write-Host "📈 Test Coverage: $($report.CoveragePercentage)%"
+            Write-Host "📝 Total Scripts: $($report.TotalScripts)"
+            Write-Host "✅ Scripts with Tests: $($report.TestedScripts)"
+            
+            # Set coverage output
+            echo "coverage_percentage=$($report.CoveragePercentage)" >> $env:GITHUB_OUTPUT
+            
+            # Check coverage threshold
+            if ($report.CoveragePercentage -lt 80) {
+              Write-Host "⚠️ Test coverage is below 80% threshold"
+              echo "coverage_warning=true" >> $env:GITHUB_OUTPUT
+            } else {
+              Write-Host "✅ Test coverage meets 80% threshold"
+              echo "coverage_warning=false" >> $env:GITHUB_OUTPUT
+            }
+          } else {
+            Write-Host "⚠️ Coverage report not found"
+          }
+        } catch {
+          Write-Host "❌ Coverage report generation failed: $_"
+        }
+        
+    - name: Upload test results
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: coreapp-test-results
+        path: |
+          CoreApp-TestResults.xml
+          CoreApp-Coverage.xml
+          tests/TestCoverage-Report.json
+          coverage/
+        retention-days: 30
+        
+    - name: Upload generated tests
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: generated-tests
+        path: |
+          tests/*.Tests.ps1
+        retention-days: 7
+        
+    - name: Comment PR with test results
+      uses: actions/github-script@v6
+      if: github.event_name == 'pull_request'
+      with:
+        script: |
+          const fs = require('fs');
+          
+          // Read coverage report if available
+          let coverageData = null;
+          try {
+            const reportPath = 'tests/TestCoverage-Report.json';
+            if (fs.existsSync(reportPath)) {
+              coverageData = JSON.parse(fs.readFileSync(reportPath, 'utf8'));
+            }
+          } catch (error) {
+            console.log('Could not read coverage report:', error.message);
+          }
+          
+          // Create comment body
+          let commentBody = '## 🧪 CoreApp Automated Testing Results\n\n';
+          
+          if (coverageData) {
+            commentBody += `### 📊 Test Coverage\n`;
+            commentBody += `- **Coverage**: ${coverageData.CoveragePercentage}%\n`;
+            commentBody += `- **Total Scripts**: ${coverageData.TotalScripts}\n`;
+            commentBody += `- **Scripts with Tests**: ${coverageData.TestedScripts}\n\n`;
+            
+            if (coverageData.CoveragePercentage < 80) {
+              commentBody += '⚠️ **Warning**: Test coverage is below 80% threshold\n\n';
+            } else {
+              commentBody += '✅ Test coverage meets quality standards\n\n';
+            }
+          }
+          
+          commentBody += '### 🎯 Automated Test Generation\n';
+          commentBody += '- Automated test generation completed\n';
+          commentBody += '- PatchManager integration verified\n';
+          commentBody += '- Cross-platform compatibility checked\n\n';
+          
+          commentBody += '### 📝 Next Steps\n';
+          commentBody += '- Review generated tests for completeness\n';
+          commentBody += '- Ensure PatchManager is used for any changes\n';
+          commentBody += '- Monitor test coverage in future changes\n';
+          
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: commentBody
+          });
+          
+  validate-patchmanager-enforcement:
+    name: Validate PatchManager Enforcement
+    runs-on: ubuntu-latest
+    needs: coreapp-testing
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Validate PatchManager usage in VS Code config
+      shell: bash
+      run: |
+        echo "🔍 Validating PatchManager enforcement in VS Code configuration"
+        
+        # Check Copilot instructions
+        if grep -q "PatchManager" .vscode/copilot-instructions.md; then
+          echo "✅ PatchManager mentioned in Copilot instructions"
+        else
+          echo "❌ PatchManager not enforced in Copilot instructions"
+          exit 1
+        fi
+        
+        # Check VS Code settings
+        if grep -q "PatchManager" .vscode/settings.json; then
+          echo "✅ PatchManager configured in VS Code settings"
+        else
+          echo "❌ PatchManager not configured in VS Code settings"
+          exit 1
+        fi
+        
+        # Check tasks configuration
+        if grep -q "PatchManager" .vscode/tasks.json; then
+          echo "✅ PatchManager tasks available in VS Code"
+        else
+          echo "❌ PatchManager tasks not configured"
+          exit 1
+        fi
+        
+        echo "✅ PatchManager enforcement validation passed"

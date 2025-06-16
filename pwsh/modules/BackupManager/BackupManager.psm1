@@ -1,7 +1,21 @@
+#Requires -Version 7.0
+
 # BackupManager Module - Core module file
 # Comprehensive backup management for OpenTofu Lab Automation
 
-# Import LabRunner for logging and utilities
+# Import the centralized Logging module
+$loggingModulePath = Join-Path $env:PWSH_MODULES_PATH "Logging"
+if (-not $env:PWSH_MODULES_PATH -or -not (Test-Path $loggingModulePath)) {
+    $loggingModulePath = Join-Path (Split-Path $PSScriptRoot -Parent) "Logging"
+}
+if (Test-Path $loggingModulePath) {
+    Import-Module $loggingModulePath -Force -Global
+    Write-Verbose "Successfully imported centralized Logging module"
+} else {
+    Write-Warning "Could not find centralized Logging module at $loggingModulePath"
+}
+
+# Import LabRunner for additional utilities
 $LabRunnerPath = Join-Path $PSScriptRoot '..' 'LabRunner'
 if (Test-Path $LabRunnerPath) {
     Import-Module $LabRunnerPath -Force -ErrorAction SilentlyContinue
