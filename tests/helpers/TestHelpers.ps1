@@ -114,7 +114,7 @@ function global:Get-RunnerScriptPath {
         [string]$Name
     )
     try {
-        $root = (Resolve-Path (Join-Path $PSScriptRoot '../..')).Path
+        $root = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
     } catch {
         Write-Error "Get-RunnerScriptPath: Failed to resolve root path: $_"
         return $null
@@ -581,50 +581,6 @@ function global:Write-Continue {
 # Missing Test Helper Functions
 # ==============================================================================
 
-function Get-RunnerScriptPath {
-    <#
-    .SYNOPSIS
-        Finds the path to a runner script by name
-    .PARAMETER ScriptName
-        The name of the script to find (e.g., '0007_Install-Go.ps1')
-    #>
-    param(
-        [Parameter(Mandatory)]
-        [string]$ScriptName
-    )
-    
-    # Start from the project root
-    $projectRoot = Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
-    
-    # Primary location for runner scripts
-    $runnerScriptsPath = Join-Path $projectRoot "pwsh" "runner_scripts" $ScriptName
-    if (Test-Path $runnerScriptsPath) {
-        return $runnerScriptsPath
-    }
-    
-    # Fallback locations
-    $searchPaths = @(
-        "LabRunner",
-        "pwsh/modules/LabRunner", 
-        "scripts",
-        "pwsh/scripts"
-    )
-    
-    foreach ($searchPath in $searchPaths) {
-        $fullSearchPath = Join-Path $projectRoot $searchPath
-        if (Test-Path $fullSearchPath) {
-            $scriptPath = Get-ChildItem -Path $fullSearchPath -Recurse -Filter $ScriptName -File | Select-Object -First 1
-            if ($scriptPath) {
-                return $scriptPath.FullName
-            }
-        }
-    }
-    
-    # Return a mock path for testing if not found
-    $mockPath = Join-Path $projectRoot "pwsh" "runner_scripts" $ScriptName
-    Write-Warning "Script not found: $ScriptName. Using mock path: $mockPath"
-    return $mockPath
-}
 
 function Test-RunnerScriptName {
     <#
