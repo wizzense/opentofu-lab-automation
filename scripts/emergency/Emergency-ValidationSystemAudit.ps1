@@ -36,9 +36,12 @@ Write-Host "🚨 EMERGENCY VALIDATION SYSTEM AUDIT 🚨" -ForegroundColor Red
 Write-Host "=========================================" -ForegroundColor Red
 Write-Host "Investigating why validation systems failed to catch corruption..." -ForegroundColor Yellow
 
+# Retrieve file list once for reuse
+$fileList = Get-ChildItem -Path "." -Recurse -Include "*.ps1"
+
 # Pattern 1: Detect repeated -Force parameters
 Write-Host "`n📊 PATTERN 1: Repeated -Force Parameters" -ForegroundColor Cyan
-$forcePattern = Get-ChildItem -Path "." -Recurse -Include "*.ps1" | ForEach-Object {
+$forcePattern = $fileList | ForEach-Object {
     $content = Get-Content $_.FullName -Raw -ErrorAction SilentlyContinue
     if ($content -match '-Force\s+-Force') {
         $forceCount = ($content | Select-String '-Force' -AllMatches).Matches.Count
