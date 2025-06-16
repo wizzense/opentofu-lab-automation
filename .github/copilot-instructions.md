@@ -8,6 +8,9 @@ This is a cross-platform OpenTofu (Terraform alternative) lab automation project
 - ** test files** for validation
 - **Cross-platform deployment** via Python scripts
 
+For guidance on writing your own repository instructions, see
+[docs/copilot_docs/repository-custom-instructions.md](../docs/copilot_docs/repository-custom-instructions.md).
+
 ## Current Architecture
 
 ### Module Locations (CRITICAL - Always Use These Paths)
