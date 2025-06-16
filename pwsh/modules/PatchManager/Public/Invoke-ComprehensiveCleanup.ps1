@@ -357,7 +357,7 @@ function Invoke-FileArchival {
 
 function Invoke-EmptyDirectoryCleanup {
     # Remove empty directories (except critical ones)
-    $directories = Get-ChildItem -Path $script:ProjectRoot -Directory -Recurse -ErrorAction SilentlyContinue | Sort-ObjectFullName -Descending  # Process deepest first
+    $directories = Get-ChildItem -Path $script:ProjectRoot -Directory -Recurse -ErrorAction SilentlyContinue | Sort-Object FullName -Descending  # Process deepest first
     
     foreach ($dir in $directories) {
         if (-not (Test-CriticalExclusion $dir.FullName)) {

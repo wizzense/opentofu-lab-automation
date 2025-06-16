@@ -695,9 +695,8 @@ function Invoke-ConsolidatedValidation {
             Write-MaintenanceLog "Running PSScriptAnalyzer..." "INFO"
             $lintResults = Invoke-ScriptAnalyzer -Path $ProjectRoot -Recurse -ErrorAction SilentlyContinue
             $consolidatedResults.PSScriptAnalyzer = $lintResults
-            
-            $errorCount = (lintResults | Where-ObjectSeverity -eq 'Error').Count
-            $warningCount = (lintResults | Where-ObjectSeverity -eq 'Warning').Count
+              $errorCount = ($lintResults | Where-Object { $_.Severity -eq 'Error' }).Count
+            $warningCount = ($lintResults | Where-Object { $_.Severity -eq 'Warning' }).Count
             
             Write-MaintenanceLog "PSScriptAnalyzer: $errorCount errors, $warningCount warnings" "INFO"
             $consolidatedResults.Summary.TotalIssues += ($errorCount + $warningCount)
