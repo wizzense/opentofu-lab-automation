@@ -46,7 +46,7 @@ if (-not (Test-Path '.git')) {
 Write-Host " Pre-commit PowerShell validation..." -ForegroundColor Cyan
 
 # Get staged PowerShell files
-`$stagedFiles = git diff --cached --name-only --diff-filter=ACM | Where-Object{ `$_ -match '\.ps1`$' }
+`$stagedFiles = git diff --cached --name-only --diff-filter=ACM | Where-Object { `$_ -match '\.ps1`$' }
 
 if (`$stagedFiles.Count -eq 0) {
  Write-Host "[PASS] No PowerShell files to validate" -ForegroundColor Green
@@ -57,11 +57,8 @@ Write-Host " Validating `$(`$stagedFiles.Count) PowerShell files with batch proc
 
 # Load our new batch processing linting functions
 try {
-    # DEPRECATED: CodeFixer module removed due to corruption issues
-    # Using PatchManager for validation instead
-    Import-Module "/pwsh/modules/PatchManager/" -Force -ErrorAction Stop
-    
-    Write-Host "Using PatchManager for validation (CodeFixer deprecated)" -ForegroundColor Yellow
+ . "./pwsh/modules/CodeFixer/Public/Invoke-PowerShellLint.ps1"
+ . "./pwsh/modules/CodeFixer/Public/Invoke-ParallelScriptAnalyzer.ps1"
  
  # Convert file paths to FileInfo objects
  `$fileObjects = @()
@@ -101,7 +98,7 @@ try {
  `$lintResults = Invoke-PowerShellLint -Files `$fileObjects -Parallel -OutputFormat 'CI' -PassThru -BatchSize `$batchSize -MaxJobs `$maxJobs
  
  # Check for errors (syntax errors are critical for commits)
- `$syntaxErrors = `$lintResults | Where-Object{ `$_.Severity -eq 'Error' }
+ `$syntaxErrors = `$lintResults | Where-Object { `$_.Severity -eq 'Error' }
  
  if (`$syntaxErrors.Count -gt 0) {
  Write-Host "`n[FAIL] CRITICAL SYNTAX ERRORS found:" -ForegroundColor Red
@@ -131,7 +128,7 @@ try {
  try {
  `$content = Get-Content `$file -Raw -ErrorAction Stop
  [System.Management.Automation.PSParser]::Tokenize(`$content, [ref]`$null) | Out-Null
-Write-Host " [PASS] Valid syntax" -ForegroundColor Green
+ Write-Host " [PASS] Valid syntax" -ForegroundColor Green
  } catch {
  Write-Host " [FAIL] SYNTAX ERROR: `$(`$_.Exception.Message)" -ForegroundColor Red
  `$hasErrors = `$true
@@ -193,7 +190,7 @@ Write-Host "Test script"
 "@
  
  New-Item -Path "temp" -ItemType Directory -Force | Out-Null
-Set-Content -Path $testFile -Value $testContent
+ Set-Content -Path $testFile -Value $testContent
  
  try {
  # Stage the test file
@@ -233,7 +230,5 @@ if ($Install) {
  Write-Host " Uninstall: .\Pre-Commit-Hook.ps1 -Uninstall" -ForegroundColor Gray
  Write-Host " Test: .\Pre-Commit-Hook.ps1 -Test" -ForegroundColor Gray
 }
-
-
 
 
