@@ -166,22 +166,53 @@ function Invoke-EmojiCleanup {
     # Get all text files and check for emoji violations
     $textExtensions = @("*.ps1", "*.psm1", "*.psd1", "*.py", "*.md", "*.yml", "*.yaml", "*.json", "*.txt")
     
+    # Use simple emoji patterns that PowerShell can handle reliably
+    $simpleEmojiPatterns = @(
+        '[\u2705]',         # ✅ (checkmark)
+        '[\u274C]',         # ❌ (cross mark)
+        '[\u26A0]',         # ⚠️ (warning)
+        '[\u2139]',         # ℹ️ (info)
+        '[\u2600-\u26FF]',  # Miscellaneous symbols
+        '[\u2700-\u27BF]'   # Dingbats
+    )
+    
     foreach ($extension in $textExtensions) {
         $files = Get-ChildItem -Path $script:ProjectRoot -Recurse -Include $extension -ErrorAction SilentlyContinue
         
-        foreach ($file in $files) {            if (-not (Test-CriticalExclusion $file.FullName)) {
-                $content = Get-Content $file.FullName -Raw -ErrorAction SilentlyContinue
-                # Use a simpler emoji detection pattern that works in PowerShell
-                $emojiPattern = '[🔥💪🚀🎯✨🌟💯🔧🛠️📋📊📈📉🎉🎊🏆🥇🎖️🔒🔓⚡🌈🎨🖼️📸🎭🎪🎨🎯🚩🏁]|[\u2600-\u26FF]|[\u2700-\u27BF]'
-                if ($content -and ($content -match $emojiPattern)) {
-                    Write-Host "  Removing emojis from: $($file.Name)" -ForegroundColor Yellow
-                    
-                    if (-not $DryRun) {
-                        # Remove emojis and save file
-                        $cleanContent = $content -replace $emojiPattern, ''
-                        Set-Content -Path $file.FullName -Value $cleanContent -NoNewline
-                        $script:CleanupLog.FilesRelocated += @{ File = $file.FullName; Action = "Emoji removal" }
+        foreach ($file in $files) {
+            if (-not (Test-CriticalExclusion $file.FullName)) {
+                try {
+                    $content = Get-Content $file.FullName -Raw -ErrorAction SilentlyContinue
+                    if ($content) {
+                        $hasEmojis = $false
+                        foreach ($pattern in $simpleEmojiPatterns) {
+                            if ($content -match $pattern) {
+                                $hasEmojis = $true
+                                break
+                            }
+                        }
+                        
+                        if ($hasEmojis) {
+                            Write-Host "  Removing emojis from: $($file.Name)" -ForegroundColor Yellow
+                            
+                            if (-not $DryRun) {
+                                # Remove emojis with text replacements
+                                $cleanContent = $content
+                                $cleanContent = $cleanContent -replace '[\u2705]', '[PASS]'   # ✅ -> [PASS]
+                                $cleanContent = $cleanContent -replace '[\u274C]', '[FAIL]'   # ❌ -> [FAIL]
+                                $cleanContent = $cleanContent -replace '[\u26A0]', '[WARN]'   # ⚠️ -> [WARN]
+                                $cleanContent = $cleanContent -replace '[\u2139]', '[INFO]'   # ℹ️ -> [INFO]
+                                $cleanContent = $cleanContent -replace '[\u2600-\u26FF]', ''  # Remove misc symbols
+                                $cleanContent = $cleanContent -replace '[\u2700-\u27BF]', ''  # Remove dingbats
+                                
+                                Set-Content -Path $file.FullName -Value $cleanContent -NoNewline -Encoding UTF8
+                                $script:CleanupLog.FilesRelocated += @{ File = $file.FullName; Action = "Emoji removal" }
+                            }
+                        }
                     }
+                } catch {
+                    Write-Warning "Failed to process emoji cleanup for $($file.FullName): $($_.Exception.Message)"
+                    $script:CleanupLog.Errors += "Emoji cleanup failed: $($file.FullName) - $($_.Exception.Message)"
                 }
             }
         }
