@@ -1,4 +1,4 @@
-Param([object]$Config)
+Param(object$Config)
 
 
 
@@ -7,7 +7,7 @@ Param([object]$Config)
 
 
 
-Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\pwsh/modules/LabRunner/" -Force# Param([pscustomobject]$Config)
+Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\pwsh/modules/LabRunner/" -Force# Param(pscustomobject$Config)
 
 
 
@@ -20,8 +20,8 @@ Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-autom
 Write-CustomLog "Starting $MyInvocation.MyCommand"
 
 function Install-OpenTofu {
-    [CmdletBinding()]
-    param([object]$Config)
+    CmdletBinding()
+    param(object$Config)
 
     
 

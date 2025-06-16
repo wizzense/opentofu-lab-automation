@@ -2,9 +2,9 @@
 # Batch repair test files to fix module import issues and remove unused variables
 
 param(
-    [string]$TestDirectory = "tests",
-    [switch]$WhatIf,
-    [switch]$Force
+    string$TestDirectory = "tests",
+    switch$WhatIf,
+    switch$Force
 )
 
 $ErrorActionPreference = "Stop"
@@ -18,8 +18,8 @@ Import-Module PSScriptAnalyzer -Force
 
 function Repair-TestFile {
     param(
-        [string]$FilePath,
-        [switch]$WhatIf
+        string$FilePath,
+        switch$WhatIf
     )
     
     Write-CustomLog "Repairing test file: $FilePath" "INFO"
@@ -28,7 +28,7 @@ function Repair-TestFile {
         Write-CustomLog "File not found: $FilePath" "WARN"
         return
     }
-      $fileName = [System.IO.Path]::GetFileName($FilePath)
+      $fileName = System.IO.Path::GetFileName($FilePath)
     
     # Create standardized test file content
     $standardHeader = @"
@@ -41,15 +41,15 @@ Describe '$($fileName -replace '\.Tests\.ps1$', '') Tests' {
 
     Context 'Module Loading' {
         It 'should load required modules' {
-            Get-Module LabRunner | Should -Not -BeNullOrEmpty
-            Get-Module CodeFixer | Should -Not -BeNullOrEmpty
+            Get-Module LabRunner  Should -Not -BeNullOrEmpty
+            Get-Module CodeFixer  Should -Not -BeNullOrEmpty
         }
     }
 
     Context 'Functionality Tests' {
         It 'should execute without errors' {
             # Basic test implementation
-            `$true | Should -BeTrue
+            `$true  Should -BeTrue
         }
     }
 
@@ -79,10 +79,10 @@ Describe '$($fileName -replace '\.Tests\.ps1$', '') Tests' {
 }
 
 function Get-TestFiles {
-    param([string]$Directory)
+    param(string$Directory)
     
-    $testFiles = Get-ChildItem -Path $Directory -Filter "*.Tests.ps1" -Recurse | 
-        Where-Object { $_.Name -ne "TestHelpers.Tests.ps1" -and $_.Name -ne "TestFramework.Tests.ps1" } |
+    $testFiles = Get-ChildItem -Path $Directory -Filter "*.Tests.ps1" -Recurse  
+        Where-Object { $_.Name -ne "TestHelpers.Tests.ps1" -and $_.Name -ne "TestFramework.Tests.ps1" } 
         Sort-Object Name
     
     return $testFiles

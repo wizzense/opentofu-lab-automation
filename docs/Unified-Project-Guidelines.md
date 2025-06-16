@@ -13,12 +13,12 @@ This document consolidates all project guidelines, including Git collaboration, 
 - **Create Pull Request**: Use PatchManager to open PRs: `./pwsh/modules/PatchManager/Public/Invoke-GitControlledPatch.ps1 -OpenPR -Title "feat(scope): description" -Body "Detailed description"`
 
 ### Commit Standards
-| **Type**   | **Scope**       | **Example**                                |
-|------------|-----------------|--------------------------------------------|
-| feat       | codefixer       | feat(codefixer): add parallel processing   |
-| fix        | labrunner       | fix(labrunner): resolve path issues        |
-| docs       | readme          | docs(readme): update installation guide    |
-| chore      | deps            | chore(deps): update dependencies           |
+ **Type**    **Scope**        **Example**                                
+-------------------------------------------------------------------------
+ feat        codefixer        feat(codefixer): add parallel processing   
+ fix         labrunner        fix(labrunner): resolve path issues        
+ docs        readme           docs(readme): update installation guide    
+ chore       deps             chore(deps): update dependencies           
 
 ### Pre-Commit Validation
 Run:
@@ -32,16 +32,16 @@ Invoke-PowerShellLint -Path "./scripts/" -Parallel
 ## Copilot Configuration
 
 ### Module Import Standards
-| **Correct**                               | **Deprecated**                  |
-|-------------------------------------------|----------------------------------|
-| `Import-Module "/pwsh/modules/CodeFixer/" -Force` | `Import-Module "pwsh/lab_utils/LabRunner"`
+ **Correct**                                **Deprecated**                  
+-----------------------------------------------------------------------------
+ `Import-Module "/pwsh/modules/CodeFixer/" -Force`  `Import-Module "pwsh/lab_utils/LabRunner"`
 
 ### Script Structure
 Template:
 ```powershell
 Param(
-    [Parameter(Mandatory=$true)]
-    [pscustomobject]$Config
+    Parameter(Mandatory=$true)
+    pscustomobject$Config
 )
 
 $ErrorActionPreference = "Stop"
@@ -70,11 +70,11 @@ try {
 ## Agent Instructions
 
 ### Maintenance Commands
-| **Command**                                | **Purpose**                     |
-|-------------------------------------------|----------------------------------|
-| `./scripts/maintenance/unified-maintenance.ps1 -Mode "Quick"` | Quick health assessment         |
-| `./scripts/maintenance/unified-maintenance.ps1 -Mode "All" -AutoFix` | Comprehensive health check      |
-| `./scripts/validation/Invoke-YamlValidation.ps1 -Mode "Fix"` | YAML validation and formatting  |
+ **Command**                                 **Purpose**                     
+-----------------------------------------------------------------------------
+ `./scripts/maintenance/unified-maintenance.ps1 -Mode "Quick"`  Quick health assessment         
+ `./scripts/maintenance/unified-maintenance.ps1 -Mode "All" -AutoFix`  Comprehensive health check      
+ `./scripts/validation/Invoke-YamlValidation.ps1 -Mode "Fix"`  YAML validation and formatting  
 
 ### Validation Sequence
 Run:
@@ -93,13 +93,13 @@ Update-ProjectManifest -Changes $Changes
 Always update the project manifest after changes:
 ```powershell
 # Read current manifest
-$manifest = Get-Content "./PROJECT-MANIFEST.json" | ConvertFrom-Json
+$manifest = Get-Content "./PROJECT-MANIFEST.json"  ConvertFrom-Json
 
 # Update last modified
 $manifest.project.lastUpdated = (Get-Date -Format "yyyy-MM-dd HH:mm:ss")
 
 # Save updated manifest
-$manifest | ConvertTo-Json -Depth 10 | Set-Content "./PROJECT-MANIFEST.json"
+$manifest  ConvertTo-Json -Depth 10  Set-Content "./PROJECT-MANIFEST.json"
 
 # Validate manifest structure
 Test-JsonConfig -Path "./PROJECT-MANIFEST.json"
@@ -112,14 +112,14 @@ Test-JsonConfig -Path "./PROJECT-MANIFEST.json"
 ### Automated Cleanup Procedures
 ```powershell
 # Clean temporary files
-Get-ChildItem -Path "." -Recurse -Filter "*.tmp" | Remove-Item -Force
-Get-ChildItem -Path "." -Recurse -Filter "*.log" -OlderThan (Get-Date).AddDays(-7) | Remove-Item -Force
+Get-ChildItem -Path "." -Recurse -Filter "*.tmp"  Remove-Item -Force
+Get-ChildItem -Path "." -Recurse -Filter "*.log" -OlderThan (Get-Date).AddDays(-7)  Remove-Item -Force
 
 # Organize archive files
 $archiveThreshold = (Get-Date).AddDays(-30)
-Get-ChildItem -Path "./coverage/" -Recurse -File | Where-Object { 
+Get-ChildItem -Path "./coverage/" -Recurse -File  Where-Object { 
     $_.LastWriteTime -lt $archiveThreshold 
-} | Move-Item -Destination "./archive/coverage/"
+}  Move-Item -Destination "./archive/coverage/"
 
 # Clean up test artifacts
 Remove-Item "./TestResults*.xml" -Force -ErrorAction SilentlyContinue

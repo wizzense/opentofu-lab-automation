@@ -10,20 +10,20 @@ It ensures scripts are integrated into the project framework without breaking de
 
 function Register-OneOffScript {
     param(
-        [Parameter(Mandatory=$true)]
-        [string]$ScriptPath,
+        Parameter(Mandatory=$true)
+        string$ScriptPath,
 
-        [Parameter(Mandatory=$true)]
-        [string]$Purpose,
+        Parameter(Mandatory=$true)
+        string$Purpose,
 
-        [Parameter(Mandatory=$false)]
-        [string[]]$Dependencies = @(),
+        Parameter(Mandatory=$false)
+        string$Dependencies = @(),
 
-        [Parameter(Mandatory=$false)]
-        [string]$ExecutionContext = "Default",
+        Parameter(Mandatory=$false)
+        string$ExecutionContext = "Default",
 
-        [Parameter(Mandatory=$false)]
-        [string]$MetadataFile = (Join-Path (Get-Location) "scripts/one-off-scripts.json")
+        Parameter(Mandatory=$false)
+        string$MetadataFile = (Join-Path (Get-Location) "scripts/one-off-scripts.json")
     )
 
     $scriptMetadata = @{
@@ -37,19 +37,19 @@ function Register-OneOffScript {
     if (-not (Test-Path $MetadataFile)) {
         $allScripts = @()
     } else {
-        $allScripts = Get-Content $MetadataFile | ConvertFrom-Json
+        $allScripts = Get-Content $MetadataFile  ConvertFrom-Json
     }
 
     $allScripts += $scriptMetadata
-    $allScripts | ConvertTo-Json -Depth 10 | Set-Content $MetadataFile
+    $allScripts  ConvertTo-Json -Depth 10  Set-Content $MetadataFile
 
     Write-Host "Script registered successfully: $ScriptPath" -ForegroundColor Green
 }
 
 function Test-OneOffScript {
     param(
-        [Parameter(Mandatory=$true)]
-        [string]$ScriptPath
+        Parameter(Mandatory=$true)
+        string$ScriptPath
     )
 
     if (-not (Test-Path $ScriptPath)) {
@@ -74,8 +74,8 @@ function Test-OneOffScript {
 
 function Invoke-OneOffScript {
     param(
-        [Parameter(Mandatory=$true)]
-        [string]$ScriptPath
+        Parameter(Mandatory=$true)
+        string$ScriptPath
     )
 
     if (-not (Test-OneOffScript -ScriptPath $ScriptPath)) {

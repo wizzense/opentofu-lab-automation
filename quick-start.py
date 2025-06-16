@@ -22,12 +22,12 @@ from pathlib import Path
 def print_status(msg, level="INFO"):
     """Print colored status message"""
     colors = {
-        "INFO": "\033[0;34m",  # Blue
-        "SUCCESS": "\033[0;32m",  # Green
-        "WARNING": "\033[1;33m",  # Yellow
-        "ERROR": "\033[0;31m",   # Red
+        "INFO": "\0330;34m",  # Blue
+        "SUCCESS": "\0330;32m",  # Green
+        "WARNING": "\0331;33m",  # Yellow
+        "ERROR": "\0330;31m",   # Red
     }
-    reset = "\033[0m"
+    reset = "\0330m"
     
     # Disable colors on Windows if needed
     if platform.system() == "Windows":
@@ -125,10 +125,10 @@ def download_project():
     zip_file = "opentofu-lab-automation.zip"
     
     # Try different download methods
-    download_commands = [
+    download_commands = 
         f"curl -L -o {zip_file} {zip_url}",
         f"wget -O {zip_file} {zip_url}",
-    ]
+    
     
     download_success = False
     for cmd in download_commands:
@@ -179,7 +179,7 @@ def launch_project(project_dir):
     os.chdir(project_dir)
     
     try:
-        subprocess.run([sys.executable, "launcher.py"], check=True)
+        subprocess.run(sys.executable, "launcher.py", check=True)
         return True
     except subprocess.CalledProcessError:
         print_status("Failed to start launcher", "ERROR")

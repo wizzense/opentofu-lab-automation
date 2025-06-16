@@ -31,17 +31,17 @@
     - Consolidates duplicate files and archives old files
 #>
 
-[CmdletBinding()]
+CmdletBinding()
 param(
-    [Parameter(Mandatory = $false)]
-    [ValidateSet("Standard", "Aggressive", "Emergency", "Safe")]
-    [string]$CleanupMode = "Standard",
+    Parameter(Mandatory = $false)
+    ValidateSet("Standard", "Aggressive", "Emergency", "Safe")
+    string$CleanupMode = "Standard",
     
-    [Parameter(Mandatory = $false)]
-    [switch]$SkipCleanup,
+    Parameter(Mandatory = $false)
+    switch$SkipCleanup,
     
-    [Parameter(Mandatory = $false)]
-    [switch]$DryRun
+    Parameter(Mandatory = $false)
+    switch$DryRun
 )
 
 $ErrorActionPreference = "Stop"
@@ -56,7 +56,7 @@ if (-not (Test-Path "PROJECT-MANIFEST.json")) {
 }
 
 Write-Host "Starting comprehensive project cleanup with PatchManager..." -ForegroundColor Green
-Write-Host "Mode: $CleanupMode | Skip Cleanup: $SkipCleanup | Dry Run: $DryRun" -ForegroundColor Yellow
+Write-Host "Mode: $CleanupMode  Skip Cleanup: $SkipCleanup  Dry Run: $DryRun" -ForegroundColor Yellow
 
 try {
     # Define the comprehensive cleanup and fix operation
@@ -77,7 +77,7 @@ try {
                 
                 if (-not $DryRun) {
                     # Fix the malformed import path
-                    $fixedContent = $content -replace 'Import-Module "/C:\\Users\\alexa\\OneDrive\\Documents\\0\. wizzense\\opentofu-lab-automation\\pwsh/modules/([^/]+)/"', 'Import-Module "/pwsh/modules/$1/" -Force'
+                    $fixedContent = $content -replace 'Import-Module "/C:\\Users\\alexa\\OneDrive\\Documents\\0\. wizzense\\opentofu-lab-automation\\pwsh/modules/(^/+)/"', 'Import-Module "/pwsh/modules/$1/" -Force'
                     $fixedContent = $fixedContent -replace 'C:\\Users\\alexa\\OneDrive\\Documents\\0\. wizzense\\opentofu-lab-automation', '/workspaces/opentofu-lab-automation'
                     Set-Content -Path $testFile.FullName -Value $fixedContent -NoNewline
                     Write-Host "    Fixed paths in: $($testFile.Name)" -ForegroundColor Green
@@ -89,9 +89,9 @@ try {
         Write-Host "Phase 2: Removing emoji violations..." -ForegroundColor Green
         
         # Use a simpler emoji detection pattern that works in PowerShell
-        $emojiPattern = '[]|[\u2600-\u26FF]|[\u2700-\u27BF]'
-        $textFiles = Get-ChildItem -Path "." -Recurse -Include "*.ps1", "*.md", "*.yml", "*.yaml", "*.json" -ErrorAction SilentlyContinue |
-            Where-Object { $_.FullName -notmatch '\.git|backups|archive' }
+        $emojiPattern = '\u2600-\u26FF\u2700-\u27BF'
+        $textFiles = Get-ChildItem -Path "." -Recurse -Include "*.ps1", "*.md", "*.yml", "*.yaml", "*.json" -ErrorAction SilentlyContinue 
+            Where-Object { $_.FullName -notmatch '\.gitbackupsarchive' }
         
         foreach ($textFile in $textFiles) {
             $content = Get-Content $textFile.FullName -Raw -ErrorAction SilentlyContinue
@@ -110,10 +110,10 @@ try {
         Write-Host "Phase 3: Updating project manifest..." -ForegroundColor Green
         
         if (-not $DryRun) {
-            $manifest = Get-Content "PROJECT-MANIFEST.json" | ConvertFrom-Json
+            $manifest = Get-Content "PROJECT-MANIFEST.json"  ConvertFrom-Json
             $manifest.project.lastUpdated = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
             $manifest.project.lastMaintenance = Get-Date -Format "yyyy-MM-dd"
-            $manifest | ConvertTo-Json -Depth 10 | Set-Content "PROJECT-MANIFEST.json"
+            $manifest  ConvertTo-Json -Depth 10  Set-Content "PROJECT-MANIFEST.json"
             Write-Host "    Updated project manifest" -ForegroundColor Green
         }
         

@@ -1,12 +1,12 @@
 # Deploy-CodeFixerModule.ps1
 # Master script for deploying and integrating the CodeFixer module
-[CmdletBinding()]
+CmdletBinding()
 param(
-    [switch]$Force,
-    [switch]$SkipBackup,
-    [switch]$SkipWorkflowUpdate,
-    [switch]$SkipCleanup,
-    [switch]$WhatIf
+    switch$Force,
+    switch$SkipBackup,
+    switch$SkipWorkflowUpdate,
+    switch$SkipCleanup,
+    switch$WhatIf
 )
 
 
@@ -34,9 +34,9 @@ Write-Host " CodeFixer module found at $modulePath" -ForegroundColor Green
 # Function to run a script with parameters
 function Invoke-DeploymentScript {
     param(
-        [string]$ScriptName,
-        [string]$Description,
-        [hashtable]$Parameters
+        string$ScriptName,
+        string$Description,
+        hashtable$Parameters
     )
 
     
@@ -58,7 +58,7 @@ $scriptPath = Join-Path $PSScriptRoot $ScriptName
     try {
         if ($WhatIf) {
             Write-Host "What If: Would execute $ScriptName with parameters:" -ForegroundColor Yellow
-            $Parameters.GetEnumerator() | ForEach-Object {
+            $Parameters.GetEnumerator()  ForEach-Object {
                 Write-Host "  -$($_.Key) $($_.Value)" -ForegroundColor Yellow
             }
             return $true

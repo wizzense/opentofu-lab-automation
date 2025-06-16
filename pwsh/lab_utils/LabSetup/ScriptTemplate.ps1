@@ -2,7 +2,7 @@ if (-not $PSScriptRoot) {
     $PSScriptRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
 }
 
-#Param([object]$Config)
+#Param(object$Config)
 
 
 
@@ -12,7 +12,7 @@ if (-not $PSScriptRoot) {
 
 
 function Invoke-LabStep {
-    param([scriptblock]$Body, [object]$Config)
+    param(scriptblock$Body, object$Config)
     
 
 
@@ -20,11 +20,11 @@ function Invoke-LabStep {
 
 
 
-if ($Config -is [string]) {
+if ($Config -is string) {
         if (Test-Path $Config) {
-            $Config = Get-Content -Raw -Path $Config | ConvertFrom-Json
+            $Config = Get-Content -Raw -Path $Config  ConvertFrom-Json
         } else {
-            try { $Config = $Config | ConvertFrom-Json } catch {}
+            try { $Config = $Config  ConvertFrom-Json } catch {}
         }
     }
     if (-not (Get-Command Write-CustomLog -ErrorAction SilentlyContinue)) {

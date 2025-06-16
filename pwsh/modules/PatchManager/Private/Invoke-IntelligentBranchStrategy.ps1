@@ -1,8 +1,8 @@
 function Invoke-IntelligentBranchStrategy {
-    [CmdletBinding()]
+    CmdletBinding()
     param(
-        [string]$PatchDescription,
-        [string]$CurrentBranch = "main"
+        string$PatchDescription,
+        string$CurrentBranch = "main"
     )
     
     try {
@@ -22,7 +22,7 @@ function Invoke-IntelligentBranchStrategy {
         }
         
         # Anti-recursive logic: if already on a feature branch, work in place
-        if ($currentBranch -match "^(patch|feature|fix|hotfix)/" -and $currentBranch -ne "main") {
+        if ($currentBranch -match "^(patchfeaturefixhotfix)/" -and $currentBranch -ne "main") {
             $strategy.SkipBranchCreation = $true
             $strategy.NewBranchName = $currentBranch
             $strategy.Message = "Working from current feature branch: $currentBranch"
@@ -30,7 +30,7 @@ function Invoke-IntelligentBranchStrategy {
         } else {
             # Create new branch from main
             $timestamp = Get-Date -Format "yyyyMMdd-HHmmss"
-            $cleanDesc = $PatchDescription -replace '[^\w\s-]', '' -replace '\s+', '-'
+            $cleanDesc = $PatchDescription -replace '^\w\s-', '' -replace '\s+', '-'
             $strategy.NewBranchName = "patch/$timestamp-$cleanDesc"
             $strategy.Message = "Creating new branch: $($strategy.NewBranchName)"
             Write-Verbose "Creating new patch branch: $($strategy.NewBranchName)"

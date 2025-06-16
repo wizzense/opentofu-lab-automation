@@ -1,4 +1,4 @@
-Param([object]$Config)
+Param(object$Config)
 
 
 
@@ -10,7 +10,7 @@ Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-autom
 
 function Get-WacRegistryInstallation {
     param(
-        [string]$RegistryPath
+        string$RegistryPath
     )
     
 
@@ -23,7 +23,7 @@ $items = Get-ChildItem $RegistryPath -ErrorAction SilentlyContinue
     foreach ($item in $items) {
         $itemProps = Get-ItemProperty $item.PSPath -ErrorAction SilentlyContinue
         # Only check if the DisplayName property exists
-        if ($itemProps.PSObject.Properties['DisplayName'] -and $itemProps.DisplayName -like "*Windows Admin Center*") {
+        if ($itemProps.PSObject.Properties'DisplayName' -and $itemProps.DisplayName -like "*Windows Admin Center*") {
             return $itemProps
         }
     }

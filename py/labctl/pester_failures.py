@@ -10,10 +10,10 @@ def summarize_failures(xml_path: Path) -> str:
     """Return a markdown list of failing tests in the results file."""
     tree = ET.parse(xml_path)
     root = tree.getroot()
-    lines = []
-    cases = list(root.findall(".//test-case[@result='Failed']"))
-    cases += list(root.findall(".//test-case[@result='Failure']"))
-    cases += list(root.findall(".//UnitTestResult[@outcome='Failed']"))
+    lines = 
+    cases = list(root.findall(".//test-case@result='Failed'"))
+    cases += list(root.findall(".//test-case@result='Failure'"))
+    cases += list(root.findall(".//UnitTestResult@outcome='Failed'"))
 
     for case in cases:
         name = case.get("name") or case.get("testName") or "Pester test failed"
@@ -30,16 +30,16 @@ def report_failures(xml_path: Path) -> None:
     commit = os.environ.get("COMMIT_SHA")
     branch = os.environ.get("BRANCH_NAME")
     os_name = xml_path.parent.name.replace("pester-results-", "")
-    details = []
+    details = 
     if run_url:
         details.append(f"Run: {run_url}")
     if commit:
         details.append(f"Commit `{commit}` on branch `{branch}`")
     details.append(f"OS: {os_name}")
     extra = "\n".join(details)
-    cases = list(root.findall(".//test-case[@result='Failed']"))
-    cases += list(root.findall(".//test-case[@result='Failure']"))
-    cases += list(root.findall(".//UnitTestResult[@outcome='Failed']"))
+    cases = list(root.findall(".//test-case@result='Failed'"))
+    cases += list(root.findall(".//test-case@result='Failure'"))
+    cases += list(root.findall(".//UnitTestResult@outcome='Failed'"))
 
     for case in cases:
         title = case.get("name") or case.get("testName") or "Pester test failed"
@@ -48,7 +48,7 @@ def report_failures(xml_path: Path) -> None:
         create_issue(title, body)
 
 
-def _main(argv: list[str] | None = None) -> None:
+def _main(argv: liststr  None = None) -> None:
     parser = argparse.ArgumentParser(description="Report or summarize Pester failures")
     parser.add_argument("xml", type=Path, help="Path to testResults.xml")
     parser.add_argument("--summary", action="store_true", help="Print summary instead of creating issues")

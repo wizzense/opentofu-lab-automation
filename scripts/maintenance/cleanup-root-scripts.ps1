@@ -19,24 +19,24 @@ Preview what would be moved without actually moving files.
 ./scripts/maintenance/cleanup-root-scripts.ps1
 #>
 
-[CmdletBinding()]
+CmdletBinding()
 param(
- [Parameter()
+ Parameter()
 
 
 
 
 
 
-]
- [switch]$WhatIf
+
+ switch$WhatIf
 )
 
 $ErrorActionPreference = "Stop"
 $ProjectRoot = "/workspaces/opentofu-lab-automation"
 
 function Write-CleanupLog {
- param([string]$Message, [string]$Level = "INFO")
+ param(string$Message, string$Level = "INFO")
  
 
 
@@ -53,14 +53,14 @@ $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
  "CLEANUP" { "Magenta" }
  default { "White" }
  }
- Write-Host "[$timestamp] [$Level] $Message" -ForegroundColor $color
+ Write-Host "$timestamp $Level $Message" -ForegroundColor $color
 }
 
 function Move-ScriptFile {
  param(
- [string]$SourceFile,
- [string]$DestinationPath,
- [string]$Reason = ""
+ string$SourceFile,
+ string$DestinationPath,
+ string$Reason = ""
  )
  
  
@@ -84,7 +84,7 @@ $sourcePath = Join-Path $ProjectRoot $SourceFile
  if ($WhatIf) {
  Write-CleanupLog "Would create directory: $destDir" "INFO"
  } else {
- New-Item -ItemType Directory -Path $destDir -Force | Out-Null
+ New-Item -ItemType Directory -Path $destDir -Force  Out-Null
  Write-CleanupLog "Created directory: $destDir" "SUCCESS"
  }
  }
@@ -105,7 +105,7 @@ $sourcePath = Join-Path $ProjectRoot $SourceFile
 }
 
 function Remove-EmptyScript {
- param([string]$ScriptFile, [string]$Reason = "")
+ param(string$ScriptFile, string$Reason = "")
  
  
 
@@ -120,7 +120,7 @@ $scriptPath = Join-Path $ProjectRoot $ScriptFile
  }
  
  $content = Get-Content $scriptPath -Raw -ErrorAction SilentlyContinue
- if ([string]::IsNullOrWhiteSpace($content)) {
+ if (string::IsNullOrWhiteSpace($content)) {
  if ($WhatIf) {
  Write-CleanupLog "Would remove empty file: $ScriptFile" "WARNING"
  } else {
@@ -173,7 +173,7 @@ $organizationScripts = @{
 }
 
 foreach ($script in $organizationScripts.Keys) {
- Move-ScriptFile $script $organizationScripts[$script] "Historical organization script"
+ Move-ScriptFile $script $organizationScripts$script "Historical organization script"
 }
 
 # 3. Move test configuration files to appropriate locations
@@ -185,7 +185,7 @@ $testConfigs = @{
 
 foreach ($config in $testConfigs.Keys) {
  if (Test-Path (Join-Path $ProjectRoot $config)) {
- Move-ScriptFile $config $testConfigs[$config] "Test configuration file"
+ Move-ScriptFile $config $testConfigs$config "Test configuration file"
  }
 }
 
@@ -223,7 +223,7 @@ foreach ($backupDir in $backupDirs) {
  Write-CleanupLog "Would move backup directory: $backupDir → backups/$backupDir" "INFO"
  } else {
  if (-not (Test-Path (Join-Path $ProjectRoot "backups"))) {
- New-Item -ItemType Directory -Path (Join-Path $ProjectRoot "backups") -Force | Out-Null
+ New-Item -ItemType Directory -Path (Join-Path $ProjectRoot "backups") -Force  Out-Null
  }
  try {
  Move-Item -Path $sourcePath -Destination $destPath -Force
@@ -248,9 +248,9 @@ $requiredScripts = @{
 foreach ($script in $requiredScripts.Keys) {
  $scriptPath = Join-Path $ProjectRoot $script
  if (Test-Path $scriptPath) {
- Write-CleanupLog "[PASS] Required script found: $script" "SUCCESS"
+ Write-CleanupLog "PASS Required script found: $script" "SUCCESS"
  } else {
- Write-CleanupLog "[FAIL] Missing required script: $script - $($requiredScripts[$script])" "ERROR"
+ Write-CleanupLog "FAIL Missing required script: $script - $($requiredScripts$script)" "ERROR"
  }
 }
 
@@ -314,7 +314,7 @@ Use the unified maintenance system instead of individual scripts:
 
 $summaryPath = Join-Path $ProjectRoot "docs/reports/project-status/$(Get-Date -Format "yyyy-MM-dd")-root-cleanup-summary.md"
 if (-not $WhatIf) {
- $cleanupSummary | Set-Content $summaryPath
+ $cleanupSummary  Set-Content $summaryPath
  Write-CleanupLog "Created cleanup summary: $summaryPath" "SUCCESS"
 }
 

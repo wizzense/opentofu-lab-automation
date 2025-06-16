@@ -1,4 +1,4 @@
-Param([object]$Config)
+Param(object$Config)
 
 
 
@@ -19,7 +19,7 @@ if ($null -ne $Config.FirewallPorts) {
                             -Direction Inbound `
                             -Protocol TCP `
                             -LocalPort $port `
-                            -Action Allow |
+                            -Action Allow 
                             Out-Null
     }
 } else {

@@ -24,7 +24,7 @@ Copilot provides inline code suggestions as you type, ranging from single line c
 - Write `// Create a REST API endpoint for user authentication` to generate Express.js route code
 - Begin a React component with `const UserProfile = ({` to receive a complete functional component with TypeScript types
 
-Learn more about [code completions in VS Code](/docs/copilot/ai-powered-suggestions.md).
+Learn more about code completions in VS Code(/docs/copilot/ai-powered-suggestions.md).
 
 ### Autonomous coding
 
@@ -41,7 +41,7 @@ Install Model Context Protocol (MCP) servers or tools from Marketplace extension
 - Debug failing tests and apply fixes
 - Optimize performance across the application
 
-Learn more about [autonomous coding with agent mode](/docs/copilot/chat/chat-agent-mode.md) and [configuring MCP servers in VS Code](/docs/copilot/chat/mcp-servers.md).
+Learn more about autonomous coding with agent mode(/docs/copilot/chat/chat-agent-mode.md) and configuring MCP servers in VS Code(/docs/copilot/chat/mcp-servers.md).
 
 ### Natural language chat
 
@@ -56,9 +56,9 @@ Apply changes across multiple files in your project using single prompts. Copilo
 - "Add error handling to the payment processing service"
 - "Add a login form and backend API"
 
-![Screenshot of the Chat view asking how to add a page to a web app](images/overview/copilot-chat-view-add-page.png)
+!Screenshot of the Chat view asking how to add a page to a web app(images/overview/copilot-chat-view-add-page.png)
 
-Learn more about [using chat in VS Code](/docs/copilot/chat/copilot-chat.md).
+Learn more about using chat in VS Code(/docs/copilot/chat/copilot-chat.md).
 
 ### Smart actions
 
@@ -66,9 +66,9 @@ VS Code has many predefined actions for common development tasks that are enhanc
 
 From helping you write commit messages or pull requests descriptions, renaming code symbols, fixing errors in the editor, to semantic search that helps you find relevant files.
 
-![Screenshot of the Smart Actions menu in VS Code](images/overview/copilot-chat-fix-test-failure.png)
+!Screenshot of the Smart Actions menu in VS Code(images/overview/copilot-chat-fix-test-failure.png)
 
-Learn more about the [smart actions in VS Code](/docs/copilot/copilot-smart-actions.md).
+Learn more about the smart actions in VS Code(/docs/copilot/copilot-smart-actions.md).
 
 ## Getting started
 
@@ -77,7 +77,7 @@ Learn more about the [smart actions in VS Code](/docs/copilot/copilot-smart-acti
 1. **Set up Copilot** from the Copilot dashboard in the Status Bar
 2. **Sign in** with your GitHub account
 
-![Hover over the Copilot icon in the Status Bar and select Set up Copilot.](images/setup/setup-copilot-status-bar.png)
+!Hover over the Copilot icon in the Status Bar and select Set up Copilot.(images/setup/setup-copilot-status-bar.png)
 
 ### Step 2: Basic code completion
 
@@ -127,7 +127,7 @@ Identifying and resolving code issues:
 - "Find and fix the memory leak in this data processing pipeline"
 - "Optimize this database query for better performance"
 
-Learn more about using [AI for debugging](/docs/copilot/guides/debug-with-copilot.md).
+Learn more about using AI for debugging(/docs/copilot/guides/debug-with-copilot.md).
 
 ### Feature implementation
 
@@ -145,7 +145,7 @@ Generating tests and ensuring code quality:
 - "Create integration tests for the API endpoints"
 - "Add property-based tests for this data validation function"
 
-Learn more about using [AI for testing](/docs/copilot/guides/test-with-copilot.md).
+Learn more about using AI for testing(/docs/copilot/guides/test-with-copilot.md).
 
 ### Learning and documentation
 
@@ -173,31 +173,31 @@ applyTo: "**"
 - Follow the Repository pattern for data access
 ```
 
-Learn more about [using custom instructions](/docs/copilot/copilot-customization.md) to tailor the AI to your coding style.
+Learn more about using custom instructions(/docs/copilot/copilot-customization.md) to tailor the AI to your coding style.
 
 ### Language models
 
 Quickly switch between different AI models to optimize for speed, reasoning, or specialized tasks. Choose from various built-in models or connect to external providers and bring your own API keys.
 
-![Screenshot that shows the model picker in the Chat view.](images/language-models/model-dropdown-change-model.png)
+!Screenshot that shows the model picker in the Chat view.(images/language-models/model-dropdown-change-model.png)
 
-Learn more about using [language models in VS Code](/docs/copilot/language-models.md).
+Learn more about using language models in VS Code(/docs/copilot/language-models.md).
 
 ### Custom chat modes
 
 The chat experience in VS Code can operate in different modes to switch between asking questions, making edits, or running autonomous coding sessions. You can also create custom chat modes that fit your workflow. For example, create a chat mode that focuses on planning and architecture discussions. Specify which tools chat is allowed to use, and provide custom instructions to provide the right context in which it should operate.
 
-![Screenshot showing the Chat view, highlighting the chat mode dropdown list.](images/overview/chat-mode-dropdown.png)
+!Screenshot showing the Chat view, highlighting the chat mode dropdown list.(images/overview/chat-mode-dropdown.png)
 
-Learn more about [creating your own chat modes](/docs/copilot/chat/chat-modes.md).
+Learn more about creating your own chat modes(/docs/copilot/chat/chat-modes.md).
 
 ### Extend chat with tools
 
 Extend the capabilities of the chat experience with specialized tools from MCP servers or Marketplace extensions. For example, add tools for querying databases, connecting to external APIs, or performing specialized tasks.
 
-![MCP tools list](chat/images/mcp-servers/agent-mode-select-tools.png)
+!MCP tools list(chat/images/mcp-servers/agent-mode-select-tools.png)
 
-Learn more about [using MCP servers and tools](/docs/copilot/chat/mcp-servers.md).
+Learn more about using MCP servers and tools(/docs/copilot/chat/mcp-servers.md).
 
 ## Best Practices
 
@@ -211,16 +211,16 @@ Learn more about [using MCP servers and tools](/docs/copilot/chat/mcp-servers.md
 
 - Choose a language model that is optimized for your task. Use fast models for quick code suggestions, reasoning models for more complex requests.
 
-Get more [tips and tricks for using AI in VS Code](/docs/copilot/copilot-tips-and-tricks.md).
+Get more tips and tricks for using AI in VS Code(/docs/copilot/copilot-tips-and-tricks.md).
 
 ## Pricing
 
 You can start using GitHub Copilot for free with monthly limits on completions and chat interactions. For more extensive usage, you can choose from various paid plans.
 
-[View detailed pricing →](https://docs.github.com/en/copilot/about-github-copilot/plans-for-github-copilot)
+View detailed pricing →(https://docs.github.com/en/copilot/about-github-copilot/plans-for-github-copilot)
 
 ## Next steps
 
-- [Set up Copilot in VS Code](/docs/copilot/setup.md)
-- [Get started with hands-on examples](/docs/copilot/getting-started.md)
-- [Customize the AI for your workflow](/docs/copilot/copilot-customization.md)
+- Set up Copilot in VS Code(/docs/copilot/setup.md)
+- Get started with hands-on examples(/docs/copilot/getting-started.md)
+- Customize the AI for your workflow(/docs/copilot/copilot-customization.md)

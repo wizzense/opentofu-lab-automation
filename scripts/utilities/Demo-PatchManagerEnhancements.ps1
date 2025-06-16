@@ -29,14 +29,14 @@
     - Reduces backup dependencies through proper version control
 #>
 
-[CmdletBinding()]
+CmdletBinding()
 param(
-    [Parameter(Mandatory = $false)]
-    [switch]$UseAutoCommit,
+    Parameter(Mandatory = $false)
+    switch$UseAutoCommit,
     
-    [Parameter(Mandatory = $true)]
-    [ValidateSet("AutoCommit", "Rollback", "Emergency", "Full")]
-    [string]$DemonstrationMode
+    Parameter(Mandatory = $true)
+    ValidateSet("AutoCommit", "Rollback", "Emergency", "Full")
+    string$DemonstrationMode
 )
 
 $ErrorActionPreference = "Stop"
@@ -56,7 +56,7 @@ try {
             
             # Create some test changes
             Write-Host "Creating test changes..." -ForegroundColor Yellow
-            "# Test change $(Get-Date)" | Add-Content "PATCH-DEMO.md"
+            "# Test change $(Get-Date)"  Add-Content "PATCH-DEMO.md"
             
             # Use PatchManager with auto-commit
             Write-Host "Using PatchManager with auto-commit..." -ForegroundColor Green
@@ -64,7 +64,7 @@ try {
                 -PatchDescription "demo: test auto-commit functionality" `
                 -PatchOperation { 
                     Write-Host "Patch operation: Adding demo content" -ForegroundColor Cyan
-                    "Demo content added by PatchManager" | Add-Content "PATCH-DEMO.md"
+                    "Demo content added by PatchManager"  Add-Content "PATCH-DEMO.md"
                 } `
                 -AutoCommitUncommitted `
                 -CreatePullRequest `
@@ -92,7 +92,7 @@ try {
             Write-Host "   Would rollback with backup: $($rollbackResult.Success)" -ForegroundColor White
               # Emergency rollback demonstration
             Write-Host "2. Emergency rollback capability:" -ForegroundColor Cyan
-            Invoke-QuickRollback -RollbackType "Emergency" -WhatIf | Out-Null
+            Invoke-QuickRollback -RollbackType "Emergency" -WhatIf  Out-Null
             Write-Host "   Emergency rollback available: Available" -ForegroundColor White
             
             Write-Host "`nRollback capabilities ready for instant recovery!" -ForegroundColor Green
@@ -120,7 +120,7 @@ try {
             Write-Host "Demonstrating full enhanced workflow..." -ForegroundColor Blue
             
             Write-Host "Step 1: Auto-commit existing changes..." -ForegroundColor Green
-            "# Full demo $(Get-Date)" | Add-Content "FULL-DEMO.md"
+            "# Full demo $(Get-Date)"  Add-Content "FULL-DEMO.md"
             
             Write-Host "Step 2: Apply patch with comprehensive cleanup..." -ForegroundColor Green
             $patchResult = Invoke-GitControlledPatch `
@@ -130,7 +130,7 @@ try {
                     Write-Host "  Fixing cross-platform issues..." -ForegroundColor Cyan
                     Write-Host "  Removing emoji violations..." -ForegroundColor Cyan
                     Write-Host "  Consolidating duplicate files..." -ForegroundColor Cyan
-                    "Full demo completed successfully" | Add-Content "FULL-DEMO.md"
+                    "Full demo completed successfully"  Add-Content "FULL-DEMO.md"
                 } `
                 -AutoCommitUncommitted `
                 -CreatePullRequest `

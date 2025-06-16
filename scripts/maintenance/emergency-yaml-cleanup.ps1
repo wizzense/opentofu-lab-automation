@@ -40,10 +40,10 @@ Write-Host "Working workflows: $($workingWorkflows.Count)" -ForegroundColor Gree
 Write-Host "Broken workflows: $($allWorkflows.Count - $workingWorkflows.Count)" -ForegroundColor Red
 
 # Archive broken workflows
-$brokenWorkflows = $allWorkflows | Where-Object { $_ -notin $workingWorkflows }
+$brokenWorkflows = $allWorkflows  Where-Object { $_ -notin $workingWorkflows }
 
 if ($brokenWorkflows.Count -eq 0) {
-    Write-Host "`n[PASS] No broken workflows found - system is clean!" -ForegroundColor Green
+    Write-Host "`nPASS No broken workflows found - system is clean!" -ForegroundColor Green
     exit 0
 }
 
@@ -54,9 +54,9 @@ foreach ($workflow in $brokenWorkflows) {
     
     try {
         Move-Item $sourcePath $destPath -Force
-        Write-Host "  [PASS] Archived: $workflow" -ForegroundColor Green
+        Write-Host "  PASS Archived: $workflow" -ForegroundColor Green
     } catch {
-        Write-Host "  [FAIL] Failed to archive: $workflow - $($_.Exception.Message)" -ForegroundColor Red
+        Write-Host "  FAIL Failed to archive: $workflow - $($_.Exception.Message)" -ForegroundColor Red
     }
 }
 
@@ -74,7 +74,7 @@ The corruption was caused by flawed auto-fix logic in the YAML validation script
 - **Auto-fix logic**: DISABLED to prevent future corruption
 
 ## Archived Files
-$($brokenWorkflows | ForEach-Object { "- $_" } | Out-String)
+$($brokenWorkflows  ForEach-Object { "- $_" }  Out-String)
 
 ## Recovery Options
 1. **Recommended**: Use the working mega-consolidated workflows
@@ -83,7 +83,7 @@ $($brokenWorkflows | ForEach-Object { "- $_" } | Out-String)
 
 ## Working Workflows
 The following workflows remain active and are YAML-valid:
-$($workingWorkflows | ForEach-Object { "- $_" } | Out-String)
+$($workingWorkflows  ForEach-Object { "- $_" }  Out-String)
 
 ## Prevention
 - YAML auto-fix logic has been disabled in Invoke-YamlValidation.ps1
@@ -104,7 +104,7 @@ foreach ($workflow in $workingWorkflows) {
     
     if (Test-Path $sourcePath) {
         Copy-Item $sourcePath $destPath -Force
-        Write-Host "  [PASS] Backed up: $workflow" -ForegroundColor Green
+        Write-Host "  PASS Backed up: $workflow" -ForegroundColor Green
     }
 }
 
@@ -117,23 +117,23 @@ foreach ($workflow in $workingWorkflows) {
     if (Test-Path $workflowPath) {
         try {
             $null = yamllint $workflowPath 2>&1
-            Write-Host "  [PASS] Valid: $workflow" -ForegroundColor Green
+            Write-Host "  PASS Valid: $workflow" -ForegroundColor Green
         } catch {
-            Write-Host "  [FAIL] Invalid: $workflow" -ForegroundColor Red
+            Write-Host "  FAIL Invalid: $workflow" -ForegroundColor Red
             $validationErrors++
         }
     } else {
-        Write-Host "  [WARN]  Missing: $workflow" -ForegroundColor Yellow
+        Write-Host "  WARN  Missing: $workflow" -ForegroundColor Yellow
     }
 }
 
 # Summary
 Write-Host "`n CLEANUP SUMMARY:" -ForegroundColor Cyan
 Write-Host "===================" -ForegroundColor Cyan
-Write-Host "[PASS] Archived broken workflows: $($brokenWorkflows.Count)" -ForegroundColor Green
-Write-Host "[PASS] Backed up working workflows: $($workingWorkflows.Count)" -ForegroundColor Green
-Write-Host "[PASS] Validation errors remaining: $validationErrors" -ForegroundColor $(if ($validationErrors -eq 0) { 'Green' } else { 'Red' })
-Write-Host "[PASS] Auto-fix corruption: DISABLED" -ForegroundColor Green
+Write-Host "PASS Archived broken workflows: $($brokenWorkflows.Count)" -ForegroundColor Green
+Write-Host "PASS Backed up working workflows: $($workingWorkflows.Count)" -ForegroundColor Green
+Write-Host "PASS Validation errors remaining: $validationErrors" -ForegroundColor $(if ($validationErrors -eq 0) { 'Green' } else { 'Red' })
+Write-Host "PASS Auto-fix corruption: DISABLED" -ForegroundColor Green
 
 if ($validationErrors -eq 0) {
     Write-Host "`n SUCCESS: Workflow directory is now clean and valid!" -ForegroundColor Green
@@ -143,16 +143,16 @@ if ($validationErrors -eq 0) {
     # Update project manifest
     Write-Host "`n� Updating project manifest..." -ForegroundColor Cyan
     try {
-        $manifest = Get-Content "./PROJECT-MANIFEST.json" | ConvertFrom-Json
+        $manifest = Get-Content "./PROJECT-MANIFEST.json"  ConvertFrom-Json
         $manifest.project.lastMaintenance = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
         $manifest.project.workflowStatus = "Cleaned - $($workingWorkflows.Count) valid workflows"
-        $manifest | ConvertTo-Json -Depth 10 | Set-Content "./PROJECT-MANIFEST.json"
-        Write-Host "[PASS] Project manifest updated" -ForegroundColor Green
+        $manifest  ConvertTo-Json -Depth 10  Set-Content "./PROJECT-MANIFEST.json"
+        Write-Host "PASS Project manifest updated" -ForegroundColor Green
     } catch {
-        Write-Host "[WARN]  Failed to update project manifest: $($_.Exception.Message)" -ForegroundColor Yellow
+        Write-Host "WARN  Failed to update project manifest: $($_.Exception.Message)" -ForegroundColor Yellow
     }
 } else {
-    Write-Host "`n[WARN]  WARNING: Some validation errors remain. Manual review required." -ForegroundColor Yellow
+    Write-Host "`nWARN  WARNING: Some validation errors remain. Manual review required." -ForegroundColor Yellow
 }
 
 Write-Host "`n PREVENTION MEASURES ACTIVE:" -ForegroundColor Cyan

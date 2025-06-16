@@ -1,5 +1,5 @@
 Param(
-    [object]$Config
+    object$Config
 )
 
 
@@ -12,8 +12,8 @@ Param(
 Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\pwsh/modules/LabRunner/" -ForceWrite-CustomLog "Starting $MyInvocation.MyCommand"
 
 function Set-LabProfile {
-    [CmdletBinding(SupportsShouldProcess = $true)]
-    param([object]$Config)
+    CmdletBinding(SupportsShouldProcess = $true)
+    param(object$Config)
 
     
 
@@ -36,7 +36,7 @@ Write-CustomLog "Running $($MyInvocation.MyCommand.Name)"
             $profilePath = $PROFILE.CurrentUserAllHosts
             $profileDir  = Split-Path $profilePath
             if (-not (Test-Path $profileDir)) {
-                New-Item -ItemType Directory -Path $profileDir -Force | Out-Null
+                New-Item -ItemType Directory -Path $profileDir -Force  Out-Null
             }
             $repoRoot = Resolve-Path -Path (Join-Path $PSScriptRoot '..')
             $content = @"

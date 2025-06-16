@@ -24,10 +24,10 @@
 #>
 
 function Invoke-BackupConsolidation {
-    [CmdletBinding()]
+    CmdletBinding()
     param(
-        [Parameter(Mandatory = $true)]
-        [hashtable]$Config
+        Parameter(Mandatory = $true)
+        hashtable$Config
     )
     
     begin {
@@ -43,7 +43,7 @@ function Invoke-BackupConsolidation {
         # Initialize logging
         if (-not (Get-Command "Write-CustomLog" -ErrorAction SilentlyContinue)) {
             function Write-CustomLog {
-                param([string]$Message, [string]$Level = "INFO")
+                param(string$Message, string$Level = "INFO")
                 $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
                 $color = switch ($Level) {
                     "ERROR" { "Red" }
@@ -52,7 +52,7 @@ function Invoke-BackupConsolidation {
                     "DEBUG" { "Cyan" }
                     default { "White" }
                 }
-                Write-Host "[$timestamp] [PatchManager] [$Level] $Message" -ForegroundColor $color
+                Write-Host "$timestamp PatchManager $Level $Message" -ForegroundColor $color
             }
         }
     }
@@ -74,7 +74,7 @@ function Invoke-BackupConsolidation {
             
             # Create backup destination
             if (-not (Test-Path $BackupDestination)) {
-                New-Item -ItemType Directory -Path $BackupDestination -Force | Out-Null
+                New-Item -ItemType Directory -Path $BackupDestination -Force  Out-Null
                 Write-CustomLog "Created backup destination directory" "INFO"
             }
             
@@ -91,9 +91,9 @@ function Invoke-BackupConsolidation {
                     $Files = Get-ChildItem -Path $ProjectRoot -Recurse -File -Filter $Pattern -ErrorAction SilentlyContinue
                     
                     # Filter out excluded files
-                    $FilteredFiles = $Files | Where-Object {
+                    $FilteredFiles = $Files  Where-Object {
                         $FilePath = $_.FullName
-                        $RelativePath = $FilePath.Replace($ProjectRoot, "").TrimStart([char]'\', [char]'/')
+                        $RelativePath = $FilePath.Replace($ProjectRoot, "").TrimStart(char'\', char'/')
                         
                         $Excluded = $false
                         foreach ($Exclusion in $AllExclusions) {
@@ -127,7 +127,7 @@ function Invoke-BackupConsolidation {
             if (-not $Force) {
                 Write-CustomLog "Found $($BackupFiles.Count) backup files to consolidate" "INFO"
                 $Confirmation = Read-Host "Proceed with consolidation? (y/N)"
-                if ($Confirmation -notmatch '^[Yy]') {
+                if ($Confirmation -notmatch '^Yy') {
                     Write-CustomLog "Operation cancelled by user" "INFO"
                     return @{ Success = $false; Message = "Cancelled by user" }
                 }
@@ -141,19 +141,19 @@ function Invoke-BackupConsolidation {
             Write-Progress -Activity "PatchManager Backup Consolidation" -Status "Preparing..." -PercentComplete 0
             
             for ($i = 0; $i -lt $BackupFiles.Count; $i++) {
-                $File = $BackupFiles[$i]
-                $percentComplete = [math]::Round(($i / $BackupFiles.Count) * 100, 2)
+                $File = $BackupFiles$i
+                $percentComplete = math::Round(($i / $BackupFiles.Count) * 100, 2)
                 Write-Progress -Activity "PatchManager Backup Consolidation" -Status "Processing file $($i+1) of $($BackupFiles.Count): $($File.Name)" -PercentComplete $percentComplete
                 
                 try {
                     # Maintain directory structure in backup
-                    $RelativePath = $File.FullName.Replace($ProjectRoot, "").TrimStart([char]'\', [char]'/')
+                    $RelativePath = $File.FullName.Replace($ProjectRoot, "").TrimStart(char'\', char'/')
                     $DestinationPath = Join-Path $BackupDestination $RelativePath
                     $DestinationDir = Split-Path $DestinationPath -Parent
                     
                     # Create destination directory if needed
                     if (-not (Test-Path $DestinationDir)) {
-                        New-Item -ItemType Directory -Path $DestinationDir -Force | Out-Null
+                        New-Item -ItemType Directory -Path $DestinationDir -Force  Out-Null
                     }
                     
                     # Move file to consolidated backup location
@@ -172,7 +172,7 @@ function Invoke-BackupConsolidation {
             Write-Progress -Activity "PatchManager Backup Consolidation" -Status "Complete" -Completed
             
             # Create consolidation summary
-            $SizeInMB = [math]::Round($TotalSize / 1MB, 2)
+            $SizeInMB = math::Round($TotalSize / 1MB, 2)
             $SummaryMessage = "Backup consolidation completed: $ProcessedCount files moved, $SizeInMB MB total"
             Write-CustomLog $SummaryMessage "INFO"
             
@@ -190,7 +190,7 @@ function Invoke-BackupConsolidation {
             }
             
             $ManifestPath = Join-Path $BackupDestination "consolidation-manifest.json"
-            $Manifest | ConvertTo-Json -Depth 3 | Set-Content -Path $ManifestPath -Encoding UTF8
+            $Manifest  ConvertTo-Json -Depth 3  Set-Content -Path $ManifestPath -Encoding UTF8
             Write-CustomLog "Created consolidation manifest: $ManifestPath" "INFO"
             
             if ($FailedMoves.Count -gt 0) {

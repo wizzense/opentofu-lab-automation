@@ -2,7 +2,7 @@ from pathlib import Path
 import sys
 from types import SimpleNamespace
 
-sys.path.append(str(Path(__file__).resolve().parents[1]))
+sys.path.append(str(Path(__file__).resolve().parents1))
 
 from labctl import pester_failures
 
@@ -27,7 +27,7 @@ def test_report_failures(tmp_path, monkeypatch):
 </test-results>
 """
     )
-    calls = []
+    calls = 
 
     def fake_issue(title, body):
         calls.append(SimpleNamespace(title=title, body=body))
@@ -39,9 +39,9 @@ def test_report_failures(tmp_path, monkeypatch):
     pester_failures.report_failures(xml)
 
     assert len(calls) == 1
-    assert calls[0].title == "Fail.Test"
-    assert "boom" in calls[0].body
-    assert "http://run" in calls[0].body
+    assert calls0.title == "Fail.Test"
+    assert "boom" in calls0.body
+    assert "http://run" in calls0.body
 
 
 def test_summarize_failures(tmp_path):

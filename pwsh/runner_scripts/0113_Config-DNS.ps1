@@ -1,4 +1,4 @@
-Param([object]$Config)
+Param(object$Config)
 
 
 
@@ -11,8 +11,8 @@ Invoke-LabStep -Config $Config -Body {
     Write-CustomLog "Running $($MyInvocation.MyCommand.Name)"
 
 if ($Config.SetDNSServers -eq $true) {
-    $mockInterface = [PSCustomObject]@{ InterfaceIndex = 1 }
-    $interfaceIndex = (Invoke-CrossPlatformCommand -CommandName 'Get-NetIPAddress' -Parameters @{ AddressFamily = 'IPv4' } -MockResult @($mockInterface) | Select-Object -First 1 -ExpandProperty InterfaceIndex)
+    $mockInterface = PSCustomObject@{ InterfaceIndex = 1 }
+    $interfaceIndex = (Invoke-CrossPlatformCommand -CommandName 'Get-NetIPAddress' -Parameters @{ AddressFamily = 'IPv4' } -MockResult @($mockInterface)  Select-Object -First 1 -ExpandProperty InterfaceIndex)
     Write-CustomLog "Setting DNS servers to $($Config.DNSServers) on interface $interfaceIndex"
     Invoke-CrossPlatformCommand -CommandName 'Set-DnsClientServerAddress' -Parameters @{ InterfaceIndex = $interfaceIndex; ServerAddresses = $Config.DNSServers } -SkipOnUnavailable
     Write-CustomLog 'DNS servers configured'

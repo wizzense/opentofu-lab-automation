@@ -2,7 +2,7 @@
 
 The workflow `.github/workflows/copilot-auto-fix.yml` uses the GitHub Copilot CLI extension via `gh`. It requires an OAuth token with the `copilot` scope.
 
-1. Install and authenticate the [GitHub CLI](https://cli.github.com/):
+1. Install and authenticate the GitHub CLI(https://cli.github.com/):
 
    ```bash
    gh auth login --web
@@ -21,5 +21,5 @@ The workflow reads the secret and sets the `GH_TOKEN` environment variable so th
 
 ---
 
-See [pester-test-failures.md](pester-test-failures.md) for a tracked list of current test failures.
+See pester-test-failures.md(pester-test-failures.md) for a tracked list of current test failures.
 

@@ -1,13 +1,13 @@
 {
-  "Issues": [
+  "Issues": 
     {
-      "Files": [
+      "Files": 
         ".\\archive\\broken-syntax-files-backup-20250614-120252\\cleanup-merged-branches.ps1",
         ".\\archive\\broken-syntax-files-backup-20250614-120252\\comprehensive-fix-and-test.ps1",
         ".\\archive\\broken-syntax-files-backup-20250614-120252\\comprehensive-health-check.ps1",
         ".\\archive\\broken-syntax-files-backup-20250614-120252\\emergency-merge-fix.ps1",
         ".\\archive\\broken-syntax-files-backup-20250614-120252\\emergency-system-fix.ps1"
-      ],
+      ,
       "Fix": "./scripts/maintenance/fix-test-syntax.ps1",
       "Description": "PowerShell files with syntax errors",
       "Category": "PowerShell Syntax",
@@ -15,20 +15,20 @@
       "Count": 14
     },
     {
-      "Files": [
+      "Files": 
         "pwsh\\modules\\CodeFixer\\Public\\Invoke-AutoFixCapture.ps1",
         "pwsh\\runner_scripts\\0000_Cleanup-Files.ps1",
         "pwsh\\runner_scripts\\0001_Reset-Git.ps1",
         "pwsh\\runner_scripts\\0002_Setup-Directories.ps1",
         "pwsh\\runner_scripts\\0006_Install-ValidationTools.ps1"
-      ],
+      ,
       "Fix": "./scripts/maintenance/fix-infrastructure-issues.ps1 -Fix ImportPaths",
       "Description": "Files using old lab_utils import paths",
       "Category": "Deprecated Import Paths",
       "Severity": "Medium",
       "Count": 51
     }
-  ],
+  ,
   "Metrics": {
     "IssueCount": 2,
     "TestFiles": 88,
@@ -37,10 +37,10 @@
     "SyntaxErrorFiles": 14,
     "DeprecatedImports": 51
   },
-  "Recommendations": [
+  "Recommendations": 
     "Run automated fixes: ./scripts/maintenance/fix-infrastructure-issues.ps1 -Fix All",
     "Fix syntax errors: ./scripts/maintenance/fix-test-syntax.ps1"
-  ],
+  ,
   "Timestamp": "2025-06-14 12:21:12",
   "OverallStatus": "Critical"
 }

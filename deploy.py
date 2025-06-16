@@ -31,7 +31,7 @@ if platform.system() == "Windows":
  sys.stdout.reconfigure(encoding='utf-8')
  sys.stderr.reconfigure(encoding='utf-8')
  # Force UTF-8 environment
- os.environ['PYTHONIOENCODING'] = 'utf-8'
+ os.environ'PYTHONIOENCODING' = 'utf-8'
  except:
  pass
 
@@ -55,12 +55,12 @@ DEFAULT_CONFIG = CONFIGS_DIR / "config_files" / "default-config.json"
 
 class Colors:
  """ANSI color codes for cross-platform terminal output"""
- BLUE = '\033[94m'
- GREEN = '\033[92m'
- YELLOW = '\033[93m'
- RED = '\033[91m'
- BOLD = '\033[1m'
- RESET = '\033[0m'
+ BLUE = '\03394m'
+ GREEN = '\03392m'
+ YELLOW = '\03393m'
+ RED = '\03391m'
+ BOLD = '\0331m'
+ RESET = '\0330m'
 
 def print_banner():
  """Display project banner"""
@@ -88,27 +88,27 @@ def print_banner():
  print(f"Project: {PROJECT_ROOT}")
  print("="*60 + "\n")
 
-def detect_platform() -> Tuple[str, str]:
+def detect_platform() -> Tuplestr, str:
  """Detect operating system and architecture"""
  system = platform.system().lower()
  arch = platform.machine().lower()
  
  # Normalize architecture names
- if arch in ['x86_64', 'amd64']:
+ if arch in 'x86_64', 'amd64':
  arch = 'x64'
- elif arch in ['aarch64', 'arm64']:
+ elif arch in 'aarch64', 'arm64':
  arch = 'arm64'
  
  return system, arch
 
-def check_powershell() -> Optional[str]:
+def check_powershell() -> Optionalstr:
  """Check if PowerShell 7+ is available with timeout and non-interactive mode"""
  try:
  # Try pwsh first (PowerShell 7+) with explicit non-interactive flag
- result = subprocess.run([
+ result = subprocess.run(
  'pwsh', '-NoProfile', '-NonInteractive', '-Command', 
  '$PSVersionTable.PSVersion.Major'
- ], capture_output=True, text=True, timeout=10)
+ , capture_output=True, text=True, timeout=10)
  
  if result.returncode == 0:
  version = int(result.stdout.strip())
@@ -121,10 +121,10 @@ def check_powershell() -> Optional[str]:
  system, _ = detect_platform()
  if system == 'windows':
  try:
- result = subprocess.run([
+ result = subprocess.run(
  'powershell', '-NoProfile', '-NonInteractive', '-Command', 
  '$PSVersionTable.PSVersion.Major'
- ], capture_output=True, text=True, timeout=10)
+ , capture_output=True, text=True, timeout=10)
  
  if result.returncode == 0:
  version = int(result.stdout.strip())
@@ -149,8 +149,8 @@ Windows Installation:
  """,
  'linux': """
 Linux Installation (Ubuntu/Debian):
-1. curl -fsSL https://packages.microsoft.com/keys/microsoft.asc | sudo gpg --dearmor -o /usr/share/keyrings/microsoft-prod.gpg
-2. echo "deb [arch=amd64,arm64,armhf signed-by=/usr/share/keyrings/microsoft-prod.gpg] https://packages.microsoft.com/repos/microsoft-ubuntu-$(lsb_release -rs)-prod $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/microsoft-prod.list
+1. curl -fsSL https://packages.microsoft.com/keys/microsoft.asc  sudo gpg --dearmor -o /usr/share/keyrings/microsoft-prod.gpg
+2. echo "deb arch=amd64,arm64,armhf signed-by=/usr/share/keyrings/microsoft-prod.gpg https://packages.microsoft.com/repos/microsoft-ubuntu-$(lsb_release -rs)-prod $(lsb_release -cs) main"  sudo tee /etc/apt/sources.list.d/microsoft-prod.list
 3. sudo apt update && sudo apt install powershell
 
 Or use snap: sudo snap install powershell --classic
@@ -168,12 +168,12 @@ macOS Installation:
 def check_git() -> bool:
  """Check if Git is available"""
  try:
- subprocess.run(['git', '--version'], capture_output=True, check=True, timeout=5)
+ subprocess.run('git', '--version', capture_output=True, check=True, timeout=5)
  return True
  except (subprocess.CalledProcessError, FileNotFoundError, subprocess.TimeoutExpired):
  return False
 
-def load_config(config_path: Optional[str] = None) -> Dict:
+def load_config(config_path: Optionalstr = None) -> Dict:
  """Load deployment configuration"""
  if config_path:
  config_file = Path(config_path)
@@ -193,7 +193,7 @@ def load_config(config_path: Optional[str] = None) -> Dict:
  print(f"{Colors.RED}ERROR: Invalid JSON in config file: {e}{Colors.RESET}")
  return {}
 
-def run_kicker_bootstrap(config_path: Optional[str] = None, quiet: bool = False, non_interactive: bool = False) -> bool:
+def run_kicker_bootstrap(config_path: Optionalstr = None, quiet: bool = False, non_interactive: bool = False) -> bool:
  """Execute the kicker-bootstrap script with proper working directory and encoding"""
  system, _ = detect_platform()
  pwsh_cmd = check_powershell()
@@ -239,16 +239,16 @@ def run_kicker_bootstrap(config_path: Optional[str] = None, quiet: bool = False,
  return False
  
  # Build command with proper non-interactive flags
- cmd = [
+ cmd = 
  pwsh_cmd, 
  '-NoProfile', # Don't load PowerShell profile
  '-NonInteractive', # Don't prompt for user input
  '-ExecutionPolicy', 'Bypass', # Bypass execution policy
  '-File', str(kicker_script)
- ]
+ 
  
  if config_path:
- cmd.extend(['-ConfigFile', config_path])
+ cmd.extend('-ConfigFile', config_path)
  if quiet:
  cmd.append('-Quiet')
  if non_interactive:
@@ -262,13 +262,13 @@ def run_kicker_bootstrap(config_path: Optional[str] = None, quiet: bool = False,
  try:
  # Set up environment with proper encoding and paths
  env = os.environ.copy()
- env['PYTHONIOENCODING'] = 'utf-8'
- env['PWD'] = str(PROJECT_ROOT)
+ env'PYTHONIOENCODING' = 'utf-8'
+ env'PWD' = str(PROJECT_ROOT)
  
  if system == 'windows':
  # Windows-specific environment setup
- env['TEMP'] = str(PROJECT_ROOT / 'temp')
- env['TMP'] = str(PROJECT_ROOT / 'temp')
+ env'TEMP' = str(PROJECT_ROOT / 'temp')
+ env'TMP' = str(PROJECT_ROOT / 'temp')
  (PROJECT_ROOT / 'temp').mkdir(exist_ok=True)
  
  # Run with proper encoding and working directory
@@ -306,18 +306,18 @@ def interactive_setup() -> Dict:
  config = {}
  
  # Basic questions
- repo_url = input(f"\nRepository: Repository URL [{Colors.YELLOW}default: use built-in{Colors.RESET}]: ").strip()
+ repo_url = input(f"\nRepository: Repository URL {Colors.YELLOW}default: use built-in{Colors.RESET}: ").strip()
  if repo_url:
- config['RepoUrl'] = repo_url
+ config'RepoUrl' = repo_url
  
- local_path = input(f"Path: Local deployment path [{Colors.YELLOW}default: C:\\Temp or /tmp{Colors.RESET}]: ").strip()
+ local_path = input(f"Path: Local deployment path {Colors.YELLOW}default: C:\\Temp or /tmp{Colors.RESET}: ").strip()
  if local_path:
- config['LocalPath'] = local_path
+ config'LocalPath' = local_path
  
  # Verbosity
- verbosity = input(f"Verbosity: Verbosity (silent/normal/detailed) [{Colors.YELLOW}default: normal{Colors.RESET}]: ").strip().lower()
- if verbosity in ['silent', 'normal', 'detailed']:
- config['Verbosity'] = verbosity
+ verbosity = input(f"Verbosity: Verbosity (silent/normal/detailed) {Colors.YELLOW}default: normal{Colors.RESET}: ").strip().lower()
+ if verbosity in 'silent', 'normal', 'detailed':
+ config'Verbosity' = verbosity
  
  return config
 
@@ -331,7 +331,7 @@ def safe_print(text: str, fallback: str = None):
  else:
  # Strip emoji and special characters
  import re
- clean_text = re.sub(r'[^\x00-\x7F]+', '', text)
+ clean_text = re.sub(r'^\x00-\x7F+', '', text)
  print(clean_text)
 
 def ensure_project_files():
@@ -345,7 +345,7 @@ def ensure_project_files():
  print(f"{Colors.YELLOW}� Project files not found in {PROJECT_ROOT}. Setting up...{Colors.RESET}")
  
  # Try to find project files in common locations
- possible_sources = []
+ possible_sources = 
  
  # 1. Where this script was originally run from
  script_dir = Path(__file__).parent
@@ -358,22 +358,22 @@ def ensure_project_files():
  possible_sources.append(cwd)
  
  # 3. Parent directories
- for parent in [cwd.parent, cwd.parent.parent]:
+ for parent in cwd.parent, cwd.parent.parent:
  if (parent / "pwsh").exists():
  possible_sources.append(parent)
  
  # 4. Common download locations
  if platform.system() == "Windows":
- common_locations = [
+ common_locations = 
  Path.home() / "Downloads" / "opentofu-lab-automation",
  Path("C:/Users") / os.environ.get('USERNAME', '') / "Downloads" / "opentofu-lab-automation",
  Path("C:/temp") / "opentofu-lab-automation"
- ]
+ 
  else:
- common_locations = [
+ common_locations = 
  Path.home() / "Downloads" / "opentofu-lab-automation",
  Path("/tmp") / "opentofu-lab-automation"
- ]
+ 
  
  for location in common_locations:
  if location.exists() and (location / "pwsh").exists():
@@ -381,14 +381,14 @@ def ensure_project_files():
  
  # Copy from the first valid source
  if possible_sources:
- source = possible_sources[0]
+ source = possible_sources0
  print(f"{Colors.BLUE}� Copying project files from {source}...{Colors.RESET}")
  
  try:
  import shutil
  
  # Copy essential directories
- for dir_name in ["pwsh", "configs", "scripts", "docs"]:
+ for dir_name in "pwsh", "configs", "scripts", "docs":
  source_dir = source / dir_name
  if source_dir.exists():
  dest_dir = PROJECT_ROOT / dir_name
@@ -398,7 +398,7 @@ def ensure_project_files():
  print(f"  Copied {dir_name}/")
  
  # Copy essential files
- for file_name in ["README.md", "LICENSE", "launcher.py", "gui.py"]:
+ for file_name in "README.md", "LICENSE", "launcher.py", "gui.py":
  source_file = source / file_name
  if source_file.exists():
  shutil.copy2(source_file, PROJECT_ROOT / file_name)
@@ -415,11 +415,11 @@ def ensure_project_files():
  
  try:
  # Try git clone first
- result = subprocess.run([
+ result = subprocess.run(
  'git', 'clone', 
  'https://github.com/wizzense/opentofu-lab-automation.git',
  str(PROJECT_ROOT)
- ], capture_output=True, text=True, timeout=60)
+ , capture_output=True, text=True, timeout=60)
  
  if result.returncode == 0:
  print(f"{Colors.GREEN} Downloaded project via git{Colors.RESET}")
@@ -477,7 +477,7 @@ Examples:
  try:
  # Import and run GUI
  gui_script = PROJECT_ROOT / "gui.py"
- subprocess.run([sys.executable, str(gui_script)])
+ subprocess.run(sys.executable, str(gui_script))
  return 0
  except Exception as e:
  print(f"{Colors.RED}ERROR: Failed to launch GUI: {e}{Colors.RESET}")

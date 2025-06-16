@@ -22,7 +22,7 @@ def test_summarize_warnings(tmp_path):
 def test_report_warnings(tmp_path, monkeypatch):
     log = tmp_path / "lint.txt"
     log.write_text("foo.py:1:1: F401 'os' imported but unused\n")
-    calls = []
+    calls = 
 
     def fake_issue(title, body):
         calls.append(SimpleNamespace(title=title, body=body))
@@ -31,5 +31,5 @@ def test_report_warnings(tmp_path, monkeypatch):
     lint_failures.report_warnings(log)
 
     assert len(calls) == 1
-    assert calls[0].title == "Lint warning or error"
-    assert "F401" in calls[0].body
+    assert calls0.title == "Lint warning or error"
+    assert "F401" in calls0.body

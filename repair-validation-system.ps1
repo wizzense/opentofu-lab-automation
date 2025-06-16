@@ -7,7 +7,7 @@
 #>
 
 param(
-    [switch]$Force
+    switch$Force
 )
 
 Set-StrictMode -Version Latest
@@ -29,19 +29,19 @@ Write-Host "Testing PSScriptAnalyzer on: $testFile"
 try {
     if (Get-Module -ListAvailable PSScriptAnalyzer) {
         $results = Invoke-ScriptAnalyzer -Path $testFile -Severity Error -ErrorAction Stop
-        Write-Host "[PASS] PSScriptAnalyzer found $($results.Count) errors" -ForegroundColor Green
+        Write-Host "PASS PSScriptAnalyzer found $($results.Count) errors" -ForegroundColor Green
         if ($results.Count -gt 0) {
-            $results | ForEach-Object { 
+            $results  ForEach-Object { 
                 Write-Host "  ERROR: $($_.Message)" -ForegroundColor Red 
                 $issues += "PSScriptAnalyzer: $($_.Message) in $($_.ScriptName)"
             }
         }
     } else {
-        Write-Host "[FAIL] PSScriptAnalyzer not installed!" -ForegroundColor Red
+        Write-Host "FAIL PSScriptAnalyzer not installed!" -ForegroundColor Red
         $issues += "PSScriptAnalyzer module not installed"
     }
 } catch {
-    Write-Host "[FAIL] PSScriptAnalyzer failed: $($_.Exception.Message)" -ForegroundColor Red
+    Write-Host "FAIL PSScriptAnalyzer failed: $($_.Exception.Message)" -ForegroundColor Red
     $issues += "PSScriptAnalyzer execution failed: $($_.Exception.Message)"
 }
 
@@ -51,17 +51,17 @@ Write-Host "`n2. TESTING POWERSHELL PARSER..." -ForegroundColor Cyan
 try {
     $errors = @()
     $tokens = @()
-    $ast = [System.Management.Automation.Language.Parser]::ParseFile($testFile, [ref]$tokens, [ref]$errors)
+    $ast = System.Management.Automation.Language.Parser::ParseFile($testFile, ref$tokens, ref$errors)
     
-    Write-Host "[PASS] Parser found $($errors.Count) errors" -ForegroundColor Green
+    Write-Host "PASS Parser found $($errors.Count) errors" -ForegroundColor Green
     if ($errors.Count -gt 0) {
-        $errors | ForEach-Object { 
+        $errors  ForEach-Object { 
             Write-Host "  PARSE ERROR: $($_.Message)" -ForegroundColor Red 
             $issues += "Parser: $($_.Message) at line $($_.Extent.StartLineNumber)"
         }
     }
 } catch {
-    Write-Host "[FAIL] Parser failed: $($_.Exception.Message)" -ForegroundColor Red
+    Write-Host "FAIL Parser failed: $($_.Exception.Message)" -ForegroundColor Red
     $issues += "PowerShell parser failed: $($_.Exception.Message)"
 }
 
@@ -74,36 +74,36 @@ try {
         # Test the YAML validation script itself
         $errors = @()
         $tokens = @()
-        $ast = [System.Management.Automation.Language.Parser]::ParseFile($yamlScript, [ref]$tokens, [ref]$errors)
+        $ast = System.Management.Automation.Language.Parser::ParseFile($yamlScript, ref$tokens, ref$errors)
         
         if ($errors.Count -eq 0) {
-            Write-Host "[PASS] YAML validation script syntax is valid" -ForegroundColor Green
+            Write-Host "PASS YAML validation script syntax is valid" -ForegroundColor Green
             
             # Test YAML validation on a workflow file
-            $testYaml = Get-ChildItem -Path ".github\workflows" -Filter "*.yml" | Select-Object -First 1
+            $testYaml = Get-ChildItem -Path ".github\workflows" -Filter "*.yml"  Select-Object -First 1
             if ($testYaml) {
                 Write-Host "Testing YAML validation on: $($testYaml.Name)"
                 
                 $result = & $yamlScript -Mode "Check" -Path ".github\workflows" -Verbose 2>&1
                 if ($LASTEXITCODE -eq 0) {
-                    Write-Host "[PASS] YAML validation working" -ForegroundColor Green
+                    Write-Host "PASS YAML validation working" -ForegroundColor Green
                 } else {
-                    Write-Host "[FAIL] YAML validation failed" -ForegroundColor Red
+                    Write-Host "FAIL YAML validation failed" -ForegroundColor Red
                     $issues += "YAML validation execution failed"
                 }
             }
         } else {
-            Write-Host "[FAIL] YAML validation script has syntax errors" -ForegroundColor Red
-            $errors | ForEach-Object { 
+            Write-Host "FAIL YAML validation script has syntax errors" -ForegroundColor Red
+            $errors  ForEach-Object { 
                 $issues += "YAML validation script: $($_.Message)"
             }
         }
     } else {
-        Write-Host "[FAIL] YAML validation script not found" -ForegroundColor Red
+        Write-Host "FAIL YAML validation script not found" -ForegroundColor Red
         $issues += "YAML validation script missing"
     }
 } catch {
-    Write-Host "[FAIL] YAML validation test failed: $($_.Exception.Message)" -ForegroundColor Red
+    Write-Host "FAIL YAML validation test failed: $($_.Exception.Message)" -ForegroundColor Red
     $issues += "YAML validation test failed: $($_.Exception.Message)"
 }
 
@@ -115,20 +115,20 @@ if (Test-Path $maintenanceScript) {
     $content = Get-Content $maintenanceScript -Raw
     
     if ($content -match "PSScriptAnalyzer" -or $content -match "Invoke-ScriptAnalyzer") {
-        Write-Host "[PASS] Maintenance script includes PSScriptAnalyzer" -ForegroundColor Green
+        Write-Host "PASS Maintenance script includes PSScriptAnalyzer" -ForegroundColor Green
     } else {
-        Write-Host "[FAIL] Maintenance script missing PSScriptAnalyzer" -ForegroundColor Red
+        Write-Host "FAIL Maintenance script missing PSScriptAnalyzer" -ForegroundColor Red
         $issues += "Maintenance script doesn't use PSScriptAnalyzer"
     }
     
-    if ($content -match "YAML.*[Vv]alidation" -or $content -match "Invoke-YamlValidation") {
-        Write-Host "[PASS] Maintenance script includes YAML validation" -ForegroundColor Green
+    if ($content -match "YAML.*Vvalidation" -or $content -match "Invoke-YamlValidation") {
+        Write-Host "PASS Maintenance script includes YAML validation" -ForegroundColor Green
     } else {
-        Write-Host "[FAIL] Maintenance script missing YAML validation" -ForegroundColor Red
+        Write-Host "FAIL Maintenance script missing YAML validation" -ForegroundColor Red
         $issues += "Maintenance script doesn't include YAML validation"
     }
 } else {
-    Write-Host "[FAIL] Maintenance script not found" -ForegroundColor Red
+    Write-Host "FAIL Maintenance script not found" -ForegroundColor Red
     $issues += "Maintenance script missing"
 }
 
@@ -138,26 +138,26 @@ Write-Host "`n5. CREATING EMERGENCY VALIDATION SCRIPT..." -ForegroundColor Cyan
 $emergencyValidator = @'
 #!/usr/bin/env pwsh
 # Emergency PowerShell Syntax Validator
-param([string]$Path = ".")
+param(string$Path = ".")
 
 $errors = @()
-Get-ChildItem -Path $Path -Filter "*.ps1" -Recurse | ForEach-Object {
+Get-ChildItem -Path $Path -Filter "*.ps1" -Recurse  ForEach-Object {
     try {
         $parseErrors = @()
         $tokens = @()
-        [System.Management.Automation.Language.Parser]::ParseFile($_.FullName, [ref]$tokens, [ref]$parseErrors)
+        System.Management.Automation.Language.Parser::ParseFile($_.FullName, ref$tokens, ref$parseErrors)
         
         if ($parseErrors.Count -gt 0) {
-            Write-Host "[FAIL] SYNTAX ERRORS in $($_.Name):" -ForegroundColor Red
-            $parseErrors | ForEach-Object {
+            Write-Host "FAIL SYNTAX ERRORS in $($_.Name):" -ForegroundColor Red
+            $parseErrors  ForEach-Object {
                 Write-Host "   Line $($_.Extent.StartLineNumber): $($_.Message)" -ForegroundColor Red
                 $errors += "$($_.FullName):$($_.Extent.StartLineNumber): $($_.Message)"
             }
         } else {
-            Write-Host "[PASS] $($_.Name)" -ForegroundColor Green
+            Write-Host "PASS $($_.Name)" -ForegroundColor Green
         }
     } catch {
-        Write-Host "[FAIL] FAILED to parse $($_.Name): $($_.Exception.Message)" -ForegroundColor Red
+        Write-Host "FAIL FAILED to parse $($_.Name): $($_.Exception.Message)" -ForegroundColor Red
         $errors += "$($_.FullName): Parse failed - $($_.Exception.Message)"
     }
 }
@@ -166,14 +166,14 @@ if ($errors.Count -gt 0) {
     Write-Host "`n� FOUND $($errors.Count) SYNTAX ERRORS!" -ForegroundColor Red
     exit 1
 } else {
-    Write-Host "`n[PASS] All PowerShell files have valid syntax" -ForegroundColor Green
+    Write-Host "`nPASS All PowerShell files have valid syntax" -ForegroundColor Green
     exit 0
 }
 '@
 
 $emergencyValidatorPath = Join-Path $projectRoot "emergency-syntax-check.ps1"
 Set-Content -Path $emergencyValidatorPath -Value $emergencyValidator
-Write-Host "[PASS] Created emergency validator: emergency-syntax-check.ps1" -ForegroundColor Green
+Write-Host "PASS Created emergency validator: emergency-syntax-check.ps1" -ForegroundColor Green
 
 # 6. Summary and recommendations
 Write-Host "`n" + "="*60 -ForegroundColor Red
@@ -182,7 +182,7 @@ Write-Host "="*60 -ForegroundColor Red
 
 if ($issues.Count -gt 0) {
     Write-Host "`nCRITICAL ISSUES FOUND:" -ForegroundColor Red
-    $issues | ForEach-Object { Write-Host "  • $_" -ForegroundColor Yellow }
+    $issues  ForEach-Object { Write-Host "  • $_" -ForegroundColor Yellow }
     
     Write-Host "`nIMMEDIATE ACTIONS NEEDED:" -ForegroundColor Red
     Write-Host "1. Run emergency syntax check: .\emergency-syntax-check.ps1" -ForegroundColor Yellow
@@ -196,7 +196,7 @@ if ($issues.Count -gt 0) {
         & $emergencyValidatorPath
     }
 } else {
-    Write-Host "`n[PASS] Validation system appears to be working correctly" -ForegroundColor Green
+    Write-Host "`nPASS Validation system appears to be working correctly" -ForegroundColor Green
 }
 
 Write-Host "`nTo prevent future issues:" -ForegroundColor Cyan

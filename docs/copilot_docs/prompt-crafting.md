@@ -10,16 +10,16 @@ This article covers tips to write prompts to get better and more relevant respon
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/hh1nOX14TyY" title="Core principles of prompt engineering with GitHub Copilot" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
-If you are new to VS Code or GitHub Copilot, you might want to review the [GitHub Copilot Overview](/docs/copilot/overview.md) article first or dive straight into the [Getting started](/docs/copilot/getting-started.md) tutorial.
+If you are new to VS Code or GitHub Copilot, you might want to review the GitHub Copilot Overview(/docs/copilot/overview.md) article first or dive straight into the Getting started(/docs/copilot/getting-started.md) tutorial.
 
 There are different options for optimizing your Copilot experience for inline suggestions and chat:
 
-- [Get the most out of inline suggestions](#getting-the-most-out-of-copilot-inline-suggestions)
-- [Get the most out of Copilot Chat](#getting-the-most-out-of-copilot-chat)
+- Get the most out of inline suggestions(#getting-the-most-out-of-copilot-inline-suggestions)
+- Get the most out of Copilot Chat(#getting-the-most-out-of-copilot-chat)
 
 ## Getting the most out of Copilot inline suggestions
 
-The [GitHub Copilot](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot) extension presents [suggestions](/docs/copilot/overview.md#Code-completions-in-the-editor) automatically to help you code more efficiently. There are things you can do to help ("prompt") Copilot to give you the best possible suggestions. And the good news is that you are probably already doing these right now, since they help you and your colleagues understand your code.
+The GitHub Copilot(https://marketplace.visualstudio.com/items?itemName=GitHub.copilot) extension presents suggestions(/docs/copilot/overview.md#Code-completions-in-the-editor) automatically to help you code more efficiently. There are things you can do to help ("prompt") Copilot to give you the best possible suggestions. And the good news is that you are probably already doing these right now, since they help you and your colleagues understand your code.
 
 ### Provide context to Copilot
 
@@ -41,11 +41,11 @@ It's best to manually set the includes or module references you need for your wo
 
 In the following TypeScript example, we want to log the output of the `add` method. When we don't have any includes, Copilot suggests using `console.log`:
 
-![Copilot inline suggestion proposes Console.log when no imports in the file.](images/prompt-crafting/copilot-suggestion-console-log.png)
+!Copilot inline suggestion proposes Console.log when no imports in the file.(images/prompt-crafting/copilot-suggestion-console-log.png)
 
 On the other hand, when you add a reference to `Log4js`, Copilot suggests using that framework for logging the output:
 
-![Copilot inline suggestion proposes logging using the imported logging framework.](images/prompt-crafting/copilot-suggestion-framework-log.png)
+!Copilot inline suggestion proposes logging using the imported logging framework.(images/prompt-crafting/copilot-suggestion-framework-log.png)
 
 #### Meaningful function names
 
@@ -69,11 +69,11 @@ Copilot is going to latch on to your code to generate suggestions that follow th
 
 Always keeping a high quality bar can take discipline. Especially when you're coding fast and loose to get something working, you might want to disable Copilot completions while in "hacking" mode. You can temporarily disable completions from the Copilot status menu. Bring up the Copilot status menu dropdown by selecting the Copilot Status bar item.
 
-![Hover over the Copilot Status bar item displays "Show Copilot status menu"](images/prompt-crafting/show-copilot-status-menu.png)
+!Hover over the Copilot Status bar item displays "Show Copilot status menu"(images/prompt-crafting/show-copilot-status-menu.png)
 
 From the dropdown, you can disable completions entirely, or disable just for the active file type, for example Markdown files.
 
-![Copilot Status menu dropdown with Disable Completions selected](images/prompt-crafting/disable-completions.png)
+!Copilot Status menu dropdown with Disable Completions selected(images/prompt-crafting/disable-completions.png)
 
 <!-- ### Be specific
 
@@ -93,7 +93,7 @@ Tools, which you may already be using, can help.
 
 ## Getting the most out of Copilot Chat
 
-You can also get assistance from Copilot via a [chat interface](/docs/copilot/overview.md#Answer-coding-questions) by installing the [GitHub Copilot Chat](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot-chat) extension.
+You can also get assistance from Copilot via a chat interface(/docs/copilot/overview.md#Answer-coding-questions) by installing the GitHub Copilot Chat(https://marketplace.visualstudio.com/items?itemName=GitHub.copilot-chat) extension.
 
 When you're using chat to interact with GitHub Copilot, there are several things you can do to optimize your experience.
 
@@ -101,15 +101,15 @@ When you're using chat to interact with GitHub Copilot, there are several things
 
 Chat participants are designed to collect extra context either about a code base or a specific domain or technology. By using the appropriate participant, Copilot Chat can find and provide better information to send to the Copilot backend. For example, use `@workspace` if you want to ask questions about your open project, or `@vscode` to know more about VS Code features and APIs.
 
-![Asking the @vscode participant how to change the VS Code colors](images/prompt-crafting/agent-example.png)
+!Asking the @vscode participant how to change the VS Code colors(images/prompt-crafting/agent-example.png)
 
 Slash commands help Copilot Chat understand your **intent** when you ask a question. Are you learning about a code base (`/explain`), do you want help with fixing an issue (`/fix`), or are you creating test cases (`/tests`)? By letting Copilot Chat know what you're trying to do, it can tune its reply to your task and provide helpful commands, settings, and code snippets.
 
-![Inline Chat slash command list](images/prompt-crafting/inline-chat-slash-commands.png)
+!Inline Chat slash command list(images/prompt-crafting/inline-chat-slash-commands.png)
 
 You could write out your project scope or current task with a natural language query but using chat participants and slash commands is more concise and explicit.
 
-Learn more about [chat participants](/docs/copilot/chat/chat-ask-mode.md#special-keywords) and [slash commands](/docs/copilot/chat/chat-ask-mode.md#special-keywords) in Copilot Chat.
+Learn more about chat participants(/docs/copilot/chat/chat-ask-mode.md#special-keywords) and slash commands(/docs/copilot/chat/chat-ask-mode.md#special-keywords) in Copilot Chat.
 
 ### Use chat variables for context
 
@@ -119,9 +119,9 @@ For example, with `#<file name>` or `#<folder name>` you can reference specific 
 
 You can also add context to your chat message by using the **Attach Context** button in the Chat view. You can then select the specific type of context from a Quick Pick, such as the current selection, one or more files from the workspace, or one or more symbols from your source code.
 
-![Screenshot of VS Code Copilot Chat view, showing the Attach context button and context Quick Pick.](./images/prompt-crafting/copilot-chat-view-attach-context.png)
+!Screenshot of VS Code Copilot Chat view, showing the Attach context button and context Quick Pick.(./images/prompt-crafting/copilot-chat-view-attach-context.png)
 
-Learn more about [using context variables with Copilot Chat](/docs/copilot/chat/chat-ask-mode.md#special-keywords).
+Learn more about using context variables with Copilot Chat(/docs/copilot/chat/chat-ask-mode.md#special-keywords).
 
 ### Be specific and keep it simple
 
@@ -135,15 +135,15 @@ When asking Copilot Chat for help, you aren't stuck with the first response. You
 
 Here's an example using Inline Chat to create a function to calculate Fibonacci numbers:
 
-![First response from Copilot for a function to calculate Fibonacci numbers](images/prompt-crafting/fibonacci-first.png)
+!First response from Copilot for a function to calculate Fibonacci numbers(images/prompt-crafting/fibonacci-first.png)
 
 Maybe you prefer a solution that doesn't use recursion:
 
-![Ask Copilot to not use recursion and new result](images/prompt-crafting/fibonacci-second.png)
+!Ask Copilot to not use recursion and new result(images/prompt-crafting/fibonacci-second.png)
 
 You can even ask Copilot to follow coding conventions or improve variable names:
 
-![Ask Copilot to use better variable names and new result](images/prompt-crafting/fibonacci-third.png)
+!Ask Copilot to use better variable names and new result(images/prompt-crafting/fibonacci-third.png)
 
 Even if you've already accepted a result, you can always ask Copilot to iterate on the code later.
 
@@ -151,7 +151,7 @@ Even if you've already accepted a result, you can always ask Copilot to iterate 
 
 If you'd like to learn more about productively using GitHub Copilot, you can follow up with these videos and blog posts:
 
-* [Effective Prompting for GitHub Copilot](https://www.youtube.com/watch?v=ImWfIDTxn7E)
-* [Pragmatic techniques to get the most out of GitHub Copilot](https://www.youtube.com/watch?v=CwAzIpc4AnA)
-* [Best practices for prompting GitHub Copilot in VS Code](https://www.linkedin.com/pulse/best-practices-prompting-github-copilot-vs-code-pamela-fox)
-* [How to use GitHub Copilot: Prompts, tips, and use cases](https://github.blog/2023-06-20-how-to-write-better-prompts-for-github-copilot/)
+* Effective Prompting for GitHub Copilot(https://www.youtube.com/watch?v=ImWfIDTxn7E)
+* Pragmatic techniques to get the most out of GitHub Copilot(https://www.youtube.com/watch?v=CwAzIpc4AnA)
+* Best practices for prompting GitHub Copilot in VS Code(https://www.linkedin.com/pulse/best-practices-prompting-github-copilot-vs-code-pamela-fox)
+* How to use GitHub Copilot: Prompts, tips, and use cases(https://github.blog/2023-06-20-how-to-write-better-prompts-for-github-copilot/)

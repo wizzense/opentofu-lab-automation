@@ -43,7 +43,7 @@ if platform.system() == "Windows":
  import codecs
  sys.stdout.reconfigure(encoding='utf-8')
  sys.stderr.reconfigure(encoding='utf-8')
- os.environ['PYTHONIOENCODING'] = 'utf-8'
+ os.environ'PYTHONIOENCODING' = 'utf-8'
  except:
  pass
 
@@ -55,11 +55,11 @@ except ImportError:
  # Fallback if config_schema is not available
  class ConfigSchema:
  def __init__(self):
- self.sections = {"General": []}
+ self.sections = {"General": }
  def get_defaults(self):
  return {}
  def validate_config(self, config):
- return []
+ return 
 
 # Project constants - use proper working directory
 WORK_DIR = get_working_directory()
@@ -109,7 +109,7 @@ class EnhancedConfigBuilder:
  # Create frame for this section
  frame = ttk.Frame(self.notebook)
  self.notebook.add(frame, text=section_name)
- self.section_frames[section_name] = frame
+ self.section_framessection_name = frame
  
  # Create scrollable area
  canvas = tk.Canvas(frame)
@@ -188,14 +188,14 @@ class EnhancedConfigBuilder:
  help_label.grid(row=row, column=2, sticky="nw", padx=(10, 5), pady=5)
  
  # Store widget references
- self.field_widgets[field.name] = widget
- self.help_labels[field.name] = help_label
+ self.field_widgetsfield.name = widget
+ self.help_labelsfield.name = help_label
  
  def browse_path(self, field: ConfigField):
  """Browse for a directory path"""
  directory = filedialog.askdirectory(title=f"Select {field.display_name}")
  if directory:
- widget = self.field_widgets[field.name]
+ widget = self.field_widgetsfield.name
  widget.delete(0, tk.END)
  widget.insert(0, directory)
  
@@ -212,18 +212,18 @@ class EnhancedConfigBuilder:
  
  if field.field_type == "bool":
  if hasattr(widget, 'state'):
- widget.state(['!alternate'])
+ widget.state('!alternate')
  if default_value:
- widget.state(['selected'])
+ widget.state('selected')
  else:
- widget.state(['!selected'])
+ widget.state('!selected')
  else:
  widget.delete(0, tk.END)
  widget.insert(0, str(default_value))
  
  messagebox.showinfo("Defaults Loaded", "All fields have been reset to their recommended default values.")
  
- def get_config(self) -> Dict[str, Any]:
+ def get_config(self) -> Dictstr, Any:
  """Get current configuration from UI fields"""
  config = {}
  
@@ -235,20 +235,20 @@ class EnhancedConfigBuilder:
  if field.field_type == "bool":
  # Check if widget has instate method (Checkbutton)
  if hasattr(widget, 'instate'):
- config[field_name] = widget.instate(['selected'])
+ configfield_name = widget.instate('selected')
  else:
- config[field_name] = field.default_value
+ configfield_name = field.default_value
  else:
  value = widget.get().strip()
  if value: # Only include non-empty values
  # Convert to appropriate type
  if field.field_type == "number":
  try:
- config[field_name] = float(value) if '.' in value else int(value)
+ configfield_name = float(value) if '.' in value else int(value)
  except ValueError:
- config[field_name] = value # Keep as string if conversion fails
+ configfield_name = value # Keep as string if conversion fails
  else:
- config[field_name] = value
+ configfield_name = value
  
  return config
  
@@ -269,7 +269,7 @@ class EnhancedConfigBuilder:
  """Load configuration from file"""
  file_path = filedialog.askopenfilename(
  title="Load Configuration File",
- filetypes=[("JSON files", "*.json"), ("All files", "*.*")],
+ filetypes=("JSON files", "*.json"), ("All files", "*.*"),
  initialdir=CONFIGS_DIR
  )
  
@@ -284,15 +284,15 @@ class EnhancedConfigBuilder:
  if not field or field_name not in config:
  continue
  
- value = config[field_name]
+ value = configfield_name
  
  if field.field_type == "bool":
  if hasattr(widget, 'state'):
- widget.state(['!alternate'])
+ widget.state('!alternate')
  if value:
- widget.state(['selected'])
+ widget.state('selected')
  else:
- widget.state(['!selected'])
+ widget.state('!selected')
  else:
  widget.delete(0, tk.END)
  widget.insert(0, str(value))
@@ -318,7 +318,7 @@ class EnhancedConfigBuilder:
  
  file_path = filedialog.asksaveasfilename(
  title="Save Configuration File",
- filetypes=[("JSON files", "*.json"), ("All files", "*.*")],
+ filetypes=("JSON files", "*.json"), ("All files", "*.*"),
  defaultextension=".json",
  initialdir=CONFIGS_DIR,
  initialfile="my-lab-config.json"
@@ -402,7 +402,7 @@ class DeploymentManager:
  def log_output(self, message: str, level: str = "INFO"):
  """Add message to output display with timestamp and level"""
  timestamp = time.strftime('%H:%M:%S')
- formatted_message = f"[{timestamp}] {level}: {message}\n"
+ formatted_message = f"{timestamp} {level}: {message}\n"
  
  self.output_text.insert(tk.END, formatted_message)
  self.output_text.see(tk.END)
@@ -431,7 +431,7 @@ class DeploymentManager:
  # Check PowerShell
  self.log_output("Checking PowerShell installation...")
  try:
- result = subprocess.run(['pwsh', '-Command', '$PSVersionTable.PSVersion.Major'], 
+ result = subprocess.run('pwsh', '-Command', '$PSVersionTable.PSVersion.Major', 
  capture_output=True, text=True, timeout=10)
  if result.returncode == 0:
  version = result.stdout.strip()
@@ -444,7 +444,7 @@ class DeploymentManager:
  # Check Git
  self.log_output("Checking Git installation...")
  try:
- result = subprocess.run(['git', '--version'], capture_output=True, text=True, timeout=5)
+ result = subprocess.run('git', '--version', capture_output=True, text=True, timeout=5)
  if result.returncode == 0:
  version = result.stdout.strip()
  self.log_output(f" Git found: {version}")
@@ -456,7 +456,7 @@ class DeploymentManager:
  # Check Python
  self.log_output("Checking Python installation...")
  try:
- result = subprocess.run([sys.executable, '--version'], capture_output=True, text=True, timeout=5)
+ result = subprocess.run(sys.executable, '--version', capture_output=True, text=True, timeout=5)
  if result.returncode == 0:
  version = result.stdout.strip()
  self.log_output(f" Python found: {version}")
@@ -509,7 +509,7 @@ class DeploymentManager:
  """Quick deployment with defaults"""
  self.deploy_with_config(None)
  
- def deploy_with_config(self, config_path: Optional[str]):
+ def deploy_with_config(self, config_path: Optionalstr):
  """Deploy with specified config file"""
  self.log_output("Starting deployment...")
  self.status_var.set("Deploying...")
@@ -528,10 +528,10 @@ class DeploymentManager:
  
  # Build command
  deploy_script = Path(__file__).parent / "deploy.py"
- cmd = [sys.executable, str(deploy_script), "--non-interactive"]
+ cmd = sys.executable, str(deploy_script), "--non-interactive"
  
  if config_path:
- cmd.extend(["--config", config_path])
+ cmd.extend("--config", config_path)
  else:
  cmd.append("--quick")
  

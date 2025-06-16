@@ -3,7 +3,7 @@ $ErrorActionPreference = "Stop"
 
 # Define emoji patterns to remove
 $emojiPatterns = @(
-    '�', '�', '[FAIL]', '[PASS]', '[WARN]', '�', '', '�', ''
+    '�', '�', 'FAIL', 'PASS', 'WARN', '�', '', '�', ''
 )
 
 # Get all markdown files in .github directory
@@ -22,11 +22,11 @@ foreach ($file in $files) {
             
             # Remove specific emojis
             foreach ($emoji in $emojiPatterns) {
-                $content = $content -replace [regex]::Escape($emoji), ''
+                $content = $content -replace regex::Escape($emoji), ''
             }
             
             # Remove any remaining non-ASCII characters (potential emojis)
-            $content = $content -replace '[^\x00-\x7F]', ''
+            $content = $content -replace '^\x00-\x7F', ''
             
             # Only update if content changed
             if ($content -ne $originalContent) {

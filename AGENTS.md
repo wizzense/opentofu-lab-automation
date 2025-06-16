@@ -100,7 +100,7 @@ Invoke-ComprehensiveValidation
 pwsh/modules/
 ├── LabRunner/ # Core lab automation
 ├── CodeFixer/ # Code analysis and repair
-└── [Dynamic modules] # Additional capabilities
+└── Dynamic modules # Additional capabilities
 `
 
 ### Validation Pipeline
@@ -127,7 +127,7 @@ pwsh/modules/
 Copilot loads `.github/copilot-instructions.md` automatically through the VS Code
 setting `github.copilot.chat.codeGeneration.useInstructionFiles`. Update this
 file to guide Copilot responses for the project. See
-[docs/copilot_docs/repository-custom-instructions.md](docs/copilot_docs/repository-custom-instructions.md)
+docs/copilot_docs/repository-custom-instructions.md(docs/copilot_docs/repository-custom-instructions.md)
 for details.
 
 ---

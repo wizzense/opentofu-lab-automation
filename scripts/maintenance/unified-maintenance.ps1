@@ -47,27 +47,27 @@ Skip test execution even in Full/All modes (for faster runs)
 ./scripts/maintenance/unified-maintenance.ps1 -Mode "Track" -AutoFix
 #>
 
-[CmdletBinding()]
+CmdletBinding()
 param(
- [Parameter()
+ Parameter()
 
 
 
-]
- [ValidateSet('Quick', 'Full', 'Test', 'Track', 'Report', 'All')]
- [string]$Mode = 'Quick',
+
+ ValidateSet('Quick', 'Full', 'Test', 'Track', 'Report', 'All')
+ string$Mode = 'Quick',
  
- [Parameter()]
- [switch]$AutoFix,
+ Parameter()
+ switch$AutoFix,
  
- [Parameter()]
- [switch]$UpdateChangelog,
+ Parameter()
+ switch$UpdateChangelog,
  
- [Parameter()]
- [switch]$SkipTests,
+ Parameter()
+ switch$SkipTests,
  
- [Parameter()]
- [switch]$IgnoreArchive
+ Parameter()
+ switch$IgnoreArchive
 )
 
 $ErrorActionPreference = "Stop"
@@ -83,7 +83,7 @@ $IssueTrackingPath = "$ProjectRoot/docs/reports/issue-tracking"
 $WorkflowPath = "$ProjectRoot/.github/workflows"
 
 function Write-MaintenanceLog {
- param([string]$Message, [string]$Level = "INFO")
+ param(string$Message, string$Level = "INFO")
  
 
 
@@ -110,14 +110,14 @@ $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
         }
 default { "White" }
  }
- Write-Host "[$timestamp] [$Level] $Message" -ForegroundColor $color
+ Write-Host "$timestamp $Level $Message" -ForegroundColor $color
 }
 
 function Invoke-MaintenanceStep {
  param(
- [string]$StepName,
- [scriptblock]$Action,
- [bool]$Required = $true
+ string$StepName,
+ scriptblock$Action,
+ bool$Required = $true
  )
  
  
@@ -127,11 +127,11 @@ function Invoke-MaintenanceStep {
 Write-MaintenanceLog ">>> $StepName" "STEP"
  try {
  $result = & $Action
- Write-MaintenanceLog "[PASS] $StepName completed" "SUCCESS"
+ Write-MaintenanceLog "PASS $StepName completed" "SUCCESS"
  return $result
  }
  catch {
- $message = "[FAIL] $StepName failed: $($_.Exception.Message)"
+ $message = "FAIL $StepName failed: $($_.Exception.Message)"
  if ($Required) {
  Write-MaintenanceLog $message "ERROR"
  throw
@@ -171,8 +171,8 @@ function Step-FixTestSyntax {
  } else {
  Write-MaintenanceLog "Fix script not found, using basic syntax validation" "WARNING"
  # Basic syntax validation fallback
- Get-ChildItem -Path "$ProjectRoot/tests" -Filter "*.ps1" -Recurse | ForEach-Object {
- $null = [System.Management.Automation.Language.Parser]::ParseFile($_.FullName, [ref]$null, [ref]$null)
+ Get-ChildItem -Path "$ProjectRoot/tests" -Filter "*.ps1" -Recurse  ForEach-Object {
+ $null = System.Management.Automation.Language.Parser::ParseFile($_.FullName, ref$null, ref$null)
  }
  }
 }
@@ -195,7 +195,7 @@ function Step-ValidateYaml {
  if ($AutoFix) {
  Write-MaintenanceLog "Attempting basic YAML fixes..." "WARNING"
  # Basic fallback validation
- Get-ChildItem -Path "$ProjectRoot/.github/workflows" -Filter "*.yml","*.yaml" -ErrorAction SilentlyContinue | ForEach-Object {
+ Get-ChildItem -Path "$ProjectRoot/.github/workflows" -Filter "*.yml","*.yaml" -ErrorAction SilentlyContinue  ForEach-Object {
  try {
  $content = Get-Content $_.FullName -Raw
  $null = ConvertFrom-Yaml $content -ErrorAction Stop
@@ -292,11 +292,11 @@ function Step-UpdateChangelog {
 - **Syntax**: PowerShell validation completed
 - **Tests**: $(if($SkipTests) { "Skipped" } else { "Executed and analyzed" })
 - **Reports**: Generated and indexed
-- **Status**: [PASS] Maintenance cycle completed
+- **Status**: PASS Maintenance cycle completed
 "@
 
- # Insert after the [Unreleased] section
- $updatedContent = $content -replace "(\[Unreleased\]\s*\n)", "`$1$maintenanceUpdate`n"
+ # Insert after the Unreleased section
+ $updatedContent = $content -replace "(\Unreleased\\s*\n)", "`$1$maintenanceUpdate`n"
  
  Set-Content $changelogPath $updatedContent
  Write-MaintenanceLog "Updated CHANGELOG.md with maintenance results" "SUCCESS"
@@ -318,7 +318,7 @@ function Get-MaintenanceSummary {
  $healthFile = "$ProjectRoot/docs/reports/project-status/current-health.json"
  if (Test-Path $healthFile) {
  try {
- $health = Get-Content $healthFile | ConvertFrom-Json
+ $health = Get-Content $healthFile  ConvertFrom-Json
  $summary.InfrastructureStatus = $health.OverallStatus
  $summary.IssueCount = $health.Metrics.IssueCount
  $summary.Issues = $health.Issues
@@ -341,8 +341,8 @@ function Get-MaintenanceSummary {
 # Function to display health issues in console
 function Show-HealthIssues {
     param (
-        [Parameter(Mandatory=$true)]
-        [PSCustomObject]$Summary
+        Parameter(Mandatory=$true)
+        PSCustomObject$Summary
     )
     
     if (-not $Summary.Issues -or $Summary.Issues.Count -eq 0) {
@@ -374,7 +374,7 @@ function Show-HealthIssues {
         }
         
         # Display issue header with color box
-        Write-Host "■ [$($issue.Severity)] $($issue.Description)" -ForegroundColor $severityColor
+        Write-Host "■ $($issue.Severity) $($issue.Description)" -ForegroundColor $severityColor
         Write-Host "  Affected Files: $($issue.Count)" -ForegroundColor $severityColor
         Write-Host "  Category: $($issue.Category)" -ForegroundColor White
         Write-Host "  Fix Command: " -NoNewline -ForegroundColor White
@@ -383,7 +383,7 @@ function Show-HealthIssues {
         # Show sample affected files (max 5)
         if ($issue.Files -and $issue.Files.Count -gt 0) {
             Write-Host "  Sample affected files:" -ForegroundColor White
-            $sampleFiles = $issue.Files | Select-Object -First 5
+            $sampleFiles = $issue.Files  Select-Object -First 5
             foreach ($file in $sampleFiles) {
                 Write-Host "    - $file" -ForegroundColor Gray
             }
@@ -428,7 +428,7 @@ function Find-AllMaintenanceTools {
     
     $foundTools = @()
     foreach ($pattern in $toolPatterns) {
-        $tools = Get-ChildItem -Path $ProjectRoot -Recurse -Include $pattern -File |
+        $tools = Get-ChildItem -Path $ProjectRoot -Recurse -Include $pattern -File 
             Where-Object { 
                 $_.FullName -notlike "*archive*" -and 
                 $_.FullName -notlike "*backup*" -and
@@ -442,7 +442,7 @@ function Find-AllMaintenanceTools {
 }
 
 function Test-AllMaintenanceTools {
-    param([array]$Tools)
+    param(array$Tools)
     
     Write-MaintenanceLog "Testing functionality of all maintenance tools..." "INFO"
     
@@ -453,12 +453,12 @@ function Test-AllMaintenanceTools {
     }
     
     foreach ($tool in $Tools) {
-        $relPath = $tool.FullName -replace [regex]::Escape($ProjectRoot), '.'
+        $relPath = $tool.FullName -replace regex::Escape($ProjectRoot), '.'
         
         try {
             # Test syntax
             $parseErrors = @()
-            [System.Management.Automation.Language.Parser]::ParseFile($tool.FullName, [ref]$null, [ref]$parseErrors)
+            System.Management.Automation.Language.Parser::ParseFile($tool.FullName, ref$null, ref$parseErrors)
             
             if ($parseErrors.Count -eq 0) {
                 $results.Working += $tool
@@ -483,7 +483,7 @@ function Test-AllMaintenanceTools {
 }
 
 function Repair-BrokenMaintenanceTools {
-    param([array]$BrokenTools, [array]$SyntaxErrors)
+    param(array$BrokenTools, array$SyntaxErrors)
     
     if ($BrokenTools.Count -eq 0) {
         Write-MaintenanceLog "No broken tools to repair" "INFO"
@@ -510,7 +510,7 @@ function Repair-BrokenMaintenanceTools {
             }
             
             # Fix common module import issues
-            if ($content -match 'Invoke-PowerShellLint|Test-JsonConfig' -and $content -notmatch 'Import-Module.*CodeFixer') {
+            if ($content -match 'Invoke-PowerShellLintTest-JsonConfig' -and $content -notmatch 'Import-Module.*CodeFixer') {
                 $importStatement = "Import-Module '/pwsh/modules/CodeFixer/' -Force -ErrorAction SilentlyContinue"
                 $content = "$importStatement`n$content"
             }
@@ -541,7 +541,7 @@ function Invoke-ComprehensiveProjectValidation {
     
     # 1. PowerShell syntax validation across entire project
     Write-MaintenanceLog "Validating PowerShell syntax across all files..." "INFO"
-    $allPsFiles = Get-ChildItem -Path $ProjectRoot -Recurse -Include "*.ps1", "*.psm1", "*.psd1" |
+    $allPsFiles = Get-ChildItem -Path $ProjectRoot -Recurse -Include "*.ps1", "*.psm1", "*.psd1" 
         Where-Object { 
             $_.FullName -notlike "*archive*" -and 
             $_.FullName -notlike "*backup*" -and
@@ -554,7 +554,7 @@ function Invoke-ComprehensiveProjectValidation {
     foreach ($file in $allPsFiles) {
         try {
             $parseErrors = @()
-            [System.Management.Automation.Language.Parser]::ParseFile($file.FullName, [ref]$null, [ref]$parseErrors)
+            System.Management.Automation.Language.Parser::ParseFile($file.FullName, ref$null, ref$parseErrors)
             
             if ($parseErrors.Count -eq 0) {
                 $validationResults.PowerShellSyntax.ValidFiles++
@@ -648,8 +648,8 @@ function Invoke-ConsolidatedValidation {
             $lintResults = Invoke-ScriptAnalyzer -Path $ProjectRoot -Recurse -ErrorAction SilentlyContinue
             $consolidatedResults.PSScriptAnalyzer = $lintResults
             
-            $errorCount = ($lintResults | Where-Object Severity -eq 'Error').Count
-            $warningCount = ($lintResults | Where-Object Severity -eq 'Warning').Count
+            $errorCount = ($lintResults  Where-Object Severity -eq 'Error').Count
+            $warningCount = ($lintResults  Where-Object Severity -eq 'Warning').Count
             
             Write-MaintenanceLog "PSScriptAnalyzer: $errorCount errors, $warningCount warnings" "INFO"
             $consolidatedResults.Summary.TotalIssues += ($errorCount + $warningCount)
@@ -717,7 +717,7 @@ function Invoke-ConsolidatedValidation {
     
     if ($consolidatedResults.Summary.Recommendations.Count -gt 0) {
         Write-MaintenanceLog "`nRecommendations:" "WARNING"
-        $consolidatedResults.Summary.Recommendations | ForEach-Object {
+        $consolidatedResults.Summary.Recommendations  ForEach-Object {
             Write-MaintenanceLog "  • $_" "WARNING"
         }
     }
@@ -727,7 +727,7 @@ function Invoke-ConsolidatedValidation {
 
 # Main execution flow
 Write-MaintenanceLog " Starting unified maintenance in mode: $Mode" "MAINTENANCE"
-Write-MaintenanceLog "AutoFix: $($AutoFix.IsPresent) | UpdateChangelog: $($UpdateChangelog.IsPresent) | SkipTests: $($SkipTests.IsPresent)" "INFO"
+Write-MaintenanceLog "AutoFix: $($AutoFix.IsPresent)  UpdateChangelog: $($UpdateChangelog.IsPresent)  SkipTests: $($SkipTests.IsPresent)" "INFO"
 
 $startTime = Get-Date
 
@@ -813,7 +813,7 @@ try {
  Write-MaintenanceLog "For detailed analysis, check docs/reports/" "INFO"
 }
 catch {
- Write-MaintenanceLog "[FAIL] Maintenance failed: $($_.Exception.Message)" "ERROR"
+ Write-MaintenanceLog "FAIL Maintenance failed: $($_.Exception.Message)" "ERROR"
  exit 1
 }
 
@@ -831,7 +831,7 @@ $RootDirectory = "c:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-aut
 $LogFile = "$RootDirectory\maintenance-log.txt"
 
 # Initialize log
-"Maintenance started at $(Get-Date)" | Out-File -FilePath $LogFile -Encoding UTF8
+"Maintenance started at $(Get-Date)"  Out-File -FilePath $LogFile -Encoding UTF8
 
 # Step 1: Validate all scripts
 Write-Host "Starting script validation..." -ForegroundColor Cyan
@@ -844,13 +844,13 @@ foreach ($Script in $ScriptFiles) {
         $ValidationResults += $Results
     } catch {
         Write-Host "Error validating $($Script.FullName): ${_}" -ForegroundColor Red
-        "Error validating $($Script.FullName): ${_}" | Out-File -FilePath $LogFile -Append -Encoding UTF8
+        "Error validating $($Script.FullName): ${_}"  Out-File -FilePath $LogFile -Append -Encoding UTF8
     }
 }
 if ($ValidationResults.Count -gt 0) {
     Write-Host "Validation completed with issues:" -ForegroundColor Yellow
-    $ValidationResults | Format-Table -AutoSize
-    $ValidationResults | Out-File -FilePath "$RootDirectory\validation-results.txt" -Encoding UTF8
+    $ValidationResults  Format-Table -AutoSize
+    $ValidationResults  Out-File -FilePath "$RootDirectory\validation-results.txt" -Encoding UTF8
     Write-Host "Validation results saved to validation-results.txt" -ForegroundColor Green
 } else {
     Write-Host "All scripts validated successfully!" -ForegroundColor Green
@@ -871,41 +871,41 @@ foreach ($Directory in $DirectoriesToClean) {
         try {
             Remove-Item -Path $Directory -Recurse -Force -ErrorAction Stop
             Write-Host "Successfully cleaned: $Directory" -ForegroundColor Green
-            "Successfully cleaned: $Directory" | Out-File -FilePath $LogFile -Append -Encoding UTF8
+            "Successfully cleaned: $Directory"  Out-File -FilePath $LogFile -Append -Encoding UTF8
         } catch {
             Write-Host "Error cleaning $Directory: ${_}" -ForegroundColor Red
-            "Error cleaning $Directory: ${_}" | Out-File -FilePath $LogFile -Append -Encoding UTF8
+            "Error cleaning $Directory: ${_}"  Out-File -FilePath $LogFile -Append -Encoding UTF8
         }
     } else {
         Write-Host "Directory not found: $Directory" -ForegroundColor Yellow
-        "Directory not found: $Directory" | Out-File -FilePath $LogFile -Append -Encoding UTF8
+        "Directory not found: $Directory"  Out-File -FilePath $LogFile -Append -Encoding UTF8
     }
 }
 
 # Finalize log
-"Maintenance completed at $(Get-Date)" | Out-File -FilePath $LogFile -Append -Encoding UTF8
+"Maintenance completed at $(Get-Date)"  Out-File -FilePath $LogFile -Append -Encoding UTF8
 Write-Host "Maintenance log saved to $LogFile" -ForegroundColor Green
 
 # Main execution function for unified maintenance
 function Invoke-UnifiedMaintenance {
-    [CmdletBinding()]
+    CmdletBinding()
     param(
-        [Parameter(Mandatory = $false)]
-        [ValidateSet("Quick", "Full", "Test", "Track", "Report", "All", "Consolidate")]
-        [string]$Mode = "Quick",
+        Parameter(Mandatory = $false)
+        ValidateSet("Quick", "Full", "Test", "Track", "Report", "All", "Consolidate")
+        string$Mode = "Quick",
         
-        [Parameter(Mandatory = $false)]
-        [switch]$AutoFix,
+        Parameter(Mandatory = $false)
+        switch$AutoFix,
         
-        [Parameter(Mandatory = $false)]
-        [switch]$UpdateChangelog,
+        Parameter(Mandatory = $false)
+        switch$UpdateChangelog,
         
-        [Parameter(Mandatory = $false)]
-        [switch]$SkipTests
+        Parameter(Mandatory = $false)
+        switch$SkipTests
     )
     
     Write-MaintenanceLog " UNIFIED MAINTENANCE SYSTEM " "INFO"
-    Write-MaintenanceLog "Mode: $Mode | AutoFix: $AutoFix | Timestamp: $(Get-Date)" "INFO"
+    Write-MaintenanceLog "Mode: $Mode  AutoFix: $AutoFix  Timestamp: $(Get-Date)" "INFO"
     Write-MaintenanceLog "" "INFO"
     
     $maintenanceResults = @{
@@ -1081,7 +1081,7 @@ function Invoke-UnifiedMaintenance {
         $duration = $endTime - $maintenanceResults.StartTime
         
         Write-MaintenanceLog "`n=== UNIFIED MAINTENANCE SUMMARY ===" "INFO"
-        Write-MaintenanceLog "Mode: $Mode | Duration: $($duration.TotalSeconds.ToString('0.0'))s" "INFO"
+        Write-MaintenanceLog "Mode: $Mode  Duration: $($duration.TotalSeconds.ToString('0.0'))s" "INFO"
         Write-MaintenanceLog "Overall Status: $($maintenanceResults.OverallStatus)" $(
             switch ($maintenanceResults.OverallStatus) {
                 "Success" { "SUCCESS" }
@@ -1094,7 +1094,7 @@ function Invoke-UnifiedMaintenance {
         
         if ($maintenanceResults.Recommendations.Count -gt 0) {
             Write-MaintenanceLog "`nRecommendations:" "WARNING"
-            $maintenanceResults.Recommendations | ForEach-Object {
+            $maintenanceResults.Recommendations  ForEach-Object {
                 Write-MaintenanceLog "  • $_" "WARNING"
             }
         }

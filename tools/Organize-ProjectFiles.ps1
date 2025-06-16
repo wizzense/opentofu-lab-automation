@@ -2,9 +2,9 @@
 # Smart file organization system with automatic tagging and sorting
 
 param(
- [switch]$WhatIf,
- [switch]$Force,
- [string]$ConfigFile = "file-organization-rules.json"
+ switch$WhatIf,
+ switch$Force,
+ string$ConfigFile = "file-organization-rules.json"
 )
 
 
@@ -73,14 +73,14 @@ function Get-FileTag {
  # Pattern-based tagging
  switch -Regex ($FileName) {
  '^fix_.*\.ps1$' { $tags += @("legacy", "fix-script", "historical") }
- '^test-.*\.(py|ps1)$' { $tags += @("test", "legacy", "python", "powershell") }
- '.*[Rr]eport.*\.json$' { $tags += @("report", "json", "generated") }
- '.*[Rr]esults.*\.xml$' { $tags += @("test-results", "xml", "generated") }
- '\.(md|txt)$' { $tags += @("documentation", "text") }
- '\.(ps1|psm1|psd1)$' { $tags += @("powershell", "script") }
- '\.(py|pyc)$' { $tags += @("python", "script") }
- '\.(tf|tfvars|hcl)$' { $tags += @("terraform", "infrastructure") }
- '\.(yml|yaml)$' { $tags += @("yaml", "config") }
+ '^test-.*\.(pyps1)$' { $tags += @("test", "legacy", "python", "powershell") }
+ '.*Rreport.*\.json$' { $tags += @("report", "json", "generated") }
+ '.*Rresults.*\.xml$' { $tags += @("test-results", "xml", "generated") }
+ '\.(mdtxt)$' { $tags += @("documentation", "text") }
+ '\.(ps1psm1psd1)$' { $tags += @("powershell", "script") }
+ '\.(pypyc)$' { $tags += @("python", "script") }
+ '\.(tftfvarshcl)$' { $tags += @("terraform", "infrastructure") }
+ '\.(ymlyaml)$' { $tags += @("yaml", "config") }
  '\.(json)$' { $tags += @("json", "config") }
  }
  
@@ -91,12 +91,12 @@ function Get-FileTag {
  if ($content) {
  $firstLines = $content -join "`n"
  
- if ($firstLines -match "#!/usr/bin/env pwsh|#!/bin/bash") { $tags += "executable" }
- if ($firstLines -match "@{|@(") { $tags += "powershell-data" }
- if ($firstLines -match "import |from .* import") { $tags += "python-module" }
- if ($firstLines -match "# Test|Describe |It ") { $tags += "test-file" }
- if ($firstLines -match "# Fix|# Repair|# Patch") { $tags += "fix-script" }
- if ($firstLines -match "terraform|resource |provider ") { $tags += "terraform" }
+ if ($firstLines -match "#!/usr/bin/env pwsh#!/bin/bash") { $tags += "executable" }
+ if ($firstLines -match "@{@(") { $tags += "powershell-data" }
+ if ($firstLines -match "import from .* import") { $tags += "python-module" }
+ if ($firstLines -match "# TestDescribe It ") { $tags += "test-file" }
+ if ($firstLines -match "# Fix# Repair# Patch") { $tags += "fix-script" }
+ if ($firstLines -match "terraformresource provider ") { $tags += "terraform" }
  }
  } catch {
  # Ignore read errors
@@ -118,7 +118,7 @@ function Get-RecommendedLocation {
 
 # Check organization rules
  foreach ($category in $organizationRules.Keys) {
- $rule = $organizationRules[$category]
+ $rule = $organizationRules$category
  
  # Check if file matches patterns
  foreach ($pattern in $rule.patterns) {
@@ -168,14 +168,14 @@ function Show-OrganizationPlan {
  Write-Host " File Organization Analysis" -ForegroundColor Yellow
  Write-Host "==============================" -ForegroundColor Yellow
  
- $rootFiles = Get-ChildItem -Path . -File | Where-Object { -not $_.Name.StartsWith('.') }
+ $rootFiles = Get-ChildItem -Path . -File  Where-Object { -not $_.Name.StartsWith('.') }
  $organizationPlan = @()
  
  foreach ($file in $rootFiles) {
  $tags = Get-FileTag $file.FullName $file.Name
  $recommendation = Get-RecommendedLocation $file.Name $tags $file.FullName
  
- $organizationPlan += [PSCustomObject]@{
+ $organizationPlan += PSCustomObject@{
  FileName = $file.Name
  CurrentLocation = "ROOT"
  RecommendedLocation = if ($recommendation) { $recommendation.Category } else { "ROOT (keep)" }
@@ -186,7 +186,7 @@ function Show-OrganizationPlan {
  }
  
  # Group by recommended location
- $grouped = $organizationPlan | Group-Object RecommendedLocation
+ $grouped = $organizationPlan  Group-Object RecommendedLocation
  
  foreach ($group in $grouped) {
  $location = $group.Name
@@ -211,8 +211,8 @@ function Show-OrganizationPlan {
  }
  
  # Summary
- $toMove = $organizationPlan | Where-Object { $_.RecommendedLocation -ne "ROOT (keep)" }
- $toKeep = $organizationPlan | Where-Object { $_.RecommendedLocation -eq "ROOT (keep)" }
+ $toMove = $organizationPlan  Where-Object { $_.RecommendedLocation -ne "ROOT (keep)" }
+ $toKeep = $organizationPlan  Where-Object { $_.RecommendedLocation -eq "ROOT (keep)" }
  
  Write-Host "`n Summary:" -ForegroundColor Yellow
  Write-Host " � Files to organize: $($toMove.Count)" -ForegroundColor Cyan
@@ -239,7 +239,7 @@ if (-not $Force -and -not $WhatIf) {
  }
  }
  
- $toMove = $OrganizationPlan | Where-Object { $_.RecommendedLocation -ne "ROOT (keep)" }
+ $toMove = $OrganizationPlan  Where-Object { $_.RecommendedLocation -ne "ROOT (keep)" }
  
  foreach ($item in $toMove) {
  $source = $item.FileName
@@ -252,16 +252,16 @@ if (-not $Force -and -not $WhatIf) {
  try {
  # Create target directory if it doesn't exist
  if (-not (Test-Path $targetDir)) {
- New-Item -ItemType Directory -Path $targetDir -Force | Out-Null
- Write-Host "[PASS] Created directory: $targetDir" -ForegroundColor Green
+ New-Item -ItemType Directory -Path $targetDir -Force  Out-Null
+ Write-Host "PASS Created directory: $targetDir" -ForegroundColor Green
  }
  
  # Move the file
  Move-Item -Path $source -Destination $target -Force
- Write-Host "[PASS] Moved: $source → $target" -ForegroundColor Green
+ Write-Host "PASS Moved: $source → $target" -ForegroundColor Green
  
  } catch {
- Write-Host "[FAIL] Failed to move $source : $_" -ForegroundColor Red
+ Write-Host "FAIL Failed to move $source : $_" -ForegroundColor Red
  }
  }
  }
@@ -282,7 +282,7 @@ function Export-OrganizationRules {
  rules = $organizationRules
  }
  
- $config | ConvertTo-Json -Depth 5 | Set-Content $ConfigFile
+ $config  ConvertTo-Json -Depth 5  Set-Content $ConfigFile
  Write-Host " Organization rules exported to: $ConfigFile" -ForegroundColor Green
 }
 

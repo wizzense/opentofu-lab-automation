@@ -4,8 +4,8 @@ This directory is created by `tofu init` and records which modules were pulled f
 
 ## Modules
 
-- [`modules/network_switch`](../../../modules/network_switch) – wraps the `hyperv_network_switch` resource so that a virtual switch can be created once and referenced by other modules. The examples create the WAN switch directly in `WAN-vSwitch.tf`, but this module can be used as a drop-in replacement when you need additional switches.
-- [`modules/vm`](../../../modules/vm) – provisions a Hyper-V VM along with its VHD. The file `vm_modules.tf` in the example root calls this module several times to build TanOS, Windows, and Rocky Linux machines.
+- `modules/network_switch`(../../../modules/network_switch) – wraps the `hyperv_network_switch` resource so that a virtual switch can be created once and referenced by other modules. The examples create the WAN switch directly in `WAN-vSwitch.tf`, but this module can be used as a drop-in replacement when you need additional switches.
+- `modules/vm`(../../../modules/vm) – provisions a Hyper-V VM along with its VHD. The file `vm_modules.tf` in the example root calls this module several times to build TanOS, Windows, and Rocky Linux machines.
 
 ## Relationship to the examples
 

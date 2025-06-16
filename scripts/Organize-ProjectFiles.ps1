@@ -1,10 +1,10 @@
 # Organize-ProjectFiles.ps1
 # Script to organize, clean up, and archive deprecated files after CodeFixer module implementation
-[CmdletBinding()]
+CmdletBinding()
 param(
-    [switch]$WhatIf,
-    [switch]$Force,
-    [switch]$SkipBackup
+    switch$WhatIf,
+    switch$Force,
+    switch$SkipBackup
 )
 
 
@@ -23,8 +23,8 @@ $backupRootDir = Join-Path $PSScriptRoot "backups" "cleanup-$timestamp"
 # Helper function to back up files
 function Backup-Files {
     param (
-        [string[]]$FilePaths,
-        [string]$Category
+        string$FilePaths,
+        string$Category
     )
 
     
@@ -41,7 +41,7 @@ if ($SkipBackup) {
     $backupDir = Join-Path $backupRootDir $Category
     if (-not (Test-Path $backupDir)) {
         if (-not $WhatIf) {
-            New-Item -Path $backupDir -ItemType Directory -Force | Out-Null
+            New-Item -Path $backupDir -ItemType Directory -Force  Out-Null
         } else {
             Write-Host "WhatIf: Would create directory $backupDir" -ForegroundColor Yellow
         }
@@ -69,8 +69,8 @@ if ($SkipBackup) {
 # Helper function to move files to archive
 function Move-ToArchive {
     param (
-        [string[]]$FilePaths,
-        [string]$Category
+        string$FilePaths,
+        string$Category
     )
 
     
@@ -83,7 +83,7 @@ function Move-ToArchive {
 $archiveDir = Join-Path $PSScriptRoot "archive" $Category
     if (-not (Test-Path $archiveDir)) {
         if (-not $WhatIf) {
-            New-Item -Path $archiveDir -ItemType Directory -Force | Out-Null
+            New-Item -Path $archiveDir -ItemType Directory -Force  Out-Null
         } else {
             Write-Host "WhatIf: Would create archive directory $archiveDir" -ForegroundColor Yellow
         }
@@ -113,7 +113,7 @@ $archiveDir = Join-Path $PSScriptRoot "archive" $Category
 # Helper function to delete files
 function Remove-DeprecatedFiles {
     param (
-        [string[]]$FilePaths
+        string$FilePaths
     )
 
     
@@ -144,9 +144,9 @@ foreach ($file in $FilePaths) {
 # Helper function to create placeholder README for archive directories
 function New-ArchiveReadme {
     param (
-        [string]$ArchiveDir,
-        [string]$Category,
-        [string]$Description
+        string$ArchiveDir,
+        string$Category,
+        string$Description
     )
 
     
@@ -171,9 +171,9 @@ These files were originally used for standalone fixes and testing, but have been
 
 ## Reference
 For more information on the new approach, see:
-- [CodeFixer Guide](../docs/CODEFIXER-GUIDE.md)
-- [Testing Documentation](../docs/TESTING.md)
-- [Integration Summary](../INTEGRATION-SUMMARY.md)
+- CodeFixer Guide(../docs/CODEFIXER-GUIDE.md)
+- Testing Documentation(../docs/TESTING.md)
+- Integration Summary(../INTEGRATION-SUMMARY.md)
 "@
 
     if ($WhatIf) {
@@ -191,7 +191,7 @@ Write-Host "Mode: $$(if (WhatIf) { 'WhatIf (simulation)' } else { 'Execution' })
 Write-Host "=================================================================" -ForegroundColor Cyan
 
 # 1. Identify and organize deprecated fix scripts
-Write-Host "`n[1/5] Organizing deprecated fix scripts..." -ForegroundColor Magenta
+Write-Host "`n1/5 Organizing deprecated fix scripts..." -ForegroundColor Magenta
 
 $fixScriptsToArchive = @(
     "fix-bootstrap-script.ps1",
@@ -199,11 +199,11 @@ $fixScriptsToArchive = @(
     "fix-test-syntax-errors.ps1",
     "fix-all-test-syntax.ps1",
     "fix-specific-file.ps1"
-) | ForEach-Object { Join-Path $PSScriptRoot $_ }
+)  ForEach-Object { Join-Path $PSScriptRoot $_ }
 
 $fixScriptsToDelete = @(
     "fix-ternary-syntax.ps1"
-) | ForEach-Object { Join-Path $PSScriptRoot $_ }
+)  ForEach-Object { Join-Path $PSScriptRoot $_ }
 
 # First back up all files
 Backup-Files -FilePaths ($fixScriptsToArchive + $fixScriptsToDelete) -Category "fix-scripts"
@@ -223,14 +223,14 @@ if (-not $WhatIf) {
 }
 
 # 2. Identify and organize deprecated test scripts
-Write-Host "`n[2/5] Organizing deprecated test scripts..." -ForegroundColor Magenta
+Write-Host "`n2/5 Organizing deprecated test scripts..." -ForegroundColor Magenta
 
 $testScriptsToArchive = @(
     "test-bootstrap-fixes.py",
     "test-bootstrap-syntax.py",
     "validate-syntax.py",
     "test-all-syntax.ps1"
-) | ForEach-Object { Join-Path $PSScriptRoot $_ }
+)  ForEach-Object { Join-Path $PSScriptRoot $_ }
 
 # Back up all files
 Backup-Files -FilePaths $testScriptsToArchive -Category "test-scripts"
@@ -247,7 +247,7 @@ if (-not $WhatIf) {
 }
 
 # 3. Identify and organize deprecated workflows
-Write-Host "`n[3/5] Organizing deprecated workflows..." -ForegroundColor Magenta
+Write-Host "`n3/5 Organizing deprecated workflows..." -ForegroundColor Magenta
 
 # Define workflow categories
 $primaryWorkflows = @(
@@ -259,8 +259,8 @@ $primaryWorkflows = @(
 )
 
 $workflowsDir = Join-Path (Split-Path $PSScriptRoot -Parent) ".github" "workflows"
-$allWorkflows = Get-ChildItem -Path $workflowsDir -Filter "*.yml" | Select-Object -ExpandProperty Name
-$potentiallyDeprecatedWorkflows = $allWorkflows | Where-Object { $_ -notin $primaryWorkflows }
+$allWorkflows = Get-ChildItem -Path $workflowsDir -Filter "*.yml"  Select-Object -ExpandProperty Name
+$potentiallyDeprecatedWorkflows = $allWorkflows  Where-Object { $_ -notin $primaryWorkflows }
 
 # Separate into categories
 $deprecatedWorkflows = @(
@@ -268,11 +268,11 @@ $deprecatedWorkflows = @(
     "lint.yml",
     "ci.yml",
     "test.yml"
-) | ForEach-Object { Join-Path $workflowsDir $_ }
+)  ForEach-Object { Join-Path $workflowsDir $_ }
 
-$specializedWorkflows = $potentiallyDeprecatedWorkflows | Where-Object { 
+$specializedWorkflows = $potentiallyDeprecatedWorkflows  Where-Object { 
     $_ -notin ("pester.yml", "lint.yml", "ci.yml", "test.yml") 
-} | ForEach-Object { Join-Path $workflowsDir $_ }
+}  ForEach-Object { Join-Path $workflowsDir $_ }
 
 # Back up all workflows
 Backup-Files -FilePaths ($deprecatedWorkflows + $specializedWorkflows) -Category "workflows"
@@ -280,7 +280,7 @@ Backup-Files -FilePaths ($deprecatedWorkflows + $specializedWorkflows) -Category
 # Move deprecated workflows to archive
 $workflowArchiveDir = Join-Path (Split-Path $PSScriptRoot -Parent) "archive" "deprecated-workflows"
 if (-not (Test-Path $workflowArchiveDir) -and -not $WhatIf) {
-    New-Item -Path $workflowArchiveDir -ItemType Directory -Force | Out-Null
+    New-Item -Path $workflowArchiveDir -ItemType Directory -Force  Out-Null
 }
 
 foreach ($workflow in $deprecatedWorkflows) {
@@ -321,14 +321,14 @@ The project now uses the following primary workflows:
 - unified-ci.yml - Main CI/CD pipeline
 - auto-test-generation.yml and related workflows - Automatic test generation
 
-For more information, see the [Integration Summary](../../INTEGRATION-SUMMARY.md).
+For more information, see the Integration Summary(../../INTEGRATION-SUMMARY.md).
 "@
     Set-Content -Path (Join-Path $workflowArchiveDir "README.md") -Value $content -Force
     Write-Host "Created README in workflow archive directory" -ForegroundColor Green
 }
 
 # 4. Create organization READMEs
-Write-Host "`n[4/5] Creating organization READMEs..." -ForegroundColor Magenta
+Write-Host "`n4/5 Creating organization READMEs..." -ForegroundColor Magenta
 
 # Create README for scripts directory
 $scriptsReadmePath = Join-Path $PSScriptRoot "README.md"
@@ -366,9 +366,9 @@ Then run without `-WhatIf` to apply the changes:
 ## Documentation
 
 For more information on the CodeFixer module and related automation, see:
-- [CODEFIXER-GUIDE.md](../docs/CODEFIXER-GUIDE.md)
-- [TESTING.md](../docs/TESTING.md)
-- [INTEGRATION-SUMMARY.md](../INTEGRATION-SUMMARY.md)
+- CODEFIXER-GUIDE.md(../docs/CODEFIXER-GUIDE.md)
+- TESTING.md(../docs/TESTING.md)
+- INTEGRATION-SUMMARY.md(../INTEGRATION-SUMMARY.md)
 "@
 
 if ($WhatIf) {
@@ -401,23 +401,23 @@ GitHub Actions workflows that have been replaced by the unified-ci.yml workflow.
 All the functionality provided by these archived files has been consolidated into the CodeFixer PowerShell module.
 
 For more information, see:
-- [CODEFIXER-GUIDE.md](../docs/CODEFIXER-GUIDE.md)
-- [TESTING.md](../docs/TESTING.md)
-- [INTEGRATION-SUMMARY.md](../INTEGRATION-SUMMARY.md)
+- CODEFIXER-GUIDE.md(../docs/CODEFIXER-GUIDE.md)
+- TESTING.md(../docs/TESTING.md)
+- INTEGRATION-SUMMARY.md(../INTEGRATION-SUMMARY.md)
 "@
 
 if ($WhatIf) {
     Write-Host "WhatIf: Would create README at $archiveReadmePath" -ForegroundColor Yellow
 } else {
     if (-not (Test-Path (Join-Path $PSScriptRoot "archive"))) {
-        New-Item -Path (Join-Path $PSScriptRoot "archive") -ItemType Directory -Force | Out-Null
+        New-Item -Path (Join-Path $PSScriptRoot "archive") -ItemType Directory -Force  Out-Null
     }
     Set-Content -Path $archiveReadmePath -Value $archiveReadmeContent -Force
     Write-Host "Created README at $archiveReadmePath" -ForegroundColor Green
 }
 
 # 5. Update module structure to ensure it's organized
-Write-Host "`n[5/5] Organizing module structure..." -ForegroundColor Magenta
+Write-Host "`n5/5 Organizing module structure..." -ForegroundColor Magenta
 
 $moduleDir = Join-Path $PSScriptRoot "pwsh" "modules" "CodeFixer"
 $publicDir = Join-Path $moduleDir "Public"
@@ -428,7 +428,7 @@ foreach ($dir in @($moduleDir, $publicDir, $privateDir)) {
         if ($WhatIf) {
             Write-Host "WhatIf: Would create directory $dir" -ForegroundColor Yellow
         } else {
-            New-Item -Path $dir -ItemType Directory -Force | Out-Null
+            New-Item -Path $dir -ItemType Directory -Force  Out-Null
             Write-Host "Created directory $dir" -ForegroundColor Green
         }
     }
@@ -450,17 +450,17 @@ This PowerShell module provides comprehensive tools for code fixing, validation,
 
 ## Key Functions
 
-| Function | Description |
-|----------|-------------|
-| `Invoke-AutoFix` | Runs all available fixers in sequence |
-| `Invoke-PowerShellLint` | Runs and reports on PowerShell linting |
-| `Invoke-TestSyntaxFix` | Fixes common syntax errors in test files |
-| `Invoke-TernarySyntaxFix` | Fixes ternary operator issues in scripts |
-| `Invoke-ScriptOrderFix` | Fixes Import-Module/Param order in scripts |
-| `New-AutoTest` | Generates tests for PowerShell scripts |
-| `Watch-ScriptDirectory` | Watches for script changes and generates tests |
-| `Invoke-ResultsAnalysis` | Parses test results and applies fixes |
-| `Invoke-ComprehensiveValidation` | Runs full validation suite |
+ Function  Description 
+-----------------------
+ `Invoke-AutoFix`  Runs all available fixers in sequence 
+ `Invoke-PowerShellLint`  Runs and reports on PowerShell linting 
+ `Invoke-TestSyntaxFix`  Fixes common syntax errors in test files 
+ `Invoke-TernarySyntaxFix`  Fixes ternary operator issues in scripts 
+ `Invoke-ScriptOrderFix`  Fixes Import-Module/Param order in scripts 
+ `New-AutoTest`  Generates tests for PowerShell scripts 
+ `Watch-ScriptDirectory`  Watches for script changes and generates tests 
+ `Invoke-ResultsAnalysis`  Parses test results and applies fixes 
+ `Invoke-ComprehensiveValidation`  Runs full validation suite 
 
 ## Usage
 
@@ -469,7 +469,7 @@ Import the module:
 Import-Module .//pwsh/modules/CodeFixer/CodeFixer.psd1 -Force
 ```
 
-For detailed documentation, see [CODEFIXER-GUIDE.md](../../../docs/CODEFIXER-GUIDE.md).
+For detailed documentation, see CODEFIXER-GUIDE.md(../../../docs/CODEFIXER-GUIDE.md).
 "@
 
 if ($WhatIf) {

@@ -1,4 +1,4 @@
-Param([object]$Config)
+Param(object$Config)
 
 
 
@@ -8,8 +8,8 @@ Param([object]$Config)
 
 Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\pwsh/modules/LabRunner/" -ForceWrite-CustomLog "Starting $MyInvocation.MyCommand"
 function Install-Packer {
-    [CmdletBinding(SupportsShouldProcess = $true)]
-    param([object]$Config)
+    CmdletBinding(SupportsShouldProcess = $true)
+    param(object$Config)
 
     
 
@@ -33,7 +33,7 @@ Invoke-LabStep -Config $Config -Body {
 
 
 
-if (-not (Test-Path $dest)) { New-Item -ItemType Directory -Path $dest -Force | Out-Null }
+if (-not (Test-Path $dest)) { New-Item -ItemType Directory -Path $dest -Force  Out-Null }
                     Expand-Archive -Path $zip -DestinationPath $dest -Force
                 }
             } else {

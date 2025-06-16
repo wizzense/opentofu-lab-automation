@@ -1,7 +1,7 @@
 ---
 description: Create comprehensive Pester tests for PowerShell scripts in the OpenTofu Lab Automation project
 mode: agent
-tools: ["filesystem", "powershell"]
+tools: "filesystem", "powershell"
 ---
 
 # Generate Pester Tests
@@ -47,34 +47,34 @@ Describe '${input:scriptName} Tests' {
     BeforeAll {
         # Test setup
         $script:TestScript = Join-Path $PSScriptRoot ".." "path" "to" "${input:scriptName}.ps1"
-        $script:TestConfig = [pscustomobject]@{
+        $script:TestConfig = pscustomobject@{
             # Test configuration
         }
         
         # Verify test script exists
-        $script:TestScript | Should -Exist
+        $script:TestScript  Should -Exist
     }
     
     Context 'Module and Dependencies' {
         It 'should load required modules' {
-            Get-Module LabRunner | Should -Not -BeNullOrEmpty
+            Get-Module LabRunner  Should -Not -BeNullOrEmpty
         }
         
         It 'should have proper script structure' {
             $content = Get-Content $script:TestScript -Raw
-            $content | Should -Match 'Param\s*\(\s*.*\$Config'
-            $content | Should -Match 'Import-Module.*LabRunner'
-            $content | Should -Match 'Invoke-LabStep'
+            $content  Should -Match 'Param\s*\(\s*.*\$Config'
+            $content  Should -Match 'Import-Module.*LabRunner'
+            $content  Should -Match 'Invoke-LabStep'
         }
     }
     
     Context 'Parameter Validation' {
         It 'should require Config parameter' {
-            { & $script:TestScript } | Should -Throw "*Config*"
+            { & $script:TestScript }  Should -Throw "*Config*"
         }
         
         It 'should validate Config type' {
-            { & $script:TestScript -Config "invalid" } | Should -Throw
+            { & $script:TestScript -Config "invalid" }  Should -Throw
         }
     }
     
@@ -83,12 +83,12 @@ Describe '${input:scriptName} Tests' {
             # Setup mocks for each test
             Mock Write-CustomLog {} -ModuleName LabRunner
             Mock Invoke-LabStep { 
-                & $Args[1] # Execute the script block
+                & $Args1 # Execute the script block
             } -ModuleName LabRunner
         }
         
         It 'should execute without errors with valid config' {
-            { & $script:TestScript -Config $script:TestConfig } | Should -Not -Throw
+            { & $script:TestScript -Config $script:TestConfig }  Should -Not -Throw
         }
         
         It 'should call expected LabRunner functions' {
@@ -99,17 +99,17 @@ Describe '${input:scriptName} Tests' {
     
     Context 'Error Handling' {
         It 'should handle configuration errors gracefully' {
-            $badConfig = [pscustomobject]@{ Invalid = $null }
+            $badConfig = pscustomobject@{ Invalid = $null }
             # Test error handling based on script requirements
         }
     }
     
     Context 'Performance' {
         It 'should complete within acceptable time' {
-            $stopwatch = [System.Diagnostics.Stopwatch]::StartNew()
+            $stopwatch = System.Diagnostics.Stopwatch::StartNew()
             & $script:TestScript -Config $script:TestConfig
             $stopwatch.Stop()
-            $stopwatch.ElapsedMilliseconds | Should -BeLessThan 10000  # 10 seconds
+            $stopwatch.ElapsedMilliseconds  Should -BeLessThan 10000  # 10 seconds
         }
     }
     
@@ -137,12 +137,12 @@ Include various test scenarios based on script functionality:
 $testScenarios = @(
     @{
         Name = "Valid Configuration"
-        Config = [pscustomobject]@{ Property = "ValidValue" }
+        Config = pscustomobject@{ Property = "ValidValue" }
         ShouldSucceed = $true
     },
     @{
         Name = "Missing Required Property"
-        Config = [pscustomobject]@{ }
+        Config = pscustomobject@{ }
         ShouldSucceed = $false
         ExpectedError = "*required*"
     }
@@ -152,9 +152,9 @@ foreach ($scenario in $testScenarios) {
     Context "Scenario: $($scenario.Name)" {
         It "should handle scenario correctly" {
             if ($scenario.ShouldSucceed) {
-                { & $script:TestScript -Config $scenario.Config } | Should -Not -Throw
+                { & $script:TestScript -Config $scenario.Config }  Should -Not -Throw
             } else {
-                { & $script:TestScript -Config $scenario.Config } | Should -Throw $scenario.ExpectedError
+                { & $script:TestScript -Config $scenario.Config }  Should -Throw $scenario.ExpectedError
             }
         }
     }
@@ -170,8 +170,8 @@ foreach ($scenario in $testScenarios) {
 ## Reference Instructions
 
 This prompt references:
-- [Testing Standards](../instructions/testing-standards.instructions.md)
-- [PowerShell Standards](../instructions/powershell-standards.instructions.md)
+- Testing Standards(../instructions/testing-standards.instructions.md)
+- PowerShell Standards(../instructions/powershell-standards.instructions.md)
 
 Please provide:
 1. The script name to test

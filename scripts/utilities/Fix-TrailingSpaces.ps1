@@ -2,13 +2,13 @@
 # Fix trailing spaces in all YAML files
 
 param(
- [string]$Path = ".github/workflows"
+ string$Path = ".github/workflows"
 )
 
 $ErrorActionPreference = "Continue"
 
 function Remove-TrailingSpaces {
- param([string]$FilePath)
+ param(string$FilePath)
  
  $content = Get-Content $FilePath -Raw
  $originalContent = $content
@@ -28,7 +28,7 @@ function Remove-TrailingSpaces {
  $fixedContent = $fixedLines -join "`n"
  
  if ($fixedContent -ne $originalContent) {
- $fixedContent | Out-File -FilePath $FilePath -Encoding UTF8 -NoNewline
+ $fixedContent  Out-File -FilePath $FilePath -Encoding UTF8 -NoNewline
  return $trailingSpaceCount
  }
  
@@ -38,7 +38,7 @@ function Remove-TrailingSpaces {
 Write-Host " Fixing trailing spaces in YAML files..." -ForegroundColor Yellow
 Write-Host ""
 
-$yamlFiles = Get-ChildItem -Path $Path -Recurse -Include "*.yml", "*.yaml" | Where-Object { !$_.PSIsContainer }
+$yamlFiles = Get-ChildItem -Path $Path -Recurse -Include "*.yml", "*.yaml"  Where-Object { !$_.PSIsContainer }
 $totalFixed = 0
 
 foreach ($file in $yamlFiles) {
@@ -46,7 +46,7 @@ foreach ($file in $yamlFiles) {
  $spacesFixed = Remove-TrailingSpaces -FilePath $file.FullName
  
  if ($spacesFixed -gt 0) {
- Write-Host "[PASS] Fixed $spacesFixed trailing spaces in: $relativePath" -ForegroundColor Green
+ Write-Host "PASS Fixed $spacesFixed trailing spaces in: $relativePath" -ForegroundColor Green
  $totalFixed += $spacesFixed
  } else {
  Write-Host " No trailing spaces in: $relativePath" -ForegroundColor Gray
@@ -63,15 +63,15 @@ if ($totalFixed -gt 0) {
  Write-Host " Verifying fixes with yamllint..." -ForegroundColor Yellow
  
  try {
- $yamlLintResult = yamllint $Path --format standard 2>&1 | Select-String "trailing spaces"
+ $yamlLintResult = yamllint $Path --format standard 2>&1  Select-String "trailing spaces"
  if ($yamlLintResult) {
- Write-Host "[WARN] Still found trailing space issues:" -ForegroundColor Yellow
- $yamlLintResult | ForEach-Object { Write-Host " $_" -ForegroundColor Red }
+ Write-Host "WARN Still found trailing space issues:" -ForegroundColor Yellow
+ $yamlLintResult  ForEach-Object { Write-Host " $_" -ForegroundColor Red }
  } else {
- Write-Host "[PASS] No trailing space errors found by yamllint" -ForegroundColor Green
+ Write-Host "PASS No trailing space errors found by yamllint" -ForegroundColor Green
  }
  }
  catch {
- Write-Host "[WARN] Could not verify with yamllint: $_" -ForegroundColor Yellow
+ Write-Host "WARN Could not verify with yamllint: $_" -ForegroundColor Yellow
  }
 }

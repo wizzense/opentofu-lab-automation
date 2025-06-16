@@ -13,7 +13,7 @@
 Write-Host " Simple Import Cleanup" -ForegroundColor Cyan
 
 # Find all PowerShell files with problematic content
-$files = Get-ChildItem -Path . -Recurse -Include "*.ps1", "*.psm1", "*.psd1" | 
+$files = Get-ChildItem -Path . -Recurse -Include "*.ps1", "*.psm1", "*.psd1"  
     Where-Object { 
         $content = Get-Content $_.FullName -Raw -ErrorAction SilentlyContinue
         $content -and ($content -match "" -or $content -match "")
@@ -30,13 +30,13 @@ foreach ($file in $files) {
         $content = $content -replace "(\r?\n)?", ""
         
         Set-Content -Path $file.FullName -Value $content -NoNewline
-        Write-Host "[PASS] Fixed: $($file.Name)" -ForegroundColor Green
+        Write-Host "PASS Fixed: $($file.Name)" -ForegroundColor Green
     }
     catch {
         Write-Warning "Failed to fix $($file.FullName): $_"
     }
 }
 
-Write-Host "[PASS] Simple cleanup complete!" -ForegroundColor Green
+Write-Host "PASS Simple cleanup complete!" -ForegroundColor Green
 
 

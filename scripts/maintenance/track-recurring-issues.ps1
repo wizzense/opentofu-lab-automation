@@ -27,21 +27,21 @@ Run prevention checks to ensure known issues don't reoccur
 ./scripts/maintenance/track-recurring-issues.ps1 -Mode "Track" -IncludePreventionCheck
 #>
 
-[CmdletBinding()]
+CmdletBinding()
 param(
- [Parameter(Mandatory = $true)
+ Parameter(Mandatory = $true)
 
 
 
 
 
 
-]
- [ValidateSet('Analyze', 'Track', 'GenerateReport', 'UpdateChangelog', 'All')]
- [string]$Mode,
+
+ ValidateSet('Analyze', 'Track', 'GenerateReport', 'UpdateChangelog', 'All')
+ string$Mode,
  
- [Parameter()]
- [switch]$IncludePreventionCheck
+ Parameter()
+ switch$IncludePreventionCheck
 )
 
 $ErrorActionPreference = "Stop"
@@ -54,7 +54,7 @@ if ($IsWindows -or $env:OS -eq "Windows_NT") {
 $IssueTrackingPath = "$ProjectRoot/docs/reports/issue-tracking"
 
 function Write-TrackLog {
- param([string]$Message, [string]$Level = "INFO")
+ param(string$Message, string$Level = "INFO")
  
 
 
@@ -72,7 +72,7 @@ $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
  "PREVENT" { "Blue" }
  default { "White" }
  }
- Write-Host "[$timestamp] [$Level] $Message" -ForegroundColor $color
+ Write-Host "$timestamp $Level $Message" -ForegroundColor $color
 }
 
 function Get-LatestTestResults {
@@ -87,7 +87,7 @@ function Get-LatestTestResults {
  )
  
  $testResultsFile = $null
- $latestTime = [DateTime]::MinValue
+ $latestTime = DateTime::MinValue
  
  foreach ($path in $possiblePaths) {
  if (Test-Path $path) {
@@ -108,7 +108,7 @@ function Get-LatestTestResults {
  Write-TrackLog "Results from: $latestTime" "SUCCESS"
  
  try {
- [xml]$testResults = Get-Content $testResultsFile
+ xml$testResults = Get-Content $testResultsFile
  return $testResults
  }
  catch {
@@ -118,7 +118,7 @@ function Get-LatestTestResults {
 }
 
 function Analyze-RecurringIssues {
- param([xml]$TestResults)
+ param(xml$TestResults)
  
  
 
@@ -130,7 +130,7 @@ function Analyze-RecurringIssues {
 Write-TrackLog "Analyzing recurring issue patterns..." "TRACK"
  
  $issuePatterns = @{}
- $testFailures = $TestResults.SelectNodes("//test-case[@result='Failure']")
+ $testFailures = $TestResults.SelectNodes("//test-case@result='Failure'")
  
  foreach ($failure in $testFailures) {
  $message = $failure.failure.message
@@ -148,11 +148,11 @@ Write-TrackLog "Analyzing recurring issue patterns..." "TRACK"
  "ParseException" { "PowerShell Parse Error" }
  "npm.*JSON\.parse" { "NPM Environment Error" }
  "git.*not a git repository" { "Git Context Error" }
- default { "Other: $($message.Split('.')[0])" }
+ default { "Other: $($message.Split('.')0)" }
  }
  
  if (-not $issuePatterns.ContainsKey($category)) {
- $issuePatterns[$category] = @{
+ $issuePatterns$category = @{
  Count = 0
  Examples = @()
  Severity = "Medium"
@@ -160,8 +160,8 @@ Write-TrackLog "Analyzing recurring issue patterns..." "TRACK"
  }
  }
  
- $issuePatterns[$category].Count++
- $issuePatterns[$category].Examples += @{
+ $issuePatterns$category.Count++
+ $issuePatterns$category.Examples += @{
  Test = $testName
  Message = $message
  }
@@ -169,8 +169,8 @@ Write-TrackLog "Analyzing recurring issue patterns..." "TRACK"
  
  # Classify severity based on count and impact
  foreach ($category in $issuePatterns.Keys) {
- $count = $issuePatterns[$category].Count
- $issuePatterns[$category].Severity = switch ($count) {
+ $count = $issuePatterns$category.Count
+ $issuePatterns$category.Severity = switch ($count) {
  { $_ -gt 10 } { "Critical" }
  { $_ -gt 5 } { "High" }
  { $_ -gt 2 } { "Medium" }
@@ -178,7 +178,7 @@ Write-TrackLog "Analyzing recurring issue patterns..." "TRACK"
  }
  
  # Add prevention recommendations
- $issuePatterns[$category].Prevention = switch -Regex ($category) {
+ $issuePatterns$category.Prevention = switch -Regex ($category) {
  "Missing Command:" { "Add mock function to TestHelpers.ps1" }
  "Syntax Error:" { "Run fix-test-syntax.ps1 before commits" }
  "Module Import Error" { "Update import paths with fix-infrastructure-issues.ps1" }
@@ -192,7 +192,7 @@ Write-TrackLog "Analyzing recurring issue patterns..." "TRACK"
 }
 
 function Generate-IssueSummary {
- param([hashtable]$IssuePatterns, [xml]$TestResults)
+ param(hashtable$IssuePatterns, xml$TestResults)
  
  
 
@@ -204,27 +204,27 @@ function Generate-IssueSummary {
 $summary = @{
  Timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
  TestResultsDate = (Get-Item "$ProjectRoot/TestResults.xml").LastWriteTime.ToString("yyyy-MM-dd HH:mm:ss")
- TotalTests = [int]$TestResults.'test-results'.total
- TotalFailures = [int]$TestResults.'test-results'.failures
- TotalSkipped = [int]$TestResults.'test-results'.skipped
- SuccessRate = [math]::Round((($TestResults.'test-results'.total - $TestResults.'test-results'.failures) / $TestResults.'test-results'.total) * 100, 2)
+ TotalTests = int$TestResults.'test-results'.total
+ TotalFailures = int$TestResults.'test-results'.failures
+ TotalSkipped = int$TestResults.'test-results'.skipped
+ SuccessRate = math::Round((($TestResults.'test-results'.total - $TestResults.'test-results'.failures) / $TestResults.'test-results'.total) * 100, 2)
  RecurringIssues = $IssuePatterns
  TopIssues = @()
  }
  
  # Sort issues by severity and count
- $sortedIssues = $IssuePatterns.GetEnumerator() | Sort-Object { 
+ $sortedIssues = $IssuePatterns.GetEnumerator()  Sort-Object { 
  $severityOrder = @{ "Critical" = 4; "High" = 3; "Medium" = 2; "Low" = 1 }
- $severityOrder[$_.Value.Severity] * 1000 + $_.Value.Count 
+ $severityOrder$_.Value.Severity * 1000 + $_.Value.Count 
  } -Descending
  
- $summary.TopIssues = $sortedIssues | Select-Object -First 10
+ $summary.TopIssues = $sortedIssues  Select-Object -First 10
  
  return $summary
 }
 
 function Save-IssueTracking {
- param([object]$Summary)
+ param(object$Summary)
  
  
 
@@ -235,24 +235,24 @@ function Save-IssueTracking {
 
 # Ensure issue tracking directory exists
  if (-not (Test-Path $IssueTrackingPath)) {
- New-Item -ItemType Directory -Path $IssueTrackingPath -Force | Out-Null
+ New-Item -ItemType Directory -Path $IssueTrackingPath -Force  Out-Null
  }
  
  # Save current summary
  $currentFile = "$IssueTrackingPath/current-issues.json"
- $Summary | ConvertTo-Json -Depth 10 | Set-Content $currentFile
+ $Summary  ConvertTo-Json -Depth 10  Set-Content $currentFile
  
  # Save historical record
  $date = Get-Date -Format "yyyy-MM-dd-HHmm"
  $historicalFile = "$IssueTrackingPath/issues-$date.json"
- $Summary | ConvertTo-Json -Depth 10 | Set-Content $historicalFile
+ $Summary  ConvertTo-Json -Depth 10  Set-Content $historicalFile
  
  Write-TrackLog "Saved issue tracking to: $currentFile" "SUCCESS"
  Write-TrackLog "Historical record: $historicalFile" "SUCCESS"
 }
 
 function Generate-IssueReport {
- param([object]$Summary)
+ param(object$Summary)
  
  
 
@@ -269,12 +269,12 @@ $reportContent = @"
 
 ## Test Health Overview
 
-| Metric | Value | Status |
-|--------|-------|--------|
-| **Total Tests** | $($Summary.TotalTests) | [PASS] |
-| **Success Rate** | $($Summary.SuccessRate)% | $(if($Summary.SuccessRate -gt 80) { "[PASS]" } elseif($Summary.SuccessRate -gt 60) { "[WARN]" } else { "[FAIL]" }) |
-| **Total Failures** | $($Summary.TotalFailures) | $(if($Summary.TotalFailures -lt 20) { "[PASS]" } elseif($Summary.TotalFailures -lt 50) { "[WARN]" } else { "[FAIL]" }) |
-| **Skipped Tests** | $($Summary.TotalSkipped) | [INFO] |
+ Metric  Value  Status 
+-----------------------
+ **Total Tests**  $($Summary.TotalTests)  PASS 
+ **Success Rate**  $($Summary.SuccessRate)%  $(if($Summary.SuccessRate -gt 80) { "PASS" } elseif($Summary.SuccessRate -gt 60) { "WARN" } else { "FAIL" }) 
+ **Total Failures**  $($Summary.TotalFailures)  $(if($Summary.TotalFailures -lt 20) { "PASS" } elseif($Summary.TotalFailures -lt 50) { "WARN" } else { "FAIL" }) 
+ **Skipped Tests**  $($Summary.TotalSkipped)  INFO 
 
 ## Top Recurring Issues
 
@@ -294,7 +294,7 @@ $reportContent = @"
 ### $icon **$($issue.Key)** - $severity Priority
 - **Occurrences**: $($issue.Value.Count)
 - **Prevention**: $($issue.Value.Prevention)
-- **Example**: ``$($issue.Value.Examples[0].Message.Split("`n")[0])``
+- **Example**: ``$($issue.Value.Examples0.Message.Split("`n")0)``
 
 "@
  }
@@ -321,10 +321,10 @@ Based on the current issues, run these commands to address problems:
 
 ## Prevention Checklist
 
-- [ ] Add missing command mocks to TestHelpers.ps1
-- [ ] Run syntax validation before commits
-- [ ] Update test templates to avoid common errors
-- [ ] Consider adding pre-commit hooks for validation
+-   Add missing command mocks to TestHelpers.ps1
+-   Run syntax validation before commits
+-   Update test templates to avoid common errors
+-   Consider adding pre-commit hooks for validation
 
 ---
 
@@ -332,7 +332,7 @@ Based on the current issues, run these commands to address problems:
 "@
 
  $reportFile = "$ProjectRoot/docs/reports/issue-tracking/$(Get-Date -Format "yyyy-MM-dd")-recurring-issues-summary.md"
- $reportContent | Set-Content $reportFile
+ $reportContent  Set-Content $reportFile
  
  Write-TrackLog "Generated issue report: $reportFile" "SUCCESS"
  return $reportFile
@@ -352,22 +352,22 @@ function Run-PreventionChecks {
  $testHelpersPath = "$ProjectRoot/tests/helpers/TestHelpers.ps1"
  if (Test-Path $testHelpersPath) {
  $content = Get-Content $testHelpersPath -Raw
- $checks["TestHelpers Mock Functions"] = $content -match "function.*Format-Config|function.*Invoke-LabStep|function.*Write-Continue"
+ $checks"TestHelpers Mock Functions" = $content -match "function.*Format-Configfunction.*Invoke-LabStepfunction.*Write-Continue"
  }
  
  # Check for syntax validation tools
- $checks["Syntax Validation Tools"] = (Test-Path "$ProjectRoot/scripts/maintenance/fix-test-syntax.ps1")
+ $checks"Syntax Validation Tools" = (Test-Path "$ProjectRoot/scripts/maintenance/fix-test-syntax.ps1")
  
  # Check for consistent import paths
- $deprecatedPaths = Get-ChildItem -Path $ProjectRoot -Recurse -Include "*.ps1", "*.psm1" | 
+ $deprecatedPaths = Get-ChildItem -Path $ProjectRoot -Recurse -Include "*.ps1", "*.psm1"  
  Select-String -Pattern "pwsh/modules" -SimpleMatch -ErrorAction SilentlyContinue
- $checks["Import Path Consistency"] = $deprecatedPaths.Count -eq 0
+ $checks"Import Path Consistency" = $deprecatedPaths.Count -eq 0
  
  # Check for pre-commit hooks
- $checks["Pre-commit Hooks"] = (Test-Path "$ProjectRoot/.git/hooks/pre-commit")
+ $checks"Pre-commit Hooks" = (Test-Path "$ProjectRoot/.git/hooks/pre-commit")
  
  foreach ($check in $checks.GetEnumerator()) {
- $status = if ($check.Value) { "[PASS] PASS" } else { "[FAIL] FAIL" }
+ $status = if ($check.Value) { "PASS PASS" } else { "FAIL FAIL" }
  Write-TrackLog " $($check.Key): $status" "PREVENT"
  }
  
@@ -375,7 +375,7 @@ function Run-PreventionChecks {
 }
 
 function Update-ChangelogWithIssues {
- param([object]$Summary, [string]$ReportFile)
+ param(object$Summary, string$ReportFile)
  
  
 
@@ -397,13 +397,13 @@ $changelogPath = "$ProjectRoot/CHANGELOG.md"
 
 ### Recurring Issues Tracking ($date)
 - **Test Success Rate**: $($Summary.SuccessRate)% ($($Summary.TotalTests - $Summary.TotalFailures)/$($Summary.TotalTests) tests passing)
-- **Top Issue**: $($Summary.TopIssues[0].Key) ($($Summary.TopIssues[0].Value.Count) occurrences)
-- **Detailed Analysis**: [Recurring Issues Summary]($ReportFile)
-- **Prevention Status**: $(if((Run-PreventionChecks).Values -contains $false) { "[WARN] Needs Attention" } else { "[PASS] Good" })
+- **Top Issue**: $($Summary.TopIssues0.Key) ($($Summary.TopIssues0.Value.Count) occurrences)
+- **Detailed Analysis**: Recurring Issues Summary($ReportFile)
+- **Prevention Status**: $(if((Run-PreventionChecks).Values -contains $false) { "WARN Needs Attention" } else { "PASS Good" })
 "@
 
- # Insert after the [Unreleased] section
- $updatedContent = $content -replace "(\[Unreleased\]\s*\n)", "`$1$issueUpdate`n"
+ # Insert after the Unreleased section
+ $updatedContent = $content -replace "(\Unreleased\\s*\n)", "`$1$issueUpdate`n"
  
  Set-Content $changelogPath $updatedContent
  Write-TrackLog "Updated CHANGELOG.md with issue tracking" "SUCCESS"
@@ -421,7 +421,7 @@ try {
  $summary = Generate-IssueSummary $issues $testResults
  Save-IssueTracking $summary
  
- Write-TrackLog "Analysis complete - Top issue: $($summary.TopIssues[0].Key)" "SUCCESS"
+ Write-TrackLog "Analysis complete - Top issue: $($summary.TopIssues0.Key)" "SUCCESS"
  Write-TrackLog "Success rate: $($summary.SuccessRate)%" "SUCCESS"
  }
  }
@@ -434,7 +434,7 @@ try {
  Save-IssueTracking $summary
  
  if ($IncludePreventionCheck) {
- Run-PreventionChecks | Out-Null
+ Run-PreventionChecks  Out-Null
  }
  }
  }
@@ -442,7 +442,7 @@ try {
  'GenerateReport' {
  $currentIssuesFile = "$IssueTrackingPath/current-issues.json"
  if (Test-Path $currentIssuesFile) {
- $summary = Get-Content $currentIssuesFile | ConvertFrom-Json
+ $summary = Get-Content $currentIssuesFile  ConvertFrom-Json
  $reportFile = Generate-IssueReport $summary
  Write-TrackLog "Report generated: $reportFile" "SUCCESS"
  } else {
@@ -453,7 +453,7 @@ try {
  'UpdateChangelog' {
  $currentIssuesFile = "$IssueTrackingPath/current-issues.json"
  if (Test-Path $currentIssuesFile) {
- $summary = Get-Content $currentIssuesFile | ConvertFrom-Json
+ $summary = Get-Content $currentIssuesFile  ConvertFrom-Json
  $reportFile = "docs/reports/issue-tracking/$(Get-Date -Format "yyyy-MM-dd")-recurring-issues-summary.md"
  Update-ChangelogWithIssues $summary $reportFile
  } else {
@@ -471,7 +471,7 @@ try {
  Update-ChangelogWithIssues $summary $reportFile
  
  if ($IncludePreventionCheck) {
- Run-PreventionChecks | Out-Null
+ Run-PreventionChecks  Out-Null
  }
  
  Write-TrackLog "Complete tracking cycle finished" "SUCCESS"

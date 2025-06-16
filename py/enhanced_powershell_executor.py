@@ -19,7 +19,7 @@ from typing import Optional, Dict, Any, Tuple
 class EnhancedPowerShellExecutor:
     """Enhanced PowerShell executor with cross-platform support"""
     
-    def __init__(self, working_directory: Optional[str] = None):
+    def __init__(self, working_directory: Optionalstr = None):
         self.working_directory = Path(working_directory) if working_directory else self.get_default_working_directory()
         self.powershell_cmd = self.detect_powershell()
         self.executor_script = None
@@ -35,14 +35,14 @@ class EnhancedPowerShellExecutor:
         work_dir.mkdir(parents=True, exist_ok=True)
         return work_dir
     
-    def detect_powershell(self) -> Optional[str]:
+    def detect_powershell(self) -> Optionalstr:
         """Detect available PowerShell executable"""
-        candidates = ['pwsh', 'powershell'] if platform.system() == "Windows" else ['pwsh']
+        candidates = 'pwsh', 'powershell' if platform.system() == "Windows" else 'pwsh'
         
         for cmd in candidates:
             try:
                 result = subprocess.run(
-                    [cmd, '-NoProfile', '-NonInteractive', '-Command', '$PSVersionTable.PSVersion.Major'],
+                    cmd, '-NoProfile', '-NonInteractive', '-Command', '$PSVersionTable.PSVersion.Major',
                     capture_output=True, text=True, timeout=10
                 )
                 if result.returncode == 0:
@@ -60,14 +60,14 @@ class EnhancedPowerShellExecutor:
             raise RuntimeError("PowerShell not found. Please install PowerShell 7+ or Windows PowerShell 5.1+")
         
         # Look for CrossPlatformExecutor.ps1 in project
-        possible_locations = [
+        possible_locations = 
             self.working_directory / "pwsh" / "CrossPlatformExecutor_Enhanced.ps1",
             self.working_directory / "pwsh" / "CrossPlatformExecutor.ps1",
             Path(__file__).parent.parent / "pwsh" / "CrossPlatformExecutor_Enhanced.ps1",
             Path(__file__).parent.parent / "pwsh" / "CrossPlatformExecutor.ps1",
             Path.cwd() / "pwsh" / "CrossPlatformExecutor_Enhanced.ps1",
             Path.cwd() / "pwsh" / "CrossPlatformExecutor.ps1"
-        ]
+        
         
         for location in possible_locations:
             if location.exists():
@@ -83,14 +83,14 @@ class EnhancedPowerShellExecutor:
         """Create a minimal PowerShell executor script"""
         executor_content = '''
 param(
-    [Parameter(Mandatory=$false)]
-    [string]$EncodedScript,
+    Parameter(Mandatory=$false)
+    string$EncodedScript,
     
-    [Parameter(Mandatory=$false)]
-    [string]$WorkingDirectory,
+    Parameter(Mandatory=$false)
+    string$WorkingDirectory,
     
-    [Parameter(Mandatory=$false)]
-    [switch]$NonInteractive
+    Parameter(Mandatory=$false)
+    switch$NonInteractive
 )
 
 try {
@@ -102,7 +102,7 @@ try {
     
     # Decode and execute script
     if ($EncodedScript) {
-        $decodedScript = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($EncodedScript))
+        $decodedScript = System.Text.Encoding::UTF8.GetString(System.Convert::FromBase64String($EncodedScript))
         Write-Host "Executing decoded PowerShell script..."
         
         # Execute the script
@@ -129,7 +129,7 @@ try {
         self.executor_script = executor_path
         print(f"Created minimal PowerShell executor: {executor_path}")
     
-    def execute_script(self, script_content: str, parameters: Optional[Dict[str, Any]] = None) -> Tuple[bool, str, str]:
+    def execute_script(self, script_content: str, parameters: OptionalDictstr, Any = None) -> Tuplebool, str, str:
         """
         Execute PowerShell script with proper encoding and error handling
         
@@ -144,7 +144,7 @@ try {
             encoded_script = base64.b64encode(script_content.encode('utf-8')).decode('ascii')
             
             # Build command
-            cmd = [
+            cmd = 
                 self.powershell_cmd,
                 '-NoProfile',
                 '-NonInteractive',
@@ -153,15 +153,15 @@ try {
                 '-EncodedScript', encoded_script,
                 '-WorkingDirectory', str(self.working_directory),
                 '-NonInteractive'
-            ]
+            
             
             # Set up environment
             env = os.environ.copy()
-            env['PYTHONIOENCODING'] = 'utf-8'
+            env'PYTHONIOENCODING' = 'utf-8'
             
             if platform.system() == "Windows":
-                env['TEMP'] = str(self.working_directory / 'temp')
-                env['TMP'] = str(self.working_directory / 'temp')
+                env'TEMP' = str(self.working_directory / 'temp')
+                env'TMP' = str(self.working_directory / 'temp')
                 (self.working_directory / 'temp').mkdir(exist_ok=True)
             
             # Execute with timeout
@@ -184,7 +184,7 @@ try {
         except Exception as e:
             return False, "", f"Execution error: {str(e)}"
     
-    def execute_file(self, script_path: str, parameters: Optional[Dict[str, Any]] = None) -> Tuple[bool, str, str]:
+    def execute_file(self, script_path: str, parameters: OptionalDictstr, Any = None) -> Tuplebool, str, str:
         """Execute PowerShell script file"""
         script_file = Path(script_path)
         
@@ -205,9 +205,9 @@ try {
         except Exception as e:
             return False, "", f"Error reading script file: {str(e)}"
     
-    def build_parameter_script(self, parameters: Dict[str, Any]) -> str:
+    def build_parameter_script(self, parameters: Dictstr, Any) -> str:
         """Build PowerShell parameter assignment script"""
-        param_lines = []
+        param_lines = 
         
         for key, value in parameters.items():
             if isinstance(value, bool):
@@ -245,7 +245,7 @@ Write-Host "Platform: $($PSVersionTable.Platform)"
             print(f"Error: {stderr}")
             return False
     
-    def get_system_info(self) -> Dict[str, Any]:
+    def get_system_info(self) -> Dictstr, Any:
         """Get system information via PowerShell"""
         info_script = '''
 $info = @{
@@ -258,7 +258,7 @@ $info = @{
     ComputerName = $env:COMPUTERNAME
 }
 
-$info | ConvertTo-Json -Depth 2
+$info  ConvertTo-Json -Depth 2
 '''
         
         success, stdout, stderr = self.execute_script(info_script)

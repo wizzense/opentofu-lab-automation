@@ -26,7 +26,7 @@ def ensure_pyinstaller():
     except ImportError:
         print("Installing PyInstaller...")
         try:
-            subprocess.run([sys.executable, "-m", "pip", "install", "pyinstaller"], check=True)
+            subprocess.run(sys.executable, "-m", "pip", "install", "pyinstaller", check=True)
             print(" PyInstaller installed successfully")
             return True
         except Exception as e:
@@ -43,7 +43,7 @@ def build_executable(script_path, name=None, onefile=True, console=True, icon=No
     print(f"Building executable for: {script_path}")
     
     # Prepare command
-    cmd = [sys.executable, "-m", "PyInstaller"]
+    cmd = sys.executable, "-m", "PyInstaller"
     
     # Add options
     if onefile:
@@ -55,18 +55,18 @@ def build_executable(script_path, name=None, onefile=True, console=True, icon=No
         cmd.append("--noconsole")
         
     if name:
-        cmd.extend(["--name", name])
+        cmd.extend("--name", name)
     
     if icon and Path(icon).exists():
-        cmd.extend(["--icon", icon])
+        cmd.extend("--icon", icon)
     
     # Add paths
-    cmd.extend([
+    cmd.extend(
         "--workpath", "build",
         "--distpath", "dist",
         "--specpath", "build",
         str(script_path)
-    ])
+    )
     
     # Execute PyInstaller
     try:
@@ -111,14 +111,14 @@ def copy_required_files(dist_dir="dist"):
     # Copy configuration schema
     try:
         # Copy Python modules
-        for py_file in ["config_schema.py", "config_schema_simple.py", "enhanced_powershell_executor.py"]:
+        for py_file in "config_schema.py", "config_schema_simple.py", "enhanced_powershell_executor.py":
             src = Path("py") / py_file
             if src.exists():
                 shutil.copy2(src, py_dir / py_file)
                 print(f"   Copied {py_file}")
         
         # Copy PowerShell scripts
-        for ps_file in ["CrossPlatformExecutor.ps1", "CrossPlatformExecutor_Enhanced.ps1"]:
+        for ps_file in "CrossPlatformExecutor.ps1", "CrossPlatformExecutor_Enhanced.ps1":
             src = Path("pwsh") / ps_file
             if src.exists():
                 shutil.copy2(src, pwsh_dir / ps_file)
@@ -211,7 +211,7 @@ def main():
         return 1
     
     # Clean previous builds
-    for path in ["build", "dist"]:
+    for path in "build", "dist":
         if Path(path).exists():
             print(f"Cleaning {path}...")
             try:

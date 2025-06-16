@@ -110,13 +110,13 @@ The `.vscode/settings.json` includes:
   "github.copilot.editor.enableCommitGeneration": true,
   "github.copilot.referencesInEditor": true,
   "github.copilot.editor.enableInstructionFiles": true,
-  "github.copilot.editor.instructionFiles": [
+  "github.copilot.editor.instructionFiles": 
     ".github/copilot-instructions.md",
     ".github/instructions/*.instructions.md"
-  ],
-  "github.copilot.editor.promptFiles": [
+  ,
+  "github.copilot.editor.promptFiles": 
     ".github/prompts/*.prompt.md"
-  ]
+  
 }
 ```
 
@@ -241,7 +241,7 @@ Get-ChildItem ".github/instructions/" -Filter "*.instructions.md"
 Get-ChildItem ".github/prompts/" -Filter "*.prompt.md"
 
 # Validate VS Code settings
-$settings = Get-Content ".vscode/settings.json" | ConvertFrom-Json
+$settings = Get-Content ".vscode/settings.json"  ConvertFrom-Json
 $settings.'github.copilot.editor.enableInstructionFiles'
 
 # Test Copilot integration

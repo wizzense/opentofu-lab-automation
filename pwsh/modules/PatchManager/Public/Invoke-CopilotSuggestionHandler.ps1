@@ -32,43 +32,43 @@
 #>
 
 function Invoke-CopilotSuggestionHandler {
-    [CmdletBinding(SupportsShouldProcess)]
+    CmdletBinding(SupportsShouldProcess)
     param(
-        [Parameter(Mandatory = $true)]
-        [int]$PullRequestNumber,
+        Parameter(Mandatory = $true)
+        int$PullRequestNumber,
         
-        [Parameter(Mandatory = $false)]
-        [string]$Repository = "wizzense/opentofu-lab-automation",
+        Parameter(Mandatory = $false)
+        string$Repository = "wizzense/opentofu-lab-automation",
         
-        [Parameter(Mandatory = $false)]
-        [switch]$AutoCommit,
+        Parameter(Mandatory = $false)
+        switch$AutoCommit,
         
-    [Parameter(Mandatory = $false)]
-    [switch]$ValidateAfterFix,
+    Parameter(Mandatory = $false)
+    switch$ValidateAfterFix,
     
-    [Parameter(Mandatory = $false)]
-    [switch]$WhatIf,
+    Parameter(Mandatory = $false)
+    switch$WhatIf,
     
-    [Parameter(Mandatory = $false)]
-    [switch]$BackgroundMonitor,
+    Parameter(Mandatory = $false)
+    switch$BackgroundMonitor,
     
-    [Parameter(Mandatory = $false)]
-    [int]$MonitorIntervalSeconds = 300,
+    Parameter(Mandatory = $false)
+    int$MonitorIntervalSeconds = 300,
     
-    [Parameter(Mandatory = $false)]
-    [string]$LogPath = "logs/copilot-suggestions.log"
+    Parameter(Mandatory = $false)
+    string$LogPath = "logs/copilot-suggestions.log"
     )
       begin {
         # Initialize logging
         $logDir = Split-Path $LogPath -Parent
         if ($logDir -and -not (Test-Path $logDir)) {
-            New-Item -ItemType Directory -Path $logDir -Force | Out-Null
+            New-Item -ItemType Directory -Path $logDir -Force  Out-Null
         }
         
         function Write-LogMessage {
-            param([string]$Message, [string]$Level = "INFO")
+            param(string$Message, string$Level = "INFO")
             $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
-            $logEntry = "[$timestamp] [$Level] $Message"
+            $logEntry = "$timestamp $Level $Message"
             Write-Host $logEntry -ForegroundColor $(switch($Level) { 
                 "ERROR" { "Red" } 
                 "WARN" { "Yellow" } 
@@ -144,8 +144,8 @@ function Invoke-CopilotSuggestionHandler {
         try {            # Get PR review comments from Copilot
             Write-LogMessage "Fetching Copilot review comments for PR #$PullRequestNumber..." "INFO"
             
-            $prComments = gh api "repos/$Repository/pulls/$PullRequestNumber/reviews" | ConvertFrom-Json
-            $copilotComments = $prComments | Where-Object { $_.user.login -eq "github-copilot[bot]" -or $_.user.type -eq "Bot" }
+            $prComments = gh api "repos/$Repository/pulls/$PullRequestNumber/reviews"  ConvertFrom-Json
+            $copilotComments = $prComments  Where-Object { $_.user.login -eq "github-copilotbot" -or $_.user.type -eq "Bot" }
             
             if (-not $copilotComments) {
                 Write-LogMessage "No Copilot review comments found for PR #$PullRequestNumber" "INFO"
@@ -157,7 +157,7 @@ function Invoke-CopilotSuggestionHandler {
             # Get detailed review comments
             $allSuggestions = @()
             foreach ($review in $copilotComments) {
-                $reviewComments = gh api "repos/$Repository/pulls/reviews/$($review.id)/comments" | ConvertFrom-Json
+                $reviewComments = gh api "repos/$Repository/pulls/reviews/$($review.id)/comments"  ConvertFrom-Json
                 foreach ($comment in $reviewComments) {
                     if ($comment.body -match "Suggested change" -or $comment.body -match "```suggestion") {
                         $allSuggestions += @{
@@ -178,7 +178,7 @@ function Invoke-CopilotSuggestionHandler {
             Write-LogMessage "Found $($allSuggestions.Count) actionable Copilot suggestions" "SUCCESS"
             
             # Group suggestions by file for efficient processing
-            $suggestionsByFile = $allSuggestions | Group-Object -Property File
+            $suggestionsByFile = $allSuggestions  Group-Object -Property File
             
             $implementedCount = 0
             $failedCount = 0
@@ -225,7 +225,7 @@ function Invoke-CopilotSuggestionHandler {
                         # Run basic syntax validation
                         if ($file -match '\.ps1$') {
                             $syntaxErrors = $null
-                            [System.Management.Automation.PSParser]::Tokenize((Get-Content $file -Raw), [ref]$syntaxErrors)
+                            System.Management.Automation.PSParser::Tokenize((Get-Content $file -Raw), ref$syntaxErrors)
                             if ($syntaxErrors) {
                                 Write-Warning "Syntax errors found in $file after implementing suggestions"
                                 foreach ($error in $syntaxErrors) {
@@ -284,16 +284,16 @@ function Invoke-CopilotSuggestionHandler {
 }
 
 function Invoke-CopilotSuggestionImplementation {
-    [CmdletBinding()]
+    CmdletBinding()
     param(
-        [Parameter(Mandatory = $true)]
-        [hashtable]$Suggestion,
+        Parameter(Mandatory = $true)
+        hashtable$Suggestion,
         
-        [Parameter(Mandatory = $true)]
-        [string]$FilePath,
+        Parameter(Mandatory = $true)
+        string$FilePath,
         
-        [Parameter(Mandatory = $false)]
-        [switch]$WhatIf
+        Parameter(Mandatory = $false)
+        switch$WhatIf
     )
     
     try {
@@ -305,15 +305,15 @@ function Invoke-CopilotSuggestionImplementation {
         
         # Format 1: "Suggested change" with code blocks
         if ($body -match '```suggestion\s*\n(.*?)\n```') {
-            $suggestedChange = $matches[1]
+            $suggestedChange = $matches1
         }
         # Format 2: Direct suggestion after "Suggested change"
-        elseif ($body -match 'Suggested change\s*\n([^\n]+)') {
-            $suggestedChange = $matches[1]
+        elseif ($body -match 'Suggested change\s*\n(^\n+)') {
+            $suggestedChange = $matches1
         }
         # Format 3: Code block with replacement
-        elseif ($body -match '```[^\n]*\n(.*?)\n```') {
-            $suggestedChange = $matches[1]
+        elseif ($body -match '```^\n*\n(.*?)\n```') {
+            $suggestedChange = $matches1
         }
         
         if (-not $suggestedChange) {
@@ -326,21 +326,21 @@ function Invoke-CopilotSuggestionImplementation {
         # Try to implement the suggestion using the diff hunk context
         if ($Suggestion.DiffHunk) {
             $diffLines = $Suggestion.DiffHunk -split '\n'
-            $contextLines = $diffLines | Where-Object { $_ -match '^[ +\-]' }
+            $contextLines = $diffLines  Where-Object { $_ -match '^ +\-' }
             
             # Find the line to replace using context
-            $linesToReplace = $contextLines | Where-Object { $_ -match '^-' } | ForEach-Object { $_.Substring(1) }
-            $replacementLines = $contextLines | Where-Object { $_ -match '^\+' } | ForEach-Object { $_.Substring(1) }
+            $linesToReplace = $contextLines  Where-Object { $_ -match '^-' }  ForEach-Object { $_.Substring(1) }
+            $replacementLines = $contextLines  Where-Object { $_ -match '^\+' }  ForEach-Object { $_.Substring(1) }
             
             if ($linesToReplace -and $replacementLines) {
                 foreach ($oldLine in $linesToReplace) {
                     $trimmedOldLine = $oldLine.Trim()
-                    if ($fileContent -match [regex]::Escape($trimmedOldLine)) {
+                    if ($fileContent -match regex::Escape($trimmedOldLine)) {
                         if ($WhatIf) {
                             Write-Host "Would replace: '$trimmedOldLine'" -ForegroundColor Yellow
                             Write-Host "         with: '$($replacementLines -join '; ')'" -ForegroundColor Green
                         } else {
-                            $fileContent = $fileContent -replace [regex]::Escape($oldLine), $replacementLines[0]
+                            $fileContent = $fileContent -replace regex::Escape($oldLine), $replacementLines0
                             Set-Content -Path $FilePath -Value $fileContent -NoNewline
                         }
                         return @{ Success = $true; Change = "Replaced line using diff context" }
@@ -352,13 +352,13 @@ function Invoke-CopilotSuggestionImplementation {
         # Fallback: Try to find and replace based on line number
         $lines = Get-Content $FilePath
         if ($Suggestion.Line -le $lines.Count) {
-            $targetLine = $lines[$Suggestion.Line - 1]
+            $targetLine = $lines$Suggestion.Line - 1
             
             if ($WhatIf) {
                 Write-Host "Would replace line $($Suggestion.Line): '$targetLine'" -ForegroundColor Yellow
                 Write-Host "                              with: '$suggestedChange'" -ForegroundColor Green
             } else {
-                $lines[$Suggestion.Line - 1] = $suggestedChange
+                $lines$Suggestion.Line - 1 = $suggestedChange
                 Set-Content -Path $FilePath -Value $lines
             }
             return @{ Success = $true; Change = "Replaced line at position $($Suggestion.Line)" }
@@ -372,22 +372,22 @@ function Invoke-CopilotSuggestionImplementation {
 }
 
 function Invoke-CopilotSuggestionCheck {
-    [CmdletBinding()]
+    CmdletBinding()
     param(
-        [Parameter(Mandatory = $true)]
-        [int]$PullRequestNumber,
+        Parameter(Mandatory = $true)
+        int$PullRequestNumber,
         
-        [Parameter(Mandatory = $true)]
-        [string]$Repository,
+        Parameter(Mandatory = $true)
+        string$Repository,
         
-        [Parameter(Mandatory = $false)]
-        [array]$LastProcessedComments = @()
+        Parameter(Mandatory = $false)
+        array$LastProcessedComments = @()
     )
     
     try {
         # Get current PR review comments from Copilot
-        $prComments = gh api "repos/$Repository/pulls/$PullRequestNumber/reviews" | ConvertFrom-Json
-        $copilotComments = $prComments | Where-Object { $_.user.login -eq "github-copilot[bot]" -or $_.user.type -eq "Bot" }
+        $prComments = gh api "repos/$Repository/pulls/$PullRequestNumber/reviews"  ConvertFrom-Json
+        $copilotComments = $prComments  Where-Object { $_.user.login -eq "github-copilotbot" -or $_.user.type -eq "Bot" }
         
         if (-not $copilotComments) {
             return @{ 
@@ -400,7 +400,7 @@ function Invoke-CopilotSuggestionCheck {
         # Get detailed review comments and compare with last processed
         $allCurrentSuggestions = @()
         foreach ($review in $copilotComments) {
-            $reviewComments = gh api "repos/$Repository/pulls/reviews/$($review.id)/comments" | ConvertFrom-Json
+            $reviewComments = gh api "repos/$Repository/pulls/reviews/$($review.id)/comments"  ConvertFrom-Json
             foreach ($comment in $reviewComments) {
                 if ($comment.body -match "Suggested change" -or $comment.body -match "```suggestion") {
                     $allCurrentSuggestions += @{
@@ -416,7 +416,7 @@ function Invoke-CopilotSuggestionCheck {
         }
         
         # Find new suggestions (not in last processed)
-        $newSuggestions = $allCurrentSuggestions | Where-Object { $_.Id -notin $LastProcessedComments.Id }
+        $newSuggestions = $allCurrentSuggestions  Where-Object { $_.Id -notin $LastProcessedComments.Id }
         
         $implementedSuggestions = @()
         if ($newSuggestions) {

@@ -17,7 +17,7 @@ foreach ($file in $files) {
             $originalContent = $content
             
             # Remove all non-ASCII characters (which includes emojis and unicode symbols)
-            $content = $content -replace '[^\x00-\x7F]', ''
+            $content = $content -replace '^\x00-\x7F', ''
             
             # Clean up any double spaces that might have been created
             $content = $content -replace '  +', ' '

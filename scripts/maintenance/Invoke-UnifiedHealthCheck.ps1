@@ -1,21 +1,21 @@
 # Invoke-UnifiedHealthCheck.ps1
 # Unified entry point for all health checks and maintenance tasks
 
-[CmdletBinding()]
+CmdletBinding()
 param(
-    [Parameter()]
-    [ValidateSet("Quick", "Full", "Infrastructure", "Workflow", "All")]
-    [string]$Mode = "Quick",
+    Parameter()
+    ValidateSet("Quick", "Full", "Infrastructure", "Workflow", "All")
+    string$Mode = "Quick",
     
-    [Parameter()]
-    [switch]$AutoFix,
+    Parameter()
+    switch$AutoFix,
     
-    [Parameter()]
-    [ValidateSet("Markdown", "JSON", "Host")]
-    [string]$OutputFormat = "Markdown",
+    Parameter()
+    ValidateSet("Markdown", "JSON", "Host")
+    string$OutputFormat = "Markdown",
     
-    [Parameter()]
-    [string]$OutputPath = "./reports/unified-health"
+    Parameter()
+    string$OutputPath = "./reports/unified-health"
 )
 
 # Ensure modules are loaded
@@ -54,20 +54,20 @@ Mode: $($Report.Mode)
 Auto-Fix: $($Report.AutoFix)
 
 ## Infrastructure Health
-$($Report.Summary.InfrastructureHealth | ConvertTo-Json -Depth 10)
+$($Report.Summary.InfrastructureHealth  ConvertTo-Json -Depth 10)
 
 ## Workflow Health
-$($Report.Summary.WorkflowHealth | ConvertTo-Json -Depth 10)
+$($Report.Summary.WorkflowHealth  ConvertTo-Json -Depth 10)
 
 ## Validation Results
-$($Report.Summary.ValidationResults | ConvertTo-Json -Depth 10)
+$($Report.Summary.ValidationResults  ConvertTo-Json -Depth 10)
 
 ## Auto-Fix Results
-$($Report.Summary.AutoFixResults | ConvertTo-Json -Depth 10)
+$($Report.Summary.AutoFixResults  ConvertTo-Json -Depth 10)
 "@
 
     # Ensure output directory exists
-    New-Item -ItemType Directory -Path $OutputPath -Force | Out-Null
+    New-Item -ItemType Directory -Path $OutputPath -Force  Out-Null
     
     # Write report
     $reportFile = Join-Path $OutputPath "unified-health-report.md"

@@ -1,17 +1,17 @@
 # Fix specific PowerShell syntax errors in test files
 # filepath: simple-fix-test-syntax.ps1
 
-[CmdletBinding()]
+CmdletBinding()
 param(
-    [Parameter()
+    Parameter()
 
 
 
 
 
 
-]
-    [switch]$WhatIf
+
+    switch$WhatIf
 )
 
 $ErrorActionPreference = 'Stop'
@@ -28,7 +28,7 @@ foreach ($file in $files) {
     $modified = $false
 
     # Fix 1: Fix broken ternary-style "if" expressions
-    $pattern1 = '\(if \(\$([^)]+)\) \{ ([^}]+) \} else \{ ([^}]+) \}\)'
+    $pattern1 = '\(if \(\$(^)+)\) \{ (^}+) \} else \{ (^}+) \}\)'
     $replacement1 = '$$(if (1) { $2 } else { $3 })'
     if ($content -match $pattern1) {
         $content = $content -replace $pattern1, $replacement1
@@ -36,7 +36,7 @@ foreach ($file in $files) {
     }
 
     # Fix 2: Fix -Skip parameter without parentheses
-    $pattern2 = '-Skip:\$([a-zA-Z0-9_]+)(?!\))'
+    $pattern2 = '-Skip:\$(a-zA-Z0-9_+)(?!\))'
     $replacement2 = '-Skip:($$$1)'
     if ($content -match $pattern2) {
         $content = $content -replace $pattern2, $replacement2
@@ -55,16 +55,16 @@ foreach ($file in $files) {
     if ($modified) {
         if (-not $WhatIf) {
             Set-Content -Path $file.FullName -Value $content -NoNewline
-            Write-Host " [PASS] Fixed!" -ForegroundColor Green
+            Write-Host " PASS Fixed!" -ForegroundColor Green
         } else {
-            Write-Host " [PASS] Would fix (WhatIf mode)" -ForegroundColor Yellow
+            Write-Host " PASS Would fix (WhatIf mode)" -ForegroundColor Yellow
         }
     } else {
         Write-Host " No issues found" -ForegroundColor Green
     }
 }
 
-Write-Host "[PASS] Completed syntax fixes!" -ForegroundColor Green
+Write-Host "PASS Completed syntax fixes!" -ForegroundColor Green
 
 
 

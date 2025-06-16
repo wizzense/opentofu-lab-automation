@@ -59,8 +59,8 @@ The framework automatically categorizes tests:
 
 - Use `pwsh -NoLogo -NoProfile -Command "Invoke-Pester"` for PowerShell
 - Use `pytest py` for Python
-- See [testing.md](testing.md) for local setup
-- See [pester-test-failures.md](pester-test-failures.md) for tracked failures
+- See testing.md(testing.md) for local setup
+- See pester-test-failures.md(pester-test-failures.md) for tracked failures
 
 ## Extending the Framework
 
@@ -70,4 +70,4 @@ The framework automatically categorizes tests:
 
 ---
 
-For more, see the [Documentation Index](index.md).
+For more, see the Documentation Index(index.md).

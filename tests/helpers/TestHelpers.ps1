@@ -12,12 +12,12 @@ $SkipNonWindows = $IsLinux -or $IsMacOS
 if (-not (Get-Command Invoke-Pester -ErrorAction SilentlyContinue)) {
     # Ensure Pester v5.7.1 is loaded, not v3.x
     $desiredPesterVersion = '5.7.1'
-    $pesterModule = Get-Module -Name Pester -ListAvailable | Where-Object { $_.Version -ge [version]$desiredPesterVersion } | Sort-Object Version -Descending | Select-Object -First 1
+    $pesterModule = Get-Module -Name Pester -ListAvailable  Where-Object { $_.Version -ge version$desiredPesterVersion }  Sort-Object Version -Descending  Select-Object -First 1
     if (-not $pesterModule) {
         Write-Error "Pester $desiredPesterVersion or newer is required. Run 'Install-Module -Name Pester -RequiredVersion $desiredPesterVersion -Force -Scope CurrentUser'."
         exit 1
     }    # Remove any loaded Pester v3 modules
-    Get-Module -Name Pester | Where-Object { $_.Version -lt [version]'5.0.0' } | Remove-Module -Force -ErrorAction SilentlyContinue
+    Get-Module -Name Pester  Where-Object { $_.Version -lt version'5.0.0' }  Remove-Module -Force -ErrorAction SilentlyContinue
     # Import the correct Pester version - ensure 5.7.1
     Import-Module Pester -RequiredVersion 5.7.1 -Force
 }
@@ -27,8 +27,8 @@ $LabRunnerModulePath = (Resolve-Path (Join-Path $PSScriptRoot '..' '..' 'pwsh/mo
 $CodeFixerModulePath = (Resolve-Path (Join-Path $PSScriptRoot '..' '..' 'pwsh/modules/CodeFixer')).Path
 
 # Remove any previously loaded modules to avoid duplicate import errors  
-Get-Module LabRunner* | Remove-Module -Force -ErrorAction SilentlyContinue
-Get-Module CodeFixer* | Remove-Module -Force -ErrorAction SilentlyContinue
+Get-Module LabRunner*  Remove-Module -Force -ErrorAction SilentlyContinue
+Get-Module CodeFixer*  Remove-Module -Force -ErrorAction SilentlyContinue
 
 # Import the modules
 Import-Module $LabRunnerModulePath -Force
@@ -37,7 +37,7 @@ Import-Module $CodeFixerModulePath -Force
 # Ensure Get-MenuSelection is always available for tests that need it
 if (-not (Get-Command Get-MenuSelection -ErrorAction SilentlyContinue)) {
     function global:Get-MenuSelection { 
-        param([string[]]$Items, [string]$Title)
+        param(string$Items, string$Title)
     }
 }
 
@@ -57,10 +57,10 @@ function Resolve-ProjectPath {
         The project root directory
     #>
     param(
-        [Parameter(Mandatory)]
-        [string]$Name,
+        Parameter(Mandatory)
+        string$Name,
         
-        [string]$Root = (Get-Location)
+        string$Root = (Get-Location)
     )
     
     # Common path mappings within the project
@@ -76,7 +76,7 @@ function Resolve-ProjectPath {
     
     # Try direct mapping first
     if ($pathMappings.ContainsKey($Name)) {
-        $mapped = Join-Path $Root $pathMappings[$Name]
+        $mapped = Join-Path $Root $pathMappings$Name
         if (Test-Path $mapped) {
             return $mapped
         }
@@ -110,8 +110,8 @@ function Resolve-ProjectPath {
 
 function global:Get-RunnerScriptPath {
     param(
-        [Parameter(Mandatory=$true)]
-        [string]$Name
+        Parameter(Mandatory=$true)
+        string$Name
     )
     try {
         $root = (Resolve-Path (Join-Path $PSScriptRoot '../..')).Path
@@ -129,7 +129,7 @@ function global:Get-RunnerScriptPath {
 
 function global:Mock-WriteLog {
     if (-not (Get-Command Write-CustomLog -ErrorAction SilentlyContinue)) {
-        function global:Write-CustomLog { param([string]$Message,[string]$Level) }
+        function global:Write-CustomLog { param(string$Message,string$Level) }
     }
     Mock Write-CustomLog {}
 }
@@ -160,7 +160,7 @@ function global:Disable-InteractivePrompts {
     # Add Get-LabConfig mock function to resolve the missing mock issue
     if (-not (Get-Command Get-LabConfig -ErrorAction SilentlyContinue)) {
         function global:Get-LabConfig {
-            param([string]$ConfigPath = "")
+            param(string$ConfigPath = "")
             
             return @{
                 ProjectName = "TestLab"
@@ -176,7 +176,7 @@ function global:Disable-InteractivePrompts {
     # Ensure Get-CrossPlatformTempPath is available (it might be imported from different module locations)
     if (-not (Get-Command Get-CrossPlatformTempPath -ErrorAction SilentlyContinue)) {
         function global:Get-CrossPlatformTempPath {
-            if ($env:TEMP) { return $env:TEMP } else { return [System.IO.Path]::GetTempPath() }
+            if ($env:TEMP) { return $env:TEMP } else { return System.IO.Path::GetTempPath() }
         }
     }
 }
@@ -196,8 +196,8 @@ function global:New-CrossPlatformTempPath {
     .SYNOPSIS
     Creates a cross-platform temporary path for tests
     #>
-    $tempDir = if ($env:TEMP) { $env:TEMP    } else { [System.IO.Path]::GetTempPath()    }
-    return Join-Path $tempDir ([System.Guid]::NewGuid().ToString())
+    $tempDir = if ($env:TEMP) { $env:TEMP    } else { System.IO.Path::GetTempPath()    }
+    return Join-Path $tempDir (System.Guid::NewGuid().ToString())
 }
 
 function global:New-StandardMocks {
@@ -206,8 +206,8 @@ function global:New-StandardMocks {
     Creates a comprehensive set of standard mocks for cross-platform testing
     #>
     param(
-        [string[]]$IncludeMocks = @(),
-        [string]$ModuleName = $null
+        string$IncludeMocks = @(),
+        string$ModuleName = $null
     )
     
     # Only add mocks if we're in a Pester context
@@ -221,8 +221,8 @@ function global:New-StandardMocks {
                 Mock Invoke-LabDownload -ModuleName $ModuleName { 
                     param($Uri, $Prefix, $Extension, $Action)
                     
-                    $tempFile = Join-Path ([System.IO.Path]::GetTempPath()) "mock_$Prefix$Extension"
-                    New-Item -ItemType File -Path $tempFile -Force | Out-Null
+                    $tempFile = Join-Path (System.IO.Path::GetTempPath()) "mock_$Prefix$Extension"
+                    New-Item -ItemType File -Path $tempFile -Force  Out-Null
                     try { 
                         if ($Action) { & $Action $tempFile }
                     } finally { 
@@ -233,8 +233,8 @@ function global:New-StandardMocks {
                 Mock Invoke-LabDownload { 
                     param($Uri, $Prefix, $Extension, $Action)
                     
-                    $tempFile = Join-Path ([System.IO.Path]::GetTempPath()) "mock_$Prefix$Extension"
-                    New-Item -ItemType File -Path $tempFile -Force | Out-Null
+                    $tempFile = Join-Path (System.IO.Path::GetTempPath()) "mock_$Prefix$Extension"
+                    New-Item -ItemType File -Path $tempFile -Force  Out-Null
                     try { 
                         if ($Action) { & $Action $tempFile }
                     } finally { 
@@ -263,7 +263,7 @@ function global:New-StandardMocks {
         if ('Platform' -in $IncludeMocks) {
             Mock Get-Platform { if ($IsWindows) { 'Windows' } elseif ($IsLinux) { 'Linux' } else { 'macOS' } }
             Mock Get-ComputerInfo { 
-                [PSCustomObject]@{
+                PSCustomObject@{
                     OsName = 'Microsoft Windows 10'
                     OsArchitecture = 'x64'
                 }
@@ -277,7 +277,7 @@ function global:New-StandardMocks {
         if ('Windows' -in $IncludeMocks) {
             # Mock Windows-specific networking cmdlets
             Mock Get-NetIPAddress {
-                [PSCustomObject]@{
+                PSCustomObject@{
                     IPAddress = '192.168.1.100'
                     InterfaceAlias = 'Ethernet'
                 }
@@ -286,14 +286,14 @@ function global:New-StandardMocks {
             Mock Set-DnsClientServerAddress {}
             
             Mock New-NetFirewallRule {
-                [PSCustomObject]@{
+                PSCustomObject@{
                     DisplayName = 'Mock Rule'
                     Enabled = $true
                 }
             }
             
             Mock Get-NetFirewallRule {
-                [PSCustomObject]@{
+                PSCustomObject@{
                     DisplayName = 'Mock Rule'
                     Enabled = $true
                 }
@@ -302,7 +302,7 @@ function global:New-StandardMocks {
             Mock Remove-NetFirewallRule {}
             
             Mock Get-Service {
-                [PSCustomObject]@{
+                PSCustomObject@{
                     Name = 'MockService'
                     Status = 'Running'
                 }
@@ -314,7 +314,7 @@ function global:New-StandardMocks {
             
             # Mock Windows Optional Features
             Mock Get-WindowsOptionalFeature {
-                [PSCustomObject]@{
+                PSCustomObject@{
                     FeatureName = 'Microsoft-Hyper-V'
                     State = 'Enabled'
                 }
@@ -325,7 +325,7 @@ function global:New-StandardMocks {
             
             # Mock certificate cmdlets
             Mock New-SelfSignedCertificate {
-                [PSCustomObject]@{
+                PSCustomObject@{
                     Thumbprint = 'ABCD1234567890'
                     Subject = 'CN=MockCert'
                 }
@@ -343,7 +343,7 @@ function global:New-StandardMocks {
             Mock Test-WSMan {}
             Mock Enable-PSRemoting {}
             Mock Get-WSManInstance {
-                [PSCustomObject]@{
+                PSCustomObject@{
                     MaxMemoryPerShellMB = 512
                     MaxTimeoutms = 60000
                     TrustedHosts = 'localhost'
@@ -356,7 +356,7 @@ function global:New-StandardMocks {
             
             # Mock registry cmdlets
             Mock Get-ItemProperty {
-                [PSCustomObject]@{
+                PSCustomObject@{
                     fDenyTSConnections = 0
                 }
             }
@@ -371,7 +371,7 @@ function global:New-StandardMocks {
             # Mock pwsh command discovery
             Mock Get-Command {
                 if ($Name -eq 'pwsh') {
-                    return [PSCustomObject]@{
+                    return PSCustomObject@{
                         Name = 'pwsh'
                         Source = '/usr/bin/pwsh'
                         CommandType = 'Application'
@@ -385,8 +385,8 @@ function global:New-StandardMocks {
             # Mock npm and node operations
             if ($ModuleName) {
                 Mock Invoke-LabNpm -ModuleName $ModuleName {
-                    param([Parameter(ValueFromRemainingArguments = $true)]
-                    [string[]]$Args)
+                    param(Parameter(ValueFromRemainingArguments = $true)
+                    string$Args)
                     # Log the mock call for verification
                     Write-Verbose "Mock Invoke-LabNpm called with: $($Args -join ' ')"
                 }
@@ -404,8 +404,8 @@ function global:New-StandardMocks {
                 Mock Get-Process -ModuleName $ModuleName { @() }
             } else {
                 Mock Invoke-LabNpm {
-                    param([Parameter(ValueFromRemainingArguments = $true)]
-                    [string[]]$Args)
+                    param(Parameter(ValueFromRemainingArguments = $true)
+                    string$Args)
                     # Log the mock call for verification
                     Write-Verbose "Mock Invoke-LabNpm called with: $($Args -join ' ')"
                 }
@@ -434,19 +434,19 @@ function global:Invoke-RunnerScriptTest {
     Standardized way to test runner scripts with proper error handling
     #>
     param(
-        [Parameter(Mandatory)]
-        [string]$ScriptPath,
+        Parameter(Mandatory)
+        string$ScriptPath,
         
-        [Parameter(Mandatory)]
-        [object]$Config,
+        Parameter(Mandatory)
+        object$Config,
         
-        [hashtable]$Mocks = @{},
+        hashtable$Mocks = @{},
         
-        [hashtable]$ExpectedInvocations = @{},
+        hashtable$ExpectedInvocations = @{},
         
-        [switch]$ShouldThrow,
+        switch$ShouldThrow,
         
-        [string]$ExpectedError
+        string$ExpectedError
     )
     
     # Disable interactive prompts
@@ -454,15 +454,15 @@ function global:Invoke-RunnerScriptTest {
     
     # Apply custom mocks
     foreach ($mockName in $Mocks.Keys) {
-        Mock $mockName $Mocks[$mockName]
+        Mock $mockName $Mocks$mockName
     }
     
     # Execute script
     if ($ShouldThrow) {
         if ($ExpectedError) {
-            { & $ScriptPath -Config $Config } | Should -Throw "*$ExpectedError*"
+            { & $ScriptPath -Config $Config }  Should -Throw "*$ExpectedError*"
         } else {
-            { & $ScriptPath -Config $Config } | Should -Throw
+            { & $ScriptPath -Config $Config }  Should -Throw
         }
     } else {
         & $ScriptPath -Config $Config
@@ -470,7 +470,7 @@ function global:Invoke-RunnerScriptTest {
     
     # Verify expected invocations
     foreach ($funcName in $ExpectedInvocations.Keys) {
-        $expectedCount = $ExpectedInvocations[$funcName]
+        $expectedCount = $ExpectedInvocations$funcName
         if ($expectedCount -eq 0) {
             Should -Invoke -CommandName $funcName -Times 0
         } else {
@@ -508,9 +508,9 @@ function global:Get-Platform {
 # Simple admin check for test config
 function global:Test-IsAdministrator {
     if ($IsWindows) {
-        $currentIdentity = [System.Security.Principal.WindowsIdentity]::GetCurrent()
+        $currentIdentity = System.Security.Principal.WindowsIdentity::GetCurrent()
         $principal = New-Object System.Security.Principal.WindowsPrincipal($currentIdentity)
-        return $principal.IsInRole([System.Security.Principal.WindowsBuiltInRole]::Administrator)
+        return $principal.IsInRole(System.Security.Principal.WindowsBuiltInRole::Administrator)
     } else {
         return $true  # Assume admin for non-Windows test runs
     }
@@ -520,22 +520,22 @@ function global:Test-IsAdministrator {
 
 # Mock function for missing command: Format-Config
 function global:Format-Config {
-    param([Parameter(ValueFromPipeline)]
-    [object]$InputObject)
+    param(Parameter(ValueFromPipeline)
+    object$InputObject)
     if ($InputObject) { return $InputObject }
     return $true
 }
 # Mock function for missing command: Invoke-LabStep
 function global:Invoke-LabStep {
-    param([Parameter(ValueFromPipeline)]
-    [object]$InputObject)
+    param(Parameter(ValueFromPipeline)
+    object$InputObject)
     if ($InputObject) { return $InputObject }
     return $true
 }
 # Mock function for missing command: Write-Continue
 function global:Write-Continue {
-    param([Parameter(ValueFromPipeline)]
-    [object]$InputObject)
+    param(Parameter(ValueFromPipeline)
+    object$InputObject)
     if ($InputObject) { return $InputObject }
     return $true
 }
@@ -551,28 +551,28 @@ function global:Write-Continue {
 
 # Auto-generated mock for missing command: errors
 function global:errors {
-    param([Parameter(ValueFromRemainingArguments)][string[]]$Arguments)
+    param(Parameter(ValueFromRemainingArguments)string$Arguments)
     Write-Host "Mock errors called with: $Arguments" -ForegroundColor Yellow
     return $true
 }
 
 # Auto-generated mock for missing command: Format-Config
 function global:Format-Config {
-    param([Parameter(ValueFromRemainingArguments)][string[]]$Arguments)
+    param(Parameter(ValueFromRemainingArguments)string$Arguments)
     Write-Host "Mock Format-Config called with: $Arguments" -ForegroundColor Yellow
     return $true
 }
 
 # Auto-generated mock for missing command: Invoke-LabStep
 function global:Invoke-LabStep {
-    param([Parameter(ValueFromRemainingArguments)][string[]]$Arguments)
+    param(Parameter(ValueFromRemainingArguments)string$Arguments)
     Write-Host "Mock Invoke-LabStep called with: $Arguments" -ForegroundColor Yellow
     return $true
 }
 
 # Auto-generated mock for missing command: Write-Continue
 function global:Write-Continue {
-    param([Parameter(ValueFromRemainingArguments)][string[]]$Arguments)
+    param(Parameter(ValueFromRemainingArguments)string$Arguments)
     Write-Host "Mock Write-Continue called with: $Arguments" -ForegroundColor Yellow
     return $true
 }
@@ -589,8 +589,8 @@ function Get-RunnerScriptPath {
         The name of the script to find (e.g., '0007_Install-Go.ps1')
     #>
     param(
-        [Parameter(Mandatory)]
-        [string]$ScriptName
+        Parameter(Mandatory)
+        string$ScriptName
     )
     
     # Start from the project root
@@ -613,7 +613,7 @@ function Get-RunnerScriptPath {
     foreach ($searchPath in $searchPaths) {
         $fullSearchPath = Join-Path $projectRoot $searchPath
         if (Test-Path $fullSearchPath) {
-            $scriptPath = Get-ChildItem -Path $fullSearchPath -Recurse -Filter $ScriptName -File | Select-Object -First 1
+            $scriptPath = Get-ChildItem -Path $fullSearchPath -Recurse -Filter $ScriptName -File  Select-Object -First 1
             if ($scriptPath) {
                 return $scriptPath.FullName
             }
@@ -634,11 +634,11 @@ function Test-RunnerScriptName {
         The path to the script file
     #>
     param(
-        [Parameter(Mandatory)]
-        [string]$ScriptPath
+        Parameter(Mandatory)
+        string$ScriptPath
     )
     
-    $scriptName = [System.IO.Path]::GetFileName($ScriptPath)
+    $scriptName = System.IO.Path::GetFileName($ScriptPath)
     
     # Check for .ps1 extension first
     if (-not $scriptName.EndsWith('.ps1')) {
@@ -651,7 +651,7 @@ function Test-RunnerScriptName {
     }
     
     # Check for special characters
-    if ($scriptName -match '[^a-zA-Z0-9_.-]') {
+    if ($scriptName -match '^a-zA-Z0-9_.-') {
         throw "Invalid characters: Only alphanumeric, underscore, dash, and dot allowed"
     }
     
@@ -671,8 +671,8 @@ function Test-RunnerScriptSafety {
         The path to the script file
     #>
     param(
-        [Parameter(Mandatory)]
-        [string]$ScriptPath
+        Parameter(Mandatory)
+        string$ScriptPath
     )
     
     if (-not (Test-Path $ScriptPath)) {
@@ -699,10 +699,10 @@ function Test-RunnerScriptSafety {
     }
       # Check for hardcoded credentials
     $credentialPatterns = @(
-        'password\s*=\s*["''][^"'']+["'']',
-        'apikey\s*=\s*["''][^"'']+["'']',
+        'password\s*=\s*"''^"''+"''',
+        'apikey\s*=\s*"''^"''+"''',
         'connectionstring.*password=',
-        'secret\s*=\s*["''][^"'']+["'']'
+        'secret\s*=\s*"''^"''+"'''
     )
     
     foreach ($pattern in $credentialPatterns) {
@@ -737,8 +737,8 @@ function Test-RunnerScriptSyntax {
         The path to the script file
     #>
     param(
-        [Parameter(Mandatory)]
-        [string]$ScriptPath
+        Parameter(Mandatory)
+        string$ScriptPath
     )
     
     if (-not (Test-Path $ScriptPath)) {
@@ -753,7 +753,7 @@ function Test-RunnerScriptSyntax {
     $tokens = $null
     
     try {
-        [System.Management.Automation.Language.Parser]::ParseFile($ScriptPath, [ref]$tokens, [ref]$errors) | Out-Null
+        System.Management.Automation.Language.Parser::ParseFile($ScriptPath, ref$tokens, ref$errors)  Out-Null
         
         return @{
             HasErrors = ($errors.Count -gt 0)
@@ -777,8 +777,8 @@ function Test-RunnerScriptEncoding {
         The path to the script file
     #>
     param(
-        [Parameter(Mandatory)]
-        [string]$ScriptPath
+        Parameter(Mandatory)
+        string$ScriptPath
     )
     
     if (-not (Test-Path $ScriptPath)) {
@@ -790,7 +790,7 @@ function Test-RunnerScriptEncoding {
         $content = Get-Content $ScriptPath -Encoding UTF8 -Raw
         
         # Check for invalid UTF-8 sequences or non-printable characters
-        if ($content -match '[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]') {
+        if ($content -match '\x00-\x08\x0B\x0C\x0E-\x1F\x7F') {
             throw "Invalid encoding: Contains non-printable characters"
         }
         
@@ -808,8 +808,8 @@ function Test-RunnerScriptSize {
         The path to the script file
     #>
     param(
-        [Parameter(Mandatory)]
-        [string]$ScriptPath
+        Parameter(Mandatory)
+        string$ScriptPath
     )
     
     if (-not (Test-Path $ScriptPath)) {
@@ -834,7 +834,7 @@ function Get-TestConfiguration {
         Gets test configuration settings
     #>
     
-    return [PSCustomObject]@{
+    return PSCustomObject@{
         TempPath = $env:TEMP
         TestTimeout = 300  # 5 minutes
         MockWebRequests = $true
@@ -851,8 +851,8 @@ function Test-IsAdministrator {
     #>
     
     if ($IsWindows -or (-not $IsLinux -and -not $IsMacOS)) {
-        $currentPrincipal = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
-        return $currentPrincipal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
+        $currentPrincipal = New-Object Security.Principal.WindowsPrincipal(Security.Principal.WindowsIdentity::GetCurrent())
+        return $currentPrincipal.IsInRole(Security.Principal.WindowsBuiltInRole::Administrator)
     } else {
         return (id -u) -eq 0
     }
@@ -865,13 +865,13 @@ function Disable-InteractivePrompts {
     #>
     
     # Mock common interactive functions
-    if (-not (Get-Command Read-Host -ErrorAction SilentlyContinue | Where-Object { $_.CommandType -eq 'Function' })) {
-        function global:Read-Host { param([string]$Prompt) return "test-input" }
+    if (-not (Get-Command Read-Host -ErrorAction SilentlyContinue  Where-Object { $_.CommandType -eq 'Function' })) {
+        function global:Read-Host { param(string$Prompt) return "test-input" }
     }
     
-    if (-not (Get-Command Get-Credential -ErrorAction SilentlyContinue | Where-Object { $_.CommandType -eq 'Function' })) {
+    if (-not (Get-Command Get-Credential -ErrorAction SilentlyContinue  Where-Object { $_.CommandType -eq 'Function' })) {
         function global:Get-Credential { 
-            param([string]$Message, [string]$UserName) 
+            param(string$Message, string$UserName) 
             $securePassword = ConvertTo-SecureString "test-password" -AsPlainText -Force
             return New-Object System.Management.Automation.PSCredential("test-user", $securePassword)
         }
@@ -908,8 +908,8 @@ function Test-RunnerScriptParameters {
         The path to the script file
     #>
     param(
-        [Parameter(Mandatory)]
-        [string]$ScriptPath
+        Parameter(Mandatory)
+        string$ScriptPath
     )
     
     if (-not (Test-Path $ScriptPath)) {
@@ -917,11 +917,11 @@ function Test-RunnerScriptParameters {
     }
     
     $content = Get-Content $ScriptPath -Raw
-    $ast = [System.Management.Automation.Language.Parser]::ParseInput($content, [ref]$null, [ref]$null)
+    $ast = System.Management.Automation.Language.Parser::ParseInput($content, ref$null, ref$null)
     
     # Find parameter blocks
     $paramBlocks = $ast.FindAll({
-        $args[0] -is [System.Management.Automation.Language.ParamBlockAst]
+        $args0 -is System.Management.Automation.Language.ParamBlockAst
     }, $false)
     
     $issues = @()
@@ -962,8 +962,8 @@ function Test-RunnerScriptConfiguration {
         The path to the script file
     #>
     param(
-        [Parameter(Mandatory)]
-        [string]$ScriptPath
+        Parameter(Mandatory)
+        string$ScriptPath
     )
     
     if (-not (Test-Path $ScriptPath)) {
@@ -1000,10 +1000,10 @@ function Invoke-RunnerScriptAutoFix {
         The type of fix to apply
     #>
     param(
-        [Parameter(Mandatory)]
-        [string]$ScriptPath,
+        Parameter(Mandatory)
+        string$ScriptPath,
         
-        [string]$FixType = "All"
+        string$FixType = "All"
     )
     
     if (-not (Test-Path $ScriptPath)) {
@@ -1017,7 +1017,7 @@ function Invoke-RunnerScriptAutoFix {
     # Fix common syntax errors
     if ($FixType -eq "All" -or $FixType -eq "Syntax") {
         # Fix missing closing braces
-        $braceCount = ($content.ToCharArray() | Where-Object { $_ -eq '{' }).Count - ($content.ToCharArray() | Where-Object { $_ -eq '}' }).Count
+        $braceCount = ($content.ToCharArray()  Where-Object { $_ -eq '{' }).Count - ($content.ToCharArray()  Where-Object { $_ -eq '}' }).Count
         if ($braceCount -gt 0) {
             $content += "`n" + ("}" * $braceCount)
             $fixesApplied += "Added $braceCount missing closing braces"
@@ -1033,7 +1033,7 @@ function Invoke-RunnerScriptAutoFix {
     # Add missing parameter blocks
     if ($FixType -eq "All" -or $FixType -eq "Parameters") {
         if (-not ($content -match 'Param\s*\(')) {
-            $content = "Param([object]`$Config)`n`n$content"
+            $content = "Param(object`$Config)`n`n$content"
             $fixesApplied += "Added missing parameter block"
         }
     }
@@ -1072,8 +1072,8 @@ function Invoke-CodeFixerOnRunnerScript {
         The path to the script file
     #>
     param(
-        [Parameter(Mandatory)]
-        [string]$ScriptPath
+        Parameter(Mandatory)
+        string$ScriptPath
     )
     
     try {
@@ -1116,8 +1116,8 @@ function Invoke-RunnerScriptDeploymentValidation {
         The path to the script file
     #>
     param(
-        [Parameter(Mandatory)]
-        [string]$ScriptPath
+        Parameter(Mandatory)
+        string$ScriptPath
     )
     
     # Combine all validation checks
@@ -1158,8 +1158,8 @@ function Test-RunnerScriptDeployment {
         The path to the script file
     #>
     param(
-        [Parameter(Mandatory)]
-        [string]$ScriptPath
+        Parameter(Mandatory)
+        string$ScriptPath
     )
     
     if (-not (Test-Path $ScriptPath)) {

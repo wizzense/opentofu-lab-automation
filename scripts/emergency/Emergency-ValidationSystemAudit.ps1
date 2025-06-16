@@ -13,11 +13,11 @@
 #>
 
 param(
-    [Parameter(Mandatory = $false)]
-    [switch]$DetailedReport,
+    Parameter(Mandatory = $false)
+    switch$DetailedReport,
     
-    [Parameter(Mandatory = $false)]
-    [switch]$GenerateReport
+    Parameter(Mandatory = $false)
+    switch$GenerateReport
 )
 
 $ErrorActionPreference = "Continue"
@@ -41,10 +41,10 @@ $fileList = Get-ChildItem -Path "." -Recurse -Include "*.ps1"
 
 # Pattern 1: Detect repeated -Force parameters
 Write-Host "`n PATTERN 1: Repeated -Force Parameters" -ForegroundColor Cyan
-$forcePattern = $fileList | ForEach-Object {
+$forcePattern = $fileList  ForEach-Object {
     $content = Get-Content $_.FullName -Raw -ErrorAction SilentlyContinue
     if ($content -match '-Force\s+-Force') {
-        $forceCount = ($content | Select-String '-Force' -AllMatches).Matches.Count
+        $forceCount = ($content  Select-String '-Force' -AllMatches).Matches.Count
         $AuditResults.TotalFilesScanned++
         
         $corruption = @{
@@ -52,7 +52,7 @@ $forcePattern = $fileList | ForEach-Object {
             Type = "RepeatedForceParameters"
             ForceCount = $forceCount
             Severity = if ($forceCount -gt 10) { "CRITICAL" } elseif ($forceCount -gt 5) { "HIGH" } else { "MEDIUM" }
-            SampleLine = ($content -split "`n" | Where-Object { $_ -match '-Force.*-Force' } | Select-Object -First 1)
+            SampleLine = ($content -split "`n"  Where-Object { $_ -match '-Force.*-Force' }  Select-Object -First 1)
         }
         
         $AuditResults.CorruptedFiles += $corruption
@@ -64,14 +64,14 @@ Write-Host "   Found $($forcePattern.Count) files with repeated -Force parameter
 
 # Pattern 2: Detect malformed paths with excessive slashes
 Write-Host "`n PATTERN 2: Malformed Import Paths" -ForegroundColor Cyan
-$pathPattern = Get-ChildItem -Path "." -Recurse -Include "*.ps1" | ForEach-Object {
+$pathPattern = Get-ChildItem -Path "." -Recurse -Include "*.ps1"  ForEach-Object {
     $content = Get-Content $_.FullName -Raw -ErrorAction SilentlyContinue
-    if ($content -match '/.*/|C:\\.*\') {
+    if ($content -match '/.*/C:\\.*\') {
         $corruption = @{
             File = $_.FullName
             Type = "MalformedPaths"
             Severity = "HIGH"
-            SampleLine = ($content -split "`n" | Where-Object { $_ -match '/.*/|C:\\.*/|Import-Module.*/.*\.*' } | Select-Object -First 1)
+            SampleLine = ($content -split "`n"  Where-Object { $_ -match '/.*/C:\\.*/Import-Module.*/.*\.*' }  Select-Object -First 1)
         }
         
         $AuditResults.CorruptedFiles += $corruption
@@ -83,13 +83,13 @@ Write-Host "   Found $($pathPattern.Count) files with malformed paths" -Foregrou
 
 # Pattern 3: Detect Import-Module statements with 20+ Force parameters
 Write-Host "`n PATTERN 3: Catastrophic Import Statements" -ForegroundColor Cyan
-$catastrophicImports = Get-ChildItem -Path "." -Recurse -Include "*.ps1" | ForEach-Object {
+$catastrophicImports = Get-ChildItem -Path "." -Recurse -Include "*.ps1"  ForEach-Object {
     $content = Get-Content $_.FullName -Raw -ErrorAction SilentlyContinue
-    $importLines = $content -split "`n" | Where-Object { $_ -match 'Import-Module.*(-Force\s*){20,}' }
+    $importLines = $content -split "`n"  Where-Object { $_ -match 'Import-Module.*(-Force\s*){20,}' }
     
     if ($importLines) {
         foreach ($line in $importLines) {
-            $forceCount = ($line | Select-String '-Force' -AllMatches).Matches.Count
+            $forceCount = ($line  Select-String '-Force' -AllMatches).Matches.Count
             $corruption = @{
                 File = $_.FullName
                 Type = "CatastrophicImport"
@@ -124,8 +124,8 @@ foreach ($script in $validationScripts) {
         
         $failure = @{
             Script = $script
-            HasForceDetection = $content -match 'Force.*Force|repeated.*Force'
-            HasPathValidation = $content -match 'path.*validation|malformed.*path'
+            HasForceDetection = $content -match 'Force.*Forcerepeated.*Force'
+            HasPathValidation = $content -match 'path.*validationmalformed.*path'
             HasImportValidation = $content -match 'Import-Module.*validation'
             LastModified = (Get-Item $script).LastWriteTime
         }
@@ -143,7 +143,7 @@ foreach ($script in $validationScripts) {
 
 # Generate severity statistics
 Write-Host "`n CORRUPTION SEVERITY ANALYSIS" -ForegroundColor Cyan
-$severityGroups = $AuditResults.CorruptedFiles | Group-Object Severity
+$severityGroups = $AuditResults.CorruptedFiles  Group-Object Severity
 foreach ($group in $severityGroups) {
     Write-Host "   $($group.Name): $($group.Count) files" -ForegroundColor $(
         switch ($group.Name) {
@@ -157,9 +157,9 @@ foreach ($group in $severityGroups) {
 
 # Find the worst affected files
 Write-Host "`n TOP 10 MOST CORRUPTED FILES" -ForegroundColor Red
-$worstFiles = $AuditResults.CorruptedFiles | 
-    Where-Object { $_.ForceCount } | 
-    Sort-Object ForceCount -Descending | 
+$worstFiles = $AuditResults.CorruptedFiles  
+    Where-Object { $_.ForceCount }  
+    Sort-Object ForceCount -Descending  
     Select-Object -First 10
 
 foreach ($file in $worstFiles) {
@@ -169,12 +169,12 @@ foreach ($file in $worstFiles) {
 
 # Critical findings summary
 $AuditResults.CriticalFindings = @(
-    "[FAIL] $($forcePattern.Count) files with repeated -Force parameters",
-    "[FAIL] $($pathPattern.Count) files with malformed paths", 
-    "[FAIL] $($catastrophicImports.Count) catastrophic import statements",
-    "[FAIL] Validation systems lack proper pattern detection",
-    "[FAIL] No automated corruption prevention in place",
-    "[FAIL] Auto-fix systems are actively making problems WORSE"
+    "FAIL $($forcePattern.Count) files with repeated -Force parameters",
+    "FAIL $($pathPattern.Count) files with malformed paths", 
+    "FAIL $($catastrophicImports.Count) catastrophic import statements",
+    "FAIL Validation systems lack proper pattern detection",
+    "FAIL No automated corruption prevention in place",
+    "FAIL Auto-fix systems are actively making problems WORSE"
 )
 
 Write-Host "`n� CRITICAL FINDINGS SUMMARY" -ForegroundColor Red
@@ -215,13 +215,13 @@ Generated: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')
 - **Catastrophic Imports**: $($catastrophicImports.Count) files
 
 ## Critical Findings
-$($AuditResults.CriticalFindings | ForEach-Object { "- $_" } | Out-String)
+$($AuditResults.CriticalFindings  ForEach-Object { "- $_" }  Out-String)
 
 ## Systemic Issues
-$($AuditResults.SystemicIssues | ForEach-Object { "- $_" } | Out-String)
+$($AuditResults.SystemicIssues  ForEach-Object { "- $_" }  Out-String)
 
 ## Worst Affected Files
-$($worstFiles | ForEach-Object { "- $($_.File): $($_.ForceCount) -Force parameters" } | Out-String)
+$($worstFiles  ForEach-Object { "- $($_.File): $($_.ForceCount) -Force parameters" }  Out-String)
 
 ## Required Actions
 1. **IMMEDIATE**: Stop all auto-fix operations
@@ -230,9 +230,9 @@ $($worstFiles | ForEach-Object { "- $($_.File): $($_.ForceCount) -Force paramete
 4. **ESSENTIAL**: Rebuild validation systems with safeguards
 
 ## Validation System Status
-$($AuditResults.ValidationSystemFailures | ForEach-Object { 
+$($AuditResults.ValidationSystemFailures  ForEach-Object { 
     "- $($_.Script): Force detection: $($_.HasForceDetection), Path validation: $($_.HasPathValidation)"
-} | Out-String)
+}  Out-String)
 "@
 
     Set-Content -Path $reportPath -Value $reportContent

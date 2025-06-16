@@ -3,8 +3,8 @@ name: Workflow Health Monitor
 
 on:
  workflow_run:
- workflows: ["Pester Tests - Windows", "Pester Tests - Linux", "Lint"]
- types: [completed]
+ workflows: "Pester Tests - Windows", "Pester Tests - Linux", "Lint"
+ types: completed
  schedule:
  # Run daily at 6 AM UTC
  - cron: '0 6 * * *'
@@ -26,7 +26,7 @@ jobs:
  id: health
  uses: actions/github-script@v7
  with:
- script: |
+ script: 
  const { owner, repo } = context.repo;
 
  // Get recent workflow runs (last 50)
@@ -47,8 +47,8 @@ jobs:
 
  for (const run of recentRuns) {
  const workflowName = run.name;
- if (!workflowStats[workflowName]) {
- workflowStats[workflowName] = {
+ if (!workflowStatsworkflowName) {
+ workflowStatsworkflowName = {
  total: 0,
  success: 0,
  failure: 0,
@@ -56,13 +56,13 @@ jobs:
  };
  }
 
- workflowStats[workflowName].total++;
+ workflowStatsworkflowName.total++;
  if (run.conclusion === 'success') {
- workflowStats[workflowName].success++;
+ workflowStatsworkflowName.success++;
  } else if (run.conclusion === 'failure') {
- workflowStats[workflowName].failure++;
+ workflowStatsworkflowName.failure++;
  } else if (run.conclusion === 'cancelled') {
- workflowStats[workflowName].cancelled++;
+ workflowStatsworkflowName.cancelled++;
  }
  }
 
@@ -71,14 +71,14 @@ jobs:
  timestamp: new Date().toISOString(),
  overallHealth: 'good',
  workflows: {},
- issues: []
+ issues: 
  };
 
- for (const [workflowName, stats] of Object.entries(workflowStats)) {
+ for (const workflowName, stats of Object.entries(workflowStats)) {
  const successRate = stats.total > 0 ? (stats.success / stats.total) * 100 : 0;
  const failureRate = stats.total > 0 ? (stats.failure / stats.total) * 100 : 0;
 
- healthReport.workflows[workflowName] = {
+ healthReport.workflowsworkflowName = {
  total: stats.total,
  success: stats.success,
  failure: stats.failure,
@@ -148,7 +148,7 @@ jobs:
 
 
  - name: Create health report artifact
- run: |
+ run: 
  mkdir -p reports/workflow-health
  echo '${{ steps.health.outputs.health_report }}' > reports/workflow-health/health-report-$(date +%Y%m%d-%H%M%S).json
  echo '${{ steps.health.outputs.health_report }}' > reports/workflow-health/latest-health-report.json
@@ -157,7 +157,7 @@ jobs:
  if: steps.health.outputs.critical_issues > 0
  uses: actions/github-script@v7
  with:
- script: |
+ script: 
  const healthReport = JSON.parse('${{ steps.health.outputs.health_report }}');
  const criticalIssues = healthReport.issues.filter(i => i.severity === 'critical');
 
@@ -187,15 +187,15 @@ jobs:
  body += '- **Details:** ' + issue.details + '\n';
  }
  if (issue.runId) {
- body += '- **Failed Run:** [ # ' + issue.runId + '](https://github.com/' + context.repo.owner + '/' + context.repo.repo + '/actions/runs/' + issue.runId + ')\n';
+ body += '- **Failed Run:**  # ' + issue.runId + '(https://github.com/' + context.repo.owner + '/' + context.repo.repo + '/actions/runs/' + issue.runId + ')\n';
  }
  body += '\n';
  }
  body += ' # # All Workflows Status\n\n';
- body += '| Workflow | Total Runs | Success Rate | Failure Rate |\n';
- body += '|----------|------------|--------------|---------------|\n';
- for (const [name, stats] of Object.entries(healthReport.workflows)) {
- body += '| ' + name + ' | ' + stats.total + ' | ' + stats.successRate + '% | ' + stats.failureRate + '% |\n';
+ body += ' Workflow  Total Runs  Success Rate  Failure Rate \n';
+ body += '---------------------------------------------------\n';
+ for (const name, stats of Object.entries(healthReport.workflows)) {
+ body += ' ' + name + '  ' + stats.total + '  ' + stats.successRate + '%  ' + stats.failureRate + '% \n';
  }
  body += '\n # # Recommended Actions\n\n';
  if (criticalIssues.some(i => i.type === 'powershell_syntax_error')) {
@@ -215,7 +215,7 @@ jobs:
  await github.rest.issues.update({
  owner: context.repo.owner,
  repo: context.repo.repo,
- issue_number: existingIssues.data[0].number,
+ issue_number: existingIssues.data0.number,
  body: body
  });
  } else {
@@ -223,9 +223,9 @@ jobs:
  await github.rest.issues.create({
  owner: context.repo.owner,
  repo: context.repo.repo,
- title: ' Critical Workflow Health Issues - ' + new Date().toISOString().split('T')[0],
+ title: ' Critical Workflow Health Issues - ' + new Date().toISOString().split('T')0,
  body: body,
- labels: ['workflow-health', 'critical', 'automation']
+ labels: 'workflow-health', 'critical', 'automation'
  });
  }
 

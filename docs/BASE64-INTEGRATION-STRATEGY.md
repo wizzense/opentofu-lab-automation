@@ -40,9 +40,9 @@ $encodedScript = ./pwsh/CrossPlatformExecutor.ps1 -Action encode -ScriptPath "./
 ```powershell
 function Invoke-ScriptSafely {
     param(
-        [string]$ScriptPath,
-        [hashtable]$Parameters = @{},
-        [switch]$ValidateOnly
+        string$ScriptPath,
+        hashtable$Parameters = @{},
+        switch$ValidateOnly
     )
     
     $executor = "$PSScriptRoot/../pwsh/CrossPlatformExecutor.ps1"
@@ -51,7 +51,7 @@ function Invoke-ScriptSafely {
         & $executor -Action validate -ScriptPath $ScriptPath -Parameters $Parameters
     } else {
         $encoded = & $executor -Action encode -ScriptPath $ScriptPath -Parameters $Parameters -CI
-        $result = $encoded | ConvertFrom-Json
+        $result = $encoded  ConvertFrom-Json
         & $executor -Action execute -EncodedScript $result.EncodedScript -CI
     }
 }
@@ -85,7 +85,7 @@ function Invoke-ScriptSafely {
 ```powershell
 # Add to CodeFixer module
 function Invoke-PowerShellLintSafe {
-    param([string[]]$Files, [switch]$AutoFix)
+    param(string$Files, switch$AutoFix)
     
     # Use base64 execution for complex linting operations
     $lintScript = "$PSScriptRoot/../../scripts/linting/comprehensive-lint.ps1"
@@ -112,14 +112,14 @@ function Invoke-PowerShellLintSafe {
 **New Functions:**
 ```powershell
 function Invoke-TestSafely {
-    param([string]$TestPath, [hashtable]$Parameters = @{})
+    param(string$TestPath, hashtable$Parameters = @{})
     
     # Execute tests using base64 encoding
     Invoke-ScriptSafely -ScriptPath $TestPath -Parameters $Parameters
 }
 
 function Test-ScriptSyntaxSafely {
-    param([string]$ScriptPath)
+    param(string$ScriptPath)
     
     # Validate syntax using base64 approach
     Invoke-ScriptSafely -ScriptPath $ScriptPath -ValidateOnly
@@ -140,10 +140,10 @@ function Test-ScriptSyntaxSafely {
 ```yaml
 - name: "Execute Maintenance Scripts Safely"
   shell: pwsh
-  run: |
+  run: 
     $executor = "./pwsh/CrossPlatformExecutor.ps1"
     $encoded = & $executor -Action encode -ScriptPath "./scripts/maintenance/unified-maintenance.ps1" -Parameters @{Mode="All"; AutoFix=$true} -CI
-    $result = $encoded | ConvertFrom-Json
+    $result = $encoded  ConvertFrom-Json
     & $executor -Action execute -EncodedScript $result.EncodedScript -CI
 ```
 
@@ -158,14 +158,14 @@ function Test-ScriptSyntaxSafely {
 #### 5.1 Intelligent Script Caching
 ```powershell
 function Get-CachedEncodedScript {
-    param([string]$ScriptPath, [hashtable]$Parameters = @{})
+    param(string$ScriptPath, hashtable$Parameters = @{})
     
-    $cacheKey = Get-FileHash $ScriptPath | Select-Object -ExpandProperty Hash
+    $cacheKey = Get-FileHash $ScriptPath  Select-Object -ExpandProperty Hash
     $cacheFile = "$env:TEMP/ps-cache-$cacheKey.txt"
     
     if (Test-Path $cacheFile) {
-        $cached = Get-Content $cacheFile | ConvertFrom-Json
-        if ($cached.Parameters -eq ($Parameters | ConvertTo-Json)) {
+        $cached = Get-Content $cacheFile  ConvertFrom-Json
+        if ($cached.Parameters -eq ($Parameters  ConvertTo-Json)) {
             return $cached.EncodedScript
         }
     }
@@ -174,9 +174,9 @@ function Get-CachedEncodedScript {
     $encoded = Invoke-ScriptSafely -ScriptPath $ScriptPath -Parameters $Parameters -ValidateOnly
     @{
         EncodedScript = $encoded
-        Parameters = ($Parameters | ConvertTo-Json)
+        Parameters = ($Parameters  ConvertTo-Json)
         Timestamp = Get-Date
-    } | ConvertTo-Json | Set-Content $cacheFile
+    }  ConvertTo-Json  Set-Content $cacheFile
     
     return $encoded
 }
@@ -186,9 +186,9 @@ function Get-CachedEncodedScript {
 ```powershell
 function Invoke-ScriptWithRollback {
     param(
-        [string]$ScriptPath,
-        [hashtable]$Parameters = @{},
-        [scriptblock]$RollbackAction
+        string$ScriptPath,
+        hashtable$Parameters = @{},
+        scriptblock$RollbackAction
     )
     
     $backupState = Get-ProjectState
@@ -255,27 +255,27 @@ function Invoke-ScriptWithRollback {
 ## Migration Plan
 
 ### Week 1: Core Infrastructure
-- [ ] Fix infrastructure-health-check.ps1 using base64
-- [ ] Update unified-maintenance.ps1 integration
-- [ ] Create base64 wrapper functions
-- [ ] Test core functionality
+-   Fix infrastructure-health-check.ps1 using base64
+-   Update unified-maintenance.ps1 integration
+-   Create base64 wrapper functions
+-   Test core functionality
 
 ### Week 2: Maintenance Scripts
-- [ ] Migrate all scripts in /scripts/maintenance/
-- [ ] Update LabRunner module integration
-- [ ] Enhance error handling and logging
-- [ ] Test maintenance workflows
+-   Migrate all scripts in /scripts/maintenance/
+-   Update LabRunner module integration
+-   Enhance error handling and logging
+-   Test maintenance workflows
 
 ### Week 3: Test Framework
-- [ ] Migrate Pester test execution
-- [ ] Update TestHelpers.ps1 functions
-- [ ] Enhance test validation
-- [ ] Test complete test suite
+-   Migrate Pester test execution
+-   Update TestHelpers.ps1 functions
+-   Enhance test validation
+-   Test complete test suite
 
 ### Week 4: CI/CD and Advanced Features
-- [ ] Update GitHub Actions workflows
-- [ ] Implement caching system
-- [ ] Add rollback capabilities
-- [ ] Performance optimization
+-   Update GitHub Actions workflows
+-   Implement caching system
+-   Add rollback capabilities
+-   Performance optimization
 
 This strategy will eliminate the root causes of syntax and encoding issues while providing a robust foundation for future enhancements.

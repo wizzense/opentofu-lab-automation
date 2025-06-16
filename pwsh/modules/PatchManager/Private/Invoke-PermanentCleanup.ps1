@@ -31,20 +31,20 @@
 #>
 
 function Invoke-PermanentCleanup {
-    [CmdletBinding(SupportsShouldProcess)]
+    CmdletBinding(SupportsShouldProcess)
     param(
-        [Parameter(Mandatory = $true)]
-        [ValidateSet('OldBackups', 'TempFiles', 'LogFiles', 'DuplicateFiles', 'EmptyDirectories', 'All')]
-        [string[]]$CleanupTargets,
+        Parameter(Mandatory = $true)
+        ValidateSet('OldBackups', 'TempFiles', 'LogFiles', 'DuplicateFiles', 'EmptyDirectories', 'All')
+        string$CleanupTargets,
         
-        [Parameter(Mandatory = $false)]
-        [int]$AgeThresholdDays = 30,
+        Parameter(Mandatory = $false)
+        int$AgeThresholdDays = 30,
         
-        [Parameter(Mandatory = $false)]
-        [switch]$DryRun,
+        Parameter(Mandatory = $false)
+        switch$DryRun,
         
-        [Parameter(Mandatory = $false)]
-        [switch]$Force
+        Parameter(Mandatory = $false)
+        switch$Force
     )
     
     begin {
@@ -65,7 +65,7 @@ function Invoke-PermanentCleanup {
         # Logging function
         if (-not (Get-Command "Write-CustomLog" -ErrorAction SilentlyContinue)) {
             function Write-CustomLog {
-                param([string]$Message, [string]$Level = "INFO")
+                param(string$Message, string$Level = "INFO")
                 $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
                 $color = switch ($Level) {
                     "ERROR" { "Red" }
@@ -74,7 +74,7 @@ function Invoke-PermanentCleanup {
                     "DEBUG" { "Cyan" }
                     default { "White" }
                 }
-                Write-Host "[$timestamp] [PatchManager] [$Level] $Message" -ForegroundColor $color
+                Write-Host "$timestamp PatchManager $Level $Message" -ForegroundColor $color
             }
         }
         
@@ -142,11 +142,11 @@ function Invoke-PermanentCleanup {
             }
             
             # Summary
-            $sizeMB = [math]::Round($totalSizeFound / 1MB, 2)
+            $sizeMB = math::Round($totalSizeFound / 1MB, 2)
             if ($DryRun) {
                 Write-CustomLog "DRY RUN SUMMARY: Found $totalFilesFound files ($sizeMB MB) that would be deleted" "INFO"
             } else {
-                $freedMB = [math]::Round($script:CleanupResults.SpaceSaved / 1MB, 2)
+                $freedMB = math::Round($script:CleanupResults.SpaceSaved / 1MB, 2)
                 Write-CustomLog "CLEANUP SUMMARY: Deleted $($script:CleanupResults.FilesDeleted) files ($freedMB MB freed)" "INFO"
             }
             
@@ -155,7 +155,7 @@ function Invoke-PermanentCleanup {
             $script:CleanupResults.Duration = $script:CleanupResults.EndTime - $script:CleanupResults.StartTime
             
             $manifestPath = "cleanup-manifest-$(Get-Date -Format 'yyyyMMdd-HHmmss').json"
-            $script:CleanupResults | ConvertTo-Json -Depth 4 | Set-Content -Path $manifestPath -Encoding UTF8
+            $script:CleanupResults  ConvertTo-Json -Depth 4  Set-Content -Path $manifestPath -Encoding UTF8
             Write-CustomLog "Created cleanup manifest: $manifestPath" "INFO"
             
             return $script:CleanupResults
@@ -169,23 +169,23 @@ function Invoke-PermanentCleanup {
 
 # Helper functions for specific cleanup operations
 function Invoke-OldBackupCleanup {
-    param($CutoffDate, [switch]$DryRun, [switch]$Force)
+    param($CutoffDate, switch$DryRun, switch$Force)
     
     $patterns = $script:CleanupPatterns.OldBackups
     $files = @()
     
     foreach ($pattern in $patterns) {
-        $foundFiles = Get-ChildItem -Path "." -Recurse -File -Filter $pattern -ErrorAction SilentlyContinue |
+        $foundFiles = Get-ChildItem -Path "." -Recurse -File -Filter $pattern -ErrorAction SilentlyContinue 
             Where-Object { $_.LastWriteTime -lt $CutoffDate }
         $files += $foundFiles
     }
     
-    $totalSize = ($files | Measure-Object Length -Sum).Sum ?? 0
+    $totalSize = ($files  Measure-Object Length -Sum).Sum ?? 0
     
     if (-not $DryRun -and $files.Count -gt 0) {
         if (-not $Force) {
             $confirmation = Read-Host "Delete $($files.Count) old backup files? (y/N)"
-            if ($confirmation -notmatch '^[Yy]') {
+            if ($confirmation -notmatch '^Yy') {
                 Write-CustomLog "Skipped old backup cleanup" "INFO"
                 return @{ Target = "OldBackups"; FilesFound = $files.Count; SizeFound = $totalSize; FilesDeleted = 0; SpaceFreed = 0 }
             }
@@ -208,18 +208,18 @@ function Invoke-OldBackupCleanup {
 }
 
 function Invoke-TempFileCleanup {
-    param($CutoffDate, [switch]$DryRun, [switch]$Force)
+    param($CutoffDate, switch$DryRun, switch$Force)
     
     $patterns = $script:CleanupPatterns.TempFiles
     $files = @()
     
     foreach ($pattern in $patterns) {
-        $foundFiles = Get-ChildItem -Path "." -Recurse -File -Filter $pattern -ErrorAction SilentlyContinue |
+        $foundFiles = Get-ChildItem -Path "." -Recurse -File -Filter $pattern -ErrorAction SilentlyContinue 
             Where-Object { $_.LastWriteTime -lt $CutoffDate }
         $files += $foundFiles
     }
     
-    $totalSize = ($files | Measure-Object Length -Sum).Sum ?? 0
+    $totalSize = ($files  Measure-Object Length -Sum).Sum ?? 0
     
     if (-not $DryRun -and $files.Count -gt 0) {
         $deleted = 0
@@ -239,23 +239,23 @@ function Invoke-TempFileCleanup {
 }
 
 function Invoke-LogFileCleanup {
-    param($CutoffDate, [switch]$DryRun, [switch]$Force)
+    param($CutoffDate, switch$DryRun, switch$Force)
     
     $patterns = $script:CleanupPatterns.LogFiles
     $files = @()
     
     foreach ($pattern in $patterns) {
-        $foundFiles = Get-ChildItem -Path "." -Recurse -File -Filter $pattern -ErrorAction SilentlyContinue |
+        $foundFiles = Get-ChildItem -Path "." -Recurse -File -Filter $pattern -ErrorAction SilentlyContinue 
             Where-Object { $_.LastWriteTime -lt $CutoffDate }
         $files += $foundFiles
     }
     
-    $totalSize = ($files | Measure-Object Length -Sum).Sum ?? 0
+    $totalSize = ($files  Measure-Object Length -Sum).Sum ?? 0
     
     if (-not $DryRun -and $files.Count -gt 0) {
         if (-not $Force) {
             $confirmation = Read-Host "Delete $($files.Count) old log files? (y/N)"
-            if ($confirmation -notmatch '^[Yy]') {
+            if ($confirmation -notmatch '^Yy') {
                 Write-CustomLog "Skipped log file cleanup" "INFO"
                 return @{ Target = "LogFiles"; FilesFound = $files.Count; SizeFound = $totalSize; FilesDeleted = 0; SpaceFreed = 0 }
             }
@@ -278,7 +278,7 @@ function Invoke-LogFileCleanup {
 }
 
 function Invoke-DuplicateFileCleanup {
-    param([switch]$DryRun, [switch]$Force)
+    param(switch$DryRun, switch$Force)
     
     # Simple duplicate detection by name patterns
     $patterns = $script:CleanupPatterns.DuplicateFiles
@@ -289,12 +289,12 @@ function Invoke-DuplicateFileCleanup {
         $files += $foundFiles
     }
     
-    $totalSize = ($files | Measure-Object Length -Sum).Sum ?? 0
+    $totalSize = ($files  Measure-Object Length -Sum).Sum ?? 0
     
     if (-not $DryRun -and $files.Count -gt 0) {
         if (-not $Force) {
             $confirmation = Read-Host "Delete $($files.Count) potential duplicate files? (y/N)"
-            if ($confirmation -notmatch '^[Yy]') {
+            if ($confirmation -notmatch '^Yy') {
                 Write-CustomLog "Skipped duplicate file cleanup" "INFO"
                 return @{ Target = "DuplicateFiles"; FilesFound = $files.Count; SizeFound = $totalSize; FilesDeleted = 0; SpaceFreed = 0 }
             }
@@ -317,15 +317,15 @@ function Invoke-DuplicateFileCleanup {
 }
 
 function Invoke-EmptyDirectoryCleanup {
-    param([switch]$DryRun, [switch]$Force)
+    param(switch$DryRun, switch$Force)
     
-    $emptyDirs = Get-ChildItem -Path "." -Recurse -Directory | 
+    $emptyDirs = Get-ChildItem -Path "." -Recurse -Directory  
         Where-Object { -not (Get-ChildItem $_.FullName -Force -ErrorAction SilentlyContinue) }
     
     if (-not $DryRun -and $emptyDirs.Count -gt 0) {
         if (-not $Force) {
             $confirmation = Read-Host "Delete $($emptyDirs.Count) empty directories? (y/N)"
-            if ($confirmation -notmatch '^[Yy]') {
+            if ($confirmation -notmatch '^Yy') {
                 Write-CustomLog "Skipped empty directory cleanup" "INFO"
                 return @{ Target = "EmptyDirectories"; FilesFound = $emptyDirs.Count; SizeFound = 0; FilesDeleted = 0; SpaceFreed = 0 }
             }

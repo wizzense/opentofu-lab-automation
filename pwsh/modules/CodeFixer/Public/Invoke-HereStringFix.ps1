@@ -31,25 +31,25 @@
  Invoke-HereStringFix -Path ./script.ps1 -WhatIf
 #>
 function Invoke-HereStringFix {
- [CmdletBinding()]
+ CmdletBinding()
  param(
- [Parameter(Mandatory = $true)
+ Parameter(Mandatory = $true)
 
 
-]
- [string]$Path,
+
+ string$Path,
  
- [Parameter(Mandatory = $false)]
- [switch]$AutoFix,
+ Parameter(Mandatory = $false)
+ switch$AutoFix,
  
- [Parameter(Mandatory = $false)]
- [switch]$WhatIf,
+ Parameter(Mandatory = $false)
+ switch$WhatIf,
  
- [Parameter(Mandatory = $false)]
- [switch]$Recurse,
+ Parameter(Mandatory = $false)
+ switch$Recurse,
  
- [Parameter(Mandatory = $false)]
- [string[]]$ExcludePath = @("archive", "legacy")
+ Parameter(Mandatory = $false)
+ string$ExcludePath = @("archive", "legacy")
  )
 
  Write-Host " Here-String Syntax Fixer" -ForegroundColor Cyan
@@ -80,7 +80,7 @@ function Invoke-HereStringFix {
 
  # Filter out excluded paths
  foreach ($exclude in $ExcludePath) {
- $files = $files | Where-Object { $_.FullName -notmatch $exclude }
+ $files = $files  Where-Object { $_.FullName -notmatch $exclude }
  }
 
  $stats.TotalFiles = $files.Count
@@ -108,7 +108,7 @@ function Invoke-HereStringFix {
 
  foreach ($pattern in $patterns) {
  # Use proper regex without escaping the search pattern (since it's already a regex)
- $matches = [regex]::Matches($content, $pattern.Search)
+ $matches = regex::Matches($content, $pattern.Search)
  if ($matches.Count -gt 0) {
  if ((-not $WhatIf) -and ($AutoFix)) {
  $content = $content -replace $pattern.Search, $pattern.Replace
@@ -116,7 +116,7 @@ function Invoke-HereStringFix {
  $fileFixes += $matches.Count
  $fileHasIssues = $true
  
- Write-Host " [PASS] $($pattern.Description): $($matches.Count) fixes in $($file.Name)" -ForegroundColor Green
+ Write-Host " PASS $($pattern.Description): $($matches.Count) fixes in $($file.Name)" -ForegroundColor Green
  }
  }
 
@@ -135,7 +135,7 @@ function Invoke-HereStringFix {
  } elseif ($WhatIf) {
  Write-Host " Would fix $fileFixes issues in $($file.Name)" -ForegroundColor Yellow
  } elseif (-not $AutoFix) {
- Write-Host " [WARN] $fileFixes issues found in $($file.Name) - use -AutoFix to repair" -ForegroundColor Yellow
+ Write-Host " WARN $fileFixes issues found in $($file.Name) - use -AutoFix to repair" -ForegroundColor Yellow
  }
  }
  } catch {
@@ -159,9 +159,9 @@ function Invoke-HereStringFix {
  }
  
  if ($WhatIf) {
- Write-Host " [WARN] WhatIf mode - no changes made" -ForegroundColor Yellow
+ Write-Host " WARN WhatIf mode - no changes made" -ForegroundColor Yellow
  } elseif (-not $AutoFix) {
- Write-Host " [WARN] Report-only mode - use -AutoFix to make changes" -ForegroundColor Yellow
+ Write-Host " WARN Report-only mode - use -AutoFix to make changes" -ForegroundColor Yellow
  }
 
  return $stats

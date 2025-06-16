@@ -2,9 +2,9 @@
 
  **One-click infrastructure lab deployment** - Cross-platform automation for OpenTofu (Terraform alternative) environments.
 
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![Python Version](https://img.shields.io/badge/python-3.7%2B-blue)](https://python.org)
-[![PowerShell](https://img.shields.io/badge/powershell-7%2B-blue)](https://github.com/PowerShell/PowerShell)
+!License(https://img.shields.io/badge/license-MIT-blue.svg)(LICENSE)
+!Python Version(https://img.shields.io/badge/python-3.7%2B-blue)(https://python.org)
+!PowerShell(https://img.shields.io/badge/powershell-7%2B-blue)(https://github.com/PowerShell/PowerShell)
 
 ##  Quick Start (30 seconds)
 
@@ -13,7 +13,7 @@
 **� Windows (PowerShell - Works on Desktop/Server Core):**
 ```powershell
 # Download and run installer (no curl required)
-iwr -useb https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/HEAD/install.ps1 | iex
+iwr -useb https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/HEAD/install.ps1  iex
 
 # Or download first, then run
 Invoke-WebRequest -Uri "https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/HEAD/install.ps1" -OutFile "install.ps1"
@@ -30,14 +30,14 @@ install-windows.bat
 **� Linux/macOS/Unix:**
 ```bash
 # One-line install
-curl -sSL https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/HEAD/install.sh | bash
+curl -sSL https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/HEAD/install.sh  bash
 
 # Or download first, then run
 curl -LO https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/HEAD/install.sh
 chmod +x install.sh && ./install.sh
 
 # Alternative with wget (if curl unavailable)
-wget -qO- https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/HEAD/install.sh | bash
+wget -qO- https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/HEAD/install.sh  bash
 ```
 
 ### Option 2: Manual Download (Cross-Platform)
@@ -172,7 +172,7 @@ Full repository clone for development and advanced usage:
 ### Quick Deployment
 ```bash
 # Download and run with one command
-curl -sSL https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/HEAD/install.sh | bash
+curl -sSL https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/HEAD/install.sh  bash
 
 # Follow the interactive menu:
 # 1. Deploy Lab Environment
@@ -241,25 +241,25 @@ Invoke-ParallelLabRunner -Config "custom-config.yaml"
 ## � Documentation
 
 ### User Guides
-- [Getting Started](docs/index.md) - Comprehensive setup guide
-- [GUI Interface](docs/python-cli.md) - Visual interface documentation
-- [CLI Reference](docs/runner.md) - Command-line usage
-- [Configuration](docs/lab_utils.md) - Settings and customization
+- Getting Started(docs/index.md) - Comprehensive setup guide
+- GUI Interface(docs/python-cli.md) - Visual interface documentation
+- CLI Reference(docs/runner.md) - Command-line usage
+- Configuration(docs/lab_utils.md) - Settings and customization
 
 ### Developer Resources
-- [Contributing](docs/CONTRIBUTING.md) - Development guidelines
-- [Testing Framework](docs/testing-framework.md) - Validation and testing
-- [Module Development](docs/CODEFIXER-GUIDE.md) - PowerShell modules
-- [Architecture](docs/AUTOMATION-QUICKREF.md) - System overview
+- Contributing(docs/CONTRIBUTING.md) - Development guidelines
+- Testing Framework(docs/testing-framework.md) - Validation and testing
+- Module Development(docs/CODEFIXER-GUIDE.md) - PowerShell modules
+- Architecture(docs/AUTOMATION-QUICKREF.md) - System overview
 
 ### Troubleshooting
-- [Common Issues](docs/pester-test-failures.md) - Solutions and workarounds
-- [Platform-Specific](docs/copilot-codespaces.md) - OS-specific guides
-- [Performance](docs/testing.md) - Optimization and tuning
+- Common Issues(docs/pester-test-failures.md) - Solutions and workarounds
+- Platform-Specific(docs/copilot-codespaces.md) - OS-specific guides
+- Performance(docs/testing.md) - Optimization and tuning
 
 ## � Contributing
 
-We welcome contributions! See [CONTRIBUTING.md](docs/CONTRIBUTING.md) for guidelines.
+We welcome contributions! See CONTRIBUTING.md(docs/CONTRIBUTING.md) for guidelines.
 
 ### Development Setup
 ```bash
@@ -284,19 +284,19 @@ pwsh -Command "./scripts/maintenance/unified-maintenance.ps1 -Mode All"
 
 ## � License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License - see the LICENSE(LICENSE) file for details.
 
 ## � Acknowledgments
 
-- [OpenTofu](https://opentofu.org/) - Open-source Terraform alternative
-- [PowerShell](https://github.com/PowerShell/PowerShell) - Cross-platform automation
-- [Python](https://python.org) - Cross-platform scripting
+- OpenTofu(https://opentofu.org/) - Open-source Terraform alternative
+- PowerShell(https://github.com/PowerShell/PowerShell) - Cross-platform automation
+- Python(https://python.org) - Cross-platform scripting
 - Community contributors and testers
 
 ---
 
 ** Ready to get started?** Run the one-line installer for your platform above!
 
-**� Need help?** Check the [documentation](docs/) or open an [issue](https://github.com/wizzense/opentofu-lab-automation/issues).
+**� Need help?** Check the documentation(docs/) or open an issue(https://github.com/wizzense/opentofu-lab-automation/issues).
 
-** Want to contribute?** See [CONTRIBUTING.md](docs/CONTRIBUTING.md) for guidelines.
+** Want to contribute?** See CONTRIBUTING.md(docs/CONTRIBUTING.md) for guidelines.

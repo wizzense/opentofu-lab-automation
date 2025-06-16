@@ -25,23 +25,23 @@ Invoke-ResultsAnalysis -TestResultsPath "TestResults.xml"
 Invoke-ResultsAnalysis -TestResultsPath "TestResults.xml" -ApplyFixes
 #>
 function Invoke-ResultsAnalysis {
- [CmdletBinding(SupportsShouldProcess)]
+ CmdletBinding(SupportsShouldProcess)
  param(
- [Parameter(Mandatory=$true, Position=0)
+ Parameter(Mandatory=$true, Position=0)
 
 
 
 
 
 
-]
- [string]$TestResultsPath,
+
+ string$TestResultsPath,
  
- [switch]$ApplyFixes,
+ switch$ApplyFixes,
  
- [int]$MaxFixAttempts = 3,
+ int$MaxFixAttempts = 3,
  
- [switch]$PassThru
+ switch$PassThru
  )
  
  $ErrorActionPreference = "Stop"
@@ -56,14 +56,14 @@ function Invoke-ResultsAnalysis {
  
  # Load test results
  try {
- [xml]$testResults = Get-Content $TestResultsPath
+ xml$testResults = Get-Content $TestResultsPath
  } catch {
  Write-Error "Failed to load test results XML: $_"
  return
  }
  
  # Find failed tests
- $failedTests = $testResults.SelectNodes("//test-case[@result='Failure']")
+ $failedTests = $testResults.SelectNodes("//test-case@result='Failure'")
  
  Write-Verbose "Found $($failedTests.Count) failed tests"
  
@@ -81,14 +81,14 @@ function Invoke-ResultsAnalysis {
  $matches = $null
  
  if ($stackTrace -match 'at\s+<ScriptBlock>,\s+(.+) line (\d+)') {
- $filePath = $matches[1]
- $lineNumber = [int]$matches[2]
+ $filePath = $matches1
+ $lineNumber = int$matches2
  
  if (-not $failuresByFile.ContainsKey($filePath)) {
- $failuresByFile[$filePath] = @()
+ $failuresByFile$filePath = @()
  }
  
- $failuresByFile[$filePath] += @{
+ $failuresByFile$filePath += @{
  TestName = $test.name
  Message = $failureDetails
  LineNumber = $lineNumber
@@ -101,13 +101,13 @@ function Invoke-ResultsAnalysis {
  
  foreach ($filePath in $failuresByFile.Keys) {
  Write-Verbose "Processing failures in $filePath"
- $failures = $failuresByFile[$filePath]
+ $failures = $failuresByFile$filePath
  
  # Group failures by type
- $ternarySyntaxIssue = $failures | Where-Object { $_.Message -match 'The term ''if'' is not recognized' }
- $skipSyntaxIssue = $failures | Where-Object { $_.Message -match 'Missing closing ''\)''' }
- $quoteSyntaxIssue = $failures | Where-Object { $_.Message -match 'Missing closing ''''' -or $_.Message -match 'Missing closing ''"''' }
- $indentationIssue = $failures | Where-Object { $_.Message -match 'Unexpected token' }
+ $ternarySyntaxIssue = $failures  Where-Object { $_.Message -match 'The term ''if'' is not recognized' }
+ $skipSyntaxIssue = $failures  Where-Object { $_.Message -match 'Missing closing ''\)''' }
+ $quoteSyntaxIssue = $failures  Where-Object { $_.Message -match 'Missing closing ''''' -or $_.Message -match 'Missing closing ''"''' }
+ $indentationIssue = $failures  Where-Object { $_.Message -match 'Unexpected token' }
  
  if ($ternarySyntaxIssue -or $skipSyntaxIssue -or $quoteSyntaxIssue -or $indentationIssue) {
  if ($ApplyFixes) {
@@ -125,14 +125,14 @@ function Invoke-ResultsAnalysis {
  # Verify fix worked by checking syntax
  try {
  $errors = $null
- [System.Management.Automation.Language.Parser]::ParseFile($filePath, [ref]$null, [ref]$errors)
+ System.Management.Automation.Language.Parser::ParseFile($filePath, ref$null, ref$errors)
  if (-not $errors) {
- Write-Verbose " [PASS] Fixed on attempt $fixAttempt - $filePath"
+ Write-Verbose " PASS Fixed on attempt $fixAttempt - $filePath"
  $fixed = $true
  $fixedFiles += $filePath
  }
  } catch {
- Write-Verbose " [FAIL] Fix attempt $fixAttempt failed - $_"
+ Write-Verbose " FAIL Fix attempt $fixAttempt failed - $_"
  }
  } else {
  break

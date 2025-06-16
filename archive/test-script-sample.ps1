@@ -13,25 +13,25 @@ Force installation even if already installed
 #>
 
 param(
-    [Parameter(Mandatory=$false)
+    Parameter(Mandatory=$false)
 
 
 
 
 
 
-]
-    [string]$Version = "latest",
+
+    string$Version = "latest",
     
-    [Parameter(Mandatory=$false)]
-    [switch]$Force
+    Parameter(Mandatory=$false)
+    switch$Force
 )
 
 function Install-SampleTool {
-    [CmdletBinding()]
+    CmdletBinding()
     param(
-        [string]$Version,
-        [switch]$Force
+        string$Version,
+        switch$Force
     )
     
     

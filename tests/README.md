@@ -4,14 +4,14 @@ This directory contains an extensible testing framework for OpenTofu Lab Automat
 
 ## Features
 
-- [PASS] **Cross-Platform Compatibility**: Automatic platform detection and platform-specific mocking
-- [PASS] **Extensible Templates**: Pre-built templates for common script patterns
-- [PASS] **Automatic Test Generation**: Generate tests from existing scripts
-- [PASS] **Comprehensive Mocking**: Standardized mocks for Windows, Linux, and macOS
-- [PASS] **Test Discovery**: Automatic categorization and discovery of tests
-- [PASS] **Parallel Execution**: Optional parallel test execution for faster results
-- [PASS] **Detailed Reporting**: HTML and JSON reports with categorization
-- [PASS] **Integration Testing**: Support for multi-script integration tests
+- PASS **Cross-Platform Compatibility**: Automatic platform detection and platform-specific mocking
+- PASS **Extensible Templates**: Pre-built templates for common script patterns
+- PASS **Automatic Test Generation**: Generate tests from existing scripts
+- PASS **Comprehensive Mocking**: Standardized mocks for Windows, Linux, and macOS
+- PASS **Test Discovery**: Automatic categorization and discovery of tests
+- PASS **Parallel Execution**: Optional parallel test execution for faster results
+- PASS **Detailed Reporting**: HTML and JSON reports with categorization
+- PASS **Integration Testing**: Support for multi-script integration tests
 
 ## Quick Start
 
@@ -137,13 +137,13 @@ New-InstallerScriptTest -ScriptName 'MyScript.ps1' -EnabledProperty 'InstallMyAp
 $scenarios = @()
 
 $scenarios += New-TestScenario -Name 'Custom scenario' -Description 'Tests custom behavior' -Config @{ CustomProp = $true } -Mocks @{
- 'Get-CustomCommand' = { [PSCustomObject]@{ Status = 'Ready' } }
+ 'Get-CustomCommand' = { PSCustomObject@{ Status = 'Ready' } }
 } -ExpectedInvocations @{
  'Get-CustomCommand' = 1
 } -CustomValidation {
  param($Result, $Error)
  # Custom validation logic
- $Result | Should -Not -BeNull
+ $Result  Should -Not -BeNull
 }
 
 Test-RunnerScript -ScriptName 'MyScript.ps1' -Scenarios $scenarios -IncludeStandardTests
@@ -161,7 +161,7 @@ New-IntegrationTest -TestName 'Full Lab Setup' -ScriptSequence @(
  Go = @{ InstallerUrl = 'https://example.com/go.msi' }
 } -Validation {
  param($Results)
- $Results.Count | Should -Be 3
+ $Results.Count  Should -Be 3
  # Additional validation
 }
 ```
@@ -225,7 +225,7 @@ Use custom validation blocks for complex verification:
 -CustomValidation {
  param($Result, $Error)
  # Verify specific behavior
- Test-Path $expectedFile | Should -BeTrue
+ Test-Path $expectedFile  Should -BeTrue
 }
 ```
 

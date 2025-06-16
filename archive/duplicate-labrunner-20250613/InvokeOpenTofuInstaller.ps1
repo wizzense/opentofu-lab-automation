@@ -1,7 +1,7 @@
 function Invoke-OpenTofuInstaller {
     param(
-        [string]$CosignPath,
-        [string]$OpenTofuVersion
+        string$CosignPath,
+        string$OpenTofuVersion
     )
     
 

@@ -17,4 +17,4 @@ pwsh -NoLogo -NoProfile -Command "Invoke-Pester"
 pytest py
 ```
 
-See [pester-test-failures.md](pester-test-failures.md) for a tracked list of current test failures.
+See pester-test-failures.md(pester-test-failures.md) for a tracked list of current test failures.

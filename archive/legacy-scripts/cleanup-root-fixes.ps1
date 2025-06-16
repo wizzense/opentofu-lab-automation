@@ -7,9 +7,9 @@ Clean up root directory by moving scattered fix scripts to archive and creating 
 Moves old fix scripts from root to archive and creates a simple unified auto-fix wrapper
 #>
 
-[CmdletBinding()]
+CmdletBinding()
 param(
-    [switch]$WhatIf
+    switch$WhatIf
 )
 
 
@@ -33,7 +33,7 @@ $filesToMove = @(
 # Create archive directory for old fix scripts
 $archiveDir = "archive/root-fix-scripts-$(Get-Date -Format 'yyyyMMdd-HHmmss')"
 if (-not $WhatIf) {
-    New-Item -ItemType Directory -Path $archiveDir -Force | Out-Null
+    New-Item -ItemType Directory -Path $archiveDir -Force  Out-Null
 }
 
 $moved = 0
@@ -58,20 +58,20 @@ Unified auto-fix script using CodeFixer module
 Simple wrapper around the CodeFixer module for comprehensive auto-fixing
 #>
 
-[CmdletBinding()]
+CmdletBinding()
 param(
-    [Parameter(Mandatory = $false)
+    Parameter(Mandatory = $false)
 
 
 
 
 
 
-]
-    [string]$Path = ".",
+
+    string$Path = ".",
     
-    [switch]$WhatIf,
-    [switch]$SkipValidation
+    switch$WhatIf,
+    switch$SkipValidation
 )
 
 # Import CodeFixer module
@@ -83,7 +83,7 @@ Invoke-ComprehensiveAutoFix -Path $Path -WhatIf:$WhatIf -SkipValidation:$SkipVal
 
 if (-not $WhatIf) {
     Set-Content -Path "auto-fix.ps1" -Value $newAutoFix
-    Write-Host "  [PASS] Updated auto-fix.ps1 to use CodeFixer module" -ForegroundColor Green
+    Write-Host "  PASS Updated auto-fix.ps1 to use CodeFixer module" -ForegroundColor Green
 }
 
 Write-Host "`n Cleanup Summary:" -ForegroundColor Cyan
@@ -91,7 +91,7 @@ Write-Host "  Files moved to archive: $moved" -ForegroundColor White
 Write-Host "  Updated auto-fix.ps1 to use module" -ForegroundColor Green
 
 if ($WhatIf) {
-    Write-Host "  [WARN]  WhatIf mode - no changes made" -ForegroundColor Yellow
+    Write-Host "  WARN  WhatIf mode - no changes made" -ForegroundColor Yellow
 } else {
     Write-Host "  � Archive created: $archiveDir" -ForegroundColor Yellow
 }

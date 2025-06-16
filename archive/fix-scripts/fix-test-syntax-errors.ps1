@@ -38,7 +38,7 @@ foreach ($file in $problematicFiles) {
         # Write back
         Set-Content $file -Value $content -NoNewline
         
-        Write-Host "    [PASS] Fixed $file" -ForegroundColor Green
+        Write-Host "    PASS Fixed $file" -ForegroundColor Green
     }
 }
 

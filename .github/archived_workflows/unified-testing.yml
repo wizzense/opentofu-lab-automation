@@ -5,7 +5,7 @@ on:
  workflow_dispatch:
  pull_request:
  push:
- branches: [main]
+ branches: main
  paths:
  - 'pwsh/**'
  - 'tests/**'
@@ -49,10 +49,10 @@ jobs:
 
  - name: "Remove Old Pester"
  shell: ${{ matrix.shell }}
- run: |
+ run: 
  $ErrorActionPreference = 'Stop'
  try {
- $old = Get-Module -ListAvailable -Name Pester | Where-Object { $_.Version -lt [version]'5.0.0' }
+ $old = Get-Module -ListAvailable -Name Pester  Where-Object { $_.Version -lt version'5.0.0' }
  foreach ($mod in $old) {
  Remove-Item -Recurse -Force $mod.ModuleBase -ErrorAction SilentlyContinue
  }
@@ -63,11 +63,11 @@ jobs:
 
  - name: "Install Pester"
  shell: ${{ matrix.shell }}
- run: |
+ run: 
  $ErrorActionPreference = 'Stop'
  try {
  Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
- Get-Module Pester -ListAvailable | Where-Object Version -lt 5.0.0 | Uninstall-Module -Force -ErrorAction SilentlyContinue
+ Get-Module Pester -ListAvailable  Where-Object Version -lt 5.0.0  Uninstall-Module -Force -ErrorAction SilentlyContinue
  Install-Module -Name Pester -RequiredVersion 5.7.1 -Force -Scope CurrentUser -AllowClobber
  Write-Host "Pester 5.7.1 installed successfully" -ForegroundColor Green
  } catch {
@@ -77,7 +77,7 @@ jobs:
 
  - name: "Install PowerShell YAML"
  shell: ${{ matrix.shell }}
- run: |
+ run: 
  $ErrorActionPreference = 'Stop'
  try {
  Install-Module -Name powershell-yaml -Force -Scope CurrentUser -AllowClobber
@@ -89,7 +89,7 @@ jobs:
 
  - name: "Import Required Modules"
  shell: ${{ matrix.shell }}
- run: |
+ run: 
  $ErrorActionPreference = 'Stop'
  try {
  Import-Module ./pwsh/modules/CodeFixer/CodeFixer.psd1 -Force
@@ -102,7 +102,7 @@ jobs:
 
  - name: "Run Pester Tests"
  shell: ${{ matrix.shell }}
- run: |
+ run: 
  $config = New-PesterConfiguration
  $config.Run.Path = "tests"
  $config.Run.Exit = true
@@ -128,7 +128,7 @@ jobs:
  runs-on: ubuntu-latest
  steps:
  - name: "Generate Test Summary"
- run: |
+ run: 
  echo "# Test Results Summary" >> $GITHUB_STEP_SUMMARY
  echo "" >> $GITHUB_STEP_SUMMARY
  echo "## Cross-Platform Tests" >> $GITHUB_STEP_SUMMARY

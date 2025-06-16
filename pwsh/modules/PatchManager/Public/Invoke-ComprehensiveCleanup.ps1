@@ -31,22 +31,22 @@
 #>
 
 function Invoke-ComprehensiveCleanup {
-    [CmdletBinding(SupportsShouldProcess)]
+    CmdletBinding(SupportsShouldProcess)
     param(
-        [Parameter(Mandatory = $false)]
-        [ValidateSet("Standard", "Aggressive", "Emergency", "Safe")]
-        [string]$CleanupMode = "Standard",
+        Parameter(Mandatory = $false)
+        ValidateSet("Standard", "Aggressive", "Emergency", "Safe")
+        string$CleanupMode = "Standard",
         
-        [Parameter(Mandatory = $false)]
-        [string[]]$ExcludePatterns = @(),
+        Parameter(Mandatory = $false)
+        string$ExcludePatterns = @(),
         
-        [Parameter(Mandatory = $false)]
-        [switch]$DryRun
+        Parameter(Mandatory = $false)
+        switch$DryRun
     )
     
     begin {
         Write-Host "Starting comprehensive cleanup..." -ForegroundColor Cyan
-        Write-Host "Mode: $CleanupMode | Dry Run: $DryRun" -ForegroundColor Yellow
+        Write-Host "Mode: $CleanupMode  Dry Run: $DryRun" -ForegroundColor Yellow
         
         # Get project root
         $script:ProjectRoot = (Get-Location).Path
@@ -172,7 +172,7 @@ function Invoke-EmojiCleanup {
         foreach ($file in $files) {            if (-not (Test-CriticalExclusion $file.FullName)) {
                 $content = Get-Content $file.FullName -Raw -ErrorAction SilentlyContinue
                 # Use a simpler emoji detection pattern that works in PowerShell
-                $emojiPattern = '[]|[\u2600-\u26FF]|[\u2700-\u27BF]'
+                $emojiPattern = '\u2600-\u26FF\u2700-\u27BF'
                 if ($content -and ($content -match $emojiPattern)) {
                     Write-Host "  Removing emojis from: $($file.Name)" -ForegroundColor Yellow
                     
@@ -198,11 +198,11 @@ function Invoke-PathStandardization {
     foreach ($file in $files) {
         if (-not (Test-CriticalExclusion $file.FullName)) {
             $content = Get-Content $file.FullName -Raw -ErrorAction SilentlyContinue
-            if ($content -and $content -match [regex]::Escape($windowsPathPattern)) {
+            if ($content -and $content -match regex::Escape($windowsPathPattern)) {
                 Write-Host "  Fixing hardcoded paths in: $($file.Name)" -ForegroundColor Yellow
                 
                 if (-not $DryRun) {
-                    $cleanContent = $content -replace [regex]::Escape($windowsPathPattern), $standardPath
+                    $cleanContent = $content -replace regex::Escape($windowsPathPattern), $standardPath
                     Set-Content -Path $file.FullName -Value $cleanContent -NoNewline
                     $script:CleanupLog.FilesRelocated += @{ File = $file.FullName; Action = "Path standardization" }
                 }
@@ -216,7 +216,7 @@ function Invoke-DuplicateConsolidation {
     $fileHashes = @{}
     $duplicates = @()
     
-    $files = Get-ChildItem -Path $script:ProjectRoot -Recurse -File -ErrorAction SilentlyContinue | 
+    $files = Get-ChildItem -Path $script:ProjectRoot -Recurse -File -ErrorAction SilentlyContinue  
         Where-Object { -not (Test-CriticalExclusion $_.FullName) }
     
     foreach ($file in $files) {
@@ -224,12 +224,12 @@ function Invoke-DuplicateConsolidation {
             $hash = Get-FileHash $file.FullName -Algorithm MD5
             if ($fileHashes.ContainsKey($hash.Hash)) {
                 $duplicates += @{
-                    Original = $fileHashes[$hash.Hash]
+                    Original = $fileHashes$hash.Hash
                     Duplicate = $file.FullName
                     Size = $file.Length
                 }
             } else {
-                $fileHashes[$hash.Hash] = $file.FullName
+                $fileHashes$hash.Hash = $file.FullName
             }
         } catch {
             # Skip files that can't be hashed
@@ -241,8 +241,8 @@ function Invoke-DuplicateConsolidation {
         $keepOriginal = $true
         
         # Prefer files in proper directories over root directory
-        if ($dup.Duplicate -match "^$([regex]::Escape($script:ProjectRoot))[/\\][^/\\]+$" -and 
-            $dup.Original -match "scripts|pwsh|tests|docs") {
+        if ($dup.Duplicate -match "^$(regex::Escape($script:ProjectRoot))/\\^/\\+$" -and 
+            $dup.Original -match "scriptspwshtestsdocs") {
             $keepOriginal = $false
         }
         
@@ -266,16 +266,16 @@ function Invoke-FileArchival {
     $archivePath = Join-Path $script:ProjectRoot "archive/cleanup-$(Get-Date -Format 'yyyyMMdd-HHmmss')"
     
     # Find old files in root directory
-    $oldFiles = Get-ChildItem -Path $script:ProjectRoot -File -ErrorAction SilentlyContinue |
+    $oldFiles = Get-ChildItem -Path $script:ProjectRoot -File -ErrorAction SilentlyContinue 
         Where-Object { 
             $_.LastWriteTime -lt $archiveThreshold -and 
             -not (Test-CriticalExclusion $_.FullName) -and
-            $_.Name -match '\.(md|ps1|py|log|txt)$'
+            $_.Name -match '\.(mdps1pylogtxt)$'
         }
     
     if ($oldFiles.Count -gt 0) {
         if (-not $DryRun) {
-            New-Item -ItemType Directory -Path $archivePath -Force | Out-Null
+            New-Item -ItemType Directory -Path $archivePath -Force  Out-Null
         }
         
         foreach ($file in $oldFiles) {
@@ -291,7 +291,7 @@ function Invoke-FileArchival {
 
 function Invoke-EmptyDirectoryCleanup {
     # Remove empty directories (except critical ones)
-    $directories = Get-ChildItem -Path $script:ProjectRoot -Directory -Recurse -ErrorAction SilentlyContinue |
+    $directories = Get-ChildItem -Path $script:ProjectRoot -Directory -Recurse -ErrorAction SilentlyContinue 
         Sort-Object FullName -Descending  # Process deepest first
     
     foreach ($dir in $directories) {
@@ -307,7 +307,7 @@ function Invoke-EmptyDirectoryCleanup {
 
 function Invoke-FileOrganization {
     # Move misplaced files to appropriate directories
-    $rootFiles = Get-ChildItem -Path $script:ProjectRoot -File -ErrorAction SilentlyContinue |
+    $rootFiles = Get-ChildItem -Path $script:ProjectRoot -File -ErrorAction SilentlyContinue 
         Where-Object { -not (Test-CriticalExclusion $_.FullName) }
     
     foreach ($file in $rootFiles) {
@@ -317,19 +317,19 @@ function Invoke-FileOrganization {
             '\.ps1$' { $destination = "scripts/utilities" }
             '\.py$' { $destination = "py" }
             '\.md$' { 
-                if ($file.Name -match '^[A-Z-]+\.md$') {
+                if ($file.Name -match '^A-Z-+\.md$') {
                     $destination = "docs"
                 }
             }
-            '\.(yml|yaml)$' { $destination = "configs" }
-            '\.(log|txt)$' { $destination = "logs" }
+            '\.(ymlyaml)$' { $destination = "configs" }
+            '\.(logtxt)$' { $destination = "logs" }
         }
         
         if ($destination) {
             $destPath = Join-Path $script:ProjectRoot $destination
             if (-not (Test-Path $destPath)) {
                 if (-not $DryRun) {
-                    New-Item -ItemType Directory -Path $destPath -Force | Out-Null
+                    New-Item -ItemType Directory -Path $destPath -Force  Out-Null
                 }
             }
             
@@ -384,10 +384,10 @@ function Invoke-CleanupValidation {
 }
 
 function Test-CriticalExclusion {
-    param([string]$Path)
+    param(string$Path)
     
-    $relativePath = $Path -replace [regex]::Escape($script:ProjectRoot), ""
-    $relativePath = $relativePath -replace '^[/\\]', ""
+    $relativePath = $Path -replace regex::Escape($script:ProjectRoot), ""
+    $relativePath = $relativePath -replace '^/\\', ""
     
     foreach ($pattern in $script:CriticalExclusions) {
         if ($relativePath -like $pattern) {
@@ -400,8 +400,8 @@ function Test-CriticalExclusion {
 
 function Remove-FileOrDirectory {
     param(
-        [string]$Path,
-        [string]$Reason
+        string$Path,
+        string$Reason
     )
     
     if (Test-Path $Path) {
@@ -423,7 +423,7 @@ function Remove-FileOrDirectory {
                 $script:CleanupLog.Errors += "Failed to remove ${Path}: $($_.Exception.Message)"
             }
         } else {
-            Write-Host "      [DRY RUN] Would remove: $Path" -ForegroundColor DarkGray
+            Write-Host "      DRY RUN Would remove: $Path" -ForegroundColor DarkGray
         }
     }
 }
@@ -444,7 +444,7 @@ function New-CleanupReport {
 - **Files Removed**: $($script:CleanupLog.FilesRemoved.Count)
 - **Directories Removed**: $($script:CleanupLog.DirectoriesRemoved.Count)  
 - **Files Relocated**: $($script:CleanupLog.FilesRelocated.Count)
-- **Size Reclaimed**: $([math]::Round($script:CleanupLog.SizeReclaimed / 1MB, 2)) MB
+- **Size Reclaimed**: $(math::Round($script:CleanupLog.SizeReclaimed / 1MB, 2)) MB
 - **Errors**: $($script:CleanupLog.Errors.Count)
 
 ## Actions Performed
@@ -483,11 +483,11 @@ function New-CleanupReport {
 
 ## Files Relocated
 
-$($script:CleanupLog.FilesRelocated | ForEach-Object { "- $($_.File): $($_.Action)" } | Out-String)
+$($script:CleanupLog.FilesRelocated  ForEach-Object { "- $($_.File): $($_.Action)" }  Out-String)
 
 ## Errors
 
-$($script:CleanupLog.Errors | ForEach-Object { "- $_" } | Out-String)
+$($script:CleanupLog.Errors  ForEach-Object { "- $_" }  Out-String)
 
 ---
 *Generated by PatchManager Comprehensive Cleanup v2.0*

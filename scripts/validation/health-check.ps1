@@ -1,19 +1,19 @@
 # comprehensive-health-check.ps1
 # This script is a wrapper around the CodeFixer module's health check capabilities
-[CmdletBinding()]
+CmdletBinding()
 param(
-    [switch]$CI,
-    [switch]$Detailed,
-    [ValidateSet('JSON','Text')
+    switch$CI,
+    switch$Detailed,
+    ValidateSet('JSON','Text')
 
 
 
 
 
 
-]
-    [string]$OutputFormat = 'Text',
-    [string]$OutputPath
+
+    string$OutputFormat = 'Text',
+    string$OutputPath
 )
 
 $ErrorActionPreference = 'Stop'

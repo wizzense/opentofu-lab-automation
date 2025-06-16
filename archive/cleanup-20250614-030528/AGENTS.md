@@ -92,7 +92,7 @@ Invoke-ComprehensiveValidation
 pwsh/modules/
 ├── LabRunner/          # Core lab automation
 ├── CodeFixer/          # Code analysis and repair
-└── [Dynamic modules]   # Additional capabilities
+└── Dynamic modules   # Additional capabilities
 `
 
 ### Validation Pipeline

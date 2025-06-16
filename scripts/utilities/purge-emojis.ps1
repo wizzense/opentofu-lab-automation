@@ -12,8 +12,8 @@
 #>
 
 param(
- [switch]$DryRun,
- [switch]$Verbose
+ switch$DryRun,
+ switch$Verbose
 )
 
 # Set strict mode and error handling
@@ -26,10 +26,10 @@ Write-Host "Removing all emojis from codebase to prevent parsing issues" -Foregr
 # Define common emoji patterns (comprehensive list)
 $emojiPatterns = @(
  # Status indicators
- "[PASS]", "[FAIL]", "[WARN]", "[INFO]",
+ "PASS", "FAIL", "WARN", "INFO",
  
  # Common technical emojis
- "[PASS]", "[FAIL]", "[WARN]", "[INFO]", "", "�", "",
+ "PASS", "FAIL", "WARN", "INFO", "", "�", "",
  "�", "", "�", "�", "�", "", "",
  
  # Common feedback emojis
@@ -49,7 +49,7 @@ $emojiPatterns = @(
 )
 
 # Build regex pattern for all emojis
-$emojiRegex = "(?:$($emojiPatterns -join '|'))"
+$emojiRegex = "(?:$($emojiPatterns -join ''))"
 
 # Get the project root
 $projectRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
@@ -84,7 +84,7 @@ $changedFiles = 0
 $totalEmojisRemoved = 0
 
 foreach ($pattern in $filePatterns) {
- $files = Get-ChildItem -Path $projectRoot -Filter $pattern -Recurse | Where-Object {
+ $files = Get-ChildItem -Path $projectRoot -Filter $pattern -Recurse  Where-Object {
  $skip = $false
  foreach ($skipDir in $skipDirs) {
  if ($_.FullName -like "*\$skipDir\*" -or $_.FullName -like "*/$skipDir/*") {
@@ -102,7 +102,7 @@ foreach ($pattern in $filePatterns) {
  $content = Get-Content -Path $file.FullName -Raw -Encoding UTF8
  if (-not $content) { continue }
  # Count emojis in this file
- $emojiMatches = [regex]::Matches($content, $emojiRegex)
+ $emojiMatches = regex::Matches($content, $emojiRegex)
  
  if ($emojiMatches.Count -gt 0) {
  if ($Verbose) {
@@ -117,9 +117,9 @@ foreach ($pattern in $filePatterns) {
  $replacements = @{
  "" = ""
  "" = ""
- "[PASS]" = "[PASS]"
- "[FAIL]" = "[FAIL]"
- "[WARN]" = "[WARN]"
+ "PASS" = "PASS"
+ "FAIL" = "FAIL"
+ "WARN" = "WARN"
  "" = ""
  "" = ""
  "" = ""
@@ -143,7 +143,7 @@ foreach ($pattern in $filePatterns) {
  "" = ""
  "" = ""
  "" = ""
- "[INFO]" = "[INFO]"
+ "INFO" = "INFO"
  "" = ""
  "" = ""
  "" = ""
@@ -151,7 +151,7 @@ foreach ($pattern in $filePatterns) {
  
  # Apply specific replacements first
  foreach ($emoji in $replacements.Keys) {
- $newContent = $newContent -replace [regex]::Escape($emoji), $replacements[$emoji]
+ $newContent = $newContent -replace regex::Escape($emoji), $replacements$emoji
  }
  
  # Remove any remaining emojis
@@ -200,7 +200,7 @@ if (-not $DryRun) {
  
  $remainingEmojis = 0
  foreach ($pattern in $filePatterns) {
- $files = Get-ChildItem -Path $projectRoot -Filter $pattern -Recurse | Where-Object {
+ $files = Get-ChildItem -Path $projectRoot -Filter $pattern -Recurse  Where-Object {
  $skip = $false
  foreach ($skipDir in $skipDirs) {
  if ($_.FullName -like "*\$skipDir\*" -or $_.FullName -like "*/$skipDir/*") {
@@ -214,7 +214,7 @@ if (-not $DryRun) {
  foreach ($file in $files) {
  try { $content = Get-Content -Path $file.FullName -Raw -Encoding UTF8
  if ($content) {
- $emojiMatches = [regex]::Matches($content, $emojiRegex)
+ $emojiMatches = regex::Matches($content, $emojiRegex)
  $remainingEmojis += $emojiMatches.Count
  if ($emojiMatches.Count -gt 0 -and $Verbose) {
  Write-Host "WARNING: $($file.FullName) still contains $($emojiMatches.Count) emojis" -ForegroundColor Red

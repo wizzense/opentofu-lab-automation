@@ -15,8 +15,8 @@
 #>
 
 param(
- [ValidateSet("ResolveConflicts", "ImplementBranching", "ValidateSystem", "All")]
- [string]$Action = "All"
+ ValidateSet("ResolveConflicts", "ImplementBranching", "ValidateSystem", "All")
+ string$Action = "All"
 )
 
 $ErrorActionPreference = "Continue"
@@ -41,11 +41,11 @@ function Resolve-MergeConflicts {
  }
  }
  
- $conflictFiles = $conflictFiles | Sort-Object -Unique
+ $conflictFiles = $conflictFiles  Sort-Object -Unique
  
  if ($conflictFiles.Count -gt 0) {
- Write-Host "[FAIL] Found $($conflictFiles.Count) files with merge conflicts:" -ForegroundColor Red
- $conflictFiles | ForEach-Object { Write-Host " - $_" -ForegroundColor Yellow }
+ Write-Host "FAIL Found $($conflictFiles.Count) files with merge conflicts:" -ForegroundColor Red
+ $conflictFiles  ForEach-Object { Write-Host " - $_" -ForegroundColor Yellow }
  
  Write-Host ""
  Write-Host " Auto-resolving simple conflicts..." -ForegroundColor Yellow
@@ -56,29 +56,29 @@ function Resolve-MergeConflicts {
  
  # Strategy 1: If conflict is just whitespace or formatting, take HEAD version
  if ($content -match '<<<<<<< HEAD\s*\n(.*?)\n=======\s*\n\s*\n>>>>>>> ') {
- $resolved = $content -replace '<<<<<<< HEAD\s*\n(.*?)\n=======\s*\n\s*\n>>>>>>> [^\n]*\n', '$1'
+ $resolved = $content -replace '<<<<<<< HEAD\s*\n(.*?)\n=======\s*\n\s*\n>>>>>>> ^\n*\n', '$1'
  Set-Content $file $resolved -NoNewline
- Write-Host " [PASS] Auto-resolved whitespace conflict: $file" -ForegroundColor Green
+ Write-Host " PASS Auto-resolved whitespace conflict: $file" -ForegroundColor Green
  continue
  }
  
  # Strategy 2: For workflow files, prefer the main branch version
  if ($file -like "*.yml" -or $file -like "*.yaml") {
- $resolved = $content -replace '<<<<<<< HEAD\s*\n(.*?)\n=======.*?>>>>>>> [^\n]*\n', '$1'
+ $resolved = $content -replace '<<<<<<< HEAD\s*\n(.*?)\n=======.*?>>>>>>> ^\n*\n', '$1'
  Set-Content $file $resolved -NoNewline
- Write-Host " [PASS] Auto-resolved workflow conflict: $file" -ForegroundColor Green
+ Write-Host " PASS Auto-resolved workflow conflict: $file" -ForegroundColor Green
  continue
  }
  
- Write-Host " [WARN] Manual resolution needed: $file" -ForegroundColor Yellow
+ Write-Host " WARN Manual resolution needed: $file" -ForegroundColor Yellow
  }
  catch {
- Write-Host " [FAIL] Error processing $file`: $_" -ForegroundColor Red
+ Write-Host " FAIL Error processing $file`: $_" -ForegroundColor Red
  }
  }
  }
  else {
- Write-Host "[PASS] No merge conflicts found" -ForegroundColor Green
+ Write-Host "PASS No merge conflicts found" -ForegroundColor Green
  }
 }
 
@@ -145,19 +145,19 @@ git push origin hotfix/critical-issue
 ## Protection Rules
 
 ### Main Branch Protection
-- [PASS] Require PR reviews (1+ approvals)
-- [PASS] Require status checks (CI/CD must pass)
-- [PASS] Require up-to-date branches
-- [PASS] Auto-delete head branches after merge
-- [PASS] Restrict force pushes
-- [PASS] Restrict deletions
+- PASS Require PR reviews (1+ approvals)
+- PASS Require status checks (CI/CD must pass)
+- PASS Require up-to-date branches
+- PASS Auto-delete head branches after merge
+- PASS Restrict force pushes
+- PASS Restrict deletions
 
 ### Auto-Validation Requirements
-- [PASS] PowerShell syntax validation
-- [PASS] YAML lint checks
-- [PASS] Pester test execution
-- [PASS] Auto-fix application
-- [PASS] Security scanning
+- PASS PowerShell syntax validation
+- PASS YAML lint checks
+- PASS Pester test execution
+- PASS Auto-fix application
+- PASS Security scanning
 
 ## Auto-Fix Integration
 
@@ -178,9 +178,9 @@ git push origin hotfix/critical-issue
 \`\`\`
 <type>(<scope>): <description>
 
-[optional body]
+optional body
 
-[optional footer]
+optional footer
 \`\`\`
 
 ### Types
@@ -235,8 +235,8 @@ chore(deps): update PowerShell modules to latest versions
 - Tool evaluation
 "@
 
- $branchingDoc | Out-File "docs/BRANCHING-STRATEGY.md" -Encoding UTF8
- Write-Host "[PASS] Created branching strategy documentation" -ForegroundColor Green
+ $branchingDoc  Out-File "docs/BRANCHING-STRATEGY.md" -Encoding UTF8
+ Write-Host "PASS Created branching strategy documentation" -ForegroundColor Green
 }
 
 function Validate-SystemHealth {
@@ -255,37 +255,37 @@ function Validate-SystemHealth {
  foreach ($file in $criticalFiles) {
  if (Test-Path $file) {
  $content = Get-Content $file -Raw
- if ($content -match '<<<<<<< HEAD|=======|>>>>>>> ') {
+ if ($content -match '<<<<<<< HEAD=======>>>>>>> ') {
  $issues += "Merge conflicts in $file"
- Write-Host " [FAIL] Merge conflicts: $file" -ForegroundColor Red
+ Write-Host " FAIL Merge conflicts: $file" -ForegroundColor Red
  }
  else {
- Write-Host " [PASS] Clean: $file" -ForegroundColor Green
+ Write-Host " PASS Clean: $file" -ForegroundColor Green
  }
  }
  else {
  $issues += "Missing critical file: $file"
- Write-Host " [FAIL] Missing: $file" -ForegroundColor Red
+ Write-Host " FAIL Missing: $file" -ForegroundColor Red
  }
  }
  
  # Test PowerShell modules
  try {
  Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\pwsh/modules/CodeFixer/" -Force-ErrorAction Stop
- Write-Host " [PASS] CodeFixer module loads" -ForegroundColor Green
+ Write-Host " PASS CodeFixer module loads" -ForegroundColor Green
  }
  catch {
  $issues += "CodeFixer module failed to load: $_"
- Write-Host " [FAIL] CodeFixer module: $_" -ForegroundColor Red
+ Write-Host " FAIL CodeFixer module: $_" -ForegroundColor Red
  }
  
  try {
  Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\pwsh/modules/LabRunner/" -Force-ErrorAction Stop 
- Write-Host " [PASS] LabRunner module loads" -ForegroundColor Green
+ Write-Host " PASS LabRunner module loads" -ForegroundColor Green
  }
  catch {
  $issues += "LabRunner module failed to load: $_"
- Write-Host " [FAIL] LabRunner module: $_" -ForegroundColor Red
+ Write-Host " FAIL LabRunner module: $_" -ForegroundColor Red
  }
  
  # Summary
@@ -294,8 +294,8 @@ function Validate-SystemHealth {
  return $true
  }
  else {
- Write-Host "[WARN] Found $($issues.Count) issues:" -ForegroundColor Yellow
- $issues | ForEach-Object { Write-Host " - $_" -ForegroundColor Red }
+ Write-Host "WARN Found $($issues.Count) issues:" -ForegroundColor Yellow
+ $issues  ForEach-Object { Write-Host " - $_" -ForegroundColor Red }
  return $false
  }
 }
@@ -314,18 +314,18 @@ function Set-BranchProtection {
 # Set up main branch protection
 gh api repos/wizzense/opentofu-lab-automation/branches/main/protection \
  --method PUT \
- --field required_status_checks='{"strict":true,"contexts":["CI/CD Pipeline"]}' \
+ --field required_status_checks='{"strict":true,"contexts":"CI/CD Pipeline"}' \
  --field enforce_admins=true \
  --field required_pull_request_reviews='{"required_approving_review_count":1,"dismiss_stale_reviews":true}' \
  --field restrictions=null \
  --field allow_force_pushes=false \
  --field allow_deletions=false
 
-echo "[PASS] Branch protection rules applied"
+echo "PASS Branch protection rules applied"
 "@
 
- $protectionScript | Out-File "scripts/setup-branch-protection.sh" -Encoding UTF8
- Write-Host "[PASS] Created branch protection setup script" -ForegroundColor Green
+ $protectionScript  Out-File "scripts/setup-branch-protection.sh" -Encoding UTF8
+ Write-Host "PASS Created branch protection setup script" -ForegroundColor Green
 }
 
 # Main execution
@@ -344,9 +344,9 @@ switch ($Action) {
  Write-Host "==============================" -ForegroundColor Cyan
  
  if ($systemHealthy) {
- Write-Host "[PASS] System is now healthy and operational" -ForegroundColor Green
- Write-Host "[PASS] Branching strategy implemented" -ForegroundColor Green
- Write-Host "[PASS] Protection rules ready for setup" -ForegroundColor Green
+ Write-Host "PASS System is now healthy and operational" -ForegroundColor Green
+ Write-Host "PASS Branching strategy implemented" -ForegroundColor Green
+ Write-Host "PASS Protection rules ready for setup" -ForegroundColor Green
  Write-Host ""
  Write-Host " Next Steps:" -ForegroundColor Yellow
  Write-Host "1. Review and commit all changes" -ForegroundColor White
@@ -355,7 +355,7 @@ switch ($Action) {
  Write-Host "4. Update team on new branching strategy" -ForegroundColor White
  }
  else {
- Write-Host "[WARN] System needs manual intervention" -ForegroundColor Yellow
+ Write-Host "WARN System needs manual intervention" -ForegroundColor Yellow
  Write-Host " Please resolve the issues above before proceeding" -ForegroundColor White
  }
  }

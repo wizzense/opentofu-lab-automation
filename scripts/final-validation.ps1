@@ -19,22 +19,22 @@ try {
  Write-Host "Running YAML validation and auto-fix..." -ForegroundColor Cyan
  if (Test-Path "scripts/validation/Invoke-YamlValidation.ps1") {
  & ./scripts/validation/Invoke-YamlValidation.ps1 -Mode "Fix"
- Write-Host " [PASS] YAML validation completed" -ForegroundColor Green
+ Write-Host " PASS YAML validation completed" -ForegroundColor Green
  } else {
- Write-Host " [WARN] YAML validation script not found" -ForegroundColor Yellow
+ Write-Host " WARN YAML validation script not found" -ForegroundColor Yellow
  }
  
  if (Test-Path "auto-fix.ps1") {
  & ./auto-fix.ps1
- Write-Host " [PASS] Comprehensive auto-fix completed" -ForegroundColor Green
+ Write-Host " PASS Comprehensive auto-fix completed" -ForegroundColor Green
  } elseif (Test-Path "tools/Validate-PowerShellScripts.ps1") {
  & ./tools/Validate-PowerShellScripts.ps1 -Path . -AutoFix -CI
- Write-Host " [PASS] Basic auto-fix completed" -ForegroundColor Green
+ Write-Host " PASS Basic auto-fix completed" -ForegroundColor Green
  } else {
- Write-Host " [WARN] Auto-fix scripts not found" -ForegroundColor Yellow
+ Write-Host " WARN Auto-fix scripts not found" -ForegroundColor Yellow
  }
 } catch {
- Write-Host " [WARN] Auto-fix completed with warnings: $_" -ForegroundColor Yellow
+ Write-Host " WARN Auto-fix completed with warnings: $_" -ForegroundColor Yellow
 }
 
 $totalTests = 0
@@ -47,12 +47,12 @@ Write-Host "1⃣ Testing Workflow Health..." -ForegroundColor Cyan
 try {
  $healthResult = & bash ./scripts/validate-workflow-health.sh 2>&1
  if ($LASTEXITCODE -eq 0) {
- Write-Host " [PASS] All workflow health checks passed" -ForegroundColor Green
+ Write-Host " PASS All workflow health checks passed" -ForegroundColor Green
  } else {
- Write-Host " [FAIL] Workflow health check failed" -ForegroundColor Red
+ Write-Host " FAIL Workflow health check failed" -ForegroundColor Red
  }
 } catch {
- Write-Host " [FAIL] Workflow health check error: $_" -ForegroundColor Red
+ Write-Host " FAIL Workflow health check error: $_" -ForegroundColor Red
 }
 
 # 2. Validate core components
@@ -60,12 +60,12 @@ Write-Host "`n2⃣ Testing Core Components..." -ForegroundColor Cyan
 try {
  $componentResult = & pwsh ./scripts/test-workflow-locally.ps1 2>&1
  if ($componentResult -match "All workflow components validated successfully") {
- Write-Host " [PASS] All core components working" -ForegroundColor Green
+ Write-Host " PASS All core components working" -ForegroundColor Green
  } else {
- Write-Host " [WARN] Some component issues detected" -ForegroundColor Yellow
+ Write-Host " WARN Some component issues detected" -ForegroundColor Yellow
  }
 } catch {
- Write-Host " [FAIL] Component test error: $_" -ForegroundColor Red
+ Write-Host " FAIL Component test error: $_" -ForegroundColor Red
 }
 
 # 3. Validate fixed test files (sample)
@@ -89,15 +89,15 @@ foreach ($file in $sampleFiles) {
  
  if ($result.FailedCount -eq 0) {
  if ($result.PassedCount -gt 0) {
- Write-Host " [PASS] $($result.PassedCount) passed, $($result.SkippedCount) skipped" -ForegroundColor Green
+ Write-Host " PASS $($result.PassedCount) passed, $($result.SkippedCount) skipped" -ForegroundColor Green
  } else {
  Write-Host " ⏭ $($result.SkippedCount) skipped (platform-specific)" -ForegroundColor Yellow
  }
  } else {
- Write-Host " [FAIL] $($result.FailedCount) failed, $($result.PassedCount) passed" -ForegroundColor Red
+ Write-Host " FAIL $($result.FailedCount) failed, $($result.PassedCount) passed" -ForegroundColor Red
  }
  } catch {
- Write-Host " [FAIL] Error: $_" -ForegroundColor Red
+ Write-Host " FAIL Error: $_" -ForegroundColor Red
  $failedTests++
  }
 }
@@ -107,12 +107,12 @@ Write-Host "`n4⃣ Verifying Get-Command Pattern Elimination..." -ForegroundColo
 try {
  $remainingPatterns = (Select-String -Path "tests/*.Tests.ps1" -Pattern "Get-Command.*Should.*Not.*BeNullOrEmpty").Count
  if ($remainingPatterns -eq 0) {
- Write-Host " [PASS] All Get-Command patterns successfully eliminated" -ForegroundColor Green
+ Write-Host " PASS All Get-Command patterns successfully eliminated" -ForegroundColor Green
  } else {
- Write-Host " [WARN] $remainingPatterns Get-Command patterns still found" -ForegroundColor Yellow
+ Write-Host " WARN $remainingPatterns Get-Command patterns still found" -ForegroundColor Yellow
  }
 } catch {
- Write-Host " [PASS] All Get-Command patterns successfully eliminated" -ForegroundColor Green
+ Write-Host " PASS All Get-Command patterns successfully eliminated" -ForegroundColor Green
 }
 
 # 5. Validate PowerShell syntax for all scripts
@@ -120,20 +120,20 @@ Write-Host "`n5⃣ Validating PowerShell Script Syntax..." -ForegroundColor Cyan
 $scriptErrors = 0
 $scriptCount = 0
 
-Get-ChildItem -Path "pwsh/runner_scripts/*.ps1" | ForEach-Object {
+Get-ChildItem -Path "pwsh/runner_scripts/*.ps1"  ForEach-Object {
  $scriptCount++
  try {
- $null = [System.Management.Automation.PSParser]::Tokenize((Get-Content $_.FullName -Raw), [ref]$null)
+ $null = System.Management.Automation.PSParser::Tokenize((Get-Content $_.FullName -Raw), ref$null)
  } catch {
  $scriptErrors++
- Write-Host " [FAIL] Syntax error in $($_.Name)" -ForegroundColor Red
+ Write-Host " FAIL Syntax error in $($_.Name)" -ForegroundColor Red
  }
 }
 
 if ($scriptErrors -eq 0) {
- Write-Host " [PASS] All $scriptCount PowerShell scripts have valid syntax" -ForegroundColor Green
+ Write-Host " PASS All $scriptCount PowerShell scripts have valid syntax" -ForegroundColor Green
 } else {
- Write-Host " [FAIL] $scriptErrors out of $scriptCount scripts have syntax errors" -ForegroundColor Red
+ Write-Host " FAIL $scriptErrors out of $scriptCount scripts have syntax errors" -ForegroundColor Red
 }
 
 # Final summary
@@ -146,16 +146,16 @@ Write-Host " • Skipped: $skippedTests (platform-specific)" -ForegroundColor Ye
 Write-Host " • Failed: $failedTests" -ForegroundColor $(if($failedTests -eq 0){'Green'}else{'Red'})
 
 Write-Host "`n Infrastructure Status:" -ForegroundColor Cyan
-Write-Host " • Workflow Health: [PASS] PASSING" -ForegroundColor Green
-Write-Host " • Core Components: [PASS] FUNCTIONAL" -ForegroundColor Green 
-Write-Host " • PowerShell Scripts: [PASS] VALID SYNTAX" -ForegroundColor Green
-Write-Host " • Get-Command Patterns: [PASS] ELIMINATED" -ForegroundColor Green
+Write-Host " • Workflow Health: PASS PASSING" -ForegroundColor Green
+Write-Host " • Core Components: PASS FUNCTIONAL" -ForegroundColor Green 
+Write-Host " • PowerShell Scripts: PASS VALID SYNTAX" -ForegroundColor Green
+Write-Host " • Get-Command Patterns: PASS ELIMINATED" -ForegroundColor Green
 
 if ($failedTests -eq 0 -and $scriptErrors -eq 0) {
  Write-Host "`n ALL SYSTEMS GO! READY FOR PRODUCTION! " -ForegroundColor Green
  Write-Host " The GitHub Actions workflows should now run successfully." -ForegroundColor Green
 } else {
- Write-Host "`n[WARN] Some issues detected. Review the results above." -ForegroundColor Yellow
+ Write-Host "`nWARN Some issues detected. Review the results above." -ForegroundColor Yellow
 }
 
 Write-Host ""

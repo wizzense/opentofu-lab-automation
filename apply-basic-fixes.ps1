@@ -28,13 +28,13 @@ foreach ($testFile in $testFiles) {
         $content = Get-Content -Path $filePath -Raw
         
         # Pattern 1: Fix empty pipe elements  
-        $content = $content -replace '\s*\|\s*Should\s+-Not\s+-Throw\s*\n\s*\}\s*\n\s*_', '{ Test-Path $script:ScriptPath } | Should -Not -Throw' + "`n        }`n        `n        It 'should follow naming conventions' {`n            `$script:ScriptPath | Should -Match '^.*[0-9]{4}_"
+        $content = $content -replace '\s*\\s*Should\s+-Not\s+-Throw\s*\n\s*\}\s*\n\s*_', '{ Test-Path $script:ScriptPath }  Should -Not -Throw' + "`n        }`n        `n        It 'should follow naming conventions' {`n            `$script:ScriptPath  Should -Match '^.*0-9{4}_"
         
         # Pattern 2: Fix broken regex patterns
-        $content = $content -replace '_\[A-Z\]\[a-zA-Z0-9-\]\+\\\.ps1\$\|\^\[A-Z\]\[a-zA-Z0-9-\]\+\\\.ps1\$', '[A-Z][a-zA-Z0-9-]+\.ps1$|^[A-Z][a-zA-Z0-9-]+\.ps1$'''
+        $content = $content -replace '_\A-Z\\a-zA-Z0-9-\\+\\\.ps1\$\\^\A-Z\\a-zA-Z0-9-\\+\\\.ps1\$', 'A-Za-zA-Z0-9-+\.ps1$^A-Za-zA-Z0-9-+\.ps1$'''
         
         # Pattern 3: Fix unterminated Context strings
-        $content = $content -replace "Context\s+'([^']+)'\s*\{\s*~~~", "Context '$1' {"
+        $content = $content -replace "Context\s+'(^'+)'\s*\{\s*~~~", "Context '$1' {"
         
         # Write the changes
         Set-Content -Path $filePath -Value $content -Encoding UTF8

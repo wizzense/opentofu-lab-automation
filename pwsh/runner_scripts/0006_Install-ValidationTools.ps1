@@ -1,4 +1,4 @@
-Param([object]$Config)
+Param(object$Config)
 
 
 
@@ -9,7 +9,7 @@ Param([object]$Config)
 Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\pwsh/modules/LabRunner/" -ForceWrite-CustomLog "Starting $MyInvocation.MyCommand"
 
 function Install-Cosign {
-    [CmdletBinding(SupportsShouldProcess)]
+    CmdletBinding(SupportsShouldProcess)
     param()
     
 
@@ -29,7 +29,7 @@ function Install-Cosign {
         # Create the installation folder if it doesn't exist
         if (-not (Test-Path $installDir)) {
             if ($PSCmdlet.ShouldProcess($installDir, 'Create directory')) {
-                New-Item -ItemType Directory -Path $installDir -Force | Out-Null
+                New-Item -ItemType Directory -Path $installDir -Force  Out-Null
             }
         }
 
@@ -48,11 +48,11 @@ function Install-Cosign {
         }
 
         # Add the installation folder to the user's PATH if not already present
-        $userPath = [Environment]::GetEnvironmentVariable("PATH", "User")
+        $userPath = Environment::GetEnvironmentVariable("PATH", "User")
         if (-not $userPath) { $userPath = '' }
         if (-not $userPath.Contains($installDir)) {
             if ($PSCmdlet.ShouldProcess('User PATH', 'Update environment variable')) {
-                [Environment]::SetEnvironmentVariable("PATH", "$userPath;$installDir", "User")
+                Environment::SetEnvironmentVariable("PATH", "$userPath;$installDir", "User")
                 Write-CustomLog "Added $installDir to your user PATH. You may need to restart your session for this change to take effect."
             }
         }

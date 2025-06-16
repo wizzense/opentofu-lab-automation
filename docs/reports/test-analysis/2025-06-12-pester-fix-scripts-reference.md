@@ -8,18 +8,18 @@ This document contains all the scripts used to fix the "Param is not recognized"
 # Script to fix numbered test files with "Param is not recognized" error
 # filepath: /workspaces/opentofu-lab-automation/fix_param_tests.ps1
 
-$numberedTestFiles = Get-ChildItem -Path "tests" -Filter "*_*.Tests.ps1" | Where-Object { $_.Name -match '^\d{4}_' }
+$numberedTestFiles = Get-ChildItem -Path "tests" -Filter "*_*.Tests.ps1"  Where-Object { $_.Name -match '^\d{4}_' }
 
 foreach ($file in $numberedTestFiles) {
     $content = Get-Content $file.FullName -Raw
     
     # Remove InModuleScope LabRunner wrapper if present
-    $content = $content -replace 'InModuleScope LabRunner \{([^}]+)\}', '$1'
+    $content = $content -replace 'InModuleScope LabRunner \{(^}+)\}', '$1'
     
     # Replace direct script execution with pwsh -File execution
     $content = $content -replace '\{ & \$script:ScriptPath -Config \$config \}', '{ 
-        $tempConfig = Join-Path ([System.IO.Path]::GetTempPath()) "$([System.Guid]::NewGuid()).json"
-        $config | ConvertTo-Json | Set-Content $tempConfig
+        $tempConfig = Join-Path (System.IO.Path::GetTempPath()) "$(System.Guid::NewGuid()).json"
+        $config  ConvertTo-Json  Set-Content $tempConfig
         try {
             & pwsh -NoLogo -NoProfile -File $script:ScriptPath -Config $tempConfig
         } finally {
@@ -44,7 +44,7 @@ $testFiles = @(
     "tests/0001_Reset-Git.Tests.ps1",
     "tests/0002_Setup-Directories.Tests.ps1", 
     "tests/0006_Install-ValidationTools.Tests.ps1",
-    # ... [full list of 36 files]
+    # ... full list of 36 files
 )
 
 foreach ($testFile in $testFiles) {
@@ -65,30 +65,30 @@ foreach ($testFile in $testFiles) {
     }
     
     # Find and replace the execution patterns
-    $oldPattern1 = '(\s+)(\{ & \$script:ScriptPath -Config \$config \} \| Should -Not -Throw)'
-    $oldPattern2 = '(\s+)(\{ & \$script:ScriptPath -Config \$config -WhatIf \} \| Should -Not -Throw)'
+    $oldPattern1 = '(\s+)(\{ & \$script:ScriptPath -Config \$config \} \ Should -Not -Throw)'
+    $oldPattern2 = '(\s+)(\{ & \$script:ScriptPath -Config \$config -WhatIf \} \ Should -Not -Throw)'
     
     $newReplacement1 = @'
-$1$config = [pscustomobject]@{}
-$1$configJson = $config | ConvertTo-Json -Depth 5
-$1$tempConfig = Join-Path ([System.IO.Path]::GetTempPath()) "$([System.Guid]::NewGuid()).json"
-$1$configJson | Set-Content -Path $tempConfig
+$1$config = pscustomobject@{}
+$1$configJson = $config  ConvertTo-Json -Depth 5
+$1$tempConfig = Join-Path (System.IO.Path::GetTempPath()) "$(System.Guid::NewGuid()).json"
+$1$configJson  Set-Content -Path $tempConfig
 $1try {
 $1    $pwsh = (Get-Command pwsh).Source
-$1    { & $pwsh -NoLogo -NoProfile -File $script:ScriptPath -Config $tempConfig } | Should -Not -Throw
+$1    { & $pwsh -NoLogo -NoProfile -File $script:ScriptPath -Config $tempConfig }  Should -Not -Throw
 $1} finally {
 $1    Remove-Item $tempConfig -Force -ErrorAction SilentlyContinue
 $1}
 '@
     
     $newReplacement2 = @'
-$1$config = [pscustomobject]@{}
-$1$configJson = $config | ConvertTo-Json -Depth 5
-$1$tempConfig = Join-Path ([System.IO.Path]::GetTempPath()) "$([System.Guid]::NewGuid()).json"
-$1$configJson | Set-Content -Path $tempConfig
+$1$config = pscustomobject@{}
+$1$configJson = $config  ConvertTo-Json -Depth 5
+$1$tempConfig = Join-Path (System.IO.Path::GetTempPath()) "$(System.Guid::NewGuid()).json"
+$1$configJson  Set-Content -Path $tempConfig
 $1try {
 $1    $pwsh = (Get-Command pwsh).Source
-$1    { & $pwsh -NoLogo -NoProfile -File $script:ScriptPath -Config $tempConfig -WhatIf } | Should -Not -Throw
+$1    { & $pwsh -NoLogo -NoProfile -File $script:ScriptPath -Config $tempConfig -WhatIf }  Should -Not -Throw
 $1} finally {
 $1    Remove-Item $tempConfig -Force -ErrorAction SilentlyContinue
 $1}
@@ -127,47 +127,47 @@ Write-Host "`nCompleted processing all numbered test files."
 $testFiles = @(
     "tests/0001_Reset-Git.Tests.ps1",
     "tests/0002_Setup-Directories.Tests.ps1", 
-    # ... [full list of 36 files]
+    # ... full list of 36 files
 )
 
 # Function to restore files from git
 function Restore-TestFile {
-    param([string]$FilePath)
+    param(string$FilePath)
     Write-Host "Restoring $FilePath from git..."
     git checkout HEAD -- $FilePath
 }
 
 # Function to fix the test file execution pattern
 function Fix-TestFile {
-    param([string]$FilePath)
+    param(string$FilePath)
     
     $content = Get-Content $FilePath -Raw
     
     # Define the working pattern to look for and replace
     $basicExecutionPattern = @'
 It 'should execute without errors with valid config' {
-                \$config = \[pscustomobject\]@\{\}
-                \{ & \$script:ScriptPath -Config \$config \} \| Should -Not -Throw
+                \$config = \pscustomobject\@\{\}
+                \{ & \$script:ScriptPath -Config \$config \} \ Should -Not -Throw
             \}
 '@
     
     $whatifExecutionPattern = @'
 It 'should handle whatif parameter' {
-                \$config = \[pscustomobject\]@\{\}
-                \{ & \$script:ScriptPath -Config \$config -WhatIf \} \| Should -Not -Throw
+                \$config = \pscustomobject\@\{\}
+                \{ & \$script:ScriptPath -Config \$config -WhatIf \} \ Should -Not -Throw
             \}
 '@
     
     # The corrected patterns to replace them with
     $newBasicPattern = @'
 It 'should execute without errors with valid config' {
-                $config = [pscustomobject]@{}
-                $configJson = $config | ConvertTo-Json -Depth 5
-                $tempConfig = Join-Path ([System.IO.Path]::GetTempPath()) "$([System.Guid]::NewGuid()).json"
-                $configJson | Set-Content -Path $tempConfig
+                $config = pscustomobject@{}
+                $configJson = $config  ConvertTo-Json -Depth 5
+                $tempConfig = Join-Path (System.IO.Path::GetTempPath()) "$(System.Guid::NewGuid()).json"
+                $configJson  Set-Content -Path $tempConfig
                 try {
                     $pwsh = (Get-Command pwsh).Source
-                    { & $pwsh -NoLogo -NoProfile -File $script:ScriptPath -Config $tempConfig } | Should -Not -Throw
+                    { & $pwsh -NoLogo -NoProfile -File $script:ScriptPath -Config $tempConfig }  Should -Not -Throw
                 } finally {
                     Remove-Item $tempConfig -Force -ErrorAction SilentlyContinue
                 }
@@ -215,7 +215,7 @@ Write-Host "`nCompleted processing all numbered test files."
 $testFiles = @(
     "tests/0001_Reset-Git.Tests.ps1",
     "tests/0002_Setup-Directories.Tests.ps1", 
-    # ... [full list of 36 files]
+    # ... full list of 36 files
 )
 
 foreach ($testFile in $testFiles) {
@@ -228,15 +228,15 @@ foreach ($testFile in $testFiles) {
     $content = Get-Content $testFile -Raw
     
     # Pattern 1: Replace the direct script execution with & operator
-    $oldPattern1 = '\{ & \$scriptPath -Config ''TestValue'' -WhatIf \} \| Should -Not -Throw'
+    $oldPattern1 = '\{ & \$scriptPath -Config ''TestValue'' -WhatIf \} \ Should -Not -Throw'
     $newPattern1 = @'
-$config = [pscustomobject]@{ TestProperty = 'TestValue' }
-            $configJson = $config | ConvertTo-Json -Depth 5
-            $tempConfig = Join-Path ([System.IO.Path]::GetTempPath()) "$([System.Guid]::NewGuid()).json"
-            $configJson | Set-Content -Path $tempConfig
+$config = pscustomobject@{ TestProperty = 'TestValue' }
+            $configJson = $config  ConvertTo-Json -Depth 5
+            $tempConfig = Join-Path (System.IO.Path::GetTempPath()) "$(System.Guid::NewGuid()).json"
+            $configJson  Set-Content -Path $tempConfig
             try {
                 $pwsh = (Get-Command pwsh).Source
-                { & $pwsh -NoLogo -NoProfile -File $scriptPath -Config $tempConfig -WhatIf } | Should -Not -Throw
+                { & $pwsh -NoLogo -NoProfile -File $scriptPath -Config $tempConfig -WhatIf }  Should -Not -Throw
             } finally {
                 Remove-Item $tempConfig -Force -ErrorAction SilentlyContinue
             }
@@ -271,7 +271,7 @@ Write-Host "`nCompleted processing all numbered test files."
 $testFiles = @(
     "tests/0001_Reset-Git.Tests.ps1",
     "tests/0002_Setup-Directories.Tests.ps1", 
-    # ... [full list of 36 files]
+    # ... full list of 36 files
 )
 
 foreach ($testFile in $testFiles) {
@@ -284,11 +284,11 @@ foreach ($testFile in $testFiles) {
     $content = Get-Content $testFile -Raw
     
     # Extract the script name from the test file name
-    $testFileName = [System.IO.Path]::GetFileName($testFile)
+    $testFileName = System.IO.Path::GetFileName($testFile)
     $scriptName = $testFileName -replace '\.Tests\.ps1$', '.ps1'
     
     # Fix the path construction - use the Get-RunnerScriptPath function
-    $oldPattern = '\$scriptPath = Join-Path \$PSScriptRoot ''\.\.'' ''/workspaces/opentofu-lab-automation/pwsh/runner_scripts/[^'']+'''
+    $oldPattern = '\$scriptPath = Join-Path \$PSScriptRoot ''\.\.'' ''/workspaces/opentofu-lab-automation/pwsh/runner_scripts/^''+'''
     $newPattern = @"
 # Get the script path using the LabRunner function  
         `$script:ScriptPath = Get-RunnerScriptPath '$scriptName'
@@ -340,11 +340,11 @@ foreach ($testFile in $testFiles) {
     $content = Get-Content $testFile -Raw
     
     # Replace the dot-sourcing pattern in the syntax validation test
-    $oldPattern = '\{ \. \$script:ScriptPath \} \| Should -Not -Throw'
+    $oldPattern = '\{ \. \$script:ScriptPath \} \ Should -Not -Throw'
     $newPattern = @'
 $errors = $null
-                [System.Management.Automation.Language.Parser]::ParseFile($script:ScriptPath, [ref]$null, [ref]$errors) | Out-Null
-                ($errors ? $errors.Count : 0) | Should -Be 0
+                System.Management.Automation.Language.Parser::ParseFile($script:ScriptPath, ref$null, ref$errors)  Out-Null
+                ($errors ? $errors.Count : 0)  Should -Be 0
 '@
     
     # Apply replacement
@@ -383,13 +383,13 @@ Write-Host "`nCompleted processing all files with dot-sourcing issues."
 
 ### Working Test Execution Pattern
 ```powershell
-$config = [pscustomobject]@{}
-$configJson = $config | ConvertTo-Json -Depth 5
-$tempConfig = Join-Path ([System.IO.Path]::GetTempPath()) "$([System.Guid]::NewGuid()).json"
-$configJson | Set-Content -Path $tempConfig
+$config = pscustomobject@{}
+$configJson = $config  ConvertTo-Json -Depth 5
+$tempConfig = Join-Path (System.IO.Path::GetTempPath()) "$(System.Guid::NewGuid()).json"
+$configJson  Set-Content -Path $tempConfig
 try {
     $pwsh = (Get-Command pwsh).Source
-    { & $pwsh -NoLogo -NoProfile -File $script:ScriptPath -Config $tempConfig } | Should -Not -Throw
+    { & $pwsh -NoLogo -NoProfile -File $script:ScriptPath -Config $tempConfig }  Should -Not -Throw
 } finally {
     Remove-Item $tempConfig -Force -ErrorAction SilentlyContinue
 }
@@ -398,8 +398,8 @@ try {
 ### Working Syntax Validation Pattern
 ```powershell
 $errors = $null
-[System.Management.Automation.Language.Parser]::ParseFile($script:ScriptPath, [ref]$null, [ref]$errors) | Out-Null
-($errors ? $errors.Count : 0) | Should -Be 0
+System.Management.Automation.Language.Parser::ParseFile($script:ScriptPath, ref$null, ref$errors)  Out-Null
+($errors ? $errors.Count : 0)  Should -Be 0
 ```
 
 ### Working Path Resolution Pattern

@@ -69,7 +69,7 @@ metadata:
 Test-JsonConfig -Path $ConfigFile -Schema $SchemaFile
 
 # Validate structure
-$config = Get-Content $ConfigFile | ConvertFrom-Json
+$config = Get-Content $ConfigFile  ConvertFrom-Json
 if (-not $config.metadata) {
     throw "Missing required metadata section"
 }
@@ -131,12 +131,12 @@ security:
 access:
   roles:
     developer:
-      permissions: ["read", "execute"]
-      paths: ["scripts/*", "configs/*"]
+      permissions: "read", "execute"
+      paths: "scripts/*", "configs/*"
       
     maintainer:
-      permissions: ["read", "write", "execute"]
-      paths: ["**/*"]
+      permissions: "read", "write", "execute"
+      paths: "**/*"
 ```
 
 ## Validation Integration
@@ -166,11 +166,11 @@ if (-not (Test-Path $config.modules.paths.labrunner)) {
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "object",
-  "required": ["metadata", "modules"],
+  "required": "metadata", "modules",
   "properties": {
     "metadata": {
       "type": "object",
-      "required": ["version", "description"],
+      "required": "version", "description",
       "properties": {
         "version": {"type": "string"},
         "description": {"type": "string"}

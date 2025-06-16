@@ -46,7 +46,7 @@ function Remove-ProblematicArchives {
  )
  
  foreach ($pattern in $archivePatterns) {
- Get-ChildItem -Path $pattern -ErrorAction SilentlyContinue | 
+ Get-ChildItem -Path $pattern -ErrorAction SilentlyContinue  
  Remove-Item -Recurse -Force -ErrorAction SilentlyContinue
  }
 }
@@ -115,14 +115,14 @@ function Invoke-SafeGitPull {
 #### Archive Size Monitoring
 ```powershell
 function Test-ArchiveSize {
- $archiveSize = (Get-ChildItem -Path "archive" -Recurse | 
+ $archiveSize = (Get-ChildItem -Path "archive" -Recurse  
  Measure-Object -Property Length -Sum).Sum / 1MB
  
  if ($archiveSize -gt 100) {
  Write-Warning "Archive directory > 100MB. Consider cleanup."
  # Auto-cleanup old archives
- Get-ChildItem -Path "archive" -Directory | 
- Where-Object { $_.CreationTime -lt (Get-Date).AddDays(-30) } |
+ Get-ChildItem -Path "archive" -Directory  
+ Where-Object { $_.CreationTime -lt (Get-Date).AddDays(-30) } 
  Remove-Item -Recurse -Force
  }
 }
@@ -157,7 +157,7 @@ jobs:
  steps:
  - uses: actions/checkout@v4
  - name: Clean Archive Directories
- run: |
+ run: 
  find archive -name "*cleanup*" -type d -exec rm -rf {} +
  find archive -name "*temp*" -type d -exec rm -rf {} +
 ```
@@ -167,7 +167,7 @@ jobs:
 #### Quick Recovery Script
 ```powershell
 # scripts/emergency-git-recovery.ps1
-param([switch]$Force)
+param(switch$Force)
 
 Write-Host " Emergency Git Recovery" -ForegroundColor Red
 
@@ -189,7 +189,7 @@ if ($Force) {
 git fetch origin
 git reset --hard origin/main
 
-Write-Host "[PASS] Recovery complete" -ForegroundColor Green
+Write-Host "PASS Recovery complete" -ForegroundColor Green
 ```
 
 ### 7. Training and Documentation
@@ -218,14 +218,14 @@ git push
 
 ## Implementation Checklist
 
-- [ ] Install pre-commit hooks
-- [ ] Create git-safe.ps1 wrapper script
-- [ ] Add archive cleanup to unified-maintenance
-- [ ] Update .gitignore for problematic patterns
-- [ ] Create emergency recovery script
-- [ ] Set up daily archive monitoring
-- [ ] Document safe Git workflows
-- [ ] Train team on new procedures
+-   Install pre-commit hooks
+-   Create git-safe.ps1 wrapper script
+-   Add archive cleanup to unified-maintenance
+-   Update .gitignore for problematic patterns
+-   Create emergency recovery script
+-   Set up daily archive monitoring
+-   Document safe Git workflows
+-   Train team on new procedures
 
 ## � Red Flags to Watch For
 
@@ -235,7 +235,7 @@ git push
 - Rebase operations with directory deletion prompts
 - Divergent branch states lasting > 1 day
 
-## [PASS] Success Metrics
+## PASS Success Metrics
 
 - Zero Git rebase failures
 - Archive directories < 50MB

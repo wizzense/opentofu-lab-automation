@@ -32,4 +32,4 @@ Use `runs-on: self-hosted` in a workflow job to target your machine.
 
 ---
 
-See [pester-test-failures.md](pester-test-failures.md) for a tracked list of current test failures.
+See pester-test-failures.md(pester-test-failures.md) for a tracked list of current test failures.

@@ -29,30 +29,30 @@ function New-TestFromScript {
     .EXAMPLE
     New-TestFromScript -ScriptPath "pwsh/runner_scripts/0101_Install-Git.ps1" -TestType "Installer" -AddAutoFix
     #>
-    [CmdletBinding(SupportsShouldProcess=$true)]
+    CmdletBinding(SupportsShouldProcess=$true)
     param(
-        [Parameter(Mandatory=$true)
+        Parameter(Mandatory=$true)
 
 
 
 
 
 
-]
-        [string]$ScriptPath,
+
+        string$ScriptPath,
         
-        [Parameter()]
-        [string]$OutputPath = "",
+        Parameter()
+        string$OutputPath = "",
         
-        [Parameter()]
-        [ValidateSet("Installer", "Feature", "Service", "Configuration", "CrossPlatform", "Auto")]
-        [string]$TestType = "Auto",
+        Parameter()
+        ValidateSet("Installer", "Feature", "Service", "Configuration", "CrossPlatform", "Auto")
+        string$TestType = "Auto",
         
-        [Parameter()]
-        [switch]$Force,
+        Parameter()
+        switch$Force,
         
-        [Parameter()]
-        [switch]$AddAutoFix
+        Parameter()
+        switch$AddAutoFix
     )
     
     if (-not (Test-Path $ScriptPath)) {
@@ -67,8 +67,8 @@ function New-TestFromScript {
     
     # Determine output path if not specified
     if (-not $OutputPath) {
-        $scriptName = [System.IO.Path]::GetFileName($ScriptPath)
-        $baseName = [System.IO.Path]::GetFileNameWithoutExtension($scriptName)
+        $scriptName = System.IO.Path::GetFileName($ScriptPath)
+        $baseName = System.IO.Path::GetFileNameWithoutExtension($scriptName)
         $OutputPath = Join-Path "tests" "$baseName.Tests.ps1"
     }
     
@@ -84,7 +84,7 @@ function New-TestFromScript {
     
     # Write the test file
     if ($PSCmdlet.ShouldProcess($OutputPath, "Create test file")) {
-        $testContent | Out-File -FilePath $OutputPath -Encoding utf8
+        $testContent  Out-File -FilePath $OutputPath -Encoding utf8
         Write-Host "Generated test file: $OutputPath" -ForegroundColor Green
         return $true
     }
@@ -97,17 +97,17 @@ function Add-AutoFixTrigger {
     .SYNOPSIS
     Adds automatic fix triggers to existing test files
     #>
-    [CmdletBinding(SupportsShouldProcess=$true)]
+    CmdletBinding(SupportsShouldProcess=$true)
     param(
-        [Parameter(Mandatory=$true)
+        Parameter(Mandatory=$true)
 
 
 
 
 
 
-]
-        [string]$Path
+
+        string$Path
     )
     
     if (-not (Test-Path $Path)) {
@@ -128,9 +128,9 @@ function Add-AutoFixTrigger {
     $beforeAllPattern = 'BeforeAll\s*\{'
     if ($content -notmatch $beforeAllPattern) {
         # No BeforeAll block, try to add after Describe
-        $describePattern = 'Describe\s+[''"]([^''"]*)[''"](.*?)\{'"
+        $describePattern = 'Describe\s+''"(^''"*)''"(.*?)\{'"
         if ($content -match $describePattern) {
-            $match = [regex]::Match($content, $describePattern)
+            $match = regex::Match($content, $describePattern)
             $insertPos = $match.Index + $match.Length
             
             $autoFixBlock = @'
@@ -140,7 +140,7 @@ function Add-AutoFixTrigger {
         # Check script syntax and auto-fix if issues found
         try {
             $scriptErrors = $null
-            $scriptAst = [System.Management.Automation.Language.Parser]::ParseFile($ScriptPath, [ref]$null, [ref]$scriptErrors)
+            $scriptAst = System.Management.Automation.Language.Parser::ParseFile($ScriptPath, ref$null, ref$scriptErrors)
             
             if ($scriptErrors -and $scriptErrors.Count -gt 0) {
                 Write-Warning "Syntax issues detected in $($ScriptPath), attempting auto-fix..."
@@ -159,7 +159,7 @@ function Add-AutoFixTrigger {
         }
     } else {
         # Add to existing BeforeAll block
-        $match = [regex]::Match($content, $beforeAllPattern)
+        $match = regex::Match($content, $beforeAllPattern)
         $insertPos = $match.Index + $match.Length
         
         $autoFixBlock = @'
@@ -168,7 +168,7 @@ function Add-AutoFixTrigger {
         # Check script syntax and auto-fix if issues found
         try {
             $scriptErrors = $null
-            $scriptAst = [System.Management.Automation.Language.Parser]::ParseFile($ScriptPath, [ref]$null, [ref]$scriptErrors)
+            $scriptAst = System.Management.Automation.Language.Parser::ParseFile($ScriptPath, ref$null, ref$scriptErrors)
             
             if ($scriptErrors -and $scriptErrors.Count -gt 0) {
                 Write-Warning "Syntax issues detected in $($ScriptPath), attempting auto-fix..."
@@ -202,20 +202,20 @@ function Update-ExistingTests {
     .SYNOPSIS
     Updates all existing test files with auto-fix triggers
     #>
-    [CmdletBinding(SupportsShouldProcess=$true)]
+    CmdletBinding(SupportsShouldProcess=$true)
     param(
-        [Parameter()
+        Parameter()
 
 
 
 
 
 
-]
-        [string]$TestDirectory = "tests",
+
+        string$TestDirectory = "tests",
         
-        [Parameter()]
-        [switch]$Recurse
+        Parameter()
+        switch$Recurse
     )
     
     if (-not (Test-Path $TestDirectory)) {
@@ -251,20 +251,20 @@ function New-FixWorkflow {
     .SYNOPSIS
     Creates a GitHub Actions workflow file that auto-fixes syntax issues on failure
     #>
-    [CmdletBinding(SupportsShouldProcess=$true)]
+    CmdletBinding(SupportsShouldProcess=$true)
     param(
-        [Parameter()
+        Parameter()
 
 
 
 
 
 
-]
-        [string]$OutputPath = ".github/workflows/auto-fix-issues.yml",
+
+        string$OutputPath = ".github/workflows/auto-fix-issues.yml",
         
-        [Parameter()]
-        [string]$BranchName = "main"
+        Parameter()
+        string$BranchName = "main"
     )
     
     $workflowContent = @@"
@@ -274,8 +274,8 @@ name: Auto-Fix Issues
 on:
   # Trigger after Pester workflow completes
   workflow_run:
-    workflows: ["Pester"]
-    types: [completed]
+    workflows: "Pester"
+    types: completed
   # Allow manual trigger
   workflow_dispatch:
 
@@ -283,7 +283,7 @@ jobs:
   auto-fix:
     name: Auto-Fix Test Issues
     runs-on: ubuntu-latest
-    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'failure'
+    if: github.event_name == 'workflow_dispatch'  github.event.workflow_run.conclusion == 'failure'
     permissions:
       contents: write
       pull-requests: write
@@ -295,7 +295,7 @@ jobs:
 
       - name: Install PowerShell
         shell: bash
-        run: |
+        run: 
           if ! command -v pwsh >/dev/null 2>&1; then
             sudo apt-get update
             sudo apt-get install -y powershell
@@ -303,10 +303,10 @@ jobs:
 
       - name: Download test results
         if: github.event_name != 'workflow_dispatch'
-        run: |
+        run: 
           mkdir -p test-results
           gh run download '${{ github.event.workflow_run.id }}' -n test-results -D test-results
-          if [ -f test-results/TestResults.xml ]; then
+          if  -f test-results/TestResults.xml ; then
             echo "Test results found"
           else
             echo "No test results found, attempting to fix anyway"
@@ -316,7 +316,7 @@ jobs:
 
       - name: Run auto-fix module
         shell: pwsh
-        run: |
+        run: 
           Import-Module ./tools/TestAutoFixer/TestAutoFixer.psd1 -Force
           
           # Analyze test results if available
@@ -341,8 +341,8 @@ jobs:
           Update-ExistingTests -TestDirectory "tests" -Recurse
 
       - name: Create PR if changes were made
-        run: |
-          if [[ \$(git status --porcelain | wc -l) -gt 0 ]]; then
+        run: 
+          if  \$(git status --porcelain  wc -l) -gt 0 ; then
             echo "Changes detected, creating PR"
             timestamp=\$(date +%Y%m%d%H%M%S)
             branch="auto-fix/syntax-fixes-\$timestamp"
@@ -372,13 +372,13 @@ jobs:
     $parentDir = Split-Path $OutputPath -Parent
     if (-not (Test-Path $parentDir)) {
         if ($PSCmdlet.ShouldProcess($parentDir, "Create directory")) {
-            New-Item -Path $parentDir -ItemType Directory -Force | Out-Null
+            New-Item -Path $parentDir -ItemType Directory -Force  Out-Null
         }
     }
     
     # Write the workflow file
     if ($PSCmdlet.ShouldProcess($OutputPath, "Create workflow file")) {
-        $workflowContent | Out-File -FilePath $OutputPath -Encoding utf8
+        $workflowContent  Out-File -FilePath $OutputPath -Encoding utf8
         Write-Host "Generated workflow file: $OutputPath" -ForegroundColor Green
         return $true
     }
@@ -393,17 +393,17 @@ function Get-ScriptCategory {
     .SYNOPSIS
     Determines the category of a PowerShell script
     #>
-    [CmdletBinding()]
+    CmdletBinding()
     param(
-        [Parameter(Mandatory=$true)
+        Parameter(Mandatory=$true)
 
 
 
 
 
 
-]
-        [string]$Path
+
+        string$Path
     )
     
     if (-not (Test-Path $Path)) {
@@ -412,19 +412,19 @@ function Get-ScriptCategory {
     }
     
     $content = Get-Content -Path $Path -Raw
-    $fileName = [System.IO.Path]::GetFileName($Path)
+    $fileName = System.IO.Path::GetFileName($Path)
     
-    if ($fileName -match "^[0-9]{4}_Install-") {
+    if ($fileName -match "^0-9{4}_Install-") {
         return "Installer"
     }
-    elseif ($fileName -match "^[0-9]{4}_Enable-" -or $fileName -match "^[0-9]{4}_Configure-") {
+    elseif ($fileName -match "^0-9{4}_Enable-" -or $fileName -match "^0-9{4}_Configure-") {
         return "Feature"
     }
-    elseif ($content -match "Get-Service|Start-Service|Stop-Service|Restart-Service") {
+    elseif ($content -match "Get-ServiceStart-ServiceStop-ServiceRestart-Service") {
         return "Service"
     }
-    elseif ($content -match "Set-Content|Get-Content|ConvertTo-Json|ConvertFrom-Json" -and 
-           ($content -match "\.json|\.config|\.conf" -or $content -match "configuration")) {
+    elseif ($content -match "Set-ContentGet-ContentConvertTo-JsonConvertFrom-Json" -and 
+           ($content -match "\.json\.config\.conf" -or $content -match "configuration")) {
         return "Configuration"
     }
     else {
@@ -437,17 +437,17 @@ function Get-ScriptAnalysis {
     .SYNOPSIS
     Analyzes a PowerShell script to determine its structure and features
     #>
-    [CmdletBinding()]
+    CmdletBinding()
     param(
-        [Parameter(Mandatory=$true)
+        Parameter(Mandatory=$true)
 
 
 
 
 
 
-]
-        [string]$Path
+
+        string$Path
     )
     
     if (-not (Test-Path $Path)) {
@@ -455,7 +455,7 @@ function Get-ScriptAnalysis {
     }
     
     $content = Get-Content $Path -Raw
-    $ast = [System.Management.Automation.Language.Parser]::ParseInput($content, [ref]$null, [ref]$null)
+    $ast = System.Management.Automation.Language.Parser::ParseInput($content, ref$null, ref$null)
     
     $analysis = @{
         Functions = @()
@@ -471,7 +471,7 @@ function Get-ScriptAnalysis {
     }
     
     # Find functions
-    $functions = $ast.FindAll({ $args[0] -is [System.Management.Automation.Language.FunctionDefinitionAst] }, $true)
+    $functions = $ast.FindAll({ $args0 -is System.Management.Automation.Language.FunctionDefinitionAst }, $true)
     foreach ($func in $functions) {
         $analysis.Functions += @{
             Name = $func.Name
@@ -480,45 +480,45 @@ function Get-ScriptAnalysis {
     }
     
     # Find parameters
-    $params = $ast.ParamBlock.Parameters | ForEach-Object { $_.Name.VariablePath.UserPath }
+    $params = $ast.ParamBlock.Parameters  ForEach-Object { $_.Name.VariablePath.UserPath }
     if ($params) {
         $analysis.Parameters = $params
     }
     
     # Check platform requirements
-    if ($content -match "IsWindows|Get-WindowsFeature|Get-WmiObject|Get-CimInstance" -or
-        $content -match "\.msi|\.exe") {
+    if ($content -match "IsWindowsGet-WindowsFeatureGet-WmiObjectGet-CimInstance" -or
+        $content -match "\.msi\.exe") {
         $analysis.Platform = "Windows"
     }
-    elseif ($content -match "IsLinux|apt-get|yum|dnf") {
+    elseif ($content -match "IsLinuxapt-getyumdnf") {
         $analysis.Platform = "Linux"
     }
-    elseif ($content -match "IsMacOS|brew ") {
+    elseif ($content -match "IsMacOSbrew ") {
         $analysis.Platform = "MacOS"
     }
     
     # Check for admin requirements
-    if ($content -match "Test-IsAdministrator|Administrator|RunAs|sudo|elevation") {
+    if ($content -match "Test-IsAdministratorAdministratorRunAssudoelevation") {
         $analysis.RequiresAdmin = $true
     }
     
     # Check for downloads
-    if ($content -match "Invoke-WebRequest|Invoke-RestMethod|wget|curl|Start-BitsTransfer") {
+    if ($content -match "Invoke-WebRequestInvoke-RestMethodwgetcurlStart-BitsTransfer") {
         $analysis.HasDownloads = $true
     }
     
     # Check for installations
-    if ($content -match "Start-Process|msiexec|choco|apt-get install|npm install|pip install") {
+    if ($content -match "Start-Processmsiexecchocoapt-get installnpm installpip install") {
         $analysis.HasInstallation = $true
     }
     
     # Check for configuration
-    if ($content -match "Set-Content|Get-Content|ConvertTo-Json|ConvertFrom-Json") {
+    if ($content -match "Set-ContentGet-ContentConvertTo-JsonConvertFrom-Json") {
         $analysis.HasConfiguration = $true
     }
     
     # Check for service management
-    if ($content -match "Get-Service|Start-Service|Stop-Service|Restart-Service") {
+    if ($content -match "Get-ServiceStart-ServiceStop-ServiceRestart-Service") {
         $analysis.HasServiceManagement = $true
     }
     
@@ -530,30 +530,30 @@ function Generate-TestContent {
     .SYNOPSIS
     Generates the content for a test file based on script analysis
     #>
-    [CmdletBinding()]
+    CmdletBinding()
     param(
-        [Parameter(Mandatory=$true)
+        Parameter(Mandatory=$true)
 
 
 
 
 
 
-]
-        [hashtable]$Analysis,
+
+        hashtable$Analysis,
         
-        [Parameter(Mandatory=$true)]
-        [string]$TestType,
+        Parameter(Mandatory=$true)
+        string$TestType,
         
-        [Parameter(Mandatory=$true)]
-        [string]$ScriptPath,
+        Parameter(Mandatory=$true)
+        string$ScriptPath,
         
-        [Parameter()]
-        [switch]$AddAutoFix
+        Parameter()
+        switch$AddAutoFix
     )
     
-    $scriptName = [System.IO.Path]::GetFileName($ScriptPath)
-    $scriptBaseName = [System.IO.Path]::GetFileNameWithoutExtension($scriptName)
+    $scriptName = System.IO.Path::GetFileName($ScriptPath)
+    $scriptBaseName = System.IO.Path::GetFileNameWithoutExtension($scriptName)
     
     $skipClause = if ($Analysis.Platform -ne "CrossPlatform") { " -Skip:`$Skip$($Analysis.Platform)"
        } else { ""
@@ -582,7 +582,7 @@ Describe '$scriptBaseName Tests' -Tag '$($Analysis.Category)' {
             }
             
             `$scriptErrors = `$null
-            `$scriptAst = [System.Management.Automation.Language.Parser]::ParseFile(`$script:ScriptPath, [ref]`$null, [ref]`$scriptErrors)
+            `$scriptAst = System.Management.Automation.Language.Parser::ParseFile(`$script:ScriptPath, ref`$null, ref`$scriptErrors)
             
             if (`$scriptErrors -and `$scriptErrors.Count -gt 0) {
                 Write-Warning "Syntax issues detected in `$(`$script:ScriptPath), attempting auto-fix..."
@@ -638,28 +638,28 @@ Describe '$scriptBaseName Tests' -Tag '$($Analysis.Category)' {
     Context 'Script Structure Validation' {
         It 'should have valid PowerShell syntax'$skipClause {
             `$errors = `$null
-            [System.Management.Automation.Language.Parser]::ParseFile(`$script:ScriptPath, [ref]`$null, [ref]`$errors) | Out-Null
-            (if (`$errors) { `$errors.Count  } else { 0 }) | Should -Be 0
+            System.Management.Automation.Language.Parser::ParseFile(`$script:ScriptPath, ref`$null, ref`$errors)  Out-Null
+            (if (`$errors) { `$errors.Count  } else { 0 })  Should -Be 0
         }
         
         It 'should follow naming conventions'$skipClause {
-            `$scriptName = [System.IO.Path]::GetFileName(`$script:ScriptPath)
-            `$scriptName | Should -Match '^[0-9]{4}_[A-Z][a-zA-Z0-9-]+\.ps1$|^[A-Z][a-zA-Z0-9-]+\.ps1$'
+            `$scriptName = System.IO.Path::GetFileName(`$script:ScriptPath)
+            `$scriptName  Should -Match '^0-9{4}_A-Za-zA-Z0-9-+\.ps1$^A-Za-zA-Z0-9-+\.ps1$'
         }
         
         It 'should have Config parameter'$skipClause {
             `$content = Get-Content `$script:ScriptPath -Raw
-            `$content | Should -Match 'Param\s*\(\s*.*\$Config'
+            `$content  Should -Match 'Param\s*\(\s*.*\$Config'
         }
         
         It 'should import LabRunner module'$skipClause {
             `$content = Get-Content `$script:ScriptPath -Raw
-            `$content | Should -Match 'Import-Module.*LabRunner'
+            `$content  Should -Match 'Import-Module.*LabRunner'
         }
         
         It 'should contain Invoke-LabStep call'$skipClause {
             `$content = Get-Content `$script:ScriptPath -Raw
-            `$content | Should -Match 'Invoke-LabStep'
+            `$content  Should -Match 'Invoke-LabStep'
         }
 "@
 
@@ -671,7 +671,7 @@ Describe '$scriptBaseName Tests' -Tag '$($Analysis.Category)' {
         foreach ($func in $Analysis.Functions) {
             $template += @@"
 
-            Get-Command '$($func.Name)' -ErrorAction SilentlyContinue | Should -Not -BeNullOrEmpty
+            Get-Command '$($func.Name)' -ErrorAction SilentlyContinue  Should -Not -BeNullOrEmpty
 "@
         }
         $template += @@"
@@ -692,7 +692,7 @@ Describe '$scriptBaseName Tests' -Tag '$($Analysis.Category)' {
             $template += @@"
 
         It 'should accept $param parameter'$skipClause {
-            { & `$script:ScriptPath -$param 'TestValue' -WhatIf } | Should -Not -Throw
+            { & `$script:ScriptPath -$param 'TestValue' -WhatIf }  Should -Not -Throw
         }
 "@
         }
@@ -700,7 +700,7 @@ Describe '$scriptBaseName Tests' -Tag '$($Analysis.Category)' {
         $template += @@"
 
         It 'should handle execution without parameters'$skipClause {
-            { & `$script:ScriptPath -WhatIf } | Should -Not -Throw
+            { & `$script:ScriptPath -WhatIf }  Should -Not -Throw
         }
 "@
     }
@@ -725,7 +725,7 @@ Describe '$scriptBaseName Tests' -Tag '$($Analysis.Category)' {
         
         It 'should validate prerequisites'$skipClause {
             # Test prerequisite checking logic
-            `$true | Should -BeTrue  # Placeholder - implement actual tests
+            `$true  Should -BeTrue  # Placeholder - implement actual tests
         }
         
         It 'should handle download failures gracefully'$skipClause {
@@ -733,12 +733,12 @@ Describe '$scriptBaseName Tests' -Tag '$($Analysis.Category)' {
             Mock Invoke-WebRequest { throw "Download failed" }
             
             # Test error handling for failed downloads
-            { & `$script:ScriptPath -Config @{ $(if ($Analysis.Category -eq "Installer") { "Install$(if($scriptName -match '_Install-(.+)\.ps1$'){$matches[1]}Else{$scriptBaseName})=" } else { "ConfigProperty=" })`$true } } | Should -Not -Throw
+            { & `$script:ScriptPath -Config @{ $(if ($Analysis.Category -eq "Installer") { "Install$(if($scriptName -match '_Install-(.+)\.ps1$'){$matches1}Else{$scriptBaseName})=" } else { "ConfigProperty=" })`$true } }  Should -Not -Throw
         }
         
         It 'should verify installation success'$skipClause {
             # Test installation verification
-            & `$script:ScriptPath -Config @{ $(if ($Analysis.Category -eq "Installer") { "Install$(if($scriptName -match '_Install-(.+)\.ps1$'){$matches[1]}Else{$scriptBaseName})=" } else { "ConfigProperty=" })`$true }
+            & `$script:ScriptPath -Config @{ $(if ($Analysis.Category -eq "Installer") { "Install$(if($scriptName -match '_Install-(.+)\.ps1$'){$matches1}Else{$scriptBaseName})=" } else { "ConfigProperty=" })`$true }
             Should -Invoke Start-Process -Times 1
         }
     }
@@ -751,17 +751,17 @@ Describe '$scriptBaseName Tests' -Tag '$($Analysis.Category)' {
     Context 'Feature Management Tests' {
         It 'should check if feature is already enabled'$skipClause {
             # Test feature state checking
-            `$true | Should -BeTrue  # Placeholder - implement actual tests
+            `$true  Should -BeTrue  # Placeholder - implement actual tests
         }
         
         It 'should enable feature when not already enabled'$skipClause {
             # Test feature enablement
-            `$true | Should -BeTrue  # Placeholder - implement actual tests
+            `$true  Should -BeTrue  # Placeholder - implement actual tests
         }
         
         It 'should handle feature enabling failures'$skipClause {
             # Test error handling for failed enablement
-            `$true | Should -BeTrue  # Placeholder - implement actual tests
+            `$true  Should -BeTrue  # Placeholder - implement actual tests
         }
     }
 "@
@@ -773,17 +773,17 @@ Describe '$scriptBaseName Tests' -Tag '$($Analysis.Category)' {
     Context 'Service Management Tests' {
         It 'should check service status before changes'$skipClause {
             # Test service status checking
-            `$true | Should -BeTrue  # Placeholder - implement actual tests
+            `$true  Should -BeTrue  # Placeholder - implement actual tests
         }
         
         It 'should handle service start/stop operations'$skipClause {
             # Test service operations
-            `$true | Should -BeTrue  # Placeholder - implement actual tests
+            `$true  Should -BeTrue  # Placeholder - implement actual tests
         }
         
         It 'should verify service configuration'$skipClause {
             # Test service configuration
-            `$true | Should -BeTrue  # Placeholder - implement actual tests
+            `$true  Should -BeTrue  # Placeholder - implement actual tests
         }
     }
 "@
@@ -795,17 +795,17 @@ Describe '$scriptBaseName Tests' -Tag '$($Analysis.Category)' {
     Context 'Configuration Tests' {
         It 'should backup existing configuration'$skipClause {
             # Test configuration backup logic
-            `$true | Should -BeTrue  # Placeholder - implement actual tests
+            `$true  Should -BeTrue  # Placeholder - implement actual tests
         }
         
         It 'should validate configuration changes'$skipClause {
             # Test configuration validation
-            `$true | Should -BeTrue  # Placeholder - implement actual tests
+            `$true  Should -BeTrue  # Placeholder - implement actual tests
         }
         
         It 'should handle rollback on failure'$skipClause {
             # Test rollback functionality
-            `$true | Should -BeTrue  # Placeholder - implement actual tests
+            `$true  Should -BeTrue  # Placeholder - implement actual tests
         }
     }
 "@
@@ -817,17 +817,17 @@ Describe '$scriptBaseName Tests' -Tag '$($Analysis.Category)' {
     Context 'Execution Tests' {
         It 'should execute without errors'$skipClause {
             # Test basic execution
-            { & `$script:ScriptPath -Config `$script:TestConfig } | Should -Not -Throw
+            { & `$script:ScriptPath -Config `$script:TestConfig }  Should -Not -Throw
         }
         
         It 'should handle empty configuration'$skipClause {
             # Test with empty config
-            { & `$script:ScriptPath -Config @{} } | Should -Not -Throw
+            { & `$script:ScriptPath -Config @{} }  Should -Not -Throw
         }
         
         It 'should handle different platforms'$skipClause {
             # Test cross-platform compatibility
-            `$true | Should -BeTrue  # Placeholder - implement actual tests
+            `$true  Should -BeTrue  # Placeholder - implement actual tests
         }
     }
 "@

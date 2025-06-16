@@ -33,17 +33,17 @@
     1. Create PR -> Copilot reviews (with delay) -> Auto-implement -> Commit -> Ready for human review
 #>
 
-[CmdletBinding()]
+CmdletBinding()
 param(
-    [Parameter(Mandatory = $false)]
-    [ValidateSet("SingleRun", "BackgroundMonitor", "TestBoth")]
-    [string]$Mode = "TestBoth",
+    Parameter(Mandatory = $false)
+    ValidateSet("SingleRun", "BackgroundMonitor", "TestBoth")
+    string$Mode = "TestBoth",
     
-    [Parameter(Mandatory = $false)]
-    [int]$PullRequestNumber,
+    Parameter(Mandatory = $false)
+    int$PullRequestNumber,
     
-    [Parameter(Mandatory = $false)]
-    [int]$MonitorIntervalSeconds = 60  # Shorter for demo
+    Parameter(Mandatory = $false)
+    int$MonitorIntervalSeconds = 60  # Shorter for demo
 )
 
 $ErrorActionPreference = "Stop"
@@ -78,10 +78,10 @@ if (-not $PullRequestNumber) {
     Write-Host "Finding recent PRs..." -ForegroundColor Yellow
     
     try {
-        $recentPRs = gh pr list --limit 5 --json number,title,state | ConvertFrom-Json
+        $recentPRs = gh pr list --limit 5 --json number,title,state  ConvertFrom-Json
         if ($recentPRs) {
-            $PullRequestNumber = $recentPRs[0].number
-            Write-Host "Using PR #$PullRequestNumber`: $($recentPRs[0].title)" -ForegroundColor Green
+            $PullRequestNumber = $recentPRs0.number
+            Write-Host "Using PR #$PullRequestNumber`: $($recentPRs0.title)" -ForegroundColor Green
         } else {
             Write-Host "No recent PRs found. Creating a test PR..." -ForegroundColor Yellow
             
@@ -131,7 +131,7 @@ switch ($Mode) {
         $result = Invoke-CopilotSuggestionHandler -PullRequestNumber $PullRequestNumber -AutoCommit -ValidateAfterFix
         
         Write-Host "`nResult:" -ForegroundColor Cyan
-        $result | Format-Table -AutoSize
+        $result  Format-Table -AutoSize
     }
     
     "BackgroundMonitor" {
@@ -206,7 +206,7 @@ switch ($Mode) {
         $logPath = "logs/demo-copilot-monitor.log"
         if (Test-Path $logPath) {
             Write-Host "`n4. Log output from background monitoring:" -ForegroundColor Cyan
-            Get-Content $logPath | Select-Object -Last 10 | ForEach-Object {
+            Get-Content $logPath  Select-Object -Last 10  ForEach-Object {
                 Write-Host "  $_" -ForegroundColor Gray
             }
         }
@@ -221,19 +221,19 @@ Write-Host @"
 
 KEY BENEFITS DEMONSTRATED:
 
-[PASS] HANDLES COPILOT REVIEW DELAYS
+PASS HANDLES COPILOT REVIEW DELAYS
    - Background monitoring accounts for the natural delay in Copilot reviews
    - No need to manually check back later
 
-[PASS] AUTOMATED IMPLEMENTATION
+PASS AUTOMATED IMPLEMENTATION
    - Suggestions are implemented automatically when detected
    - Uses PatchManager for safe, rollback-enabled changes
 
-[PASS] COMPREHENSIVE LOGGING
+PASS COMPREHENSIVE LOGGING
    - Full audit trail of all activities
    - Timestamped logs for transparency
 
-[PASS] HUMAN-READY REVIEWS
+PASS HUMAN-READY REVIEWS
    - By the time humans review the PR, Copilot suggestions are already implemented
    - Faster review cycles and fewer back-and-forth iterations
 

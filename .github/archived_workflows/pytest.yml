@@ -5,7 +5,7 @@ on:
  workflow_dispatch:
  pull_request:
  push:
- branches: [main]
+ branches: main
 
 jobs:
  pytest:
@@ -16,13 +16,13 @@ jobs:
  strategy:
  fail-fast: false
  matrix:
- os: [windows-latest, ubuntu-latest, macos-latest]
+ os: windows-latest, ubuntu-latest, macos-latest
  runs-on: ${{ matrix.os }}
  steps:
  - uses: actions/checkout@v4
  - name: Authenticate gh
  shell: bash
- run: |
+ run: 
  if ! gh auth login --with-token <<< "${{ secrets.GITHUB_TOKEN }}"; then
  echo "Failed to authenticate with GitHub CLI" >&2
  exit 1
@@ -36,7 +36,7 @@ jobs:
  - name: Cache Poetry
  uses: actions/cache@v4
  with:
- path: |
+ path: 
  ~/.cache/pypoetry
  py/.venv
  key: ${{ runner.os }}-poetry-${{ hashFiles('py/poetry.lock') }}
@@ -44,7 +44,7 @@ jobs:
  - name: Install dependencies
  env:
  POETRY_VIRTUALENVS_IN_PROJECT: 'true'
- run: |
+ run: 
  cd py
  if ! poetry install --with dev; then
  echo "Failed to install Python dependencies" >&2
@@ -55,7 +55,7 @@ jobs:
  - name: Run pytest
  env:
  POETRY_VIRTUALENVS_IN_PROJECT: 'true'
- run: |
+ run: 
  cd py
  if ! poetry run pytest --junitxml=../coverage/junit.xml; then
  echo "Pytest failed" >&2

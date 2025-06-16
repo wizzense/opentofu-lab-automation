@@ -1,7 +1,7 @@
 ---
 description: Perform comprehensive project maintenance including health checks, validation, and cross-platform testing
 mode: agent
-tools: ["codebase", "run_in_terminal", "github_repo"]
+tools: "codebase", "run_in_terminal", "github_repo"
 ---
 
 # Project Maintenance and Health Check
@@ -193,7 +193,7 @@ Keep chat history relevant by focusing on the current maintenance session and re
 ### PROJECT-MANIFEST.json Maintenance
 ```powershell
 # Read and update project manifest
-$manifest = Get-Content "./PROJECT-MANIFEST.json" | ConvertFrom-Json
+$manifest = Get-Content "./PROJECT-MANIFEST.json"  ConvertFrom-Json
 
 # Update metadata
 $manifest.project.lastUpdated = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
@@ -212,15 +212,15 @@ foreach ($moduleName in @("CodeFixer", "LabRunner")) {
 
 # Update project statistics
 $manifest.statistics = @{
-    totalFiles = (Get-ChildItem -Recurse -File | Measure-Object).Count
-    powershellFiles = (Get-ChildItem -Recurse -Filter "*.ps1" | Measure-Object).Count
-    testFiles = (Get-ChildItem -Path "./tests/" -Filter "*.ps1" | Measure-Object).Count
-    workflowFiles = (Get-ChildItem -Path "./.github/workflows/" -Filter "*.yml" | Measure-Object).Count
+    totalFiles = (Get-ChildItem -Recurse -File  Measure-Object).Count
+    powershellFiles = (Get-ChildItem -Recurse -Filter "*.ps1"  Measure-Object).Count
+    testFiles = (Get-ChildItem -Path "./tests/" -Filter "*.ps1"  Measure-Object).Count
+    workflowFiles = (Get-ChildItem -Path "./.github/workflows/" -Filter "*.yml"  Measure-Object).Count
     lastHealthCheck = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
 }
 
 # Save updated manifest
-$manifest | ConvertTo-Json -Depth 10 | Set-Content "./PROJECT-MANIFEST.json"
+$manifest  ConvertTo-Json -Depth 10  Set-Content "./PROJECT-MANIFEST.json"
 
 # Validate manifest structure
 Test-JsonConfig -Path "./PROJECT-MANIFEST.json"
@@ -235,7 +235,7 @@ $moduleIndex = @{
 }
 
 # Scan all modules
-Get-ChildItem -Path "./pwsh/modules/" -Directory | ForEach-Object {
+Get-ChildItem -Path "./pwsh/modules/" -Directory  ForEach-Object {
     $moduleName = $_.Name
     $manifestPath = Join-Path $_.FullName "$moduleName.psd1"
     
@@ -244,7 +244,7 @@ Get-ChildItem -Path "./pwsh/modules/" -Directory | ForEach-Object {
             Import-Module $_.FullName -Force
             $commands = Get-Command -Module $moduleName
             
-            $moduleIndex.modules[$moduleName] = @{
+            $moduleIndex.modules$moduleName = @{
                 path = "/pwsh/modules/$moduleName/"
                 manifestPath = $manifestPath
                 functionCount = $commands.Count
@@ -258,7 +258,7 @@ Get-ChildItem -Path "./pwsh/modules/" -Directory | ForEach-Object {
     }
 }
 
-$moduleIndex | ConvertTo-Json -Depth 5 | Set-Content "./MODULE-INDEX.json"
+$moduleIndex  ConvertTo-Json -Depth 5  Set-Content "./MODULE-INDEX.json"
 ```
 
 ### Documentation Index Updates
@@ -270,21 +270,21 @@ $docIndex = @{
 }
 
 # Scan documentation files
-Get-ChildItem -Path "./docs/" -Filter "*.md" -Recurse | ForEach-Object {
+Get-ChildItem -Path "./docs/" -Filter "*.md" -Recurse  ForEach-Object {
     $relativePath = $_.FullName.Replace((Get-Location).Path, "").TrimStart("\", "/")
     $content = Get-Content $_.FullName -Raw
     
     # Extract title from first heading
-    $title = if ($content -match "^# (.+)$") { $matches[1] } else { $_.BaseName }
+    $title = if ($content -match "^# (.+)$") { $matches1 } else { $_.BaseName }
     
     # Extract description from content
-    $description = if ($content -match "(?m)^## (?:Overview|Description)\s*\n(.+)$") { 
-        $matches[1].Trim() 
+    $description = if ($content -match "(?m)^## (?:OverviewDescription)\s*\n(.+)$") { 
+        $matches1.Trim() 
     } else { 
         "Documentation for $($_.BaseName)" 
     }
     
-    $docIndex.documents[$relativePath] = @{
+    $docIndex.documents$relativePath = @{
         title = $title
         description = $description
         lastModified = $_.LastWriteTime.ToString("yyyy-MM-dd HH:mm:ss")
@@ -292,7 +292,7 @@ Get-ChildItem -Path "./docs/" -Filter "*.md" -Recurse | ForEach-Object {
     }
 }
 
-$docIndex | ConvertTo-Json -Depth 5 | Set-Content "./DOCUMENTATION-INDEX.json"
+$docIndex  ConvertTo-Json -Depth 5  Set-Content "./DOCUMENTATION-INDEX.json"
 ```
 
 ## Cleanup and Organization
@@ -303,22 +303,22 @@ $docIndex | ConvertTo-Json -Depth 5 | Set-Content "./DOCUMENTATION-INDEX.json"
 Write-Host " Cleaning temporary files..." -ForegroundColor Yellow
 
 # Remove temporary files
-Get-ChildItem -Path "." -Recurse -Filter "*.tmp" | Remove-Item -Force
-Get-ChildItem -Path "." -Recurse -Filter "*.bak" | Remove-Item -Force
-Get-ChildItem -Path "." -Recurse -Filter "*~" | Remove-Item -Force
+Get-ChildItem -Path "." -Recurse -Filter "*.tmp"  Remove-Item -Force
+Get-ChildItem -Path "." -Recurse -Filter "*.bak"  Remove-Item -Force
+Get-ChildItem -Path "." -Recurse -Filter "*~"  Remove-Item -Force
 
 # Clean old log files (older than 7 days)
-Get-ChildItem -Path "." -Recurse -Filter "*.log" | Where-Object {
+Get-ChildItem -Path "." -Recurse -Filter "*.log"  Where-Object {
     $_.LastWriteTime -lt (Get-Date).AddDays(-7)
-} | Remove-Item -Force
+}  Remove-Item -Force
 
 # Archive old test results
 $archiveThreshold = (Get-Date).AddDays(-30)
 $archivePath = "./archive/test-results/$(Get-Date -Format 'yyyy-MM')"
 
-Get-ChildItem -Path "./coverage/" -Recurse -Filter "*.xml" | Where-Object {
+Get-ChildItem -Path "./coverage/" -Recurse -Filter "*.xml"  Where-Object {
     $_.LastWriteTime -lt $archiveThreshold
-} | ForEach-Object {
+}  ForEach-Object {
     if (-not (Test-Path $archivePath)) {
         New-Item -ItemType Directory -Path $archivePath -Force
     }
@@ -395,7 +395,7 @@ function Invoke-ProjectHealthCheck {
         "./scripts/maintenance/"
     )
     
-    $missingPaths = $expectedPaths | Where-Object { -not (Test-Path $_) }
+    $missingPaths = $expectedPaths  Where-Object { -not (Test-Path $_) }
     if ($missingPaths.Count -eq 0) {
         $healthReport.results.structure = @{ status = "healthy" }
     } else {
@@ -405,7 +405,7 @@ function Invoke-ProjectHealthCheck {
     
     # 3. Configuration Health
     try {
-        $manifest = Get-Content "./PROJECT-MANIFEST.json" | ConvertFrom-Json
+        $manifest = Get-Content "./PROJECT-MANIFEST.json"  ConvertFrom-Json
         Test-JsonConfig -Path "./PROJECT-MANIFEST.json"
         $healthReport.results.configuration = @{ status = "healthy"; version = $manifest.project.version }
     } catch {
@@ -416,8 +416,8 @@ function Invoke-ProjectHealthCheck {
     # 4. Code Quality Health
     try {
         $lintResult = Invoke-PowerShellLint -Path "./pwsh/" -PassThru -OutputFormat "JSON"
-        $errorCount = ($lintResult | Where-Object { $_.Severity -eq "Error" }).Count
-        $warningCount = ($lintResult | Where-Object { $_.Severity -eq "Warning" }).Count
+        $errorCount = ($lintResult  Where-Object { $_.Severity -eq "Error" }).Count
+        $warningCount = ($lintResult  Where-Object { $_.Severity -eq "Warning" }).Count
         
         $healthReport.results.codeQuality = @{
             status = if ($errorCount -eq 0) { "healthy" } else { "issues" }
@@ -434,7 +434,7 @@ function Invoke-ProjectHealthCheck {
     
     # 5. Test Health
     try {
-        $testFiles = Get-ChildItem -Path "./tests/" -Filter "*.ps1" | Measure-Object
+        $testFiles = Get-ChildItem -Path "./tests/" -Filter "*.ps1"  Measure-Object
         $healthReport.results.tests = @{
             status = "healthy"
             testFileCount = $testFiles.Count
@@ -444,9 +444,9 @@ function Invoke-ProjectHealthCheck {
     }
     
     # Calculate overall score
-    $healthyComponents = ($healthReport.results.Values | Where-Object { $_.status -eq "healthy" }).Count
+    $healthyComponents = ($healthReport.results.Values  Where-Object { $_.status -eq "healthy" }).Count
     $totalComponents = $healthReport.results.Count
-    $healthReport.overallScore = [math]::Round(($healthyComponents / $totalComponents) * 100, 2)
+    $healthReport.overallScore = math::Round(($healthyComponents / $totalComponents) * 100, 2)
     
     # Generate recommendations
     if ($healthReport.overallScore -lt 100) {
@@ -456,7 +456,7 @@ function Invoke-ProjectHealthCheck {
     }
     
     # Save health report
-    $healthReport | ConvertTo-Json -Depth 5 | Set-Content "./HEALTH-REPORT.json"
+    $healthReport  ConvertTo-Json -Depth 5  Set-Content "./HEALTH-REPORT.json"
     
     # Log results
     Write-CustomLog "Health check completed. Score: $($healthReport.overallScore)%" "INFO"
@@ -476,14 +476,14 @@ $healthResult = Invoke-ProjectHealthCheck
 # Create maintenance issues for tracking
 function New-MaintenanceIssue {
     param(
-        [string]$Title,
-        [string]$Description,
-        [string]$Severity = "Medium",
-        [string[]]$AffectedFiles = @(),
-        [string]$Category = "Maintenance"
+        string$Title,
+        string$Description,
+        string$Severity = "Medium",
+        string$AffectedFiles = @(),
+        string$Category = "Maintenance"
     )
     
-    $issueId = [Guid]::NewGuid().ToString("N")[0..7] -join ""
+    $issueId = Guid::NewGuid().ToString("N")0..7 -join ""
     $issue = @{
         id = $issueId
         title = $Title
@@ -501,14 +501,14 @@ function New-MaintenanceIssue {
     # Load existing issues
     $issuesFile = "./PROJECT-ISSUES.json"
     $issues = if (Test-Path $issuesFile) {
-        Get-Content $issuesFile | ConvertFrom-Json
+        Get-Content $issuesFile  ConvertFrom-Json
     } else {
         @()
     }
     
     # Add new issue
     $issues = @($issues) + $issue
-    $issues | ConvertTo-Json -Depth 5 | Set-Content $issuesFile
+    $issues  ConvertTo-Json -Depth 5  Set-Content $issuesFile
     
     Write-CustomLog "Created maintenance issue: $Title (ID: $issueId)" "WARN"
     return $issueId
@@ -528,7 +528,7 @@ if ($healthResult.issues.Count -gt 0) {
 ```powershell
 # Validate maintenance operation results
 function Test-MaintenanceResults {
-    param([string]$OperationType = "maintenance")
+    param(string$OperationType = "maintenance")
     
     Write-Host " Validating maintenance results..." -ForegroundColor Cyan
     
@@ -563,7 +563,7 @@ function Test-MaintenanceResults {
     
     # 3. Verify critical paths exist
     $criticalPaths = @("./pwsh/modules/", "./tests/", "./.github/", "./scripts/")
-    $allPathsExist = $criticalPaths | ForEach-Object { Test-Path $_ } | Where-Object { $_ -eq $false }
+    $allPathsExist = $criticalPaths  ForEach-Object { Test-Path $_ }  Where-Object { $_ -eq $false }
     $validationResults.checks.pathValidation = ($allPathsExist.Count -eq 0)
     
     if (-not $validationResults.checks.pathValidation) {
@@ -573,11 +573,11 @@ function Test-MaintenanceResults {
     
     # 4. Quick syntax check
     try {
-        $syntaxErrors = Get-ChildItem -Path "./pwsh/" -Filter "*.ps1" -Recurse | ForEach-Object {
+        $syntaxErrors = Get-ChildItem -Path "./pwsh/" -Filter "*.ps1" -Recurse  ForEach-Object {
             $errors = $null
-            [System.Management.Automation.Language.Parser]::ParseFile($_.FullName, [ref]$null, [ref]$errors)
+            System.Management.Automation.Language.Parser::ParseFile($_.FullName, ref$null, ref$errors)
             $errors
-        } | Where-Object { $_ }
+        }  Where-Object { $_ }
         
         $validationResults.checks.syntaxValidation = ($syntaxErrors.Count -eq 0)
         if ($syntaxErrors.Count -gt 0) {
@@ -590,7 +590,7 @@ function Test-MaintenanceResults {
     }
     
     # Save validation results
-    $validationResults | ConvertTo-Json -Depth 5 | Set-Content "./MAINTENANCE-VALIDATION.json"
+    $validationResults  ConvertTo-Json -Depth 5  Set-Content "./MAINTENANCE-VALIDATION.json"
     
     # Log results
     if ($validationResults.overallSuccess) {
@@ -618,9 +618,9 @@ $validationResult = Test-MaintenanceResults -OperationType ${input:operationType
 ## Reference Instructions
 
 This prompt references:
-- [Maintenance Standards](../instructions/maintenance-standards.instructions.md)
-- [PowerShell Standards](../instructions/powershell-standards.instructions.md)
-- [Configuration Standards](../instructions/configuration-standards.instructions.md)
+- Maintenance Standards(../instructions/maintenance-standards.instructions.md)
+- PowerShell Standards(../instructions/powershell-standards.instructions.md)
+- Configuration Standards(../instructions/configuration-standards.instructions.md)
 
 Please specify:
 1. Level of maintenance needed (quick, comprehensive, deep)

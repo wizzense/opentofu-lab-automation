@@ -1,13 +1,13 @@
 # Non-interactive repository cleanup script
-[CmdletBinding()]
+CmdletBinding()
 param(
-    [Parameter(Mandatory = $false)]
-    [string]$RootDirectory = (Get-Location).Path
+    Parameter(Mandatory = $false)
+    string$RootDirectory = (Get-Location).Path
 )
 
 # Cross-platform path resolution
 function Get-ProjectRoot {
-    param([string]$StartPath = (Get-Location).Path)
+    param(string$StartPath = (Get-Location).Path)
     
     $current = $StartPath
     while ($current -and (Split-Path $current -Parent)) {
@@ -35,7 +35,7 @@ $DirectoriesToClean = @(
 $LogFile = Join-Path $RootDirectory "cleanup-log.txt"
 
 # Initialize log
-"Cleanup started at $(Get-Date)" | Out-File -FilePath $LogFile -Encoding UTF8
+"Cleanup started at $(Get-Date)"  Out-File -FilePath $LogFile -Encoding UTF8
 
 foreach ($Directory in $DirectoriesToClean) {
     Write-Host "Cleaning: $Directory" -ForegroundColor Cyan
@@ -43,16 +43,16 @@ foreach ($Directory in $DirectoriesToClean) {
         try {
             Remove-Item -Path $Directory -Recurse -Force -ErrorAction Stop
             Write-Host "Successfully cleaned: $Directory" -ForegroundColor Green
-            "Successfully cleaned: $Directory" | Out-File -FilePath $LogFile -Append -Encoding UTF8
+            "Successfully cleaned: $Directory"  Out-File -FilePath $LogFile -Append -Encoding UTF8
         } catch {
             Write-Host "Error cleaning $Directory: ${_}" -ForegroundColor Red
-            "Error cleaning $Directory: ${_}" | Out-File -FilePath $LogFile -Append -Encoding UTF8
+            "Error cleaning $Directory: ${_}"  Out-File -FilePath $LogFile -Append -Encoding UTF8
         }
     } else {
         Write-Host "Directory not found: $Directory" -ForegroundColor Yellow
-        "Directory not found: $Directory" | Out-File -FilePath $LogFile -Append -Encoding UTF8
+        "Directory not found: $Directory"  Out-File -FilePath $LogFile -Append -Encoding UTF8
     }
 }
 
-"Cleanup completed at $(Get-Date)" | Out-File -FilePath $LogFile -Append -Encoding UTF8
+"Cleanup completed at $(Get-Date)"  Out-File -FilePath $LogFile -Append -Encoding UTF8
 Write-Host "Cleanup log saved to $LogFile" -ForegroundColor Green

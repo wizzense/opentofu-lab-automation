@@ -1,20 +1,20 @@
 # invoke-comprehensive-validation.ps1
 # This script runs a full system validation using the CodeFixer module
-[CmdletBinding()]
+CmdletBinding()
 param(
-    [switch]$Fix,
-    [switch]$GenerateTests,
-    [switch]$SaveResults,
-    [ValidateSet('JSON','Text','CI')
+    switch$Fix,
+    switch$GenerateTests,
+    switch$SaveResults,
+    ValidateSet('JSON','Text','CI')
 
 
 
 
 
 
-]
-    [string]$OutputFormat = 'Text',
-    [string]$OutputDirectory = "reports/validation"
+
+    string$OutputFormat = 'Text',
+    string$OutputDirectory = "reports/validation"
 )
 
 $ErrorActionPreference = 'Stop'
@@ -38,10 +38,10 @@ try {
 $timestamp = Get-Date -Format "yyyyMMdd-HHmmss"
 
 # Create output directory if it doesn't exist
-if ($SaveResults -and -not [string]::IsNullOrEmpty($OutputDirectory)) {
+if ($SaveResults -and -not string::IsNullOrEmpty($OutputDirectory)) {
     $reportPath = Join-Path $PSScriptRoot $OutputDirectory
     if (-not (Test-Path $reportPath)) {
-        New-Item -Path $reportPath -ItemType Directory -Force | Out-Null
+        New-Item -Path $reportPath -ItemType Directory -Force  Out-Null
         Write-Host "Created report directory: $reportPath" -ForegroundColor Cyan
     }
 }
@@ -66,7 +66,7 @@ try {
     }
     
     if ($SaveResults) {
-        if (-not [string]::IsNullOrEmpty($OutputDirectory)) {
+        if (-not string::IsNullOrEmpty($OutputDirectory)) {
             $params.OutputPath = Join-Path $PSScriptRoot $OutputDirectory "validation-report-$timestamp.json"
             Write-Host "Results will be saved to: $($params.OutputPath)" -ForegroundColor Cyan
         }

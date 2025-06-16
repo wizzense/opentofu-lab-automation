@@ -2,16 +2,16 @@
 # Implements parallel processing for Pester tests to improve performance
 
 function Invoke-ParallelPesterTests {
- [CmdletBinding()]
+ CmdletBinding()
  param(
- [string]$TestPath = "tests",
- [int]$MaxParallelJobs = [Environment]::ProcessorCount,
- [switch]$UseThreadJobs,
- [string]$OutputFormat = "NUnitXml",
- [string]$OutputPath = "TestResults-Parallel.xml",
- [string[]]$Tags = @(),
- [string[]]$ExcludeTags = @(),
- [switch]$PassThru
+ string$TestPath = "tests",
+ int$MaxParallelJobs = Environment::ProcessorCount,
+ switch$UseThreadJobs,
+ string$OutputFormat = "NUnitXml",
+ string$OutputPath = "TestResults-Parallel.xml",
+ string$Tags = @(),
+ string$ExcludeTags = @(),
+ switch$PassThru
  )
  
  Write-Host " Starting Parallel Pester Test Execution" -ForegroundColor Cyan
@@ -19,17 +19,17 @@ function Invoke-ParallelPesterTests {
  Write-Host "Using Thread Jobs: $UseThreadJobs" -ForegroundColor Yellow
  
  # Get all test files
- $testFiles = Get-ChildItem -Path $TestPath -Recurse -Include "*.Tests.ps1" | 
- Where-Object { $_.Name -notmatch "Integration|E2E|Slow" } # Exclude slow tests from parallel run
+ $testFiles = Get-ChildItem -Path $TestPath -Recurse -Include "*.Tests.ps1"  
+ Where-Object { $_.Name -notmatch "IntegrationE2ESlow" } # Exclude slow tests from parallel run
  
  Write-Host "Found $($testFiles.Count) test files" -ForegroundColor Green
  
  # Group tests into batches for parallel execution
- $batchSize = [Math]::Max(1, [Math]::Floor($testFiles.Count / $MaxParallelJobs))
+ $batchSize = Math::Max(1, Math::Floor($testFiles.Count / $MaxParallelJobs))
  $batches = @()
  
  for ($i = 0; $i -lt $testFiles.Count; $i += $batchSize) {
- $batch = $testFiles[$i..([Math]::Min($i + $batchSize - 1, $testFiles.Count - 1))]
+ $batch = $testFiles$i..(Math::Min($i + $batchSize - 1, $testFiles.Count - 1))
  $batches += ,@($batch)
  }
  
@@ -63,7 +63,7 @@ function Invoke-ParallelPesterTests {
  BatchId = $BatchId
  Success = $true
  Result = $result
- TestFiles = $TestBatch | ForEach-Object { $_.Name }
+ TestFiles = $TestBatch  ForEach-Object { $_.Name }
  TestCount = $result.TotalCount
  PassedCount = $result.PassedCount
  FailedCount = $result.FailedCount
@@ -75,7 +75,7 @@ function Invoke-ParallelPesterTests {
  BatchId = $BatchId
  Success = $false
  Error = $_.Exception.Message
- TestFiles = $TestBatch | ForEach-Object { $_.Name }
+ TestFiles = $TestBatch  ForEach-Object { $_.Name }
  }
  }
  }
@@ -85,7 +85,7 @@ function Invoke-ParallelPesterTests {
  $startTime = Get-Date
  
  for ($i = 0; $i -lt $batches.Count; $i++) {
- $batch = $batches[$i]
+ $batch = $batches$i
  Write-Host "Starting batch $($i + 1) with $($batch.Count) test files" -ForegroundColor Yellow
  
  if ($UseThreadJobs) {
@@ -103,10 +103,10 @@ function Invoke-ParallelPesterTests {
  $results = @()
  
  while ($completed -lt $jobs.Count) {
- $finishedJobs = $jobs | Where-Object { $_.State -eq 'Completed' -or $_.State -eq 'Failed' }
+ $finishedJobs = $jobs  Where-Object { $_.State -eq 'Completed' -or $_.State -eq 'Failed' }
  
  foreach ($job in $finishedJobs) {
- if ($job.Id -notin ($results | ForEach-Object { $_.JobId })) {
+ if ($job.Id -notin ($results  ForEach-Object { $_.JobId })) {
  try {
  $result = Receive-Job -Job $job -Wait
  $result.JobId = $job.Id
@@ -114,12 +114,12 @@ function Invoke-ParallelPesterTests {
  $completed++
  
  if ($result.Success) {
- Write-Host "[PASS] Batch $($result.BatchId) completed: $($result.PassedCount)/$($result.TestCount) passed" -ForegroundColor Green
+ Write-Host "PASS Batch $($result.BatchId) completed: $($result.PassedCount)/$($result.TestCount) passed" -ForegroundColor Green
  } else {
- Write-Host "[FAIL] Batch $($result.BatchId) failed: $($result.Error)" -ForegroundColor Red
+ Write-Host "FAIL Batch $($result.BatchId) failed: $($result.Error)" -ForegroundColor Red
  }
  } catch {
- Write-Host "[WARN] Failed to receive job result: $($_.Exception.Message)" -ForegroundColor Yellow
+ Write-Host "WARN Failed to receive job result: $($_.Exception.Message)" -ForegroundColor Yellow
  $completed++
  }
  Remove-Job -Job $job -Force
@@ -127,7 +127,7 @@ function Invoke-ParallelPesterTests {
  }
  
  # Show progress
- $progress = [Math]::Round(($completed / $jobs.Count) * 100, 1)
+ $progress = Math::Round(($completed / $jobs.Count) * 100, 1)
  Write-Progress -Activity "Running Parallel Tests" -Status "$completed/$($jobs.Count) batches completed" -PercentComplete $progress
  
  if ($completed -lt $jobs.Count) {
@@ -141,13 +141,13 @@ function Invoke-ParallelPesterTests {
  $totalDuration = $endTime - $startTime
  
  # Aggregate results
- $successfulResults = $results | Where-Object { $_.Success }
- $failedResults = $results | Where-Object { -not $_.Success }
+ $successfulResults = $results  Where-Object { $_.Success }
+ $failedResults = $results  Where-Object { -not $_.Success }
  
- $totalTests = ($successfulResults | Measure-Object -Property TestCount -Sum).Sum
- $totalPassed = ($successfulResults | Measure-Object -Property PassedCount -Sum).Sum
- $totalFailed = ($successfulResults | Measure-Object -Property FailedCount -Sum).Sum
- $totalSkipped = ($successfulResults | Measure-Object -Property SkippedCount -Sum).Sum
+ $totalTests = ($successfulResults  Measure-Object -Property TestCount -Sum).Sum
+ $totalPassed = ($successfulResults  Measure-Object -Property PassedCount -Sum).Sum
+ $totalFailed = ($successfulResults  Measure-Object -Property FailedCount -Sum).Sum
+ $totalSkipped = ($successfulResults  Measure-Object -Property SkippedCount -Sum).Sum
  
  # Merge XML results if needed
  if ($OutputFormat -eq "NUnitXml" -and $OutputPath) {
@@ -165,14 +165,14 @@ function Invoke-ParallelPesterTests {
  Write-Host "Skipped: $totalSkipped" -ForegroundColor Yellow
  
  if ($failedResults.Count -gt 0) {
- Write-Host "`n[FAIL] Failed Batches:" -ForegroundColor Red
- $failedResults | ForEach-Object {
+ Write-Host "`nFAIL Failed Batches:" -ForegroundColor Red
+ $failedResults  ForEach-Object {
  Write-Host " Batch $($_.BatchId): $($_.Error)" -ForegroundColor Red
  }
  }
  
  # Calculate performance improvement
- $estimatedSequentialTime = ($successfulResults | Measure-Object -Property Duration -Sum).Sum
+ $estimatedSequentialTime = ($successfulResults  Measure-Object -Property Duration -Sum).Sum
  if ($estimatedSequentialTime -gt 0) {
  $speedup = $estimatedSequentialTime.TotalSeconds / $totalDuration.TotalSeconds
  Write-Host "Estimated Speedup: ${speedup:F1}x faster than sequential" -ForegroundColor Cyan
@@ -193,9 +193,9 @@ function Invoke-ParallelPesterTests {
 }
 
 function Merge-TestResults {
- [CmdletBinding()]
+ CmdletBinding()
  param(
- [string]$OutputPath = "TestResults-Parallel.xml"
+ string$OutputPath = "TestResults-Parallel.xml"
  )
  
  # Find all batch result files
@@ -209,7 +209,7 @@ function Merge-TestResults {
  Write-Host "Merging $($batchFiles.Count) test result files..." -ForegroundColor Yellow
  
  # Create merged XML document
- $mergedXml = [xml]'<?xml version="1.0" encoding="utf-8"?><test-results />'
+ $mergedXml = xml'<?xml version="1.0" encoding="utf-8"?><test-results />'
  $mergedRoot = $mergedXml.'test-results'
  
  $totalTests = 0
@@ -219,19 +219,19 @@ function Merge-TestResults {
  
  foreach ($file in $batchFiles) {
  try {
- [xml]$batchXml = Get-Content $file
+ xml$batchXml = Get-Content $file
  $batchRoot = $batchXml.'test-results'
  
  # Aggregate counts
- $totalTests += [int]$batchRoot.total
- $totalFailures += [int]$batchRoot.failures
- $totalNotRun += [int]$batchRoot.'not-run'
- $totalTime += [double]$batchRoot.time
+ $totalTests += int$batchRoot.total
+ $totalFailures += int$batchRoot.failures
+ $totalNotRun += int$batchRoot.'not-run'
+ $totalTime += double$batchRoot.time
  
  # Import test suites
  foreach ($testSuite in $batchRoot.'test-suite') {
  $importedNode = $mergedXml.ImportNode($testSuite, $true)
- $mergedRoot.AppendChild($importedNode) | Out-Null
+ $mergedRoot.AppendChild($importedNode)  Out-Null
  }
  } catch {
  Write-Warning "Failed to process $file : $($_.Exception.Message)"
@@ -248,25 +248,25 @@ function Merge-TestResults {
  
  # Save merged results
  $mergedXml.Save((Resolve-Path $OutputPath))
- Write-Host "[PASS] Merged results saved to $OutputPath" -ForegroundColor Green
+ Write-Host "PASS Merged results saved to $OutputPath" -ForegroundColor Green
  
  # Clean up batch files
- $batchFiles | Remove-Item -Force
+ $batchFiles  Remove-Item -Force
  Write-Host "� Cleaned up batch result files" -ForegroundColor Gray
 }
 
 # Function to run integration tests separately (these shouldn't be parallelized)
 function Invoke-IntegrationTests {
- [CmdletBinding()]
+ CmdletBinding()
  param(
- [string]$TestPath = "tests",
- [string]$OutputPath = "IntegrationTestResults.xml"
+ string$TestPath = "tests",
+ string$OutputPath = "IntegrationTestResults.xml"
  )
  
  Write-Host " Running Integration Tests (Sequential)" -ForegroundColor Cyan
  
- $integrationTests = Get-ChildItem -Path $TestPath -Recurse -Include "*.Tests.ps1" | 
- Where-Object { $_.Name -match "Integration|E2E|Slow" }
+ $integrationTests = Get-ChildItem -Path $TestPath -Recurse -Include "*.Tests.ps1"  
+ Where-Object { $_.Name -match "IntegrationE2ESlow" }
  
  if ($integrationTests.Count -eq 0) {
  Write-Host "No integration tests found" -ForegroundColor Yellow

@@ -27,8 +27,8 @@ try:
         print(f"  Section '{section_name}': {len(fields)} fields")
         
         # Show a few example fields
-        for i, field in enumerate(fields[:2]):  # Show first 2 fields per section
-            print(f"    - {field.display_name} ({field.field_type}): {field.help_text[:50]}...")
+        for i, field in enumerate(fields:2):  # Show first 2 fields per section
+            print(f"    - {field.display_name} ({field.field_type}): {field.help_text:50}...")
     
     # Test defaults
     defaults = schema.get_defaults()
@@ -36,7 +36,7 @@ try:
     print(f"  Total default values: {len(defaults)}")
     print(f"  Sample defaults:")
     
-    for i, (key, value) in enumerate(list(defaults.items())[:5]):
+    for i, (key, value) in enumerate(list(defaults.items()):5):
         print(f"    {key}: {value}")
     
     # Test validation

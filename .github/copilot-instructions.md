@@ -9,7 +9,7 @@ This is a cross-platform OpenTofu (Terraform alternative) lab automation project
 - **Cross-platform deployment** via Python scripts
 
 For guidance on writing your own repository instructions, see
-[docs/copilot_docs/repository-custom-instructions.md](../docs/copilot_docs/repository-custom-instructions.md).
+docs/copilot_docs/repository-custom-instructions.md(../docs/copilot_docs/repository-custom-instructions.md).
 
 ## Current Architecture
 
@@ -72,7 +72,7 @@ Get-BackupStatistics
 ### Always Use Project Manifest First
 `powershell
 # Check current state before making changes
-$manifest = Get-Content "./PROJECT-MANIFEST.json" | ConvertFrom-Json
+$manifest = Get-Content "./PROJECT-MANIFEST.json"  ConvertFrom-Json
 $manifest.core.modules # View all modules
 `
 
@@ -152,11 +152,11 @@ Invoke-GitControlledPatch -PatchDescription "fix: update configuration" -PatchOp
 ### Cross-Platform Environment Variables
 Project now uses environment variables for cross-platform compatibility:
 
-| **Variable** | **Description** | **Auto-Set** |
-|--------------|-----------------|-------------|
-| `PROJECT_ROOT` | Project root directory | [PASS] |
-| `PWSH_MODULES_PATH` | PowerShell modules path | [PASS] |
-| `PLATFORM` | Current platform (Windows/Linux/macOS) | [PASS] |
+ **Variable**  **Description**  **Auto-Set** 
+--------------------------------------------
+ `PROJECT_ROOT`  Project root directory  PASS 
+ `PWSH_MODULES_PATH`  PowerShell modules path  PASS 
+ `PLATFORM`  Current platform (Windows/Linux/macOS)  PASS 
 
 ### Enhanced Comprehensive Cleanup
 ```powershell
@@ -167,11 +167,11 @@ Invoke-GitControlledPatch -PatchDescription "chore: comprehensive cleanup" -Patc
 ```
 
 ### Intelligent Branch Strategy
-| **Current Branch** | **PatchManager Action** | **Prevents** |
-|-------------------|------------------------|---------------|
-| `main` or `master` | Creates new patch branch | Working directly on main |
-| Feature branch | Works on current branch | Recursive branch explosion |
-| Patch branch | Works on current branch | Nested patch branches |
+ **Current Branch**  **PatchManager Action**  **Prevents** 
+----------------------------------------------------------
+ `main` or `master`  Creates new patch branch  Working directly on main 
+ Feature branch  Works on current branch  Recursive branch explosion 
+ Patch branch  Works on current branch  Nested patch branches 
 
 ### Cross-Platform Path Standards
 All hardcoded paths now use environment variables:

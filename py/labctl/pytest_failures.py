@@ -10,7 +10,7 @@ def summarize_failures(xml_path: Path) -> str:
     """Return a markdown list of failing tests in the results file."""
     tree = ET.parse(xml_path)
     root = tree.getroot()
-    lines = []
+    lines = 
     for case in root.findall(".//testcase"):
         failure = case.find("failure")
         if failure is None:
@@ -19,7 +19,7 @@ def summarize_failures(xml_path: Path) -> str:
             continue
         classname = case.get("classname")
         name = case.get("name")
-        parts = [p for p in [classname, name] if p]
+        parts = p for p in classname, name if p
         title = ".".join(parts) if parts else "Pytest test failed"
         msg = failure.get("message") or (failure.text or "")
         lines.append(f"- **{title}**: {msg.strip()}")
@@ -33,7 +33,7 @@ def report_failures(xml_path: Path) -> None:
     commit = os.environ.get("COMMIT_SHA")
     branch = os.environ.get("BRANCH_NAME")
     os_name = xml_path.parent.name.replace("pytest-results-", "")
-    details = []
+    details = 
     if run_url:
         details.append(f"Run: {run_url}")
     if commit:
@@ -48,14 +48,14 @@ def report_failures(xml_path: Path) -> None:
             continue
         classname = case.get("classname")
         name = case.get("name")
-        parts = [p for p in [classname, name] if p]
+        parts = p for p in classname, name if p
         title = ".".join(parts) if parts else "Pytest test failed"
         message = failure.get("message") or (failure.text or "")
         body = f"{message}\n\n{extra}" if message else extra
         create_issue(title, body)
 
 
-def _main(argv: list[str] | None = None) -> None:
+def _main(argv: liststr  None = None) -> None:
     parser = argparse.ArgumentParser(description="Report or summarize pytest failures")
     parser.add_argument("xml", type=Path, help="Path to junit.xml")
     parser.add_argument("--summary", action="store_true", help="Print summary instead of creating issues")

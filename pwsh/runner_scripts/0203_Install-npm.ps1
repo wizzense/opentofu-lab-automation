@@ -1,19 +1,19 @@
 Param(
-    [Parameter(Mandatory)
+    Parameter(Mandatory)
 
 
 
 
 
 
-]
-    [object]$Config
+
+    object$Config
 )
 
 Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\pwsh/modules/LabRunner/" -ForceWrite-CustomLog "Starting $MyInvocation.MyCommand"
 function Install-NpmDependencies {
-    [CmdletBinding(SupportsShouldProcess = $true)]
-    param([object]$Config)
+    CmdletBinding(SupportsShouldProcess = $true)
+    param(object$Config)
 
 
     
@@ -50,7 +50,7 @@ Write-CustomLog "Running $($MyInvocation.MyCommand.Name)"
 #>
 
         # Pull Node_Dependencies block
-        $nodeDeps = if ($Config -is [hashtable]) { $Config['Node_Dependencies']    } else { $Config.Node_Dependencies    }
+        $nodeDeps = if ($Config -is hashtable) { $Config'Node_Dependencies'    } else { $Config.Node_Dependencies    }
         if (-not $nodeDeps) {
             Write-CustomLog 'Config missing Node_Dependencies; skipping npm install.'
             return
@@ -61,22 +61,22 @@ Write-CustomLog "Running $($MyInvocation.MyCommand.Name)"
         $createPath = $false
 
         foreach ($key in @('InstallNpm','CreateNpmPath')) {
-            if ($nodeDeps -is [hashtable]) {
+            if ($nodeDeps -is hashtable) {
                 if ($nodeDeps.ContainsKey($key)) {
                     switch ($key) {
-                        'InstallNpm'    { $installNpm  = [bool]$nodeDeps[$key] }
-                        'CreateNpmPath' { $createPath  = [bool]$nodeDeps[$key] }
+                        'InstallNpm'    { $installNpm  = bool$nodeDeps$key }
+                        'CreateNpmPath' { $createPath  = bool$nodeDeps$key }
                     }
                 }
             } elseif ($nodeDeps.PSObject.Properties.Match($key).Count) {
                 switch ($key) {
-                    'InstallNpm'    { $installNpm  = [bool]$nodeDeps.$key }
-                    'CreateNpmPath' { $createPath  = [bool]$nodeDeps.$key }
+                    'InstallNpm'    { $installNpm  = bool$nodeDeps.$key }
+                    'CreateNpmPath' { $createPath  = bool$nodeDeps.$key }
                 }
 
             }
             if ($nodeDeps.PSObject.Properties.Match('CreateNpmPath').Count) {
-                $createPath = [bool]$nodeDeps.CreateNpmPath
+                $createPath = bool$nodeDeps.CreateNpmPath
             }
 
         }
@@ -88,14 +88,14 @@ Write-CustomLog "Running $($MyInvocation.MyCommand.Name)"
 
         # Determine frontend path
         $frontendPath = $null
-        if ($nodeDeps -is [hashtable]) {
-            if ($nodeDeps.ContainsKey('NpmPath')) { $frontendPath = $nodeDeps['NpmPath'] }
+        if ($nodeDeps -is hashtable) {
+            if ($nodeDeps.ContainsKey('NpmPath')) { $frontendPath = $nodeDeps'NpmPath' }
         } elseif ($nodeDeps.PSObject.Properties.Match('NpmPath').Count) {
             $frontendPath = $nodeDeps.NpmPath
         }
         if (-not $frontendPath) { $frontendPath = Join-Path $PSScriptRoot '..' 'frontend' }
 
-        if ($nodeDeps.PSObject.Properties.Match('NpmPath').Count -and [string]::IsNullOrWhiteSpace($nodeDeps.NpmPath) -and -not $createPath) {
+        if ($nodeDeps.PSObject.Properties.Match('NpmPath').Count -and string::IsNullOrWhiteSpace($nodeDeps.NpmPath) -and -not $createPath) {
             throw 'Node_Dependencies.NpmPath is empty and CreateNpmPath is false.'
         }
 
@@ -103,7 +103,7 @@ Write-CustomLog "Running $($MyInvocation.MyCommand.Name)"
             if ($createPath) {
                 Write-CustomLog "Creating missing frontend folder at: $frontendPath"
                 if ($PSCmdlet.ShouldProcess($frontendPath,'Create NpmPath')) {
-                    New-Item -ItemType Directory -Path $frontendPath -Force | Out-Null
+                    New-Item -ItemType Directory -Path $frontendPath -Force  Out-Null
                 }
             } else {
                 throw "Frontend folder not found at: $frontendPath"
@@ -112,7 +112,7 @@ Write-CustomLog "Running $($MyInvocation.MyCommand.Name)"
 
         if (-not (Test-Path (Join-Path $frontendPath 'package.json'))) {
             if ($createPath) {
-                '{}' | Set-Content -Path (Join-Path $frontendPath 'package.json')
+                '{}'  Set-Content -Path (Join-Path $frontendPath 'package.json')
             } else {
                 Write-CustomLog "No package.json found in $frontendPath. Skipping npm install."
                 return

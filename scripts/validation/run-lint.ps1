@@ -1,19 +1,19 @@
 # comprehensive-lint.ps1
 # This script is a wrapper around the CodeFixer module's Invoke-PowerShellLint function
-[CmdletBinding()]
+CmdletBinding()
 param(
-    [switch]$FixErrors,
-    [ValidateSet('Default', 'CI', 'JSON', 'Detailed')
+    switch$FixErrors,
+    ValidateSet('Default', 'CI', 'JSON', 'Detailed')
 
 
 
 
 
 
-]
-    [string]$OutputFormat = 'Default',
-    [string]$OutputPath,
-    [switch]$IncludeArchive
+
+    string$OutputFormat = 'Default',
+    string$OutputPath,
+    switch$IncludeArchive
 )
 
 $ErrorActionPreference = 'Stop'

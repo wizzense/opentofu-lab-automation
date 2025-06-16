@@ -2,11 +2,11 @@
 # Smart file tagging system for automatic organization
 
 param(
- [string]$FilePath,
- [switch]$ListTags,
- [switch]$UpdateIndex,
- [string[]]$AddTags,
- [string[]]$RemoveTags
+ string$FilePath,
+ switch$ListTags,
+ switch$UpdateIndex,
+ string$AddTags,
+ string$RemoveTags
 )
 
 
@@ -49,11 +49,11 @@ function Initialize-TagIndex {
  }
  }
  
- $initialIndex | ConvertTo-Json -Depth 5 | Set-Content $tagIndexPath
+ $initialIndex  ConvertTo-Json -Depth 5  Set-Content $tagIndexPath
  Write-Host " Initialized tag index: $tagIndexPath" -ForegroundColor Green
  return $initialIndex
  } else {
- return Get-Content $tagIndexPath | ConvertFrom-Json
+ return Get-Content $tagIndexPath  ConvertFrom-Json
  }
 }
 
@@ -72,33 +72,33 @@ $autoTags = @()
  # Pattern-based auto-tagging
  $patterns = @{
  "^fix_.*\.ps1$" = @("legacy", "fix-script")
- "^test-.*\.(py|ps1)$" = @("test", "legacy")
- ".*[Tt]est.*\.ps1$" = @("test", "powershell")
- ".*[Rr]eport.*\.json$" = @("report", "generated")
- ".*[Rr]esults.*\.xml$" = @("test-results", "generated")
- "\.(ps1|psm1|psd1)$" = @("powershell", "script")
- "\.(py|pyc)$" = @("python", "script")
- "\.(md|txt)$" = @("documentation")
- "\.(tf|tfvars)$" = @("terraform", "infrastructure")
- "\.(yml|yaml)$" = @("yaml", "config")
+ "^test-.*\.(pyps1)$" = @("test", "legacy")
+ ".*Ttest.*\.ps1$" = @("test", "powershell")
+ ".*Rreport.*\.json$" = @("report", "generated")
+ ".*Rresults.*\.xml$" = @("test-results", "generated")
+ "\.(ps1psm1psd1)$" = @("powershell", "script")
+ "\.(pypyc)$" = @("python", "script")
+ "\.(mdtxt)$" = @("documentation")
+ "\.(tftfvars)$" = @("terraform", "infrastructure")
+ "\.(ymlyaml)$" = @("yaml", "config")
  "\.(json)$" = @("json", "config")
  }
  
  foreach ($pattern in $patterns.Keys) {
  if ($FileName -match $pattern) {
- $autoTags += $patterns[$pattern]
+ $autoTags += $patterns$pattern
  }
  }
  
  # Content-based tagging
  if ($Content) {
- if ($Content -match "#!/usr/bin/env pwsh|#!/bin/bash") { $autoTags += "executable" }
- if ($Content -match "Describe |It ") { $autoTags += "pester-test" }
- if ($Content -match "terraform|resource |provider ") { $autoTags += "terraform" }
- if ($Content -match "function|param\(") { $autoTags += "function-definition" }
+ if ($Content -match "#!/usr/bin/env pwsh#!/bin/bash") { $autoTags += "executable" }
+ if ($Content -match "Describe It ") { $autoTags += "pester-test" }
+ if ($Content -match "terraformresource provider ") { $autoTags += "terraform" }
+ if ($Content -match "functionparam\(") { $autoTags += "function-definition" }
  }
  
- return $autoTags | Sort-Object -Unique
+ return $autoTags  Sort-Object -Unique
 }
 
 function Set-FileTags {
@@ -132,7 +132,7 @@ $index = Initialize-TagIndex
  }
  
  # Save updated index
- $index | ConvertTo-Json -Depth 5 | Set-Content $tagIndexPath
+ $index  ConvertTo-Json -Depth 5  Set-Content $tagIndexPath
  Write-Host " Tagged '$FilePath' with: $($Tags -join ', ')" -ForegroundColor Green
 }
 
@@ -182,7 +182,7 @@ function Update-AutoTags {
  $updated = 0
  
  # Scan all files in project
- $allFiles = Get-ChildItem -Recurse -File | Where-Object { 
+ $allFiles = Get-ChildItem -Recurse -File  Where-Object { 
  $_.FullName -notlike "*\.git*" -and
  $_.FullName -notlike "*node_modules*" -and
  $_.Name -ne "file-tags-index.json"
@@ -204,7 +204,7 @@ function Update-AutoTags {
  $existingTags = if ($index.files.$relativePath) { $index.files.$relativePath.tags } else { @() }
  
  # Merge auto tags with existing manual tags
- $allTags = ($existingTags + $autoTags) | Sort-Object -Unique
+ $allTags = ($existingTags + $autoTags)  Sort-Object -Unique
  
  # Update only if changed
  $comparison = Compare-Object $existingTags $allTags -ErrorAction SilentlyContinue
@@ -215,7 +215,7 @@ function Update-AutoTags {
  }
  }
  
- Write-Host "[PASS] Updated tags for $updated files" -ForegroundColor Green
+ Write-Host "PASS Updated tags for $updated files" -ForegroundColor Green
 }
 
 function Show-TagSummary {
@@ -228,11 +228,11 @@ function Show-TagSummary {
  Write-Host "`n Tag Distribution:" -ForegroundColor Cyan
  $tagCounts = @{}
  foreach ($tag in $index.tags.Keys) {
- $tagCounts[$tag] = $index.tags.$tag.Count
+ $tagCounts$tag = $index.tags.$tag.Count
  }
  
- $tagCounts.GetEnumerator() | Sort-Object Value -Descending | ForEach-Object {
- $bar = "█" * [Math]::Min($_.Value, 20)
+ $tagCounts.GetEnumerator()  Sort-Object Value -Descending  ForEach-Object {
+ $bar = "█" * Math::Min($_.Value, 20)
  Write-Host " $($_.Key.PadRight(15)) │$bar │ $($_.Value) files" -ForegroundColor White
  }
  
@@ -247,15 +247,15 @@ function Show-TagSummary {
  }
  
  # Show untagged files
- $allFiles = Get-ChildItem -File | Where-Object { $_.Name -ne "file-tags-index.json" }
- $untagged = $allFiles | Where-Object { 
+ $allFiles = Get-ChildItem -File  Where-Object { $_.Name -ne "file-tags-index.json" }
+ $untagged = $allFiles  Where-Object { 
  $relativePath = Resolve-Path $_.FullName -Relative
  -not $index.files.$relativePath
  }
  
  if ($untagged.Count -gt 0) {
- Write-Host "`n[WARN] Untagged Files ($($untagged.Count)):" -ForegroundColor Yellow
- $untagged | ForEach-Object { Write-Host " $($_.Name)" -ForegroundColor Gray }
+ Write-Host "`nWARN Untagged Files ($($untagged.Count)):" -ForegroundColor Yellow
+ $untagged  ForEach-Object { Write-Host " $($_.Name)" -ForegroundColor Gray }
  }
 }
 
@@ -267,11 +267,11 @@ if ($ListTags) {
 } elseif ($FilePath) {
  if ($AddTags) {
  $existingTags = Get-FileTags $FilePath
- $newTags = ($existingTags + $AddTags) | Sort-Object -Unique
+ $newTags = ($existingTags + $AddTags)  Sort-Object -Unique
  Set-FileTags $FilePath $newTags
  } elseif ($RemoveTags) {
  $existingTags = Get-FileTags $FilePath
- $newTags = $existingTags | Where-Object { $_ -notin $RemoveTags }
+ $newTags = $existingTags  Where-Object { $_ -notin $RemoveTags }
  Set-FileTags $FilePath $newTags
  } else {
  $tags = Get-FileTags $FilePath

@@ -42,30 +42,30 @@
 #>
 
 function Invoke-GitControlledPatch {
-    [CmdletBinding(SupportsShouldProcess)]
+    CmdletBinding(SupportsShouldProcess)
     param(
-        [Parameter(Mandatory = $true)]
-        [string]$PatchDescription,
-        [Parameter(Mandatory = $true)]
-        [scriptblock]$PatchOperation,
-        [Parameter(Mandatory = $false)]
-        [string[]]$AffectedFiles = @(),
-        [Parameter(Mandatory = $false)]
-        [string]$BaseBranch = "main",        [Parameter(Mandatory = $false)]
-        [switch]$CreatePullRequest,        [Parameter(Mandatory = $false)]
-        [switch]$Force,
-        [Parameter(Mandatory = $false)]
-        [ValidateSet("Standard", "Aggressive", "Emergency", "Safe")]
-        [string]$CleanupMode = "Standard",
-        [Parameter(Mandatory = $false)]
-        [switch]$SkipCleanup,
-        [Parameter(Mandatory = $false)]
-        [switch]$DirectCommit,        [Parameter(Mandatory = $false)]
-        [switch]$EnableRollback,
-        [Parameter(Mandatory = $false)]
-        [string]$RollbackBranch,
-        [Parameter(Mandatory = $false)]
-        [switch]$AutoCommitUncommitted
+        Parameter(Mandatory = $true)
+        string$PatchDescription,
+        Parameter(Mandatory = $true)
+        scriptblock$PatchOperation,
+        Parameter(Mandatory = $false)
+        string$AffectedFiles = @(),
+        Parameter(Mandatory = $false)
+        string$BaseBranch = "main",        Parameter(Mandatory = $false)
+        switch$CreatePullRequest,        Parameter(Mandatory = $false)
+        switch$Force,
+        Parameter(Mandatory = $false)
+        ValidateSet("Standard", "Aggressive", "Emergency", "Safe")
+        string$CleanupMode = "Standard",
+        Parameter(Mandatory = $false)
+        switch$SkipCleanup,
+        Parameter(Mandatory = $false)
+        switch$DirectCommit,        Parameter(Mandatory = $false)
+        switch$EnableRollback,
+        Parameter(Mandatory = $false)
+        string$RollbackBranch,
+        Parameter(Mandatory = $false)
+        switch$AutoCommitUncommitted
     )
     begin {
         Write-Host "Starting Git-controlled patch process..." -ForegroundColor Cyan
@@ -119,7 +119,7 @@ function Invoke-GitControlledPatch {
         
         # Generate unique branch name
         $timestamp = Get-Date -Format "yyyyMMdd-HHmmss"
-        $sanitizedDescription = $PatchDescription -replace '[^a-zA-Z0-9]', '-' -replace '-+', '-'
+        $sanitizedDescription = $PatchDescription -replace '^a-zA-Z0-9', '-' -replace '-+', '-'
         $branchName = "patch/$timestamp-$sanitizedDescription"
         
         Write-Host "Patch Details:" -ForegroundColor Yellow
@@ -173,12 +173,12 @@ function Invoke-GitControlledPatch {
                 Write-Host "Validating changes..." -ForegroundColor Blue
                 $changedFiles = git diff --name-only HEAD
                 if (-not $changedFiles) {
-                    $changedFiles = git status --porcelain | ForEach-Object { $_.Substring(3) }
+                    $changedFiles = git status --porcelain  ForEach-Object { $_.Substring(3) }
                 }
                 
                 if ($changedFiles) {
                     Write-Host "Changed files:" -ForegroundColor Green
-                    $changedFiles | ForEach-Object { Write-Host "  - $_" -ForegroundColor White }
+                    $changedFiles  ForEach-Object { Write-Host "  - $_" -ForegroundColor White }
                     
                     # Commit changes directly
                     git add -A
@@ -217,12 +217,12 @@ function Invoke-GitControlledPatch {
                 # Use PowerShell cleanup instead of git clean to avoid interactive prompts
                 $itemsToClean = @('*.tmp', '*.log', '*.bak', '*.orig')
                 foreach ($pattern in $itemsToClean) {
-                    Get-ChildItem -Path "." -Recurse -Include $pattern -Force -ErrorAction SilentlyContinue | 
+                    Get-ChildItem -Path "." -Recurse -Include $pattern -Force -ErrorAction SilentlyContinue  
                         Remove-Item -Force -Recurse -ErrorAction SilentlyContinue
                 }
                 
                 # Remove problematic directories manually without prompts
-                @('assets', 'node_modules', '.vs', 'build', 'coverage') | ForEach-Object {
+                @('assets', 'node_modules', '.vs', 'build', 'coverage')  ForEach-Object {
                     if (Test-Path $_) {
                         try {
                             Remove-Item $_ -Recurse -Force -ErrorAction SilentlyContinue
@@ -251,13 +251,13 @@ function Invoke-GitControlledPatch {
             git checkout -b $branchName
             # Create backup before applying patch
             $backupPath = "./backups/pre-patch-$(Get-Date -Format 'yyyyMMdd-HHmmss')"
-            New-Item -ItemType Directory -Path $backupPath -Force | Out-Null
+            New-Item -ItemType Directory -Path $backupPath -Force  Out-Null
             
             if ($AffectedFiles.Count -gt 0) {
                 foreach ($file in $AffectedFiles) {
                     if (Test-Path $file) {
                         $relativePath = Resolve-Path $file -Relative
-                        $backupFile = "$backupPath/$($relativePath -replace '[/\\]', '-')"
+                        $backupFile = "$backupPath/$($relativePath -replace '/\\', '-')"
                         Copy-Item $file $backupFile -Force -ErrorAction SilentlyContinue
                     }
                 }
@@ -301,14 +301,14 @@ function Invoke-GitControlledPatch {
                 $changedFiles = git diff --cached --name-only
                 if (-not $changedFiles) {
                     Write-Host "Creating minimal change to ensure branch has content..." -ForegroundColor Yellow
-                    "# Patch applied: $PatchDescription`n# $(Get-Date)" | Out-File "patch-log.md" -Append
+                    "# Patch applied: $PatchDescription`n# $(Get-Date)"  Out-File "patch-log.md" -Append
                     git add "patch-log.md"
                     $changedFiles = @("patch-log.md")
                 }
             }
             
             Write-Host "Changed files:" -ForegroundColor Green
-            $changedFiles | ForEach-Object { Write-Host "  - $_" -ForegroundColor White }
+            $changedFiles  ForEach-Object { Write-Host "  - $_" -ForegroundColor White }
             
             # Run validation checks (non-blocking)
             try {
@@ -413,21 +413,21 @@ Auto-generated by PatchManager v2.0
 
 function Invoke-PatchValidation {
     param(
-        [string[]]$ChangedFiles
+        string$ChangedFiles
     )
     
     Write-Host "Running patch validation..." -ForegroundColor Blue
     $issues = @()
     
     # PowerShell syntax validation
-    $psFiles = $ChangedFiles | Where-Object { $_ -match '\.ps1$' }
+    $psFiles = $ChangedFiles  Where-Object { $_ -match '\.ps1$' }
     if ($psFiles) {
         foreach ($file in $psFiles) {
             if (Test-Path $file) {
                 try {
                     $content = Get-Content $file -Raw -ErrorAction SilentlyContinue
                     if ($content) {
-                        $null = [System.Management.Automation.PSParser]::Tokenize($content, [ref]$null)
+                        $null = System.Management.Automation.PSParser::Tokenize($content, ref$null)
                         Write-Host "  PowerShell syntax OK: $file" -ForegroundColor Green
                     }
                 } catch {
@@ -439,7 +439,7 @@ function Invoke-PatchValidation {
     }
     
     # Python syntax validation
-    $pyFiles = $ChangedFiles | Where-Object { $_ -match '\.py$' }
+    $pyFiles = $ChangedFiles  Where-Object { $_ -match '\.py$' }
     if ($pyFiles -and (Get-Command python -ErrorAction SilentlyContinue)) {
         foreach ($file in $pyFiles) {
             if (Test-Path $file) {
@@ -460,7 +460,7 @@ function Invoke-PatchValidation {
     }
     
     # YAML validation  
-    $yamlFiles = $ChangedFiles | Where-Object { $_ -match '\.(yml|yaml)$' }
+    $yamlFiles = $ChangedFiles  Where-Object { $_ -match '\.(ymlyaml)$' }
     if ($yamlFiles) {
         foreach ($file in $yamlFiles) {
             if (Test-Path $file) {
@@ -476,7 +476,7 @@ function Invoke-PatchValidation {
                     } else {
                         # Basic YAML validation using PowerShell
                         $content = Get-Content $file -Raw
-                        if ($content -match '^[\s]*$' -or $content.Length -eq 0) {
+                        if ($content -match '^\s*$' -or $content.Length -eq 0) {
                             Write-Warning "  YAML file appears empty: $file"
                         } else {
                             Write-Host "  YAML basic check OK: $file" -ForegroundColor Green
@@ -502,10 +502,10 @@ function Invoke-PatchValidation {
 
 function New-PatchPullRequest {
     param(
-        [string]$BranchName,
-        [string]$BaseBranch,
-        [string]$Description,
-        [string[]]$ChangedFiles
+        string$BranchName,
+        string$BaseBranch,
+        string$Description,
+        string$ChangedFiles
     )
     
     try {
@@ -525,19 +525,19 @@ This PR contains automated fixes that require manual review before merging.
 - **Generated**: $(Get-Date -Format "yyyy-MM-dd HH:mm:ss UTC")
 
 ### Changed Files
-$($ChangedFiles | ForEach-Object { "- $_" } | Out-String)
+$($ChangedFiles  ForEach-Object { "- $_" }  Out-String)
 
 ### Validation Status
-- [x] PowerShell linting passed
-- [x] Python syntax validation passed  
-- [x] YAML validation passed
-- [x] Affected tests executed successfully
+- x PowerShell linting passed
+- x Python syntax validation passed  
+- x YAML validation passed
+- x Affected tests executed successfully
 
 ### Review Checklist
-- [ ] **REQUIRED**: Manual code review completed
-- [ ] **REQUIRED**: Changes tested in clean environment
-- [ ] **REQUIRED**: No breaking changes introduced
-- [ ] **REQUIRED**: Documentation updated if needed
+-   **REQUIRED**: Manual code review completed
+-   **REQUIRED**: Changes tested in clean environment
+-   **REQUIRED**: No breaking changes introduced
+-   **REQUIRED**: Documentation updated if needed
 
 ### Important Notes
 - This is an **automated patch** generated by PatchManager v2.0

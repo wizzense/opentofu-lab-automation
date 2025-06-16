@@ -14,23 +14,23 @@ By default, Copilot Chat uses a base model to provide fast, capable responses fo
 
 However, you are not limited to using this model. You can choose from a selection of other models, each with its own particular strengths. You may have a favorite model that you like to use, or you might prefer to use a particular model for inquiring about a specific subject.
 
-| Model type | Models |
-|-----------|--------|
-| Fast coding | <ul><li>GPT-4o</li><li>Claude Sonnet 3.5</li><li>Claude Sonnet 3.7</li><li>Gemini 2.0 Flash</li></ul> |
-| Reasoning/planning | <ul><li>Claude Sonnet 3.7 Thinking</li><li>o1</li><li>o3-mini</li></ul> |
+ Model type  Models 
+-------------------
+ Fast coding  <ul><li>GPT-4o</li><li>Claude Sonnet 3.5</li><li>Claude Sonnet 3.7</li><li>Gemini 2.0 Flash</li></ul> 
+ Reasoning/planning  <ul><li>Claude Sonnet 3.7 Thinking</li><li>o1</li><li>o3-mini</li></ul> 
 
-For a detailed comparison of AI models, see [Choosing the right AI model for your task](https://docs.github.com/en/copilot/using-github-copilot/ai-models/choosing-the-right-ai-model-for-your-task) in the GitHub Copilot documentation.
+For a detailed comparison of AI models, see Choosing the right AI model for your task(https://docs.github.com/en/copilot/using-github-copilot/ai-models/choosing-the-right-ai-model-for-your-task) in the GitHub Copilot documentation.
 
-Depending on which [chat mode](/docs/copilot/chat/copilot-chat.md#chat-mode) you are using, the list of available models might be different. In agent mode, the list of models is limited to those that have good support for tool calling.
+Depending on which chat mode(/docs/copilot/chat/copilot-chat.md#chat-mode) you are using, the list of available models might be different. In agent mode, the list of models is limited to those that have good support for tool calling.
 
-The list of [models available in Copilot](https://docs.github.com/en/copilot/using-github-copilot/ai-models/changing-the-ai-model-for-copilot-chat?tool=vscode) can change over time.
+The list of models available in Copilot(https://docs.github.com/en/copilot/using-github-copilot/ai-models/changing-the-ai-model-for-copilot-chat?tool=vscode) can change over time.
 
-> [!NOTE]
-> If you are a Copilot Business or Enterprise user, your administrator needs to enable certain models for your organization by opting in to `Editor Preview Features` in the [Copilot policy settings](https://docs.github.com/en/enterprise-cloud@latest/copilot/managing-copilot/managing-github-copilot-in-your-organization/managing-policies-for-copilot-in-your-organization#enabling-copilot-features-in-your-organization) on GitHub.com.
+> !NOTE
+> If you are a Copilot Business or Enterprise user, your administrator needs to enable certain models for your organization by opting in to `Editor Preview Features` in the Copilot policy settings(https://docs.github.com/en/enterprise-cloud@latest/copilot/managing-copilot/managing-github-copilot-in-your-organization/managing-policies-for-copilot-in-your-organization#enabling-copilot-features-in-your-organization) on GitHub.com.
 
 ## Why use your own language model API key?
 
-Developers can now leverage models directly from Anthropic, Azure, Google, OpenAI, OpenRouter, or Ollama directly by providing a valid API key. Learn how to [use your own API in VS Code](#bring-your-own-language-model-key).
+Developers can now leverage models directly from Anthropic, Azure, Google, OpenAI, OpenRouter, or Ollama directly by providing a valid API key. Learn how to use your own API in VS Code(#bring-your-own-language-model-key).
 
 Using your own language model API key in VS Code has several advantages:
 
@@ -39,18 +39,18 @@ Using your own language model API key in VS Code has several advantages:
 - **Local compute**: use your own compute for one of the models already supported in GitHub Copilot or to run models not yet available.
 - **Greater control**: by using your own key, you can bypass the standard rate limits and restrictions imposed on the built-in models.
 
-> [!IMPORTANT]
+> !IMPORTANT
 > This feature is currently in preview and is not currently available to Copilot Business or Copilot Enterprise users.
 
 ## Change the model for chat conversations
 
 Use the language model picker in the chat input field to change the model that is used for chat conversations and code editing.
 
-![Screenshot that shows the model picker in the Chat view.](images/language-models/model-dropdown-change-model.png)
+!Screenshot that shows the model picker in the Chat view.(images/language-models/model-dropdown-change-model.png)
 
-You can further extend the list of available models by [using your own language model API key](#bring-your-own-language-model-key).
+You can further extend the list of available models by using your own language model API key(#bring-your-own-language-model-key).
 
-If you have a paid Copilot plan, the model picker shows the premium request multiplier for premium models. Learn more about [premium requests](https://docs.github.com/en/copilot/managing-copilot/monitoring-usage-and-entitlements/about-premium-requests#premium-requests) in the GitHub Copilot documentation.
+If you have a paid Copilot plan, the model picker shows the premium request multiplier for premium models. Learn more about premium requests(https://docs.github.com/en/copilot/managing-copilot/monitoring-usage-and-entitlements/about-premium-requests#premium-requests) in the GitHub Copilot documentation.
 
 ## Change the model for code completions
 
@@ -64,7 +64,7 @@ To change the language model that is used for generating code completions in the
 
 If you already have an API key for a language model provider, you can use their models in chat in VS Code, in addition to the built-in models that Copilot provides. You can use models from the following providers: Anthropic, Azure, Google Gemini, Ollama, OpenAI, and OpenRouter.
 
-> [!IMPORTANT]
+> !IMPORTANT
 > This feature is currently in preview and is not currently available to Copilot Business or Copilot Enterprise users.
 
 To manage the available models for chat:
@@ -73,11 +73,11 @@ To manage the available models for chat:
 
     Alternatively, run the **GitHub Copilot: Manage Models** command from the Command Palette.
 
-    ![Screenshot that shows the model picker in the Chat view, which has an item for managing the list of models.](images/language-models/model-dropdown-change-model.png)
+    !Screenshot that shows the model picker in the Chat view, which has an item for managing the list of models.(images/language-models/model-dropdown-change-model.png)
 
 1. Select a model provider from the list.
 
-    ![Screenshot that shows the model provider Quick Pick.](images/language-models/model-provider-quick-pick.png)
+    !Screenshot that shows the model provider Quick Pick.(images/language-models/model-provider-quick-pick.png)
 
 1. Enter the provider-specific details, such as the API key or endpoint URL.
 
@@ -85,7 +85,7 @@ To manage the available models for chat:
 
     The following screenshot shows the model picker for Ollama running locally, with the Phi-4 model deployed.
 
-    ![Screenshot that shows the model picker of Ollama running locally, allowing you to select a model from the list of available models.](images/language-models/ollama-installed-models-quick-pick.png)
+    !Screenshot that shows the model picker of Ollama running locally, allowing you to select a model from the list of available models.(images/language-models/ollama-installed-models-quick-pick.png)
 
 1. You can now select the model from the model picker in the Chat view and use it for chat conversations.
 
@@ -99,7 +99,7 @@ To update the provider details, such as the API key or endpoint URL:
 
 1. Hover over a model provider in the list, and select the gear icon to edit the provider details.
 
-   ![Screenshot that shows the model provider Quick Pick, with a gear icon next to the provider name.](images/language-models/reconfigure-model-provider.png)
+   !Screenshot that shows the model provider Quick Pick, with a gear icon next to the provider name.(images/language-models/reconfigure-model-provider.png)
 
 1. Update the provider details, such as the API key or endpoint URL.
 
@@ -122,4 +122,4 @@ Bringing your own model key will come to Copilot Business and Enterprise plans l
 
 ## Related resources
 
-- [Available language models in GitHub Copilot](https://docs.github.com/en/copilot/using-github-copilot/ai-models/changing-the-ai-model-for-copilot-chat?tool=vscode)
+- Available language models in GitHub Copilot(https://docs.github.com/en/copilot/using-github-copilot/ai-models/changing-the-ai-model-for-copilot-chat?tool=vscode)

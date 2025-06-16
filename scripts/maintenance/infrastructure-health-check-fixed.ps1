@@ -20,14 +20,14 @@ Automatically apply fixes where possible
 ./scripts/maintenance/infrastructure-health-check.ps1 -Mode "Full" -AutoFix
 #>
 
-[CmdletBinding()]
+CmdletBinding()
 param(
-    [Parameter()]
-    [ValidateSet('Quick', 'Full', 'Report', 'All')]
-    [string]$Mode = 'Full',
+    Parameter()
+    ValidateSet('Quick', 'Full', 'Report', 'All')
+    string$Mode = 'Full',
     
-    [Parameter()]
-    [switch]$AutoFix
+    Parameter()
+    switch$AutoFix
 )
 
 $ErrorActionPreference = "Stop"
@@ -41,7 +41,7 @@ if ($IsWindows -or $env:OS -eq "Windows_NT") {
 $ReportPath = "$projectRoot/docs/reports/project-status"
 
 function Write-HealthLog {
-    param([string]$Message, [string]$Level = "INFO")
+    param(string$Message, string$Level = "INFO")
     $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
     $color = switch ($Level) {
         "INFO" { "Cyan" }
@@ -52,7 +52,7 @@ function Write-HealthLog {
         "FIX" { "Blue" }
         default { "White" }
     }
-    Write-Host "[$timestamp] [$Level] $Message" -ForegroundColor $color
+    Write-Host "$timestamp $Level $Message" -ForegroundColor $color
 }
 
 function Test-PowerShellSyntax {
@@ -87,8 +87,8 @@ function Test-ProjectStructure {
     }
 
     # Enhanced batch processing logic
-    $processorCount = [Environment]::ProcessorCount
-    $optimalBatchSize = [Math]::Max(5, [Math]::Min(20, [Math]::Ceiling($requiredDirs.Keys.Count / $processorCount)))    Write-HealthLog "Running batch processing with optimal batch size: $optimalBatchSize, MaxJobs: $processorCount" "INFO"
+    $processorCount = Environment::ProcessorCount
+    $optimalBatchSize = Math::Max(5, Math::Min(20, Math::Ceiling($requiredDirs.Keys.Count / $processorCount)))    Write-HealthLog "Running batch processing with optimal batch size: $optimalBatchSize, MaxJobs: $processorCount" "INFO"
     
     # Import CodeFixer module for parallel processing
     try {
@@ -105,8 +105,8 @@ function Test-ProjectStructure {
     
     try {
         # Calculate optimal batch size based on file count and CPU cores
-        $processorCount = [Environment]::ProcessorCount
-        $optimalBatchSize = [Math]::Max(5, [Math]::Min(20, [Math]::Ceiling($requiredDirs.Keys.Count / $processorCount)))
+        $processorCount = Environment::ProcessorCount
+        $optimalBatchSize = Math::Max(5, Math::Min(20, Math::Ceiling($requiredDirs.Keys.Count / $processorCount)))
         
         Write-HealthLog "Running parallel analysis with batch size: $optimalBatchSize, MaxJobs: $processorCount" "INFO"
         
@@ -115,7 +115,7 @@ function Test-ProjectStructure {
         foreach ($result in $batchResults) {
             if ($result.Passed) {
                 Write-HealthLog " Directory exists: $($result.Name)" "INFO"
-                $structureCheck.Details[$result.Name] = "EXISTS"
+                $structureCheck.Details$result.Name = "EXISTS"
             } else {
                 Write-HealthLog " Directory missing: $($result.Name)" "ERROR"
                 $structureCheck.Issues += "Missing directory: $($result.Name)"
@@ -123,16 +123,16 @@ function Test-ProjectStructure {
 
                 if ($AutoFix) {
                     try {
-                        New-Item -ItemType Directory -Path (Join-Path $projectRoot $result.Name) -Force | Out-Null
+                        New-Item -ItemType Directory -Path (Join-Path $projectRoot $result.Name) -Force  Out-Null
                         Write-HealthLog " Created missing directory: $($result.Name)" "INFO"
                         $healthResults.Fixes += "Created directory: $($result.Name)"
-                        $structureCheck.Details[$result.Name] = "CREATED"
+                        $structureCheck.Details$result.Name = "CREATED"
                     } catch {
                         Write-HealthLog " Failed to create directory: $($result.Name) - $_" "ERROR"
                         $healthResults.Errors += "Failed to create directory: $($result.Name) - $_"
                     }
                 } else {
-                    $structureCheck.Details[$result.Name] = "MISSING"
+                    $structureCheck.Details$result.Name = "MISSING"
                 }
             }
         }        # Standardized logging
@@ -167,7 +167,7 @@ function Test-ModuleHealth {
         $modulePath = Join-Path $projectRoot $moduleDir
         if (Test-Path $modulePath) {
             Write-HealthLog " Module directory exists: $moduleDir" "INFO"
-            $moduleCheck.Details[$moduleDir] = "EXISTS"
+            $moduleCheck.Details$moduleDir = "EXISTS"
         } else {
             Write-HealthLog " Module directory missing: $moduleDir" "ERROR"
             $moduleCheck.Issues += "Missing module directory: $moduleDir"
@@ -198,7 +198,7 @@ function Test-ConfigurationFiles {
         $filePath = Join-Path $projectRoot $file
         if (Test-Path $filePath) {
             Write-HealthLog " Configuration file exists: $file" "INFO"
-            $configCheck.Details[$file] = "EXISTS"
+            $configCheck.Details$file = "EXISTS"
         } else {
             Write-HealthLog " Missing configuration file: $file" "ERROR"
             $configCheck.Issues += "Missing configuration file: $file"
@@ -268,8 +268,8 @@ function New-HealthReport {
         ProjectRoot = $healthResults.ProjectRoot
         Summary = @{
             TotalChecks = $healthResults.Checks.Keys.Count
-            PassedChecks = ($healthResults.Checks.Values | Where-Object { $_.Passed }).Count
-            FailedChecks = ($healthResults.Checks.Values | Where-Object { -not $_.Passed }).Count
+            PassedChecks = ($healthResults.Checks.Values  Where-Object { $_.Passed }).Count
+            FailedChecks = ($healthResults.Checks.Values  Where-Object { -not $_.Passed }).Count
             TotalErrors = $healthResults.Errors.Count
             TotalWarnings = $healthResults.Warnings.Count
             TotalFixes = $healthResults.Fixes.Count
@@ -283,12 +283,12 @@ function New-HealthReport {
     # Ensure report directory exists
     $reportDir = Split-Path $ReportPath -Parent
     if (-not (Test-Path $reportDir)) {
-        New-Item -ItemType Directory -Path $reportDir -Force | Out-Null
+        New-Item -ItemType Directory -Path $reportDir -Force  Out-Null
     }
     
     # Save report
     $reportFile = "$ReportPath-$(Get-Date -Format 'yyyyMMdd-HHmmss').json"
-    $report | ConvertTo-Json -Depth 10 | Set-Content $reportFile
+    $report  ConvertTo-Json -Depth 10  Set-Content $reportFile
     
     Write-HealthLog "Health report saved to: $reportFile" "SUCCESS"
     return $report

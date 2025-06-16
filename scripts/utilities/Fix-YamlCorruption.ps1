@@ -2,13 +2,13 @@
 # Fix corrupted YAML workflow files where 'on:' was replaced with 'true:'
 
 param(
- [string]$Path = ".github/workflows"
+ string$Path = ".github/workflows"
 )
 
 $ErrorActionPreference = "Continue"
 
 function Fix-YamlCorruption {
- param([string]$FilePath)
+ param(string$FilePath)
  
  $content = Get-Content $FilePath -Raw
  $originalContent = $content
@@ -26,15 +26,15 @@ function Fix-YamlCorruption {
  
  $fixesApplied = @()
  foreach ($corrupt in $fixes.Keys) {
- $correct = $fixes[$corrupt]
- if ($content -match [regex]::Escape($corrupt)) {
- $content = $content -replace [regex]::Escape($corrupt), $correct
+ $correct = $fixes$corrupt
+ if ($content -match regex::Escape($corrupt)) {
+ $content = $content -replace regex::Escape($corrupt), $correct
  $fixesApplied += "$corrupt → $correct"
  }
  }
  
  if ($fixesApplied.Count -gt 0) {
- $content | Out-File -FilePath $FilePath -Encoding UTF8 -NoNewline
+ $content  Out-File -FilePath $FilePath -Encoding UTF8 -NoNewline
  return $fixesApplied
  }
  
@@ -44,7 +44,7 @@ function Fix-YamlCorruption {
 Write-Host " Fixing corrupted YAML workflow files..." -ForegroundColor Yellow
 Write-Host ""
 
-$yamlFiles = Get-ChildItem -Path $Path -Recurse -Include "*.yml", "*.yaml" | Where-Object { !$_.PSIsContainer }
+$yamlFiles = Get-ChildItem -Path $Path -Recurse -Include "*.yml", "*.yaml"  Where-Object { !$_.PSIsContainer }
 $totalFixed = 0
 
 foreach ($file in $yamlFiles) {
@@ -52,7 +52,7 @@ foreach ($file in $yamlFiles) {
  $fixesApplied = Fix-YamlCorruption -FilePath $file.FullName
  
  if ($fixesApplied.Count -gt 0) {
- Write-Host "[PASS] Fixed $($fixesApplied.Count) corruptions in: $relativePath" -ForegroundColor Green
+ Write-Host "PASS Fixed $($fixesApplied.Count) corruptions in: $relativePath" -ForegroundColor Green
  foreach ($fix in $fixesApplied) {
  Write-Host " $fix" -ForegroundColor Gray
  }
@@ -74,17 +74,17 @@ if ($totalFixed -gt 0) {
  try {
  $yamlLintResult = yamllint $Path --format standard 2>&1
  if ($LASTEXITCODE -eq 0) {
- Write-Host "[PASS] No YAML errors found by yamllint" -ForegroundColor Green
+ Write-Host "PASS No YAML errors found by yamllint" -ForegroundColor Green
  } else {
- $errorCount = ($yamlLintResult | Measure-Object).Count
- Write-Host "[WARN] Found $errorCount YAML issues:" -ForegroundColor Yellow
- $yamlLintResult | Select-Object -First 10 | ForEach-Object { Write-Host " $_" -ForegroundColor Red }
+ $errorCount = ($yamlLintResult  Measure-Object).Count
+ Write-Host "WARN Found $errorCount YAML issues:" -ForegroundColor Yellow
+ $yamlLintResult  Select-Object -First 10  ForEach-Object { Write-Host " $_" -ForegroundColor Red }
  if ($errorCount -gt 10) {
  Write-Host " ... and $($errorCount - 10) more" -ForegroundColor Red
  }
  }
  }
  catch {
- Write-Host "[WARN] Could not verify with yamllint: $_" -ForegroundColor Yellow
+ Write-Host "WARN Could not verify with yamllint: $_" -ForegroundColor Yellow
  }
 }

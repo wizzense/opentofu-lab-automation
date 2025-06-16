@@ -47,7 +47,7 @@ jobs:
 
  - name: Install PowerShell
  shell: bash
- run: |
+ run: 
  sudo apt-get update
  sudo apt-get install -y wget apt-transport-https \
  software-properties-common
@@ -58,15 +58,15 @@ jobs:
 
  - name: Install Pester
  shell: pwsh
- run: |
+ run: 
  Install-Module -Name Pester -RequiredVersion 5.7.1 -Force -Scope CurrentUser
 
  - name: Run newly generated tests
  shell: pwsh
- run: |
+ run: 
  $jsonPath = "test-generation-ubuntu-latest.json" # Check for the correct JSON file name
  if (Test-Path $jsonPath) {
- $generationInfo = Get-Content $jsonPath | ConvertFrom-Json
+ $generationInfo = Get-Content $jsonPath  ConvertFrom-Json
 
  if ($generationInfo.GeneratedTests.Count -gt 0) {
  Write-Host ("Running $($generationInfo.GeneratedTests.Count) newly " + \
@@ -126,7 +126,7 @@ jobs:
 
  - name: Install PowerShell
  shell: bash
- run: |
+ run: 
  sudo apt-get update
  sudo apt-get install -y wget apt-transport-https \
  software-properties-common
@@ -137,13 +137,13 @@ jobs:
 
  - name: Apply file renames and copy generated tests
  shell: pwsh
- run: |
+ run: 
  $commitNeeded = $false
 
  # Apply renames if info exists
  $renamedFilesInput = '${{ inputs.renamed-files-json }}'
  if ($renamedFilesInput) {
- $renamedFiles = $renamedFilesInput | ConvertFrom-Json
+ $renamedFiles = $renamedFilesInput  ConvertFrom-Json
  if ($null -ne $renamedFiles) {
  foreach ($renamed in $renamedFiles) {
  # Check if original still exists
@@ -153,7 +153,7 @@ jobs:
  Write-Host ("Applying rename: $old -> $new") -ForegroundColor Yellow
  $targetDir = Split-Path $new -Parent
  if (-not (Test-Path $targetDir)) {
- New-Item -Path $targetDir -ItemType Directory -Force | Out-Null
+ New-Item -Path $targetDir -ItemType Directory -Force  Out-Null
  }
  Move-Item $old $new -Force
  $commitNeeded = $true
@@ -171,17 +171,17 @@ jobs:
  $artifactBase = "artifacts"
  $targetTestDir = "./tests" # Relative to checkout root
  if (-not (Test-Path $targetTestDir)) {
- New-Item -Path $targetTestDir -ItemType Directory -Force | Out-Null
+ New-Item -Path $targetTestDir -ItemType Directory -Force  Out-Null
  }
 
- Get-ChildItem -Path $artifactBase -Directory | ForEach-Object {
+ Get-ChildItem -Path $artifactBase -Directory  ForEach-Object {
  $osArtifactDir = $_.FullName
  # Path within the artifact structure
  $srcTestPattern = Join-Path $osArtifactDir "tests/*.Tests.ps1"
  # Check if it's a relevant artifact
  $generationJson = Join-Path $osArtifactDir "test-generation-*.json"
  if (Test-Path $generationJson) {
- Get-ChildItem -Path $srcTestPattern -File -ErrorAction SilentlyContinue | \\
+ Get-ChildItem -Path $srcTestPattern -File -ErrorAction SilentlyContinue  \\
  ForEach-Object {
  $srcTestFile = $_.FullName
  $destTestFile = Join-Path $targetTestDir $_.Name
@@ -194,14 +194,14 @@ jobs:
  }
 
  # Final regeneration for any scripts that were renamed or newly detected
- $changedScriptsForFinalGen = '${{ inputs.changed-scripts }}' | ConvertFrom-Json
+ $changedScriptsForFinalGen = '${{ inputs.changed-scripts }}'  ConvertFrom-Json
  if ($renamedFilesInput) {
- $renamedFiles = $renamedFilesInput | ConvertFrom-Json
+ $renamedFiles = $renamedFilesInput  ConvertFrom-Json
  if ($null -ne $renamedFiles) {
  foreach ($renamed in $renamedFiles) {
  $oldIdx = $changedScriptsForFinalGen.IndexOf($renamed.Original)
  if ($oldIdx -ge 0) {
- $changedScriptsForFinalGen[$oldIdx] = $renamed.New
+ $changedScriptsForFinalGen$oldIdx = $renamed.New
  }
  }
  }
@@ -214,7 +214,7 @@ jobs:
  # Force to overwrite if exists, ensuring latest
  New-AutoTestGenerator -ScriptPath $scriptPath -Force
  # Test file path construction
- $fileName = [System.IO.Path]::GetFileNameWithoutExtension($scriptPath)
+ $fileName = System.IO.Path::GetFileNameWithoutExtension($scriptPath)
  $testFileName = $fileName + ".Tests.ps1"
  $expectedTestPath = Join-Path $targetTestDir $testFileName
  if(Test-Path $expectedTestPath){
@@ -224,11 +224,11 @@ jobs:
  }
  }
  }
- "COMMIT_NEEDED=$commitNeeded" | Out-File -FilePath $env:GITHUB_ENV -Append
+ "COMMIT_NEEDED=$commitNeeded"  Out-File -FilePath $env:GITHUB_ENV -Append
 
  - name: Commit and push changes
  if: env.COMMIT_NEEDED == 'true'
- run: |
+ run: 
  git config --local user.email "action@github.com"
  git config --local user.name "GitHub Action (Auto-Test Gen)"
 

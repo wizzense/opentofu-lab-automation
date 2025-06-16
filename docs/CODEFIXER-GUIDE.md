@@ -3,13 +3,13 @@
 This guide provides detailed information on how to use the CodeFixer PowerShell module, which is the core component of the OpenTofu Lab Automation testing framework.
 
 ## Table of Contents
-- [Installation and Setup](#installation-and-setup)
-- [Module Structure](#module-structure)
-- [Key Functions](#key-functions)
-- [Automation Integration](#automation-integration)
-- [Common Usage Scenarios](#common-usage-scenarios)
-- [Extending the Module](#extending-the-module)
-- [Troubleshooting](#troubleshooting)
+- Installation and Setup(#installation-and-setup)
+- Module Structure(#module-structure)
+- Key Functions(#key-functions)
+- Automation Integration(#automation-integration)
+- Common Usage Scenarios(#common-usage-scenarios)
+- Extending the Module(#extending-the-module)
+- Troubleshooting(#troubleshooting)
 
 ## Installation and Setup
 

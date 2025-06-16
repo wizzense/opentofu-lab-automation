@@ -9,15 +9,15 @@
 Successfully resolved systemic Pester test failures affecting 36+ numbered test files in the opentofu-lab-automation repository. The core issue was PowerShell scripts with `Param()` blocks failing when executed via direct script invocation (`&` operator) or dot-sourcing within Pester test contexts.
 
 ### Key Results:
-- **[PASS] 100% Discovery Success**: All 86 test files now parse successfully (previously 36 failed)
-- **[PASS] Eliminated "Param is not recognized" Errors**: Core systemic issue resolved
-- **[PASS] Improved Test Pass Rate**: 285 tests passing (up from much lower numbers)
-- **[PASS] 681 Total Tests Discovered**: Complete test suite now functional
+- **PASS 100% Discovery Success**: All 86 test files now parse successfully (previously 36 failed)
+- **PASS Eliminated "Param is not recognized" Errors**: Core systemic issue resolved
+- **PASS Improved Test Pass Rate**: 285 tests passing (up from much lower numbers)
+- **PASS 681 Total Tests Discovered**: Complete test suite now functional
 
 ## Root Cause Analysis
 
 ### The Problem
-PowerShell scripts containing `Param([object]$Config)` blocks were failing when executed using:
+PowerShell scripts containing `Param(object$Config)` blocks were failing when executed using:
 1. **Direct script invocation**: `& $scriptPath -Config $config`
 2. **Dot-sourcing**: `. $scriptPath` 
 
@@ -33,18 +33,18 @@ CommandNotFoundException: The term 'Param' is not recognized as a name of a cmdl
 
 **Before (Failing):**
 ```powershell
-{ & $scriptPath -Config $config } | Should -Not -Throw
+{ & $scriptPath -Config $config }  Should -Not -Throw
 ```
 
 **After (Working):**
 ```powershell
-$config = [pscustomobject]@{}
-$configJson = $config | ConvertTo-Json -Depth 5
-$tempConfig = Join-Path ([System.IO.Path]::GetTempPath()) "$([System.Guid]::NewGuid()).json"
-$configJson | Set-Content -Path $tempConfig
+$config = pscustomobject@{}
+$configJson = $config  ConvertTo-Json -Depth 5
+$tempConfig = Join-Path (System.IO.Path::GetTempPath()) "$(System.Guid::NewGuid()).json"
+$configJson  Set-Content -Path $tempConfig
 try {
  $pwsh = (Get-Command pwsh).Source
- { & $pwsh -NoLogo -NoProfile -File $script:ScriptPath -Config $tempConfig } | Should -Not -Throw
+ { & $pwsh -NoLogo -NoProfile -File $script:ScriptPath -Config $tempConfig }  Should -Not -Throw
 } finally {
  Remove-Item $tempConfig -Force -ErrorAction SilentlyContinue
 }
@@ -62,7 +62,7 @@ try {
 - **Action:** Added consistent headers:
  ```powershell
  Import-Module "$PSScriptRoot/../lab_utils/LabRunner/LabRunner.psd1" -Force
- Param([object]$Config)
+ Param(object$Config)
  ```
 - **Purpose:** Ensured all runner scripts follow standard pattern
 
@@ -92,12 +92,12 @@ try {
 - **After:** Used `Get-RunnerScriptPath` function for proper resolution
 
 #### B. Execution Pattern Fix (36 files)
-- **Before:** `{ & $scriptPath -Config 'TestValue' -WhatIf } | Should -Not -Throw`
+- **Before:** `{ & $scriptPath -Config 'TestValue' -WhatIf }  Should -Not -Throw`
 - **After:** `pwsh -File` execution with temporary config file pattern
 
 #### C. Syntax Validation Fix (8 files)
-- **Before:** `{ . $script:ScriptPath } | Should -Not -Throw`
-- **After:** Proper PowerShell parsing using `[System.Management.Automation.Language.Parser]::ParseFile()`
+- **Before:** `{ . $script:ScriptPath }  Should -Not -Throw`
+- **After:** Proper PowerShell parsing using `System.Management.Automation.Language.Parser::ParseFile()`
 
 ## Files Modified
 

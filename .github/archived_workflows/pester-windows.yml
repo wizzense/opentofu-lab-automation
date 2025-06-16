@@ -5,7 +5,7 @@ on:
  workflow_dispatch:
  pull_request:
  push:
- branches: [main]
+ branches: main
 
 jobs:
  pester-windows:
@@ -19,17 +19,17 @@ jobs:
  - name: Cache PowerShell modules
  uses: actions/cache@v4
  with:
- path: |
+ path: 
  C:\\\\Users\\\\runneradmin\\\\Documents\\\\WindowsPowerShell\\\\Modules
  C:\\\\Users\\\\runneradmin\\\\Documents\\\\PowerShell\\\\Modules
  key: windows-pwsh-modules-${{ hashFiles('tests/PesterConfiguration.psd1') }}
  restore-keys: windows-pwsh-modules-
  - name: Remove old Pester
  shell: pwsh
- run: |
+ run: 
  $ErrorActionPreference = 'Stop'
  try {
- $old = Get-Module -ListAvailable -Name Pester | Where-Object { $_.Version -lt [version]'5.0.0' }
+ $old = Get-Module -ListAvailable -Name Pester  Where-Object { $_.Version -lt version'5.0.0' }
  foreach ($mod in $old) {
  Remove-Item -Recurse -Force $mod.ModuleBase -ErrorAction SilentlyContinue
  }
@@ -39,7 +39,7 @@ jobs:
  }
  - name: Install Pester
  shell: pwsh
- run: |
+ run: 
  $ErrorActionPreference = 'Stop'
  try {
  Install-Module -Name Pester -RequiredVersion 5.7.1 -Force -Scope CurrentUser
@@ -50,7 +50,7 @@ jobs:
  }
  - name: Install powershell-yaml
  shell: pwsh
- run: |
+ run: 
  $ErrorActionPreference = 'Stop'
  try {
  Install-Module -Name powershell-yaml -Force -Scope CurrentUser
@@ -61,7 +61,7 @@ jobs:
  }
  - name: Verify test helpers
  shell: pwsh
- run: |
+ run: 
  $ErrorActionPreference = 'Stop'
  try {
  . ./tests/helpers/Get-ScriptAst.ps1
@@ -76,11 +76,11 @@ jobs:
  }
  - name: Ensure coverage directory
  shell: pwsh
- run: |
+ run: 
  $ErrorActionPreference = 'Stop'
  try {
  if (-not (Test-Path coverage)) {
- New-Item -ItemType Directory -Path coverage | Out-Null
+ New-Item -ItemType Directory -Path coverage  Out-Null
  }
  Write-Host "Coverage directory ready" -ForegroundColor Green
  } catch {
@@ -90,7 +90,7 @@ jobs:
  - name: Run Pester Tests
  id: pester
  shell: pwsh
- run: |
+ run: 
  $ErrorActionPreference = 'Stop'
  Write-Host "Running Pester tests for Windows" -ForegroundColor Yellow
  try {
@@ -101,13 +101,13 @@ jobs:
  if (Test-Path 'tools/iso') {
  $coveragePaths += 'tools/iso'
  }
- $cfg.CodeCoverage.Path = [Pester.StringArrayOption]::new($coveragePaths)
+ $cfg.CodeCoverage.Path = Pester.StringArrayOption::new($coveragePaths)
  $repoRoot = $env:GITHUB_WORKSPACE
  $cfg.TestResult.OutputPath = Join-Path $repoRoot 'coverage/testResults.xml'
  $cfg.CodeCoverage.OutputPath = Join-Path $repoRoot 'coverage/coverage.xml'
  $logPath = Join-Path $repoRoot 'coverage/pester.log'
  Write-Host "Starting test execution..." -ForegroundColor Green
- $result = Invoke-Pester -Configuration $cfg 2>&1 | Tee-Object -FilePath $logPath
+ $result = Invoke-Pester -Configuration $cfg 2>&1  Tee-Object -FilePath $logPath
  if ($result.FailedCount -gt 0) {
  Write-Error "Tests failed: $($result.FailedCount) failed out of $($result.TotalCount) total tests"
  exit 1
@@ -122,7 +122,7 @@ jobs:
  }
  $exitCode = 1
  }
- "pester_exit_code=$exitCode" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+ "pester_exit_code=$exitCode"  Out-File -FilePath $env:GITHUB_OUTPUT -Append
  - name: Upload Pester log
  if: always()
  uses: actions/upload-artifact@v4
@@ -153,14 +153,14 @@ jobs:
  - uses: actions/checkout@v4
  - name: Configure Node flags
  shell: pwsh
- run: |
+ run: 
  $ErrorActionPreference = 'Stop'
  try {
  $cfgPath = 'configs/config_files/default-config.json'
- $cfg = Get-Content $cfgPath | ConvertFrom-Json
+ $cfg = Get-Content $cfgPath  ConvertFrom-Json
  $cfg.Node_Dependencies.InstallNode = $true
  $cfg.Node_Dependencies.InstallNpm = $true
- $cfg | ConvertTo-Json -Depth 10 | Set-Content $cfgPath
+ $cfg  ConvertTo-Json -Depth 10  Set-Content $cfgPath
  Write-Host "Node configuration updated successfully" -ForegroundColor Green
  } catch {
  Write-Error "Failed to configure Node flags: $_"
@@ -168,13 +168,13 @@ jobs:
  }
  - name: Install Node core
  shell: pwsh
- run: |
+ run: 
  $ErrorActionPreference = 'Stop'
  try {
  Write-Host "Loading NodeCore script..." -ForegroundColor Yellow
  . ./pwsh/runner_scripts/0201_Install-NodeCore.ps1
  Write-Host "Script loaded successfully. Executing Install-NodeCore..." -ForegroundColor Green
- $cfg = Get-Content 'configs/config_files/default-config.json' | ConvertFrom-Json
+ $cfg = Get-Content 'configs/config_files/default-config.json'  ConvertFrom-Json
  Install-NodeCore -Config $cfg
  Write-Host "Node core installed successfully" -ForegroundColor Green
  } catch {
@@ -183,10 +183,10 @@ jobs:
  }
  - name: Install global packages
  shell: pwsh
- run: |
+ run: 
  $ErrorActionPreference = 'Stop'
  try {
- $cfg = Get-Content 'configs/config_files/default-config.json' | ConvertFrom-Json
+ $cfg = Get-Content 'configs/config_files/default-config.json'  ConvertFrom-Json
  . ./pwsh/runner_scripts/0202_Install-NodeGlobalPackages.ps1
  Install-NodeGlobalPackages -Config $cfg
  Write-Host "Node global packages installed successfully" -ForegroundColor Green
@@ -196,10 +196,10 @@ jobs:
  }
  - name: Verify Node and packages
  shell: pwsh
- run: |
+ run: 
  $ErrorActionPreference = 'Stop'
  try {
- $cfg = Get-Content 'configs/config_files/default-config.json' | ConvertFrom-Json
+ $cfg = Get-Content 'configs/config_files/default-config.json'  ConvertFrom-Json
  node --version
  $packages = $cfg.Node_Dependencies.GlobalPackages
  foreach ($pkg in $packages) {

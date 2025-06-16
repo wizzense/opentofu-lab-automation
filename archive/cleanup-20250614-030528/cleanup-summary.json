@@ -2,7 +2,7 @@
   "timestamp": "2025-06-14T03:05:28.345078",
   "files_kept": 1702,
   "files_archived": 28,
-  "archived_files": [
+  "archived_files": 
     "AGENTS.md",
     "AUTOMATED-EXECUTION-CONFIRMED.md",
     "bootstrap.py",
@@ -31,5 +31,5 @@
     "test-gui-improvements.py",
     "validate-infrastructure.ps1",
     "WINDOWS-VALIDATION-COMPLETE.md"
-  ]
+  
 }

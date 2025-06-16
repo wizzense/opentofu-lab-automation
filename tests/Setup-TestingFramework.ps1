@@ -17,10 +17,10 @@ This script initializes the testing framework by:
 #>
 
 param(
- [switch]$RegenerateAll,
- [switch]$SetupWatcher,
- [switch]$ValidateOnly,
- [string]$WatchDirectory = "pwsh"
+ switch$RegenerateAll,
+ switch$SetupWatcher,
+ switch$ValidateOnly,
+ string$WatchDirectory = "pwsh"
 )
 
 
@@ -39,7 +39,7 @@ Write-Host "=" * 60
 $helpersPath = Join-Path $PSScriptRoot 'helpers'
 if (Test-Path (Join-Path $helpersPath 'TestHelpers.ps1')) {
  . (Join-Path $helpersPath 'TestHelpers.ps1')
- Write-Host "[PASS] Loaded test helpers" -ForegroundColor Green
+ Write-Host "PASS Loaded test helpers" -ForegroundColor Green
 } else {
  Write-Warning "Test helpers not found, some features may not work"
 }
@@ -56,7 +56,7 @@ function Install-RequiredModules {
  try {
  $installed = Get-Module -ListAvailable -Name $module.Name
  if ($module.Version) {
- $installed = $installed | Where-Object { $_.Version -ge [version]$module.Version }
+ $installed = $installed  Where-Object { $_.Version -ge version$module.Version }
  }
  
  if ($installed) {
@@ -115,7 +115,7 @@ function Test-FrameworkComponents {
  if ($component.Path -like "*.ps1") {
  try {
  $content = Get-Content $component.Path -Raw
- $ast = [System.Management.Automation.Language.Parser]::ParseInput($content, [ref]$null, [ref]$errors)
+ $ast = System.Management.Automation.Language.Parser::ParseInput($content, ref$null, ref$errors)
  if ($errors.Count -gt 0) {
  Write-Host " Syntax warnings: $($errors.Count)" -ForegroundColor Yellow
  } else {
@@ -152,7 +152,7 @@ function Initialize-TestGeneration {
  if (Test-Path $dir) {
  Write-Host " � Processing directory: $dir" -ForegroundColor Cyan
  
- $scripts = Get-ChildItem $dir -Filter "*.ps1" -Recurse | 
+ $scripts = Get-ChildItem $dir -Filter "*.ps1" -Recurse  
  Where-Object { -not $_.Name.EndsWith('.Tests.ps1') -and $_.Name -ne 'Setup-TestingFramework.ps1' }
  
  $totalScripts += $scripts.Count
@@ -167,9 +167,9 @@ function Initialize-TestGeneration {
  Write-Host " Generating test for: $($script.Name)" -ForegroundColor Gray
  & (Join-Path $helpersPath 'New-AutoTestGenerator.ps1') -ScriptPath $script.FullName -Force:$RegenerateAll
  $generatedTests++
- Write-Host " [PASS] Generated: $testName" -ForegroundColor Green
+ Write-Host " PASS Generated: $testName" -ForegroundColor Green
  } catch {
- Write-Host " [FAIL] Failed to generate test for $($script.Name): $_" -ForegroundColor Red
+ Write-Host " FAIL Failed to generate test for $($script.Name): $_" -ForegroundColor Red
  }
  } else {
  Write-Host " ⏭ Test exists: $testName" -ForegroundColor Gray
@@ -209,8 +209,8 @@ function Start-FileWatcher {
 & $WatcherScript -WatchMode -WatchDirectory $WatchPath -WatchIntervalSeconds 30
  } -ArgumentList $watcherScript, $watchPath
  
- Write-Host " [PASS] File watcher started (Job ID: $($job.Id))" -ForegroundColor Green
- Write-Host " Use 'Get-Job | Remove-Job' to stop the watcher" -ForegroundColor Gray
+ Write-Host " PASS File watcher started (Job ID: $($job.Id))" -ForegroundColor Green
+ Write-Host " Use 'Get-Job  Remove-Job' to stop the watcher" -ForegroundColor Gray
  
  return $job
 }
@@ -222,7 +222,7 @@ function Test-FrameworkExecution {
  # Test the extensible runner
  Write-Host " Testing extensible test runner..." -ForegroundColor Cyan
  $testResult = & (Join-Path $helpersPath 'Invoke-ExtensibleTests.ps1') -ScriptPattern "NonExistentTest*" -Platform 'All' 2>$null
- Write-Host " [PASS] Extensible test runner working" -ForegroundColor Green
+ Write-Host " PASS Extensible test runner working" -ForegroundColor Green
  
  # Test basic Pester functionality
  Write-Host " Testing Pester integration..." -ForegroundColor Cyan
@@ -232,11 +232,11 @@ function Test-FrameworkExecution {
  $pesterConfig.Run.Path = @() # Empty path to test config only
  
  $result = Invoke-Pester -Configuration $pesterConfig
- Write-Host " [PASS] Pester integration working" -ForegroundColor Green
+ Write-Host " PASS Pester integration working" -ForegroundColor Green
  
  return $true
  } catch {
- Write-Host " [FAIL] Framework execution test failed: $_" -ForegroundColor Red
+ Write-Host " FAIL Framework execution test failed: $_" -ForegroundColor Red
  return $false
  }
 }
@@ -272,9 +272,9 @@ try {
  Write-Host " Validation mode - checking framework components only" -ForegroundColor Yellow
  $isValid = Test-FrameworkComponents
  if ($isValid) {
- Write-Host "`n[PASS] Framework validation passed!" -ForegroundColor Green
+ Write-Host "`nPASS Framework validation passed!" -ForegroundColor Green
  } else {
- Write-Host "`n[FAIL] Framework validation failed!" -ForegroundColor Red
+ Write-Host "`nFAIL Framework validation failed!" -ForegroundColor Red
  exit 1
  }
  exit 0
@@ -325,7 +325,7 @@ try {
  Start-Sleep 10
  $job = Get-Job -Id $watcherJob.Id -ErrorAction SilentlyContinue
  if (-not $job -or $job.State -eq 'Failed') {
- Write-Host "[WARN] File watcher stopped unexpectedly" -ForegroundColor Yellow
+ Write-Host "WARN File watcher stopped unexpectedly" -ForegroundColor Yellow
  break
  }
  }
@@ -335,7 +335,7 @@ try {
  }
  
 } catch {
- Write-Host "`n[FAIL] Setup failed: $_" -ForegroundColor Red
+ Write-Host "`nFAIL Setup failed: $_" -ForegroundColor Red
  Write-Host "Check the error above and try again" -ForegroundColor Gray
  exit 1
 }

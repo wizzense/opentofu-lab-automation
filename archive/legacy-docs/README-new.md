@@ -2,9 +2,9 @@
 
  **One-click infrastructure lab deployment** - Cross-platform automation for OpenTofu (Terraform alternative) environments.
 
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![Python Version](https://img.shields.io/badge/python-3.7%2B-blue)](https://python.org)
-[![PowerShell](https://img.shields.io/badge/powershell-7%2B-blue)](https://github.com/PowerShell/PowerShell)
+!License(https://img.shields.io/badge/license-MIT-blue.svg)(LICENSE)
+!Python Version(https://img.shields.io/badge/python-3.7%2B-blue)(https://python.org)
+!PowerShell(https://img.shields.io/badge/powershell-7%2B-blue)(https://github.com/PowerShell/PowerShell)
 
 ##  Quick Start (30 seconds)
 
@@ -41,11 +41,11 @@ python deploy.py --quick
 ##  What This Does
 
 This automation framework:
-- [PASS] **Installs prerequisites** (PowerShell, Git, OpenTofu, etc.)
-- [PASS] **Sets up lab infrastructure** (Hyper-V, networking, certificates)
-- [PASS] **Configures development tools** (VS Code, Python, Node.js)
-- [PASS] **Deploys OpenTofu modules** for infrastructure as code
-- [PASS] **Creates ready-to-use lab environment** in minutes
+- PASS **Installs prerequisites** (PowerShell, Git, OpenTofu, etc.)
+- PASS **Sets up lab infrastructure** (Hyper-V, networking, certificates)
+- PASS **Configures development tools** (VS Code, Python, Node.js)
+- PASS **Deploys OpenTofu modules** for infrastructure as code
+- PASS **Creates ready-to-use lab environment** in minutes
 
 ##  Prerequisites
 
@@ -161,7 +161,7 @@ python deploy.py --check
 ### Common Issues
 
 **Python not found:**
-- **Windows**: Install from [python.org](https://python.org) and check "Add to PATH"
+- **Windows**: Install from python.org(https://python.org) and check "Add to PATH"
 - **Linux**: `sudo apt install python3` or `sudo yum install python3`
 - **macOS**: `brew install python3`
 
@@ -185,7 +185,7 @@ sudo ./deploy.sh  # If admin access needed
 1. **Check logs**: Look for error details in terminal output
 2. **Run check mode**: `python deploy.py --check`
 3. **Review config**: Verify your configuration file
-4. **Open issue**: [GitHub Issues](https://github.com/wizzense/opentofu-lab-automation/issues)
+4. **Open issue**: GitHub Issues(https://github.com/wizzense/opentofu-lab-automation/issues)
 
 ##  Use Cases
 
@@ -209,10 +209,10 @@ sudo ./deploy.sh  # If admin access needed
 
 ## � Documentation
 
-- **[Configuration Guide](docs/AUTOMATION-QUICKREF.md)** - Detailed setup options
-- **[Troubleshooting](docs/troubleshooting.md)** - Common problems and solutions
-- **[Development](docs/CONTRIBUTING.md)** - Contributing to the project
-- **[Testing Framework](docs/testing-framework.md)** - Running and writing tests
+- **Configuration Guide(docs/AUTOMATION-QUICKREF.md)** - Detailed setup options
+- **Troubleshooting(docs/troubleshooting.md)** - Common problems and solutions
+- **Development(docs/CONTRIBUTING.md)** - Contributing to the project
+- **Testing Framework(docs/testing-framework.md)** - Running and writing tests
 
 ## � Contributing
 
@@ -223,11 +223,11 @@ We welcome contributions! Quick start:
 3. Make changes and test: `python deploy.py --check`
 4. Submit pull request
 
-See [CONTRIBUTING.md](docs/CONTRIBUTING.md) for detailed guidelines.
+See CONTRIBUTING.md(docs/CONTRIBUTING.md) for detailed guidelines.
 
 ## � License
 
-MIT License - see [LICENSE](LICENSE) file for details.
+MIT License - see LICENSE(LICENSE) file for details.
 
 ## � Acknowledgments
 

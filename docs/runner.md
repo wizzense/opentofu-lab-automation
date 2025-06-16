@@ -41,4 +41,4 @@ You can also specify the output level directly with the `-Verbosity` parameter (
 
 ---
 
-See [pester-test-failures.md](pester-test-failures.md) for a tracked list of current test failures.
+See pester-test-failures.md(pester-test-failures.md) for a tracked list of current test failures.

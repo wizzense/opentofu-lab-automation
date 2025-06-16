@@ -35,31 +35,31 @@ jobs:
 
  - name: Detect changed scripts
  id: changes
- run: |
- if ["${{ inputs.force_regenerate }}" = "true"]; then
+ run: 
+ if "${{ inputs.force_regenerate }}" = "true"; then
  # Force regenerate all scripts
- scripts=$(find pwsh -name "*.ps1" -not -name "*.Tests.ps1" | jq -R -s -c 'split("\\n")[:-1]')
+ scripts=$(find pwsh -name "*.ps1" -not -name "*.Tests.ps1"  jq -R -s -c 'split("\\n"):-1')
  echo "scripts=$scripts" >> $GITHUB_OUTPUT
  echo "has-changes=true" >> $GITHUB_OUTPUT
  else
  # Only process changed files
- if ["${{ github.event_name }}" = "pull_request"]; then
+ if "${{ github.event_name }}" = "pull_request"; then
  base_ref="${{ github.event.pull_request.base.sha }}"
  else
  base_ref="${{ github.event.before }}"
  fi
 
  # Get changed PowerShell scripts (excluding test files)
- changed_files=$(git diff --name-only $base_ref..HEAD | grep -E '^pwsh/.*\\.ps1$' | grep -v '\\.Tests\\.ps1$' || true)
+ changed_files=$(git diff --name-only $base_ref..HEAD  grep -E '^pwsh/.*\\.ps1$'  grep -v '\\.Tests\\.ps1$'  true)
 
- if [-n "$changed_files"]; then
- scripts=$(echo "$changed_files" | jq -R -s -c 'split("\\n")[:-1]')
+ if -n "$changed_files"; then
+ scripts=$(echo "$changed_files"  jq -R -s -c 'split("\\n"):-1')
  echo "scripts=$scripts" >> $GITHUB_OUTPUT
  echo "has-changes=true" >> $GITHUB_OUTPUT
  echo "Changed scripts detected:"
  echo "$changed_files"
  else
- echo "scripts=[]" >> $GITHUB_OUTPUT
+ echo "scripts=" >> $GITHUB_OUTPUT
  echo "has-changes=false" >> $GITHUB_OUTPUT
  echo "No PowerShell script changes detected"
  fi
@@ -77,7 +77,7 @@ jobs:
 
  - name: Install PowerShell
  shell: bash
- run: |
+ run: 
  sudo apt-get update
  sudo apt-get install -y wget apt-transport-https software-properties-common
  wget -q https://packages.microsoft.com/config/ubuntu/22.04/packages-microsoft-prod.deb
@@ -88,8 +88,8 @@ jobs:
  - name: Validate and fix script naming
  id: renaming
  shell: pwsh
- run: |
- $changedScripts = '${{ needs.detect-changes.outputs.changed-scripts }}' | ConvertFrom-Json
+ run: 
+ $changedScripts = '${{ needs.detect-changes.outputs.changed-scripts }}'  ConvertFrom-Json
  $renamedFiles = @()
 
  foreach ($scriptPath in $changedScripts) {
@@ -126,7 +126,7 @@ jobs:
  }
  }
 
- $outputJson = $renamedFiles | ConvertTo-Json -Depth 2
+ $outputJson = $renamedFiles  ConvertTo-Json -Depth 2
  echo "renamed-files-json=$outputJson" >> $GITHUB_OUTPUT
 
  if ($renamedFiles.Count -gt 0) {

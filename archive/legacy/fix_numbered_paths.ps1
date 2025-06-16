@@ -57,11 +57,11 @@ foreach ($testFile in $testFiles) {
     $content = Get-Content $testFile -Raw
     
     # Extract the script name from the test file name
-    $testFileName = [System.IO.Path]::GetFileName($testFile)
+    $testFileName = System.IO.Path::GetFileName($testFile)
     $scriptName = $testFileName -replace '\.Tests\.ps1$', '.ps1'
     
     # Fix the path construction - use the Get-RunnerScriptPath function like 0000_Cleanup-Files.Tests.ps1
-    $oldPattern = '\$scriptPath = Join-Path \$PSScriptRoot ''\.\.'' ''/workspaces/opentofu-lab-automation/pwsh/runner_scripts/[^'']+'''
+    $oldPattern = '\$scriptPath = Join-Path \$PSScriptRoot ''\.\.'' ''/workspaces/opentofu-lab-automation/pwsh/runner_scripts/^''+'''
     $newPattern = @"
 # Get the script path using the LabRunner function  
         `$script:ScriptPath = Get-RunnerScriptPath '$scriptName'

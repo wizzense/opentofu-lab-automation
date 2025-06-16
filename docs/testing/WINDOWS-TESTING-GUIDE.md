@@ -7,11 +7,11 @@
 
 **Solution**: Use proper PowerShell syntax:
 ```powershell
-# [FAIL] DON'T USE (bash syntax)
-curl -sL https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/HEAD/deploy.py | python
+# FAIL DON'T USE (bash syntax)
+curl -sL https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/HEAD/deploy.py  python
 
-# [PASS] USE (PowerShell syntax)
-Invoke-WebRequest -Uri "https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/HEAD/deploy.py" | Select-Object -ExpandProperty Content | python
+# PASS USE (PowerShell syntax)
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/HEAD/deploy.py"  Select-Object -ExpandProperty Content  python
 ```
 
 ### Issue 2: 404 Errors on `/HEAD/` URLs
@@ -38,7 +38,7 @@ python deploy.py
 Invoke-WebRequest -Uri "URL" -OutFile "filename"
 
 # Download and run immediately
-Invoke-WebRequest -Uri "URL" | Select-Object -ExpandProperty Content | python
+Invoke-WebRequest -Uri "URL"  Select-Object -ExpandProperty Content  python
 
 # Alternative with iwr alias
 iwr "URL" -OutFile "filename"
@@ -127,7 +127,7 @@ python gui.py
 > python deploy.py --help
 OpenTofu Lab Automation - Cross-Platform Deployment
 
-Usage: deploy.py [options]
+Usage: deploy.py options
  -h, --help Show this help message
  -c, --config Specify config file
  -g, --gui Launch GUI mode
@@ -137,7 +137,7 @@ Usage: deploy.py [options]
 ### Successful GUI Test
 ```
 > python gui.py
-[GUI should open with configuration options]
+GUI should open with configuration options
 ```
 
 ## Troubleshooting
@@ -153,7 +153,7 @@ Usage: deploy.py [options]
 ### Error: "SSL/TLS errors"
 ```powershell
 # Bypass SSL issues (temporary, for testing only)
-[System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]::Tls12
+System.Net.ServicePointManager::SecurityProtocol = System.Net.SecurityProtocolType::Tls12
 ```
 
 ## Next Steps After Testing
@@ -168,14 +168,14 @@ Once you've successfully tested the deployment scripts:
 ## Support
 
 If you encounter issues not covered here:
-1. Check the main [TESTING-DEPLOYMENT-WRAPPER.md](TESTING-DEPLOYMENT-WRAPPER.md)
+1. Check the main TESTING-DEPLOYMENT-WRAPPER.md(TESTING-DEPLOYMENT-WRAPPER.md)
 2. Review error messages carefully
 3. Try the local clone method as fallback
 4. Report specific error messages for assistance
 
 ## Recent Fixes (June 13, 2025)
 
-### [PASS] FIXED: Prerequisites Check Error
+### PASS FIXED: Prerequisites Check Error
 **Problem**: GUI shows "can't open file 'C:\\temp\\deploy.py': No such file or directory"
 
 **Solution Applied**: 
@@ -185,7 +185,7 @@ If you encounter issues not covered here:
 
 **Now Works**: Prerequisites check automatically finds or downloads deploy.py
 
-### [PASS] FIXED: Windows Performance Issues
+### PASS FIXED: Windows Performance Issues
 **Problem**: GUI caused severe system performance impact and multiple console windows
 
 **Solutions Applied**:
@@ -196,7 +196,7 @@ If you encounter issues not covered here:
 
 **Now Works**: GUI runs smoothly without impacting system performance
 
-### [PASS] FIXED: Windows File Association Issues 
+### PASS FIXED: Windows File Association Issues 
 **Problem**: Windows prompting to choose application for .py files
 
 **Solutions Applied**:
@@ -215,7 +215,7 @@ If you encounter issues not covered here:
 > 
 > **Or with error handling:**
 > ```powershell
-> try { Invoke-WebRequest -Uri "https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/feature/deployment-wrapper-gui/gui.py" -OutFile "gui.py" -UseBasicParsing; Write-Host "[PASS] Downloaded successfully"; python gui.py } catch { Write-Host "[FAIL] Error: $($_.Exception.Message)" }
+> try { Invoke-WebRequest -Uri "https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/feature/deployment-wrapper-gui/gui.py" -OutFile "gui.py" -UseBasicParsing; Write-Host "PASS Downloaded successfully"; python gui.py } catch { Write-Host "FAIL Error: $($_.Exception.Message)" }
 > ```
 > 
 > **Multi-step (run each line separately):**

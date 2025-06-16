@@ -1,20 +1,20 @@
-[CmdletBinding()]
+CmdletBinding()
 param(
-    [Parameter()]
-    [ValidateSet("Markdown", "JSON", "Host")]
-    [string]$OutputFormat = "Markdown",
+    Parameter()
+    ValidateSet("Markdown", "JSON", "Host")
+    string$OutputFormat = "Markdown",
     
-    [Parameter()]
-    [string]$OutputPath = "./reports/infrastructure-health",
+    Parameter()
+    string$OutputPath = "./reports/infrastructure-health",
     
-    [Parameter()]
-    [switch]$AutoFix,
+    Parameter()
+    switch$AutoFix,
     
-    [Parameter()]
-    [switch]$CleanupBackups,
+    Parameter()
+    switch$CleanupBackups,
     
-    [Parameter()]
-    [switch]$IgnoreArchive
+    Parameter()
+    switch$IgnoreArchive
 )
 
 $ErrorActionPreference = 'Stop'
@@ -58,10 +58,10 @@ $report = @{
 }
 
 function Test-PowerShellSyntax {
-    param([string]$FilePath)
+    param(string$FilePath)
     
     # Skip archived files
-    if ($IgnoreArchive -and $FilePath -match '\\(archive|backups|deprecated)\\') {
+    if ($IgnoreArchive -and $FilePath -match '\\(archivebackupsdeprecated)\\') {
         return @{
             HasErrors = $false
             Errors = @()
@@ -71,10 +71,10 @@ function Test-PowerShellSyntax {
     try {
         $errors = @()
         $tokens = $null
-        $null = [System.Management.Automation.Language.Parser]::ParseFile(
+        $null = System.Management.Automation.Language.Parser::ParseFile(
             $FilePath, 
-            [ref]$tokens, 
-            [ref]$errors
+            ref$tokens, 
+            ref$errors
         )
         return @{
             HasErrors = ($errors.Count -gt 0)
@@ -89,10 +89,10 @@ function Test-PowerShellSyntax {
 }
 
 function Test-ImportPaths {
-    param([string]$FilePath)
+    param(string$FilePath)
     
     # Skip archived files
-    if ($IgnoreArchive -and $FilePath -match '\\(archive|backups|deprecated)\\') {
+    if ($IgnoreArchive -and $FilePath -match '\\(archivebackupsdeprecated)\\') {
         return @{
             HasIssues = $false
             Issues = @()
@@ -119,16 +119,16 @@ function Test-ImportPaths {
 }
 
 function Test-ModuleLoading {
-    param([string]$FilePath)
+    param(string$FilePath)
     
     $issues = @()
     $content = Get-Content $FilePath -Raw
     
     # Extract module imports
-    $moduleImports = [regex]::Matches($content, 'Import-Module\s+"([^"]+)"')
+    $moduleImports = regex::Matches($content, 'Import-Module\s+"(^"+)"')
     
     foreach ($import in $moduleImports) {
-        $modulePath = $import.Groups[1].Value
+        $modulePath = $import.Groups1.Value
         if (-not (Test-Path $modulePath)) {
             $issues += "Module not found: $modulePath"
         }
@@ -146,7 +146,7 @@ function Get-ConfigurationIssues {
     # Check PROJECT-MANIFEST.json
     if (Test-Path "$ProjectRoot/PROJECT-MANIFEST.json") {
         try {
-            $null = Get-Content "$ProjectRoot/PROJECT-MANIFEST.json" | ConvertFrom-Json
+            $null = Get-Content "$ProjectRoot/PROJECT-MANIFEST.json"  ConvertFrom-Json
         } catch {
             $issues += @{
                 File = "PROJECT-MANIFEST.json"
@@ -165,7 +165,7 @@ function Get-ConfigurationIssues {
     # Check .vscode/tasks.json
     if (Test-Path "$ProjectRoot/.vscode/tasks.json") {
         try {
-            $null = Get-Content "$ProjectRoot/.vscode/tasks.json" | ConvertFrom-Json
+            $null = Get-Content "$ProjectRoot/.vscode/tasks.json"  ConvertFrom-Json
         } catch {
             $issues += @{
                 File = ".vscode/tasks.json"
@@ -203,18 +203,18 @@ function Test-ProjectStructure {
 }
 
 function Test-DeprecatedFeatures {
-    param([string]$FilePath)
+    param(string$FilePath)
     
     $issues = @()
     $content = Get-Content $FilePath -Raw
     
     # Check for deprecated module paths
-    if ($content -match 'pwsh/modules/CodeFixer(?!CodeFixer|LabRunner)') {
+    if ($content -match 'pwsh/modules/CodeFixer(?!CodeFixerLabRunner)') {
         $issues += "Referenced deprecated module path"
     }
     
     # Check for old script patterns
-    if ($content -match '\.\\scripts\\(?:maintenance|validation)\\') {
+    if ($content -match '\.\\scripts\\(?:maintenancevalidation)\\') {
         $issues += "Using legacy script paths"
     }
     
@@ -231,10 +231,10 @@ function Test-DeprecatedFeatures {
 
 function Invoke-AutoFix {
     param(
-        [Parameter(Mandatory)]
-        [string]$FilePath,
-        [Parameter(Mandatory)]
-        [hashtable]$Issues
+        Parameter(Mandatory)
+        string$FilePath,
+        Parameter(Mandatory)
+        hashtable$Issues
     )
     
     $results = @()
@@ -243,7 +243,7 @@ function Invoke-AutoFix {
     
     # Fix import paths
     if ($Issues.ImportPaths) {
-        $newContent = $content -replace 'Import-Module\s+"(?!/)([^"]+)"', 'Import-Module "/$1"'
+        $newContent = $content -replace 'Import-Module\s+"(?!/)(^"+)"', 'Import-Module "/$1"'
         if ($newContent -ne $content) {
             $content = $newContent
             $modified = $true
@@ -253,7 +253,7 @@ function Invoke-AutoFix {
     
     # Fix deprecated module references
     if ($Issues.DeprecatedFeatures) {
-        $newContent = $content -replace 'pwsh/modules/CodeFixer(?!CodeFixer|LabRunner)', 'pwsh/modules/CodeFixer'
+        $newContent = $content -replace 'pwsh/modules/CodeFixer(?!CodeFixerLabRunner)', 'pwsh/modules/CodeFixer'
         if ($newContent -ne $content) {
             $content = $newContent
             $modified = $true
@@ -322,14 +322,14 @@ $(
 ### Configuration Issues
 $(
     foreach ($issue in $ReportData.Categories.Configuration) {
-        "- **$($issue.File)**: $($issue.Issue) $(if ($issue.IsCritical) {"[WARN] CRITICAL"})`n"
+        "- **$($issue.File)**: $($issue.Issue) $(if ($issue.IsCritical) {"WARN CRITICAL"})`n"
     }
 )
 
 ### Project Structure Issues
 $(
     foreach ($issue in $ReportData.Categories.ProjectStructure) {
-        "- **$($issue.Path)**: $($issue.Issue) $(if ($issue.IsCritical) {"[WARN] CRITICAL"})`n"
+        "- **$($issue.Path)**: $($issue.Issue) $(if ($issue.IsCritical) {"WARN CRITICAL"})`n"
     }
 )
 
@@ -370,7 +370,7 @@ $(
 
 # Create output directory if it doesn't exist
 if (-not (Test-Path $OutputPath)) {
-    New-Item -ItemType Directory -Path $OutputPath -Force | Out-Null
+    New-Item -ItemType Directory -Path $OutputPath -Force  Out-Null
 }
 
 # Paths to exclude from analysis
@@ -384,16 +384,16 @@ $script:ExcludePaths = @(
 
 function Remove-OldBackups {
     param(
-        [int]$DaysToKeep = 7
+        int$DaysToKeep = 7
     )
     
     Write-Host "Cleaning up old backup files..." -ForegroundColor Yellow
     $cutoffDate = (Get-Date).AddDays(-$DaysToKeep)
     
     # Find backup directories older than cutoff
-    $oldBackups = Get-ChildItem -Path "$ProjectRoot" -Recurse -Directory |
+    $oldBackups = Get-ChildItem -Path "$ProjectRoot" -Recurse -Directory 
         Where-Object { 
-            $_.Name -match '(backup|broken).*\d{8}-\d{6}' -and
+            $_.Name -match '(backupbroken).*\d{8}-\d{6}' -and
             $_.CreationTime -lt $cutoffDate 
         }
     
@@ -408,11 +408,11 @@ function Remove-OldBackups {
 }
 
 # Get all PowerShell files excluding archives/backups
-$psFiles = Get-ChildItem -Path $ProjectRoot -Recurse -Filter "*.ps1" | 
+$psFiles = Get-ChildItem -Path $ProjectRoot -Recurse -Filter "*.ps1"  
     Where-Object { 
         $file = $_.FullName
-        -not ($script:ExcludePaths | Where-Object { $file -match $_ })
-    } |
+        -not ($script:ExcludePaths  Where-Object { $file -match $_ })
+    } 
     Select-Object -ExpandProperty FullName
 
 # Update report data
@@ -497,12 +497,12 @@ if ($report.Categories.Syntax.Count -gt 0) {
 
 # Calculate critical errors
 $report.Summary.CriticalErrors = (
-    $report.Categories.Configuration | 
-    Where-Object { $_.IsCritical } | 
+    $report.Categories.Configuration  
+    Where-Object { $_.IsCritical }  
     Measure-Object
 ).Count + (
-    $report.Categories.ProjectStructure | 
-    Where-Object { $_.IsCritical } | 
+    $report.Categories.ProjectStructure  
+    Where-Object { $_.IsCritical }  
     Measure-Object
 ).Count
 
@@ -516,8 +516,8 @@ if ($AutoFix) {
     
     foreach ($file in $psFiles) {
         $issues = @{
-            ImportPaths = ($report.Categories.ImportPaths | Where-Object { $_.File -eq $file })
-            DeprecatedFeatures = ($report.Categories.DeprecatedFeatures | Where-Object { $_.File -eq $file })
+            ImportPaths = ($report.Categories.ImportPaths  Where-Object { $_.File -eq $file })
+            DeprecatedFeatures = ($report.Categories.DeprecatedFeatures  Where-Object { $_.File -eq $file })
         }
         
         if ($issues.ImportPaths -or $issues.DeprecatedFeatures) {
@@ -551,7 +551,7 @@ switch ($OutputFormat) {
     }
     "JSON" {
         $jsonFile = Join-Path $OutputPath "infrastructure-health-report.json"
-        $report | ConvertTo-Json -Depth 10 | Set-Content $jsonFile
+        $report  ConvertTo-Json -Depth 10  Set-Content $jsonFile
         Write-Host "JSON report generated at: $jsonFile" -ForegroundColor Green
     }
     "Host" {
@@ -566,28 +566,28 @@ switch ($OutputFormat) {
         
         if ($report.Categories.Syntax.Count -gt 0) {
             Write-Host "`nSyntax Issues:" -ForegroundColor Red
-            $report.Categories.Syntax | ForEach-Object {
+            $report.Categories.Syntax  ForEach-Object {
                 Write-Host "- $($_.File): $($_.Error)"
             }
         }
         
         if ($report.Categories.ImportPaths.Count -gt 0) {
             Write-Host "`nImport Path Issues:" -ForegroundColor Yellow
-            $report.Categories.ImportPaths | ForEach-Object {
+            $report.Categories.ImportPaths  ForEach-Object {
                 Write-Host "- $($_.File): $($_.Issue)"
             }
         }
         
         if ($report.Categories.DeprecatedFeatures.Count -gt 0) {
             Write-Host "`nDeprecated Features Issues:" -ForegroundColor Magenta
-            $report.Categories.DeprecatedFeatures | ForEach-Object {
+            $report.Categories.DeprecatedFeatures  ForEach-Object {
                 Write-Host "- $($_.File): $($_.Issue)"
             }
         }
         
         if ($report.Categories.Workflows.Count -gt 0) {
             Write-Host "`nWorkflow Issues:" -ForegroundColor Cyan
-            $report.Categories.Workflows | ForEach-Object {
+            $report.Categories.Workflows  ForEach-Object {
                 Write-Host "- $($_.File): $($_.Issue)"
             }
         }
@@ -595,7 +595,7 @@ switch ($OutputFormat) {
 }
 
 function Test-WorkflowHealth {
-    param([string]$WorkflowPath = ".github/workflows")
+    param(string$WorkflowPath = ".github/workflows")
     
     $issues = @()
     

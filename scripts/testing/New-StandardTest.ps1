@@ -2,29 +2,29 @@
 # Generates standardized, robust test files that won't break the testing system
 
 Param(
-    [Parameter(Mandatory=$true)]
-    [string]$ScriptName,
+    Parameter(Mandatory=$true)
+    string$ScriptName,
     
-    [Parameter(Mandatory=$false)]
-    [ValidateSet("Installer", "Configuration", "SystemInfo", "Setup", "Cleanup", "Validation", "Security")]
-    [string]$ScriptType = "Installer",
+    Parameter(Mandatory=$false)
+    ValidateSet("Installer", "Configuration", "SystemInfo", "Setup", "Cleanup", "Validation", "Security")
+    string$ScriptType = "Installer",
     
-    [Parameter(Mandatory=$false)]
-    [string]$OutputPath = ".\tests\",
+    Parameter(Mandatory=$false)
+    string$OutputPath = ".\tests\",
     
-    [Parameter(Mandatory=$false)]
-    [switch]$OverwriteExisting,
+    Parameter(Mandatory=$false)
+    switch$OverwriteExisting,
     
-    [Parameter(Mandatory=$false)]
-    [switch]$Validate
+    Parameter(Mandatory=$false)
+    switch$Validate
 )
 
 function New-StandardTest {
     param(
-        [string]$ScriptName,
-        [string]$ScriptType,
-        [string]$OutputPath,
-        [bool]$OverwriteExisting
+        string$ScriptName,
+        string$ScriptType,
+        string$OutputPath,
+        bool$OverwriteExisting
     )
     
     Write-Host "Generating test for: $ScriptName" -ForegroundColor Cyan
@@ -48,7 +48,7 @@ function New-StandardTest {
         "Security" = @{ Tag = "Security"; Context = "Security" }
     }
     
-    $mapping = $tagMappings[$ScriptType]
+    $mapping = $tagMappings$ScriptType
     if (-not $mapping) {
         $mapping = @{ Tag = "Unknown"; Context = "General" }
     }
@@ -72,22 +72,22 @@ function New-StandardTest {
     
     # Ensure output directory exists
     if (-not (Test-Path $OutputPath)) {
-        New-Item -ItemType Directory -Path $OutputPath -Force | Out-Null
+        New-Item -ItemType Directory -Path $OutputPath -Force  Out-Null
     }
     
     # Write test file
     try {
-        $testContent | Set-Content -Path $testFilePath -Encoding UTF8
-        Write-Host "[PASS] Generated test file: $testFilePath" -ForegroundColor Green
+        $testContent  Set-Content -Path $testFilePath -Encoding UTF8
+        Write-Host "PASS Generated test file: $testFilePath" -ForegroundColor Green
         
         # Validate the generated test
         if ($Validate) {
             Write-Host "Validating generated test..." -ForegroundColor Yellow
             $validation = Test-GeneratedTest -Path $testFilePath
             if ($validation.IsValid) {
-                Write-Host "[PASS] Test validation passed" -ForegroundColor Green
+                Write-Host "PASS Test validation passed" -ForegroundColor Green
             } else {
-                Write-Error "[FAIL] Test validation failed: $($validation.Errors -join '; ')"
+                Write-Error "FAIL Test validation failed: $($validation.Errors -join '; ')"
                 return $false
             }
         }
@@ -100,14 +100,14 @@ function New-StandardTest {
 }
 
 function Test-GeneratedTest {
-    param([string]$Path)
+    param(string$Path)
     
     $errors = @()
     $isValid = $true
     
     try {
         # Test 1: PowerShell syntax validation
-        $null = [System.Management.Automation.PSParser]::Tokenize((Get-Content $Path -Raw), [ref]$null)
+        $null = System.Management.Automation.PSParser::Tokenize((Get-Content $Path -Raw), ref$null)
           # Test 2: Try to run Pester discovery (without execution)
         $null = Invoke-Pester -Path $Path -DryRun -ErrorAction Stop
         
@@ -142,13 +142,13 @@ function Test-GeneratedTest {
 
 function Repair-ExistingTests {
     param(
-        [string]$TestsPath = ".\tests\",
-        [switch]$WhatIf
+        string$TestsPath = ".\tests\",
+        switch$WhatIf
     )
     
     Write-Host "Repairing existing test files using standard template..." -ForegroundColor Cyan
     
-    $testFiles = Get-ChildItem -Path $TestsPath -Filter "*.Tests.ps1" | Where-Object { $_.Name -match '^[0-9]{4}_.*\.Tests\.ps1$' }
+    $testFiles = Get-ChildItem -Path $TestsPath -Filter "*.Tests.ps1"  Where-Object { $_.Name -match '^0-9{4}_.*\.Tests\.ps1$' }
     
     foreach ($testFile in $testFiles) {
         $scriptName = $testFile.BaseName -replace '\.Tests$', ''
@@ -157,12 +157,12 @@ function Repair-ExistingTests {
         
         # Determine script type based on name patterns
         $scriptType = switch -Regex ($scriptName) {
-            '^[0-9]{4}_Install-' { "Installer" }
-            '^[0-9]{4}_Config-' { "Configuration" }
-            '^[0-9]{4}_Get-' { "SystemInfo" }
-            '^[0-9]{4}_Setup-' { "Setup" }
-            '^[0-9]{4}_Reset-' { "Cleanup" }
-            '^[0-9]{4}_Enable-' { "Configuration" }
+            '^0-9{4}_Install-' { "Installer" }
+            '^0-9{4}_Config-' { "Configuration" }
+            '^0-9{4}_Get-' { "SystemInfo" }
+            '^0-9{4}_Setup-' { "Setup" }
+            '^0-9{4}_Reset-' { "Cleanup" }
+            '^0-9{4}_Enable-' { "Configuration" }
             default { "Installer" }
         }
         
@@ -180,9 +180,9 @@ function Repair-ExistingTests {
             $success = New-StandardTest -ScriptName $scriptName -ScriptType $scriptType -OutputPath $TestsPath -OverwriteExisting $true
             
             if ($success) {
-                Write-Host "  [PASS] Repaired: $($testFile.Name)" -ForegroundColor Green
+                Write-Host "  PASS Repaired: $($testFile.Name)" -ForegroundColor Green
             } else {
-                Write-Host "  [FAIL] Failed to repair: $($testFile.Name)" -ForegroundColor Red
+                Write-Host "  FAIL Failed to repair: $($testFile.Name)" -ForegroundColor Red
             }
         }
     }
@@ -193,11 +193,11 @@ if ($ScriptName) {
     $success = New-StandardTest -ScriptName $ScriptName -ScriptType $ScriptType -OutputPath $OutputPath -OverwriteExisting $OverwriteExisting
     
     if ($success) {
-        Write-Host "[PASS] Test generation completed successfully!" -ForegroundColor Green
+        Write-Host "PASS Test generation completed successfully!" -ForegroundColor Green
         Write-Host "Run the following to test your new test file:" -ForegroundColor Cyan
         Write-Host "Invoke-Pester -Path `"$OutputPath$ScriptName.Tests.ps1`" -PassThru" -ForegroundColor Gray
     } else {
-        Write-Error "[FAIL] Test generation failed!"
+        Write-Error "FAIL Test generation failed!"
         exit 1
     }
 } else {

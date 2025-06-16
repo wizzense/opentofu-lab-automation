@@ -8,16 +8,16 @@ description: PowerShell coding standards and best practices for the OpenTofu Lab
 ## Quick Reference
 
 ### Module Import Standards
-| **Correct**                               | **Deprecated**                  |
-|-------------------------------------------|----------------------------------|
-| `Import-Module "/pwsh/modules/CodeFixer/" -Force` | `Import-Module "pwsh/lab_utils/LabRunner"` |
+ **Correct**                                **Deprecated**                  
+-----------------------------------------------------------------------------
+ `Import-Module "/pwsh/modules/CodeFixer/" -Force`  `Import-Module "pwsh/lab_utils/LabRunner"` 
 
 ### Script Structure
 Template:
 ```powershell
 Param(
-    [Parameter(Mandatory=$true)]
-    [pscustomobject]$Config
+    Parameter(Mandatory=$true)
+    pscustomobject$Config
 )
 
 $ErrorActionPreference = "Stop"
@@ -48,7 +48,7 @@ Use Pester:
 ```powershell
 Describe 'ScriptName Tests' {
     It 'should import required modules' {
-        Get-Module LabRunner | Should -Not -BeNullOrEmpty
+        Get-Module LabRunner  Should -Not -BeNullOrEmpty
     }
 }
 ```

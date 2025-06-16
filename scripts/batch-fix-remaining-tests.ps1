@@ -36,7 +36,7 @@ foreach ($fileName in $targetFiles) {
  $filePath = "tests/$fileName"
  
  if (-not (Test-Path $filePath)) {
- Write-Host "[WARN] File not found: $fileName" -ForegroundColor Yellow
+ Write-Host "WARN File not found: $fileName" -ForegroundColor Yellow
  continue
  }
  
@@ -47,40 +47,40 @@ foreach ($fileName in $targetFiles) {
  
  # Extract function name from filename (e.g., "0201_Install-NodeCore" -> "Install-NodeCore")
  if ($fileName -match '^\d+_(.+)\.Tests\.ps1$') {
- $functionName = $matches[1]
+ $functionName = $matches1
  Write-Host " Target function: $functionName" -ForegroundColor Gray
  
  # Fix Get-Command function definition check
- $pattern = "Get-Command\s+'$functionName'\s+(-ErrorAction\s+SilentlyContinue\s+)?\|\s+Should\s+-Not\s+-BeNullOrEmpty"
- $replacement = "`$scriptContent = Get-Content `$script:ScriptPath -Raw`n `$scriptContent | Should -Match 'function\s+$functionName'"
+ $pattern = "Get-Command\s+'$functionName'\s+(-ErrorAction\s+SilentlyContinue\s+)?\\s+Should\s+-Not\s+-BeNullOrEmpty"
+ $replacement = "`$scriptContent = Get-Content `$script:ScriptPath -Raw`n `$scriptContent  Should -Match 'function\s+$functionName'"
  
  if ($content -match $pattern) {
  $content = $content -replace $pattern, $replacement
- Write-Host " [PASS] Fixed Get-Command check for $functionName" -ForegroundColor Green
+ Write-Host " PASS Fixed Get-Command check for $functionName" -ForegroundColor Green
  }
  
  # Fix Get-Command parameter checks
- $paramPattern = "\(Get-Command\s+'$functionName'\)\.Parameters\.Keys\s+\|\s+Should\s+-Contain\s+'(Verbose|WhatIf)'"
+ $paramPattern = "\(Get-Command\s+'$functionName'\)\.Parameters\.Keys\s+\\s+Should\s+-Contain\s+'(VerboseWhatIf)'"
  if ($content -match $paramPattern) {
- $content = $content -replace $paramPattern, "`$scriptContent = Get-Content `$script:ScriptPath -Raw`n `$scriptContent | Should -Match '\[CmdletBinding\('"
- Write-Host " [PASS] Fixed parameter checks for $functionName" -ForegroundColor Green
+ $content = $content -replace $paramPattern, "`$scriptContent = Get-Content `$script:ScriptPath -Raw`n `$scriptContent  Should -Match '\CmdletBinding\('"
+ Write-Host " PASS Fixed parameter checks for $functionName" -ForegroundColor Green
  }
  }
  
  # Fix dot-sourcing syntax check if present
- $dotSourcingPattern = '\{\s*\.\s+\$script:ScriptPath\s*\}\s*\|\s*Should\s+-Not\s+-Throw'
+ $dotSourcingPattern = '\{\s*\.\s+\$script:ScriptPath\s*\}\s*\\s*Should\s+-Not\s+-Throw'
  if ($content -match $dotSourcingPattern) {
  $dotSourcingReplacement = '# Test syntax by parsing the script content instead of dot-sourcing
- { $null = [System.Management.Automation.PSParser]::Tokenize((Get-Content $script:ScriptPath -Raw), [ref]$null) } | Should -Not -Throw'
+ { $null = System.Management.Automation.PSParser::Tokenize((Get-Content $script:ScriptPath -Raw), ref$null) }  Should -Not -Throw'
  $content = $content -replace $dotSourcingPattern, $dotSourcingReplacement
- Write-Host " [PASS] Fixed dot-sourcing syntax check" -ForegroundColor Green
+ Write-Host " PASS Fixed dot-sourcing syntax check" -ForegroundColor Green
  }
  
  # Save file if changes were made
  if ($content -ne $originalContent) {
  Set-Content -Path $filePath -Value $content -Encoding UTF8
  $fixedCount++
- Write-Host " [PASS] Successfully fixed $fileName" -ForegroundColor Green
+ Write-Host " PASS Successfully fixed $fileName" -ForegroundColor Green
  } else {
  Write-Host " ⏭ No changes needed for $fileName" -ForegroundColor Yellow
  }
@@ -92,20 +92,20 @@ Write-Host " Testing a sample fixed file..." -ForegroundColor Yellow
 
 # Test one of the fixed files
 if ($fixedCount -gt 0) {
- $testFile = $targetFiles | Where-Object { Test-Path "tests/$_" } | Select-Object -First 1
+ $testFile = $targetFiles  Where-Object { Test-Path "tests/$_" }  Select-Object -First 1
  if ($testFile) {
  Write-Host " Testing $testFile..." -ForegroundColor Cyan
  try {
  $result = Invoke-Pester "tests/$testFile" -PassThru -Output None
  if ($result.FailedCount -eq 0 -and $result.PassedCount -gt 0) {
- Write-Host "[PASS] Test successful: $($result.PassedCount) passed, $($result.FailedCount) failed, $($result.SkippedCount) skipped" -ForegroundColor Green
+ Write-Host "PASS Test successful: $($result.PassedCount) passed, $($result.FailedCount) failed, $($result.SkippedCount) skipped" -ForegroundColor Green
  } elseif ($result.SkippedCount -gt 0 -and $result.FailedCount -eq 0) {
  Write-Host "⏭ Tests skipped (platform-specific): $($result.SkippedCount) skipped" -ForegroundColor Yellow
  } else {
- Write-Host "[WARN] Test issues: $($result.PassedCount) passed, $($result.FailedCount) failed, $($result.SkippedCount) skipped" -ForegroundColor Yellow
+ Write-Host "WARN Test issues: $($result.PassedCount) passed, $($result.FailedCount) failed, $($result.SkippedCount) skipped" -ForegroundColor Yellow
  }
  } catch {
- Write-Host "[FAIL] Test error: $_" -ForegroundColor Red
+ Write-Host "FAIL Test error: $_" -ForegroundColor Red
  }
  }
 }

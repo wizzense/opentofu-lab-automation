@@ -10,13 +10,13 @@ function Get-TestFailures {
     .SYNOPSIS
     Extracts test failures from a Pester test results file
     #>
-    [CmdletBinding()]
+    CmdletBinding()
     param(
-        [Parameter(Mandatory=$true)
+        Parameter(Mandatory=$true)
 
 
-]
-        [string]$ResultsPath
+
+        string$ResultsPath
     )
     
     if (-not (Test-Path $ResultsPath)) {
@@ -26,14 +26,14 @@ function Get-TestFailures {
     
     try {
         # Load the XML file
-        $testResults = [xml](Get-Content $ResultsPath)
+        $testResults = xml(Get-Content $ResultsPath)
         
         # Extract all failed test cases
         $failedTests = @()
-        $testSuites = $testResults.SelectNodes("//test-case[@success='False' and @result='Failure']")
+        $testSuites = $testResults.SelectNodes("//test-case@success='False' and @result='Failure'")
         
         foreach ($test in $testSuites) {
-            $sourceFile = $test.SelectSingleNode("ancestor::test-suite[@type='TestFixture']/@name").Value
+            $sourceFile = $test.SelectSingleNode("ancestor::test-suite@type='TestFixture'/@name").Value
             $description = $test.description
             
             # Find the failure information
@@ -45,8 +45,8 @@ function Get-TestFailures {
             if ($sourceFile -match "\.Tests\.ps1$") {
                 try {
                     $testFileContent = Get-Content $sourceFile -Raw -ErrorAction SilentlyContinue
-                    if ($testFileContent -match "Get-RunnerScriptPath\s+['\""]([^'\""]+)['\""]\s*\)") {
-                        $sourceScript = $matches[1]
+                    if ($testFileContent -match "Get-RunnerScriptPath\s+'\""(^'\""+)'\""\s*\)") {
+                        $sourceScript = $matches1
                         $sourceScript = Get-RunnerScriptPath $sourceScript -ErrorAction SilentlyContinue
                     }
                 } catch {
@@ -54,13 +54,13 @@ function Get-TestFailures {
                 }
             }
             
-            $failedTests += [PSCustomObject]@{
+            $failedTests += PSCustomObject@{
                 SourceFile = $sourceFile
                 Description = $description
                 Message = $message
                 StackTrace = $stackTrace
                 SourceScript = $sourceScript
-                ErrorLine = if ($stackTrace -match ":(\d+)") { $matches[1] } else { $null }
+                ErrorLine = if ($stackTrace -match ":(\d+)") { $matches1 } else { $null }
             }
         }
         
@@ -77,9 +77,9 @@ function Get-LintIssues {
     .SYNOPSIS
     Extracts lint issues from a PSScriptAnalyzer results file
     #>
-    [CmdletBinding()]
+    CmdletBinding()
     param(
-        [Parameter(Mandatory=$true)
+        Parameter(Mandatory=$true)
 
 
 
@@ -90,8 +90,8 @@ function Get-LintIssues {
 if (-not (Get-Module -ListAvailable PSScriptAnalyzer -ErrorAction SilentlyContinue)) { Install-Module PSScriptAnalyzer -Force -Scope CurrentUser }
 Import-Module PSScriptAnalyzer -Force
 
-]
-        [string]$ResultsPath
+
+        string$ResultsPath
     )
     
     if (-not (Test-Path $ResultsPath)) {
@@ -102,15 +102,15 @@ Import-Module PSScriptAnalyzer -Force
     try {
         # Load the JSON file if available
         if ($ResultsPath -match "\.json$") {
-            $lintResults = Get-Content $ResultsPath -Raw | ConvertFrom-Json
+            $lintResults = Get-Content $ResultsPath -Raw  ConvertFrom-Json
         }
         # Or the XML file if that's what's available
         elseif ($ResultsPath -match "\.xml$") {
-            $lintResults = [xml](Get-Content $ResultsPath)
+            $lintResults = xml(Get-Content $ResultsPath)
             # Convert XML structure to objects
             $issues = @()
             foreach ($issue in $lintResults.SelectNodes("//Issue")) {
-                $issues += [PSCustomObject]@{
+                $issues += PSCustomObject@{
                     ScriptName = $issue.ScriptName
                     Line = $issue.Line
                     Column = $issue.Column
@@ -145,9 +145,9 @@ function Invoke-ValidationChecks {
     .SYNOPSIS
     Runs comprehensive validation checks on PowerShell scripts
     #>
-    [CmdletBinding()]
+    CmdletBinding()
     param(
-        [Parameter(Mandatory=$true)
+        Parameter(Mandatory=$true)
 
 
 
@@ -158,17 +158,17 @@ function Invoke-ValidationChecks {
 if (-not (Get-Module -ListAvailable PSScriptAnalyzer -ErrorAction SilentlyContinue)) { Install-Module PSScriptAnalyzer -Force -Scope CurrentUser }
 Import-Module PSScriptAnalyzer -Force
 
-]
-        [string]$Path,
+
+        string$Path,
         
-        [Parameter()]
-        [switch]$IncludeLint,
+        Parameter()
+        switch$IncludeLint,
         
-        [Parameter()]
-        [switch]$IncludeTests,
+        Parameter()
+        switch$IncludeTests,
         
-        [Parameter()]
-        [string]$OutputPath
+        Parameter()
+        string$OutputPath
     )
     
     $results = @{
@@ -195,13 +195,13 @@ Import-Module PSScriptAnalyzer -Force
     foreach ($file in $files) {
         try {
             $errors = $null
-            $null = [System.Management.Automation.Language.Parser]::ParseFile($file.FullName, [ref]$null, [ref]$errors)
+            $null = System.Management.Automation.Language.Parser::ParseFile($file.FullName, ref$null, ref$errors)
             
             if ($errors -and $errors.Count -gt 0) {
-                $results.Syntax.Invalid += [PSCustomObject]@{
+                $results.Syntax.Invalid += PSCustomObject@{
                     File = $file.FullName
-                    Errors = $errors | ForEach-Object {
-                        [PSCustomObject]@{
+                    Errors = $errors  ForEach-Object {
+                        PSCustomObject@{
                             Line = $_.Extent.StartLineNumber
                             Message = $_.Message
                         }
@@ -211,9 +211,9 @@ Import-Module PSScriptAnalyzer -Force
                 $results.Syntax.Valid++
             }
         } catch {
-            $results.Syntax.Invalid += [PSCustomObject]@{
+            $results.Syntax.Invalid += PSCustomObject@{
                 File = $file.FullName
-                Errors = @([PSCustomObject]@{
+                Errors = @(PSCustomObject@{
                     Line = 0
                     Message = "Failed to parse: $_"
                 })
@@ -244,8 +244,8 @@ Import-Module PSScriptAnalyzer -Force
             
             $results.Tests.Total = $pesterResults.TotalCount
             $results.Tests.Passed = $pesterResults.PassedCount
-            $results.Tests.Failures = $pesterResults.Failed | ForEach-Object {
-                [PSCustomObject]@{
+            $results.Tests.Failures = $pesterResults.Failed  ForEach-Object {
+                PSCustomObject@{
                     Name = $_.Name
                     Message = $_.ErrorRecord.Exception.Message
                     File = $_.ExpandedPath
@@ -258,7 +258,7 @@ Import-Module PSScriptAnalyzer -Force
     
     # Output results if requested
     if ($OutputPath) {
-        $results | ConvertTo-Json -Depth 10 | Out-File -FilePath $OutputPath -Encoding utf8
+        $results  ConvertTo-Json -Depth 10  Out-File -FilePath $OutputPath -Encoding utf8
     }
     
     return $results
@@ -269,9 +269,9 @@ function Show-ValidationSummary {
     .SYNOPSIS
     Displays a formatted summary of validation results
     #>
-    [CmdletBinding()]
+    CmdletBinding()
     param(
-        [Parameter(Mandatory=$true)
+        Parameter(Mandatory=$true)
 
 
 
@@ -282,8 +282,8 @@ function Show-ValidationSummary {
 if (-not (Get-Module -ListAvailable PSScriptAnalyzer -ErrorAction SilentlyContinue)) { Install-Module PSScriptAnalyzer -Force -Scope CurrentUser }
 Import-Module PSScriptAnalyzer -Force
 
-]
-        [object]$Results
+
+        object$Results
     )
     
     Write-Host "`n VALIDATION SUMMARY" -ForegroundColor Cyan
@@ -294,7 +294,7 @@ Import-Module PSScriptAnalyzer -Force
     $validSyntax = $Results.Syntax.Valid
     $invalidSyntax = $Results.Syntax.Invalid.Count
     $totalSyntax = $Results.Syntax.Total
-    $syntaxPercent = [Math]::Round(($validSyntax / $totalSyntax) * 100)
+    $syntaxPercent = Math::Round(($validSyntax / $totalSyntax) * 100)
     
     Write-Host "  Valid:   $validSyntax / $totalSyntax ($syntaxPercent%)" -ForegroundColor $$(if (invalidSyntax -eq 0) { "Green" } else { "Yellow" })
     Write-Host "  Invalid: $invalidSyntax / $totalSyntax" -ForegroundColor $$(if (invalidSyntax -gt 0) { "Red" } else { "Green" })
@@ -303,7 +303,7 @@ Import-Module PSScriptAnalyzer -Force
         Write-Host "`nInvalid Syntax Files:" -ForegroundColor Yellow
         foreach ($file in $Results.Syntax.Invalid) {
             Write-Host "  $($file.File)" -ForegroundColor Red
-            foreach ($error in $file.Errors | Select-Object -First 3) {
+            foreach ($error in $file.Errors  Select-Object -First 3) {
                 Write-Host "    Line $($error.Line): $($error.Message)" -ForegroundColor DarkRed
             }
             if ($file.Errors.Count -gt 3) {
@@ -315,9 +315,9 @@ Import-Module PSScriptAnalyzer -Force
     # Lint issues summary
     if ($Results.Lint.Total -gt 0) {
         Write-Host "`nLint Issues:" -ForegroundColor Yellow
-        $errorCount = ($Results.Lint.Issues | Where-Object { $_.Severity -eq 'Error' }).Count
-        $warningCount = ($Results.Lint.Issues | Where-Object { $_.Severity -eq 'Warning' }).Count
-        $infoCount = ($Results.Lint.Issues | Where-Object { $_.Severity -eq 'Information' }).Count
+        $errorCount = ($Results.Lint.Issues  Where-Object { $_.Severity -eq 'Error' }).Count
+        $warningCount = ($Results.Lint.Issues  Where-Object { $_.Severity -eq 'Warning' }).Count
+        $infoCount = ($Results.Lint.Issues  Where-Object { $_.Severity -eq 'Information' }).Count
         
         Write-Host "  Errors:   $errorCount" -ForegroundColor $$(if (errorCount -gt 0) { "Red" } else { "Green" })
         Write-Host "  Warnings: $warningCount" -ForegroundColor $$(if (warningCount -gt 0) { "Yellow" } else { "Green" })
@@ -325,7 +325,7 @@ Import-Module PSScriptAnalyzer -Force
         
         if ($errorCount -gt 0) {
             Write-Host "`nTop Error Issues:" -ForegroundColor Yellow
-            foreach ($issue in ($Results.Lint.Issues | Where-Object { $_.Severity -eq 'Error' } | Select-Object -First 5)) {
+            foreach ($issue in ($Results.Lint.Issues  Where-Object { $_.Severity -eq 'Error' }  Select-Object -First 5)) {
                 Write-Host "  $($issue.ScriptName):$($issue.Line) - $($issue.RuleName)" -ForegroundColor Red
                 Write-Host "    $($issue.Message)" -ForegroundColor DarkRed
             }
@@ -342,14 +342,14 @@ Import-Module PSScriptAnalyzer -Force
         $passedTests = $Results.Tests.Passed
         $failedTests = $Results.Tests.Failures.Count
         $totalTests = $Results.Tests.Total
-        $testsPercent = [Math]::Round(($passedTests / $totalTests) * 100)
+        $testsPercent = Math::Round(($passedTests / $totalTests) * 100)
         
         Write-Host "  Passed: $passedTests / $totalTests ($testsPercent%)" -ForegroundColor $$(if (failedTests -eq 0) { "Green" } else { "Yellow" })
         Write-Host "  Failed: $failedTests / $totalTests" -ForegroundColor $$(if (failedTests -gt 0) { "Red" } else { "Green" })
         
         if ($failedTests -gt 0) {
             Write-Host "`nFailed Tests:" -ForegroundColor Yellow
-            foreach ($failure in ($Results.Tests.Failures | Select-Object -First 5)) {
+            foreach ($failure in ($Results.Tests.Failures  Select-Object -First 5)) {
                 Write-Host "  $($failure.Name)" -ForegroundColor Red
                 Write-Host "    $($failure.Message)" -ForegroundColor DarkRed
             }
@@ -362,14 +362,14 @@ Import-Module PSScriptAnalyzer -Force
     
     # Overall assessment
     Write-Host "`nOverall Assessment:" -ForegroundColor Cyan
-    if ($invalidSyntax -eq 0 -and ($Results.Lint.Total -eq 0 -or ($Results.Lint.Issues | Where-Object { $_.Severity -eq 'Error' }).Count -eq 0) -and $Results.Tests.Failures.Count -eq 0) {
-        Write-Host "  [PASS] PASSED - All validation checks successful" -ForegroundColor Green
+    if ($invalidSyntax -eq 0 -and ($Results.Lint.Total -eq 0 -or ($Results.Lint.Issues  Where-Object { $_.Severity -eq 'Error' }).Count -eq 0) -and $Results.Tests.Failures.Count -eq 0) {
+        Write-Host "  PASS PASSED - All validation checks successful" -ForegroundColor Green
     } else {
-        $hasErrors = $invalidSyntax -gt 0 -or ($Results.Lint.Issues | Where-Object { $_.Severity -eq 'Error' }).Count -gt 0
+        $hasErrors = $invalidSyntax -gt 0 -or ($Results.Lint.Issues  Where-Object { $_.Severity -eq 'Error' }).Count -gt 0
         if ($hasErrors) {
-            Write-Host "  [FAIL] FAILED - Critical issues found that need to be fixed" -ForegroundColor Red
+            Write-Host "  FAIL FAILED - Critical issues found that need to be fixed" -ForegroundColor Red
         } else {
-            Write-Host "  [WARN] WARNINGS - Non-critical issues found that should be addressed" -ForegroundColor Yellow
+            Write-Host "  WARN WARNINGS - Non-critical issues found that should be addressed" -ForegroundColor Yellow
         }
         
         # Suggest fixes
@@ -379,7 +379,7 @@ Import-Module PSScriptAnalyzer -Force
             Write-Host "  • Run syntax fixes: Invoke-SyntaxFix -Path '$Path' -FixTypes All" -ForegroundColor Yellow
         }
         
-        if (($Results.Lint.Issues | Where-Object { $_.Severity -eq 'Error' }).Count -gt 0) {
+        if (($Results.Lint.Issues  Where-Object { $_.Severity -eq 'Error' }).Count -gt 0) {
             Write-Host "  • Run comprehensive lint: ./comprehensive-lint.ps1" -ForegroundColor Yellow
         }
         
@@ -397,9 +397,9 @@ function Get-RunnerScriptPath {
     .SYNOPSIS
     Gets the path to a runner script
     #>
-    [CmdletBinding()]
+    CmdletBinding()
     param(
-        [Parameter(Mandatory=$true)
+        Parameter(Mandatory=$true)
 
 
 
@@ -410,11 +410,11 @@ function Get-RunnerScriptPath {
 if (-not (Get-Module -ListAvailable PSScriptAnalyzer -ErrorAction SilentlyContinue)) { Install-Module PSScriptAnalyzer -Force -Scope CurrentUser }
 Import-Module PSScriptAnalyzer -Force
 
-]
-        [string]$ScriptName,
+
+        string$ScriptName,
         
-        [Parameter()]
-        [string]$BasePath
+        Parameter()
+        string$BasePath
     )
     
     if (-not $BasePath) {
@@ -437,12 +437,12 @@ Import-Module PSScriptAnalyzer -Force
     }
     
     # If not found and no base number, try to find by name
-    if (-not ($ScriptName -match "^[0-9]{4}_")) {
+    if (-not ($ScriptName -match "^0-9{4}_")) {
         $pattern = "*_$ScriptName"
         $foundScripts = Get-ChildItem (Join-Path $BasePath ".." ".." "pwsh" "runner_scripts" $pattern) -ErrorAction SilentlyContinue
         
         if ($foundScripts -and $foundScripts.Count -gt 0) {
-            return $foundScripts[0].FullName
+            return $foundScripts0.FullName
         }
     }
     

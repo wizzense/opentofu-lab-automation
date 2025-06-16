@@ -11,16 +11,16 @@ function Invoke-AutoFixCapture {
  and applies the same fixes automatically to prevent regression
  #>
  
- [CmdletBinding()]
+ CmdletBinding()
  param(
- [Parameter()]
- [string]$Path = ".",
+ Parameter()
+ string$Path = ".",
  
- [Parameter()]
- [switch]$WhatIf,
+ Parameter()
+ switch$WhatIf,
  
- [Parameter()]
- [switch]$Verbose
+ Parameter()
+ switch$Verbose
  )
  
  Write-Host " Auto-Fix Capture System" -ForegroundColor Cyan
@@ -33,8 +33,8 @@ function Invoke-AutoFixCapture {
  # Define fix patterns based on our manual fixes
  $fixPatterns = @{
  'BrokenParameterBlocks' = @{
- Pattern = '\[Parameter\(Mandatory=\$true\)\s*#.*?if.*?PSScriptAnalyzer.*?\]\[string\]'
- Replacement = '[Parameter(Mandatory=$true)]`n [string]'
+ Pattern = '\Parameter\(Mandatory=\$true\)\s*#.*?if.*?PSScriptAnalyzer.*?\\string\'
+ Replacement = 'Parameter(Mandatory=$true)`n string'
  Description = 'Fix broken parameter blocks with embedded PSScriptAnalyzer imports'
  }
  
@@ -45,8 +45,8 @@ function Invoke-AutoFixCapture {
  }
  
  'BrokenValidateSet' = @{
- Pattern = '\[ValidateSet\([^\]]+\)\s*\n\s*\n\s*\]\s*\[string\]'
- Replacement = '[ValidateSet($1)]`n [string]'
+ Pattern = '\ValidateSet\(^\+\)\s*\n\s*\n\s*\\s*\string\'
+ Replacement = 'ValidateSet($1)`n string'
  Description = 'Fix broken ValidateSet parameter attributes'
  }
  
@@ -63,27 +63,27 @@ function Invoke-AutoFixCapture {
  }
  
  'UnicodeCharacters' = @{
- Pattern = '[��[FAIL][WARN][PASS]]'
+ Pattern = '��FAILWARNPASS'
  Replacement = ''
  Description = 'Remove Unicode characters that cause Windows encoding issues'
  }
  
  'ErrorsCommand' = @{
- Pattern = '\$\s*errors\s*\|'
- Replacement = '$errorOutput |'
+ Pattern = '\$\s*errors\s*\'
+ Replacement = '$errorOutput '
  Description = 'Fix undefined errors command references'
  }
  
  'MissingClosingBrace' = @{
- Pattern = 'function\s+\w+\s*\{\s*param\([^}]+\)\s*(?!\})'
+ Pattern = 'function\s+\w+\s*\{\s*param\(^}+\)\s*(?!\})'
  Replacement = '$1}'
  Description = 'Add missing closing braces for function parameter blocks'
  }
  }
  
  # Get all PowerShell files
- $psFiles = Get-ChildItem -Path $Path -Recurse -Include "*.ps1", "*.psm1", "*.psd1" | Where-Object { 
- $_.FullName -notmatch '\\(archive|backups|node_modules)\\' 
+ $psFiles = Get-ChildItem -Path $Path -Recurse -Include "*.ps1", "*.psm1", "*.psd1"  Where-Object { 
+ $_.FullName -notmatch '\\(archivebackupsnode_modules)\\' 
  }
  
  Write-Host " Scanning $($psFiles.Count) PowerShell files for fixable issues..." -ForegroundColor Blue
@@ -98,7 +98,7 @@ function Invoke-AutoFixCapture {
  $fileFixes = @()
  
  foreach ($fixName in $fixPatterns.Keys) {
- $fix = $fixPatterns[$fixName]
+ $fix = $fixPatterns$fixName
  
  if ($content -match $fix.Pattern) {
  if ($fix.Pattern -eq 'UnicodeCharacters') {
@@ -109,15 +109,15 @@ function Invoke-AutoFixCapture {
  '�' = 'Path:'
  'Package:' = 'Directory:'
  'Volume:' = 'Critical:'
- '[FAIL]' = 'ERROR:'
- '[WARN]' = 'WARNING:'
- '[PASS]' = 'OK:'
+ 'FAIL' = 'ERROR:'
+ 'WARN' = 'WARNING:'
+ 'PASS' = 'OK:'
  }
  
  foreach ($unicode in $unicodeChars.Keys) {
  if ($content.Contains($unicode)) {
- $content = $content.Replace($unicode, $unicodeChars[$unicode])
- $fileFixes += "Replaced Unicode: $unicode -> $($unicodeChars[$unicode])"
+ $content = $content.Replace($unicode, $unicodeChars$unicode)
+ $fileFixes += "Replaced Unicode: $unicode -> $($unicodeChars$unicode)"
  $fileFixed = $true
  }
  }
@@ -136,7 +136,7 @@ function Invoke-AutoFixCapture {
  # Apply fixes if any were found
  if ($fileFixed) {
  if ($WhatIf) {
- Write-Host " [WHAT-IF] Would fix: $($file.Name)" -ForegroundColor Yellow
+ Write-Host " WHAT-IF Would fix: $($file.Name)" -ForegroundColor Yellow
  foreach ($fix in $fileFixes) {
  Write-Host " • $fix" -ForegroundColor Gray
  }
@@ -147,7 +147,7 @@ function Invoke-AutoFixCapture {
  
  # Apply fixes
  Set-Content -Path $file.FullName -Value $content -Encoding UTF8
- Write-Host " [PASS] Fixed: $($file.Name)" -ForegroundColor Green
+ Write-Host " PASS Fixed: $($file.Name)" -ForegroundColor Green
  
  if ($Verbose) {
  foreach ($fix in $fileFixes) {
@@ -175,7 +175,7 @@ function Invoke-AutoFixCapture {
  Write-Host "� Backups Created: $fixedFiles" -ForegroundColor Yellow
  
  if ($WhatIf) {
- Write-Host "`n[WARN] WhatIf Mode: No changes were applied" -ForegroundColor Yellow
+ Write-Host "`nWARN WhatIf Mode: No changes were applied" -ForegroundColor Yellow
  Write-Host "Run without -WhatIf to apply fixes" -ForegroundColor Gray
  }
  
@@ -189,8 +189,8 @@ function Export-FixPatterns {
  #>
  
  param(
- [Parameter()]
- [string]$OutputPath = "./tools/auto-fix-patterns.json"
+ Parameter()
+ string$OutputPath = "./tools/auto-fix-patterns.json"
  )
  
  $patterns = @{
@@ -199,8 +199,8 @@ function Export-FixPatterns {
  Description = "Auto-fix patterns learned from manual fixes"
  Patterns = @{
  BrokenParameterBlocks = @{
- Pattern = '\[Parameter\(Mandatory=\$true\)\s*#.*?if.*?PSScriptAnalyzer.*?\]\[string\]'
- Replacement = '[Parameter(Mandatory=$true)]`n [string]'
+ Pattern = '\Parameter\(Mandatory=\$true\)\s*#.*?if.*?PSScriptAnalyzer.*?\\string\'
+ Replacement = 'Parameter(Mandatory=$true)`n string'
  Description = 'Fix broken parameter blocks with embedded PSScriptAnalyzer imports'
  Category = 'Syntax'
  Severity = 'High'
@@ -220,7 +220,7 @@ function Export-FixPatterns {
  Severity = 'High'
  }
  UnicodeCharacters = @{
- Pattern = '[��[FAIL][WARN][PASS]]'
+ Pattern = '��FAILWARNPASS'
  Replacement = 'TEXT_EQUIVALENT'
  Description = 'Remove Unicode characters that cause Windows encoding issues'
  Category = 'Compatibility'
@@ -229,8 +229,8 @@ function Export-FixPatterns {
  }
  }
  
- $patterns | ConvertTo-Json -Depth 5 | Set-Content -Path $OutputPath -Encoding UTF8
- Write-Host "[PASS] Fix patterns exported to: $OutputPath" -ForegroundColor Green
+ $patterns  ConvertTo-Json -Depth 5  Set-Content -Path $OutputPath -Encoding UTF8
+ Write-Host "PASS Fix patterns exported to: $OutputPath" -ForegroundColor Green
 }
 
 function Import-FixPatterns {
@@ -240,13 +240,13 @@ function Import-FixPatterns {
  #>
  
  param(
- [Parameter()]
- [string]$InputPath = "./tools/auto-fix-patterns.json"
+ Parameter()
+ string$InputPath = "./tools/auto-fix-patterns.json"
  )
  
  if (Test-Path $InputPath) {
- $patterns = Get-Content $InputPath -Raw | ConvertFrom-Json
- Write-Host "[PASS] Imported fix patterns from: $InputPath" -ForegroundColor Green
+ $patterns = Get-Content $InputPath -Raw  ConvertFrom-Json
+ Write-Host "PASS Imported fix patterns from: $InputPath" -ForegroundColor Green
  Write-Host " Version: $($patterns.Version)" -ForegroundColor Gray
  Write-Host " Last Updated: $($patterns.LastUpdated)" -ForegroundColor Gray
  Write-Host " Patterns Count: $($patterns.Patterns.PSObject.Properties.Count)" -ForegroundColor Gray

@@ -1,7 +1,7 @@
 function Get-LabConfig {
-    [CmdletBinding()]
+    CmdletBinding()
     param(
-        [string]$Path
+        string$Path
     )
 
     
@@ -33,28 +33,28 @@ $scriptDir = if ($PSScriptRoot) { $PSScriptRoot    } else { Split-Path -Parent $
                     throw "YAML support requires the 'powershell-yaml' module. Install it with 'Install-Module powershell-yaml'."
                 }
             }
-            $config = $content | ConvertFrom-Yaml
+            $config = $content  ConvertFrom-Yaml
         }
         else {
-            $config = $content | ConvertFrom-Json
+            $config = $content  ConvertFrom-Json
         }
 
         $repoRoot = Resolve-Path (Join-Path $scriptDir '..')
         $dirs     = @{}
-        if ($config.PSObject.Properties['Directories']) {
+        if ($config.PSObject.Properties'Directories') {
             # Preserve any user-defined directory settings
-            $config.Directories.PSObject.Properties | ForEach-Object {
-                $dirs[$_.Name] = $_.Value
+            $config.Directories.PSObject.Properties  ForEach-Object {
+                $dirs$_.Name = $_.Value
             }
         }
 
-        $dirs['RepoRoot']       = $repoRoot.Path
-        $dirs['RunnerScripts']  = Join-Path $repoRoot 'runner_scripts'
-        $dirs['UtilityScripts'] = Join-Path (Join-Path $repoRoot 'lab_utils') 'LabRunner'
-        $dirs['ConfigFiles']    = Join-Path $repoRoot '..' 'configs' 'config_files'
-        $dirs['InfraRepo']      = if ($config.InfraRepoPath) { $config.InfraRepoPath } else { 'C:\\Temp\\base-infra' }
+        $dirs'RepoRoot'       = $repoRoot.Path
+        $dirs'RunnerScripts'  = Join-Path $repoRoot 'runner_scripts'
+        $dirs'UtilityScripts' = Join-Path (Join-Path $repoRoot 'lab_utils') 'LabRunner'
+        $dirs'ConfigFiles'    = Join-Path $repoRoot '..' 'configs' 'config_files'
+        $dirs'InfraRepo'      = if ($config.InfraRepoPath) { $config.InfraRepoPath } else { 'C:\\Temp\\base-infra' }
 
-        Add-Member -InputObject $config -MemberType NoteProperty -Name Directories -Value ([pscustomobject]$dirs) -Force
+        Add-Member -InputObject $config -MemberType NoteProperty -Name Directories -Value (pscustomobject$dirs) -Force
         return $config
     }
     catch {

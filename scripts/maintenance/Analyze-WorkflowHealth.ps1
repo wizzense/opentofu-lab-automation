@@ -10,17 +10,17 @@
     with recommendations for fixes. Integrates with the project's maintenance system.
 #>
 
-[CmdletBinding()]
+CmdletBinding()
 param(
-    [Parameter()]
-    [ValidateSet("Markdown", "JSON", "Host")]
-    [string]$OutputFormat = "Markdown",
+    Parameter()
+    ValidateSet("Markdown", "JSON", "Host")
+    string$OutputFormat = "Markdown",
     
-    [Parameter()]
-    [string]$OutputPath = "./reports/workflow-health",
+    Parameter()
+    string$OutputPath = "./reports/workflow-health",
     
-    [Parameter()]
-    [switch]$AutoFix
+    Parameter()
+    switch$AutoFix
 )
 
 $ErrorActionPreference = 'Stop'
@@ -36,19 +36,19 @@ if ($IsWindows -or $env:OS -eq "Windows_NT") {
 }
 
 function Get-WorkflowAnalysis {
-    [CmdletBinding()]
+    CmdletBinding()
     param()
     
     Write-CustomLog "Starting workflow analysis..." "INFO"
     
     # Get recent workflow runs
     $workflowRuns = gh run list --json status,conclusion,name,headSha,databaseId,workflowName,event,displayTitle --limit 100
-    $runs = $workflowRuns | ConvertFrom-Json
+    $runs = $workflowRuns  ConvertFrom-Json
 
     # Analyze patterns in failures
     $analysis = @{
         TotalRuns = $runs.Count
-        FailedRuns = @($runs | Where-Object { $_.conclusion -eq 'failure' })
+        FailedRuns = @($runs  Where-Object { $_.conclusion -eq 'failure' })
         SuccessRate = 0
         CommonFailures = @{}
         AffectedWorkflows = @{}
@@ -62,29 +62,29 @@ function Get-WorkflowAnalysis {
     # Analyze each failed run in detail
     foreach ($failure in $analysis.FailedRuns) {
         $details = gh run view $failure.databaseId --json jobs
-        $jobs = ($details | ConvertFrom-Json).jobs
+        $jobs = ($details  ConvertFrom-Json).jobs
 
-        foreach ($job in $jobs | Where-Object { $_.conclusion -eq 'failure' }) {
+        foreach ($job in $jobs  Where-Object { $_.conclusion -eq 'failure' }) {
             $errorPattern = Get-ErrorPattern -Steps $job.steps
             
             if (-not $analysis.CommonFailures.ContainsKey($errorPattern)) {
-                $analysis.CommonFailures[$errorPattern] = 0
+                $analysis.CommonFailures$errorPattern = 0
             }
-            $analysis.CommonFailures[$errorPattern]++
+            $analysis.CommonFailures$errorPattern++
 
             # Track affected workflows
             if (-not $analysis.AffectedWorkflows.ContainsKey($failure.workflowName)) {
-                $analysis.AffectedWorkflows[$failure.workflowName] = @{
+                $analysis.AffectedWorkflows$failure.workflowName = @{
                     FailureCount = 0
                     Errors = @{}
                 }
             }
-            $analysis.AffectedWorkflows[$failure.workflowName].FailureCount++
+            $analysis.AffectedWorkflows$failure.workflowName.FailureCount++
             
-            if (-not $analysis.AffectedWorkflows[$failure.workflowName].Errors.ContainsKey($errorPattern)) {
-                $analysis.AffectedWorkflows[$failure.workflowName].Errors[$errorPattern] = 0
+            if (-not $analysis.AffectedWorkflows$failure.workflowName.Errors.ContainsKey($errorPattern)) {
+                $analysis.AffectedWorkflows$failure.workflowName.Errors$errorPattern = 0
             }
-            $analysis.AffectedWorkflows[$failure.workflowName].Errors[$errorPattern]++
+            $analysis.AffectedWorkflows$failure.workflowName.Errors$errorPattern++
         }
     }
 
@@ -96,11 +96,11 @@ function Get-WorkflowAnalysis {
 
 function Get-ErrorPattern {
     param (
-        [Parameter(Mandatory)]
-        [object[]]$Steps
+        Parameter(Mandatory)
+        object$Steps
     )
 
-    $failedSteps = $Steps | Where-Object { $_.conclusion -eq 'failure' }
+    $failedSteps = $Steps  Where-Object { $_.conclusion -eq 'failure' }
     foreach ($step in $failedSteps) {
         if ($step.completed_at) {
             return "$(Split-Path -Leaf $step.name): $($step.conclusion)"
@@ -111,14 +111,14 @@ function Get-ErrorPattern {
 
 function Get-FixRecommendations {
     param (
-        [Parameter(Mandatory)]
-        [hashtable]$Analysis
+        Parameter(Mandatory)
+        hashtable$Analysis
     )
 
     $recommendations = @()
 
     # Analyze common failure patterns and suggest fixes
-    foreach ($failure in $Analysis.CommonFailures.GetEnumerator() | Sort-Object Value -Descending) {
+    foreach ($failure in $Analysis.CommonFailures.GetEnumerator()  Sort-Object Value -Descending) {
         $recommendation = switch -Regex ($failure.Key) {
             'Setup-Directories: failure' {
                 @{
@@ -158,7 +158,7 @@ function Get-FixRecommendations {
             }
         }
         
-        $recommendation['Occurrences'] = $failure.Value
+        $recommendation'Occurrences' = $failure.Value
         $recommendations += $recommendation
     }
 
@@ -167,8 +167,8 @@ function Get-FixRecommendations {
 
 function New-WorkflowReport {
     param (
-        [Parameter(Mandatory)]
-        [hashtable]$Analysis
+        Parameter(Mandatory)
+        hashtable$Analysis
     )
 
     $reportDate = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
@@ -180,29 +180,29 @@ Generated: $reportDate
 
 ## Executive Summary
 - Total Runs Analyzed: $($Analysis.TotalRuns)
-- Success Rate: $([math]::Round($Analysis.SuccessRate, 2))%
+- Success Rate: $(math::Round($Analysis.SuccessRate, 2))%
 - Failed Runs: $($Analysis.FailedRuns.Count)
 - Affected Workflows: $($Analysis.AffectedWorkflows.Count)
 
 ## Failure Analysis
 
 ### Common Failure Patterns
-$(($Analysis.CommonFailures.GetEnumerator() | Sort-Object Value -Descending | ForEach-Object {
+$(($Analysis.CommonFailures.GetEnumerator()  Sort-Object Value -Descending  ForEach-Object {
 "- $($_.Key): $($_.Value) occurrences"
 }) -join "`n")
 
 ### Affected Workflows
-$(($Analysis.AffectedWorkflows.GetEnumerator() | Sort-Object {$_.Value.FailureCount} -Descending | ForEach-Object {
+$(($Analysis.AffectedWorkflows.GetEnumerator()  Sort-Object {$_.Value.FailureCount} -Descending  ForEach-Object {
 @"
 #### $($_.Key)
 - Total Failures: $($_.Value.FailureCount)
 - Error Distribution:
-$(($_.Value.Errors.GetEnumerator() | ForEach-Object {"  - $($_.Key): $($_.Value) times"}) -join "`n")
+$(($_.Value.Errors.GetEnumerator()  ForEach-Object {"  - $($_.Key): $($_.Value) times"}) -join "`n")
 "@
 }) -join "`n`n")
 
 ## Recommendations
-$(($Analysis.RecommendedFixes | ForEach-Object {
+$(($Analysis.RecommendedFixes  ForEach-Object {
 @"
 ### $($_.Issue)
 - Fix: $($_.Fix)
@@ -229,7 +229,7 @@ Run maintenance script with fixes:
     # Create report directory if it doesn't exist
     $reportDir = Split-Path $reportPath -Parent
     if (-not (Test-Path $reportDir)) {
-        New-Item -ItemType Directory -Path $reportDir -Force | Out-Null
+        New-Item -ItemType Directory -Path $reportDir -Force  Out-Null
     }
 
     # Save report
@@ -240,7 +240,7 @@ Run maintenance script with fixes:
 }
 
 function Start-WorkflowAnalysis {
-    [CmdletBinding()]
+    CmdletBinding()
     param()
 
     try {
@@ -258,7 +258,7 @@ function Start-WorkflowAnalysis {
         # Apply fixes if requested
         if ($FixIssues) {
             Write-CustomLog "Applying automated fixes..." "INFO"
-            foreach ($fix in $analysis.RecommendedFixes | Where-Object { $_.AutoFixable -eq $true }) {
+            foreach ($fix in $analysis.RecommendedFixes  Where-Object { $_.AutoFixable -eq $true }) {
                 Write-CustomLog "Applying fix for: $($fix.Issue)" "INFO"
                 & $fix.FixCommand
             }

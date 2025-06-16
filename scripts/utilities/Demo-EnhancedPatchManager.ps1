@@ -34,18 +34,18 @@
     - Includes comprehensive error handling and rollback
 #>
 
-[CmdletBinding()]
+CmdletBinding()
 param(
-    [Parameter(Mandatory = $false)]
-    [ValidateSet("DirectCommit", "Rollback", "Emergency", "Demo")]
-    [string]$Mode = "Demo",
+    Parameter(Mandatory = $false)
+    ValidateSet("DirectCommit", "Rollback", "Emergency", "Demo")
+    string$Mode = "Demo",
     
-    [Parameter(Mandatory = $false)]
-    [ValidateSet("LastCommit", "LastWorkingState", "SpecificCommit", "Emergency", "SelectiveFiles")]
-    [string]$RollbackTarget = "LastCommit",
+    Parameter(Mandatory = $false)
+    ValidateSet("LastCommit", "LastWorkingState", "SpecificCommit", "Emergency", "SelectiveFiles")
+    string$RollbackTarget = "LastCommit",
     
-    [Parameter(Mandatory = $false)]
-    [string]$CommitHash
+    Parameter(Mandatory = $false)
+    string$CommitHash
 )
 
 $ErrorActionPreference = "Stop"
@@ -74,10 +74,10 @@ switch ($Mode) {
                     Write-Host "Updating project manifest..." -ForegroundColor Blue
                     
                     if (Test-Path "PROJECT-MANIFEST.json") {
-                        $manifest = Get-Content "PROJECT-MANIFEST.json" | ConvertFrom-Json
+                        $manifest = Get-Content "PROJECT-MANIFEST.json"  ConvertFrom-Json
                         $manifest.project.lastUpdated = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
                         $manifest.project.lastDemo = "Enhanced PatchManager DirectCommit Demo"
-                        $manifest | ConvertTo-Json -Depth 10 | Set-Content "PROJECT-MANIFEST.json"
+                        $manifest  ConvertTo-Json -Depth 10  Set-Content "PROJECT-MANIFEST.json"
                         Write-Host "Project manifest updated successfully" -ForegroundColor Green
                     } else {
                         Write-Warning "PROJECT-MANIFEST.json not found"

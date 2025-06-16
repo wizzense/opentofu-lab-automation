@@ -35,7 +35,7 @@ The GitHub Actions workflows for the OpenTofu Lab Automation project have been c
 
 ## Legacy Workflows
 
-All legacy workflows have been archived to `.github/archived_workflows/` for reference. The full list of consolidated workflows and more details are available in [WORKFLOW-CONSOLIDATION-SUMMARY.md](./WORKFLOW-CONSOLIDATION-SUMMARY.md).
+All legacy workflows have been archived to `.github/archived_workflows/` for reference. The full list of consolidated workflows and more details are available in WORKFLOW-CONSOLIDATION-SUMMARY.md(./WORKFLOW-CONSOLIDATION-SUMMARY.md).
 
 ## Next Steps
 

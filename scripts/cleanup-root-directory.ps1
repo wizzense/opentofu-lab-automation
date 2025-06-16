@@ -1,10 +1,10 @@
 # Root Directory Cleanup Script
 # Organizes loose files in the project root into appropriate directories
 
-[CmdletBinding()]
+CmdletBinding()
 param(
- [switch]$DryRun,
- [switch]$Force
+ switch$DryRun,
+ switch$Force
 )
 
 Write-Host "� Starting root directory cleanup..." -ForegroundColor Cyan
@@ -86,9 +86,9 @@ $fileCategories = @{
 
 function Move-FilesToTarget {
  param(
- [string[]]$Files,
- [string]$TargetDir,
- [string]$Category
+ string$Files,
+ string$TargetDir,
+ string$Category
  )
  
  $movedCount = 0
@@ -96,7 +96,7 @@ function Move-FilesToTarget {
  
  # Create target directory if it doesn't exist
  if (-not (Test-Path $targetPath) -and -not $DryRun) {
- New-Item -ItemType Directory -Path $targetPath -Force | Out-Null
+ New-Item -ItemType Directory -Path $targetPath -Force  Out-Null
  Write-Host " � Created directory: $TargetDir" -ForegroundColor Green
  }
  
@@ -110,10 +110,10 @@ function Move-FilesToTarget {
  } else {
  try {
  Move-Item -Path $sourcePath -Destination $destPath -Force
- Write-Host " [PASS] Moved: $file → $TargetDir/" -ForegroundColor Green
+ Write-Host " PASS Moved: $file → $TargetDir/" -ForegroundColor Green
  $movedCount++
  } catch {
- Write-Host " [FAIL] Failed to move $file`: $($_.Exception.Message)" -ForegroundColor Red
+ Write-Host " FAIL Failed to move $file`: $($_.Exception.Message)" -ForegroundColor Red
  }
  }
  }
@@ -177,7 +177,7 @@ if ($DryRun) {
  Write-Host "`n DRY RUN COMPLETE - No files were actually moved" -ForegroundColor Yellow
  Write-Host "Run without -DryRun to perform the cleanup" -ForegroundColor Yellow
 } else {
- Write-Host "`n[PASS] Root directory cleanup completed!" -ForegroundColor Green
+ Write-Host "`nPASS Root directory cleanup completed!" -ForegroundColor Green
  Write-Host "� Files organized into appropriate directories" -ForegroundColor Green
  Write-Host " Run 'git status' to review changes before committing" -ForegroundColor Cyan
 }

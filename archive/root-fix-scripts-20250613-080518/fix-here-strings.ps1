@@ -9,23 +9,23 @@ Fixes common here-string syntax issues:
 - Ensures proper line breaks after here-string headers
 #>
 
-[CmdletBinding()]
+CmdletBinding()
 param(
-    [Parameter(Mandatory = $false)
+    Parameter(Mandatory = $false)
 
 
 
 
 
 
-]
-    [string]$Path = ".",
+
+    string$Path = ".",
     
-    [Parameter(Mandatory = $false)]
-    [switch]$WhatIf,
+    Parameter(Mandatory = $false)
+    switch$WhatIf,
     
-    [Parameter(Mandatory = $false)]
-    [switch]$ShowDetails
+    Parameter(Mandatory = $false)
+    switch$ShowDetails
 )
 
 $ErrorActionPreference = "Stop"
@@ -34,7 +34,7 @@ Write-Host " Fixing Here-String Syntax Issues" -ForegroundColor Cyan
 Write-Host "=" * 50
 
 # Find all PowerShell files
-$psFiles = Get-ChildItem -Path $Path -Recurse -Include "*.ps1", "*.psm1", "*.psd1" | 
+$psFiles = Get-ChildItem -Path $Path -Recurse -Include "*.ps1", "*.psm1", "*.psd1"  
     Where-Object { 
         $_.FullName -notmatch "\\archive\\" -and 
         $_.FullName -notmatch "\\legacy\\" -and
@@ -56,9 +56,9 @@ foreach ($file in $psFiles) {
     # Fix 1: @' should be @'
     $pattern1 = "@'"
     $replacement1 = "@'"
-    if ($content -match [regex]::Escape($pattern1)) {
-        $content = $content -replace [regex]::Escape($pattern1), $replacement1
-        $matches = ([regex]::Matches($originalContent, [regex]::Escape($pattern1))).Count
+    if ($content -match regex::Escape($pattern1)) {
+        $content = $content -replace regex::Escape($pattern1), $replacement1
+        $matches = (regex::Matches($originalContent, regex::Escape($pattern1))).Count
         $fileFixes += $matches
         if ($ShowDetails) {
             Write-Host "  Fixed $matches instances of @' -> @'" -ForegroundColor Green
@@ -68,9 +68,9 @@ foreach ($file in $psFiles) {
     # Fix 2: '@ should be '@
     $pattern2 = "'@"
     $replacement2 = "'@"
-    if ($content -match [regex]::Escape($pattern2)) {
-        $content = $content -replace [regex]::Escape($pattern2), $replacement2
-        $matches = ([regex]::Matches($originalContent, [regex]::Escape($pattern2))).Count
+    if ($content -match regex::Escape($pattern2)) {
+        $content = $content -replace regex::Escape($pattern2), $replacement2
+        $matches = (regex::Matches($originalContent, regex::Escape($pattern2))).Count
         $fileFixes += $matches
         if ($ShowDetails) {
             Write-Host "  Fixed $matches instances of '@ -> '@" -ForegroundColor Green
@@ -80,9 +80,9 @@ foreach ($file in $psFiles) {
     # Fix 3: Fix nested here-string quotes (common in these files)
     # Look for @" and "@ patterns
     $pattern5 = '@"'
-    if ($content -match [regex]::Escape($pattern5)) {
-        $content = $content -replace [regex]::Escape($pattern5), '@"'
-        $matches = ([regex]::Matches($originalContent, [regex]::Escape($pattern5))).Count
+    if ($content -match regex::Escape($pattern5)) {
+        $content = $content -replace regex::Escape($pattern5), '@"'
+        $matches = (regex::Matches($originalContent, regex::Escape($pattern5))).Count
         $fileFixes += $matches
         if ($ShowDetails) {
             Write-Host "  Fixed $matches instances of @`"`" -> @`"" -ForegroundColor Green
@@ -90,9 +90,9 @@ foreach ($file in $psFiles) {
     }
     
     $pattern6 = '"@'
-    if ($content -match [regex]::Escape($pattern6)) {
-        $content = $content -replace [regex]::Escape($pattern6), '"@'
-        $matches = ([regex]::Matches($originalContent, [regex]::Escape($pattern6))).Count
+    if ($content -match regex::Escape($pattern6)) {
+        $content = $content -replace regex::Escape($pattern6), '"@'
+        $matches = (regex::Matches($originalContent, regex::Escape($pattern6))).Count
         $fileFixes += $matches
         if ($ShowDetails) {
             Write-Host "  Fixed $matches instances of `"@`" -> `"@ -ForegroundColor Green
@@ -103,7 +103,7 @@ foreach ($file in $psFiles) {
         $fixedFiles += $file.FullName
         $totalFixes += $fileFixes
         
-        Write-Host "  [PASS] Fixed $fileFixes here-string issues in $($file.Name)" -ForegroundColor Green
+        Write-Host "  PASS Fixed $fileFixes here-string issues in $($file.Name)" -ForegroundColor Green
         
         if (-not $WhatIf) {
             Set-Content -Path $file.FullName -Value $content -Encoding UTF8
@@ -117,9 +117,9 @@ Write-Host "  Files fixed: $($fixedFiles.Count)" -ForegroundColor Green
 Write-Host "  Total fixes applied: $totalFixes" -ForegroundColor Green
 
 if ($WhatIf) {
-    Write-Host "`n[WARN]  WhatIf mode - no changes were made" -ForegroundColor Yellow
+    Write-Host "`nWARN  WhatIf mode - no changes were made" -ForegroundColor Yellow
 } elseif ($fixedFiles.Count -gt 0) {
-    Write-Host "`n[PASS] Here-string syntax fixes completed!" -ForegroundColor Green
+    Write-Host "`nPASS Here-string syntax fixes completed!" -ForegroundColor Green
     Write-Host "Fixed files:" -ForegroundColor Gray
     foreach ($file in $fixedFiles) {
         Write-Host "  - $file" -ForegroundColor Gray

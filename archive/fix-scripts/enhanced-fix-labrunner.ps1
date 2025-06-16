@@ -1,7 +1,7 @@
 # Enhanced Fix Script for LabRunner Path Updates
 param(
-    [switch]$WhatIf,
-    [switch]$Force
+    switch$WhatIf,
+    switch$Force
 )
 
 
@@ -16,8 +16,8 @@ $ErrorActionPreference = "Continue"
 Write-Host "� Finding all files with lab_utils references..." -ForegroundColor Cyan
 
 # Find all files that might have lab_utils references
-$allFiles = Get-ChildItem -Path "/workspaces/opentofu-lab-automation" -Recurse -Include "*.ps1", "*.psm1", "*.psd1" -File | 
-    Where-Object { $_.FullName -notmatch "(archive|cleanup-backup|\.git)" }
+$allFiles = Get-ChildItem -Path "/workspaces/opentofu-lab-automation" -Recurse -Include "*.ps1", "*.psm1", "*.psd1" -File  
+    Where-Object { $_.FullName -notmatch "(archivecleanup-backup\.git)" }
 
 $filesToFix = @()
 
@@ -25,7 +25,7 @@ foreach ($file in $allFiles) {
     try {
         $content = Get-Content -Path $file.FullName -Raw -ErrorAction SilentlyContinue
         if ($content -and $content -match "lab_utils") {
-            $filesToFix += [PSCustomObject]@{
+            $filesToFix += PSCustomObject@{
                 File = $file.FullName
                 Name = $file.Name
                 Content = $content
@@ -41,18 +41,18 @@ Write-Host "� Found $($filesToFix.Count) files with lab_utils references" -For
 # Define comprehensive replacement patterns
 $patterns = @{
     # Main LabRunner module paths
-    'pwsh[\\/]lab_utils[\\/]LabRunner[\\/]LabRunner\.psd1' = 'pwsh/modules/LabRunner/LabRunner.psd1'
-    'pwsh[\\/]lab_utils[\\/]LabRunner' = 'pwsh/modules/LabRunner'
+    'pwsh\\/lab_utils\\/LabRunner\\/LabRunner\.psd1' = 'pwsh/modules/LabRunner/LabRunner.psd1'
+    'pwsh\\/lab_utils\\/LabRunner' = 'pwsh/modules/LabRunner'
     
     # Specific file references within LabRunner
-    'pwsh[\\/]lab_utils[\\/]LabRunner[\\/]Logger\.ps1' = 'pwsh/modules/LabRunner/Logger.ps1'
-    'pwsh[\\/]lab_utils[\\/]LabRunner[\\/]OpenTofuInstaller\.ps1' = 'pwsh/modules/LabRunner/OpenTofuInstaller.ps1'
+    'pwsh\\/lab_utils\\/LabRunner\\/Logger\.ps1' = 'pwsh/modules/LabRunner/Logger.ps1'
+    'pwsh\\/lab_utils\\/LabRunner\\/OpenTofuInstaller\.ps1' = 'pwsh/modules/LabRunner/OpenTofuInstaller.ps1'
     
     # Other lab_utils references that should move to LabRunner
-    'pwsh[\\/]lab_utils[\\/]Get-LabConfig\.ps1' = 'pwsh/modules/LabRunner/Get-LabConfig.ps1'
-    'pwsh[\\/]lab_utils[\\/]Get-Platform\.ps1' = 'pwsh/modules/LabRunner/Get-Platform.ps1'
-    'pwsh[\\/]lab_utils[\\/]Hypervisor\.psm1' = 'pwsh/modules/LabRunner/Hypervisor.psm1'
-    'pwsh[\\/]lab_utils[\\/]Get-WindowsJobArtifacts\.ps1' = 'pwsh/modules/LabRunner/Get-WindowsJobArtifacts.ps1'
+    'pwsh\\/lab_utils\\/Get-LabConfig\.ps1' = 'pwsh/modules/LabRunner/Get-LabConfig.ps1'
+    'pwsh\\/lab_utils\\/Get-Platform\.ps1' = 'pwsh/modules/LabRunner/Get-Platform.ps1'
+    'pwsh\\/lab_utils\\/Hypervisor\.psm1' = 'pwsh/modules/LabRunner/Hypervisor.psm1'
+    'pwsh\\/lab_utils\\/Get-WindowsJobArtifacts\.ps1' = 'pwsh/modules/LabRunner/Get-WindowsJobArtifacts.ps1'
 }
 
 $updatedCount = 0
@@ -66,7 +66,7 @@ foreach ($fileInfo in $filesToFix) {
     
     # Apply each pattern
     foreach ($pattern in $patterns.Keys) {
-        $replacement = $patterns[$pattern]
+        $replacement = $patterns$pattern
         $newContent = $content -replace $pattern, $replacement
         if ($newContent -ne $content) {
             $content = $newContent
@@ -82,7 +82,7 @@ foreach ($fileInfo in $filesToFix) {
             try {
                 Set-Content -Path $fileInfo.File -Value $content -Encoding UTF8
                 $updatedCount++
-                Write-Host "    [PASS] Updated file" -ForegroundColor Green
+                Write-Host "    PASS Updated file" -ForegroundColor Green
             } catch {
                 Write-Warning "Failed to update $($fileInfo.File): $($_.Exception.Message)"
             }
@@ -105,7 +105,7 @@ if (-not $WhatIf) {
             Import-Module /workspaces/opentofu-lab-automation/pwsh/modules/CodeFixer -Force
             Invoke-PowerShellLint -Path /workspaces/opentofu-lab-automation/pwsh/runner.ps1 -OutputFormat Text
         "
-        Write-Host "[PASS] CodeFixer test passed" -ForegroundColor Green
+        Write-Host "PASS CodeFixer test passed" -ForegroundColor Green
     } catch {
         Write-Warning "CodeFixer test failed: $($_.Exception.Message)"
     }
@@ -117,7 +117,7 @@ if (-not $WhatIf) {
             Get-Module LabRunner
         "
         if ($labRunnerTest) {
-            Write-Host "[PASS] LabRunner loads correctly in tests" -ForegroundColor Green
+            Write-Host "PASS LabRunner loads correctly in tests" -ForegroundColor Green
         } else {
             Write-Warning "LabRunner may not be loading correctly"
         }

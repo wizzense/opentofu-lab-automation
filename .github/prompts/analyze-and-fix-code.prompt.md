@@ -1,7 +1,7 @@
 ---
 description: Analyze and fix code issues using CodeFixer module with validation and cross-platform testing
 mode: agent  
-tools: ["codebase", "run_in_terminal"]
+tools: "codebase", "run_in_terminal"
 ---
 
 # Analyze and Fix Code Issues

@@ -10,8 +10,8 @@ Write-Host "=================================" -ForegroundColor Cyan
 $reportsArchive = "reports/archive-$timestamp"
 $tempArchive = "archive/temp-files-$timestamp"
 
-New-Item -ItemType Directory -Path $reportsArchive -Force | Out-Null
-New-Item -ItemType Directory -Path $tempArchive -Force | Out-Null
+New-Item -ItemType Directory -Path $reportsArchive -Force  Out-Null
+New-Item -ItemType Directory -Path $tempArchive -Force  Out-Null
 
 # Files to move to reports archive
 $reportFiles = @(
@@ -66,7 +66,7 @@ Write-Host " Archive location: $tempArchive" -ForegroundColor Green
 
 Write-Host ""
 Write-Host "� Clean root directory now contains:" -ForegroundColor Green
-Get-ChildItem -Path "." -File | Where-Object { $_.Name -notmatch '\.(log|tmp)$' } | Select-Object Name | Format-Table -AutoSize
+Get-ChildItem -Path "." -File  Where-Object { $_.Name -notmatch '\.(logtmp)$' }  Select-Object Name  Format-Table -AutoSize
 
 Write-Host ""
-Write-Host "[PASS] Root directory cleanup completed!" -ForegroundColor Green
+Write-Host "PASS Root directory cleanup completed!" -ForegroundColor Green

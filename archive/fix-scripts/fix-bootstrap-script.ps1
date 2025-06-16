@@ -1,19 +1,19 @@
 # fix-bootstrap-script.ps1
 # Comprehensive fix for kicker-bootstrap.ps1 runtime issues
 
-[CmdletBinding()]
+CmdletBinding()
 
 Import-Module (Join-Path $PSScriptRoot "pwsh/modules/CodeFixer/CodeFixer.psd1") -Force
 param(
-    [Parameter(Mandatory = $false)
+    Parameter(Mandatory = $false)
 
 
 
 
 
 
-]
-    [switch]$WhatIf
+
+    switch$WhatIf
 )
 
 $ErrorActionPreference = "Stop"
@@ -43,14 +43,14 @@ $prompt = "`n<press any key to continue>`n"
 
 
 function Write-Continue($prompt) {
-  [Console]::Write($prompt + '  ')
-  Read-LoggedInput -Prompt $prompt | Out-Null
+  Console::Write($prompt + '  ')
+  Read-LoggedInput -Prompt $prompt  Out-Null
 }
 '@
 
 $newPromptSection = @'
 function Write-Continue {
-    param([string]$Message = "Press any key to continue...")
+    param(string$Message = "Press any key to continue...")
     
 
 
@@ -63,62 +63,62 @@ Write-Host $Message -ForegroundColor Yellow -NoNewline
 }
 '@
 
-if ($content -match [regex]::Escape($oldPromptSection)) {
-    $content = $content -replace [regex]::Escape($oldPromptSection), $newPromptSection
-    $fixes += "[PASS] Replaced problematic Write-Continue function"
+if ($content -match regex::Escape($oldPromptSection)) {
+    $content = $content -replace regex::Escape($oldPromptSection), $newPromptSection
+    $fixes += "PASS Replaced problematic Write-Continue function"
 } else {
     Write-Warning "Could not find exact prompt section to replace - applying manual fix"
     
     # Manual replacement patterns
-    $content = $content -replace 'function Write-Continue\(\$prompt\) \{[^}]+\}', $newPromptSection
+    $content = $content -replace 'function Write-Continue\(\$prompt\) \{^}+\}', $newPromptSection
     $content = $content -replace '\$prompt = "`n<press any key to continue>`n"', ''
-    $fixes += "[PASS] Applied manual Write-Continue fix"
+    $fixes += "PASS Applied manual Write-Continue fix"
 }
 
 # Fix 2: Replace the Write-Continue call with a cleaner version
 $oldWriteCall = 'Write-Continue "`n<press any key to continue>`n"'
 $newWriteCall = 'Write-Continue "Press Enter to continue..."'
 
-if ($content -match [regex]::Escape($oldWriteCall)) {
-    $content = $content -replace [regex]::Escape($oldWriteCall), $newWriteCall
-    $fixes += "[PASS] Fixed Write-Continue call"
+if ($content -match regex::Escape($oldWriteCall)) {
+    $content = $content -replace regex::Escape($oldWriteCall), $newWriteCall
+    $fixes += "PASS Fixed Write-Continue call"
 }
 
 # Fix 3: Fix configuration selection logic that might cause parsing issues
 $oldConfigLogic = @'
         for ($i = 0; $i -lt $configFiles.Count; $i++) {
             $num = $i + 1
-            Write-CustomLog ("{0}) {1}" -f $num, $configFiles[$i].Name) "INFO" | Write-Host
+            Write-CustomLog ("{0}) {1}" -f $num, $configFiles$i.Name) "INFO"  Write-Host
         }
 '@
 
 $newConfigLogic = @'
         for ($i = 0; $i -lt $configFiles.Count; $i++) {
             $num = $i + 1
-            Write-Host "$num) $($configFiles[$i].Name)" -ForegroundColor White
+            Write-Host "$num) $($configFiles$i.Name)" -ForegroundColor White
         }
 '@
 
-if ($content -match [regex]::Escape($oldConfigLogic)) {
-    $content = $content -replace [regex]::Escape($oldConfigLogic), $newConfigLogic
-    $fixes += "[PASS] Fixed configuration selection display"
+if ($content -match regex::Escape($oldConfigLogic)) {
+    $content = $content -replace regex::Escape($oldConfigLogic), $newConfigLogic
+    $fixes += "PASS Fixed configuration selection display"
 }
 
 # Fix 4: Improve prompt handling in configuration selection
 $oldConfigPrompt = '$ans = Read-LoggedInput -Prompt ''Select configuration number'''
 $newConfigPrompt = '$ans = Read-Host -Prompt "Select configuration number"'
 
-$content = $content -replace [regex]::Escape($oldConfigPrompt), $newConfigPrompt
-$fixes += "[PASS] Simplified configuration selection prompt"
+$content = $content -replace regex::Escape($oldConfigPrompt), $newConfigPrompt
+$fixes += "PASS Simplified configuration selection prompt"
 
 # Fix 5: Clean up any stray escape characters or formatting issues
 $content = $content -replace '`n<press any key to continue>`n', 'Press Enter to continue...'
 $content = $content -replace ':\s*$', ''  # Remove trailing colons at end of lines
 
 # Fix 6: Ensure proper Read-LoggedInput usage
-$content = $content -replace 'Read-LoggedInput -Prompt "([^"]+)"', 'Read-Host -Prompt "$1"'
+$content = $content -replace 'Read-LoggedInput -Prompt "(^"+)"', 'Read-Host -Prompt "$1"'
 
-$fixes += "[PASS] Cleaned up formatting and escape characters"
+$fixes += "PASS Cleaned up formatting and escape characters"
 
 # Fix 7: Add input validation for configuration selection
 $validationFix = @'
@@ -127,27 +127,27 @@ $validationFix = @'
         # Validate input
         if (-not $ans -or $ans -notmatch '^\d+$') {
             Write-Host "Invalid input. Using first configuration file." -ForegroundColor Yellow
-            $ConfigFile = $configFiles[0].FullName
-        } elseif ([int]$ans -ge 1 -and [int]$ans -le $configFiles.Count) {
-            $ConfigFile = $configFiles[[int]$ans - 1].FullName
+            $ConfigFile = $configFiles0.FullName
+        } elseif (int$ans -ge 1 -and int$ans -le $configFiles.Count) {
+            $ConfigFile = $configFilesint$ans - 1.FullName
         } else {
             Write-Host "Number out of range. Using first configuration file." -ForegroundColor Yellow
-            $ConfigFile = $configFiles[0].FullName
+            $ConfigFile = $configFiles0.FullName
         }
 '@
 
 $oldValidation = @'
         $ans = Read-Host -Prompt "Select configuration number"
-        if ($ans -match '^[0-9]+$' -and [int]$ans -ge 1 -and [int]$ans -le $configFiles.Count) {
-            $ConfigFile = $configFiles[[int]$ans - 1].FullName
+        if ($ans -match '^0-9+$' -and int$ans -ge 1 -and int$ans -le $configFiles.Count) {
+            $ConfigFile = $configFilesint$ans - 1.FullName
         } else {
-            $ConfigFile = $configFiles[0].FullName
+            $ConfigFile = $configFiles0.FullName
         }
 '@
 
-$content = $content -replace [regex]::Escape('$ans = Read-Host -Prompt "Select configuration number"[^}]+\}'), $validationFix
+$content = $content -replace regex::Escape('$ans = Read-Host -Prompt "Select configuration number"^}+\}'), $validationFix
 
-$fixes += "[PASS] Added input validation for configuration selection"
+$fixes += "PASS Added input validation for configuration selection"
 
 # Display what we're fixing
 Write-Host "`n� Applied Fixes:" -ForegroundColor Cyan
@@ -156,7 +156,7 @@ foreach ($fix in $fixes) {
 }
 
 if ($WhatIf) {
-    Write-Host "`n[WARN] WhatIf mode - changes not applied" -ForegroundColor Yellow
+    Write-Host "`nWARN WhatIf mode - changes not applied" -ForegroundColor Yellow
     Write-Host "Run without -WhatIf to apply fixes" -ForegroundColor Gray
     return
 }
@@ -168,17 +168,17 @@ Write-Host "� Backup created: $backupPath" -ForegroundColor Gray
 
 # Apply fixes
 Set-Content -Path $bootstrapPath -Value $content -Encoding UTF8
-Write-Host "[PASS] Bootstrap script fixes applied successfully!" -ForegroundColor Green
+Write-Host "PASS Bootstrap script fixes applied successfully!" -ForegroundColor Green
 
 # Validate the fixed script
 Write-Host "`n� Validating fixed script..." -ForegroundColor Cyan
 
 try {
     # Test PowerShell syntax
-    $null = [System.Management.Automation.PSParser]::Tokenize($content, [ref]$null)
-    Write-Host "[PASS] PowerShell syntax validation passed" -ForegroundColor Green
+    $null = System.Management.Automation.PSParser::Tokenize($content, ref$null)
+    Write-Host "PASS PowerShell syntax validation passed" -ForegroundColor Green
 } catch {
-    Write-Error "[FAIL] PowerShell syntax validation failed: $_"
+    Write-Error "FAIL PowerShell syntax validation failed: $_"
     Write-Host "Restoring backup..." -ForegroundColor Yellow
     Copy-Item $backupPath $bootstrapPath -Force
     exit 1
@@ -200,7 +200,7 @@ if ($content -match '\$prompt.*\$prompt') {
 }
 
 if ($issues.Count -gt 0) {
-    Write-Host "`n[WARN] Potential remaining issues detected:" -ForegroundColor Yellow
+    Write-Host "`nWARN Potential remaining issues detected:" -ForegroundColor Yellow
     foreach ($issue in $issues) {
         Write-Host "  - $issue" -ForegroundColor Yellow
     }

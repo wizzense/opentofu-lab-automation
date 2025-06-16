@@ -6,14 +6,14 @@ on:
  # Run every 6 hours
  - cron: '0 */6 * * *'
  push:
- branches: [main, advanced-testing]
+ branches: main, advanced-testing
  paths:
  - 'pwsh/**'
  - 'tests/**'
  - 'tools/**'
  - '.github/workflows/**'
  pull_request:
- branches: [main, advanced-testing]
+ branches: main, advanced-testing
  workflow_dispatch:
 
 jobs:
@@ -28,15 +28,15 @@ jobs:
 
  - name: Install PowerShell
  shell: bash
- run: |
- if ! sudo apt-get update || ! sudo apt-get install -y powershell; then
+ run: 
+ if ! sudo apt-get update  ! sudo apt-get install -y powershell; then
  echo "Failed to install PowerShell" >&2
  exit 1
  fi
 
  - name: Install Pester
  shell: pwsh
- run: |
+ run: 
  try {
  Install-Module -Name Pester -RequiredVersion 5.7.1 -Force -Scope CurrentUser
  Write-Host "Pester installed successfully"
@@ -48,10 +48,10 @@ jobs:
  - name: Run Comprehensive Health Check
  id: health
  shell: pwsh
- run: |
+ run: 
  try {
  $result = & ./comprehensive-health-check.ps1 -CI -Detailed -OutputFormat JSON
- $healthData = $result | ConvertFrom-Json
+ $healthData = $result  ConvertFrom-Json
  Write-Host "Health check completed successfully"
  } catch {
  Write-Error "Health check failed: $_"
@@ -65,7 +65,7 @@ jobs:
  echo "critical-count=$($healthData.Summary.Critical)" >> $env:GITHUB_OUTPUT
  
  # Save detailed report
- $result | Out-File health-report.json -Encoding UTF8
+ $result  Out-File health-report.json -Encoding UTF8
  
  Write-Host "Health Check Complete:"
  Write-Host " Status: $($healthData.OverallStatus)"
@@ -84,7 +84,7 @@ jobs:
  - name: Create Status Badge Data
  if: always()
  shell: pwsh
- run: |
+ run: 
  $status = "${{ steps.health.outputs.status }}"
  $color = switch ($status) {
  "Healthy" { "brightgreen" }
@@ -100,13 +100,13 @@ jobs:
  color = $color
  }
  
- $badgeData | ConvertTo-Json | Out-File health-badge.json -Encoding UTF8
+ $badgeData  ConvertTo-Json  Out-File health-badge.json -Encoding UTF8
 
  - name: Notify on Critical Issues
  if: steps.health.outputs.status == 'Critical'
  uses: actions/github-script@v7
  with:
- script: |
+ script: 
  const issue = {
  owner: context.repo.owner,
  repo: context.repo.repo,
@@ -128,7 +128,7 @@ jobs:
  
  This issue was automatically created by the health monitoring system.
  `,
- labels: ['health-check', 'critical', 'automated']
+ labels: 'health-check', 'critical', 'automated'
  };
  
  // Check if similar issue already exists
@@ -152,43 +152,43 @@ jobs:
  - uses: actions/checkout@v4
 
  - name: Validate YAML Syntax
- run: |
+ run: 
  sudo snap install yq
  
  # Check all workflow files
  for file in .github/workflows/*.yml; do
  echo "Validating $file..."
  if yq eval . "$file" > /dev/null 2>&1; then
- echo " [PASS] Valid YAML syntax"
+ echo " PASS Valid YAML syntax"
  else
- echo " [FAIL] Invalid YAML syntax"
+ echo " FAIL Invalid YAML syntax"
  exit 1
  fi
  done
 
  - name: Check Workflow Structure
  shell: bash
- run: |
+ run: 
  # Verify all workflows have required elements
  for file in .github/workflows/*.yml; do
  echo "Checking structure of $file..."
  
  if ! grep -q "^name:" "$file"; then
- echo " [FAIL] Missing 'name' field"
+ echo " FAIL Missing 'name' field"
  exit 1
  fi
  
  if ! grep -q "^on:" "$file"; then
- echo " [FAIL] Missing 'on' field"
+ echo " FAIL Missing 'on' field"
  exit 1
  fi
  
  if ! grep -q "^jobs:" "$file"; then
- echo " [FAIL] Missing 'jobs' field"
+ echo " FAIL Missing 'jobs' field"
  exit 1
  fi
  
- echo " [PASS] Structure valid"
+ echo " PASS Structure valid"
  done
 
  test-cross-platform:
@@ -197,7 +197,7 @@ jobs:
  if: always()
  strategy:
  matrix:
- os: [ubuntu-latest, windows-latest, macos-latest]
+ os: ubuntu-latest, windows-latest, macos-latest
  runs-on: ${{ matrix.os }}
  steps:
  - uses: actions/checkout@v4
@@ -205,8 +205,8 @@ jobs:
  - name: Install PowerShell (Non-Windows)
  if: runner.os != 'Windows'
  shell: bash
- run: |
- if [[ "${{ runner.os }}" == "Linux" ]]; then
+ run: 
+ if  "${{ runner.os }}" == "Linux" ; then
  sudo apt-get update
  sudo apt-get install -y wget apt-transport-https \
  software-properties-common
@@ -214,18 +214,18 @@ jobs:
  sudo dpkg -i packages-microsoft-prod.deb
  sudo apt-get update
  sudo apt-get install -y powershell
- elif [[ "${{ runner.os }}" == "macOS" ]]; then
+ elif  "${{ runner.os }}" == "macOS" ; then
  brew install --cask powershell
  fi
 
  - name: Install Pester
  shell: pwsh
- run: |
+ run: 
  Install-Module -Name Pester -RequiredVersion 5.7.1 -Force -Scope CurrentUser
 
  - name: Test Core Script Syntax
  shell: pwsh
- run: |
+ run: 
  $errors = @()
  
  # Test key scripts on this platform
@@ -239,57 +239,57 @@ jobs:
  if (Test-Path $script) {
  try {
  $content = Get-Content $script -Raw
- $null = [System.Management.Automation.PSParser]::Tokenize($content, [ref]$null)
- Write-Host "[PASS] $script - Valid syntax" -ForegroundColor Green
+ $null = System.Management.Automation.PSParser::Tokenize($content, ref$null)
+ Write-Host "PASS $script - Valid syntax" -ForegroundColor Green
  } catch {
  $errors += "$script`: $($_.Exception.Message)"
- Write-Host "[FAIL] $script - Syntax error: $($_.Exception.Message)" -ForegroundColor Red
+ Write-Host "FAIL $script - Syntax error: $($_.Exception.Message)" -ForegroundColor Red
  }
  } else {
  $errors += "$script`: File not found"
- Write-Host "[FAIL] $script - File not found" -ForegroundColor Red
+ Write-Host "FAIL $script - File not found" -ForegroundColor Red
  }
  }
  
  if ($errors.Count -gt 0) {
  Write-Host "`nSyntax errors found on ${{ matrix.os }}:" -ForegroundColor Red
- $errors | ForEach-Object { Write-Host " - $_" -ForegroundColor Red }
+ $errors  ForEach-Object { Write-Host " - $_" -ForegroundColor Red }
  exit 1
  }
  
- Write-Host "`n[PASS] All core scripts pass syntax validation on ${{ matrix.os }}" -ForegroundColor Green
+ Write-Host "`nPASS All core scripts pass syntax validation on ${{ matrix.os }}" -ForegroundColor Green
 
  - name: Test PowerShell Module Loading
  shell: pwsh
- run: |
+ run: 
  # Test that we can load key modules/functions
  try {
  # Test loading validation tools
  if (Test-Path "tools/Validate-PowerShellScripts.ps1") {
  . ./tools/Validate-PowerShellScripts.ps1
- Write-Host "[PASS] Validation tools loaded successfully" -ForegroundColor Green
+ Write-Host "PASS Validation tools loaded successfully" -ForegroundColor Green
  }
  
  # Test bootstrap script basic functionality
  if (Test-Path "pwsh/kicker-bootstrap.ps1") {
  $output = & ./pwsh/kicker-bootstrap.ps1 -WhatIf 2>&1
  if ($LASTEXITCODE -eq 0) {
- Write-Host "[PASS] Bootstrap script WhatIf mode works" -ForegroundColor Green
+ Write-Host "PASS Bootstrap script WhatIf mode works" -ForegroundColor Green
  } else {
- Write-Host "[FAIL] Bootstrap script WhatIf failed" -ForegroundColor Red
+ Write-Host "FAIL Bootstrap script WhatIf failed" -ForegroundColor Red
  exit 1
  }
  }
  
  } catch {
- Write-Host "[FAIL] Module loading test failed: $($_.Exception.Message)" -ForegroundColor Red
+ Write-Host "FAIL Module loading test failed: $($_.Exception.Message)" -ForegroundColor Red
  exit 1
  }
 
  report-status:
  name: Report Final Status
  runs-on: ubuntu-latest
- needs: [health-check, validate-workflows, test-cross-platform]
+ needs: health-check, validate-workflows, test-cross-platform
  if: always()
  steps:
  - name: Download Health Report
@@ -299,7 +299,7 @@ jobs:
 
  - name: Generate Summary
  shell: pwsh
- run: |
+ run: 
  $healthStatus = "${{ needs.health-check.outputs.overall-status }}"
  $workflowStatus = "${{ needs.validate-workflows.result }}"
  $crossPlatformStatus = "${{ needs.test-cross-platform.result }}"
@@ -317,7 +317,7 @@ jobs:
  Write-Host "`n SYSTEM STATUS: FULLY OPERATIONAL" -ForegroundColor Green
  Write-Host "All components are healthy and functioning correctly across all platforms." -ForegroundColor Green
  } else {
- Write-Host "`n[WARN] SYSTEM STATUS: REQUIRES ATTENTION" -ForegroundColor Yellow
+ Write-Host "`nWARN SYSTEM STATUS: REQUIRES ATTENTION" -ForegroundColor Yellow
  Write-Host "One or more components need attention. Review the detailed reports above." -ForegroundColor Yellow
  }
  
@@ -325,13 +325,13 @@ jobs:
  $summary = @"
  ## System Health Summary
  
- | Component | Status |
- |-----------|---------|
- | Health Check | $healthStatus |
- | Workflow Validation | $workflowStatus |
- | Cross-Platform Tests | $crossPlatformStatus |
+  Component  Status 
+ --------------------
+  Health Check  $healthStatus 
+  Workflow Validation  $workflowStatus 
+  Cross-Platform Tests  $crossPlatformStatus 
  
- **Overall Status**: $(if ($overallHealthy) { "[PASS] Operational" } else { "[WARN] Needs Attention" })
+ **Overall Status**: $(if ($overallHealthy) { "PASS Operational" } else { "WARN Needs Attention" })
  "@
  
- $summary | Out-File $env:GITHUB_STEP_SUMMARY -Encoding utf8
+ $summary  Out-File $env:GITHUB_STEP_SUMMARY -Encoding utf8

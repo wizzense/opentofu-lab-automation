@@ -5,7 +5,7 @@ on:
  workflow_dispatch:
  pull_request:
  push:
- branches: [main]
+ branches: main
 
 jobs:
  pester-macos:
@@ -18,9 +18,9 @@ jobs:
  run: gh auth login --with-token <<< "${{ secrets.GITHUB_TOKEN }}"
  - name: Install PowerShell
  shell: bash
- run: |
+ run: 
  if ! command -v pwsh >/dev/null 2>&1; then
- brew install --cask powershell || { echo "Failed to install PowerShell via Homebrew"; exit 1; }
+ brew install --cask powershell  { echo "Failed to install PowerShell via Homebrew"; exit 1; }
  fi
  - name: Cache PowerShell modules
  uses: actions/cache@v4
@@ -30,7 +30,7 @@ jobs:
  restore-keys: macos-pwsh-modules-
  - name: Install Pester
  shell: pwsh
- run: |
+ run: 
  $ErrorActionPreference = 'Stop'
  try {
  Install-Module -Name Pester -RequiredVersion 5.7.1 -Force -Scope CurrentUser -ErrorAction Stop
@@ -41,7 +41,7 @@ jobs:
  }
  - name: Install powershell-yaml
  shell: pwsh
- run: |
+ run: 
  $ErrorActionPreference = 'Stop'
  try {
  Install-Module -Name powershell-yaml -Force -Scope CurrentUser
@@ -52,7 +52,7 @@ jobs:
  }
  - name: Verify test helpers
  shell: pwsh
- run: |
+ run: 
  $ErrorActionPreference = 'Stop'
  try {
  . ./tests/helpers/Get-ScriptAst.ps1
@@ -67,11 +67,11 @@ jobs:
  }
  - name: Ensure coverage directory
  shell: pwsh
- run: |
+ run: 
  $ErrorActionPreference = 'Stop'
  try {
  if (-not (Test-Path coverage)) {
- New-Item -ItemType Directory -Path coverage | Out-Null
+ New-Item -ItemType Directory -Path coverage  Out-Null
  }
  Write-Host "Coverage directory ready" -ForegroundColor Green
  } catch {
@@ -81,7 +81,7 @@ jobs:
  - name: Run Pester Tests
  id: pester
  shell: pwsh
- run: |
+ run: 
  $ErrorActionPreference = 'Stop'
  Write-Host "Running Pester tests for macOS" -ForegroundColor Yellow
  try {
@@ -92,13 +92,13 @@ jobs:
  if (Test-Path 'tools/iso') {
  $coveragePaths += 'tools/iso'
  }
- $cfg.CodeCoverage.Path = [Pester.StringArrayOption]::new($coveragePaths)
+ $cfg.CodeCoverage.Path = Pester.StringArrayOption::new($coveragePaths)
  $repoRoot = $env:GITHUB_WORKSPACE
  $cfg.TestResult.OutputPath = Join-Path $repoRoot 'coverage/testResults.xml'
  $cfg.CodeCoverage.OutputPath = Join-Path $repoRoot 'coverage/coverage.xml'
  $logPath = Join-Path $repoRoot 'coverage/pester.log'
  Write-Host "Starting test execution..." -ForegroundColor Green
- $result = Invoke-Pester -Configuration $cfg 2>&1 | Tee-Object -FilePath $logPath
+ $result = Invoke-Pester -Configuration $cfg 2>&1  Tee-Object -FilePath $logPath
  if ($result.FailedCount -gt 0) {
  Write-Error "Tests failed: $($result.FailedCount) failed out of $($result.TotalCount) total tests"
  exit 1
@@ -113,7 +113,7 @@ jobs:
  }
  $exitCode = 1
  }
- "pester_exit_code=$exitCode" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+ "pester_exit_code=$exitCode"  Out-File -FilePath $env:GITHUB_OUTPUT -Append
  - name: Upload Pester log
  if: always()
  uses: actions/upload-artifact@v4

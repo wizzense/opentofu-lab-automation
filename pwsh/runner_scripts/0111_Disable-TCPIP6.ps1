@@ -1,4 +1,4 @@
-Param([object]$Config)
+Param(object$Config)
 
 
 
@@ -12,7 +12,7 @@ Invoke-LabStep -Config $Config -Body {
 
 if ($Config.DisableTCPIP6 -eq $true) {
     Write-CustomLog 'Disabling IPv6 bindings on all adapters'
-    Get-NetAdapterBinding -ComponentID 'ms_tcpip6' | where-object enabled -eq $true | Disable-NetAdapterBinding -ComponentID 'ms_tcpip6'
+    Get-NetAdapterBinding -ComponentID 'ms_tcpip6'  where-object enabled -eq $true  Disable-NetAdapterBinding -ComponentID 'ms_tcpip6'
     Write-CustomLog 'IPv6 bindings disabled'
 
 } else {

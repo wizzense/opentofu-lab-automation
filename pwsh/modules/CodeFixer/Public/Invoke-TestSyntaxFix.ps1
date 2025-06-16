@@ -29,22 +29,22 @@ Invoke-TestSyntaxFix -Path "tests/"
 Invoke-TestSyntaxFix -Path "tests/0000_Cleanup-Files.Tests.ps1" -WhatIf
 #>
 function Invoke-TestSyntaxFix {
- [CmdletBinding(SupportsShouldProcess)]
+ CmdletBinding(SupportsShouldProcess)
  param(
- [Parameter(Mandatory=$true, Position=0)
+ Parameter(Mandatory=$true, Position=0)
 
 
 
 
 
 
-]
- [string]$Path,
+
+ string$Path,
  
- [Parameter(Mandatory=$false)]
- [string]$Filter = "*.Tests.ps1",
+ Parameter(Mandatory=$false)
+ string$Filter = "*.Tests.ps1",
  
- [switch]$PassThru
+ switch$PassThru
  )
  
  $ErrorActionPreference = "Stop"
@@ -77,7 +77,7 @@ function Invoke-TestSyntaxFix {
  $modified = $false
  
  # Fix 1: Fix broken ternary-style "if" expressions
- $pattern1 = '\(if \(\$([^)]+)\) \{ ([^}]+) \} else \{ ([^}]+) \}\)'
+ $pattern1 = '\(if \(\$(^)+)\) \{ (^}+) \} else \{ (^}+) \}\)'
  $replacement1 = '$$(if (1) { $2 } else { $3 })'
  if ($content -match $pattern1) {
  Write-Verbose " Fixing ternary-style if expressions"
@@ -86,7 +86,7 @@ function Invoke-TestSyntaxFix {
  }
  
  # Fix 2: Fix -Skip parameter without parentheses
- $pattern2 = '-Skip:\$([a-zA-Z0-9_]+)(?!\))'
+ $pattern2 = '-Skip:\$(a-zA-Z0-9_+)(?!\))'
  $replacement2 = '-Skip:($$$1)'
  if ($content -match $pattern2) {
  Write-Verbose " Fixing -Skip parameter without parentheses"
@@ -104,7 +104,7 @@ function Invoke-TestSyntaxFix {
  }
  
  # Fix 4: Fix missing closing quotes on It statements
- $pattern4 = "It 'should ([^']+)' -Skip:([^{]+) \{"
+ $pattern4 = "It 'should (^'+)' -Skip:(^{+) \{"
  $replacement4 = "It 'should $1' -Skip:$2 {"
  if ($content -match $pattern4) {
  Write-Verbose " Fixing missing closing quotes on It statements"
@@ -116,7 +116,7 @@ function Invoke-TestSyntaxFix {
  if ($modified) {
  if ($PSCmdlet.ShouldProcess($file.FullName, "Apply syntax fixes")) {
  Set-Content -Path $file.FullName -Value $content -NoNewline
- Write-Verbose " [PASS] Fixed: $($file.Name)"
+ Write-Verbose " PASS Fixed: $($file.Name)"
  $fixedFiles += $file.FullName
  } else {
  Write-Verbose " Would fix: $($file.Name) (WhatIf mode)"

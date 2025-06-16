@@ -1,65 +1,65 @@
 {
 	"version": "2.0.0",
-	"tasks": [
+	"tasks": 
 		{
 			"label": "Quick Health Check",
 			"type": "shell",
 			"command": "pwsh",
-			"args": [
+			"args": 
 				"-File",
 				"./scripts/maintenance/Invoke-UnifiedHealthCheck.ps1",
 				"-Mode",
 				"Quick"
-			],
+			,
 			"group": {
 				"kind": "test",
 				"isDefault": true
 			},
-			"problemMatcher": [],
+			"problemMatcher": ,
 			"isBackground": false
 		},
 		{
 			"label": "Full Health Analysis",
 			"type": "shell",
 			"command": "pwsh",
-			"args": [
+			"args": 
 				"-File",
 				"./scripts/maintenance/Invoke-UnifiedHealthCheck.ps1",
 				"-Mode",
 				"All",
 				"-AutoFix"
-			],
+			,
 			"group": "test",
-			"problemMatcher": [],
+			"problemMatcher": ,
 			"isBackground": false
 		},
 		{
 			"label": "Run Infrastructure Health",
 			"type": "shell",
 			"command": "pwsh",
-			"args": [
+			"args": 
 				"-File",
 				"./scripts/maintenance/Invoke-UnifiedHealthCheck.ps1",
 				"-Mode",
 				"Infrastructure"
-			],
+			,
 			"group": "test",
-			"problemMatcher": [],
+			"problemMatcher": ,
 			"isBackground": false
 		},
 		{
 			"label": "Run Workflow Health",
 			"type": "shell",
 			"command": "pwsh",
-			"args": [
+			"args": 
 				"-File",
 				"./scripts/maintenance/Invoke-UnifiedHealthCheck.ps1",
 				"-Mode",
 				"Workflow"
-			],
+			,
 			"group": "test",
-			"problemMatcher": [],
+			"problemMatcher": ,
 			"isBackground": false
 		}
-	]
+	
 }

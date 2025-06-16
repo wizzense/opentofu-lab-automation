@@ -21,10 +21,10 @@
     ./scripts/maintenance/cleanup-duplicate-directories.ps1 -ArchiveObsolete
 #>
 
-[CmdletBinding()]
+CmdletBinding()
 param(
-    [switch]$DryRun,
-    [switch]$ArchiveObsolete
+    switch$DryRun,
+    switch$ArchiveObsolete
 )
 
 
@@ -42,7 +42,7 @@ $reportFile = "$reportPath/$timestamp-duplicate-cleanup.md"
 
 # Ensure report directory exists
 if (-not (Test-Path $reportPath)) {
-    New-Item -Path $reportPath -ItemType Directory -Force | Out-Null
+    New-Item -Path $reportPath -ItemType Directory -Force  Out-Null
 }
 
 function Write-Log {
@@ -54,7 +54,7 @@ function Write-Log {
 
 
 
-$logMessage = "[$Level] $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss'): $Message"
+$logMessage = "$Level $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss'): $Message"
     Write-Host $logMessage
     Add-Content -Path $reportFile -Value $logMessage
 }
@@ -88,16 +88,16 @@ if (-not (Test-Path $Dir1) -or -not (Test-Path $Dir2)) {
         return $false
     }
     
-    $files1 = Get-ChildItem -Path $Dir1 -Recurse -File | Sort-Object Name
-    $files2 = Get-ChildItem -Path $Dir2 -Recurse -File | Sort-Object Name
+    $files1 = Get-ChildItem -Path $Dir1 -Recurse -File  Sort-Object Name
+    $files2 = Get-ChildItem -Path $Dir2 -Recurse -File  Sort-Object Name
     
     if ($files1.Count -ne $files2.Count) {
         return $false
     }
     
     for ($i = 0; $i -lt $files1.Count; $i++) {
-        $content1 = Get-Content -Path $files1[$i].FullName -Raw -ErrorAction SilentlyContinue
-        $content2 = Get-Content -Path $files2[$i].FullName -Raw -ErrorAction SilentlyContinue
+        $content1 = Get-Content -Path $files1$i.FullName -Raw -ErrorAction SilentlyContinue
+        $content2 = Get-Content -Path $files2$i.FullName -Raw -ErrorAction SilentlyContinue
         
         if ($content1 -ne $content2) {
             return $false
@@ -141,7 +141,7 @@ function Cleanup-DuplicateModules {
                 
                 if (-not $DryRun) {
                     if (-not (Test-Path (Split-Path $archivePath))) {
-                        New-Item -Path (Split-Path $archivePath) -ItemType Directory -Force | Out-Null
+                        New-Item -Path (Split-Path $archivePath) -ItemType Directory -Force  Out-Null
                     }
                     Move-Item -Path $legacyModules -Destination $archivePath -Force
                 }
@@ -155,8 +155,8 @@ function Cleanup-DuplicateModules {
             Write-Log "WARNING: LabRunner directories differ - manual review needed!" -Level "WARNING"
             
             # Show differences
-            $modernFiles = Get-ChildItem -Path $modernLabRunner -File | Sort-Object Name
-            $legacyFiles = Get-ChildItem -Path $legacyLabRunner -File | Sort-Object Name
+            $modernFiles = Get-ChildItem -Path $modernLabRunner -File  Sort-Object Name
+            $legacyFiles = Get-ChildItem -Path $legacyLabRunner -File  Sort-Object Name
             
             Write-Log "Modern LabRunner files: $($modernFiles.Count)"
             Write-Log "Legacy LabRunner files: $($legacyFiles.Count)"
@@ -182,7 +182,7 @@ function Cleanup-FixesDirectory {
     $readmePath = "$fixesDir/pester-param-errors/README.md"
     if (Test-Path $readmePath) {
         $readmeContent = Get-Content $readmePath -Raw
-        if ($readmeContent -match "historical|development|obsolete" -or 
+        if ($readmeContent -match "historicaldevelopmentobsolete" -or 
             $readmeContent -match "working scripts.*final solutions") {
             
             Write-Log "Fixes directory contains historical/development scripts"
@@ -193,7 +193,7 @@ function Cleanup-FixesDirectory {
                 
                 if (-not $DryRun) {
                     if (-not (Test-Path (Split-Path $archivePath))) {
-                        New-Item -Path (Split-Path $archivePath) -ItemType Directory -Force | Out-Null
+                        New-Item -Path (Split-Path $archivePath) -ItemType Directory -Force  Out-Null
                     }
                     Move-Item -Path $fixesDir -Destination $archivePath -Force
                 }
@@ -209,7 +209,7 @@ function Check-OtherDuplicates {
     
     # Check for case-sensitive duplicates
     $projectRoot = "/workspaces/opentofu-lab-automation"
-    $directories = Get-ChildItem -Path $projectRoot -Directory | Group-Object { $_.Name.ToLower() }
+    $directories = Get-ChildItem -Path $projectRoot -Directory  Group-Object { $_.Name.ToLower() }
     
     foreach ($group in $directories) {
         if ($group.Count -gt 1) {
@@ -234,7 +234,7 @@ function Update-GitIgnore {
         $needsUpdate = $false
         
         foreach ($entry in $cleanupEntries) {
-            if ($entry -and $content -notmatch [regex]::Escape($entry)) {
+            if ($entry -and $content -notmatch regex::Escape($entry)) {
                 $needsUpdate = $true
                 break
             }

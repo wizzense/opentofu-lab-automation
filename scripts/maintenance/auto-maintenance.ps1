@@ -34,24 +34,24 @@ Enable verbose output for debugging
 ./scripts/maintenance/auto-maintenance.ps1 -Task "full" -GenerateReport
 #>
 
-[CmdletBinding()]
+CmdletBinding()
 param(
-    [Parameter(Mandatory = $true)
+    Parameter(Mandatory = $true)
 
 
 
 
 
 
-]
-    [ValidateSet('validate', 'fix-imports', 'check-health', 'cleanup', 'full')]
-    [string]$Task,
+
+    ValidateSet('validate', 'fix-imports', 'check-health', 'cleanup', 'full')
+    string$Task,
     
-    [Parameter()]
-    [bool]$GenerateReport = $false,
+    Parameter()
+    bool$GenerateReport = $false,
     
-    [Parameter()]
-    [switch]$Verbose
+    Parameter()
+    switch$Verbose
 )
 
 $ErrorActionPreference = "Stop"
@@ -63,7 +63,7 @@ if ($Verbose) {
 }
 
 function Write-MaintenanceLog {
-    param([string]$Message, [string]$Level = "INFO")
+    param(string$Message, string$Level = "INFO")
     
 
 
@@ -79,11 +79,11 @@ $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
         "ERROR" { "Red" }
         default { "White" }
     }
-    Write-Host "[$timestamp] [$Level] $Message" -ForegroundColor $color
+    Write-Host "$timestamp $Level $Message" -ForegroundColor $color
 }
 
 function Test-ModuleAvailable {
-    param([string]$ModulePath)
+    param(string$ModulePath)
     
 
 
@@ -178,7 +178,7 @@ function Invoke-HealthCheckTask {
         
         # Check for deprecated paths
         Write-MaintenanceLog "Checking for deprecated paths..." "INFO"
-        $deprecatedPaths = Get-ChildItem -Path $ProjectRoot -Recurse -Include "*.ps1", "*.psm1" | 
+        $deprecatedPaths = Get-ChildItem -Path $ProjectRoot -Recurse -Include "*.ps1", "*.psm1"  
             Select-String -Pattern "pwsh/modules" -SimpleMatch
         
         if ($deprecatedPaths) {
@@ -268,12 +268,12 @@ switch ($Task) {
         $results.Validation = Invoke-ValidationTask
         $results.HealthCheck = (Invoke-HealthCheckTask) -ne $null
         
-        $success = $results.Values | ForEach-Object { $_ } | Measure-Object -Sum | Select-Object -ExpandProperty Sum
+        $success = $results.Values  ForEach-Object { $_ }  Measure-Object -Sum  Select-Object -ExpandProperty Sum
         $success = $success -eq $results.Count
         
         Write-MaintenanceLog "Full maintenance results:" "INFO"
         foreach ($task in $results.Keys) {
-            $status = if ($results[$task]) { "SUCCESS"    } else { "FAILED"    }
+            $status = if ($results$task) { "SUCCESS"    } else { "FAILED"    }
             Write-MaintenanceLog "  $task`: $status" "INFO"
         }
     }

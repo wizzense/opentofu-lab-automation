@@ -25,27 +25,27 @@ function Invoke-SyntaxFix {
     .EXAMPLE
     Invoke-SyntaxFix -Path "tests" -FixTypes "Ternary","TestSyntax" -Recurse
     #>
-    [CmdletBinding(SupportsShouldProcess=$true)]
+    CmdletBinding(SupportsShouldProcess=$true)
     param(
-        [Parameter(Mandatory=$true, Position=0)
+        Parameter(Mandatory=$true, Position=0)
 
 
 
 
 
 
-]
-        [string]$Path,
+
+        string$Path,
         
-        [Parameter()]
-        [ValidateSet("Ternary", "Parameter", "TestSyntax", "Bootstrap", "RunnerScript", "All")]
-        [string[]]$FixTypes = @("All"),
+        Parameter()
+        ValidateSet("Ternary", "Parameter", "TestSyntax", "Bootstrap", "RunnerScript", "All")
+        string$FixTypes = @("All"),
         
-        [Parameter()]
-        [switch]$Recurse,
+        Parameter()
+        switch$Recurse,
         
-        [Parameter()]
-        [switch]$PassThru
+        Parameter()
+        switch$PassThru
     )
     
     $isAllFixes = $FixTypes -contains "All"
@@ -146,17 +146,17 @@ function Fix-TernarySyntax {
     .SYNOPSIS
     Fixes ternary operator and conditional syntax issues in PowerShell scripts
     #>
-    [CmdletBinding(SupportsShouldProcess=$true)]
+    CmdletBinding(SupportsShouldProcess=$true)
     param(
-        [Parameter(Mandatory=$true)
+        Parameter(Mandatory=$true)
 
 
 
 
 
 
-]
-        [string]$Path
+
+        string$Path
     )
     
     if (-not (Test-Path $Path)) {
@@ -168,22 +168,22 @@ function Fix-TernarySyntax {
     $originalContent = $content
     
     # Fix 1: Convert broken "if" ternary patterns
-    $pattern1 = '\(if \(\$([^)]+)\) \{ ([^}]+) \} else \{ ([^}]+) \}\)'
+    $pattern1 = '\(if \(\$(^)+)\) \{ (^}+) \} else \{ (^}+) \}\)'
     $replacement1 = '$$(if (1) { $2 } else { $3 })'
     $content = $content -replace $pattern1, $replacement1
     
     # Fix 2: Handle incorrect ternary operator patterns
-    $pattern2 = '\(\$([^?]+)\s*\?\s*([^:]+)\s*:\s*([^)]+)\)'
+    $pattern2 = '\(\$(^?+)\s*\?\s*(^:+)\s*:\s*(^)+)\)'
     $replacement2 = '$$(if (1) { $2 } else { $3 })'
     $content = $content -replace $pattern2, $replacement2
     
     # Fix 3: Properly form if statements
-    $pattern3 = 'if\s+([^\(\s][^{]*)\s*\{'
+    $pattern3 = 'if\s+(^\(\s^{*)\s*\{'
     $replacement3 = 'if ($1) {'
     $content = $content -replace $pattern3, $replacement3
     
     # Fix 4: Properly form if..else blocks
-    $pattern4 = '\}\s*else\s*if\s+([^\(].*?)\s*\{'
+    $pattern4 = '\}\s*else\s*if\s+(^\(.*?)\s*\{'
     $replacement4 = '} elseif ($1) {'
     $content = $content -replace $pattern4, $replacement4
     
@@ -204,17 +204,17 @@ function Fix-TestSyntax {
     .SYNOPSIS
     Fixes common syntax issues in Pester test files
     #>
-    [CmdletBinding(SupportsShouldProcess=$true)]
+    CmdletBinding(SupportsShouldProcess=$true)
     param(
-        [Parameter(Mandatory=$true)
+        Parameter(Mandatory=$true)
 
 
 
 
 
 
-]
-        [string]$Path
+
+        string$Path
     )
     
     if (-not (Test-Path $Path)) {
@@ -226,12 +226,12 @@ function Fix-TestSyntax {
     $originalContent = $content
     
     # Fix 1: Fix broken ternary-style "if" expressions
-    $pattern1 = '\(if \(\$([^)]+)\) \{ ([^}]+) \} else \{ ([^}]+) \}\)'
+    $pattern1 = '\(if \(\$(^)+)\) \{ (^}+) \} else \{ (^}+) \}\)'
     $replacement1 = '$$(if (1) { $2 } else { $3 })'
     $content = $content -replace $pattern1, $replacement1
     
     # Fix 2: Fix -Skip parameter without parentheses
-    $pattern2 = '-Skip:\$([a-zA-Z0-9_]+)(?!\))'
+    $pattern2 = '-Skip:\$(a-zA-Z0-9_+)(?!\))'
     $replacement2 = '-Skip:($$$1)'
     $content = $content -replace $pattern2, $replacement2
     
@@ -242,8 +242,8 @@ function Fix-TestSyntax {
     
     # Fix 4: Fix missing closing braces in It blocks
     # Simplified pattern to avoid quote escaping issues
-    $pattern4 = '([ \t]+)It (.+)\{(?!\s*\n\s+)'
-    $replacement4 = '$1It $2{' + [Environment]::NewLine + '$1    '
+    $pattern4 = '( \t+)It (.+)\{(?!\s*\n\s+)'
+    $replacement4 = '$1It $2{' + Environment::NewLine + '$1    '
     $content = $content -replace $pattern4, $replacement4
     
     # Apply changes if needed
@@ -263,17 +263,17 @@ function Fix-ParamSyntax {
     .SYNOPSIS
     Fixes parameter declaration and usage issues in PowerShell scripts
     #>
-    [CmdletBinding(SupportsShouldProcess=$true)]
+    CmdletBinding(SupportsShouldProcess=$true)
     param(
-        [Parameter(Mandatory=$true)
+        Parameter(Mandatory=$true)
 
 
 
 
 
 
-]
-        [string]$Path
+
+        string$Path
     )
     
     if (-not (Test-Path $Path)) {
@@ -285,17 +285,17 @@ function Fix-ParamSyntax {
     $originalContent = $content
     
     # Fix 1: Fix Parameter attribute syntax
-    $pattern1 = '\[Parameter\((Mandatory)=\$true\)\]'
-    $replacement1 = '[Parameter($1=$true)]'
+    $pattern1 = '\Parameter\((Mandatory)=\$true\)\'
+    $replacement1 = 'Parameter($1=$true)'
     $content = $content -replace $pattern1, $replacement1
     
-    $pattern2 = '\[Parameter\((Mandatory)=\$false\)\]'
-    $replacement2 = '[Parameter($1=$false)]'
+    $pattern2 = '\Parameter\((Mandatory)=\$false\)\'
+    $replacement2 = 'Parameter($1=$false)'
     $content = $content -replace $pattern2, $replacement2
     
     # Fix 2: Ensure proper spacing in parameter declarations
-    $pattern3 = 'param\s*\(\s*\[Parameter\('
-    $replacement3 = 'param([Parameter('
+    $pattern3 = 'param\s*\(\s*\Parameter\('
+    $replacement3 = 'param(Parameter('
     $content = $content -replace $pattern3, $replacement3
     
     # Fix 3: Fix incorrect Import-Module / Param order
@@ -307,8 +307,8 @@ function Fix-ParamSyntax {
 
 
 {
-        $importLine = [regex]::Match($content, '^Import-Module.*LabRunner.*-Force.*?\r?\n').Value
-        $paramBlock = [regex]::Match($content, '^Param\(.*?\).*?\r?\n', [System.Text.RegularExpressions.RegexOptions]::Singleline).Value
+        $importLine = regex::Match($content, '^Import-Module.*LabRunner.*-Force.*?\r?\n').Value
+        $paramBlock = regex::Match($content, '^Param\(.*?\).*?\r?\n', System.Text.RegularExpressions.RegexOptions::Singleline).Value
         
         # Generate replacement with Param before Import
         $replacement = $paramBlock + $importLine
@@ -334,17 +334,17 @@ function Test-SyntaxValidity {
     .SYNOPSIS
     Tests if a PowerShell script has valid syntax
     #>
-    [CmdletBinding()]
+    CmdletBinding()
     param(
-        [Parameter(Mandatory=$true)
+        Parameter(Mandatory=$true)
 
 
 
 
 
 
-]
-        [string]$Path
+
+        string$Path
     )
     
     if (-not (Test-Path $Path)) {
@@ -354,7 +354,7 @@ function Test-SyntaxValidity {
     
     try {
         $errors = $null
-        $ast = [System.Management.Automation.Language.Parser]::ParseFile($Path, [ref]$null, [ref]$errors)
+        $ast = System.Management.Automation.Language.Parser::ParseFile($Path, ref$null, ref$errors)
         
         if ($errors -and $errors.Count -gt 0) {
             return $false
@@ -373,17 +373,17 @@ function Fix-BootstrapScript {
     .SYNOPSIS
     Fixes specific issues in the bootstrap script
     #>
-    [CmdletBinding(SupportsShouldProcess=$true)]
+    CmdletBinding(SupportsShouldProcess=$true)
     param(
-        [Parameter(Mandatory=$true)
+        Parameter(Mandatory=$true)
 
 
 
 
 
 
-]
-        [string]$Path
+
+        string$Path
     )
     
     # Implementation of bootstrap script fixes
@@ -404,14 +404,14 @@ $prompt = "`n<press any key to continue>`n"
 
 
 function Write-Continue($prompt) {
-  [Console]::Write($prompt + '  ')
-  Read-LoggedInput -Prompt $prompt | Out-Null
+  Console::Write($prompt + '  ')
+  Read-LoggedInput -Prompt $prompt  Out-Null
 }
 '@
 
     $newPromptSection = @'
 function Write-Continue {
-    param([string]$Message = "Press any key to continue...")
+    param(string$Message = "Press any key to continue...")
     
 
 
@@ -424,7 +424,7 @@ Write-Host $Message -ForegroundColor Yellow -NoNewline
 }
 '@
 
-    $content = $content -replace [regex]::Escape($oldPromptSection), $newPromptSection
+    $content = $content -replace regex::Escape($oldPromptSection), $newPromptSection
     
     # Fix 2: Fix variable escaping in string expressions
     $content = $content -replace '\$repoPath:', '${repoPath}:'
@@ -436,7 +436,7 @@ $errorMsg = "Failed to locate the runner script at $runnerScriptPath"
 Write-Error $errorMsg
 throw $errorMsg
 '@
-    $content = $content -replace [regex]::Escape($oldErrorSection), $newErrorSection
+    $content = $content -replace regex::Escape($oldErrorSection), $newErrorSection
     
     # Apply changes if needed
     if ($content -ne $originalContent) {
@@ -455,17 +455,17 @@ function Fix-RunnerScriptIssues {
     .SYNOPSIS
     Fixes common issues in runner scripts
     #>
-    [CmdletBinding(SupportsShouldProcess=$true)]
+    CmdletBinding(SupportsShouldProcess=$true)
     param(
-        [Parameter(Mandatory=$true)
+        Parameter(Mandatory=$true)
 
 
 
 
 
 
-]
-        [string]$Path
+
+        string$Path
     )
     
     if (-not (Test-Path $Path)) {
@@ -483,11 +483,11 @@ function Fix-RunnerScriptIssues {
         # Fix import-module/param order
         if ($content -match "^Import-Module.*LabRunner.*-Force" -and 
             $content -match "^Param\(" -and 
-            [regex]::Matches($content, "^Import-Module").Count -eq 1 -and 
-            [regex]::Match($content, "^Import-Module.*\r?\n.*^Param\(").Success) {
+            regex::Matches($content, "^Import-Module").Count -eq 1 -and 
+            regex::Match($content, "^Import-Module.*\r?\n.*^Param\(").Success) {
             
-            $importLine = [regex]::Match($content, "^Import-Module.*LabRunner.*-Force.*?\r?\n").Value
-            $paramBlock = [regex]::Match($content, "^Param\(.*?\).*?\r?\n", [System.Text.RegularExpressions.RegexOptions]::Singleline).Value
+            $importLine = regex::Match($content, "^Import-Module.*LabRunner.*-Force.*?\r?\n").Value
+            $paramBlock = regex::Match($content, "^Param\(.*?\).*?\r?\n", System.Text.RegularExpressions.RegexOptions::Singleline).Value
             
             # Generate replacement with Param before Import
             $replacement = $paramBlock + $importLine

@@ -24,11 +24,11 @@ Run comprehensive validation in CI mode
 Run quick validation checks only
 #>
 
-[CmdletBinding()]
+CmdletBinding()
 param(
-    [switch]$CI,
-    [switch]$Quick,
-    [switch]$Detailed
+    switch$CI,
+    switch$Quick,
+    switch$Detailed
 )
 
 # Define the base path
@@ -58,10 +58,10 @@ $results = @{
 # Function to add check result
 function Add-CheckResult {
     param(
-        [string]$Name,
-        [string]$Status,
-        [string]$Message = "",
-        [string[]]$Details = @()
+        string$Name,
+        string$Status,
+        string$Message = "",
+        string$Details = @()
     )
     
     $check = @{
@@ -78,16 +78,16 @@ function Add-CheckResult {
     switch ($Status) {
         "Passed" { 
             $results.Summary.Passed++
-            Write-Host "  [PASS] $Name" -ForegroundColor Green
+            Write-Host "  PASS $Name" -ForegroundColor Green
         }        "Failed" { 
             $results.Summary.Failed++
             $results.Errors += "${Name}: ${Message}"
-            Write-Host "  [FAIL] $Name - $Message" -ForegroundColor Red
+            Write-Host "  FAIL $Name - $Message" -ForegroundColor Red
         }
         "Warning" { 
             $results.Summary.Warnings++
             $results.Warnings += "${Name}: ${Message}"
-            Write-Host "  [WARN]  $Name - $Message" -ForegroundColor Yellow
+            Write-Host "  WARN  $Name - $Message" -ForegroundColor Yellow
         }
     }
     
@@ -195,7 +195,7 @@ Write-Host " Checking Workflow Health..." -ForegroundColor Blue
 try {
     $workflowPath = Join-Path $basePath ".github/workflows"
     if (Test-Path $workflowPath) {
-        $workflowFiles = Get-ChildItem $workflowPath -Filter "*.yml" | Measure-Object
+        $workflowFiles = Get-ChildItem $workflowPath -Filter "*.yml"  Measure-Object
         $details = @("Found $($workflowFiles.Count) workflow files")
         
         # Quick YAML syntax check on a few key files
@@ -253,7 +253,7 @@ if (-not $Quick) {
         
         $testPath = Join-Path $basePath "tests"
         if (Test-Path $testPath) {
-            $testFiles = Get-ChildItem $testPath -Filter "*.Tests.ps1" -Recurse | Measure-Object
+            $testFiles = Get-ChildItem $testPath -Filter "*.Tests.ps1" -Recurse  Measure-Object
             $testChecks += "Found $($testFiles.Count) test files"
             
             $helperPath = Join-Path $testPath "helpers"
@@ -297,7 +297,7 @@ Write-Host "`nOverall Status: $($results.Status)" -ForegroundColor $(
 
 # CI mode output
 if ($CI) {
-    $results | ConvertTo-Json -Depth 10
+    $results  ConvertTo-Json -Depth 10
     
     # Exit with appropriate code for CI
     switch ($results.Status) {
@@ -307,15 +307,15 @@ if ($CI) {
         default { exit 1 }
     }
 } else {
-    Write-Host "`n[PASS] Final validation completed!" -ForegroundColor Green
+    Write-Host "`nPASS Final validation completed!" -ForegroundColor Green
     if ($results.Errors.Count -gt 0) {
-        Write-Host "`n[FAIL] Errors found:" -ForegroundColor Red
+        Write-Host "`nFAIL Errors found:" -ForegroundColor Red
         foreach ($error in $results.Errors) {
             Write-Host "  - $error" -ForegroundColor Red
         }
     }
     if ($results.Warnings.Count -gt 0) {
-        Write-Host "`n[WARN]  Warnings:" -ForegroundColor Yellow
+        Write-Host "`nWARN  Warnings:" -ForegroundColor Yellow
         foreach ($warning in $results.Warnings) {
             Write-Host "  - $warning" -ForegroundColor Yellow
         }

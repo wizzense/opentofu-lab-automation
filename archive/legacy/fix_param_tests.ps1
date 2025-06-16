@@ -88,40 +88,40 @@ Describe '$($scriptName -replace '\.ps1$', '') Tests' -Tag 'Maintenance' {
         Context 'Script Structure Validation' {
             It 'should have valid PowerShell syntax' {
                 `$errors = `$null
-                [System.Management.Automation.Language.Parser]::ParseFile(`$script:ScriptPath, [ref]`$null, [ref]`$errors) | Out-Null
-                (`$$(if (errors) { `$errors.Count } else { 0) | Should -Be 0 })
+                System.Management.Automation.Language.Parser::ParseFile(`$script:ScriptPath, ref`$null, ref`$errors)  Out-Null
+                (`$$(if (errors) { `$errors.Count } else { 0)  Should -Be 0 })
             }
             
             It 'should follow naming conventions' {
-                `$scriptName = [System.IO.Path]::GetFileName(`$script:ScriptPath)
-                `$scriptName | Should -Match '^[0-9]{4}_[A-Z][a-zA-Z0-9-]+\.ps1$|^[A-Z][a-zA-Z0-9-]+\.ps1$'
+                `$scriptName = System.IO.Path::GetFileName(`$script:ScriptPath)
+                `$scriptName  Should -Match '^0-9{4}_A-Za-zA-Z0-9-+\.ps1$^A-Za-zA-Z0-9-+\.ps1$'
             }
             
             It 'should have Config parameter' {
                 `$content = Get-Content `$script:ScriptPath -Raw
-                `$content | Should -Match 'Param\s*\(\s*.*\$Config'
+                `$content  Should -Match 'Param\s*\(\s*.*\$Config'
             }
             
             It 'should import LabRunner module' {
                 `$content = Get-Content `$script:ScriptPath -Raw
-                `$content | Should -Match 'Import-Module.*LabRunner'
+                `$content  Should -Match 'Import-Module.*LabRunner'
             }
             
             It 'should contain Invoke-LabStep call' {
                 `$content = Get-Content `$script:ScriptPath -Raw
-                `$content | Should -Match 'Invoke-LabStep'
+                `$content  Should -Match 'Invoke-LabStep'
             }
         }
         
         Context 'Basic Functionality' {
             It 'should execute without errors with valid config' {
-                `$config = [pscustomobject]@{}
-                { & `$script:ScriptPath -Config `$config } | Should -Not -Throw
+                `$config = pscustomobject@{}
+                { & `$script:ScriptPath -Config `$config }  Should -Not -Throw
             }
             
             It 'should handle whatif parameter' {
-                `$config = [pscustomobject]@{}
-                { & `$script:ScriptPath -Config `$config -WhatIf } | Should -Not -Throw
+                `$config = pscustomobject@{}
+                { & `$script:ScriptPath -Config `$config -WhatIf }  Should -Not -Throw
             }
         }
         
@@ -133,7 +133,7 @@ Describe '$($scriptName -replace '\.ps1$', '') Tests' -Tag 'Maintenance' {
 "@
     
     # Write the new content to the file
-    $newContent | Set-Content -Path $fullPath -Encoding UTF8
+    $newContent  Set-Content -Path $fullPath -Encoding UTF8
     Write-Host "  Updated: $testFile" -ForegroundColor Yellow
 }
 

@@ -10,11 +10,11 @@
     Output format for results (JSON, Text)
 #>
 
-[CmdletBinding()]
+CmdletBinding()
 param(
-    [switch]$CI,
-    [ValidateSet('JSON', 'Text')]
-    [string]$OutputFormat = 'Text'
+    switch$CI,
+    ValidateSet('JSON', 'Text')
+    string$OutputFormat = 'Text'
 )
 
 # Use the existing final validation script as the core health check
@@ -41,7 +41,7 @@ try {
     }
     
     if ($OutputFormat -eq 'JSON') {
-        $healthReport | ConvertTo-Json -Depth 3
+        $healthReport  ConvertTo-Json -Depth 3
     } else {
         Write-Host "Health Status: $($healthReport.status)" -ForegroundColor $(if ($healthStatus) { 'Green' } else { 'Red' })
         Write-Host "Validation: $($healthReport.checks.validation)" 

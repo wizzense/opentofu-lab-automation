@@ -20,14 +20,14 @@ Automatically apply fixes where possible
 ./scripts/maintenance/infrastructure-health-check.ps1 -Mode "Full" -AutoFix
 #>
 
-[CmdletBinding()]
+CmdletBinding()
 param(
-    [Parameter()]
-    [ValidateSet('Quick', 'Full', 'Report', 'All')]
-    [string]$Mode = 'Full',
+    Parameter()
+    ValidateSet('Quick', 'Full', 'Report', 'All')
+    string$Mode = 'Full',
     
-    [Parameter()]
-    [switch]$AutoFix
+    Parameter()
+    switch$AutoFix
 )
 
 $ErrorActionPreference = "Stop"
@@ -40,7 +40,7 @@ if ($IsWindows -or $env:OS -eq "Windows_NT") {
 }
 
 function Write-HealthLog {
-    param([string]$Message, [string]$Level = "INFO")
+    param(string$Message, string$Level = "INFO")
     $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
     $color = switch ($Level) {
         "INFO" { "Cyan" }
@@ -51,7 +51,7 @@ function Write-HealthLog {
         "FIX" { "Blue" }
         default { "White" }
     }
-    Write-Host "[$timestamp] [$Level] $Message" -ForegroundColor $color
+    Write-Host "$timestamp $Level $Message" -ForegroundColor $color
 }
 
 function Test-ProjectStructure {
@@ -79,7 +79,7 @@ function Test-ProjectStructure {
         $dirPath = Join-Path $projectRoot $dirName
         if (Test-Path $dirPath) {
             Write-HealthLog " Directory exists: $dirName" "SUCCESS"
-            $structureCheck.Details[$dirName] = "EXISTS"
+            $structureCheck.Details$dirName = "EXISTS"
         } else {
             Write-HealthLog " Directory missing: $dirName" "ERROR"
             $structureCheck.Issues += "Missing directory: $dirName"
@@ -87,15 +87,15 @@ function Test-ProjectStructure {
 
             if ($AutoFix) {
                 try {
-                    New-Item -ItemType Directory -Path $dirPath -Force | Out-Null
+                    New-Item -ItemType Directory -Path $dirPath -Force  Out-Null
                     Write-HealthLog " Created missing directory: $dirName" "FIX"
-                    $structureCheck.Details[$dirName] = "CREATED"
+                    $structureCheck.Details$dirName = "CREATED"
                 } catch {
                     Write-HealthLog " Failed to create directory: $dirName - $_" "ERROR"
-                    $structureCheck.Details[$dirName] = "FAILED"
+                    $structureCheck.Details$dirName = "FAILED"
                 }
             } else {
-                $structureCheck.Details[$dirName] = "MISSING"
+                $structureCheck.Details$dirName = "MISSING"
             }
         }
     }
@@ -123,12 +123,12 @@ function Test-ModuleHealth {
         $modulePath = Join-Path $projectRoot $moduleDir
         if (Test-Path $modulePath) {
             Write-HealthLog " Module directory exists: $moduleDir" "SUCCESS"
-            $moduleCheck.Details[$moduleDir] = "EXISTS"
+            $moduleCheck.Details$moduleDir = "EXISTS"
         } else {
             Write-HealthLog " Module directory missing: $moduleDir" "ERROR"
             $moduleCheck.Issues += "Missing module directory: $moduleDir"
             $moduleCheck.Passed = $false
-            $moduleCheck.Details[$moduleDir] = "MISSING"
+            $moduleCheck.Details$moduleDir = "MISSING"
         }
     }
     
@@ -155,12 +155,12 @@ function Test-ConfigurationFiles {
         $filePath = Join-Path $projectRoot $file
         if (Test-Path $filePath) {
             Write-HealthLog " Configuration file exists: $file" "SUCCESS"
-            $configCheck.Details[$file] = "EXISTS"
+            $configCheck.Details$file = "EXISTS"
         } else {
             Write-HealthLog " Missing configuration file: $file" "ERROR"
             $configCheck.Issues += "Missing configuration file: $file"
             $configCheck.Passed = $false
-            $configCheck.Details[$file] = "MISSING"
+            $configCheck.Details$file = "MISSING"
         }
     }
     
@@ -236,7 +236,7 @@ function Test-PowerShellSyntax {
     
     foreach ($script in $scriptPaths) {
         try {
-            $null = [System.Management.Automation.PSParser]::Tokenize((Get-Content $script.FullName -Raw), [ref]$null)
+            $null = System.Management.Automation.PSParser::Tokenize((Get-Content $script.FullName -Raw), ref$null)
             $syntaxCheck.Details.ValidScripts++
         } catch {
             $syntaxCheck.Details.ErrorScripts++
@@ -294,9 +294,9 @@ switch ($Mode) {
 }
 
 # Calculate summary
-$passedChecks = ($healthResults.Checks.Values | Where-Object { $_.Passed }).Count
-$failedChecks = ($healthResults.Checks.Values | Where-Object { -not $_.Passed }).Count
-$totalIssues = ($healthResults.Checks.Values | ForEach-Object { $_.Issues.Count } | Measure-Object -Sum).Sum
+$passedChecks = ($healthResults.Checks.Values  Where-Object { $_.Passed }).Count
+$failedChecks = ($healthResults.Checks.Values  Where-Object { -not $_.Passed }).Count
+$totalIssues = ($healthResults.Checks.Values  ForEach-Object { $_.Issues.Count }  Measure-Object -Sum).Sum
 
 $healthResults.Summary = @{
     TotalChecks = $healthResults.Checks.Keys.Count
@@ -314,7 +314,7 @@ Write-HealthLog "Total issues: $($healthResults.Summary.TotalIssues)" "WARNING"
 
 # Show detailed results
 foreach ($checkName in $healthResults.Checks.Keys) {
-    $check = $healthResults.Checks[$checkName]
+    $check = $healthResults.Checks$checkName
     if ($check.Issues.Count -gt 0) {
         Write-HealthLog "Issues in ${checkName}:" "WARNING"
         foreach ($issue in $check.Issues) {

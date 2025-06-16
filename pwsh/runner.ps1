@@ -1,23 +1,23 @@
-[CmdletBinding(SupportsShouldProcess, DefaultParameterSetName='Verbose')]
+CmdletBinding(SupportsShouldProcess, DefaultParameterSetName='Verbose')
 param(
-    [Parameter(ParameterSetName='Quiet')
+    Parameter(ParameterSetName='Quiet')
 
 
 
 
 
 
-]
-    [switch]$Quiet,
 
-    [Parameter(ParameterSetName='Verbose')]
-    [ValidateSet('silent','normal','detailed')]
-    [string]$Verbosity = 'normal',
-    [string]$ConfigFile,
-    #[string]$ConfigFile = (Join-Path $PSScriptRoot 'config_files' 'default-config.json'),
-    [switch]$Auto,
-    [string]$Scripts,
-    [switch]$Force
+    switch$Quiet,
+
+    Parameter(ParameterSetName='Verbose')
+    ValidateSet('silent','normal','detailed')
+    string$Verbosity = 'normal',
+    string$ConfigFile,
+    #string$ConfigFile = (Join-Path $PSScriptRoot 'config_files' 'default-config.json'),
+    switch$Auto,
+    string$Scripts,
+    switch$Force
 )
 
 # repo root is this script's directory
@@ -25,13 +25,13 @@ $repoRoot   = $PSScriptRoot
 $indexPath  = Join-Path $repoRoot 'path-index.yaml'
 $script:PathIndex = @{}
 if (Test-Path $indexPath) {
-    try { $script:PathIndex = Get-Content -Raw -Path $indexPath | ConvertFrom-Yaml } catch { $script:PathIndex = @{} }
+    try { $script:PathIndex = Get-Content -Raw -Path $indexPath  ConvertFrom-Yaml } catch { $script:PathIndex = @{} }
 }
 
 . (Join-Path $repoRoot (Join-Path 'lab_utils' 'PathUtils.ps1'))
 
 function Resolve-IndexPath {
-    param([string]$Key)
+    param(string$Key)
     
 
 
@@ -40,7 +40,7 @@ function Resolve-IndexPath {
 
 
 if ($script:PathIndex.ContainsKey($Key)) {
-        $relative = Normalize-RelativePath $script:PathIndex[$Key]
+        $relative = Normalize-RelativePath $script:PathIndex$Key
         return Join-Path $repoRoot $relative
     }
     return $null
@@ -72,7 +72,7 @@ if (-not (Test-Path $pwshPath)) {
 if ($PSVersionTable.PSVersion.Major -lt 7) {
     $argList = @()
     foreach ($kvp in $PSBoundParameters.GetEnumerator()) {
-        if ($kvp.Value -is [System.Management.Automation.SwitchParameter]) {
+        if ($kvp.Value -is System.Management.Automation.SwitchParameter) {
             if ($kvp.Value.IsPresent) { $argList += "-$($kvp.Key)" }
         } else {
             $argList += "-$($kvp.Key)"
@@ -87,7 +87,7 @@ if ($PSVersionTable.PSVersion.Major -lt 7) {
 if ($Quiet) { $Verbosity = 'silent' }
 
 $script:VerbosityLevels = @{ silent = 0; normal = 1; detailed = 2 }
-$script:ConsoleLevel    = $script:VerbosityLevels[$Verbosity]
+$script:ConsoleLevel    = $script:VerbosityLevels$Verbosity
 
 
 # ─── Load helpers ──────────────────────────────────────────────────────────────
@@ -103,7 +103,7 @@ if (-not $configFilesDir) {
 if (-not (Get-Command Write-CustomLog -ErrorAction SilentlyContinue)) {
     . (Join-Path $labUtilsDir (Join-Path 'LabRunner' 'Logger.ps1'))
 }
-$env:LAB_CONSOLE_LEVEL = $script:VerbosityLevels[$Verbosity]
+$env:LAB_CONSOLE_LEVEL = $script:VerbosityLevels$Verbosity
 . (Join-Path $PSScriptRoot (Join-Path 'lab_utils' 'Get-LabConfig.ps1'))
 . (Join-Path $PSScriptRoot (Join-Path 'lab_utils' 'Format-Config.ps1'))
 . (Join-Path $PSScriptRoot (Join-Path 'lab_utils' 'Get-Platform.ps1'))
@@ -125,9 +125,9 @@ if (-not (Get-Variable -Name LogFilePath -Scope Script -ErrorAction SilentlyCont
 
     $logDir = $env:LAB_LOG_DIR
     if (-not $logDir) {
-        if ($IsWindows) { $logDir = 'C:\temp' } else { $logDir = [System.IO.Path]::GetTempPath() }
+        if ($IsWindows) { $logDir = 'C:\temp' } else { $logDir = System.IO.Path::GetTempPath() }
     }
-    if (-not (Test-Path $logDir)) { New-Item -ItemType Directory -Path $logDir -Force | Out-Null }
+    if (-not (Test-Path $logDir)) { New-Item -ItemType Directory -Path $logDir -Force  Out-Null }
     $script:LogFilePath = Join-Path $logDir 'lab.log'
 }
 
@@ -142,17 +142,17 @@ function ConvertTo-Hashtable {
 
 
 switch ($obj) {
-        { $_ -is [System.Collections.IDictionary] } {
+        { $_ -is System.Collections.IDictionary } {
             $ht = @{}
-            foreach ($k in $_.Keys) { $ht[$k] = ConvertTo-Hashtable $_[$k] }
+            foreach ($k in $_.Keys) { $ht$k = ConvertTo-Hashtable $_$k }
             return $ht
         }
-        { $_ -is [System.Collections.IEnumerable] -and -not ($_ -is [string]) } {
-            return $_ | ForEach-Object { ConvertTo-Hashtable $_ }
+        { $_ -is System.Collections.IEnumerable -and -not ($_ -is string) } {
+            return $_  ForEach-Object { ConvertTo-Hashtable $_ }
         }
-        { $_ -is [PSCustomObject] } {
+        { $_ -is PSCustomObject } {
             $ht = @{}
-            foreach ($p in $_.PSObject.Properties) { $ht[$p.Name] = ConvertTo-Hashtable $p.Value }
+            foreach ($p in $_.PSObject.Properties) { $ht$p.Name = ConvertTo-Hashtable $p.Value }
             return $ht
         }
         default { return $_ }
@@ -160,7 +160,7 @@ switch ($obj) {
 }
 
 function Get-ScriptConfigFlag {
-    param([string]$Path)
+    param(string$Path)
     
 
 
@@ -169,13 +169,13 @@ function Get-ScriptConfigFlag {
 
 
 $content = Get-Content -Path $Path -Raw -ErrorAction SilentlyContinue
-    if ($content -match '\$Config\.([A-Za-z0-9_\.]+)\s*-eq\s*\$true') { return $matches[1] }
-    if ($content -match '\$config\.([A-Za-z0-9_\.]+)\s*-eq\s*\$true') { return $matches[1] }
+    if ($content -match '\$Config\.(A-Za-z0-9_\.+)\s*-eq\s*\$true') { return $matches1 }
+    if ($content -match '\$config\.(A-Za-z0-9_\.+)\s*-eq\s*\$true') { return $matches1 }
     return $null
 }
 
 function Get-NestedConfigValue {
-    param([hashtable]$Config, [string]$Path)
+    param(hashtable$Config, string$Path)
     
 
 
@@ -187,13 +187,13 @@ $parts = $Path -split '\.'
     $cur   = $Config
     foreach ($p in $parts) {
         if (-not $cur.ContainsKey($p)) { return $null }
-        $cur = $cur[$p]
+        $cur = $cur$p
     }
     return $cur
 }
 
 function Set-NestedConfigValue {
-    param([hashtable]$Config, [string]$Path, [object]$Value)
+    param(hashtable$Config, string$Path, object$Value)
     
 
 
@@ -204,14 +204,14 @@ function Set-NestedConfigValue {
 $parts = $Path -split '\.'
     $cur   = $Config
     for ($i = 0; $i -lt $parts.Length - 1; $i++) {
-        if (-not $cur.ContainsKey($parts[$i])) { $cur[$parts[$i]] = @{} }
-        $cur = $cur[$parts[$i]]
+        if (-not $cur.ContainsKey($parts$i)) { $cur$parts$i = @{} }
+        $cur = $cur$parts$i
     }
-    $cur[$parts[-1]] = $Value
+    $cur$parts-1 = $Value
 }
 
 function Apply-RecommendedDefaults {
-    param([hashtable]$ConfigObject)
+    param(hashtable$ConfigObject)
 
     
 
@@ -223,7 +223,7 @@ function Apply-RecommendedDefaults {
 $recommendedPath = Join-Path $configFilesDir 'recommended-config.json'
     if (-not (Test-Path $recommendedPath)) { return $ConfigObject }
     try {
-        $recommended = Get-Content -Raw -Path $recommendedPath | ConvertFrom-Json
+        $recommended = Get-Content -Raw -Path $recommendedPath  ConvertFrom-Json
         foreach ($prop in $recommended.PSObject.Properties) {
             Set-NestedConfigValue -Config $ConfigObject -Path $prop.Name -Value $prop.Value
         }
@@ -234,8 +234,8 @@ $recommendedPath = Join-Path $configFilesDir 'recommended-config.json'
 }
 
 function Set-LabConfig {
-    [CmdletBinding(SupportsShouldProcess)]
-    param([hashtable]$ConfigObject)
+    CmdletBinding(SupportsShouldProcess)
+    param(hashtable$ConfigObject)
 
     
 
@@ -245,7 +245,7 @@ function Set-LabConfig {
 
 
 function Edit-PrimitiveValue {
-        param([string]$Path, [object]$Current)
+        param(string$Path, object$Current)
         
 
 
@@ -253,16 +253,16 @@ function Edit-PrimitiveValue {
 
 
 
-$prompt = "New value for '$Path' [$Current]"
+$prompt = "New value for '$Path' $Current"
         $ans = Read-LoggedInput $prompt
         if (-not $ans) { return $Current }
-        if ($Current -is [bool]) { return $ans -match '^(?i)y|true$' }
-        if ($Current -is [int])  { return [int]$ans }
+        if ($Current -is bool) { return $ans -match '^(?i)ytrue$' }
+        if ($Current -is int)  { return int$ans }
         return $ans
     }
 
     function Edit-Section {
-        param([hashtable]$Section, [string]$Prefix)
+        param(hashtable$Section, string$Prefix)
         
 
 
@@ -271,24 +271,24 @@ $prompt = "New value for '$Path' [$Current]"
 
 
 while ($true) {
-            $keys  = $Section.Keys | Sort-Object
+            $keys  = $Section.Keys  Sort-Object
             $items = $keys + 'Back'
             $sel   = Get-MenuSelection -Items $items -Title "Edit $Prefix"
             if (-not $sel -or $sel -eq 'Back') { break }
             foreach ($key in @($sel)) {
                 $path = if ($Prefix) { "$Prefix.$key"    } else { $key    }
-                $val  = $Section[$key]
-                if ($val -is [hashtable]) {
+                $val  = $Section$key
+                if ($val -is hashtable) {
                     Edit-Section -Section $val -Prefix $path
                 } else {
-                    $Section[$key] = Edit-PrimitiveValue -Path $path -Current $val
+                    $Section$key = Edit-PrimitiveValue -Path $path -Current $val
                 }
             }
         }
     }
 
     while ($true) {
-        $opts = $ConfigObject.Keys | Sort-Object
+        $opts = $ConfigObject.Keys  Sort-Object
         $menu = $opts + @('Apply recommended defaults','Done')
         $choice = Get-MenuSelection -Items $menu -Title 'Edit configuration'
         if (-not $choice) { break }
@@ -299,11 +299,11 @@ while ($true) {
                     $ConfigObject = Apply-RecommendedDefaults -ConfigObject $ConfigObject
                 }
                 default {
-                    $val = $ConfigObject[$sel]
-                    if ($val -is [hashtable]) {
+                    $val = $ConfigObject$sel
+                    if ($val -is hashtable) {
                         Edit-Section -Section $val -Prefix $sel
                     } else {
-                        $ConfigObject[$sel] = Edit-PrimitiveValue -Path $sel -Current $val
+                        $ConfigObject$sel = Edit-PrimitiveValue -Path $sel -Current $val
                     }
                 }
             }
@@ -330,7 +330,7 @@ if (-not $Auto) {
     if ((Read-LoggedInput "Customize configuration? (Y/N)") -match '^(?i)y') {
         $Config = Set-LabConfig -ConfigObject $Config
         if ($PSCmdlet.ShouldProcess($ConfigFile, 'Save updated configuration')) {
-            $Config | ConvertTo-Json -Depth 5 | Out-File $ConfigFile -Encoding utf8
+            $Config  ConvertTo-Json -Depth 5  Out-File $ConfigFile -Encoding utf8
             Write-CustomLog "Configuration updated and saved to $ConfigFile"
         }
     }
@@ -341,12 +341,12 @@ Write-CustomLog "==== Locating scripts ===="
 
 try {
 
-$ScriptFiles = Get-ChildItem (Join-Path $PSScriptRoot 'runner_scripts') -Filter "????_*.ps1" -File -Recurse | Sort-Object Name
+$ScriptFiles = Get-ChildItem (Join-Path $PSScriptRoot 'runner_scripts') -Filter "????_*.ps1" -File -Recurse  Sort-Object Name
 
 }
 catch {
 
-$ScriptFiles = Get-ChildItem $runnerScriptsDir -Filter "????_*.ps1" -File | Sort-Object Name
+$ScriptFiles = Get-ChildItem $runnerScriptsDir -Filter "????_*.ps1" -File  Sort-Object Name
 }
 
 if (-not $ScriptFiles) {
@@ -354,11 +354,11 @@ if (-not $ScriptFiles) {
     exit 1
 }
 Write-CustomLog "`n==== Found scripts ===="
-$ScriptFiles | ForEach-Object { Write-CustomLog "$($_.Name.Substring(0,4)) - $($_.Name)" }
+$ScriptFiles  ForEach-Object { Write-CustomLog "$($_.Name.Substring(0,4)) - $($_.Name)" }
 
 # ─── Execution helpers ───────────────────────────────────────────────────────
 function Invoke-Scripts {
-    param([array]$ScriptsToRun)
+    param(array$ScriptsToRun)
 
     
 
@@ -368,7 +368,7 @@ function Invoke-Scripts {
 
 
 if ($ScriptsToRun.Count -gt 1) {
-        $cleanup = $ScriptsToRun | Where-Object { $_.Name.Substring(0,4) -eq '0000' }
+        $cleanup = $ScriptsToRun  Where-Object { $_.Name.Substring(0,4) -eq '0000' }
         if ($cleanup) {
             Write-CustomLog "WARNING: Cleanup script 0000 will remove local files."
             if (-not $Auto) {
@@ -382,7 +382,7 @@ if ($ScriptsToRun.Count -gt 1) {
 
     if ($ScriptsToRun.Count -eq 0) { Write-CustomLog "No scripts selected."; return $true }
 
-    $names = $ScriptsToRun | ForEach-Object { $_.Name }
+    $names = $ScriptsToRun  ForEach-Object { $_.Name }
     Write-CustomLog "Selected script order: $($names -join ', ')"
     Write-CustomLog "`n==== Executing selected scripts ===="
     $failed = @()
@@ -399,29 +399,29 @@ if ($ScriptsToRun.Count -gt 1) {
                         # Validate script syntax before execution
             try {
                 $scriptContent = Get-Content $scriptPath -Raw
-                $null = [System.Management.Automation.PSParser]::Tokenize($scriptContent, [ref]$null)
+                $null = System.Management.Automation.PSParser::Tokenize($scriptContent, ref$null)
                 Write-CustomLog "Script syntax validation passed for $($s.Name)"
             } catch {
-                Write-CustomLog "ERROR: Script has syntax errors: $scriptPath - [CmdletBinding(SupportsShouldProcess, DefaultParameterSetName='Verbose')]
+                Write-CustomLog "ERROR: Script has syntax errors: $scriptPath - CmdletBinding(SupportsShouldProcess, DefaultParameterSetName='Verbose')
 param(
-    [Parameter(ParameterSetName='Quiet')
+    Parameter(ParameterSetName='Quiet')
 
 
 
 
 
 
-]
-    [switch]$Quiet,
 
-    [Parameter(ParameterSetName='Verbose')]
-    [ValidateSet('silent','normal','detailed')]
-    [string]$Verbosity = 'normal',
-    [string]$ConfigFile,
-    #[string]$ConfigFile = (Join-Path $PSScriptRoot 'config_files' 'default-config.json'),
-    [switch]$Auto,
-    [string]$Scripts,
-    [switch]$Force
+    switch$Quiet,
+
+    Parameter(ParameterSetName='Verbose')
+    ValidateSet('silent','normal','detailed')
+    string$Verbosity = 'normal',
+    string$ConfigFile,
+    #string$ConfigFile = (Join-Path $PSScriptRoot 'config_files' 'default-config.json'),
+    switch$Auto,
+    string$Scripts,
+    switch$Force
 )
 
 # repo root is this script's directory
@@ -429,13 +429,13 @@ $repoRoot   = $PSScriptRoot
 $indexPath  = Join-Path $repoRoot 'path-index.yaml'
 $script:PathIndex = @{}
 if (Test-Path $indexPath) {
-    try { $script:PathIndex = Get-Content -Raw -Path $indexPath | ConvertFrom-Yaml } catch { $script:PathIndex = @{} }
+    try { $script:PathIndex = Get-Content -Raw -Path $indexPath  ConvertFrom-Yaml } catch { $script:PathIndex = @{} }
 }
 
 . (Join-Path $repoRoot (Join-Path 'lab_utils' 'PathUtils.ps1'))
 
 function Resolve-IndexPath {
-    param([string]$Key)
+    param(string$Key)
     
 
 
@@ -444,7 +444,7 @@ function Resolve-IndexPath {
 
 
 if ($script:PathIndex.ContainsKey($Key)) {
-        $relative = Normalize-RelativePath $script:PathIndex[$Key]
+        $relative = Normalize-RelativePath $script:PathIndex$Key
         return Join-Path $repoRoot $relative
     }
     return $null
@@ -476,7 +476,7 @@ if (-not (Test-Path $pwshPath)) {
 if ($PSVersionTable.PSVersion.Major -lt 7) {
     $argList = @()
     foreach ($kvp in $PSBoundParameters.GetEnumerator()) {
-        if ($kvp.Value -is [System.Management.Automation.SwitchParameter]) {
+        if ($kvp.Value -is System.Management.Automation.SwitchParameter) {
             if ($kvp.Value.IsPresent) { $argList += "-$($kvp.Key)" }
         } else {
             $argList += "-$($kvp.Key)"
@@ -491,7 +491,7 @@ if ($PSVersionTable.PSVersion.Major -lt 7) {
 if ($Quiet) { $Verbosity = 'silent' }
 
 $script:VerbosityLevels = @{ silent = 0; normal = 1; detailed = 2 }
-$script:ConsoleLevel    = $script:VerbosityLevels[$Verbosity]
+$script:ConsoleLevel    = $script:VerbosityLevels$Verbosity
 
 
 # ─── Load helpers ──────────────────────────────────────────────────────────────
@@ -507,7 +507,7 @@ if (-not $configFilesDir) {
 if (-not (Get-Command Write-CustomLog -ErrorAction SilentlyContinue)) {
     . (Join-Path $labUtilsDir (Join-Path 'LabRunner' 'Logger.ps1'))
 }
-$env:LAB_CONSOLE_LEVEL = $script:VerbosityLevels[$Verbosity]
+$env:LAB_CONSOLE_LEVEL = $script:VerbosityLevels$Verbosity
 . (Join-Path $PSScriptRoot (Join-Path 'lab_utils' 'Get-LabConfig.ps1'))
 . (Join-Path $PSScriptRoot (Join-Path 'lab_utils' 'Format-Config.ps1'))
 . (Join-Path $PSScriptRoot (Join-Path 'lab_utils' 'Get-Platform.ps1'))
@@ -529,9 +529,9 @@ if (-not (Get-Variable -Name LogFilePath -Scope Script -ErrorAction SilentlyCont
 
     $logDir = $env:LAB_LOG_DIR
     if (-not $logDir) {
-        if ($IsWindows) { $logDir = 'C:\temp' } else { $logDir = [System.IO.Path]::GetTempPath() }
+        if ($IsWindows) { $logDir = 'C:\temp' } else { $logDir = System.IO.Path::GetTempPath() }
     }
-    if (-not (Test-Path $logDir)) { New-Item -ItemType Directory -Path $logDir -Force | Out-Null }
+    if (-not (Test-Path $logDir)) { New-Item -ItemType Directory -Path $logDir -Force  Out-Null }
     $script:LogFilePath = Join-Path $logDir 'lab.log'
 }
 
@@ -546,17 +546,17 @@ function ConvertTo-Hashtable {
 
 
 switch ($obj) {
-        { $_ -is [System.Collections.IDictionary] } {
+        { $_ -is System.Collections.IDictionary } {
             $ht = @{}
-            foreach ($k in $_.Keys) { $ht[$k] = ConvertTo-Hashtable $_[$k] }
+            foreach ($k in $_.Keys) { $ht$k = ConvertTo-Hashtable $_$k }
             return $ht
         }
-        { $_ -is [System.Collections.IEnumerable] -and -not ($_ -is [string]) } {
-            return $_ | ForEach-Object { ConvertTo-Hashtable $_ }
+        { $_ -is System.Collections.IEnumerable -and -not ($_ -is string) } {
+            return $_  ForEach-Object { ConvertTo-Hashtable $_ }
         }
-        { $_ -is [PSCustomObject] } {
+        { $_ -is PSCustomObject } {
             $ht = @{}
-            foreach ($p in $_.PSObject.Properties) { $ht[$p.Name] = ConvertTo-Hashtable $p.Value }
+            foreach ($p in $_.PSObject.Properties) { $ht$p.Name = ConvertTo-Hashtable $p.Value }
             return $ht
         }
         default { return $_ }
@@ -564,7 +564,7 @@ switch ($obj) {
 }
 
 function Get-ScriptConfigFlag {
-    param([string]$Path)
+    param(string$Path)
     
 
 
@@ -573,13 +573,13 @@ function Get-ScriptConfigFlag {
 
 
 $content = Get-Content -Path $Path -Raw -ErrorAction SilentlyContinue
-    if ($content -match '\$Config\.([A-Za-z0-9_\.]+)\s*-eq\s*\$true') { return $matches[1] }
-    if ($content -match '\$config\.([A-Za-z0-9_\.]+)\s*-eq\s*\$true') { return $matches[1] }
+    if ($content -match '\$Config\.(A-Za-z0-9_\.+)\s*-eq\s*\$true') { return $matches1 }
+    if ($content -match '\$config\.(A-Za-z0-9_\.+)\s*-eq\s*\$true') { return $matches1 }
     return $null
 }
 
 function Get-NestedConfigValue {
-    param([hashtable]$Config, [string]$Path)
+    param(hashtable$Config, string$Path)
     
 
 
@@ -591,13 +591,13 @@ $parts = $Path -split '\.'
     $cur   = $Config
     foreach ($p in $parts) {
         if (-not $cur.ContainsKey($p)) { return $null }
-        $cur = $cur[$p]
+        $cur = $cur$p
     }
     return $cur
 }
 
 function Set-NestedConfigValue {
-    param([hashtable]$Config, [string]$Path, [object]$Value)
+    param(hashtable$Config, string$Path, object$Value)
     
 
 
@@ -608,14 +608,14 @@ function Set-NestedConfigValue {
 $parts = $Path -split '\.'
     $cur   = $Config
     for ($i = 0; $i -lt $parts.Length - 1; $i++) {
-        if (-not $cur.ContainsKey($parts[$i])) { $cur[$parts[$i]] = @{} }
-        $cur = $cur[$parts[$i]]
+        if (-not $cur.ContainsKey($parts$i)) { $cur$parts$i = @{} }
+        $cur = $cur$parts$i
     }
-    $cur[$parts[-1]] = $Value
+    $cur$parts-1 = $Value
 }
 
 function Apply-RecommendedDefaults {
-    param([hashtable]$ConfigObject)
+    param(hashtable$ConfigObject)
 
     
 
@@ -627,7 +627,7 @@ function Apply-RecommendedDefaults {
 $recommendedPath = Join-Path $configFilesDir 'recommended-config.json'
     if (-not (Test-Path $recommendedPath)) { return $ConfigObject }
     try {
-        $recommended = Get-Content -Raw -Path $recommendedPath | ConvertFrom-Json
+        $recommended = Get-Content -Raw -Path $recommendedPath  ConvertFrom-Json
         foreach ($prop in $recommended.PSObject.Properties) {
             Set-NestedConfigValue -Config $ConfigObject -Path $prop.Name -Value $prop.Value
         }
@@ -638,8 +638,8 @@ $recommendedPath = Join-Path $configFilesDir 'recommended-config.json'
 }
 
 function Set-LabConfig {
-    [CmdletBinding(SupportsShouldProcess)]
-    param([hashtable]$ConfigObject)
+    CmdletBinding(SupportsShouldProcess)
+    param(hashtable$ConfigObject)
 
     
 
@@ -649,7 +649,7 @@ function Set-LabConfig {
 
 
 function Edit-PrimitiveValue {
-        param([string]$Path, [object]$Current)
+        param(string$Path, object$Current)
         
 
 
@@ -657,16 +657,16 @@ function Edit-PrimitiveValue {
 
 
 
-$prompt = "New value for '$Path' [$Current]"
+$prompt = "New value for '$Path' $Current"
         $ans = Read-LoggedInput $prompt
         if (-not $ans) { return $Current }
-        if ($Current -is [bool]) { return $ans -match '^(?i)y|true$' }
-        if ($Current -is [int])  { return [int]$ans }
+        if ($Current -is bool) { return $ans -match '^(?i)ytrue$' }
+        if ($Current -is int)  { return int$ans }
         return $ans
     }
 
     function Edit-Section {
-        param([hashtable]$Section, [string]$Prefix)
+        param(hashtable$Section, string$Prefix)
         
 
 
@@ -675,24 +675,24 @@ $prompt = "New value for '$Path' [$Current]"
 
 
 while ($true) {
-            $keys  = $Section.Keys | Sort-Object
+            $keys  = $Section.Keys  Sort-Object
             $items = $keys + 'Back'
             $sel   = Get-MenuSelection -Items $items -Title "Edit $Prefix"
             if (-not $sel -or $sel -eq 'Back') { break }
             foreach ($key in @($sel)) {
                 $path = if ($Prefix) { "$Prefix.$key"    } else { $key    }
-                $val  = $Section[$key]
-                if ($val -is [hashtable]) {
+                $val  = $Section$key
+                if ($val -is hashtable) {
                     Edit-Section -Section $val -Prefix $path
                 } else {
-                    $Section[$key] = Edit-PrimitiveValue -Path $path -Current $val
+                    $Section$key = Edit-PrimitiveValue -Path $path -Current $val
                 }
             }
         }
     }
 
     while ($true) {
-        $opts = $ConfigObject.Keys | Sort-Object
+        $opts = $ConfigObject.Keys  Sort-Object
         $menu = $opts + @('Apply recommended defaults','Done')
         $choice = Get-MenuSelection -Items $menu -Title 'Edit configuration'
         if (-not $choice) { break }
@@ -703,11 +703,11 @@ while ($true) {
                     $ConfigObject = Apply-RecommendedDefaults -ConfigObject $ConfigObject
                 }
                 default {
-                    $val = $ConfigObject[$sel]
-                    if ($val -is [hashtable]) {
+                    $val = $ConfigObject$sel
+                    if ($val -is hashtable) {
                         Edit-Section -Section $val -Prefix $sel
                     } else {
-                        $ConfigObject[$sel] = Edit-PrimitiveValue -Path $sel -Current $val
+                        $ConfigObject$sel = Edit-PrimitiveValue -Path $sel -Current $val
                     }
                 }
             }
@@ -734,7 +734,7 @@ if (-not $Auto) {
     if ((Read-LoggedInput "Customize configuration? (Y/N)") -match '^(?i)y') {
         $Config = Set-LabConfig -ConfigObject $Config
         if ($PSCmdlet.ShouldProcess($ConfigFile, 'Save updated configuration')) {
-            $Config | ConvertTo-Json -Depth 5 | Out-File $ConfigFile -Encoding utf8
+            $Config  ConvertTo-Json -Depth 5  Out-File $ConfigFile -Encoding utf8
             Write-CustomLog "Configuration updated and saved to $ConfigFile"
         }
     }
@@ -745,12 +745,12 @@ Write-CustomLog "==== Locating scripts ===="
 
 try {
 
-$ScriptFiles = Get-ChildItem (Join-Path $PSScriptRoot 'runner_scripts') -Filter "????_*.ps1" -File -Recurse | Sort-Object Name
+$ScriptFiles = Get-ChildItem (Join-Path $PSScriptRoot 'runner_scripts') -Filter "????_*.ps1" -File -Recurse  Sort-Object Name
 
 }
 catch {
 
-$ScriptFiles = Get-ChildItem $runnerScriptsDir -Filter "????_*.ps1" -File | Sort-Object Name
+$ScriptFiles = Get-ChildItem $runnerScriptsDir -Filter "????_*.ps1" -File  Sort-Object Name
 }
 
 if (-not $ScriptFiles) {
@@ -758,11 +758,11 @@ if (-not $ScriptFiles) {
     exit 1
 }
 Write-CustomLog "`n==== Found scripts ===="
-$ScriptFiles | ForEach-Object { Write-CustomLog "$($_.Name.Substring(0,4)) - $($_.Name)" }
+$ScriptFiles  ForEach-Object { Write-CustomLog "$($_.Name.Substring(0,4)) - $($_.Name)" }
 
 # ─── Execution helpers ───────────────────────────────────────────────────────
 function Invoke-Scripts {
-    param([array]$ScriptsToRun)
+    param(array$ScriptsToRun)
 
     
 
@@ -772,7 +772,7 @@ function Invoke-Scripts {
 
 
 if ($ScriptsToRun.Count -gt 1) {
-        $cleanup = $ScriptsToRun | Where-Object { $_.Name.Substring(0,4) -eq '0000' }
+        $cleanup = $ScriptsToRun  Where-Object { $_.Name.Substring(0,4) -eq '0000' }
         if ($cleanup) {
             Write-CustomLog "WARNING: Cleanup script 0000 will remove local files."
             if (-not $Auto) {
@@ -786,7 +786,7 @@ if ($ScriptsToRun.Count -gt 1) {
 
     if ($ScriptsToRun.Count -eq 0) { Write-CustomLog "No scripts selected."; return $true }
 
-    $names = $ScriptsToRun | ForEach-Object { $_.Name }
+    $names = $ScriptsToRun  ForEach-Object { $_.Name }
     Write-CustomLog "Selected script order: $($names -join ', ')"
     Write-CustomLog "`n==== Executing selected scripts ===="
     $failed = @()
@@ -805,12 +805,12 @@ if ($ScriptsToRun.Count -gt 1) {
                 if (-not $current) {
                     if ($Force) {
                         Set-NestedConfigValue -Config $Config -Path $flag -Value $true
-                        $Config | ConvertTo-Json -Depth 5 | Out-File -FilePath $ConfigFile -Encoding utf8
+                        $Config  ConvertTo-Json -Depth 5  Out-File -FilePath $ConfigFile -Encoding utf8
                         $current = $true
                     }
                     elseif (-not $Auto -and (Read-LoggedInput "Enable flag '$flag' and run? (Y/N)") -match '^(?i)y') {
                         Set-NestedConfigValue -Config $Config -Path $flag -Value $true
-                        $Config | ConvertTo-Json -Depth 5 | Out-File -FilePath $ConfigFile -Encoding utf8
+                        $Config  ConvertTo-Json -Depth 5  Out-File -FilePath $ConfigFile -Encoding utf8
                         $current = $true
                     }
                 }
@@ -820,11 +820,11 @@ if ($ScriptsToRun.Count -gt 1) {
                 }
             }
 
-            $tempCfg = [System.IO.Path]::GetTempFileName()
-            $Config | ConvertTo-Json -Depth 5 | Out-File -FilePath $tempCfg -Encoding utf8 -NoNewline
+            $tempCfg = System.IO.Path::GetTempFileName()
+            $Config  ConvertTo-Json -Depth 5  Out-File -FilePath $tempCfg -Encoding utf8 -NoNewline
             $scriptArgs = @('-File', $scriptPath, '-Config', $tempCfg)
             if ((Get-Command $scriptPath).Parameters.ContainsKey('AsJson')) { $scriptArgs += '-AsJson' }
-            $env:LAB_CONSOLE_LEVEL = $script:VerbosityLevels[$Verbosity]
+            $env:LAB_CONSOLE_LEVEL = $script:VerbosityLevels$Verbosity
             $output = & $pwshPath -NoLogo -NoProfile @scriptArgs *>&1
             Remove-Item Env:LAB_CONSOLE_LEVEL -ErrorAction SilentlyContinue
 
@@ -841,10 +841,10 @@ if ($ScriptsToRun.Count -gt 1) {
                     $lineStr -match "positional parameter cannot be found") {
                     Write-CustomLog "ERROR: Parameter binding issue detected in $($s.Name): $lineStr" 'ERROR'
                     $exitCode = 1
-                } elseif ($line -is [System.Management.Automation.ErrorRecord] -or $lineStr.StartsWith('ERROR:')) {
+                } elseif ($line -is System.Management.Automation.ErrorRecord -or $lineStr.StartsWith('ERROR:')) {
                     Write-CustomLog "ERROR: $lineStr" 'ERROR'
                     $exitCode = 1
-                } elseif ($line -is [System.Management.Automation.WarningRecord] -or $lineStr.StartsWith('WARNING:')) {
+                } elseif ($line -is System.Management.Automation.WarningRecord -or $lineStr.StartsWith('WARNING:')) {
                     Write-CustomLog "WARNING: $lineStr" 'WARN'
                 } else {
                     Write-CustomLog $lineStr
@@ -853,10 +853,10 @@ if ($ScriptsToRun.Count -gt 1) {
 
             Remove-Item $tempCfg -ErrorAction SilentlyContinue
 
-            $Config | ConvertTo-Json -Depth 5 |
+            $Config  ConvertTo-Json -Depth 5 
                 Out-File -FilePath $ConfigFile -Encoding utf8
 
-            $results[$s.Name] = $exitCode
+            $results$s.Name = $exitCode
             if ($exitCode) {
                 Write-CustomLog "ERROR: $($s.Name) exited with code $exitCode."
                 $failed += $s.Name
@@ -867,18 +867,18 @@ if ($ScriptsToRun.Count -gt 1) {
 
         } catch {
             Write-CustomLog "ERROR: Exception in $($s.Name): $_"
-            $results[$s.Name] = 1
+            $results$s.Name = 1
             $global:LASTEXITCODE = 1
-            $results[$s.Name] = $LASTEXITCODE
+            $results$s.Name = $LASTEXITCODE
             $failed += $s.Name
         }
     }
 
 
-    $Config | ConvertTo-Json -Depth 5 | Out-File $ConfigFile -Encoding utf8
-    $summary = $results.GetEnumerator() |
-        ForEach-Object { "$(($_.Key))=$($_.Value)" } |
-        Sort-Object |
+    $Config  ConvertTo-Json -Depth 5  Out-File $ConfigFile -Encoding utf8
+    $summary = $results.GetEnumerator() 
+        ForEach-Object { "$(($_.Key))=$($_.Value)" } 
+        Sort-Object 
         Join-String -Separator ', '
     Write-CustomLog "Results: $summary"
     Write-CustomLog "`n==== Script run complete ===="
@@ -892,7 +892,7 @@ if ($ScriptsToRun.Count -gt 1) {
 }
 
 function Select-Scripts {
-    param([string]$Spec)
+    param(string$Spec)
 
     
 
@@ -904,24 +904,24 @@ function Select-Scripts {
 if (-not $Spec) { Write-CustomLog 'No script selection provided.'; return @() }
     if ($Spec -eq 'all') { return $ScriptFiles }
 
-    $prefixes = $Spec -split ',' |
-        ForEach-Object { $_.Trim() } |
+    $prefixes = $Spec -split ',' 
+        ForEach-Object { $_.Trim() } 
         Where-Object { $_ -match '^\d{4}$' }
 
     if (-not $prefixes) { Write-CustomLog 'No valid prefixes.'; return @() }
 
-    $matches = $ScriptFiles | Where-Object { $prefixes -contains $_.Name.Substring(0,4) }
+    $matches = $ScriptFiles  Where-Object { $prefixes -contains $_.Name.Substring(0,4) }
 
     if (-not $matches) { Write-CustomLog 'No matching scripts.' }
     return $matches
 }
 
 function Prompt-Scripts {
-    $names = $ScriptFiles | ForEach-Object { $_.Name }
+    $names = $ScriptFiles  ForEach-Object { $_.Name }
     $selNames = Get-MenuSelection -Items $names -Title 'Select scripts to run' -AllowAll
     if (-not $selNames) { return @() }
     $selNames = @($selNames)  # ensure array semantics for single selections
-    return $ScriptFiles | Where-Object { $selNames -contains $_.Name }
+    return $ScriptFiles  Where-Object { $selNames -contains $_.Name }
 }
 
 # ─── Non-interactive or interactive execution ────────────────────────────────
@@ -929,7 +929,7 @@ if ($Scripts) {
     if ($Scripts -eq 'all') { $sel = Select-Scripts -Spec 'all' }
     else                    { $sel = Select-Scripts -Spec $Scripts }
     if (-not $sel -or $sel.Count -eq 0) { $global:LASTEXITCODE = 1; exit 1 }
-    Invoke-Scripts -ScriptsToRun $sel | Out-Null
+    Invoke-Scripts -ScriptsToRun $sel  Out-Null
     exit $LASTEXITCODE
 }
 
@@ -956,12 +956,12 @@ exit $LASTEXITCODE
                 if (-not $current) {
                     if ($Force) {
                         Set-NestedConfigValue -Config $Config -Path $flag -Value $true
-                        $Config | ConvertTo-Json -Depth 5 | Out-File -FilePath $ConfigFile -Encoding utf8
+                        $Config  ConvertTo-Json -Depth 5  Out-File -FilePath $ConfigFile -Encoding utf8
                         $current = $true
                     }
                     elseif (-not $Auto -and (Read-LoggedInput "Enable flag '$flag' and run? (Y/N)") -match '^(?i)y') {
                         Set-NestedConfigValue -Config $Config -Path $flag -Value $true
-                        $Config | ConvertTo-Json -Depth 5 | Out-File -FilePath $ConfigFile -Encoding utf8
+                        $Config  ConvertTo-Json -Depth 5  Out-File -FilePath $ConfigFile -Encoding utf8
                         $current = $true
                     }
                 }
@@ -971,11 +971,11 @@ exit $LASTEXITCODE
                 }
             }
 
-            $tempCfg = [System.IO.Path]::GetTempFileName()
-            $Config | ConvertTo-Json -Depth 5 | Out-File -FilePath $tempCfg -Encoding utf8 -NoNewline
+            $tempCfg = System.IO.Path::GetTempFileName()
+            $Config  ConvertTo-Json -Depth 5  Out-File -FilePath $tempCfg -Encoding utf8 -NoNewline
             $scriptArgs = @('-File', $scriptPath, '-Config', $tempCfg)
             if ((Get-Command $scriptPath).Parameters.ContainsKey('AsJson')) { $scriptArgs += '-AsJson' }
-            $env:LAB_CONSOLE_LEVEL = $script:VerbosityLevels[$Verbosity]
+            $env:LAB_CONSOLE_LEVEL = $script:VerbosityLevels$Verbosity
             $output = & $pwshPath -NoLogo -NoProfile @scriptArgs *>&1
             Remove-Item Env:LAB_CONSOLE_LEVEL -ErrorAction SilentlyContinue
 
@@ -992,10 +992,10 @@ exit $LASTEXITCODE
                     $lineStr -match "positional parameter cannot be found") {
                     Write-CustomLog "ERROR: Parameter binding issue detected in $($s.Name): $lineStr" 'ERROR'
                     $exitCode = 1
-                } elseif ($line -is [System.Management.Automation.ErrorRecord] -or $lineStr.StartsWith('ERROR:')) {
+                } elseif ($line -is System.Management.Automation.ErrorRecord -or $lineStr.StartsWith('ERROR:')) {
                     Write-CustomLog "ERROR: $lineStr" 'ERROR'
                     $exitCode = 1
-                } elseif ($line -is [System.Management.Automation.WarningRecord] -or $lineStr.StartsWith('WARNING:')) {
+                } elseif ($line -is System.Management.Automation.WarningRecord -or $lineStr.StartsWith('WARNING:')) {
                     Write-CustomLog "WARNING: $lineStr" 'WARN'
                 } else {
                     Write-CustomLog $lineStr
@@ -1004,10 +1004,10 @@ exit $LASTEXITCODE
 
             Remove-Item $tempCfg -ErrorAction SilentlyContinue
 
-            $Config | ConvertTo-Json -Depth 5 |
+            $Config  ConvertTo-Json -Depth 5 
                 Out-File -FilePath $ConfigFile -Encoding utf8
 
-            $results[$s.Name] = $exitCode
+            $results$s.Name = $exitCode
             if ($exitCode) {
                 Write-CustomLog "ERROR: $($s.Name) exited with code $exitCode."
                 $failed += $s.Name
@@ -1018,18 +1018,18 @@ exit $LASTEXITCODE
 
         } catch {
             Write-CustomLog "ERROR: Exception in $($s.Name): $_"
-            $results[$s.Name] = 1
+            $results$s.Name = 1
             $global:LASTEXITCODE = 1
-            $results[$s.Name] = $LASTEXITCODE
+            $results$s.Name = $LASTEXITCODE
             $failed += $s.Name
         }
     }
 
 
-    $Config | ConvertTo-Json -Depth 5 | Out-File $ConfigFile -Encoding utf8
-    $summary = $results.GetEnumerator() |
-        ForEach-Object { "$(($_.Key))=$($_.Value)" } |
-        Sort-Object |
+    $Config  ConvertTo-Json -Depth 5  Out-File $ConfigFile -Encoding utf8
+    $summary = $results.GetEnumerator() 
+        ForEach-Object { "$(($_.Key))=$($_.Value)" } 
+        Sort-Object 
         Join-String -Separator ', '
     Write-CustomLog "Results: $summary"
     Write-CustomLog "`n==== Script run complete ===="
@@ -1043,7 +1043,7 @@ exit $LASTEXITCODE
 }
 
 function Select-Scripts {
-    param([string]$Spec)
+    param(string$Spec)
 
     
 
@@ -1055,24 +1055,24 @@ function Select-Scripts {
 if (-not $Spec) { Write-CustomLog 'No script selection provided.'; return @() }
     if ($Spec -eq 'all') { return $ScriptFiles }
 
-    $prefixes = $Spec -split ',' |
-        ForEach-Object { $_.Trim() } |
+    $prefixes = $Spec -split ',' 
+        ForEach-Object { $_.Trim() } 
         Where-Object { $_ -match '^\d{4}$' }
 
     if (-not $prefixes) { Write-CustomLog 'No valid prefixes.'; return @() }
 
-    $matches = $ScriptFiles | Where-Object { $prefixes -contains $_.Name.Substring(0,4) }
+    $matches = $ScriptFiles  Where-Object { $prefixes -contains $_.Name.Substring(0,4) }
 
     if (-not $matches) { Write-CustomLog 'No matching scripts.' }
     return $matches
 }
 
 function Prompt-Scripts {
-    $names = $ScriptFiles | ForEach-Object { $_.Name }
+    $names = $ScriptFiles  ForEach-Object { $_.Name }
     $selNames = Get-MenuSelection -Items $names -Title 'Select scripts to run' -AllowAll
     if (-not $selNames) { return @() }
     $selNames = @($selNames)  # ensure array semantics for single selections
-    return $ScriptFiles | Where-Object { $selNames -contains $_.Name }
+    return $ScriptFiles  Where-Object { $selNames -contains $_.Name }
 }
 
 # ─── Non-interactive or interactive execution ────────────────────────────────
@@ -1080,7 +1080,7 @@ if ($Scripts) {
     if ($Scripts -eq 'all') { $sel = Select-Scripts -Spec 'all' }
     else                    { $sel = Select-Scripts -Spec $Scripts }
     if (-not $sel -or $sel.Count -eq 0) { $global:LASTEXITCODE = 1; exit 1 }
-    Invoke-Scripts -ScriptsToRun $sel | Out-Null
+    Invoke-Scripts -ScriptsToRun $sel  Out-Null
     exit $LASTEXITCODE
 }
 

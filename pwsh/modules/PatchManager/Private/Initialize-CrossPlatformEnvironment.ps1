@@ -1,5 +1,5 @@
 function Initialize-CrossPlatformEnvironment {
-    [CmdletBinding()]
+    CmdletBinding()
     param()
     
     try {

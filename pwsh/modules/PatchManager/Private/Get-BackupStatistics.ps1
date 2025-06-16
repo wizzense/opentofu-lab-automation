@@ -27,18 +27,18 @@
 #>
 
 function Get-BackupStatistics {
-    [CmdletBinding()]
+    CmdletBinding()
     param(
-        [Parameter(Mandatory = $false)]
-        [ValidateSet('Summary', 'Detailed', 'Historical', 'SizeAnalysis')]
-        [string]$AnalysisType = 'Summary',
+        Parameter(Mandatory = $false)
+        ValidateSet('Summary', 'Detailed', 'Historical', 'SizeAnalysis')
+        string$AnalysisType = 'Summary',
         
-        [Parameter(Mandatory = $false)]
-        [string[]]$BackupPaths = @(),
+        Parameter(Mandatory = $false)
+        string$BackupPaths = @(),
         
-        [Parameter(Mandatory = $false)]
-        [ValidateSet('Object', 'JSON', 'Report')]
-        [string]$OutputFormat = 'Object'
+        Parameter(Mandatory = $false)
+        ValidateSet('Object', 'JSON', 'Report')
+        string$OutputFormat = 'Object'
     )
     
     begin {
@@ -57,7 +57,7 @@ function Get-BackupStatistics {
         # Logging function
         if (-not (Get-Command "Write-CustomLog" -ErrorAction SilentlyContinue)) {
             function Write-CustomLog {
-                param([string]$Message, [string]$Level = "INFO")
+                param(string$Message, string$Level = "INFO")
                 $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
                 $color = switch ($Level) {
                     "ERROR" { "Red" }
@@ -66,7 +66,7 @@ function Get-BackupStatistics {
                     "DEBUG" { "Cyan" }
                     default { "White" }
                 }
-                Write-Host "[$timestamp] [PatchManager] [$Level] $Message" -ForegroundColor $color
+                Write-Host "$timestamp PatchManager $Level $Message" -ForegroundColor $color
             }
         }
         
@@ -121,7 +121,7 @@ function Get-BackupStatistics {
             
             # Calculate summary statistics
             $totalFiles = $allBackupFiles.Count
-            $totalSize = ($allBackupFiles | Measure-Object Length -Sum).Sum ?? 0
+            $totalSize = ($allBackupFiles  Measure-Object Length -Sum).Sum ?? 0
             $totalDirs = $allBackupDirs.Count
             $avgFileSize = if ($totalFiles -gt 0) { $totalSize / $totalFiles } else { 0 }
             
@@ -129,10 +129,10 @@ function Get-BackupStatistics {
                 TotalFiles = $totalFiles
                 TotalDirectories = $totalDirs
                 TotalSizeBytes = $totalSize
-                TotalSizeMB = [math]::Round($totalSize / 1MB, 2)
-                TotalSizeGB = [math]::Round($totalSize / 1GB, 3)
-                AverageFileSizeBytes = [math]::Round($avgFileSize, 0)
-                AverageFileSizeMB = [math]::Round($avgFileSize / 1MB, 3)
+                TotalSizeMB = math::Round($totalSize / 1MB, 2)
+                TotalSizeGB = math::Round($totalSize / 1GB, 3)
+                AverageFileSizeBytes = math::Round($avgFileSize, 0)
+                AverageFileSizeMB = math::Round($avgFileSize / 1MB, 3)
             }
             
             # Perform detailed analysis based on type
@@ -157,7 +157,7 @@ function Get-BackupStatistics {
                     return $script:Stats
                 }
                 'JSON' {
-                    return ($script:Stats | ConvertTo-Json -Depth 4)
+                    return ($script:Stats  ConvertTo-Json -Depth 4)
                 }
                 'Report' {
                     return Format-BackupReport -Stats $script:Stats
@@ -175,28 +175,28 @@ function Get-BackupStatistics {
 function Get-DetailedBackupAnalysis {
     param($Files, $Directories)
     
-    $filesByExtension = $Files | Group-Object Extension | ForEach-Object {
+    $filesByExtension = $Files  Group-Object Extension  ForEach-Object {
         @{
             Extension = $_.Name
             Count = $_.Count
-            TotalSize = ($_.Group | Measure-Object Length -Sum).Sum
+            TotalSize = ($_.Group  Measure-Object Length -Sum).Sum
         }
-    } | Sort-Object TotalSize -Descending
+    }  Sort-Object TotalSize -Descending
     
     $filesByAge = @{
-        Last24Hours = ($Files | Where-Object { $_.LastWriteTime -gt (Get-Date).AddDays(-1) }).Count
-        LastWeek = ($Files | Where-Object { $_.LastWriteTime -gt (Get-Date).AddDays(-7) }).Count
-        LastMonth = ($Files | Where-Object { $_.LastWriteTime -gt (Get-Date).AddDays(-30) }).Count
-        LastYear = ($Files | Where-Object { $_.LastWriteTime -gt (Get-Date).AddDays(-365) }).Count
-        OlderThanYear = ($Files | Where-Object { $_.LastWriteTime -le (Get-Date).AddDays(-365) }).Count
+        Last24Hours = ($Files  Where-Object { $_.LastWriteTime -gt (Get-Date).AddDays(-1) }).Count
+        LastWeek = ($Files  Where-Object { $_.LastWriteTime -gt (Get-Date).AddDays(-7) }).Count
+        LastMonth = ($Files  Where-Object { $_.LastWriteTime -gt (Get-Date).AddDays(-30) }).Count
+        LastYear = ($Files  Where-Object { $_.LastWriteTime -gt (Get-Date).AddDays(-365) }).Count
+        OlderThanYear = ($Files  Where-Object { $_.LastWriteTime -le (Get-Date).AddDays(-365) }).Count
     }
     
-    $largestFiles = $Files | Sort-Object Length -Descending | Select-Object -First 10 | ForEach-Object {
+    $largestFiles = $Files  Sort-Object Length -Descending  Select-Object -First 10  ForEach-Object {
         @{
             Name = $_.Name
             Path = $_.FullName
             SizeBytes = $_.Length
-            SizeMB = [math]::Round($_.Length / 1MB, 2)
+            SizeMB = math::Round($_.Length / 1MB, 2)
             LastModified = $_.LastWriteTime
         }
     }
@@ -205,7 +205,7 @@ function Get-DetailedBackupAnalysis {
         FilesByExtension = $filesByExtension
         FilesByAge = $filesByAge
         LargestFiles = $largestFiles
-        DirectoryStructure = $Directories | ForEach-Object { $_.FullName }
+        DirectoryStructure = $Directories  ForEach-Object { $_.FullName }
     }
 }
 
@@ -213,30 +213,30 @@ function Get-DetailedBackupAnalysis {
 function Get-HistoricalBackupAnalysis {
     param($Files)
     
-    $monthlyStats = $Files | Group-Object { $_.LastWriteTime.ToString("yyyy-MM") } | ForEach-Object {
+    $monthlyStats = $Files  Group-Object { $_.LastWriteTime.ToString("yyyy-MM") }  ForEach-Object {
         @{
             Month = $_.Name
             Count = $_.Count
-            TotalSize = ($_.Group | Measure-Object Length -Sum).Sum
+            TotalSize = ($_.Group  Measure-Object Length -Sum).Sum
         }
-    } | Sort-Object Month -Descending
+    }  Sort-Object Month -Descending
     
-    $dailyStats = $Files | Where-Object { $_.LastWriteTime -gt (Get-Date).AddDays(-30) } | 
-        Group-Object { $_.LastWriteTime.ToString("yyyy-MM-dd") } | ForEach-Object {
+    $dailyStats = $Files  Where-Object { $_.LastWriteTime -gt (Get-Date).AddDays(-30) }  
+        Group-Object { $_.LastWriteTime.ToString("yyyy-MM-dd") }  ForEach-Object {
         @{
             Date = $_.Name
             Count = $_.Count
-            TotalSize = ($_.Group | Measure-Object Length -Sum).Sum
+            TotalSize = ($_.Group  Measure-Object Length -Sum).Sum
         }
-    } | Sort-Object Date -Descending
+    }  Sort-Object Date -Descending
     
     return @{
         MonthlyStatistics = $monthlyStats
         DailyStatistics = $dailyStats
         GrowthTrend = if ($monthlyStats.Count -gt 1) { 
-            $latest = $monthlyStats[0].TotalSize
-            $previous = $monthlyStats[1].TotalSize
-            [math]::Round((($latest - $previous) / $previous) * 100, 2)
+            $latest = $monthlyStats0.TotalSize
+            $previous = $monthlyStats1.TotalSize
+            math::Round((($latest - $previous) / $previous) * 100, 2)
         } else { 0 }
     }
 }
@@ -246,25 +246,25 @@ function Get-SizeAnalysis {
     param($Files)
     
     $sizeRanges = @{
-        'Tiny (<1KB)' = ($Files | Where-Object { $_.Length -lt 1KB }).Count
-        'Small (1KB-1MB)' = ($Files | Where-Object { $_.Length -ge 1KB -and $_.Length -lt 1MB }).Count
-        'Medium (1MB-10MB)' = ($Files | Where-Object { $_.Length -ge 1MB -and $_.Length -lt 10MB }).Count
-        'Large (10MB-100MB)' = ($Files | Where-Object { $_.Length -ge 10MB -and $_.Length -lt 100MB }).Count
-        'Huge (>100MB)' = ($Files | Where-Object { $_.Length -ge 100MB }).Count
+        'Tiny (<1KB)' = ($Files  Where-Object { $_.Length -lt 1KB }).Count
+        'Small (1KB-1MB)' = ($Files  Where-Object { $_.Length -ge 1KB -and $_.Length -lt 1MB }).Count
+        'Medium (1MB-10MB)' = ($Files  Where-Object { $_.Length -ge 1MB -and $_.Length -lt 10MB }).Count
+        'Large (10MB-100MB)' = ($Files  Where-Object { $_.Length -ge 10MB -and $_.Length -lt 100MB }).Count
+        'Huge (>100MB)' = ($Files  Where-Object { $_.Length -ge 100MB }).Count
     }
     
-    $duplicateSizes = $Files | Group-Object Length | Where-Object { $_.Count -gt 1 } | ForEach-Object {
+    $duplicateSizes = $Files  Group-Object Length  Where-Object { $_.Count -gt 1 }  ForEach-Object {
         @{
             Size = $_.Name
             Count = $_.Count
-            Files = $_.Group | ForEach-Object { $_.FullName }
+            Files = $_.Group  ForEach-Object { $_.FullName }
         }
     }
     
     return @{
         SizeDistribution = $sizeRanges
         PotentialDuplicates = $duplicateSizes
-        CompressionOpportunity = [math]::Round((($Files | Where-Object { $_.Extension -in @('.txt', '.log', '.xml', '.json', '.csv') } | Measure-Object Length -Sum).Sum ?? 0) / 1MB, 2)
+        CompressionOpportunity = math::Round((($Files  Where-Object { $_.Extension -in @('.txt', '.log', '.xml', '.json', '.csv') }  Measure-Object Length -Sum).Sum ?? 0) / 1MB, 2)
     }
 }
 
@@ -292,8 +292,8 @@ function Format-BackupReport {
         
         if ($Stats.Details.FilesByExtension) {
             $report += "`n### Files by Extension`n"
-            foreach ($ext in $Stats.Details.FilesByExtension | Select-Object -First 5) {
-                $sizeMB = [math]::Round($ext.TotalSize / 1MB, 2)
+            foreach ($ext in $Stats.Details.FilesByExtension  Select-Object -First 5) {
+                $sizeMB = math::Round($ext.TotalSize / 1MB, 2)
                 $report += "- **$($ext.Extension):** $($ext.Count) files ($sizeMB MB)`n"
             }
         }
@@ -309,7 +309,7 @@ function Format-BackupReport {
         
         if ($Stats.Details.LargestFiles) {
             $report += "`n### Largest Files`n"
-            foreach ($file in $Stats.Details.LargestFiles | Select-Object -First 5) {
+            foreach ($file in $Stats.Details.LargestFiles  Select-Object -First 5) {
                 $report += "- **$($file.Name):** $($file.SizeMB) MB`n"
             }
         }

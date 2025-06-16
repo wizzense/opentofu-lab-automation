@@ -5,41 +5,41 @@ from pathlib import Path
 
 import yaml
 
-REPO_ROOT = Path(__file__).resolve().parents[1]
+REPO_ROOT = Path(__file__).resolve().parents1
 
 # directories to scan recursively for files
-SCAN_DIRS = [
+SCAN_DIRS = 
     'pwsh/runner_scripts',
     'pwsh/lab_utils',
     'py/labctl',
     'py/tests',
     'configs/config_files',
     'tools/iso',
-]
 
-ROOT_FILES = [
+
+ROOT_FILES = 
     'pwsh/runner.ps1',
     'pwsh/kicker-bootstrap.ps1',
     'pwsh/kickstart-bootstrap.sh',
-]
+
 
 
 def tracked_files():
     """Return a list of git-tracked files relative to the repository root."""
 
-    out = subprocess.check_output(["git", "ls-files"], cwd=REPO_ROOT, text=True)
-    return [Path(line) for line in out.splitlines()]
+    out = subprocess.check_output("git", "ls-files", cwd=REPO_ROOT, text=True)
+    return Path(line) for line in out.splitlines()
 
 
-def build_index() -> dict[str, str]:
+def build_index() -> dictstr, str:
     """Build a dynamic index of relevant files in the repository."""
-    index: dict[str, str] = {}
+    index: dictstr, str = {}
 
     # Recursively scan the repository for relevant files
     for path in REPO_ROOT.rglob("*"):
         if path.is_file() and path.suffix in {".ps1", ".py", ".yaml"}:  # Filter by file types
             relative_path = path.relative_to(REPO_ROOT)
-            index[str(relative_path)] = str(relative_path)
+            indexstr(relative_path) = str(relative_path)
 
     return index
 

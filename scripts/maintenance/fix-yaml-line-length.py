@@ -14,7 +14,7 @@ def fix_yaml_line_length(file_path, max_length=120):
             content = f.read()
         
         lines = content.split('\n')
-        fixed_lines = []
+        fixed_lines = 
         
         for line in lines:
             if len(line) <= max_length:
@@ -26,14 +26,14 @@ def fix_yaml_line_length(file_path, max_length=120):
             indent_str = ' ' * indent
             
             # For run commands and other long strings
-            if 'run: |' in line or 'run:' in line:
+            if 'run: ' in line or 'run:' in line:
                 fixed_lines.append(line)
             elif ' - ' in line and len(line) > max_length:
                 # Handle long array items
                 parts = line.split(' - ', 1)
                 if len(parts) == 2:
-                    prefix = parts[0] + ' - '
-                    content_part = parts[1]
+                    prefix = parts0 + ' - '
+                    content_part = parts1
                     if len(prefix + content_part) > max_length:
                         fixed_lines.append(prefix + '>')
                         fixed_lines.append(indent_str + '  ' + content_part)
@@ -52,9 +52,9 @@ def fix_yaml_line_length(file_path, max_length=120):
             else:
                 # Default: break at word boundaries
                 words = line.split()
-                current_line = words[0] if words else ''
+                current_line = words0 if words else ''
                 
-                for word in words[1:]:
+                for word in words1::
                     if len(current_line + ' ' + word) <= max_length:
                         current_line += ' ' + word
                     else:

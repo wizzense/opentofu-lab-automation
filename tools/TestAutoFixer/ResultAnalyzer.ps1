@@ -16,17 +16,17 @@ function Get-TestStatistics {
     .EXAMPLE
     Get-TestStatistics -ResultsPath "TestResults.xml" 
     #>
-    [CmdletBinding()]
+    CmdletBinding()
     param(
-        [Parameter(Mandatory = $true)
+        Parameter(Mandatory = $true)
 
 
 
 
 
 
-]
-        [string]$ResultsPath
+
+        string$ResultsPath
     )
 
     if (-not (Test-Path $ResultsPath)) {
@@ -36,33 +36,33 @@ function Get-TestStatistics {
 
     try {
         # Load the XML file
-        $testResults = [xml](Get-Content $ResultsPath)
+        $testResults = xml(Get-Content $ResultsPath)
         
         # Extract key metrics
         $totalTests = $testResults.SelectNodes("//test-case").Count
-        $passedTests = $testResults.SelectNodes("//test-case[@result='Success']").Count
-        $failedTests = $testResults.SelectNodes("//test-case[@result='Failure']").Count
-        $skippedTests = $testResults.SelectNodes("//test-case[@result='Skipped']").Count
+        $passedTests = $testResults.SelectNodes("//test-case@result='Success'").Count
+        $failedTests = $testResults.SelectNodes("//test-case@result='Failure'").Count
+        $skippedTests = $testResults.SelectNodes("//test-case@result='Skipped'").Count
         $inconclusiveTests = $totalTests - $passedTests - $failedTests - $skippedTests
         
         # Calculate pass rate
-        $passRate = if ($totalTests -gt 0) { [math]::Round(($passedTests / $totalTests) * 100, 2)    } else { 0    }
+        $passRate = if ($totalTests -gt 0) { math::Round(($passedTests / $totalTests) * 100, 2)    } else { 0    }
         
         # Get execution time information
-        $testSuites = $testResults.SelectNodes("//test-suite[@type='TestFixture']")
-        $totalTime = [double]$testResults.SelectSingleNode("//test-results/@time").Value
+        $testSuites = $testResults.SelectNodes("//test-suite@type='TestFixture'")
+        $totalTime = double$testResults.SelectSingleNode("//test-results/@time").Value
         
         # Find longest running tests
         $testCases = $testResults.SelectNodes("//test-case")
-        $longestRunningTests = $testCases | 
+        $longestRunningTests = $testCases  
             Select-Object @{Name="Name"; Expression={$_.name}}, 
-                          @{Name="Time"; Expression={[double]$_.time}},
-                          @{Name="Result"; Expression={$_.result}} |
-            Sort-Object -Property Time -Descending |
+                          @{Name="Time"; Expression={double$_.time}},
+                          @{Name="Result"; Expression={$_.result}} 
+            Sort-Object -Property Time -Descending 
             Select-Object -First 5
         
         # Return statistics object
-        return [PSCustomObject]@{
+        return PSCustomObject@{
             TotalTests = $totalTests
             PassedTests = $passedTests
             FailedTests = $failedTests
@@ -104,23 +104,23 @@ function Analyze-TestResults {
     .EXAMPLE
     Analyze-TestResults -ResultsPath "TestResults.xml"
     #>
-    [CmdletBinding()]
+    CmdletBinding()
     param(
-        [Parameter(Mandatory = $true)
+        Parameter(Mandatory = $true)
 
 
 
 
 
 
-]
-        [string]$ResultsPath,
+
+        string$ResultsPath,
         
-        [Parameter()]
-        [switch]$IncludePreviousResults,
+        Parameter()
+        switch$IncludePreviousResults,
         
-        [Parameter()]
-        [string]$PreviousResultsDirectory = "$env:TEMP\TestResults"
+        Parameter()
+        string$PreviousResultsDirectory = "$env:TEMP\TestResults"
     )
 
     if (-not (Test-Path $ResultsPath)) {
@@ -133,22 +133,22 @@ function Analyze-TestResults {
         $failures = Get-TestFailures -ResultsPath $ResultsPath
         
         # Group failures by pattern type
-        $syntaxFailures = $failures | Where-Object { $_.ErrorType -eq "SyntaxError" }
-        $parameterFailures = $failures | Where-Object { $_.ErrorType -eq "ParameterBindingError" }
-        $runtimeFailures = $failures | Where-Object { $_.ErrorType -eq "RuntimeException" }
-        $assertionFailures = $failures | Where-Object { $_.ErrorType -eq "AssertionFailure" }
+        $syntaxFailures = $failures  Where-Object { $_.ErrorType -eq "SyntaxError" }
+        $parameterFailures = $failures  Where-Object { $_.ErrorType -eq "ParameterBindingError" }
+        $runtimeFailures = $failures  Where-Object { $_.ErrorType -eq "RuntimeException" }
+        $assertionFailures = $failures  Where-Object { $_.ErrorType -eq "AssertionFailure" }
         
         # Look for common patterns in error messages
         $failurePatterns = @{
-            TernarySyntax = ($failures | Where-Object { $_.ErrorMessage -match "Unexpected token '?'" }).Count
-            MissingClosingBrace = ($failures | Where-Object { $_.ErrorMessage -match "Missing closing '}'" }).Count
-            IncorrectParameterFormat = ($failures | Where-Object { $_.ErrorMessage -match "Parameter attribute" }).Count
-            FileNotFound = ($failures | Where-Object { $_.ErrorMessage -match "Cannot find path" }).Count
-            MissingFunction = ($failures | Where-Object { $_.ErrorMessage -match "The term .* is not recognized" }).Count
+            TernarySyntax = ($failures  Where-Object { $_.ErrorMessage -match "Unexpected token '?'" }).Count
+            MissingClosingBrace = ($failures  Where-Object { $_.ErrorMessage -match "Missing closing '}'" }).Count
+            IncorrectParameterFormat = ($failures  Where-Object { $_.ErrorMessage -match "Parameter attribute" }).Count
+            FileNotFound = ($failures  Where-Object { $_.ErrorMessage -match "Cannot find path" }).Count
+            MissingFunction = ($failures  Where-Object { $_.ErrorMessage -match "The term .* is not recognized" }).Count
         }
         
         # Analyze file patterns
-        $filePatterns = $failures | Group-Object -Property SourceFile | Select-Object Name, Count, Group
+        $filePatterns = $failures  Group-Object -Property SourceFile  Select-Object Name, Count, Group
         
         # Build fix recommendations
         $fixRecommendations = @()
@@ -161,14 +161,14 @@ function Analyze-TestResults {
             $fixRecommendations += "Run Fix-ParamSyntax to fix parameter declaration issues"
         }
         
-        if ($filePatterns | Where-Object { $_.Name -match "Tests.ps1" -and $_.Count -gt 2 }) {
+        if ($filePatterns  Where-Object { $_.Name -match "Tests.ps1" -and $_.Count -gt 2 }) {
             $fixRecommendations += "Run Fix-TestSyntax to fix Pester test syntax issues"
         }
         
         # Get trend information if requested
         $trends = $null
         if ($IncludePreviousResults -and (Test-Path $PreviousResultsDirectory)) {
-            $previousResults = Get-ChildItem -Path $PreviousResultsDirectory -Filter "*.xml" |
+            $previousResults = Get-ChildItem -Path $PreviousResultsDirectory -Filter "*.xml" 
                                Where-Object { $_.FullName -ne $ResultsPath }
                                
             if ($previousResults.Count -gt 0) {
@@ -181,7 +181,7 @@ function Analyze-TestResults {
                 foreach ($result in $previousResults) {
                     $stats = Get-TestStatistics -ResultsPath $result.FullName
                     if ($stats) {
-                        $trends.FailureRateHistory += [PSCustomObject]@{
+                        $trends.FailureRateHistory += PSCustomObject@{
                             Date = $result.LastWriteTime
                             FailRate = 100 - $stats.PassRate
                             TotalTests = $stats.TotalTests
@@ -192,14 +192,14 @@ function Analyze-TestResults {
         }
         
         # Return analysis report
-        return [PSCustomObject]@{
+        return PSCustomObject@{
             FailureCount = $failures.Count
             SyntaxFailures = $syntaxFailures.Count
             ParameterFailures = $parameterFailures.Count
             RuntimeFailures = $runtimeFailures.Count
             AssertionFailures = $assertionFailures.Count
             FailurePatterns = $failurePatterns
-            ProblemFiles = $filePatterns | Sort-Object -Property Count -Descending | Select-Object -First 5
+            ProblemFiles = $filePatterns  Sort-Object -Property Count -Descending  Select-Object -First 5
             FixRecommendations = $fixRecommendations
             Trends = $trends
             DetailedFailures = $failures
@@ -235,24 +235,24 @@ function Format-TestResultsReport {
     $analysis = Analyze-TestResults -ResultsPath "TestResults.xml"
     Format-TestResultsReport -Analysis $analysis -Format HTML -OutputPath "TestReport.html"
     #>
-    [CmdletBinding()]
+    CmdletBinding()
     param(
-        [Parameter(Mandatory = $true)
+        Parameter(Mandatory = $true)
 
 
 
 
 
 
-]
-        [PSObject]$Analysis,
+
+        PSObject$Analysis,
         
-        [Parameter()]
-        [ValidateSet("Text", "HTML", "JSON", "Markdown")]
-        [string]$Format = "Text",
+        Parameter()
+        ValidateSet("Text", "HTML", "JSON", "Markdown")
+        string$Format = "Text",
         
-        [Parameter()]
-        [string]$OutputPath = ""
+        Parameter()
+        string$OutputPath = ""
     )
     
     switch ($Format) {
@@ -271,13 +271,13 @@ Summary:
 - Assertion Failures: $($Analysis.AssertionFailures)
 
 Failure Patterns:
-$($Analysis.FailurePatterns | ForEach-Object { "- $($_.Key): $($_.Value)" } | Out-String)
+$($Analysis.FailurePatterns  ForEach-Object { "- $($_.Key): $($_.Value)" }  Out-String)
 
 Problem Files:
-$($Analysis.ProblemFiles | ForEach-Object { "- $($_.Name): $($_.Count) failures" } | Out-String)
+$($Analysis.ProblemFiles  ForEach-Object { "- $($_.Name): $($_.Count) failures" }  Out-String)
 
 Fix Recommendations:
-$($Analysis.FixRecommendations | ForEach-Object { "- $_" } | Out-String)
+$($Analysis.FixRecommendations  ForEach-Object { "- $_" }  Out-String)
 
 "@
         }
@@ -380,10 +380,10 @@ $(foreach ($rec in $Analysis.FixRecommendations) {
         }
     }
     
-    if ([string]::IsNullOrEmpty($OutputPath)) {
+    if (string::IsNullOrEmpty($OutputPath)) {
         return $report
     } else {
-        $report | Out-File -FilePath $OutputPath -Encoding utf8 -Force
+        $report  Out-File -FilePath $OutputPath -Encoding utf8 -Force
         Write-Verbose "Report saved to $OutputPath"
     }
 }
@@ -409,24 +409,24 @@ function Export-TestResults {
     .EXAMPLE
     Export-TestResults -ResultsPath "TestResults.xml" -OutputPath "results.json" -Format JSON
     #>
-    [CmdletBinding()]
+    CmdletBinding()
     param(
-        [Parameter(Mandatory = $true)
+        Parameter(Mandatory = $true)
 
 
 
 
 
 
-]
-        [string]$ResultsPath,
+
+        string$ResultsPath,
         
-        [Parameter(Mandatory = $true)]
-        [string]$OutputPath,
+        Parameter(Mandatory = $true)
+        string$OutputPath,
         
-        [Parameter()]
-        [ValidateSet("JSON", "CSV", "XML")]
-        [string]$Format = "JSON"
+        Parameter()
+        ValidateSet("JSON", "CSV", "XML")
+        string$Format = "JSON"
     )
     
     if (-not (Test-Path $ResultsPath)) {
@@ -440,7 +440,7 @@ function Export-TestResults {
         $stats = Get-TestStatistics -ResultsPath $ResultsPath
         
         # Create export object
-        $exportData = [PSCustomObject]@{
+        $exportData = PSCustomObject@{
             Failures = $failures
             Statistics = $stats
             ExportDate = Get-Date
@@ -450,13 +450,13 @@ function Export-TestResults {
         # Export based on format
         switch ($Format) {
             "JSON" {
-                $exportData | ConvertTo-Json -Depth 5 | Out-File -FilePath $OutputPath -Encoding utf8 -Force
+                $exportData  ConvertTo-Json -Depth 5  Out-File -FilePath $OutputPath -Encoding utf8 -Force
             }
             "CSV" {
-                $failures | Export-Csv -Path $OutputPath -NoTypeInformation -Force
+                $failures  Export-Csv -Path $OutputPath -NoTypeInformation -Force
             }
             "XML" {
-                $exportData | Export-Clixml -Path $OutputPath -Force
+                $exportData  Export-Clixml -Path $OutputPath -Force
             }
         }
         

@@ -2,8 +2,8 @@
 # This script fixes the ternary operator and if-statement syntax issues in our test files
 
 param(
-    [switch]$WhatIf,
-    [string]$Directory = "tests"
+    switch$WhatIf,
+    string$Directory = "tests"
 )
 
 
@@ -16,7 +16,7 @@ param(
 $ErrorActionPreference = 'Stop'
 
 # Find all PowerShell files
-$files = Get-ChildItem -Path $Directory -Recurse -Include "*.ps1" | Select-Object -ExpandProperty FullName
+$files = Get-ChildItem -Path $Directory -Recurse -Include "*.ps1"  Select-Object -ExpandProperty FullName
 
 $fixedCount = 0
 $fileCount = 0
@@ -29,16 +29,16 @@ foreach ($file in $files) {
 
     # Replace the ternary operator pattern
     # ($(if ($errors) { $errors.Count } else { 0) becomes $(if (errors) { $errors.Count } else { 0 }) })
-    $newContent = $content -replace '\(\s*(\$\w+)\s*\?\s*([^:]+)\s*:\s*([^\)]+)\s*\)', '$(if (1) { $2 } else { $3 })'
+    $newContent = $content -replace '\(\s*(\$\w+)\s*\?\s*(^:+)\s*:\s*(^\)+)\s*\)', '$(if (1) { $2 } else { $3 })'
     
     # Also fix ternary operators without parentheses
-    $newContent = $newContent -replace '(\$\w+)\s+\?\s+(.+?)\s+:\s+(.+?)([;\r\n]|$)', 'if ($1) {$2} else {$3}$4'
+    $newContent = $newContent -replace '(\$\w+)\s+\?\s+(.+?)\s+:\s+(.+?)(;\r\n$)', 'if ($1) {$2} else {$3}$4'
     
     # Fix if statements without parentheses
-    $newContent = $newContent -replace 'if\s+([^(].+?)\s+\{', 'if ($1) {'
+    $newContent = $newContent -replace 'if\s+(^(.+?)\s+\{', 'if ($1) {'
     
     # Fix broken -if/-else constructs (from previous incorrect fixes)
-    $newContent = $newContent -replace '(\S+)\s+-if\s+\{([^}]+)\}\s+-else\s+\{([^}]+)\}', 'if ($1) {$2} else {$3}'
+    $newContent = $newContent -replace '(\S+)\s+-if\s+\{(^}+)\}\s+-else\s+\{(^}+)\}', 'if ($1) {$2} else {$3}'
 
     if ($newContent -ne $originalContent) {
         $fileCount++
@@ -46,7 +46,7 @@ foreach ($file in $files) {
             Write-Host "Would fix syntax in: $file"
         }
         else {
-            $newContent | Set-Content -Path $file
+            $newContent  Set-Content -Path $file
             Write-Host "Fixed ternary operators in: $file"
             $fixedCount++
         }

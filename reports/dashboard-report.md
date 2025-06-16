@@ -6,21 +6,21 @@
 
 ### Current Status
 
-| Component | Status | Details |
-|-----------|--------|---------|| PowerShell Scripts | [PASS] Healthy | 37 scripts found |
-| Workflow Files | [PASS] Healthy | 22 workflows found |
-| Test Coverage | [PASS] Healthy | 85 test files found |
+ Component  Status  Details 
+---------------------------- PowerShell Scripts  PASS Healthy  37 scripts found 
+ Workflow Files  PASS Healthy  22 workflows found 
+ Test Coverage  PASS Healthy  85 test files found 
 
 ### Test Results Summary
 
-| Metric | Value |
-|--------|-------|
-| **Total Tests** | 0 |
-| **Passed** | 0 [PASS] |
-| **Failed** | 0 [FAIL] |
-| **Skipped** | 0 ⏭ |
-| **Success Rate** | 0% |
-| **Last Run** | 2025-06-12 10:27:33 |
+ Metric  Value 
+---------------
+ **Total Tests**  0 
+ **Passed**  0 PASS 
+ **Failed**  0 FAIL 
+ **Skipped**  0 ⏭ 
+ **Success Rate**  0% 
+ **Last Run**  2025-06-12 10:27:33 
 
 ### Health Metrics
 
@@ -32,10 +32,10 @@
 
 ### Quick Actions
 
-- [Run Final Automation Test](../../final-automation-test.ps1)
-- [Run Pester Tests](../../actions/workflows/pester.yml) 
-- [Run PowerShell Validation](../../tools/Validate-PowerShellScripts.ps1)
-- [Generate Health Report](../../scripts/generate-dashboard.ps1)
+- Run Final Automation Test(../../final-automation-test.ps1)
+- Run Pester Tests(../../actions/workflows/pester.yml) 
+- Run PowerShell Validation(../../tools/Validate-PowerShellScripts.ps1)
+- Generate Health Report(../../scripts/generate-dashboard.ps1)
 
 ### Recommendations
 - Set up Pester tests for better code quality monitoring

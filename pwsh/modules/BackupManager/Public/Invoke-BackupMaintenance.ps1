@@ -47,18 +47,18 @@ This function integrates with the unified maintenance system and follows
 project standards for logging, error handling, and cross-platform compatibility.
 #>
 function Invoke-BackupMaintenance {
-    [CmdletBinding(SupportsShouldProcess)]
+    CmdletBinding(SupportsShouldProcess)
     param(
-        [Parameter(Mandatory=$false)]
-        [ValidateSet("Quick", "Full", "Cleanup", "Statistics", "All")]
-        [string]$Mode = "Quick",
+        Parameter(Mandatory=$false)
+        ValidateSet("Quick", "Full", "Cleanup", "Statistics", "All")
+        string$Mode = "Quick",
         
-        [Parameter(Mandatory=$false)]
-        [switch]$AutoFix,
+        Parameter(Mandatory=$false)
+        switch$AutoFix,
         
-        [Parameter(Mandatory=$false)]
-        [ValidateSet("Standard", "CI", "JSON")]
-        [string]$OutputFormat = "Standard"
+        Parameter(Mandatory=$false)
+        ValidateSet("Standard", "CI", "JSON")
+        string$OutputFormat = "Standard"
     )
     
     $ErrorActionPreference = "Stop"    # Import required modules
@@ -132,7 +132,7 @@ function Invoke-BackupMaintenance {
 
 # Internal helper functions
 function Invoke-QuickBackupMaintenance {
-    param($Results, [switch]$AutoFix)
+    param($Results, switch$AutoFix)
     
     Write-CustomLog "Executing quick backup maintenance..." "INFO"
       # 1. Quick backup consolidation
@@ -191,7 +191,7 @@ function Invoke-QuickBackupMaintenance {
 }
 
 function Invoke-FullBackupMaintenance {
-    param($Results, [switch]$AutoFix)
+    param($Results, switch$AutoFix)
     
     Write-CustomLog "Executing full backup maintenance..." "INFO"
     
@@ -248,7 +248,7 @@ function Invoke-FullBackupMaintenance {
 }
 
 function Invoke-CleanupBackupMaintenance {
-    param($Results, [switch]$AutoFix)
+    param($Results, switch$AutoFix)
     
     Write-CustomLog "Executing cleanup-focused backup maintenance..." "INFO"
     
@@ -310,7 +310,7 @@ function Invoke-StatisticsBackupMaintenance {
 }
 
 function Invoke-AllBackupMaintenance {
-    param($Results, [switch]$AutoFix)
+    param($Results, switch$AutoFix)
     
     Write-CustomLog "Executing complete backup maintenance..." "INFO"
     
@@ -341,7 +341,7 @@ function Invoke-AllBackupMaintenance {
         $reportPath = "./reports/backup-maintenance-$(Get-Date -Format 'yyyyMMdd-HHmmss').json"
         
         if (-not $WhatIfPreference) {
-            $Results | ConvertTo-Json -Depth 10 | Set-Content -Path $reportPath
+            $Results  ConvertTo-Json -Depth 10  Set-Content -Path $reportPath
         }
         
         $Results.Operations += @{
@@ -366,7 +366,7 @@ function Write-BackupMaintenanceResults {
     
     switch ($OutputFormat) {
         "JSON" {
-            $Results | ConvertTo-Json -Depth 10
+            $Results  ConvertTo-Json -Depth 10
         }
         "CI" {
             Write-Host "::group::Backup Maintenance Results"

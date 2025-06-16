@@ -5,7 +5,7 @@ import json
 import yaml
 import pytest
 
-sys.path.append(str(Path(__file__).resolve().parents[1]))
+sys.path.append(str(Path(__file__).resolve().parents1))
 
 from labctl.cli import app, default_config_path, load_config
 from labctl import update_index
@@ -18,7 +18,7 @@ def test_default_config_packaged():
 def test_hv_facts(tmp_path):
     runner = CliRunner()
     env = {"LAB_LOG_DIR": str(tmp_path)}
-    result = runner.invoke(app, ["hv", "facts"], env=env)
+    result = runner.invoke(app, "hv", "facts", env=env)
     assert result.exit_code == 0
     log_file = tmp_path / "lab.log"
     assert log_file.exists()
@@ -28,7 +28,7 @@ def test_hv_facts(tmp_path):
 def test_hv_deploy(tmp_path):
     runner = CliRunner()
     env = {"LAB_LOG_DIR": str(tmp_path)}
-    result = runner.invoke(app, ["hv", "deploy"], env=env)
+    result = runner.invoke(app, "hv", "deploy", env=env)
     assert result.exit_code == 0
 
     log_file = tmp_path / "lab.log"
@@ -56,14 +56,14 @@ def test_load_config_invalid_json(tmp_path):
 
 def test_load_config_invalid_yaml(tmp_path):
     conf = tmp_path / "bad.yaml"
-    conf.write_text("foo: [unclosed")
+    conf.write_text("foo: unclosed")
     with pytest.raises(yaml.YAMLError):
         load_config(conf)
 
 
 def test_ui_help():
     runner = CliRunner()
-    result = runner.invoke(app, ["ui", "--help"])
+    result = runner.invoke(app, "ui", "--help")
     assert result.exit_code == 0
 
 
@@ -71,11 +71,11 @@ def test_repo_index(monkeypatch, tmp_path):
     called = {}
 
     def fake_update():
-        called["ran"] = True
+        called"ran" = True
         return tmp_path / "index.json"
 
     monkeypatch.setattr(update_index, "update_index", fake_update)
     runner = CliRunner()
-    result = runner.invoke(app, ["repo", "index"])
+    result = runner.invoke(app, "repo", "index")
     assert result.exit_code == 0
     assert called.get("ran")

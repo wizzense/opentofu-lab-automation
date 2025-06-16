@@ -6,7 +6,7 @@ from typing import Iterable
 from .github_utils import create_issue
 
 
-def _collect_lines(path: Path) -> Iterable[str]:
+def _collect_lines(path: Path) -> Iterablestr:
     if path.is_dir():
         for p in sorted(path.rglob('*.txt')):
             yield from _collect_lines(p)
@@ -16,9 +16,9 @@ def _collect_lines(path: Path) -> Iterable[str]:
             yield line.rstrip()
 
 def summarize_warnings(path: Path) -> str:
-    pattern = re.compile(r"(warning|error)", re.IGNORECASE)
+    pattern = re.compile(r"(warningerror)", re.IGNORECASE)
     ruff_pattern = re.compile(r".+:\d+:\d+:")
-    lines = []
+    lines = 
     for line in _collect_lines(path):
         if pattern.search(line) or ruff_pattern.match(line):
             cleaned = line.strip()
@@ -35,7 +35,7 @@ def report_warnings(path: Path) -> None:
     for line in summary.splitlines():
         create_issue("Lint warning or error", line)
 
-def _main(argv: list[str] | None = None) -> None:
+def _main(argv: liststr  None = None) -> None:
     parser = argparse.ArgumentParser(description="Report or summarize lint warnings")
     parser.add_argument("path", type=Path, help="Path to log file or directory")
     parser.add_argument("--summary", action="store_true", help="Print summary instead of creating issues")

@@ -1,7 +1,7 @@
 ---
 description: Generate comprehensive documentation for PowerShell modules, functions, and project components
 mode: agent
-tools: ["filesystem", "documentation"]
+tools: "filesystem", "documentation"
 ---
 
 # Generate Documentation
@@ -19,7 +19,7 @@ Generate complete module documentation including:
 ${input:moduleDescription}
 
 ## Overview
-The ${input:moduleName} module provides comprehensive functionality for [specific purpose]. This module is part of the OpenTofu Lab Automation project and follows established patterns and standards.
+The ${input:moduleName} module provides comprehensive functionality for specific purpose. This module is part of the OpenTofu Lab Automation project and follows established patterns and standards.
 
 ## Installation
 ```powershell
@@ -35,10 +35,10 @@ Import-Module "/pwsh/modules/${input:moduleName}/" -Force
 ## Functions
 
 ### Public Functions
-[Auto-generated function list with descriptions]
+Auto-generated function list with descriptions
 
 ### Private Functions  
-[Internal functions for module operation]
+Internal functions for module operation
 
 ## Usage Examples
 
@@ -84,10 +84,10 @@ ${input:functionSynopsis}
 ### Syntax
 ```powershell
 ${input:functionName}
-    [-Parameter1] <Type>
-    [[-Parameter2] <Type>]
-    [-Switch]
-    [<CommonParameters>]
+    -Parameter1 <Type>
+    -Parameter2 <Type>
+    -Switch
+    <CommonParameters>
 ```
 
 ### Description
@@ -120,7 +120,7 @@ ${input:example1Output}
 
 #### Example 2: Pipeline Usage
 ```powershell
-PS> Get-ChildItem | ${input:functionName} -Parameter2 "Value"
+PS> Get-ChildItem  ${input:functionName} -Parameter2 "Value"
 ${input:example2Output}
 ```
 
@@ -142,8 +142,8 @@ ${input:functionOutputs}
 - **Platform**: ${input:platformNotes}
 
 ### Related Links
-- [${input:relatedFunction1}](#${input:relatedFunction1})
-- [Module Overview](#module-overview)
+- ${input:relatedFunction1}(#${input:relatedFunction1})
+- Module Overview(#module-overview)
 ```
 
 ### 3. Script Documentation
@@ -187,7 +187,7 @@ ${input:optionalConfigProperties}
 
 ### Example 1: Basic Execution
 ```powershell
-$config = [PSCustomObject]@{
+$config = PSCustomObject@{
     ${input:basicConfigExample}
 }
 .\\${input:scriptName}.ps1 -Config $config
@@ -195,7 +195,7 @@ $config = [PSCustomObject]@{
 
 ### Example 2: Advanced Configuration
 ```powershell
-$config = [PSCustomObject]@{
+$config = PSCustomObject@{
     ${input:advancedConfigExample}
 }
 .\\${input:scriptName}.ps1 -Config $config
@@ -274,7 +274,7 @@ Import-Module "./pwsh/modules/CodeFixer/" -Force
 Invoke-ComprehensiveValidation
 
 # Execute sample lab step
-$config = [PSCustomObject]@{ Example = "Value" }
+$config = PSCustomObject@{ Example = "Value" }
 Invoke-LabStep -Config $config -Body { 
     Write-CustomLog "Hello from OpenTofu Lab Automation!" "INFO" 
 }
@@ -341,11 +341,11 @@ foreach ($section in $requiredSections) {
 }
 
 # Validate code examples
-$codeBlocks = [regex]::Matches($content, '```powershell\r?\n(.*?)\r?\n```', 'Singleline')
+$codeBlocks = regex::Matches($content, '```powershell\r?\n(.*?)\r?\n```', 'Singleline')
 foreach ($block in $codeBlocks) {
-    $code = $block.Groups[1].Value
+    $code = $block.Groups1.Value
     try {
-        $null = [System.Management.Automation.Language.Parser]::ParseInput($code, [ref]$null, [ref]$null)
+        $null = System.Management.Automation.Language.Parser::ParseInput($code, ref$null, ref$null)
     } catch {
         Write-Warning "Invalid PowerShell syntax in documentation"
     }
@@ -362,8 +362,8 @@ foreach ($block in $codeBlocks) {
 ## Reference Instructions
 
 This prompt references:
-- [Documentation Standards](../instructions/documentation-standards.instructions.md)
-- [PowerShell Standards](../instructions/powershell-standards.instructions.md)
+- Documentation Standards(../instructions/documentation-standards.instructions.md)
+- PowerShell Standards(../instructions/powershell-standards.instructions.md)
 
 Please specify:
 1. Type of documentation needed (module, function, script, project)

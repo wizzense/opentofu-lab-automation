@@ -26,18 +26,18 @@ def validate_powershell_file(file_path):
             
         # Look for problematic patterns like "$variableName:" in strings
         # but exclude valid scope qualifiers like $env:, $script:, $global:, etc.
-        if re.search(r'\$[a-zA-Z_][a-zA-Z0-9_]*:', line):
+        if re.search(r'\$a-zA-Z_a-zA-Z0-9_*:', line):
             # Check if it's not a valid scope qualifier
-            if not re.search(r'\$(env|script|global|local|private|using|workflow):', line, re.IGNORECASE):
+            if not re.search(r'\$(envscriptgloballocalprivateusingworkflow):', line, re.IGNORECASE):
                 # Check if it's in a string context that could cause parsing issues
-                if '"' in line and re.search(r'"\s*[^"]*\$[a-zA-Z_][a-zA-Z0-9_]*:[^"]*"', line):
+                if '"' in line and re.search(r'"\s*^"*\$a-zA-Z_a-zA-Z0-9_*:^"*"', line):
                     print(f"ERROR: Line {i} has potentially problematic variable interpolation: {line.strip()}")
                     return False
     
     # Check for basic PowerShell syntax patterns
-    common_issues = [
-        (r'@\s*"[^"]*\n[^"]*"@\s*-\w+', 'Here-string followed by parameter without proper separation'),
-    ]
+    common_issues = 
+        (r'@\s*"^"*\n^"*"@\s*-\w+', 'Here-string followed by parameter without proper separation'),
+    
     
     for pattern, description in common_issues:
         if re.search(pattern, content, re.MULTILINE):

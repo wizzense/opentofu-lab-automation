@@ -2,10 +2,10 @@
 # Project Organization and Cleanup Script
 # This script organizes and cleans up the OpenTofu Lab Automation project structure
 
-[CmdletBinding()]
+CmdletBinding()
 param(
-    [switch]$WhatIf,
-    [switch]$Force
+    switch$WhatIf,
+    switch$Force
 )
 
 
@@ -18,7 +18,7 @@ param(
 $ErrorActionPreference = "Stop"
 
 function Write-Step {
-    param([string]$Message, [string]$Color = "Cyan")
+    param(string$Message, string$Color = "Cyan")
     
 
 
@@ -31,9 +31,9 @@ Write-Host " $Message" -ForegroundColor $Color
 
 function Move-ProjectFile {
     param(
-        [string]$Source,
-        [string]$Destination,
-        [switch]$CreateDirectory
+        string$Source,
+        string$Destination,
+        switch$CreateDirectory
     )
     
     
@@ -51,7 +51,7 @@ if (-not (Test-Path $Source)) {
     $destDir = Split-Path -Parent $Destination
     if ($CreateDirectory -and -not (Test-Path $destDir)) {
         try {
-            New-Item -Path $destDir -ItemType Directory -Force | Out-Null
+            New-Item -Path $destDir -ItemType Directory -Force  Out-Null
             Write-Host "  � Created directory: $destDir" -ForegroundColor Gray
         } catch {
             Write-Warning "Failed to create directory $destDir`: $_"
@@ -64,7 +64,7 @@ if (-not (Test-Path $Source)) {
             Write-Host "   Would move: $Source -> $Destination" -ForegroundColor Yellow
         } else {
             Move-Item -Path $Source -Destination $Destination -Force:$Force
-            Write-Host "  [PASS] Moved: $Source -> $Destination" -ForegroundColor Green
+            Write-Host "  PASS Moved: $Source -> $Destination" -ForegroundColor Green
         }
         return $true
     } catch {
@@ -75,9 +75,9 @@ if (-not (Test-Path $Source)) {
 
 function Copy-ProjectFile {
     param(
-        [string]$Source,
-        [string]$Destination,
-        [switch]$CreateDirectory
+        string$Source,
+        string$Destination,
+        switch$CreateDirectory
     )
     
     
@@ -95,7 +95,7 @@ if (-not (Test-Path $Source)) {
     $destDir = Split-Path -Parent $Destination
     if ($CreateDirectory -and -not (Test-Path $destDir)) {
         try {
-            New-Item -Path $destDir -ItemType Directory -Force | Out-Null
+            New-Item -Path $destDir -ItemType Directory -Force  Out-Null
             Write-Host "  � Created directory: $destDir" -ForegroundColor Gray
         } catch {
             Write-Warning "Failed to create directory $destDir`: $_"
@@ -108,7 +108,7 @@ if (-not (Test-Path $Source)) {
             Write-Host "   Would copy: $Source -> $Destination" -ForegroundColor Yellow
         } else {
             Copy-Item -Path $Source -Destination $Destination -Force:$Force
-            Write-Host "  [PASS] Copied: $Source -> $Destination" -ForegroundColor Green
+            Write-Host "  PASS Copied: $Source -> $Destination" -ForegroundColor Green
         }
         return $true
     } catch {
@@ -119,8 +119,8 @@ if (-not (Test-Path $Source)) {
 
 function Archive-ProjectFile {
     param(
-        [string]$Source,
-        [string]$ArchiveDir = "archive"
+        string$Source,
+        string$ArchiveDir = "archive"
     )
     
     
@@ -140,7 +140,7 @@ if (-not (Test-Path $Source)) {
     
     if (-not (Test-Path $ArchiveDir)) {
         try {
-            New-Item -Path $ArchiveDir -ItemType Directory -Force | Out-Null
+            New-Item -Path $ArchiveDir -ItemType Directory -Force  Out-Null
             Write-Host "  � Created archive directory: $ArchiveDir" -ForegroundColor Gray
         } catch {
             Write-Warning "Failed to create archive directory $ArchiveDir`: $_"
@@ -191,7 +191,7 @@ foreach ($dir in $directories) {
             Write-Host "   Would create directory: $dir" -ForegroundColor Yellow
         } else {
             try {
-                New-Item -Path $dirPath -ItemType Directory -Force | Out-Null
+                New-Item -Path $dirPath -ItemType Directory -Force  Out-Null
                 Write-Host "  � Created directory: $dir" -ForegroundColor Green
             } catch {
                 Write-Warning "Failed to create directory $dir`: $_"
@@ -215,7 +215,7 @@ $validationScripts = @{
 
 foreach ($script in $validationScripts.Keys) {
     $source = Join-Path $rootDir $script
-    $destination = Join-Path $rootDir $validationScripts[$script]
+    $destination = Join-Path $rootDir $validationScripts$script
     
     Move-ProjectFile -Source $source -Destination $destination -CreateDirectory
 }
@@ -232,7 +232,7 @@ $testScripts = @{
 
 foreach ($script in $testScripts.Keys) {
     $source = Join-Path $rootDir $script
-    $destination = Join-Path $rootDir $testScripts[$script]
+    $destination = Join-Path $rootDir $testScripts$script
     
     Move-ProjectFile -Source $source -Destination $destination -CreateDirectory
 }
@@ -248,7 +248,7 @@ $maintenanceScripts = @{
 
 foreach ($script in $maintenanceScripts.Keys) {
     $source = Join-Path $rootDir $script
-    $destination = Join-Path $rootDir $maintenanceScripts[$script]
+    $destination = Join-Path $rootDir $maintenanceScripts$script
     
     Move-ProjectFile -Source $source -Destination $destination -CreateDirectory
 }
@@ -290,12 +290,12 @@ foreach ($file in $archiveFiles) {
        }
     
     if (-not (Test-Path $source)) {
-        Write-Host "  [WARN] File not found: $file" -ForegroundColor Yellow
+        Write-Host "  WARN File not found: $file" -ForegroundColor Yellow
         continue
     }
 
     if (-not (Test-Path $archiveDir)) {
-        New-Item -Path $archiveDir -ItemType Directory -Force | Out-Null
+        New-Item -Path $archiveDir -ItemType Directory -Force  Out-Null
     }
     
     $destination = Join-Path $archiveDir $file
@@ -363,59 +363,59 @@ The project has been organized into the following structure:
 
 ## � Scripts Cleanup Summary
 
-### [PASS] Scripts Consolidated into CodeFixer Module
+### PASS Scripts Consolidated into CodeFixer Module
 
 The following scripts have been incorporated into the CodeFixer module:
 
-| Original Script | Module Function | Description |
-|-----------------|-----------------|-------------|
-| fix-powershell-syntax.ps1 | Invoke-PowerShellLint | PowerShell syntax checking and linting |
-| fix-test-syntax-errors.ps1 | Invoke-TestSyntaxFix | Fix common test syntax errors |
-| fix-ternary-syntax.ps1 | Invoke-TernarySyntaxFix | Fix ternary operator syntax issues |
-| comprehensive-lint.ps1 | Invoke-ComprehensiveValidation | Run comprehensive validation |
-| enhanced-fix-labrunner.ps1 | Invoke-ImportAnalysis | Fix import paths and dependencies |
+ Original Script  Module Function  Description 
+-----------------------------------------------
+ fix-powershell-syntax.ps1  Invoke-PowerShellLint  PowerShell syntax checking and linting 
+ fix-test-syntax-errors.ps1  Invoke-TestSyntaxFix  Fix common test syntax errors 
+ fix-ternary-syntax.ps1  Invoke-TernarySyntaxFix  Fix ternary operator syntax issues 
+ comprehensive-lint.ps1  Invoke-ComprehensiveValidation  Run comprehensive validation 
+ enhanced-fix-labrunner.ps1  Invoke-ImportAnalysis  Fix import paths and dependencies 
 
-### [PASS] Scripts Moved to Operational Directories
+### PASS Scripts Moved to Operational Directories
 
 The following scripts have been moved to appropriate operational directories:
 
-| Original Location | New Location | Description |
-|-------------------|--------------|-------------|
-| run-final-validation.ps1 | scripts/validation/run-validation.ps1 | Run full validation suite |
-| final-verification.ps1 | scripts/validation/verify-system.ps1 | Verify system functionality |
-| comprehensive-lint.ps1 | scripts/validation/run-lint.ps1 | Run linting checks |
-| comprehensive-health-check.ps1 | scripts/validation/health-check.ps1 | Run health checks |
-| run-all-tests.ps1 | scripts/testing/run-all-tests.ps1 | Run all test suites |
-| run-comprehensive-tests.ps1 | scripts/testing/run-comprehensive-tests.ps1 | Run comprehensive tests |
-| test-all-syntax.ps1 | scripts/testing/test-syntax.ps1 | Test syntax of all scripts |
-| create-validation-system.ps1 | scripts/maintenance/setup-validation.ps1 | Set up validation system |
-| fix-runner-execution.ps1 | scripts/maintenance/fix-runner.ps1 | Fix runner execution |
-| fix-runtime-execution-simple.ps1 | scripts/maintenance/simple-runtime-fix.ps1 | Simple runtime fixes |
-| update-labrunner-imports.ps1 | scripts/maintenance/update-imports.ps1 | Update import paths |
+ Original Location  New Location  Description 
+----------------------------------------------
+ run-final-validation.ps1  scripts/validation/run-validation.ps1  Run full validation suite 
+ final-verification.ps1  scripts/validation/verify-system.ps1  Verify system functionality 
+ comprehensive-lint.ps1  scripts/validation/run-lint.ps1  Run linting checks 
+ comprehensive-health-check.ps1  scripts/validation/health-check.ps1  Run health checks 
+ run-all-tests.ps1  scripts/testing/run-all-tests.ps1  Run all test suites 
+ run-comprehensive-tests.ps1  scripts/testing/run-comprehensive-tests.ps1  Run comprehensive tests 
+ test-all-syntax.ps1  scripts/testing/test-syntax.ps1  Test syntax of all scripts 
+ create-validation-system.ps1  scripts/maintenance/setup-validation.ps1  Set up validation system 
+ fix-runner-execution.ps1  scripts/maintenance/fix-runner.ps1  Fix runner execution 
+ fix-runtime-execution-simple.ps1  scripts/maintenance/simple-runtime-fix.ps1  Simple runtime fixes 
+ update-labrunner-imports.ps1  scripts/maintenance/update-imports.ps1  Update import paths 
 
-### [PASS] Scripts Archived
+### PASS Scripts Archived
 
 The following obsolete or redundant scripts have been archived:
 
-| Script | Reason |
-|--------|--------|
-| simple-syntax-error.ps1 | Test file, no longer needed |
-| test-param-issue.ps1 | Test file, functionality now in tests |
-| test-syntax-errors.ps1 | Test file, functionality now in CodeFixer |
-| test-bootstrap-fixes.py | Test script, functionality now automated |
-| test-bootstrap-syntax.py | Python test, functionality now in CodeFixer |
-| test-cross-platform-executor.ps1 | Test script, functionality integrated |
-| test-syntax-validation.ps1 | Test script, functionality in CodeFixer |
-| fix-bootstrap-script.ps1 | Fix script, functionality in CodeFixer |
-| fix-codefixer-and-tests.ps1 | Fix script, functionality in CodeFixer |
-| fix-ternary-syntax.ps1 | Fix script, functionality in CodeFixer |
-| fix-powershell-syntax.ps1 | Fix script, functionality in CodeFixer |
-| fix-all-test-syntax.ps1 | Fix script, functionality in CodeFixer |
-| fix-specific-file.ps1 | One-time fix, no longer needed |
-| auto-fix.ps1 | Replaced by Invoke-AutoFix function |
-| simple-fix-test-syntax.ps1 | Simple fix script, functionality in CodeFixer |
-| enhanced-fix-labrunner.ps1 | Fix script, functionality in CodeFixer |
-| final-automation-test.ps1 | Test script, functionality in test framework |
+ Script  Reason 
+----------------
+ simple-syntax-error.ps1  Test file, no longer needed 
+ test-param-issue.ps1  Test file, functionality now in tests 
+ test-syntax-errors.ps1  Test file, functionality now in CodeFixer 
+ test-bootstrap-fixes.py  Test script, functionality now automated 
+ test-bootstrap-syntax.py  Python test, functionality now in CodeFixer 
+ test-cross-platform-executor.ps1  Test script, functionality integrated 
+ test-syntax-validation.ps1  Test script, functionality in CodeFixer 
+ fix-bootstrap-script.ps1  Fix script, functionality in CodeFixer 
+ fix-codefixer-and-tests.ps1  Fix script, functionality in CodeFixer 
+ fix-ternary-syntax.ps1  Fix script, functionality in CodeFixer 
+ fix-powershell-syntax.ps1  Fix script, functionality in CodeFixer 
+ fix-all-test-syntax.ps1  Fix script, functionality in CodeFixer 
+ fix-specific-file.ps1  One-time fix, no longer needed 
+ auto-fix.ps1  Replaced by Invoke-AutoFix function 
+ simple-fix-test-syntax.ps1  Simple fix script, functionality in CodeFixer 
+ enhanced-fix-labrunner.ps1  Fix script, functionality in CodeFixer 
+ final-automation-test.ps1  Test script, functionality in test framework 
 
 ##  Benefits of Reorganization
 
@@ -438,14 +438,14 @@ if ($WhatIf) {
 } else {
     try {
         Set-Content -Path (Join-Path $rootDir "CLEANUP-SUMMARY.md") -Value $cleanupSummary -Force
-        Write-Host "  [PASS] Updated CLEANUP-SUMMARY.md" -ForegroundColor Green
+        Write-Host "  PASS Updated CLEANUP-SUMMARY.md" -ForegroundColor Green
     } catch {
         Write-Warning "Failed to update CLEANUP-SUMMARY.md`: $_"
     }
 }
 
 # Summary
-Write-Host "`n[PASS] Project organization and cleanup completed!" -ForegroundColor Green
+Write-Host "`nPASS Project organization and cleanup completed!" -ForegroundColor Green
 Write-Host "=============================================================" -ForegroundColor Cyan
 
 if ($WhatIf) {

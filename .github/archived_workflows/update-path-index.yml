@@ -3,7 +3,7 @@ name: Update Path Index
 
 on:
  push:
- branches: [main]
+ branches: main
  workflow_dispatch:
 
 jobs:
@@ -20,14 +20,14 @@ jobs:
  run: python scripts/update_index.py
  - name: Check for changes
  id: check_changes
- run: |
- git diff --quiet path-index.yaml || echo "changes_detected=true" >> $GITHUB_ENV
+ run: 
+ git diff --quiet path-index.yaml  echo "changes_detected=true" >> $GITHUB_ENV
 
  - name: Commit and push changes
  if: env.changes_detected == 'true'
- run: |
- git config user.name 'github-actions[bot]'
- git config user.email 'github-actions[bot]@users.noreply.github.com'
+ run: 
+ git config user.name 'github-actionsbot'
+ git config user.email 'github-actionsbot@users.noreply.github.com'
  git add path-index.yaml
  git commit -m 'chore: update path-index'
  git push

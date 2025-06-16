@@ -1,17 +1,17 @@
 # fix-runtime-execution-simple.ps1
 # Simple targeted fixes for the most critical runtime execution issues
 
-[CmdletBinding()]
+CmdletBinding()
 param(
- [Parameter(Mandatory = $false)
+ Parameter(Mandatory = $false)
 
 
 
 
 
 
-]
- [switch]$WhatIf
+
+ switch$WhatIf
 )
 
 Import-Module (Join-Path $PSScriptRoot "/pwsh/modules/CodeFixer/CodeFixer.psd1") -Force
@@ -38,7 +38,7 @@ $validationInsert = @'
  # Validate script syntax before execution
  try {
  $scriptContent = Get-Content $scriptPath -Raw
- $null = [System.Management.Automation.PSParser]::Tokenize($scriptContent, [ref]$null)
+ $null = System.Management.Automation.PSParser::Tokenize($scriptContent, ref$null)
  Write-CustomLog "Script syntax validation passed for $($s.Name)"
  } catch {
  Write-CustomLog "ERROR: Script has syntax errors: $scriptPath - $_" 'ERROR'
@@ -51,7 +51,7 @@ $validationInsert = @'
 # Insert validation before the config flag check
 if ($content -match '(\s+)(if \(\$flag = Get-ScriptConfigFlag -Path \$scriptPath\))') {
  $content = $content -replace '(\s+)(if \(\$flag = Get-ScriptConfigFlag -Path \$scriptPath\))', "`$1$validationInsert`$2"
- $fixes += "[PASS] Added script syntax validation before execution"
+ $fixes += "PASS Added script syntax validation before execution"
 } else {
  Write-Warning "Could not find insertion point for syntax validation"
 }
@@ -62,9 +62,9 @@ Write-Host " Fix 2: Improving error detection..." -ForegroundColor Green
 $oldErrorProcessing = @'
  foreach ($line in $output) {
  if (-not $line) { continue }
- if ($line -is [System.Management.Automation.ErrorRecord]) {
+ if ($line -is System.Management.Automation.ErrorRecord) {
  Write-Error $line.ToString()
- } elseif ($line -is [System.Management.Automation.WarningRecord]) {
+ } elseif ($line -is System.Management.Automation.WarningRecord) {
  Write-Warning $line.ToString()
  } else {
  Write-CustomLog $line.ToString()
@@ -84,10 +84,10 @@ $newErrorProcessing = @'
  $lineStr -match "positional parameter cannot be found") {
  Write-CustomLog "ERROR: Parameter binding issue detected in $($s.Name): $lineStr" 'ERROR'
  $exitCode = 1
- } elseif ($line -is [System.Management.Automation.ErrorRecord] -or $lineStr.StartsWith('ERROR:')) {
+ } elseif ($line -is System.Management.Automation.ErrorRecord -or $lineStr.StartsWith('ERROR:')) {
  Write-CustomLog "ERROR: $lineStr" 'ERROR'
  $exitCode = 1
- } elseif ($line -is [System.Management.Automation.WarningRecord] -or $lineStr.StartsWith('WARNING:')) {
+ } elseif ($line -is System.Management.Automation.WarningRecord -or $lineStr.StartsWith('WARNING:')) {
  Write-CustomLog "WARNING: $lineStr" 'WARN'
  } else {
  Write-CustomLog $lineStr
@@ -95,9 +95,9 @@ $newErrorProcessing = @'
  }
 '@
 
-if ($content -match [regex]::Escape($oldErrorProcessing)) {
- $content = $content -replace [regex]::Escape($oldErrorProcessing), $newErrorProcessing
- $fixes += "[PASS] Enhanced error detection for parameter binding issues"
+if ($content -match regex::Escape($oldErrorProcessing)) {
+ $content = $content -replace regex::Escape($oldErrorProcessing), $newErrorProcessing
+ $fixes += "PASS Enhanced error detection for parameter binding issues"
 } else {
  Write-Warning "Could not find error processing section to enhance"
 }
@@ -109,7 +109,7 @@ $content = $content -replace
  'Out-File -FilePath \$tempCfg -Encoding utf8', 
  'Out-File -FilePath $tempCfg -Encoding utf8 -NoNewline'
 
-$fixes += "[PASS] Fixed temporary config file encoding"
+$fixes += "PASS Fixed temporary config file encoding"
 
 # Display what we're fixing
 Write-Host "`n Applied Fixes:" -ForegroundColor Cyan
@@ -118,7 +118,7 @@ foreach ($fix in $fixes) {
 }
 
 if ($WhatIf) {
- Write-Host "`n[WARN] WhatIf mode - changes not applied" -ForegroundColor Yellow
+ Write-Host "`nWARN WhatIf mode - changes not applied" -ForegroundColor Yellow
  Write-Host "Run without -WhatIf to apply fixes" -ForegroundColor Gray
  return
 }
@@ -130,17 +130,17 @@ Write-Host "� Backup created: $backupPath" -ForegroundColor Gray
 
 # Apply fixes
 Set-Content -Path $runnerPath -Value $content -Encoding UTF8
-Write-Host "[PASS] Simple runtime fixes applied successfully!" -ForegroundColor Green
+Write-Host "PASS Simple runtime fixes applied successfully!" -ForegroundColor Green
 
 # Validate the fixed script
 Write-Host "`n� Validating fixed script..." -ForegroundColor Cyan
 
 try {
  # Test PowerShell syntax
- $null = [System.Management.Automation.PSParser]::Tokenize($content, [ref]$null)
- Write-Host "[PASS] PowerShell syntax validation passed" -ForegroundColor Green
+ $null = System.Management.Automation.PSParser::Tokenize($content, ref$null)
+ Write-Host "PASS PowerShell syntax validation passed" -ForegroundColor Green
 } catch {
- Write-Error "[FAIL] PowerShell syntax validation failed: $_"
+ Write-Error "FAIL PowerShell syntax validation failed: $_"
  Write-Host "Restoring backup..." -ForegroundColor Yellow
  Copy-Item $backupPath $runnerPath -Force
  exit 1

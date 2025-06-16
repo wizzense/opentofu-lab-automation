@@ -50,12 +50,12 @@ Invoke-GitControlledPatch -PatchDescription "feat: comprehensive cleanup" -Patch
 - **Hotfix**: `hotfix/critical-security-patch`
 
 ### Commit Standards
-| **Type** | **Scope** | **Example** |
-|----------|-----------|-------------|
-| feat | codefixer | feat(codefixer): add parallel processing |
-| fix | labrunner | fix(labrunner): resolve path issues |
-| docs | readme | docs(readme): update installation guide |
-| chore | deps | chore(deps): update dependencies |
+ **Type**  **Scope**  **Example** 
+----------------------------------
+ feat  codefixer  feat(codefixer): add parallel processing 
+ fix  labrunner  fix(labrunner): resolve path issues 
+ docs  readme  docs(readme): update installation guide 
+ chore  deps  chore(deps): update dependencies 
 
 ---
 
@@ -75,10 +75,10 @@ Invoke-GitControlledPatch -PatchDescription "feat: comprehensive cleanup" -Patch
     ./Script.ps1 -Config $config
 #>
 
-[CmdletBinding()]
+CmdletBinding()
 param(
-    [Parameter(Mandatory=$true)]
-    [pscustomobject]$Config
+    Parameter(Mandatory=$true)
+    pscustomobject$Config
 )
 
 $ErrorActionPreference = "Stop"
@@ -131,11 +131,11 @@ Update-ProjectManifest -Changes $Changes
 ```
 
 ### Health Check Commands
-| **Command** | **Purpose** |
-|-------------|-------------|
-| `./scripts/maintenance/unified-maintenance.ps1 -Mode "Quick"` | Quick health assessment |
-| `./scripts/maintenance/unified-maintenance.ps1 -Mode "All" -AutoFix` | Comprehensive health check |
-| `./Master-ConsolidatedMaintenance.ps1 -Mode "Quick"` | Master maintenance tool |
+ **Command**  **Purpose** 
+--------------------------
+ `./scripts/maintenance/unified-maintenance.ps1 -Mode "Quick"`  Quick health assessment 
+ `./scripts/maintenance/unified-maintenance.ps1 -Mode "All" -AutoFix`  Comprehensive health check 
+ `./Master-ConsolidatedMaintenance.ps1 -Mode "Quick"`  Master maintenance tool 
 
 ### Validation Sequence (After Every Change)
 1. **Import modules**: See module import standards above
@@ -150,7 +150,7 @@ Update-ProjectManifest -Changes $Changes
 ### PROJECT-MANIFEST.json Updates
 ```powershell
 # Read current manifest
-$manifest = Get-Content "./PROJECT-MANIFEST.json" | ConvertFrom-Json
+$manifest = Get-Content "./PROJECT-MANIFEST.json"  ConvertFrom-Json
 
 # Update last modified
 $manifest.project.lastUpdated = (Get-Date -Format "yyyy-MM-dd HH:mm:ss")
@@ -162,7 +162,7 @@ if ($ModuleChanges) {
 }
 
 # Save updated manifest
-$manifest | ConvertTo-Json -Depth 10 | Set-Content "./PROJECT-MANIFEST.json"
+$manifest  ConvertTo-Json -Depth 10  Set-Content "./PROJECT-MANIFEST.json"
 
 # Validate manifest structure
 Test-JsonConfig -Path "./PROJECT-MANIFEST.json"
@@ -200,7 +200,7 @@ Test-JsonConfig -Path "./PROJECT-MANIFEST.json"
 - **Legacy workflows**: Multiple files with structural errors (archive candidates)
 
 ### YAML Validation (AUTO-FIX DISABLED)
-[WARN] **CRITICAL**: YAML auto-fix is permanently disabled due to corruption issues.
+WARN **CRITICAL**: YAML auto-fix is permanently disabled due to corruption issues.
 
 ```powershell
 # SAFE: Check YAML syntax only
@@ -225,11 +225,11 @@ Describe 'ScriptName Tests' {
     }
     
     It 'should import required modules' {
-        Get-Module LabRunner | Should -Not -BeNullOrEmpty
+        Get-Module LabRunner  Should -Not -BeNullOrEmpty
     }
     
     It 'should have valid syntax' {
-        { $null = [System.Management.Automation.PSParser]::Tokenize((Get-Content $script:ScriptPath -Raw), [ref]$null) } | Should -Not -Throw
+        { $null = System.Management.Automation.PSParser::Tokenize((Get-Content $script:ScriptPath -Raw), ref$null) }  Should -Not -Throw
     }
 }
 ```
@@ -242,7 +242,7 @@ Describe 'ScriptName Tests' {
 ```json
 {
   "github.copilot.chat.codeGeneration.useInstructionFiles": true,
-  "github.copilot.instructionFiles": [
+  "github.copilot.instructionFiles": 
     {
       "pattern": "**/*",
       "instructionFile": ".github/UNIFIED-PROJECT-GUIDELINES.md"
@@ -259,7 +259,7 @@ Describe 'ScriptName Tests' {
       "pattern": ".github/workflows/**/*.{yml,yaml}",
       "instructionFile": ".github/UNIFIED-PROJECT-GUIDELINES.md"
     }
-  ],
+  ,
   "files.exclude": {
     "**/backups/**": true,
     "**/*.backup*": true,
@@ -379,20 +379,20 @@ Test-PatchingRequirements        # Validate patching environment
 ## **Compliance Checklist**
 
 ### Before Every Commit
-- [ ] Used PatchManager for branch creation
-- [ ] Pre-commit validation passed
-- [ ] PowerShell linting completed
-- [ ] YAML validation checked (no auto-fix)
-- [ ] PROJECT-MANIFEST.json updated
-- [ ] No emoji characters in any files
-- [ ] All modules import successfully
+-   Used PatchManager for branch creation
+-   Pre-commit validation passed
+-   PowerShell linting completed
+-   YAML validation checked (no auto-fix)
+-   PROJECT-MANIFEST.json updated
+-   No emoji characters in any files
+-   All modules import successfully
 
 ### Before Every Release
-- [ ] Full health check completed
-- [ ] Cross-platform testing passed
-- [ ] Documentation updated
-- [ ] Security validation completed
-- [ ] Backup systems tested
+-   Full health check completed
+-   Cross-platform testing passed
+-   Documentation updated
+-   Security validation completed
+-   Backup systems tested
 
 ---
 

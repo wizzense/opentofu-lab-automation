@@ -14,12 +14,12 @@ Copilot can help with the following debugging tasks:
 * **Start a debugging session**: use `copilot-debug` to start a debugging session from the terminal.
 * **Fix issues**: receive suggestions for fixing issues discovered during debugging.
 
-> [!TIP]
-> If you don't yet have a Copilot subscription, you can use Copilot for free by signing up for the [Copilot Free plan](https://github.com/github-copilot/signup) and get a monthly limit of completions and chat interactions.
+> !TIP
+> If you don't yet have a Copilot subscription, you can use Copilot for free by signing up for the Copilot Free plan(https://github.com/github-copilot/signup) and get a monthly limit of completions and chat interactions.
 
 ## Set up debug configuration with Copilot
 
-VS Code uses the `launch.json` file to store [debug configuration](/docs/debugtest/debugging-configuration.md). Copilot can help you create and customize this file to set up debugging for your project.
+VS Code uses the `launch.json` file to store debug configuration(/docs/debugtest/debugging-configuration.md). Copilot can help you create and customize this file to set up debugging for your project.
 
 1. Open the Chat view (`kb(workbench.action.chat.open)`).
 1. Enter the `/startDebugging` command.
@@ -51,7 +51,7 @@ The `copilot-debug` terminal command simplifies the process of configuring and s
 
 1. Copilot launches a debugging session for your application. You can now use the built-in debugging features in VS Code.
 
-Learn more about [debugging in VS Code](/docs/debugtest/debugging.md).
+Learn more about debugging in VS Code(/docs/debugtest/debugging.md).
 
 ## Fix coding issues with Copilot
 
@@ -73,7 +73,7 @@ You can use Copilot Chat to help you fix coding issues or improve your code.
     * "Refactor this code"
     * "Improve the performance of this code"
 
-Learn more about using [Copilot Chat](/docs/copilot/chat/copilot-chat.md) and [Copilot Edits](/docs/copilot/chat/copilot-edits.md) in VS Code.
+Learn more about using Copilot Chat(/docs/copilot/chat/copilot-chat.md) and Copilot Edits(/docs/copilot/chat/copilot-edits.md) in VS Code.
 
 ### Use editor smart actions
 
@@ -89,5 +89,5 @@ To fix coding issues for your application code without writing a prompt, you can
 
 ## Next steps
 
-* Explore [general debugging features in VS Code](/docs/debugtest/debugging.md).
-* Learn more about [Copilot in VS Code](/docs/copilot/overview.md).
+* Explore general debugging features in VS Code(/docs/debugtest/debugging.md).
+* Learn more about Copilot in VS Code(/docs/copilot/overview.md).

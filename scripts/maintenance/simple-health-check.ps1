@@ -2,17 +2,17 @@
 # Simple health check script for base64 encoding test
 
 param(
-    [string]$Mode = 'Full',
-    [switch]$AutoFix
+    string$Mode = 'Full',
+    switch$AutoFix
 )
 
 $ErrorActionPreference = "Stop"
 
 function Write-HealthLog {
-    param([string]$Message, [string]$Level = "INFO")
+    param(string$Message, string$Level = "INFO")
     
     $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
-    Write-Host "[$timestamp] [$Level] $Message" -ForegroundColor Green
+    Write-Host "$timestamp $Level $Message" -ForegroundColor Green
 }
 
 function Get-ProjectRoot {
@@ -31,7 +31,7 @@ Write-HealthLog "AutoFix enabled: $($AutoFix.IsPresent)" "INFO"
 
 try {
     # Simple health check
-    $psFiles = Get-ChildItem -Path $ProjectRoot -Recurse -Include "*.ps1" -ErrorAction SilentlyContinue | Measure-Object
+    $psFiles = Get-ChildItem -Path $ProjectRoot -Recurse -Include "*.ps1" -ErrorAction SilentlyContinue  Measure-Object
     Write-HealthLog "Found $($psFiles.Count) PowerShell files" "SUCCESS"
     
     # Check if key directories exist

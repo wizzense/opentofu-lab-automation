@@ -23,22 +23,22 @@ Watch-ScriptDirectory -Directory "pwsh/runner_scripts"
 Watch-ScriptDirectory -Directory "pwsh/runner_scripts" -IntervalSeconds 10
 #>
 function Watch-ScriptDirectory {
-    [CmdletBinding()]
+    CmdletBinding()
     param(
-        [Parameter(Mandatory=$true, Position=0)
+        Parameter(Mandatory=$true, Position=0)
 
 
 
 
 
 
-]
-        [string]$Directory,
+
+        string$Directory,
         
-        [Parameter(Mandatory=$false)]
-        [string]$OutputDirectory = "tests",
+        Parameter(Mandatory=$false)
+        string$OutputDirectory = "tests",
         
-        [int]$IntervalSeconds = 30
+        int$IntervalSeconds = 30
     )
     
     $ErrorActionPreference = "Stop"
@@ -49,7 +49,7 @@ function Watch-ScriptDirectory {
     
     if (-not $fullOutputDir) {
         if (-not (Test-Path $OutputDirectory)) {
-            New-Item -ItemType Directory -Path $OutputDirectory -Force | Out-Null
+            New-Item -ItemType Directory -Path $OutputDirectory -Force  Out-Null
         }
         $fullOutputDir = Resolve-Path $OutputDirectory
     }
@@ -75,7 +75,7 @@ function Watch-ScriptDirectory {
     try {
         while ($true) {
             # Get all script files in directory
-            $scriptFiles = Get-ChildItem -Path $fullDir -Filter "*.ps1" -Recurse | 
+            $scriptFiles = Get-ChildItem -Path $fullDir -Filter "*.ps1" -Recurse  
                 Where-Object { -not $_.Name.EndsWith('.Tests.ps1') }
             
             Write-Verbose "Found $($scriptFiles.Count) script files"
@@ -85,20 +85,20 @@ function Watch-ScriptDirectory {
                 $lastWrite = $script.LastWriteTime
                 
                 # Check if file is new or modified
-                if (-not $processedFiles.ContainsKey($key) -or $processedFiles[$key] -ne $lastWrite) {
+                if (-not $processedFiles.ContainsKey($key) -or $processedFiles$key -ne $lastWrite) {
                     Write-Host "Processing script: $($script.Name)" -ForegroundColor Yellow
                     
                     try {
                         # Standardize naming if needed
                         $scriptName = $script.Name
-                        if ($script.Directory.FullName -like "*runner_scripts*" -and -not ($scriptName -match '^[0-9]{4}_')) {
+                        if ($script.Directory.FullName -like "*runner_scripts*" -and -not ($scriptName -match '^0-9{4}_')) {
                             # Get next available sequence number
-                            $existingScripts = Get-ChildItem $script.Directory -Filter "*.ps1" | 
-                                Where-Object { $_.Name -match '^[0-9]{4}_' } |
-                                ForEach-Object { [int]($_.Name.Substring(0,4)) } |
+                            $existingScripts = Get-ChildItem $script.Directory -Filter "*.ps1"  
+                                Where-Object { $_.Name -match '^0-9{4}_' } 
+                                ForEach-Object { int($_.Name.Substring(0,4)) } 
                                 Sort-Object
                             
-                            $nextNumber = if ($existingScripts.Count -gt 0) { $existingScripts[-1] + 1    } else { 100    }
+                            $nextNumber = if ($existingScripts.Count -gt 0) { $existingScripts-1 + 1    } else { 100    }
                             $newName = "{0:D4}_{1}" -f $nextNumber, $scriptName
                             $newPath = Join-Path $script.Directory $newName
                             
@@ -116,7 +116,7 @@ function Watch-ScriptDirectory {
                             New-TestForScript -ScriptPath $script.FullName -OutputPath $testPath
                         }
                         
-                        $processedFiles[$key] = $lastWrite
+                        $processedFiles$key = $lastWrite
                         
                     } catch {
                         Write-Error "Failed to process script $($script.Name): $_"

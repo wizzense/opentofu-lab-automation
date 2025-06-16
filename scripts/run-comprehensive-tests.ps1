@@ -1,10 +1,10 @@
 #!/usr/bin/env pwsh
 # Run Comprehensive Tests - Executes all validation and test scripts
 
-[CmdletBinding()]
+CmdletBinding()
 param(
-    [Parameter()]
-    [switch]$Verbose
+    Parameter()
+    switch$Verbose
 )
 
 $ErrorActionPreference = "Stop"
@@ -13,7 +13,7 @@ $ErrorActionPreference = "Stop"
 $projectRoot = if ($PSScriptRoot) {
     Split-Path $PSScriptRoot -Parent
 } else {
-    Get-Location | Select-Object -ExpandProperty Path
+    Get-Location  Select-Object -ExpandProperty Path
 }
 
 # Import required modules

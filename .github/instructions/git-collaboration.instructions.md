@@ -14,27 +14,27 @@ description: Git workflow, branch management, and GitHub collaboration standards
 - **Emergency Rollback**: Instant recovery from current branch: `Invoke-QuickRollback -RollbackType "LastPatch" -CreateBackup`
 
 ### Safety Features (Protects Main Branch)
-| **Safety Feature** | **Description** | **Benefit** |
-|-------------------|-----------------|-------------|
-| No Main Branch Checkout | Never checks out protected main branch | Prevents accidental main branch modifications |
-| No Force Updates | Never uses `git pull --force` on main | Preserves branch protection integrity |
-| Current Branch Operation | Works from current branch state | Safe for feature branch workflows |
-| Protected Branch Detection | Detects and respects branch protection | Prevents policy violations |
+ **Safety Feature**  **Description**  **Benefit** 
+-------------------------------------------------
+ No Main Branch Checkout  Never checks out protected main branch  Prevents accidental main branch modifications 
+ No Force Updates  Never uses `git pull --force` on main  Preserves branch protection integrity 
+ Current Branch Operation  Works from current branch state  Safe for feature branch workflows 
+ Protected Branch Detection  Detects and respects branch protection  Prevents policy violations 
 
 ### Auto-Commit Features (Eliminates Manual Git Steps)
-| **Parameter** | **Effect** | **Use Case** |
-|---------------|------------|--------------|
-| `-AutoCommitUncommitted` | Auto-commits existing changes | Replaces `git add && git commit` |
-| `-Force` | Auto-stashes changes | Preserves work while allowing patch |
-| `-DirectCommit` | Commits directly to current branch | Skip PR for minor fixes |
+ **Parameter**  **Effect**  **Use Case** 
+-----------------------------------------
+ `-AutoCommitUncommitted`  Auto-commits existing changes  Replaces `git add && git commit` 
+ `-Force`  Auto-stashes changes  Preserves work while allowing patch 
+ `-DirectCommit`  Commits directly to current branch  Skip PR for minor fixes 
 
 ### Commit Standards
-| **Type**   | **Scope**       | **Example**                                |
-|------------|-----------------|--------------------------------------------|
-| feat       | codefixer       | feat(codefixer): add parallel processing   |
-| fix        | labrunner       | fix(labrunner): resolve path issues        |
-| docs       | readme          | docs(readme): update installation guide    |
-| chore      | deps            | chore(deps): update dependencies           |
+ **Type**    **Scope**        **Example**                                
+-------------------------------------------------------------------------
+ feat        codefixer        feat(codefixer): add parallel processing   
+ fix         labrunner        fix(labrunner): resolve path issues        
+ docs        readme           docs(readme): update installation guide    
+ chore       deps             chore(deps): update dependencies           
 
 ### Pre-Commit Validation
 Run:
@@ -60,47 +60,47 @@ Include:
 Brief description of changes.
 
 ## Type of Change
-- [ ] Bug fix
-- [ ] New feature
-- [ ] Breaking change
-- [ ] Documentation update
-- [ ] Comprehensive cleanup
+-   Bug fix
+-   New feature
+-   Breaking change
+-   Documentation update
+-   Comprehensive cleanup
 
 ## Validation Checklist
-- [ ] Pre-commit validation passed
-- [ ] PowerShell linting passed
-- [ ] YAML validation passed
-- [ ] Cross-platform path issues fixed
-- [ ] Emoji violations removed
-- [ ] Duplicate files consolidated
+-   Pre-commit validation passed
+-   PowerShell linting passed
+-   YAML validation passed
+-   Cross-platform path issues fixed
+-   Emoji violations removed
+-   Duplicate files consolidated
 
 ## Cleanup Details (if applicable)
 - **Cleanup Mode**: Standard/Aggressive/Emergency/Safe
-- **Files Removed**: [number]
-- **Directories Cleaned**: [number]
-- **Size Reclaimed**: [amount]
-- **Cross-Platform Fixes**: [count]
+- **Files Removed**: number
+- **Directories Cleaned**: number
+- **Size Reclaimed**: amount
+- **Cross-Platform Fixes**: count
 ```
 
 ### Cleanup Modes
-| **Mode** | **File Age Threshold** | **Aggressiveness** | **Use Case** |
-|----------|----------------------|-------------------|--------------|
-| Safe | 90 days | Low | Cautious cleanup, preserve most files |
-| Standard | 30 days | Medium | Regular maintenance cleanup |
-| Aggressive | 7 days | High | Major cleanup, remove recent unused files |
-| Emergency | 1 day | Very High | Crisis cleanup, remove almost everything unused |
+ **Mode**  **File Age Threshold**  **Aggressiveness**  **Use Case** 
+-----------------------------------------------------------------
+ Safe  90 days  Low  Cautious cleanup, preserve most files 
+ Standard  30 days  Medium  Regular maintenance cleanup 
+ Aggressive  7 days  High  Major cleanup, remove recent unused files 
+ Emergency  1 day  Very High  Crisis cleanup, remove almost everything unused 
 
 ### Commit Workflows
 
 #### DirectCommit vs Branch Workflow
-| **DirectCommit** | **Branch Workflow** |
-|------------------|-------------------|
-| `` Quick fixes and maintenance | `` Feature development |
-| `` Documentation updates | `` Major changes requiring review |
-| `` Emergency fixes | `` Breaking changes |
-| `` Automated cleanup operations | `` Collaborative development |
-| `` No peer review | `` Full peer review process |
-| `` No CI validation | `` Complete CI/CD validation |
+ **DirectCommit**  **Branch Workflow** 
+-------------------------------------
+ `` Quick fixes and maintenance  `` Feature development 
+ `` Documentation updates  `` Major changes requiring review 
+ `` Emergency fixes  `` Breaking changes 
+ `` Automated cleanup operations  `` Collaborative development 
+ `` No peer review  `` Full peer review process 
+ `` No CI validation  `` Complete CI/CD validation 
 
 #### When to Use DirectCommit
 ```powershell
@@ -141,11 +141,11 @@ Invoke-PatchRollback -RollbackTarget "LastWorkingState" -CreateBackup -ValidateA
 ```
 
 ### Rollback Safety Features
-| **Feature** | **Description** |
-|-------------|-----------------|
-| Safety Checks | Validates rollback safety before execution |
-| Backup Creation | Creates backups before destructive operations |
-| Stash Management | Automatically handles uncommitted changes |
-| Integrity Validation | Ensures system integrity after rollback |
-| Audit Trail | Full logging of all rollback operations |
-| Protected Branch Detection | Prevents dangerous operations on protected branches |
+ **Feature**  **Description** 
+------------------------------
+ Safety Checks  Validates rollback safety before execution 
+ Backup Creation  Creates backups before destructive operations 
+ Stash Management  Automatically handles uncommitted changes 
+ Integrity Validation  Ensures system integrity after rollback 
+ Audit Trail  Full logging of all rollback operations 
+ Protected Branch Detection  Prevents dangerous operations on protected branches 

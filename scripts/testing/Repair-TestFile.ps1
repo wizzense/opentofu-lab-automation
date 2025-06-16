@@ -1,14 +1,14 @@
 Param(
-    [Parameter(Mandatory=$true)]
-    [string]$FilePath
+    Parameter(Mandatory=$true)
+    string$FilePath
 )
 
 $ErrorActionPreference = "Stop"
 Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\pwsh/modules/CodeFixer/" -Forcefunction Test-PesterStructure {
-    param([string]$Content)
+    param(string$Content)
     
     $hasDescribe = $Content -match '^\s*Describe\s+.+'
-    $hasDot = $Content -match '^\s*\.\s+\$PSScriptRoot[^''"]+'
+    $hasDot = $Content -match '^\s*\.\s+\$PSScriptRoot^''"+'
     $hasBeforeAll = $Content -match '^\s*BeforeAll\s*\{'
     
     return @{
@@ -19,7 +19,7 @@ Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-autom
 }
 
 function Add-TestHeader {
-    param([string]$Content)
+    param(string$Content)
     
     $header = @"
 . (Join-Path `$PSScriptRoot 'helpers' 'TestHelpers.ps1')
@@ -29,14 +29,14 @@ function Add-TestHeader {
 }
 
 function Add-PesterStructure {
-    param([string]$Content)
+    param(string$Content)
     
-    $scriptName = [System.IO.Path]::GetFileNameWithoutExtension($FilePath)
+    $scriptName = System.IO.Path::GetFileNameWithoutExtension($FilePath)
     return @"
 Describe '$scriptName' {
     BeforeAll {
         # Setup test environment
-        Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\pwsh/modules/LabRunner/" -ForceImport-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\pwsh/modules/CodeFixer/" -Force`$script:TestConfig = [pscustomobject]@{
+        Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\pwsh/modules/LabRunner/" -ForceImport-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\pwsh/modules/CodeFixer/" -Force`$script:TestConfig = pscustomobject@{
             TestProperty = "TestValue"
         }
     }
@@ -76,17 +76,17 @@ $results = Invoke-ScriptAnalyzer -Path $FilePath -Settings $analyzerSettings
 
 if ($results) {
     Write-Host "Script Analyzer found $($results.Count) issues in $FilePath" -ForegroundColor Yellow
-    $results | ForEach-Object {
-        Write-Host "[$($_.Severity)] Line $($_.Line): $($_.Message)" -ForegroundColor Yellow
+    $results  ForEach-Object {
+        Write-Host "$($_.Severity) Line $($_.Line): $($_.Message)" -ForegroundColor Yellow
     }
 }
 
 # Test if the file can be imported by Pester
 try {
     $null = Invoke-Pester -Path $FilePath -PassThru
-    Write-Host "[PASS] Test file structure validated successfully" -ForegroundColor Green
+    Write-Host "PASS Test file structure validated successfully" -ForegroundColor Green
 } catch {
-    Write-Host "[FAIL] Test file validation failed: $($_.Exception.Message)" -ForegroundColor Red
+    Write-Host "FAIL Test file validation failed: $($_.Exception.Message)" -ForegroundColor Red
     throw
 }
 

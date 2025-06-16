@@ -2,8 +2,8 @@
 # Tests PSScriptAnalyzer auto-installation, import analysis, and LabRunner integration
 
 param(
- [switch]$Verbose,
- [switch]$AutoFix
+ switch$Verbose,
+ switch$AutoFix
 )
 
 
@@ -16,7 +16,7 @@ param(
 $ErrorActionPreference = "Continue"
 
 function Write-TestResult {
- param([string]$Test, [bool]$Passed, [string]$Details = "")
+ param(string$Test, bool$Passed, string$Details = "")
  
 
 
@@ -24,7 +24,7 @@ function Write-TestResult {
 
 
 
-$status = if ($Passed) { "[PASS] PASS" } else { "[FAIL] FAIL" }
+$status = if ($Passed) { "PASS PASS" } else { "FAIL FAIL" }
  $color = if ($Passed) { "Green" } else { "Red" }
  Write-Host "$status - $Test" -ForegroundColor $color
  if ($Details -and $Verbose) {
@@ -58,7 +58,7 @@ try {
 Write-Host "`n2⃣ Testing PSScriptAnalyzer Auto-Installation..." -ForegroundColor Yellow
 try {
  # Remove PSScriptAnalyzer first to test installation
- Get-Module PSScriptAnalyzer | Remove-Module -Force -ErrorAction SilentlyContinue
+ Get-Module PSScriptAnalyzer  Remove-Module -Force -ErrorAction SilentlyContinue
  
  # Test the enhanced linting function
  $result = Invoke-PowerShellLint -Path "/workspaces/opentofu-lab-automation/pwsh/runner.ps1" -PassThru -OutputFormat Text
@@ -81,8 +81,8 @@ try {
  Write-TestResult "Import analysis runs" ($importIssues -ne $null) "Found $($importIssues.Count) import issues"
  
  # Check for specific issue types
- $outdatedPaths = $importIssues | Where-Object Type -eq 'OutdatedPath'
- $missingImports = $importIssues | Where-Object Type -eq 'MissingImport'
+ $outdatedPaths = $importIssues  Where-Object Type -eq 'OutdatedPath'
+ $missingImports = $importIssues  Where-Object Type -eq 'MissingImport'
  
  Write-TestResult "Detects outdated paths" ($outdatedPaths.Count -ge 0) "Found $($outdatedPaths.Count) outdated paths"
  Write-TestResult "Detects missing imports" ($missingImports.Count -ge 0) "Found $($missingImports.Count) missing imports"
@@ -123,7 +123,7 @@ try {
 Write-Host "`n5⃣ Testing JSON Config Validation..." -ForegroundColor Yellow
 try {
  # Find some JSON config files to test
- $jsonFiles = Get-ChildItem -Path "/workspaces/opentofu-lab-automation/configs" -Recurse -Include "*.json" -File | Select-Object -First 3
+ $jsonFiles = Get-ChildItem -Path "/workspaces/opentofu-lab-automation/configs" -Recurse -Include "*.json" -File  Select-Object -First 3
  
  if ($jsonFiles.Count -gt 0) {
  foreach ($jsonFile in $jsonFiles) {

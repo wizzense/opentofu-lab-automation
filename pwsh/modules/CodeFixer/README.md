@@ -35,5 +35,5 @@ This module provides comprehensive automation tools for fixing, testing, and val
 ## Documentation
 
 For detailed usage information, see:
-- [CODEFIXER-GUIDE.md](../../../docs/CODEFIXER-GUIDE.md)
-- [TESTING.md](../../../docs/TESTING.md)
+- CODEFIXER-GUIDE.md(../../../docs/CODEFIXER-GUIDE.md)
+- TESTING.md(../../../docs/TESTING.md)

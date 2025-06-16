@@ -1,7 +1,7 @@
 # Install dependencies for running Pester and pytest
-[CmdletBinding()]
+CmdletBinding()
 param(
-    [switch]$InstallPoetry
+    switch$InstallPoetry
 )
 
 
@@ -14,8 +14,8 @@ param(
 $ErrorActionPreference = 'Stop'
 
 function Ensure-Module($Name, $Version) {
-    $module = Get-Module -ListAvailable -Name $Name | Sort-Object Version -Descending | Select-Object -First 1
-    if (-not $module -or [version]$module.Version -lt [version]$Version) {
+    $module = Get-Module -ListAvailable -Name $Name  Sort-Object Version -Descending  Select-Object -First 1
+    if (-not $module -or version$module.Version -lt version$Version) {
         Write-Host "Installing or updating module '$Name' to version '$Version'..."
         Install-Module -Name $Name -RequiredVersion $Version -Force -Scope CurrentUser
     } else {

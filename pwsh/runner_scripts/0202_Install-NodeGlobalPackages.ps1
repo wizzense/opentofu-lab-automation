@@ -1,4 +1,4 @@
-Param([object]$Config)
+Param(object$Config)
 
 
 
@@ -10,10 +10,10 @@ Param([object]$Config)
 Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\pwsh/modules/LabRunner/" -ForceWrite-CustomLog "Starting $MyInvocation.MyCommand"
 
 function Install-GlobalPackage {
-    [CmdletBinding(SupportsShouldProcess)]
+    CmdletBinding(SupportsShouldProcess)
 
     param(
-        [string]$package
+        string$package
     )
 
     
@@ -36,8 +36,8 @@ function Install-GlobalPackage {
 }
 
 function Install-NodeGlobalPackages {
-    [CmdletBinding(SupportsShouldProcess = $true)]
-    param([object]$Config)
+    CmdletBinding(SupportsShouldProcess = $true)
+    param(object$Config)
 
     
 
@@ -83,9 +83,9 @@ Write-CustomLog "Running $($MyInvocation.MyCommand.Name)"
 
 Write-CustomLog "Config parameter is: $Config"
 
-Write-CustomLog "==== [0202] Installing Global npm Packages ===="
+Write-CustomLog "==== 0202 Installing Global npm Packages ===="
 
-$nodeDeps = if ($Config -is [hashtable]) { $Config['Node_Dependencies']    } else { $Config.Node_Dependencies    }
+$nodeDeps = if ($Config -is hashtable) { $Config'Node_Dependencies'    } else { $Config.Node_Dependencies    }
 if (-not $nodeDeps) {
     Write-CustomLog "Config missing Node_Dependencies; skipping global package install."
     return
@@ -93,16 +93,16 @@ if (-not $nodeDeps) {
 
 $packages = @()
 
-if ($nodeDeps -is [hashtable] -and $nodeDeps.ContainsKey('GlobalPackages')) {
-    $packages = $nodeDeps['GlobalPackages']
+if ($nodeDeps -is hashtable -and $nodeDeps.ContainsKey('GlobalPackages')) {
+    $packages = $nodeDeps'GlobalPackages'
 } elseif ($nodeDeps.PSObject.Properties.Name -contains 'GlobalPackages') {
     $packages = $nodeDeps.GlobalPackages
 
 } else {
-    if ($nodeDeps -is [hashtable]) {
-        if ($nodeDeps['InstallYarn'])    { $packages += 'yarn' }
-        if ($nodeDeps['InstallVite'])    { $packages += 'vite' }
-        if ($nodeDeps['InstallNodemon']) { $packages += 'nodemon' }
+    if ($nodeDeps -is hashtable) {
+        if ($nodeDeps'InstallYarn')    { $packages += 'yarn' }
+        if ($nodeDeps'InstallVite')    { $packages += 'vite' }
+        if ($nodeDeps'InstallNodemon') { $packages += 'nodemon' }
     } else {
         if ($nodeDeps.InstallYarn)    { $packages += 'yarn' }
         if ($nodeDeps.InstallVite)    { $packages += 'vite' }
@@ -111,10 +111,10 @@ if ($nodeDeps -is [hashtable] -and $nodeDeps.ContainsKey('GlobalPackages')) {
 }
 
 if (-not $packages) {
-    if ($nodeDeps -is [hashtable]) {
-        if ($nodeDeps['InstallYarn']) { $packages += 'yarn' } else { Write-CustomLog "InstallYarn flag is disabled. Skipping yarn installation." }
-        if ($nodeDeps['InstallVite']) { $packages += 'vite' } else { Write-CustomLog "InstallVite flag is disabled. Skipping vite installation." }
-        if ($nodeDeps['InstallNodemon']) { $packages += 'nodemon' } else { Write-CustomLog "InstallNodemon flag is disabled. Skipping nodemon installation." }
+    if ($nodeDeps -is hashtable) {
+        if ($nodeDeps'InstallYarn') { $packages += 'yarn' } else { Write-CustomLog "InstallYarn flag is disabled. Skipping yarn installation." }
+        if ($nodeDeps'InstallVite') { $packages += 'vite' } else { Write-CustomLog "InstallVite flag is disabled. Skipping vite installation." }
+        if ($nodeDeps'InstallNodemon') { $packages += 'nodemon' } else { Write-CustomLog "InstallNodemon flag is disabled. Skipping nodemon installation." }
     } else {
         if ($nodeDeps.InstallYarn) { $packages += 'yarn' } else { Write-CustomLog "InstallYarn flag is disabled. Skipping yarn installation." }
         if ($nodeDeps.InstallVite) { $packages += 'vite' } else { Write-CustomLog "InstallVite flag is disabled. Skipping vite installation." }

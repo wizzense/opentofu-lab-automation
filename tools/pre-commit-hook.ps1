@@ -8,16 +8,16 @@
  entering the repository.
 #>
 
-[CmdletBinding()]
+CmdletBinding()
 param(
- [Parameter(Mandatory = $false)]
- [switch]$Install,
+ Parameter(Mandatory = $false)
+ switch$Install,
  
- [Parameter(Mandatory = $false)]
- [switch]$Uninstall,
+ Parameter(Mandatory = $false)
+ switch$Uninstall,
  
- [Parameter(Mandatory = $false)]
- [switch]$Test
+ Parameter(Mandatory = $false)
+ switch$Test
 )
 
 $ErrorActionPreference = "Stop"
@@ -39,17 +39,17 @@ function Install-PreCommitHook {
 
 # Check if we're in a git repository
 if (-not (Test-Path '.git')) {
- Write-Host "[FAIL] Not in a git repository" -ForegroundColor Red
+ Write-Host "FAIL Not in a git repository" -ForegroundColor Red
  exit 1
 }
 
 Write-Host " Pre-commit PowerShell validation..." -ForegroundColor Cyan
 
 # Get staged PowerShell files
-`$stagedFiles = git diff --cached --name-only --diff-filter=ACM | Where-Object { `$_ -match '\.ps1`$' }
+`$stagedFiles = git diff --cached --name-only --diff-filter=ACM  Where-Object { `$_ -match '\.ps1`$' }
 
 if (`$stagedFiles.Count -eq 0) {
- Write-Host "[PASS] No PowerShell files to validate" -ForegroundColor Green
+ Write-Host "PASS No PowerShell files to validate" -ForegroundColor Green
  exit 0
 }
 
@@ -69,7 +69,7 @@ try {
  }
  
  if (`$fileObjects.Count -eq 0) {
- Write-Host "[PASS] No valid PowerShell files to validate" -ForegroundColor Green
+ Write-Host "PASS No valid PowerShell files to validate" -ForegroundColor Green
  exit 0
  }
  
@@ -77,42 +77,42 @@ try {
  
  # Run the new batch linting with optimal batch processing parameters
  # Dynamically adjust based on file count and available CPU cores
- `$processorCount = [Environment]::ProcessorCount
+ `$processorCount = Environment::ProcessorCount
  
  if (`$fileObjects.Count -lt 20) {
  # Small file count: fewer, larger batches
- `$batchSize = [Math]::Max(3, [Math]::Ceiling(`$fileObjects.Count / 4))
- `$maxJobs = [Math]::Min(4, `$processorCount)
+ `$batchSize = Math::Max(3, Math::Ceiling(`$fileObjects.Count / 4))
+ `$maxJobs = Math::Min(4, `$processorCount)
  } elseif (`$fileObjects.Count -lt 100) {
  # Medium file count: balanced approach
  `$batchSize = 5
- `$maxJobs = [Math]::Min(6, `$processorCount)
+ `$maxJobs = Math::Min(6, `$processorCount)
  } else {
  # Large file count: optimize for maximum throughput
  `$batchSize = 4
  # Scale jobs based on CPU cores, but cap for system stability
- `$maxJobs = [Math]::Min([Math]::Max(4, `$processorCount), 12)
+ `$maxJobs = Math::Min(Math::Max(4, `$processorCount), 12)
  }
  
  Write-Host " Using `$maxJobs concurrent jobs with batch size of `$batchSize files" -ForegroundColor Gray
  `$lintResults = Invoke-PowerShellLint -Files `$fileObjects -Parallel -OutputFormat 'CI' -PassThru -BatchSize `$batchSize -MaxJobs `$maxJobs
  
  # Check for errors (syntax errors are critical for commits)
- `$syntaxErrors = `$lintResults | Where-Object { `$_.Severity -eq 'Error' }
+ `$syntaxErrors = `$lintResults  Where-Object { `$_.Severity -eq 'Error' }
  
  if (`$syntaxErrors.Count -gt 0) {
- Write-Host "`n[FAIL] CRITICAL SYNTAX ERRORS found:" -ForegroundColor Red
+ Write-Host "`nFAIL CRITICAL SYNTAX ERRORS found:" -ForegroundColor Red
  foreach (`$error in `$syntaxErrors) {
  Write-Host " `$(`$error.ScriptName):`$(`$error.Line) - `$(`$error.Message)" -ForegroundColor Red
  }
  `$hasErrors = `$true
  } else {
- Write-Host "[PASS] No critical syntax errors found" -ForegroundColor Green
+ Write-Host "PASS No critical syntax errors found" -ForegroundColor Green
  `$hasErrors = `$false
  }
  
 } catch {
- Write-Host "[WARN] Could not load batch processing, falling back to basic validation..." -ForegroundColor Yellow
+ Write-Host "WARN Could not load batch processing, falling back to basic validation..." -ForegroundColor Yellow
  Write-Host "Error: `$(`$_.Exception.Message)" -ForegroundColor Gray
  
  # Fallback to basic syntax checking only
@@ -127,10 +127,10 @@ try {
  # Test: Basic syntax
  try {
  `$content = Get-Content `$file -Raw -ErrorAction Stop
- [System.Management.Automation.PSParser]::Tokenize(`$content, [ref]`$null) | Out-Null
- Write-Host " [PASS] Valid syntax" -ForegroundColor Green
+ System.Management.Automation.PSParser::Tokenize(`$content, ref`$null)  Out-Null
+ Write-Host " PASS Valid syntax" -ForegroundColor Green
  } catch {
- Write-Host " [FAIL] SYNTAX ERROR: `$(`$_.Exception.Message)" -ForegroundColor Red
+ Write-Host " FAIL SYNTAX ERROR: `$(`$_.Exception.Message)" -ForegroundColor Red
  `$hasErrors = `$true
  continue
  }
@@ -138,11 +138,11 @@ try {
 }
 
 if (`$hasErrors) {
- Write-Host "`n[FAIL] Pre-commit validation FAILED!" -ForegroundColor Red -BackgroundColor Black
+ Write-Host "`nFAIL Pre-commit validation FAILED!" -ForegroundColor Red -BackgroundColor Black
  Write-Host "Fix the errors above before committing." -ForegroundColor Red
  exit 1
 } else {
- Write-Host "`n[PASS] All PowerShell files are valid!" -ForegroundColor Green -BackgroundColor Black
+ Write-Host "`nPASS All PowerShell files are valid!" -ForegroundColor Green -BackgroundColor Black
  
  # Re-stage any files that were auto-fixed
  foreach (`$file in `$stagedFiles) {
@@ -162,7 +162,7 @@ if (`$hasErrors) {
  chmod +x $preCommitPath
  }
  
- Write-Host "[PASS] Pre-commit hook installed successfully" -ForegroundColor Green
+ Write-Host "PASS Pre-commit hook installed successfully" -ForegroundColor Green
  Write-Host "Location: $preCommitPath" -ForegroundColor Gray
 }
 
@@ -171,9 +171,9 @@ function Remove-PreCommitHook {
  
  if (Test-Path $preCommitPath) {
  Remove-Item $preCommitPath -Force
- Write-Host "[PASS] Pre-commit hook removed" -ForegroundColor Green
+ Write-Host "PASS Pre-commit hook removed" -ForegroundColor Green
  } else {
- Write-Host "[INFO] No pre-commit hook found" -ForegroundColor Yellow
+ Write-Host "INFO No pre-commit hook found" -ForegroundColor Yellow
  }
 }
 
@@ -184,12 +184,12 @@ function Test-PreCommitHook {
  $testFile = "temp/test-precommit.ps1"
  $testContent = @"
 # Test file with syntax error
-Param([string]`$TestParam
+Param(string`$TestParam
 
 Write-Host "Test script"
 "@
  
- New-Item -Path "temp" -ItemType Directory -Force | Out-Null
+ New-Item -Path "temp" -ItemType Directory -Force  Out-Null
  Set-Content -Path $testFile -Value $testContent
  
  try {
@@ -201,9 +201,9 @@ Write-Host "Test script"
  $exitCode = $LASTEXITCODE
  
  if ($exitCode -ne 0) {
- Write-Host "[PASS] Pre-commit hook correctly blocked invalid PowerShell script" -ForegroundColor Green
+ Write-Host "PASS Pre-commit hook correctly blocked invalid PowerShell script" -ForegroundColor Green
  } else {
- Write-Host "[FAIL] Pre-commit hook failed to block invalid script" -ForegroundColor Red
+ Write-Host "FAIL Pre-commit hook failed to block invalid script" -ForegroundColor Red
  }
  
  # Clean up

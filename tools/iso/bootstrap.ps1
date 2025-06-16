@@ -1,5 +1,5 @@
 param(
-    [string]$Branch = 'main'
+    string$Branch = 'main'
 )
 
 

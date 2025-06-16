@@ -37,7 +37,7 @@ def ensure_utf8_encoding():
  import codecs
  sys.stdout.reconfigure(encoding='utf-8')
  sys.stderr.reconfigure(encoding='utf-8')
- os.environ['PYTHONIOENCODING'] = 'utf-8'
+ os.environ'PYTHONIOENCODING' = 'utf-8'
  except:
  pass
 
@@ -55,7 +55,7 @@ def print_banner():
 
 Platform: {platform.system()} {platform.release()}
 Working Directory: {get_working_directory()}
-Python: {sys.version.split()[0]}
+Python: {sys.version.split()0}
 """
  print(banner)
 
@@ -63,13 +63,13 @@ def check_dependencies():
  """Check for required dependencies"""
  print(" Checking dependencies...")
  
- issues = []
+ issues = 
  
  # Check Python version
  if sys.version_info < (3, 7):
  issues.append("Python 3.7+ is required")
  else:
- print(f"  Python {sys.version.split()[0]}")
+ print(f"  Python {sys.version.split()0}")
  
  # Check tkinter for GUI
  try:
@@ -81,9 +81,9 @@ def check_dependencies():
  
  # Check PowerShell
  pwsh_available = False
- for cmd in ['pwsh', 'powershell']:
+ for cmd in 'pwsh', 'powershell':
  try:
- result = subprocess.run([cmd, '-Command', 'Write-Host "OK"'], 
+ result = subprocess.run(cmd, '-Command', 'Write-Host "OK"', 
  capture_output=True, timeout=5)
  if result.returncode == 0:
  print(f"  PowerShell ({cmd})")
@@ -114,7 +114,7 @@ def launch_enhanced_gui():
  print(f" Enhanced GUI script not found: {gui_script}")
  return False
  
- subprocess.run([sys.executable, str(gui_script)], cwd=str(work_dir))
+ subprocess.run(sys.executable, str(gui_script), cwd=str(work_dir))
  return True
  
  except Exception as e:
@@ -149,15 +149,15 @@ def launch_config_builder():
  for field in fields:
  if field.field_type == "bool":
  while True:
- response = input(f" {field.display_name} (y/n) [{field.default_value}]: ").strip().lower()
+ response = input(f" {field.display_name} (y/n) {field.default_value}: ").strip().lower()
  if not response:
- config[field.name] = field.default_value
+ configfield.name = field.default_value
  break
- elif response in ['y', 'yes', 'true', '1']:
- config[field.name] = True
+ elif response in 'y', 'yes', 'true', '1':
+ configfield.name = True
  break
- elif response in ['n', 'no', 'false', '0']:
- config[field.name] = False
+ elif response in 'n', 'no', 'false', '0':
+ configfield.name = False
  break
  else:
  print(" Please enter y/n")
@@ -165,19 +165,19 @@ def launch_config_builder():
  elif field.field_type == "choice":
  print(f" Choices: {', '.join(field.choices)}")
  while True:
- response = input(f" {field.display_name} [{field.default_value}]: ").strip()
+ response = input(f" {field.display_name} {field.default_value}: ").strip()
  if not response:
- config[field.name] = field.default_value
+ configfield.name = field.default_value
  break
  elif response in field.choices:
- config[field.name] = response
+ configfield.name = response
  break
  else:
  print(f" Please choose from: {', '.join(field.choices)}")
  
  else:
- response = input(f" {field.display_name} [{field.default_value}]: ").strip()
- config[field.name] = response if response else field.default_value
+ response = input(f" {field.display_name} {field.default_value}: ").strip()
+ configfield.name = response if response else field.default_value
  
  # Show help text
  print(f" {field.help_text}")
@@ -226,16 +226,16 @@ def launch_enhanced_deploy():
  
  try:
  if choice == "1":
- subprocess.run([sys.executable, str(deploy_script), "--quick", "--non-interactive"], 
+ subprocess.run(sys.executable, str(deploy_script), "--quick", "--non-interactive", 
  cwd=str(work_dir))
  elif choice == "2":
  config_path = input("Configuration file path (or Enter for default): ").strip()
- cmd = [sys.executable, str(deploy_script), "--non-interactive"]
+ cmd = sys.executable, str(deploy_script), "--non-interactive"
  if config_path:
- cmd.extend(["--config", config_path])
+ cmd.extend("--config", config_path)
  subprocess.run(cmd, cwd=str(work_dir))
  elif choice == "3":
- subprocess.run([sys.executable, str(deploy_script), "--check", "--non-interactive"], 
+ subprocess.run(sys.executable, str(deploy_script), "--check", "--non-interactive", 
  cwd=str(work_dir))
  else:
  print("Invalid choice")
@@ -263,7 +263,7 @@ def ensure_project_files(work_dir: Path):
  import shutil
  
  # Copy essential directories
- for dir_name in ["configs", "pwsh", "py"]:
+ for dir_name in "configs", "pwsh", "py":
  source_dir = script_dir / dir_name
  if source_dir.exists():
  dest_dir = work_dir / dir_name
@@ -273,7 +273,7 @@ def ensure_project_files(work_dir: Path):
  print(f"  Copied {dir_name}/")
  
  # Copy essential files
- for file_name in ["deploy.py", "gui_enhanced.py"]:
+ for file_name in "deploy.py", "gui_enhanced.py":
  source_file = script_dir / file_name
  if source_file.exists():
  shutil.copy2(source_file, work_dir / file_name)
@@ -337,7 +337,7 @@ def main():
  
  args = parser.parse_args()
  
- if not any([args.gui, args.config_builder, args.deploy, args.check]):
+ if not any(args.gui, args.config_builder, args.deploy, args.check):
  # No specific action requested, show interactive menu
  print_banner()
  interactive_menu()

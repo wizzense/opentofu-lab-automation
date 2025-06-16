@@ -1,4 +1,4 @@
-Param([object]$Config)
+Param(object$Config)
 
 
 

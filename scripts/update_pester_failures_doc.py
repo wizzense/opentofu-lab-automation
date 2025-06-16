@@ -6,28 +6,28 @@ import os
 import re
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents1
 ARTIFACTS = ROOT / "artifacts"
 DOC = ROOT / "docs/pester-test-failures.md"
 
 # Find the most recent Pester XML result file
 def find_pester_xml():
-    for name in ["pestertesterresults.xml", "testResults.xml"]:
+    for name in "pestertesterresults.xml", "testResults.xml":
         f = ARTIFACTS / name
         if f.exists():
             return f
     # fallback to root
-    for name in ["pestertesterresults.xml", "testResults.xml"]:
+    for name in "pestertesterresults.xml", "testResults.xml":
         f = ROOT / name
         if f.exists():
             return f
     return None
 
 def parse_errors(xml_path):
-    errors = []
+    errors = 
     with open(xml_path, encoding="utf-8", errors="ignore") as f:
         for line in f:
-            if re.search(r"\[-\]", line) or re.search(r"Error|Exception|ParseException|InvalidOperationException", line):
+            if re.search(r"\-\", line) or re.search(r"ErrorExceptionParseExceptionInvalidOperationException", line):
                 errors.append(line.strip())
     return errors
 
@@ -45,7 +45,7 @@ def update_doc(errors):
 def main():
     xml = find_pester_xml()
     if not xml:
-        update_doc(["No Pester XML results found."])
+        update_doc("No Pester XML results found.")
         return
     errors = parse_errors(xml)
     update_doc(errors)

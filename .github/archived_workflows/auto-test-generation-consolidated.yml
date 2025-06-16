@@ -35,8 +35,8 @@ jobs:
  - name: " Detect Changed Scripts"
  id: detect-changes
  shell: bash
- run: |
- if [[ "${{ github.event_name }}" == "workflow_dispatch" && "${{ github.event.inputs.force_regenerate }}" == "true" ]]; then
+ run: 
+ if  "${{ github.event_name }}" == "workflow_dispatch" && "${{ github.event.inputs.force_regenerate }}" == "true" ; then
  FORCE_REGENERATE=true
  else
  FORCE_REGENERATE=false
@@ -44,14 +44,14 @@ jobs:
 
  echo "Force regenerate: $FORCE_REGENERATE"
 
- if [[ "$FORCE_REGENERATE" == "true" ]]; then
+ if  "$FORCE_REGENERATE" == "true" ; then
  echo "Forcing regeneration of all tests"
  # Get all PowerShell scripts (excluding test files)
- CHANGED_SCRIPTS=$(find pwsh -name "*.ps1" -not -path "*/\.*" -not -name "*.Tests.ps1" -type f | tr '\n' ' ')
+ CHANGED_SCRIPTS=$(find pwsh -name "*.ps1" -not -path "*/\.*" -not -name "*.Tests.ps1" -type f  tr '\n' ' ')
  HAS_CHANGES="true"
  else
  # For pull requests, compare with base branch
- if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+ if  "${{ github.event_name }}" == "pull_request" ; then
  BASE_SHA="${{ github.event.pull_request.base.sha }}"
  else
  # For pushes, get the parent commit
@@ -59,9 +59,9 @@ jobs:
  fi
 
  # Get changed PowerShell scripts (excluding test files)
- CHANGED_SCRIPTS=$(git diff --name-only "$BASE_SHA" HEAD -- "pwsh/**/*.ps1" | grep -v ".Tests.ps1" | tr '\n' ' ')
+ CHANGED_SCRIPTS=$(git diff --name-only "$BASE_SHA" HEAD -- "pwsh/**/*.ps1"  grep -v ".Tests.ps1"  tr '\n' ' ')
 
- if [[ -n "$CHANGED_SCRIPTS" ]]; then
+ if  -n "$CHANGED_SCRIPTS" ; then
  HAS_CHANGES="true"
  else
  HAS_CHANGES="false"
@@ -69,27 +69,27 @@ jobs:
  fi
 
  # Detect renamed files
- RENAMED_FILES=$(git diff --name-status "$BASE_SHA" HEAD | grep "^R" || true)
- RENAMED_JSON="[]"
+ RENAMED_FILES=$(git diff --name-status "$BASE_SHA" HEAD  grep "^R"  true)
+ RENAMED_JSON=""
 
- if [[ -n "$RENAMED_FILES" ]]; then
+ if  -n "$RENAMED_FILES" ; then
  # Convert to JSON
- RENAMED_JSON="["
+ RENAMED_JSON=""
  while IFS= read -r line; do
- if [[ "$line" =~ ^R[0-9]+[[:space:]]+(.+)[[:space:]]+(.+)$ ]]; then
- FROM="${BASH_REMATCH[1]}"
- TO="${BASH_REMATCH[2]}"
- if [[ "$FROM" == *.ps1 && "$TO" == *.ps1 && ! "$FROM" == *.Tests.ps1 && ! "$TO" == *.Tests.ps1 ]]; then
+ if  "$line" =~ ^R0-9+:space:+(.+):space:+(.+)$ ; then
+ FROM="${BASH_REMATCH1}"
+ TO="${BASH_REMATCH2}"
+ if  "$FROM" == *.ps1 && "$TO" == *.ps1 && ! "$FROM" == *.Tests.ps1 && ! "$TO" == *.Tests.ps1 ; then
  RENAMED_JSON="${RENAMED_JSON}{\"from\":\"$FROM\",\"to\":\"$TO\"},"
  fi
  fi
  done <<< "$RENAMED_FILES"
 
  # Remove trailing comma if needed
- if [[ "$RENAMED_JSON" != "[" ]]; then
+ if  "$RENAMED_JSON" != "" ; then
  RENAMED_JSON="${RENAMED_JSON:0:-1}"
  fi
- RENAMED_JSON="${RENAMED_JSON}]"
+ RENAMED_JSON="${RENAMED_JSON}"
  fi
 
  echo "has-changes=$HAS_CHANGES" >> $GITHUB_OUTPUT
@@ -108,7 +108,7 @@ jobs:
  strategy:
  fail-fast: false
  matrix:
- os: [ubuntu-latest, windows-latest, macos-latest]
+ os: ubuntu-latest, windows-latest, macos-latest
  steps:
  - name: " Checkout Repository"
  uses: actions/checkout@v4
@@ -116,8 +116,8 @@ jobs:
  - name: " Setup PowerShell"
  if: matrix.os == 'ubuntu-latest'
  shell: bash
- run: |
- if ! sudo apt-get update || ! sudo apt-get install -y powershell; then
+ run: 
+ if ! sudo apt-get update  ! sudo apt-get install -y powershell; then
  echo "Failed to install PowerShell" >&2
  exit 1
  fi
@@ -125,7 +125,7 @@ jobs:
  - name: " Cache PowerShell Modules"
  uses: actions/cache@v4
  with:
- path: |
+ path: 
  ~/.local/share/powershell/Modules
  ~/Documents/PowerShell/Modules
  C:\\Users\\runneradmin\\Documents\\PowerShell\\Modules
@@ -134,13 +134,13 @@ jobs:
 
  - name: " Install Dependencies"
  shell: pwsh
- run: |
+ run: 
  # Install Pester for test generation
  if (-not (Get-Module -ListAvailable -Name Pester)) {
  # Ensure PowerShell Gallery is trusted
  Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
  # Remove old Pester versions that might conflict
- Get-Module Pester -ListAvailable | Where-Object Version -lt 5.0.0 | Uninstall-Module -Force -ErrorAction SilentlyContinue
+ Get-Module Pester -ListAvailable  Where-Object Version -lt 5.0.0  Uninstall-Module -Force -ErrorAction SilentlyContinue
  # Install specific Pester version
  Install-Module -Name Pester -RequiredVersion 5.7.1 -Force -Scope CurrentUser -AllowClobber
  }
@@ -150,16 +150,16 @@ jobs:
 
  - name: " Generate Tests"
  shell: pwsh
- run: |
+ run: 
  $ErrorActionPreference = 'Stop'
 
  # Parse changed scripts
- $changedScripts = "${{ needs.setup.outputs.changed-scripts }}".Trim().Split(' ', [StringSplitOptions]::RemoveEmptyEntries)
+ $changedScripts = "${{ needs.setup.outputs.changed-scripts }}".Trim().Split(' ', StringSplitOptions::RemoveEmptyEntries)
 
  # Parse renamed files JSON
  $renamedFilesJson = "${{ needs.setup.outputs.renamed-files-json }}"
- $renamedFiles = if ($renamedFilesJson -and $renamedFilesJson -ne '[]') {
- $renamedFilesJson | ConvertFrom-Json
+ $renamedFiles = if ($renamedFilesJson -and $renamedFilesJson -ne '') {
+ $renamedFilesJson  ConvertFrom-Json
  } else {
  @()
  }
@@ -175,7 +175,7 @@ jobs:
  # Ensure the directory exists
  $testDir = Split-Path -Parent $testFilePath
  if (-not (Test-Path $testDir)) {
- New-Item -Path $testDir -ItemType Directory -Force | Out-Null
+ New-Item -Path $testDir -ItemType Directory -Force  Out-Null
  }
 
  # Generate the test file
@@ -207,7 +207,7 @@ jobs:
  if (Test-Path $oldTestPath) {
  $testDir = Split-Path -Parent $newTestPath
  if (-not (Test-Path $testDir)) {
- New-Item -Path $testDir -ItemType Directory -Force | Out-Null
+ New-Item -Path $testDir -ItemType Directory -Force  Out-Null
  }
 
  Move-Item -Path $oldTestPath -Destination $newTestPath -Force
@@ -224,7 +224,7 @@ jobs:
  report-results:
  name: " Test Generation Report"
  if: always() && needs.setup.outputs.has-changes == 'true'
- needs: [setup, generate-tests]
+ needs: setup, generate-tests
  runs-on: ubuntu-latest
  steps:
  - name: " Checkout Repository"
@@ -240,12 +240,12 @@ jobs:
  - name: " Count Generated Tests"
  id: count
  shell: bash
- run: |
- TEST_COUNT=$(find tests -name "*.Tests.ps1" | wc -l)
+ run: 
+ TEST_COUNT=$(find tests -name "*.Tests.ps1"  wc -l)
  echo "count=$TEST_COUNT" >> $GITHUB_OUTPUT
 
  - name: " Generate Report"
- run: |
+ run: 
  echo "# Test Generation Report" >> $GITHUB_STEP_SUMMARY
  echo "" >> $GITHUB_STEP_SUMMARY
  echo "Total generated tests: ${{ steps.count.outputs.count }}" >> $GITHUB_STEP_SUMMARY
@@ -257,5 +257,5 @@ jobs:
  uses: EndBug/add-and-commit@v9
  with:
  add: 'tests'
- message: ' Auto-generated tests from CI [skip ci]'
+ message: ' Auto-generated tests from CI skip ci'
  default_author: github_actions

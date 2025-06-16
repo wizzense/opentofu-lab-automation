@@ -21,7 +21,7 @@ Pass `-RunId <id>` to target a specific run if automatic discovery fails. Run ID
 Open the results file in any editor or query it with `Select-Xml`:
 
 ```powershell
-Select-Xml -Path path\to\testResults.xml -XPath "//test-case[@result='Failed' or @outcome='Failed']" | ForEach-Object { $_.Node.name }
+Select-Xml -Path path\to\testResults.xml -XPath "//test-case@result='Failed' or @outcome='Failed'"  ForEach-Object { $_.Node.name }
 ```
 
 The output lists failing Pester tests. Review the surrounding `failure` nodes for the error message and stack trace.
@@ -50,4 +50,4 @@ done
 
 ---
 
-See [pester-test-failures.md](pester-test-failures.md) for a tracked list of current test failures.
+See pester-test-failures.md(pester-test-failures.md) for a tracked list of current test failures.

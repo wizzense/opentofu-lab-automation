@@ -9,7 +9,7 @@
 #>
 
 param(
-    [switch]$WhatIf
+    switch$WhatIf
 )
 
 
@@ -29,7 +29,7 @@ $issuesFound = @()
 
 # Function to fix GitHub Actions syntax in PowerShell files
 function Fix-GitHubActionsSyntax {
-    param([string]$FilePath, [string]$Content)
+    param(string$FilePath, string$Content)
     
     
 
@@ -43,7 +43,7 @@ $originalContent = $Content
     $changes = @()
     
     # Pattern 1: Fix ${{ }} in strings - make them literal strings
-    $pattern1 = '\$\{\{([^}]+)\}\}'
+    $pattern1 = '\$\{\{(^}+)\}\}'
     if ($fixedContent -match $pattern1) {
         $fixedContent = $fixedContent -replace $pattern1, '`${{ $1 }}'
         $changes += "Fixed GitHub Actions syntax: `${{ }} -> ```${{ }}"
@@ -53,14 +53,14 @@ $originalContent = $Content
     $pattern2 = 'Use `\{ instead of \{ in variable names\.'
     
     # Pattern 3: Fix double quotes around GitHub expressions
-    $pattern3 = '"\$\{\{([^}]+)\}\}"'
+    $pattern3 = '"\$\{\{(^}+)\}\}"'
     if ($fixedContent -match $pattern3) {
         $fixedContent = $fixedContent -replace $pattern3, '"`${{ $1 }}"'
         $changes += "Fixed quoted GitHub Actions expressions"
     }
     
     # Pattern 4: Fix single quotes around GitHub expressions  
-    $pattern4 = "'\$\{\{([^}]+)\}\}'"
+    $pattern4 = "'\$\{\{(^}+)\}\}'"
     if ($fixedContent -match $pattern4) {
         $fixedContent = $fixedContent -replace $pattern4, "'`${{ `$1 }}'"
         $changes += "Fixed single-quoted GitHub Actions expressions"
@@ -75,7 +75,7 @@ $originalContent = $Content
 
 # Function to fix common PowerShell syntax errors
 function Fix-CommonSyntaxErrors {
-    param([string]$FilePath, [string]$Content)
+    param(string$FilePath, string$Content)
     
     
 
@@ -91,27 +91,27 @@ $originalContent = $Content
     # Fix missing string terminators
     $lines = $fixedContent -split "`n"
     for ($i = 0; $i -lt $lines.Count; $i++) {
-        $line = $lines[$i]
+        $line = $lines$i
         
         # Check for unclosed single quotes
-        $singleQuotes = ($line.ToCharArray() | Where-Object { $_ -eq "'" }).Count
+        $singleQuotes = ($line.ToCharArray()  Where-Object { $_ -eq "'" }).Count
         if ($singleQuotes % 2 -eq 1 -and $line -notmatch "\\'" -and $line -notmatch "#.*'") {
-            $lines[$i] = $line + "'"
+            $lines$i = $line + "'"
             $changes += "Fixed missing single quote on line $($i + 1)"
         }
         
         # Check for unclosed double quotes
-        $doubleQuotes = ($line.ToCharArray() | Where-Object { $_ -eq '"' }).Count
+        $doubleQuotes = ($line.ToCharArray()  Where-Object { $_ -eq '"' }).Count
         if ($doubleQuotes % 2 -eq 1 -and $line -notmatch '\\"' -and $line -notmatch '#.*"') {
-            $lines[$i] = $line + '"'
+            $lines$i = $line + '"'
             $changes += "Fixed missing double quote on line $($i + 1)"
         }
     }
     $fixedContent = $lines -join "`n"
     
     # Fix missing closing braces
-    $openBraces = ($fixedContent.ToCharArray() | Where-Object { $_ -eq '{' }).Count
-    $closeBraces = ($fixedContent.ToCharArray() | Where-Object { $_ -eq '}' }).Count
+    $openBraces = ($fixedContent.ToCharArray()  Where-Object { $_ -eq '{' }).Count
+    $closeBraces = ($fixedContent.ToCharArray()  Where-Object { $_ -eq '}' }).Count
     if ($openBraces -gt $closeBraces) {
         $fixedContent += "`n}"
         $changes += "Added missing closing brace"
@@ -125,14 +125,14 @@ $originalContent = $Content
 }
 
 # Get all PowerShell files, excluding legacy/archive
-$allFiles = Get-ChildItem -Path . -Recurse -Include "*.ps1", "*.psm1", "*.psd1" -File | 
+$allFiles = Get-ChildItem -Path . -Recurse -Include "*.ps1", "*.psm1", "*.psd1" -File  
     Where-Object { 
-        $_.FullName -notmatch [regex]::Escape("archive") -and
-        $_.FullName -notmatch [regex]::Escape("legacy") -and 
-        $_.FullName -notmatch [regex]::Escape("historical-fixes") -and
-        $_.FullName -notmatch [regex]::Escape(".backup") -and
-        $_.FullName -notmatch [regex]::Escape("temp") -and
-        $_.FullName -notmatch [regex]::Escape("backup") 
+        $_.FullName -notmatch regex::Escape("archive") -and
+        $_.FullName -notmatch regex::Escape("legacy") -and 
+        $_.FullName -notmatch regex::Escape("historical-fixes") -and
+        $_.FullName -notmatch regex::Escape(".backup") -and
+        $_.FullName -notmatch regex::Escape("temp") -and
+        $_.FullName -notmatch regex::Escape("backup") 
     }
 
 Write-Host "Found $($allFiles.Count) PowerShell files to check (excluding legacy/archive)" -ForegroundColor Green
@@ -147,25 +147,25 @@ foreach ($file in $allFiles) {
         $parseErrors = $null
         $content = Get-Content -Path $file.FullName -Raw -ErrorAction Stop
         
-        if ([string]::IsNullOrWhiteSpace($content)) {
-            Write-Host "  [WARN]  Empty file, skipping" -ForegroundColor Yellow
+        if (string::IsNullOrWhiteSpace($content)) {
+            Write-Host "  WARN  Empty file, skipping" -ForegroundColor Yellow
             continue
         }
         
         # Try to parse
-        $ast = [System.Management.Automation.Language.Parser]::ParseInput(
+        $ast = System.Management.Automation.Language.Parser::ParseInput(
             $content, 
             $file.FullName,
-            [ref]$tokens, 
-            [ref]$parseErrors
+            ref$tokens, 
+            ref$parseErrors
         )
         
         if ($parseErrors.Count -eq 0) {
-            Write-Host "  [PASS] No syntax errors" -ForegroundColor Green
+            Write-Host "  PASS No syntax errors" -ForegroundColor Green
             continue
         }
         
-        Write-Host "  [FAIL] Found $($parseErrors.Count) syntax error(s)" -ForegroundColor Red
+        Write-Host "  FAIL Found $($parseErrors.Count) syntax error(s)" -ForegroundColor Red
         
         $issuesFound += @{
             File = $file.FullName
@@ -206,7 +206,7 @@ foreach ($file in $allFiles) {
             # Save fixed content
             Set-Content -Path $file.FullName -Value $currentContent -Encoding UTF8
             
-            Write-Host "  [PASS] FIXED: Applied $($allChanges.Count) fix(es)" -ForegroundColor Green
+            Write-Host "  PASS FIXED: Applied $($allChanges.Count) fix(es)" -ForegroundColor Green
             foreach ($change in $allChanges) {
                 Write-Host "    • $change" -ForegroundColor Cyan
             }
@@ -216,25 +216,25 @@ foreach ($file in $allFiles) {
             # Verify the fix worked
             try {
                 $verifyErrors = $null
-                [System.Management.Automation.Language.Parser]::ParseFile(
+                System.Management.Automation.Language.Parser::ParseFile(
                     $file.FullName, 
-                    [ref]$null, 
-                    [ref]$verifyErrors
+                    ref$null, 
+                    ref$verifyErrors
                 )
                 if ($verifyErrors.Count -eq 0) {
-                    Write-Host "  [PASS] Verification: Syntax is now valid" -ForegroundColor Green
+                    Write-Host "  PASS Verification: Syntax is now valid" -ForegroundColor Green
                 } else {
-                    Write-Host "  [WARN]  Verification: $($verifyErrors.Count) errors remain" -ForegroundColor Yellow
+                    Write-Host "  WARN  Verification: $($verifyErrors.Count) errors remain" -ForegroundColor Yellow
                 }
             } catch {
-                Write-Host "  [FAIL] Verification failed: $($_.Exception.Message)" -ForegroundColor Red
+                Write-Host "  FAIL Verification failed: $($_.Exception.Message)" -ForegroundColor Red
             }
         } else {
-            Write-Host "  [WARN]  No automatic fixes available" -ForegroundColor Yellow
+            Write-Host "  WARN  No automatic fixes available" -ForegroundColor Yellow
         }
         
     } catch {
-        Write-Host "  [FAIL] Error processing file: $($_.Exception.Message)" -ForegroundColor Red
+        Write-Host "  FAIL Error processing file: $($_.Exception.Message)" -ForegroundColor Red
     }
 }
 
@@ -254,10 +254,10 @@ if ($WhatIf) {
     }
 } else {
     if ($totalFixed -gt 0) {
-        Write-Host "`n[PASS] Successfully fixed $totalFixed files!" -ForegroundColor Green
+        Write-Host "`nPASS Successfully fixed $totalFixed files!" -ForegroundColor Green
         Write-Host "� Backup files created with .backup-* extension" -ForegroundColor Yellow
     } else {
-        Write-Host "`n[PASS] No fixes were needed!" -ForegroundColor Green
+        Write-Host "`nPASS No fixes were needed!" -ForegroundColor Green
     }
 }
 

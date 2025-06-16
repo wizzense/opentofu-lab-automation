@@ -34,23 +34,23 @@ Invoke-ComprehensiveValidation
 Invoke-ComprehensiveValidation -SkipLint -DetailedResults
 #>
 function Invoke-ComprehensiveValidation {
-    [CmdletBinding()]
+    CmdletBinding()
     param(
-        [switch]$EnableAutoFix,
-        [switch]$GenerateTests,
-        [ValidateSet('Text', 'JSON', 'CI')]
-        [string]$OutputFormat = 'Text',
-        [string]$OutputPath,
-        [switch]$OutputComprehensiveReport,
-        [switch]$CI,
-        [switch]$Detailed,
-        [switch]$SkipLint,
-        [switch]$SkipPester,
-        [switch]$SkipPyTest,
-        [switch]$SkipFixes,
-        [switch]$DetailedResults,
-        [switch]$PassThru,
-        [string]$BasePath = (Get-Location).Path
+        switch$EnableAutoFix,
+        switch$GenerateTests,
+        ValidateSet('Text', 'JSON', 'CI')
+        string$OutputFormat = 'Text',
+        string$OutputPath,
+        switch$OutputComprehensiveReport,
+        switch$CI,
+        switch$Detailed,
+        switch$SkipLint,
+        switch$SkipPester,
+        switch$SkipPyTest,
+        switch$SkipFixes,
+        switch$DetailedResults,
+        switch$PassThru,
+        string$BasePath = (Get-Location).Path
     )
 
     Write-Host "Running comprehensive validation..." -ForegroundColor Cyan
@@ -75,33 +75,33 @@ function Invoke-ComprehensiveValidation {
     try {
         # 1. PowerShell Linting
         if (-not $SkipLint) {
-            Write-Host "`n[1/4] Running PowerShell linting..." -ForegroundColor Yellow
+            Write-Host "`n1/4 Running PowerShell linting..." -ForegroundColor Yellow
             $lintResults = Invoke-ParallelScriptAnalyzer -Path $BasePath -OutputFormat $OutputFormat -PassThru
             $results.PowerShellLint = $lintResults
 
             if ($lintResults) {
-                $results.SummaryStats.ScriptsWithIssues = ($lintResults | Select-Object -Unique File).Count
-                if ($lintResults | Where-Object Severity -eq 'Error') {
+                $results.SummaryStats.ScriptsWithIssues = ($lintResults  Select-Object -Unique File).Count
+                if ($lintResults  Where-Object Severity -eq 'Error') {
                     $results.OverallStatus = "HasIssues"
                 }
             }
         }
 
         # 2. JSON Configuration Validation
-        Write-Host "`n[2/4] Validating JSON configuration files..." -ForegroundColor Yellow
+        Write-Host "`n2/4 Validating JSON configuration files..." -ForegroundColor Yellow
         $jsonResults = Test-JsonConfig -Path $BasePath -OutputFormat $OutputFormat -PassThru
         $results.JsonValidation = $jsonResults
 
         if ($jsonResults) {
             $results.SummaryStats.JsonIssues = $jsonResults.Count
-            if ($jsonResults | Where-Object Severity -eq 'Error') {
+            if ($jsonResults  Where-Object Severity -eq 'Error') {
                 $results.OverallStatus = "HasIssues"
             }
         }
 
         # 3. Apply fixes if requested
         if (($EnableAutoFix -or -not $SkipFixes) -and $results.OverallStatus -eq "HasIssues") {
-            Write-Host "`n[3/4] Applying automatic fixes..." -ForegroundColor Yellow
+            Write-Host "`n3/4 Applying automatic fixes..." -ForegroundColor Yellow
             try {
                 $fixResults = Invoke-AutoFix -Path $BasePath -EnableAutoFix -PassThru
                 $results.SyntaxFixes = $fixResults
@@ -110,31 +110,31 @@ function Invoke-ComprehensiveValidation {
                 Write-CustomLog "Some fixes failed: $($_.Exception.Message)" "ERROR"
             }
         } else {
-            Write-Host "`n[3/4] Skipping fixes (not requested or no issues found)" -ForegroundColor Gray
+            Write-Host "`n3/4 Skipping fixes (not requested or no issues found)" -ForegroundColor Gray
         }
 
         # 4. Generate tests if requested
         if ($GenerateTests) {
-            Write-Host "`n[4/4] Generating missing tests..." -ForegroundColor Yellow
+            Write-Host "`n4/4 Generating missing tests..." -ForegroundColor Yellow
             Write-CustomLog "Test generation not yet implemented" "INFO"
         } else {
-            Write-Host "`n[4/4] Skipping test generation (not requested)" -ForegroundColor Gray
+            Write-Host "`n4/4 Skipping test generation (not requested)" -ForegroundColor Gray
         }
 
         # Calculate total scripts
-        $allScripts = Get-ChildItem -Path $BasePath -Recurse -Include *.ps1,*.psm1,*.psd1 -File |
+        $allScripts = Get-ChildItem -Path $BasePath -Recurse -Include *.ps1,*.psm1,*.psd1 -File 
             Where-Object { $_.FullName -notlike "*archive*" -and $_.FullName -notlike "*backup*" }
         $results.SummaryStats.TotalScripts = $allScripts.Count
 
-        $allJsonFiles = Get-ChildItem -Path $BasePath -Recurse -Include *.json -File |
+        $allJsonFiles = Get-ChildItem -Path $BasePath -Recurse -Include *.json -File 
             Where-Object { $_.FullName -notlike "*archive*" -and $_.FullName -notlike "*backup*" }
         $results.SummaryStats.JsonFilesChecked = $allJsonFiles.Count
 
         # Output results
         if ($OutputFormat -eq 'JSON') {
-            $jsonOutput = $results | ConvertTo-Json -Depth 10
+            $jsonOutput = $results  ConvertTo-Json -Depth 10
             if ($OutputPath) {
-                $jsonOutput | Out-File -FilePath $OutputPath -Encoding UTF8
+                $jsonOutput  Out-File -FilePath $OutputPath -Encoding UTF8
                 Write-Host "Comprehensive report saved to $OutputPath" -ForegroundColor Green
             }
             Write-Output $jsonOutput

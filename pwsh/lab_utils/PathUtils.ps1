@@ -1,20 +1,20 @@
 function Normalize-RelativePath {
-    [CmdletBinding()]
+    CmdletBinding()
     param(
-        [Parameter(Mandatory)
+        Parameter(Mandatory)
 
 
 
 
 
 
-][string]$Path
+string$Path
     )
-    if ([string]::IsNullOrEmpty($Path)) {
-        throw [System.ArgumentException]::new("Path cannot be null or empty", "Path")
+    if (string::IsNullOrEmpty($Path)) {
+        throw System.ArgumentException::new("Path cannot be null or empty", "Path")
     }
-    $segments = $Path -split '[\\/]+'
-    $segments -join [System.IO.Path]::DirectorySeparatorChar
+    $segments = $Path -split '\\/+'
+    $segments -join System.IO.Path::DirectorySeparatorChar
 }
 
 

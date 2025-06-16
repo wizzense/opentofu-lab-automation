@@ -7,15 +7,15 @@ Describe '0216_Set-LabProfile Tests' {
 
     Context 'Module Loading' {
         It 'should load required modules' {
-            Get-Module LabRunner | Should -Not -BeNullOrEmpty
-            Get-Module CodeFixer | Should -Not -BeNullOrEmpty
+            Get-Module LabRunner  Should -Not -BeNullOrEmpty
+            Get-Module CodeFixer  Should -Not -BeNullOrEmpty
         }
     }
 
     Context 'Functionality Tests' {
         It 'should execute without errors' {
             # Basic test implementation
-            $true | Should -BeTrue
+            $true  Should -BeTrue
         }
     }
 

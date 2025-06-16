@@ -21,6 +21,6 @@ As part of the CodeFixer module integration, individual fix scripts and workflow
 These files are kept for reference and can be restored if needed. All functionality has been migrated to the new system with improved maintainability and extensibility.
 
 For more information, see:
-- [TESTING.md](../../docs/TESTING.md)
-- [CODEFIXER-GUIDE.md](../../docs/CODEFIXER-GUIDE.md)
-- [INTEGRATION-SUMMARY.md](../../INTEGRATION-SUMMARY.md)
+- TESTING.md(../../docs/TESTING.md)
+- CODEFIXER-GUIDE.md(../../docs/CODEFIXER-GUIDE.md)
+- INTEGRATION-SUMMARY.md(../../INTEGRATION-SUMMARY.md)

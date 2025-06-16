@@ -24,17 +24,17 @@
     capability in PatchManager v2.0
 #>
 
-[CmdletBinding()]
+CmdletBinding()
 param(
-    [Parameter(Mandatory = $false)]
-    [int]$PullRequestNumber,
+    Parameter(Mandatory = $false)
+    int$PullRequestNumber,
     
-    [Parameter(Mandatory = $false)]
-    [string]$Repository = "wizzense/opentofu-lab-automation",
+    Parameter(Mandatory = $false)
+    string$Repository = "wizzense/opentofu-lab-automation",
     
-    [Parameter(Mandatory = $false)]
-    [ValidateSet("WhatIf", "Live", "Demo")]
-    [string]$Mode = "Demo"
+    Parameter(Mandatory = $false)
+    ValidateSet("WhatIf", "Live", "Demo")
+    string$Mode = "Demo"
 )
 
 $ErrorActionPreference = "Stop"
@@ -66,7 +66,7 @@ try {
             Write-Host "`n--- DEMO MODE: Showing Copilot Integration Capabilities ---" -ForegroundColor Cyan
             
             Write-Host "`n1. Finding recent pull requests..." -ForegroundColor Yellow
-            $recentPRs = gh api "repos/$Repository/pulls?state=open&per_page=5" | ConvertFrom-Json
+            $recentPRs = gh api "repos/$Repository/pulls?state=open&per_page=5"  ConvertFrom-Json
             
             if ($recentPRs.Count -gt 0) {
                 Write-Host "Found $($recentPRs.Count) open pull requests:" -ForegroundColor Green
@@ -75,7 +75,7 @@ try {
                 }
                 
                 # Use the provided PR number or the first one found
-                $targetPR = if ($PullRequestNumber) { $PullRequestNumber } else { $recentPRs[0].number }
+                $targetPR = if ($PullRequestNumber) { $PullRequestNumber } else { $recentPRs0.number }
                 
                 Write-Host "`n2. Checking PR #$targetPR for Copilot suggestions..." -ForegroundColor Yellow
                 

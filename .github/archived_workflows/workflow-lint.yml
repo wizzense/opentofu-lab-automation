@@ -6,7 +6,7 @@ on:
  paths:
  - '.github/workflows/*.yml'
  push:
- branches: [main]
+ branches: main
  paths:
  - '.github/workflows/*.yml'
  workflow_dispatch:
@@ -24,18 +24,18 @@ jobs:
  - name: Install yamllint
  run: pip install yamllint
  - name: Lint all workflow YAML files
- run: |
+ run: 
  yamllint .github/workflows/
  - name: Validate workflow structure (if script exists)
- run: |
- if [ -f scripts/validate-workflows.py ]; then
+ run: 
+ if  -f scripts/validate-workflows.py ; then
  python3 scripts/validate-workflows.py .github/workflows/*.yml
  else
  echo "No workflow validation script found."
  fi
  - name: Run comprehensive workflow health check
- run: |
- if [ -f scripts/validate-workflow-health.sh ]; then
+ run: 
+ if  -f scripts/validate-workflow-health.sh ; then
  bash scripts/validate-workflow-health.sh
  else
  echo "No workflow health check script found."

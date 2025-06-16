@@ -27,15 +27,15 @@ $scriptTemplate = @'
 #>
 
 Param(
- [Parameter(Mandatory = $true)
+ Parameter(Mandatory = $true)
 
 
 
 
 
 
-]
- [object]$Config
+
+ object$Config
 )
 
 # Import required modules AFTER Param block
@@ -51,9 +51,9 @@ Invoke-LabStep -Config $Config -Body {
 
 # 2. Save the template
 $templatePath = "pwsh/ScriptTemplate.ps1"
-$scriptTemplate -replace '{DATE}', (Get-Date -Format 'yyyy-MM-dd') | Set-Content $templatePath
+$scriptTemplate -replace '{DATE}', (Get-Date -Format 'yyyy-MM-dd')  Set-Content $templatePath
 
-Write-Host "[PASS] Created script template: $templatePath" -ForegroundColor Green
+Write-Host "PASS Created script template: $templatePath" -ForegroundColor Green
 
 # 3. Create comprehensive validation function
 $validationScript = @'
@@ -80,21 +80,21 @@ $validationScript = @'
 #>
 
 Param(
- [Parameter(Mandatory = $true)
+ Parameter(Mandatory = $true)
 
 
 
 
 
 
-]
- [string]$Path,
+
+ string$Path,
  
- [switch]$Fix
+ switch$Fix
 )
 
 function Test-PowerShellSyntax {
- param([string]$FilePath)
+ param(string$FilePath)
  
  
 
@@ -105,7 +105,7 @@ function Test-PowerShellSyntax {
 
 try {
  $content = Get-Content $FilePath -Raw
- $tokens = [System.Management.Automation.PSParser]::Tokenize($content, [ref]$null)
+ $tokens = System.Management.Automation.PSParser::Tokenize($content, ref$null)
  return @{ IsValid = $true; Error = $null }
  } catch {
  return @{ IsValid = $false; Error = $_.Exception.Message }
@@ -113,7 +113,7 @@ try {
 }
 
 function Test-ParamBlockPosition {
- param([string]$FilePath)
+ param(string$FilePath)
  
  
 
@@ -127,7 +127,7 @@ $lines = Get-Content $FilePath
  $paramLineIndex = -1
  
  for ($i = 0; $i -lt $lines.Count; $i++) {
- $line = $lines[$i].Trim()
+ $line = $lines$i.Trim()
  
  # Skip comments and empty lines
  if ($line -eq '' -or $line.StartsWith('#') -or $line.StartsWith('<#')) {
@@ -163,7 +163,7 @@ $lines = Get-Content $FilePath
 }
 
 function Test-ImportModulePosition {
- param([string]$FilePath)
+ param(string$FilePath)
  
  
 
@@ -181,7 +181,7 @@ $lines = Get-Content $FilePath
  $inParam = $false
  
  for ($i = 0; $i -lt $lines.Count; $i++) {
- $line = $lines[$i]
+ $line = $lines$i
  
  if ($line -match "^Param\(") {
  $inParam = $true
@@ -200,7 +200,7 @@ $lines = Get-Content $FilePath
  
  # Find Import-Module
  for ($i = 0; $i -lt $lines.Count; $i++) {
- if ($lines[$i] -match "Import-Module.*LabRunner.*-Force") {
+ if ($lines$i -match "Import-Module.*LabRunner.*-Force") {
  $importIndex = $i
  break
  }
@@ -214,7 +214,7 @@ $lines = Get-Content $FilePath
 }
 
 function Repair-ScriptStructure {
- param([string]$FilePath)
+ param(string$FilePath)
  
  
 
@@ -233,16 +233,16 @@ Write-Host " Attempting to fix: $FilePath" -ForegroundColor Yellow
  
  # Extract Import-Module line and find Param block
  for ($i = 0; $i -lt $lines.Count; $i++) {
- if ($lines[$i] -match "^Import-Module.*LabRunner.*-Force") {
- $importLine = $lines[$i]
+ if ($lines$i -match "^Import-Module.*LabRunner.*-Force") {
+ $importLine = $lines$i
  continue # Skip this line
  }
  
- if ($lines[$i] -match "^Param\(") {
+ if ($lines$i -match "^Param\(") {
  $paramStart = $i
  }
  
- $newLines += $lines[$i]
+ $newLines += $lines$i
  }
  
  # Find Param block end
@@ -251,7 +251,7 @@ Write-Host " Attempting to fix: $FilePath" -ForegroundColor Yellow
  $inParam = $false
  
  for ($i = $paramStart; $i -lt $newLines.Count; $i++) {
- $line = $newLines[$i]
+ $line = $newLines$i
  
  if ($line -match "^Param\(") {
  $inParam = $true
@@ -271,10 +271,10 @@ Write-Host " Attempting to fix: $FilePath" -ForegroundColor Yellow
  # Insert Import-Module after Param block
  if ($paramEnd -ne -1 -and $importLine -ne "") {
  $finalLines = @()
- $finalLines += $newLines[0..$paramEnd]
+ $finalLines += $newLines0..$paramEnd
  $finalLines += $importLine
  if ($paramEnd + 1 -lt $newLines.Count) {
- $finalLines += $newLines[($paramEnd + 1)..($newLines.Count - 1)]
+ $finalLines += $newLines($paramEnd + 1)..($newLines.Count - 1)
  }
  
  Set-Content -Path $FilePath -Value ($finalLines -join "`n") -NoNewline
@@ -308,26 +308,26 @@ foreach ($file in $files) {
  # Test 1: Basic PowerShell syntax
  $syntaxTest = Test-PowerShellSyntax -FilePath $file.FullName
  if (-not $syntaxTest.IsValid) {
- Write-Host " [FAIL] Syntax Error: $($syntaxTest.Error)" -ForegroundColor Red
+ Write-Host " FAIL Syntax Error: $($syntaxTest.Error)" -ForegroundColor Red
  $allValid = $false
  }
  
  # Test 2: Param block position
  $paramTest = Test-ParamBlockPosition -FilePath $file.FullName
  if (-not $paramTest.IsValid) {
- Write-Host " [FAIL] Param Position Error: $($paramTest.Error)" -ForegroundColor Red
+ Write-Host " FAIL Param Position Error: $($paramTest.Error)" -ForegroundColor Red
  $allValid = $false
  }
  
  # Test 3: Import-Module position
  $importTest = Test-ImportModulePosition -FilePath $file.FullName
  if (-not $importTest.IsValid) {
- Write-Host " [FAIL] Import Position Error: $($importTest.Error)" -ForegroundColor Red
+ Write-Host " FAIL Import Position Error: $($importTest.Error)" -ForegroundColor Red
  $allValid = $false
  
  if ($Fix) {
  if (Repair-ScriptStructure -FilePath $file.FullName) {
- Write-Host " [PASS] FIXED: Script structure corrected" -ForegroundColor Green
+ Write-Host " PASS FIXED: Script structure corrected" -ForegroundColor Green
  $fixedFiles++
  $allValid = $true
  }
@@ -335,7 +335,7 @@ foreach ($file in $files) {
  }
  
  if ($allValid) {
- Write-Host " [PASS] Valid" -ForegroundColor Green
+ Write-Host " PASS Valid" -ForegroundColor Green
  $validFiles++
  } else {
  $errorFiles += $file.FullName
@@ -350,7 +350,7 @@ Write-Host "Error files: $($errorFiles.Count)" -ForegroundColor Red
 
 if ($errorFiles.Count -gt 0) {
  Write-Host "`nFiles with errors:" -ForegroundColor Red
- $errorFiles | ForEach-Object { Write-Host " - $_" -ForegroundColor Red }
+ $errorFiles  ForEach-Object { Write-Host " - $_" -ForegroundColor Red }
  exit 1
 } else {
  Write-Host "`n All PowerShell scripts are valid!" -ForegroundColor Green -BackgroundColor Black
@@ -361,7 +361,7 @@ if ($errorFiles.Count -gt 0) {
 # Save validation script
 Set-Content -Path "tools/Validate-PowerShellScripts.ps1" -Value $validationScript
 
-Write-Host "[PASS] Created validation script: tools/Validate-PowerShellScripts.ps1" -ForegroundColor Green
+Write-Host "PASS Created validation script: tools/Validate-PowerShellScripts.ps1" -ForegroundColor Green
 
 Write-Host "`n=== Next Steps ===" -ForegroundColor Cyan
 Write-Host "1. Run validation: pwsh tools/Validate-PowerShellScripts.ps1 -Path pwsh/runner_scripts" -ForegroundColor White

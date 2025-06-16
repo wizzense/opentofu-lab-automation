@@ -10,6 +10,6 @@ These files were originally used for standalone fixes and testing, but have been
 
 ## Reference
 For more information on the new approach, see:
-- [CodeFixer Guide](../docs/CODEFIXER-GUIDE.md)
-- [Testing Documentation](../docs/TESTING.md)
-- [Integration Summary](../INTEGRATION-SUMMARY.md)
+- CodeFixer Guide(../docs/CODEFIXER-GUIDE.md)
+- Testing Documentation(../docs/TESTING.md)
+- Integration Summary(../INTEGRATION-SUMMARY.md)

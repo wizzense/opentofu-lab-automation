@@ -23,17 +23,17 @@ Show what would be fixed without making changes
 ./scripts/maintenance/fix-test-syntax.ps1 -DryRun
 #>
 
-[CmdletBinding()]
+CmdletBinding()
 param(
-    [Parameter()
+    Parameter()
 
 
 
 
 
 
-]
-    [switch]$DryRun
+
+    switch$DryRun
 )
 
 $ErrorActionPreference = "Stop"
@@ -45,7 +45,7 @@ if ($IsWindows -or $env:OS -eq "Windows_NT") {
 }
 
 function Write-SyntaxLog {
-    param([string]$Message, [string]$Level = "INFO")
+    param(string$Message, string$Level = "INFO")
     
 
 
@@ -62,11 +62,11 @@ $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
         "FIX" { "Magenta" }
         default { "White" }
     }
-    Write-Host "[$timestamp] [$Level] $Message" -ForegroundColor $color
+    Write-Host "$timestamp $Level $Message" -ForegroundColor $color
 }
 
 function Test-PowerShellSyntax {
-    param([string]$FilePath)
+    param(string$FilePath)
     
 
 
@@ -75,7 +75,7 @@ function Test-PowerShellSyntax {
 
 
 try {
-        $null = [System.Management.Automation.PSParser]::Tokenize((Get-Content $FilePath -Raw), [ref]$null)
+        $null = System.Management.Automation.PSParser::Tokenize((Get-Content $FilePath -Raw), ref$null)
         return $true
     }
     catch {
@@ -84,7 +84,7 @@ try {
 }
 
 function Fix-TestFileSyntax {
-    param([string]$FilePath)
+    param(string$FilePath)
     
     
 
@@ -111,7 +111,7 @@ $content = Get-Content $FilePath -Raw
     $fixes = @(
         # Fix malformed It statements with missing quotes or parentheses
         @{ 
-            Pattern = "It '([^']*)\([^)]*'[^)]*\)"
+            Pattern = "It '(^'*)\(^)*'^)*\)"
             Replacement = "It '`$1'"
             Description = "Fix malformed It statements with mismatched quotes/parentheses"
         },
@@ -125,21 +125,21 @@ $content = Get-Content $FilePath -Raw
         
         # Fix missing spaces before opening braces in It statements
         @{
-            Pattern = "It '([^']+)'\s*\{"
+            Pattern = "It '(^'+)'\s*\{"
             Replacement = "It '`$1' {"
             Description = "Fix spacing before opening braces in It statements"
         },
         
         # Fix missing closing quotes in It statements  
         @{
-            Pattern = "It '([^']*)\(([^)]*)\s*\{"
+            Pattern = "It '(^'*)\((^)*)\s*\{"
             Replacement = "It '`$1' {"
             Description = "Fix malformed It statements with unmatched parentheses"
         },
         
         # Fix improper Context indentation
         @{
-            Pattern = "(?m)^\s*Context\s+'([^']+)'\s*\{\s*$"
+            Pattern = "(?m)^\s*Context\s+'(^'+)'\s*\{\s*$"
             Replacement = "`n    Context '`$1' {"
             Description = "Fix Context statement indentation"
         },
@@ -153,7 +153,7 @@ $content = Get-Content $FilePath -Raw
         
         # Fix Should -Invoke syntax
         @{
-            Pattern = "Should\s+-Invoke\s+-CommandName\s+([^\s]+)\s+-Times\s+(\d+)(?!\s+-)"
+            Pattern = "Should\s+-Invoke\s+-CommandName\s+(^\s+)\s+-Times\s+(\d+)(?!\s+-)"
             Replacement = "Should -Invoke -CommandName `$1 -Exactly `$2"
             Description = "Fix Should -Invoke syntax to use -Exactly"
         },
@@ -184,8 +184,8 @@ $content = Get-Content $FilePath -Raw
     }
     
     # Ensure proper closing braces
-    $openBraces = ($content | Select-String '\{' -AllMatches).Matches.Count
-    $closeBraces = ($content | Select-String '\}' -AllMatches).Matches.Count
+    $openBraces = ($content  Select-String '\{' -AllMatches).Matches.Count
+    $closeBraces = ($content  Select-String '\}' -AllMatches).Matches.Count
     
     if ($openBraces -gt $closeBraces) {
         $missing = $openBraces - $closeBraces

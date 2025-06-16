@@ -1,6 +1,6 @@
 {
   "timestamp": "2025-06-13T06:39:43.465965",
-  "workflows": [
+  "workflows": 
     {
       "name": "system-health-monitor.yml",
       "path": ".github/workflows/system-health-monitor.yml",
@@ -9,9 +9,9 @@
       "has_matrix": false,
       "has_cache": false,
       "has_artifacts": true,
-      "platforms": [
+      "platforms": 
         "Linux"
-      ]
+      
     },
     {
       "name": "copilot-auto-fix.yml",
@@ -21,9 +21,9 @@
       "has_matrix": false,
       "has_cache": false,
       "has_artifacts": false,
-      "platforms": [
+      "platforms": 
         "Linux"
-      ]
+      
     },
     {
       "name": "unified-ci.yml",
@@ -33,9 +33,9 @@
       "has_matrix": false,
       "has_cache": true,
       "has_artifacts": true,
-      "platforms": [
+      "platforms": 
         "Linux"
-      ]
+      
     },
     {
       "name": "changelog.yml",
@@ -45,9 +45,9 @@
       "has_matrix": false,
       "has_cache": true,
       "has_artifacts": false,
-      "platforms": [
+      "platforms": 
         "Linux"
-      ]
+      
     },
     {
       "name": "auto-test-generation-consolidated.yml",
@@ -57,11 +57,11 @@
       "has_matrix": true,
       "has_cache": true,
       "has_artifacts": true,
-      "platforms": [
+      "platforms": 
         "Windows",
         "Linux",
         "macOS"
-      ]
+      
     },
     {
       "name": "unified-utilities.yml",
@@ -71,9 +71,9 @@
       "has_matrix": false,
       "has_cache": false,
       "has_artifacts": false,
-      "platforms": [
+      "platforms": 
         "Linux"
-      ]
+      
     },
     {
       "name": "package-labctl.yml",
@@ -83,9 +83,9 @@
       "has_matrix": false,
       "has_cache": true,
       "has_artifacts": true,
-      "platforms": [
+      "platforms": 
         "Windows"
-      ]
+      
     },
     {
       "name": "issue-on-fail.yml",
@@ -95,9 +95,9 @@
       "has_matrix": false,
       "has_cache": false,
       "has_artifacts": false,
-      "platforms": [
+      "platforms": 
         "Linux"
-      ]
+      
     },
     {
       "name": "archive-legacy-workflows.yml",
@@ -107,9 +107,9 @@
       "has_matrix": false,
       "has_cache": false,
       "has_artifacts": false,
-      "platforms": [
+      "platforms": 
         "Linux"
-      ]
+      
     },
     {
       "name": "auto-merge.yml",
@@ -119,9 +119,9 @@
       "has_matrix": false,
       "has_cache": false,
       "has_artifacts": false,
-      "platforms": [
+      "platforms": 
         "Linux"
-      ]
+      
     },
     {
       "name": "auto-test-generation.yml",
@@ -131,7 +131,7 @@
       "has_matrix": false,
       "has_cache": false,
       "has_artifacts": false,
-      "platforms": []
+      "platforms": 
     },
     {
       "name": "unified-testing.yml",
@@ -141,11 +141,11 @@
       "has_matrix": true,
       "has_cache": true,
       "has_artifacts": true,
-      "platforms": [
+      "platforms": 
         "Windows",
         "Linux",
         "macOS"
-      ]
+      
     },
     {
       "name": "validate-workflows.yml",
@@ -155,12 +155,12 @@
       "has_matrix": false,
       "has_cache": false,
       "has_artifacts": false,
-      "platforms": [
+      "platforms": 
         "Linux"
-      ]
+      
     }
-  ],
-  "recent_runs": [
+  ,
+  "recent_runs": 
     {
       "conclusion": "failure",
       "createdAt": "2025-06-13T06:08:21Z",
@@ -231,13 +231,13 @@
       "url": "https://github.com/wizzense/opentofu-lab-automation/actions/runs/15624322048",
       "workflowName": "Update Dashboard"
     }
-  ],
+  ,
   "summary": {
     "total_workflows": 13,
     "with_cache": 5,
     "with_artifacts": 5,
     "with_matrix": 2,
-    "issues": [
+    "issues": 
       "\u26a0\ufe0f  system-health-monitor.yml is very long (333 lines)",
       "\u26a0\ufe0f  unified-ci.yml is very long (395 lines)",
       "\u26a0\ufe0f  auto-test-generation-consolidated.yml is very long (261 lines)",
@@ -245,11 +245,11 @@
       "\u26a0\ufe0f  issue-on-fail.yml is very long (218 lines)",
       "\u26a0\ufe0f  auto-test-generation.yml has no platform specified",
       "\u26a0\ufe0f  unified-testing.yml is very long (261 lines)"
-    ],
-    "recommendations": [
+    ,
+    "recommendations": 
       "\ud83d\udca1 Consider adding caching to more workflows to improve performance",
       "\ud83d\udca1 Consider adding artifact uploads for better debugging",
       "\ud83d\udca1 Consider splitting long workflows (6 found)"
-    ]
+    
   }
 }

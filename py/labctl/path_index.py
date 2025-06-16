@@ -8,8 +8,8 @@ try:
 except ImportError:
     yaml = None
 
-_INDEX: dict[str, str] = {}
-_repo_root: Optional[Path] = None
+_INDEX: dictstr, str = {}
+_repo_root: OptionalPath = None
 
 def repo_root() -> Path:
     """Return the repository root directory."""
@@ -20,7 +20,7 @@ def repo_root() -> Path:
     if env_root:
         _repo_root = Path(env_root)
     else:
-        _repo_root = Path(__file__).resolve().parents[2]
+        _repo_root = Path(__file__).resolve().parents2
     return _repo_root
 
 def load_index() -> dict:
@@ -46,7 +46,7 @@ def load_index() -> dict:
             _INDEX = {}
     return _INDEX
 
-def resolve_path(name: str) -> Optional[Path]:
+def resolve_path(name: str) -> OptionalPath:
     """Return Path for *name* from the index or by searching the repo."""
     index = load_index()
     rel = index.get(name)
@@ -57,10 +57,10 @@ def resolve_path(name: str) -> Optional[Path]:
     # Fallback to search
     found = search_for_file(name)
     if found:
-        _INDEX[name] = str(found.relative_to(repo_root()))
+        _INDEXname = str(found.relative_to(repo_root()))
     return found
 
-def search_for_file(name: str) -> Optional[Path]:
+def search_for_file(name: str) -> OptionalPath:
     """Recursively search the repository for *name* and return the path."""
     root = repo_root()
     for p in root.rglob(name):

@@ -17,10 +17,10 @@
     "**/archive/**": true,
     "**/cleanup-backup-*/**": true
   },  "github.copilot.chat.codeGeneration.useInstructionFiles": true,
-  "github.copilot.chat.codeGeneration.instructions": [],
-  "github.copilot.chat.testGeneration.instructions": [],
-  "github.copilot.chat.reviewSelection.instructions": [],
-  "github.copilot.chat.commitMessageGeneration.instructions": [
+  "github.copilot.chat.codeGeneration.instructions": ,
+  "github.copilot.chat.testGeneration.instructions": ,
+  "github.copilot.chat.reviewSelection.instructions": ,
+  "github.copilot.chat.commitMessageGeneration.instructions": 
     {
       "text": "Use conventional commit format: type(scope): description"
     },
@@ -30,23 +30,23 @@
     {
       "text": "Reference module names in scope when applicable: codefixer, labrunner, backupmanager, etc."
     }
-  ],
-  "github.copilot.chat.pullRequestDescriptionGeneration.instructions": [
+  ,
+  "github.copilot.chat.pullRequestDescriptionGeneration.instructions": 
     {
       "text": "Summarize key changes and mention affected modules."
     },
     {
       "text": "Highlight new features or bug fixes in the description."
     }
-  ],  "github.copilot.instructionFiles": [
+  ,  "github.copilot.instructionFiles": 
     {
       "pattern": "**/*",
       "instructionFile": ".github/UNIFIED-PROJECT-GUIDELINES.md"
     }
-  ],
-  "python.testing.pytestArgs": [
+  ,
+  "python.testing.pytestArgs": 
     "py"
-  ],
+  ,
   "python.testing.unittestEnabled": false,
   "python.testing.pytestEnabled": true
 }

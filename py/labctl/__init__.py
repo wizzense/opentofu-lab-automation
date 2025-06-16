@@ -11,4 +11,4 @@ try:  # pragma: no cover - fallback for editable installs
 except metadata.PackageNotFoundError:  # pragma: no cover - not installed
     __version__ = "0.0.0"
 
-__all__ = ["__version__"]
+__all__ = "__version__"

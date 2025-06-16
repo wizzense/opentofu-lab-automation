@@ -1,7 +1,7 @@
 ---
 description: Perform comprehensive security review of PowerShell scripts and infrastructure code
 mode: agent
-tools: ["filesystem", "powershell", "security"]
+tools: "filesystem", "powershell", "security"
 ---
 
 # Security Review
@@ -45,27 +45,27 @@ Analyze the following security aspects:
 # Check for common security issues:
 
 # 1. Input Validation
-- [ ] All parameters properly validated
-- [ ] No direct string concatenation in commands
-- [ ] Path traversal prevention
-- [ ] SQL injection prevention (if applicable)
+-   All parameters properly validated
+-   No direct string concatenation in commands
+-   Path traversal prevention
+-   SQL injection prevention (if applicable)
 
 # 2. Privilege Management  
-- [ ] Runs with minimum required privileges
-- [ ] No unnecessary admin rights
-- [ ] Proper UAC handling on Windows
+-   Runs with minimum required privileges
+-   No unnecessary admin rights
+-   Proper UAC handling on Windows
 
 # 3. External Dependencies
-- [ ] All downloads from trusted sources
-- [ ] Checksums verified for downloads
-- [ ] No execution of untrusted code
-- [ ] Module imports from known sources
+-   All downloads from trusted sources
+-   Checksums verified for downloads
+-   No execution of untrusted code
+-   Module imports from known sources
 
 # 4. Credential Handling
-- [ ] No hardcoded passwords or keys
-- [ ] Proper secret management
-- [ ] Secure credential storage
-- [ ] Token expiration handling
+-   No hardcoded passwords or keys
+-   Proper secret management
+-   Secure credential storage
+-   Token expiration handling
 ```
 
 ### Configuration Security
@@ -89,9 +89,9 @@ security:
     
   # Access controls
   access:
-    read: ["developers", "ci_cd"]
-    write: ["maintainers"]
-    execute: ["automation_service"]
+    read: "developers", "ci_cd"
+    write: "maintainers"
+    execute: "automation_service"
 ```
 
 ### Security Patterns to Check
@@ -99,8 +99,8 @@ security:
 1. **Safe PowerShell Patterns**:
    ```powershell
    #  Good: Parameter validation
-   [ValidateSet('Option1', 'Option2')]
-   [string]$Choice
+   ValidateSet('Option1', 'Option2')
+   string$Choice
    
    #  Good: Path validation
    $safePath = Resolve-Path $InputPath -ErrorAction Stop
@@ -113,17 +113,17 @@ security:
    ```powershell
    #  Good: Safe file operations
    if (Test-Path $ConfigFile) {
-       $config = Get-Content $ConfigFile | ConvertFrom-Json
+       $config = Get-Content $ConfigFile  ConvertFrom-Json
    }
    
    #  Bad: Unsafe file access
-   $content = [System.IO.File]::ReadAllText($UserProvidedPath)
+   $content = System.IO.File::ReadAllText($UserProvidedPath)
    ```
 
 3. **Network Security**:
    ```powershell
    #  Good: TLS enforcement
-   [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+   Net.ServicePointManager::SecurityProtocol = Net.SecurityProtocolType::Tls12
    
    #  Good: Certificate validation
    Invoke-WebRequest -Uri $url -UseBasicParsing -Certificate $cert
@@ -137,36 +137,36 @@ Generate findings using this format:
 ## Security Review Findings
 
 ### Critical Issues
-- **Issue**: [Description]
-  - **File**: [Path/to/file]
-  - **Line**: [Line number]
+- **Issue**: Description
+  - **File**: Path/to/file
+  - **Line**: Line number
   - **Risk**: Critical
-  - **Recommendation**: [Fix description]
+  - **Recommendation**: Fix description
 
 ### High Priority Issues
-- **Issue**: [Description]
-  - **File**: [Path/to/file]  
+- **Issue**: Description
+  - **File**: Path/to/file  
   - **Risk**: High
-  - **Recommendation**: [Fix description]
+  - **Recommendation**: Fix description
 
 ### Medium Priority Issues
-- **Issue**: [Description]
-  - **File**: [Path/to/file]
+- **Issue**: Description
+  - **File**: Path/to/file
   - **Risk**: Medium
-  - **Recommendation**: [Fix description]
+  - **Recommendation**: Fix description
 
 ### Best Practice Recommendations
-- [Recommendation 1]
-- [Recommendation 2]
-- [Recommendation 3]
+- Recommendation 1
+- Recommendation 2
+- Recommendation 3
 
-### Security Score: [X/10]
+### Security Score: X/10
 
 ### Action Items
-1. [ ] Fix critical issues immediately
-2. [ ] Address high priority issues within 1 week
-3. [ ] Plan medium priority fixes for next sprint
-4. [ ] Implement security monitoring
+1.   Fix critical issues immediately
+2.   Address high priority issues within 1 week
+3.   Plan medium priority fixes for next sprint
+4.   Implement security monitoring
 ```
 
 ## Analysis Areas

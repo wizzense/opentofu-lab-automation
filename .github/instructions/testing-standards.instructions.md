@@ -16,15 +16,15 @@ Use the enhanced TestFramework for all tests:
 Describe 'ScriptName Tests' {
     BeforeAll {
         # Setup test environment
-        $script:TestConfig = [pscustomobject]@{
+        $script:TestConfig = pscustomobject@{
             TestProperty = "TestValue"
         }
     }
     
     Context 'Module Loading' {
         It 'should load required modules' {
-            Get-Module LabRunner | Should -Not -BeNullOrEmpty
-            Get-Module CodeFixer | Should -Not -BeNullOrEmpty
+            Get-Module LabRunner  Should -Not -BeNullOrEmpty
+            Get-Module CodeFixer  Should -Not -BeNullOrEmpty
         }
     }
     
@@ -65,13 +65,13 @@ Use the TestFramework for complex scenario testing:
 $testScenarios = @(
     @{
         Name = "Valid Configuration"
-        Config = [pscustomobject]@{ ValidProperty = "Value" }
+        Config = pscustomobject@{ ValidProperty = "Value" }
         ExpectedResult = $true
         ShouldThrow = $false
     },
     @{
         Name = "Invalid Configuration"
-        Config = [pscustomobject]@{ InvalidProperty = $null }
+        Config = pscustomobject@{ InvalidProperty = $null }
         ExpectedResult = $false
         ShouldThrow = $true
         ExpectedError = "Invalid configuration"
@@ -82,10 +82,10 @@ foreach ($scenario in $testScenarios) {
     Context $scenario.Name {
         It "should handle scenario correctly" {
             if ($scenario.ShouldThrow) {
-                { YourFunction -Config $scenario.Config } | Should -Throw "*$($scenario.ExpectedError)*"
+                { YourFunction -Config $scenario.Config }  Should -Throw "*$($scenario.ExpectedError)*"
             } else {
                 $result = YourFunction -Config $scenario.Config
-                $result | Should -Be $scenario.ExpectedResult
+                $result  Should -Be $scenario.ExpectedResult
             }
         }
     }
@@ -98,10 +98,10 @@ Include performance expectations in tests:
 
 ```powershell
 It 'should complete within acceptable time' {
-    $stopwatch = [System.Diagnostics.Stopwatch]::StartNew()
+    $stopwatch = System.Diagnostics.Stopwatch::StartNew()
     YourFunction -Config $TestConfig
     $stopwatch.Stop()
-    $stopwatch.ElapsedMilliseconds | Should -BeLessThan 5000  # 5 seconds max
+    $stopwatch.ElapsedMilliseconds  Should -BeLessThan 5000  # 5 seconds max
 }
 ```
 
@@ -114,7 +114,7 @@ Context 'Module Integration' {
     It 'should integrate with CodeFixer' {
         # Test CodeFixer integration
         $result = Invoke-PowerShellLint -Path $TestScript -PassThru
-        $result | Should -Not -BeNullOrEmpty
+        $result  Should -Not -BeNullOrEmpty
     }
     
     It 'should integrate with LabRunner' {
@@ -133,11 +133,11 @@ Always test error conditions:
 ```powershell
 Context 'Error Handling' {
     It 'should handle missing files gracefully' {
-        { YourFunction -Path "NonExistentFile.ps1" } | Should -Throw "*File not found*"
+        { YourFunction -Path "NonExistentFile.ps1" }  Should -Throw "*File not found*"
     }
     
     It 'should validate parameters' {
-        { YourFunction -Config $null } | Should -Throw "*Config cannot be null*"
+        { YourFunction -Config $null }  Should -Throw "*Config cannot be null*"
     }
 }
 ```
@@ -179,7 +179,7 @@ Describe 'YAML Configuration Tests' {
             
             if ($workflowFiles) {
                 foreach ($file in $workflowFiles) {
-                    { & "./scripts/validation/Invoke-YamlValidation.ps1" -Mode "Check" -Path $file.FullName } | Should -Not -Throw
+                    { & "./scripts/validation/Invoke-YamlValidation.ps1" -Mode "Check" -Path $file.FullName }  Should -Not -Throw
                 }
             }
         }
@@ -194,9 +194,9 @@ Describe 'YAML Configuration Tests' {
                 $yaml = ConvertFrom-Yaml $content
                 
                 # Basic workflow structure validation
-                $yaml.name | Should -Not -BeNullOrEmpty
-                $yaml.on | Should -Not -BeNullOrEmpty
-                $yaml.jobs | Should -Not -BeNullOrEmpty
+                $yaml.name  Should -Not -BeNullOrEmpty
+                $yaml.on  Should -Not -BeNullOrEmpty
+                $yaml.jobs  Should -Not -BeNullOrEmpty
             }
         }
     }
@@ -212,7 +212,7 @@ Describe 'Configuration Validation' {
         $configFiles = Get-ChildItem "configs/*.yml", "configs/*.yaml" -ErrorAction SilentlyContinue
         
         foreach ($file in $configFiles) {
-            { ConvertFrom-Yaml (Get-Content $file.FullName -Raw) } | Should -Not -Throw
+            { ConvertFrom-Yaml (Get-Content $file.FullName -Raw) }  Should -Not -Throw
         }
     }
     
@@ -222,7 +222,7 @@ Describe 'Configuration Validation' {
         $jsonFiles = Get-ChildItem "*.json", "configs/*.json" -ErrorAction SilentlyContinue
         
         foreach ($file in $jsonFiles) {
-            { Test-JsonConfig -Path $file.FullName } | Should -Not -Throw
+            { Test-JsonConfig -Path $file.FullName }  Should -Not -Throw
         }
     }
 }

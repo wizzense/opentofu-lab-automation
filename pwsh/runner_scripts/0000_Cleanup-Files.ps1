@@ -1,4 +1,4 @@
-Param([object]$Config)
+Param(object$Config)
 
 
 
@@ -25,8 +25,8 @@ Invoke-LabStep -Config $Config -Body {
         $localBase = if ($Config.LocalPath) { $Config.LocalPath
            } else { Get-CrossPlatformTempPath
            }
-        $localBase = [System.Environment]::ExpandEnvironmentVariables($localBase)
-        $repoName  = ($Config.RepoUrl -split '/')[-1] -replace '\.git$',''
+        $localBase = System.Environment::ExpandEnvironmentVariables($localBase)
+        $repoName  = ($Config.RepoUrl -split '/')-1 -replace '\.git$',''
         $repoPath  = Join-Path $localBase $repoName
 
         if (Test-Path $repoPath) {

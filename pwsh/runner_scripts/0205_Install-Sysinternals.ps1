@@ -1,4 +1,4 @@
-Param([object]$Config)
+Param(object$Config)
 
 
 
@@ -17,7 +17,7 @@ Invoke-LabStep -Config $Config -Body {
 
     $destDir = if ($Config.SysinternalsPath) { $Config.SysinternalsPath    } else { 'C:\\Sysinternals'    }
     if (-not (Test-Path $destDir)) {
-        New-Item -ItemType Directory -Path $destDir -Force | Out-Null
+        New-Item -ItemType Directory -Path $destDir -Force  Out-Null
     }
 
     $zipUrl  = 'https:\download.sysinternals.com/files/SysinternalsSuite.zip'
@@ -37,7 +37,7 @@ Write-CustomLog "Extracting to $destDir"
     $psInfo = Join-Path $destDir 'PsInfo.exe'
     if (Test-Path $psInfo) {
         Write-CustomLog 'Verifying PsInfo.exe'
-        & $psInfo | Out-Null
+        & $psInfo  Out-Null
     }
 
     Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
