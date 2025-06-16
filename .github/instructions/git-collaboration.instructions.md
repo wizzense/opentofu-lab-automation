@@ -8,10 +8,19 @@ description: Git workflow, branch management, and GitHub collaboration standards
 ## Quick Reference
 
 ### Branch Management
-- **Create Feature Branch**: Use PatchManager module: `Import-Module "/pwsh/modules/PatchManager/" -Force; Invoke-GitControlledPatch -PatchDescription "feature: <description>" -PatchOperation { <your-changes> } -CreatePullRequest -Force`
-- **Comprehensive Cleanup**: Use enhanced PatchManager: `Invoke-GitControlledPatch -PatchDescription "chore: comprehensive cleanup" -PatchOperation { <cleanup-code> } -CleanupMode "Standard" -CreatePullRequest -Force`
-- **Emergency Cleanup**: For critical issues: `Invoke-GitControlledPatch -PatchDescription "fix: emergency cleanup" -PatchOperation { <fixes> } -CleanupMode "Emergency" -CreatePullRequest -Force`
-- **Safe Mode**: For cautious cleanup: `Invoke-GitControlledPatch -PatchDescription "chore: safe cleanup" -PatchOperation { <changes> } -CleanupMode "Safe" -CreatePullRequest -Force`
+- **Auto-Commit Mode**: Eliminates manual Git steps: `Invoke-GitControlledPatch -PatchDescription "feature: <description>" -PatchOperation { <your-changes> } -AutoCommitUncommitted -CreatePullRequest`
+- **Direct Commit**: Simple commits without branches: `Invoke-GitControlledPatch -PatchDescription "chore: <description>" -PatchOperation { <changes> } -DirectCommit -AutoCommitUncommitted`
+- **Comprehensive Cleanup**: Use enhanced PatchManager: `Invoke-GitControlledPatch -PatchDescription "chore: comprehensive cleanup" -PatchOperation { <cleanup-code> } -CleanupMode "Standard" -CreatePullRequest -AutoCommitUncommitted`
+- **Emergency Cleanup**: For critical issues: `Invoke-GitControlledPatch -PatchDescription "fix: emergency cleanup" -PatchOperation { <fixes> } -CleanupMode "Emergency" -CreatePullRequest -AutoCommitUncommitted`
+- **Quick Rollback**: Instant recovery: `Invoke-QuickRollback -RollbackType "LastPatch" -CreateBackup`
+- **Emergency Rollback**: Crisis recovery: `Invoke-QuickRollback -RollbackType "Emergency" -Force`
+
+### Auto-Commit Features (Eliminates Manual Git Steps)
+| **Parameter** | **Effect** | **Use Case** |
+|---------------|------------|--------------|
+| `-AutoCommitUncommitted` | Auto-commits existing changes | Replaces `git add && git commit` |
+| `-Force` | Auto-stashes changes | Preserves work while allowing patch |
+| `-DirectCommit` | Commits directly to current branch | Skip PR for minor fixes |
 
 ### Commit Standards
 | **Type**   | **Scope**       | **Example**                                |
@@ -74,3 +83,63 @@ Brief description of changes.
 | Standard | 30 days | Medium | Regular maintenance cleanup |
 | Aggressive | 7 days | High | Major cleanup, remove recent unused files |
 | Emergency | 1 day | Very High | Crisis cleanup, remove almost everything unused |
+
+### Commit Workflows
+
+#### DirectCommit vs Branch Workflow
+| **DirectCommit** | **Branch Workflow** |
+|------------------|-------------------|
+| `✓` Quick fixes and maintenance | `✓` Feature development |
+| `✓` Documentation updates | `✓` Major changes requiring review |
+| `✓` Emergency fixes | `✓` Breaking changes |
+| `✓` Automated cleanup operations | `✓` Collaborative development |
+| `✗` No peer review | `✓` Full peer review process |
+| `✗` No CI validation | `✓` Complete CI/CD validation |
+
+#### When to Use DirectCommit
+```powershell
+# Quick maintenance tasks
+Invoke-GitControlledPatch -PatchDescription "chore: update project manifest" -PatchOperation { 
+    Update-ProjectManifest 
+} -DirectCommit -Force
+
+# Emergency fixes
+Invoke-GitControlledPatch -PatchDescription "fix: resolve critical path issue" -PatchOperation { 
+    Fix-HardcodedPaths 
+} -DirectCommit -Force -CleanupMode "Emergency"
+
+# Documentation updates
+Invoke-GitControlledPatch -PatchDescription "docs: update README with new instructions" -PatchOperation { 
+    Update-Documentation 
+} -DirectCommit -Force
+```
+
+### Emergency Rollback Capabilities
+PatchManager now includes comprehensive rollback functionality to quickly recover from breaking changes:
+
+```powershell
+# Quick rollback to last commit
+Invoke-PatchRollback -RollbackTarget "LastCommit" -Force
+
+# Emergency rollback (resets to last known good state)
+Invoke-PatchRollback -RollbackTarget "Emergency" -Force -ValidateAfterRollback
+
+# Rollback to specific commit with backup
+Invoke-PatchRollback -RollbackTarget "SpecificCommit" -CommitHash "abc123" -CreateBackup
+
+# Selective file rollback
+Invoke-PatchRollback -RollbackTarget "SelectiveFiles" -AffectedFiles @("file1.ps1", "file2.ps1")
+
+# Rollback to last working state (finds last validated commit)
+Invoke-PatchRollback -RollbackTarget "LastWorkingState" -CreateBackup -ValidateAfterRollback
+```
+
+### Rollback Safety Features
+| **Feature** | **Description** |
+|-------------|-----------------|
+| Safety Checks | Validates rollback safety before execution |
+| Backup Creation | Creates backups before destructive operations |
+| Stash Management | Automatically handles uncommitted changes |
+| Integrity Validation | Ensures system integrity after rollback |
+| Audit Trail | Full logging of all rollback operations |
+| Protected Branch Detection | Prevents dangerous operations on protected branches |

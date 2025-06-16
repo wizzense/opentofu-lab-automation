@@ -30,7 +30,7 @@ CompanyName = 'Unknown'
 Copyright = '(c) OpenTofu Lab Automation Team. All rights reserved.'
 
 # Description of the functionality provided by this module
-Description = 'Centralized patch management and maintenance system with Git-controlled workflows'
+Description = 'Unified patch management with Git-controlled workflows, comprehensive cleanup, backup consolidation, advanced rollback capabilities, and reduced reliance on traditional backups'
 
 # Minimum version of the PowerShell engine required by this module
 PowerShellVersion = '7.0'
@@ -70,7 +70,8 @@ PowerShellVersion = '7.0'
 
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
 FunctionsToExport = 'Invoke-GitControlledPatch', 'Invoke-SelfHeal', 
-               'Test-PatchingRequirements', 'Invoke-ComprehensiveCleanup'
+               'Test-PatchingRequirements', 'Invoke-ComprehensiveCleanup', 'Invoke-QuickRollback', 'Invoke-PatchRollback',
+               'Invoke-BackupConsolidation', 'Invoke-PermanentCleanup', 'Get-BackupStatistics'
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
 CmdletsToExport = '*'

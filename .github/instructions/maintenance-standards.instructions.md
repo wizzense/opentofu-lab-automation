@@ -13,6 +13,8 @@ description: Project maintenance, health checking, and continuous validation gui
 | `./scripts/maintenance/unified-maintenance.ps1 -Mode "Quick"` | Quick health assessment         |
 | `./scripts/maintenance/unified-maintenance.ps1 -Mode "All" -AutoFix` | Comprehensive health check      |
 | `./scripts/validation/Invoke-YamlValidation.ps1 -Mode "Fix"` | YAML validation and formatting  |
+| `Invoke-PatchRollback -RollbackTarget "Emergency" -Force` | Emergency recovery from breaking changes |
+| `Invoke-GitControlledPatch -DirectCommit -Force` | Quick fixes with proper change control |
 
 ### Validation Sequence
 Run:
@@ -130,6 +132,63 @@ Copy-Item "./.github/" "$backupPath/" -Recurse
 
 Write-CustomLog "Created backup at $backupPath" "INFO"
 ```
+
+## Modern Change Control with PatchManager
+
+### Reduced Backup Requirements
+With PatchManager's advanced rollback capabilities, traditional backup frequency can be reduced:
+
+#### Traditional Approach (High Backup Frequency)
+- **Daily backups** required for safety
+- **Manual rollback** process prone to errors
+- **No audit trail** of changes
+- **Limited recovery options**
+
+#### PatchManager Approach (Low Backup Frequency)
+- **Git-based change control** provides automatic versioning
+- **Instant rollback** capabilities with multiple strategies
+- **Complete audit trail** of all operations
+- **Automated safety checks** before destructive operations
+
+### Change Control Workflow
+```powershell
+# Standard workflow with built-in safety
+Import-Module "/pwsh/modules/PatchManager/" -Force
+
+# Apply changes with automatic backup
+Invoke-GitControlledPatch -PatchDescription "maintenance: optimize performance" -PatchOperation {
+    Optimize-SystemPerformance
+} -DirectCommit -Force -CleanupMode "Standard"
+
+# If issues detected, instant rollback
+if (Test-SystemIssues) {
+    Invoke-PatchRollback -RollbackTarget "LastCommit" -Force -ValidateAfterRollback
+}
+```
+
+### Emergency Recovery Procedures
+```powershell
+# Level 1: Last commit rollback (safest)
+Invoke-PatchRollback -RollbackTarget "LastCommit" -Force
+
+# Level 2: Last working state (finds last validated commit)
+Invoke-PatchRollback -RollbackTarget "LastWorkingState" -CreateBackup
+
+# Level 3: Emergency rollback (resets to known good state)
+Invoke-PatchRollback -RollbackTarget "Emergency" -Force -ValidateAfterRollback
+
+# Level 4: Selective file recovery
+Invoke-PatchRollback -RollbackTarget "SelectiveFiles" -AffectedFiles @("critical-file.ps1")
+```
+
+### Backup Strategy with PatchManager
+| **Component** | **Traditional** | **With PatchManager** |
+|---------------|----------------|----------------------|
+| **Frequency** | Daily | Weekly (or on-demand) |
+| **Scope** | Full system | Critical config only |
+| **Recovery Time** | Hours | Seconds |
+| **Accuracy** | Manual, error-prone | Automated, validated |
+| **Audit Trail** | Limited | Complete |
 
 ## Logging and Issue Tracking
 
