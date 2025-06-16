@@ -201,17 +201,12 @@ function Invoke-GitControlledPatch {
                         Message = "No changes to commit"
                         Branch = (git branch --show-current)
                     }
-                }
-            }
+                }            }
             
             # Standard branch-based patching workflow
-            # Switch to base branch and pull latest with automated conflict resolution
-            Write-Host "Updating base branch: $BaseBranch" -ForegroundColor Blue
-            # Force checkout to base branch (handles any conflicts)
-            git checkout $BaseBranch --force
-            if ($LASTEXITCODE -ne 0) {
-                Write-Warning "Base branch checkout had issues, continuing..."
-            }            # Clean any problematic directories or files
+            # SAFETY: Do NOT checkout base branch - work from current state
+            Write-Host "Creating patch branch from current state..." -ForegroundColor Blue
+            Write-Host "Base branch: $BaseBranch (reference only, not checked out)" -ForegroundColor Yellow# Clean any problematic directories or files
             Write-Host "Cleaning repository state..." -ForegroundColor Blue
             try {
                 # Use PowerShell cleanup instead of git clean to avoid interactive prompts
@@ -237,15 +232,13 @@ function Invoke-GitControlledPatch {
                 $env:GIT_TERMINAL_PROMPT = "0"
                 git clean -f 2>$null
                 Remove-Item env:GIT_TERMINAL_PROMPT -ErrorAction SilentlyContinue
-                
-            } catch {
+                  } catch {
                 Write-Host "Repository cleanup completed with warnings (continuing...)" -ForegroundColor Yellow
             }
-            # Pull latest changes
-            git pull origin $BaseBranch
-            if ($LASTEXITCODE -ne 0) {
-                Write-Warning "Pull had issues, continuing with local state..."
-            }
+            
+            # SAFETY: Do NOT pull from base branch - use current state for safety
+            Write-Host "Working from current branch state (safe mode)" -ForegroundColor Green
+            
             # Create and switch to patch branch
             Write-Host "Creating patch branch: $branchName" -ForegroundColor Green
             git checkout -b $branchName
