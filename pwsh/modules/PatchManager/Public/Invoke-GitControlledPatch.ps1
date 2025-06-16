@@ -208,11 +208,12 @@ function Invoke-GitControlledPatch {
                         Branch = (git branch --show-current)
                     }
                 }            }
-            
-            # Standard branch-based patching workflow
+              # Standard branch-based patching workflow
             # SAFETY: Do NOT checkout base branch - work from current state
             Write-Host "Creating patch branch from current state..." -ForegroundColor Blue
-            Write-Host "Base branch: $BaseBranch (reference only, not checked out)" -ForegroundColor Yellow# Clean any problematic directories or files
+            Write-Host "Base branch: $BaseBranch (reference only, not checked out)" -ForegroundColor Yellow
+            
+            # Clean any problematic directories or files
             Write-Host "Cleaning repository state..." -ForegroundColor Blue
             try {
                 # Use PowerShell cleanup instead of git clean to avoid interactive prompts
