@@ -26,7 +26,6 @@
     "**/.git/objects/**": true,
     "**/.git/subtree-cache/**": true
   },
-
   // GitHub Copilot Configuration
   "github.copilot.enable": {
     "*": true,
@@ -145,7 +144,6 @@
       "text": "Use professional language without emojis"
     }
   ],
-
   // Copilot instruction files
   "github.copilot.instructionFiles": [
     {
@@ -153,7 +151,6 @@
       "instructionFile": ".vscode/copilot-instructions.md"
     }
   ],
-
   // PowerShell Configuration
   "powershell.codeFormatting.preset": "OTBS",
   "powershell.codeFormatting.openBraceOnSameLine": true,
@@ -168,7 +165,6 @@
   "powershell.scriptAnalysis.enable": true,
   "powershell.scriptAnalysis.settingsPath": "pwsh/PSScriptAnalyzerSettings.psd1",
   "powershell.developer.powerShellExePath": "pwsh",
-
   // Python Configuration
   "python.testing.pytestArgs": [
     "py"
@@ -179,7 +175,6 @@
   "python.formatting.provider": "black",
   "python.linting.enabled": true,
   "python.linting.pylintEnabled": true,
-
   // JSON/JSONC Configuration
   "json.format.enable": true,
   "[json]": {
@@ -190,7 +185,6 @@
     "editor.defaultFormatter": "vscode.json-language-features",
     "editor.formatOnSave": true
   },
-
   // Terraform/OpenTofu Configuration
   "[terraform]": {
     "editor.defaultFormatter": "hashicorp.terraform",
@@ -201,7 +195,6 @@
     "enabled": true,
     "args": []
   },
-
   // Markdown Configuration
   "[markdown]": {
     "editor.wordWrap": "on",
@@ -219,14 +212,12 @@
   "yaml.validate": true,
   "yaml.hover": true,
   "yaml.completion": true,
-
   // Git Configuration
   "git.enableCommitSigning": false,
   "git.fetchOnPull": true,
   "git.pruneOnFetch": true,
   "git.autofetch": true,
   "git.confirmSync": false,
-
   // Editor Configuration
   "editor.formatOnSave": true,
   "editor.formatOnPaste": true,
@@ -235,8 +226,10 @@
   "editor.tabSize": 4,
   "editor.detectIndentation": true,
   "editor.renderWhitespace": "trailing",
-  "editor.rulers": [100, 120],
-
+  "editor.rulers": [
+    100,
+    120
+  ],
   // File associations
   "files.associations": {
     "*.ps1": "powershell",
@@ -246,23 +239,28 @@
     "*.tfvars": "terraform",
     "*.hcl": "terraform"
   },
-
   // Terminal Configuration
   "terminal.integrated.defaultProfile.windows": "PowerShell",
   "terminal.integrated.profiles.windows": {
     "PowerShell": {
       "source": "PowerShell",
       "icon": "terminal-powershell",
-      "args": ["-NoLogo"]
+      "args": [
+        "-NoLogo"
+      ]
     }
   },
-
   // Extension-specific settings
   "pester.useLegacyCodeLens": false,
   "pester.enableCodeLens": true,
-  "errorLens.enabledDiagnosticLevels": ["error", "warning", "info"],
-  "errorLens.exclude": ["never (read|used)"],
-
+  "errorLens.enabledDiagnosticLevels": [
+    "error",
+    "warning",
+    "info"
+  ],
+  "errorLens.exclude": [
+    "never (read|used)"
+  ],
   // Workspace-specific settings
   "explorer.fileNesting.enabled": true,
   "explorer.fileNesting.patterns": {

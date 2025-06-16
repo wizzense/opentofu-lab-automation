@@ -87,14 +87,16 @@ The automated test generation system:
 ## 📋 Test Categories
 
 ### Critical Tests (Tier 1)
+
 - **Impact**: Failures block builds/merges
 - **Scope**: Core functionality, syntax validation, module loading
-- **Examples**: 
+- **Examples**:
   - PowerShell syntax validation
   - Module import verification
   - Cross-platform compatibility
 
 ### Important Tests (Tier 2)
+
 - **Impact**: Failures warn but don't block
 - **Scope**: Feature functionality, integration tests
 - **Examples**:
@@ -103,6 +105,7 @@ The automated test generation system:
   - Performance benchmarks
 
 ### Maintenance Tests (Tier 3)
+
 - **Impact**: Informational only
 - **Scope**: Code quality, optimization opportunities
 - **Examples**:
@@ -170,6 +173,7 @@ Submit-PatchForReview -PatchOperation $patch
 ### Core App Tests (`tests/CoreApp.Tests.ps1`)
 
 Comprehensive test suite covering:
+
 - Module structure validation
 - Script syntax and standards
 - Function definition verification
@@ -179,6 +183,7 @@ Comprehensive test suite covering:
 ### Automated Generation (`scripts/Invoke-AutomatedTestGeneration.ps1`)
 
 Features:
+
 - AST-based script analysis
 - Template-driven test generation
 - Continuous monitoring capability
@@ -188,6 +193,7 @@ Features:
 ### GitHub Actions (`.github/workflows/coreapp-automated-testing.yml`)
 
 Automated CI/CD pipeline:
+
 - Multi-platform testing
 - Automated test generation
 - Coverage reporting
@@ -199,6 +205,7 @@ Automated CI/CD pipeline:
 ### Copilot Instructions (`.vscode/copilot-instructions.md`)
 
 Enforces:
+
 - PatchManager usage for all changes
 - PowerShell 7.0+ standards
 - Cross-platform compatibility
@@ -208,6 +215,7 @@ Enforces:
 ### Settings (`.vscode/settings.json`)
 
 Configures:
+
 - Code generation standards
 - Test generation preferences
 - Review selection criteria
@@ -216,6 +224,7 @@ Configures:
 ### Tasks (`.vscode/tasks.json`)
 
 Provides:
+
 - Quick test generation
 - Continuous monitoring
 - Test execution
@@ -260,6 +269,7 @@ Invoke-Pester -Path './tests/CoreApp.Tests.ps1' -Output Detailed
 ### Test Coverage Reports
 
 Generated automatically in:
+
 - `tests/TestCoverage-Report.json`: Detailed coverage metrics
 - `coverage/CoreApp-TestReport.json`: Test execution results
 - GitHub Actions artifacts: CI/CD run results

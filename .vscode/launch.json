@@ -20,7 +20,10 @@
             "type": "PowerShell",
             "request": "launch",
             "script": "${workspaceFolder}/pwsh/runner.ps1",
-            "args": ["-Scripts", "0006,0007,0008,0009"],
+            "args": [
+                "-Scripts",
+                "0006,0007,0008,0009"
+            ],
             "cwd": "${workspaceFolder}"
         },
         {
@@ -29,8 +32,10 @@
             "request": "launch",
             "script": "Invoke-Pester",
             "args": [
-                "-Path", "${workspaceFolder}/tests/",
-                "-Output", "Detailed",
+                "-Path",
+                "${workspaceFolder}/tests/",
+                "-Output",
+                "Detailed",
                 "-PassThru"
             ],
             "cwd": "${workspaceFolder}"
@@ -51,7 +56,9 @@
             "type": "debugpy",
             "request": "launch",
             "module": "labctl",
-            "args": ["--help"],
+            "args": [
+                "--help"
+            ],
             "console": "integratedTerminal",
             "cwd": "${workspaceFolder}/py",
             "env": {

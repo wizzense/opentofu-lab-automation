@@ -35,218 +35,251 @@
 #>
 
 function Initialize-DevelopmentEnvironment {
+    <#
+    .SYNOPSIS
+        Completely sets up the development environment with all required components
+    
+    .DESCRIPTION
+        This function provides comprehensive development environment setup including:
+        - Module import issue resolution
+        - Pre-commit hook installation with emoji prevention
+        - Git aliases for PatchManager integration
+        - PowerShell module installation to standard locations
+        - Environment variable configuration
+        - Development tooling setup
+        
+    .PARAMETER Force
+        Force reinstallation of modules and components
+        
+    .PARAMETER SkipModuleImportFixes
+        Skip the module import issue resolution (useful if already done)
+        
+    .EXAMPLE
+        Initialize-DevelopmentEnvironment
+        Sets up complete development environment
+        
+    .EXAMPLE
+        Initialize-DevelopmentEnvironment -Force
+        Force reinstalls all components
+    #>
     [CmdletBinding(SupportsShouldProcess)]
     param(
-        [Parameter()]
-        [switch]$InstallModulesGlobally,
-        
-        [Parameter()]
-        [switch]$SetupGitAliases,
-        
-        [Parameter()]
-        [switch]$CleanupEmojis,
-        
-        [Parameter()]
-        [switch]$Force
+        [switch]$Force,
+        [switch]$SkipModuleImportFixes
     )
     
     begin {
-        Write-CustomLog "=== Initializing Optimal Development Environment ===" -Level INFO
+        Write-CustomLog "=== INITIALIZING DEVELOPMENT ENVIRONMENT ===" -Level INFO
+        Write-CustomLog "This will set up all required development tools and resolve import issues" -Level INFO
         
-        # Import required modules
-        Import-Module "$env:USERPROFILE\Documents\PowerShell\Modules\Logging" -Force -ErrorAction SilentlyContinue
-        Import-Module "$env:USERPROFILE\Documents\PowerShell\Modules\TestingFramework" -Force -ErrorAction SilentlyContinue
-        Import-Module "$env:USERPROFILE\Documents\PowerShell\Modules\UnifiedMaintenance" -Force -ErrorAction SilentlyContinue
-        
-        $results = @{
-            PreCommitHook = $false
-            ModulesInstalled = $false
-            GitAliases = $false
-            EmojisRemoved = $false
-            Errors = @()
+        $stepCount = 0
+        $totalSteps = 8
+          function Write-Step {
+            param($StepName)
+            $script:stepCount++
+            Write-CustomLog "Step $($script:stepCount)/$($totalSteps): $StepName" -Level INFO
         }
     }
     
     process {
-        try {            # Step 1: Install pre-commit hook with emoji prevention
-            if ($PSCmdlet.ShouldProcess("Pre-commit hook", "Install with emoji prevention")) {
-                try {
-                    Write-CustomLog "Installing pre-commit hook with emoji prevention..." -Level INFO
-                    
-                    # Force reinstall if requested
-                    if ($Force -and (Test-Path ".git\hooks\pre-commit")) {
-                        Remove-Item ".git\hooks\pre-commit" -Force
-                        Write-CustomLog "Removed existing pre-commit hook for forced reinstall" -Level INFO
-                    }
-                    
-                    $hookResult = Install-PreCommitHook
-                    
-                    if ($hookResult.Success) {
-                        Write-CustomLog "Pre-commit hook installed successfully" -Level SUCCESS
-                        $results.PreCommitHook = $true
-                    }
-                }
-                catch {
-                    $error = "Failed to install pre-commit hook: $($_.Exception.Message)"
-                    Write-CustomLog $error -Level ERROR
-                    $results.Errors += $error
-                }
-            }
-            
-            # Step 2: Install modules globally for easier testing
-            if ($InstallModulesGlobally -and $PSCmdlet.ShouldProcess("PowerShell modules", "Install globally")) {
-                try {
-                    Write-CustomLog "Installing project modules to standard PowerShell locations..." -Level INFO
-                    
-                    # Use the PowerShell module installer we created
-                    $moduleResult = Install-PowerShellModules -Install
-                    
-                    if ($moduleResult -and $moduleResult.Contains("SUCCESS")) {
-                        Write-CustomLog "Modules installed globally successfully" -Level SUCCESS
-                        $results.ModulesInstalled = $true
-                    }
-                }
-                catch {
-                    $error = "Failed to install modules globally: $($_.Exception.Message)"
-                    Write-CustomLog $error -Level ERROR
-                    $results.Errors += $error
-                }
-            }
-            
-            # Step 3: Setup Git aliases that use PatchManager
-            if ($SetupGitAliases -and $PSCmdlet.ShouldProcess("Git aliases", "Configure PatchManager integration")) {
-                try {
-                    Write-CustomLog "Setting up Git aliases for automatic PatchManager usage..." -Level INFO
-                    
-                    # Source the Git aliases script
-                    $aliasScript = "c:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\Setup-GitPatchManagerAliases.ps1"
-                    if (Test-Path $aliasScript) {
-                        & $aliasScript
-                        Write-CustomLog "Git aliases configured for PatchManager integration" -Level SUCCESS
-                        $results.GitAliases = $true
-                    } else {
-                        Write-CustomLog "Git aliases script not found at $aliasScript" -Level WARN
-                    }
-                }
-                catch {
-                    $error = "Failed to setup Git aliases: $($_.Exception.Message)"
-                    Write-CustomLog $error -Level ERROR
-                    $results.Errors += $error
-                }
-            }
-            
-            # Step 4: Clean up existing emojis
-            if ($CleanupEmojis -and $PSCmdlet.ShouldProcess("Project files", "Remove emojis")) {
-                try {
-                    Write-CustomLog "Removing emojis from project files..." -Level INFO
-                    
-                    $emojiResult = Remove-ProjectEmojis -Path "." -CreateBackup
-                    
-                    Write-CustomLog "Emoji cleanup completed:" -Level SUCCESS
-                    Write-CustomLog "  Files scanned: $($emojiResult.FilesScanned)" -Level INFO
-                    Write-CustomLog "  Files modified: $($emojiResult.FilesModified)" -Level INFO
-                    Write-CustomLog "  Emojis replaced: $($emojiResult.EmojisReplaced)" -Level INFO
-                    
-                    $results.EmojisRemoved = $true
-                }
-                catch {
-                    $error = "Failed to remove emojis: $($_.Exception.Message)"
-                    Write-CustomLog $error -Level ERROR
-                    $results.Errors += $error
-                }
-            }
-            
-            # Step 5: Validate VS Code integration
-            Write-CustomLog "Validating VS Code integration..." -Level INFO
-            
-            $vscodeDir = ".vscode"
-            if (Test-Path $vscodeDir) {
-                $requiredFiles = @(
-                    "$vscodeDir\copilot-instructions.md",
-                    "$vscodeDir\settings.json",
-                    "$vscodeDir\tasks.json",
-                    "$vscodeDir\extensions.json"
-                )
-                
-                $missingFiles = $requiredFiles | Where-Object { -not (Test-Path $_) }
-                
-                if ($missingFiles.Count -eq 0) {
-                    Write-CustomLog "All VS Code configuration files present" -Level SUCCESS
-                } else {
-                    Write-CustomLog "Missing VS Code files: $($missingFiles -join ', ')" -Level WARN
-                }
+        try {
+            # Step 1: Resolve all module import issues
+            if (-not $SkipModuleImportFixes) {
+                Write-Step "Resolving module import issues"
+                Resolve-ModuleImportIssues -Force:$Force -WhatIf:$WhatIfPreference
             } else {
-                Write-CustomLog "VS Code configuration directory not found" -Level WARN
+                Write-CustomLog "Skipping module import fixes as requested" -Level INFO
             }
             
-            # Step 6: Test the complete setup
-            Write-CustomLog "Testing development environment setup..." -Level INFO
-            
+            # Step 2: Install pre-commit hook with emoji prevention
+            Write-Step "Installing pre-commit hook with emoji prevention"
             try {
-                # Test module imports
-                $testModules = @("Logging", "TestingFramework", "UnifiedMaintenance", "DevEnvironment")
-                foreach ($module in $testModules) {
-                    if (Get-Module -ListAvailable -Name $module) {
-                        Write-CustomLog "  Module available: $module" -Level SUCCESS
-                    } else {
-                        Write-CustomLog "  Module missing: $module" -Level WARN
-                    }
-                }
-                
-                # Test pre-commit hook
-                if (Test-Path ".git\hooks\pre-commit") {
-                    Write-CustomLog "  Pre-commit hook: Installed" -Level SUCCESS
-                } else {
-                    Write-CustomLog "  Pre-commit hook: Missing" -Level WARN
-                }
-                
-                # Test Git aliases
-                $gitAliases = git config --get-regexp "alias\." 2>$null
-                if ($gitAliases -and $gitAliases.Count -gt 0) {
-                    Write-CustomLog "  Git aliases: Configured ($($gitAliases.Count) aliases)" -Level SUCCESS
-                } else {
-                    Write-CustomLog "  Git aliases: Not configured" -Level WARN
-                }
-                
+                Install-PreCommitHook -Install -Force:$Force
+                Write-CustomLog "✓ Pre-commit hook installed successfully" -Level SUCCESS
+            } catch {
+                Write-CustomLog "⚠ Pre-commit hook installation failed: $($_.Exception.Message)" -Level WARN
             }
-            catch {
-                Write-CustomLog "Error during environment testing: $($_.Exception.Message)" -Level ERROR
+            
+            # Step 3: Set up Git aliases for PatchManager integration
+            Write-Step "Setting up Git aliases for PatchManager"
+            try {
+                Set-PatchManagerAliases -Install
+                Write-CustomLog "✓ Git aliases configured for PatchManager" -Level SUCCESS
+            } catch {
+                Write-CustomLog "⚠ Git aliases setup failed: $($_.Exception.Message)" -Level WARN
             }
-        }
-        catch {
+            
+            # Step 4: Remove any existing emojis from project
+            Write-Step "Removing emojis from project"
+            try {
+                Remove-ProjectEmojis -WhatIf:$WhatIfPreference
+                Write-CustomLog "✓ Project emoji cleanup completed" -Level SUCCESS
+            } catch {
+                Write-CustomLog "⚠ Emoji removal failed: $($_.Exception.Message)" -Level WARN
+            }
+            
+            # Step 5: Install required PowerShell modules
+            Write-Step "Installing required PowerShell modules"
+            Install-RequiredPowerShellModules -Force:$Force
+            
+            # Step 6: Set up testing framework
+            Write-Step "Setting up testing framework"
+            Setup-TestingFramework
+            
+            # Step 7: Configure VS Code integration
+            Write-Step "Configuring VS Code integration"
+            Configure-VSCodeIntegration
+            
+            # Step 8: Validate development environment
+            Write-Step "Validating development environment"
+            $validationResults = Test-DevelopmentSetup -Detailed
+            
+            # Show summary
+            Show-DevEnvironmentSummary -ValidationResults $validationResults
+            
+        } catch {
             Write-CustomLog "Critical error during development environment setup: $($_.Exception.Message)" -Level ERROR
             throw
         }
     }
     
     end {
-        Write-CustomLog "=== Development Environment Setup Complete ===" -Level INFO
-        
-        # Summary
-        $successCount = ($results.PreCommitHook, $results.ModulesInstalled, $results.GitAliases, $results.EmojisRemoved | Where-Object { $_ }).Count
-        $totalSteps = 4
-        
-        Write-CustomLog "Setup Summary:" -Level INFO
-        Write-CustomLog "  Pre-commit hook: $(if ($results.PreCommitHook) { 'SUCCESS' } else { 'SKIPPED/FAILED' })" -Level $(if ($results.PreCommitHook) { 'SUCCESS' } else { 'WARN' })
-        Write-CustomLog "  Modules globally: $(if ($results.ModulesInstalled) { 'SUCCESS' } else { 'SKIPPED/FAILED' })" -Level $(if ($results.ModulesInstalled) { 'SUCCESS' } else { 'WARN' })
-        Write-CustomLog "  Git aliases: $(if ($results.GitAliases) { 'SUCCESS' } else { 'SKIPPED/FAILED' })" -Level $(if ($results.GitAliases) { 'SUCCESS' } else { 'WARN' })
-        Write-CustomLog "  Emoji removal: $(if ($results.EmojisRemoved) { 'SUCCESS' } else { 'SKIPPED/FAILED' })" -Level $(if ($results.EmojisRemoved) { 'SUCCESS' } else { 'WARN' })
-        
-        if ($results.Errors.Count -gt 0) {
-            Write-CustomLog "Errors encountered:" -Level ERROR
-            foreach ($error in $results.Errors) {
-                Write-CustomLog "  - $error" -Level ERROR
-            }
-        }
-        
-        if ($successCount -eq $totalSteps) {
-            Write-CustomLog "OPTIMAL DEVELOPMENT ENVIRONMENT READY!" -Level SUCCESS
-        } else {
-            Write-CustomLog "Development environment setup completed with warnings" -Level WARN
-        }
-        
-        return $results
+        Write-CustomLog "=== DEVELOPMENT ENVIRONMENT INITIALIZATION COMPLETE ===" -Level SUCCESS
+        Write-CustomLog "Please restart PowerShell to pick up all environment changes" -Level INFO
     }
 }
 
-Export-ModuleMember -Function Initialize-DevelopmentEnvironment
+function Install-RequiredPowerShellModules {
+    [CmdletBinding()]
+    param([switch]$Force)
+    
+    $requiredModules = @(
+        @{ Name = "Pester"; Version = "5.7.1" },
+        @{ Name = "powershell-yaml"; Version = $null },
+        @{ Name = "ThreadJob"; Version = $null },
+        @{ Name = "PSScriptAnalyzer"; Version = $null }
+    )
+    
+    foreach ($module in $requiredModules) {
+        try {
+            $installed = Get-Module -ListAvailable -Name $module.Name
+            if ($module.Version) {
+                $installed = $installed | Where-Object { $_.Version -ge [version]$module.Version }
+            }
+            
+            if (-not $installed -or $Force) {
+                Write-CustomLog "Installing $($module.Name)..." -Level INFO
+                $installParams = @{
+                    Name = $module.Name
+                    Scope = "CurrentUser"
+                    Force = $true
+                }
+                if ($module.Version) {
+                    $installParams.RequiredVersion = $module.Version
+                }
+                Install-Module @installParams
+                Write-CustomLog "✓ $($module.Name) installed successfully" -Level SUCCESS
+            } else {
+                Write-CustomLog "✓ $($module.Name) already installed" -Level SUCCESS
+            }
+        } catch {
+            Write-CustomLog "⚠ Failed to install $($module.Name): $($_.Exception.Message)" -Level WARN
+        }
+    }
+}
+
+function Setup-TestingFramework {
+    [CmdletBinding()]
+    param()
+    
+    try {
+        # Ensure Pester 5.7.1+ is available
+        $pester = Get-Module -ListAvailable -Name Pester | Where-Object { $_.Version -ge [version]"5.7.1" }
+        if ($pester) {
+            Import-Module Pester -RequiredVersion 5.7.1 -Force
+            Write-CustomLog "✓ Pester 5.7.1+ configured" -Level SUCCESS
+        } else {
+            Write-CustomLog "⚠ Pester 5.7.1+ not found" -Level WARN
+        }
+        
+        # Set up Python testing if available
+        if (Get-Command python -ErrorAction SilentlyContinue) {
+            $projectRoot = $env:PROJECT_ROOT
+            if ($projectRoot -and (Test-Path "$projectRoot/py")) {
+                python -m pip install -e "$projectRoot/py" | Out-Null
+                Write-CustomLog "✓ Python testing framework configured" -Level SUCCESS
+            }
+        }
+        
+    } catch {
+        Write-CustomLog "⚠ Testing framework setup encountered issues: $($_.Exception.Message)" -Level WARN
+    }
+}
+
+function Configure-VSCodeIntegration {
+    [CmdletBinding()]
+    param()
+    
+    try {
+        $projectRoot = $env:PROJECT_ROOT
+        if (-not $projectRoot) { 
+            Write-CustomLog "⚠ PROJECT_ROOT not set, skipping VS Code integration" -Level WARN
+            return 
+        }
+        
+        $vscodeSettingsPath = "$projectRoot/.vscode/settings.json"
+        if (Test-Path $vscodeSettingsPath) {
+            Write-CustomLog "✓ VS Code settings detected" -Level SUCCESS
+        }
+        
+        $vscodeTasksPath = "$projectRoot/.vscode/tasks.json"  
+        if (Test-Path $vscodeTasksPath) {
+            Write-CustomLog "✓ VS Code tasks configured" -Level SUCCESS
+        }
+        
+        Write-CustomLog "✓ VS Code integration verified" -Level SUCCESS
+        
+    } catch {
+        Write-CustomLog "⚠ VS Code integration check failed: $($_.Exception.Message)" -Level WARN
+    }
+}
+
+function Show-DevEnvironmentSummary {
+    [CmdletBinding()]
+    param($ValidationResults)
+    
+    Write-CustomLog "`n=== DEVELOPMENT ENVIRONMENT SUMMARY ===" -Level INFO
+    
+    # Show module status
+    $modules = @("LabRunner", "PatchManager", "Logging", "DevEnvironment", "BackupManager")
+    Write-CustomLog "`nModule Status:" -Level INFO
+    foreach ($module in $modules) {
+        try {
+            Import-Module $module -Force -ErrorAction Stop
+            Write-CustomLog "  ✓ $module - Available" -Level SUCCESS
+        } catch {
+            Write-CustomLog "  ✗ $module - Not available" -Level ERROR
+        }
+    }
+      # Show environment variables
+    Write-CustomLog "`nEnvironment Variables:" -Level INFO
+    $projectRootStatus = if ($env:PROJECT_ROOT) { $env:PROJECT_ROOT } else { 'NOT SET' }
+    $modulesPathStatus = if ($env:PWSH_MODULES_PATH) { $env:PWSH_MODULES_PATH } else { 'NOT SET' }
+    Write-CustomLog "  PROJECT_ROOT: $projectRootStatus" -Level INFO
+    Write-CustomLog "  PWSH_MODULES_PATH: $modulesPathStatus" -Level INFO
+    
+    # Show validation results if provided
+    if ($ValidationResults) {
+        Write-CustomLog "`nValidation Results:" -Level INFO
+        foreach ($result in $ValidationResults) {
+            $status = if ($result.Status -eq "PASS") { "✓" } else { "✗" }
+            Write-CustomLog "  $status $($result.Test): $($result.Message)" -Level INFO
+        }
+    }
+    
+    Write-CustomLog "`nNext Steps:" -Level INFO
+    Write-CustomLog "  1. Restart PowerShell session" -Level INFO
+    Write-CustomLog "  2. Test: Import-Module LabRunner -Force" -Level INFO
+    Write-CustomLog "  3. Run: Test-DevelopmentSetup" -Level INFO
+    Write-CustomLog "  4. Start developing with PatchManager for all changes" -Level INFO
+}

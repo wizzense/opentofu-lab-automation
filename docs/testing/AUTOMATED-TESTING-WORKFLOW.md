@@ -50,6 +50,7 @@ The main orchestrator for all testing activities, providing:
 #### Keyboard Shortcuts
 
 Access via:
+
 - `Ctrl+Shift+P` → "Tasks: Run Task" → Select test task
 - `Ctrl+Shift+` ` (backtick) → Opens integrated terminal for manual execution
 
@@ -90,6 +91,7 @@ tests/
 ```
 
 **Test Categories Available:**
+
 - `Critical` - Essential functionality
 - `CoreApp` - Core application components
 - `Generated` - Auto-generated tests
@@ -106,6 +108,7 @@ py/tests/
 ```
 
 **Coverage Requirements:**
+
 - Minimum 80% test coverage for new code
 - HTML and XML coverage reports generated
 - Integration with CI/CD coverage tracking
@@ -123,6 +126,7 @@ The workflow can automatically generate test files for:
 ### Test Templates
 
 #### PowerShell Test Template
+
 ```powershell
 #Requires -Version 7.0
 #Requires -Module Pester
@@ -145,6 +149,7 @@ Describe "ScriptName Tests" -Tag @('Generated', 'CoreApp') {
 ```
 
 #### Python Test Template
+
 ```python
 #!/usr/bin/env python3
 """Automated tests for module"""
@@ -230,6 +235,7 @@ Invoke-GitControlledPatch -PatchDescription "Add automated tests for new module"
 ### Common Issues
 
 #### Pester Tests Failing
+
 ```powershell
 # Check module loading
 Import-Module './pwsh/modules/LabRunner/' -Force
@@ -240,6 +246,7 @@ Invoke-ScriptAnalyzer -Path tests/ -Recurse
 ```
 
 #### Python Tests Failing
+
 ```bash
 # Check Python environment
 python --version
@@ -250,6 +257,7 @@ python -c "import py.labctl.pester_failures"
 ```
 
 #### CI/CD Pipeline Issues
+
 - **Check platform-specific logs** in GitHub Actions
 - **Verify dependency installation** in setup steps
 - **Review test artifacts** for detailed error information
@@ -257,6 +265,7 @@ python -c "import py.labctl.pester_failures"
 ### Debug Mode
 
 Enable verbose logging:
+
 ```powershell
 ./Invoke-AutomatedTestWorkflow.ps1 -TestCategory All -Verbose
 ```
@@ -361,11 +370,13 @@ function New-ModuleSpecificTest {
 ```
 
 ### VS Code Tasks
+
 - Press `Ctrl+Shift+P` → "Tasks: Run Task"
 - Select from available test tasks
 - Use "Test: Run All Automated Tests" for comprehensive validation
 
 ### CI/CD Monitoring
+
 - Check GitHub Actions tab for workflow status
 - Download test artifacts for detailed analysis
 - Review PR comments for test summaries

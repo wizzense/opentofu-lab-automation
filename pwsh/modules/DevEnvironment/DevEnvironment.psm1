@@ -12,11 +12,20 @@
     This module integrates development environment setup into the core project workflow.
 #>
 
-# Import required modules
-try {
-    Import-Module "$PSScriptRoot\..\Logging\Logging.psm1" -Force -ErrorAction Stop
-} catch {
-    Write-Warning "Logging module not available, using basic Write-Host"
+# Import the centralized Logging module
+$loggingModulePath = $null
+if ($env:PWSH_MODULES_PATH -and (Test-Path $env:PWSH_MODULES_PATH)) {
+    $loggingModulePath = Join-Path $env:PWSH_MODULES_PATH "Logging"
+}
+if (-not $loggingModulePath -or -not (Test-Path $loggingModulePath)) {
+    $loggingModulePath = Join-Path (Split-Path $PSScriptRoot -Parent) "Logging"
+}
+if (Test-Path $loggingModulePath) {
+    Import-Module $loggingModulePath -Force -Global
+    Write-Verbose "Successfully imported centralized Logging module"
+} else {
+    Write-Warning "Could not find centralized Logging module at $loggingModulePath"
+    # Fallback logging function
     function Write-CustomLog {
         param($Message, $Level = "INFO")
         $color = switch ($Level) {

@@ -1,6 +1,7 @@
 # GitHub Copilot Test Generation Instructions
 
 ## Test Framework Standards
+
 Use **Pester 5.x** for all PowerShell tests with the following structure:
 
 ```powershell
@@ -37,24 +38,28 @@ Describe "ModuleName" {
 ## Test Categories
 
 ### Unit Tests
+
 - Test individual functions in isolation
 - Mock external dependencies
 - Focus on single responsibility
 - File pattern: `*.Tests.ps1`
 
 ### Integration Tests
+
 - Test module interactions
 - Use real dependencies where appropriate
 - Validate cross-module functionality
 - File pattern: `*.Integration.Tests.ps1`
 
 ### System Tests
+
 - End-to-end scenarios
 - Full environment testing
 - Cross-platform validation
 - File pattern: `*.System.Tests.ps1`
 
 ## Test Data Management
+
 ```powershell
 BeforeAll {
     $script:TestDataPath = "$PSScriptRoot/TestData"
@@ -77,6 +82,7 @@ AfterAll {
 ```
 
 ## Mock Patterns
+
 ```powershell
 BeforeEach {
     Mock Write-Host { }
@@ -86,6 +92,7 @@ BeforeEach {
 ```
 
 ## Test Validation Rules
+
 1. **Always include negative test cases**
 2. **Test parameter validation**
 3. **Verify error handling**
@@ -93,6 +100,7 @@ BeforeEach {
 5. **Validate side effects**
 
 ## Cross-Platform Test Considerations
+
 ```powershell
 It "Should work on all platforms" {
     if ($IsWindows) {
@@ -106,6 +114,7 @@ It "Should work on all platforms" {
 ```
 
 ## Performance Testing
+
 ```powershell
 It "Should complete within acceptable time" {
     $stopwatch = [System.Diagnostics.Stopwatch]::StartNew()
@@ -118,12 +127,15 @@ It "Should complete within acceptable time" {
 ```
 
 ## Test Documentation
+
 Include test descriptions that clearly state:
+
 - **What** is being tested
 - **Expected** behavior
 - **Conditions** under which the test runs
 
 Example:
+
 ```powershell
 It "Should create backup before applying patches when BackupEnabled is true" {
     # Test validates that backup creation is triggered

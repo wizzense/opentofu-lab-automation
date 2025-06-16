@@ -1,16 +1,10 @@
 function Invoke-LabWebRequest {
-    CmdletBinding()
+    [CmdletBinding()]
     param(
-        Parameter(Mandatory)
-
-
-
-
-
-
-string$Uri,
-        string$OutFile,
-        switch$UseBasicParsing
+        [Parameter(Mandatory)]
+        [string]$Uri,
+        [string]$OutFile,
+        [switch]$UseBasicParsing
     )
     Invoke-WebRequest @PSBoundParameters
 }
@@ -18,34 +12,21 @@ string$Uri,
 # Provide a module-scoped wrapper so tests can mock Invoke-WebRequest via
 # -ModuleName LabSetup. This delegates to the built-in cmdlet.
 function Invoke-WebRequest {
-    CmdletBinding()
+    [CmdletBinding()]
     param(
-        Parameter(Mandatory)
-
-
-
-
-
-
-string$Uri,
-        string$OutFile,
-        switch$UseBasicParsing
+        [Parameter(Mandatory)]
+        [string]$Uri,
+        [string]$OutFile,
+        [switch]$UseBasicParsing
     )
     Microsoft.PowerShell.Utility\Invoke-WebRequest @PSBoundParameters
 }
 
 function Invoke-LabNpm {
-    CmdletBinding()
+    [CmdletBinding()]
     param(
-        Parameter(ValueFromRemainingArguments=$true)
-
-
-
-
-
-
-
-        string$Args
+        [Parameter(ValueFromRemainingArguments=$true)]
+        [string[]]$Args
     )
     npm @Args
 }

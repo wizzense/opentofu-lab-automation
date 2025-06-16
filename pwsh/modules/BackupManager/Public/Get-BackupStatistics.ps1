@@ -19,12 +19,12 @@ Get-BackupStatistics -ProjectRoot "." -IncludeDetails
 Follows OpenTofu Lab Automation maintenance standards
 #>
 function Get-BackupStatistics {
-    CmdletBinding()
+    [CmdletBinding()]
     param(
-        Parameter(Mandatory = $true)
-        string$ProjectRoot,
+        [Parameter(Mandatory = $true)]
+        [string]$ProjectRoot,
         
-        switch$IncludeDetails
+        [switch]$IncludeDetails
     )
     
     $ErrorActionPreference = "Stop"

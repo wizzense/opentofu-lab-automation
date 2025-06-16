@@ -36,8 +36,7 @@ function Invoke-BackupConsolidation {
         [switch]$DryRun
     )
     
-    begin {
-        # Initialize consolidation results
+    begin {        # Initialize consolidation results
         $script:ConsolidationResults = @{
             StartTime = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
             TotalSizeReclaimed = 0
@@ -46,24 +45,6 @@ function Invoke-BackupConsolidation {
             Errors = @()
             DryRun = $DryRun.IsPresent
             ConsolidatedPaths = @()
-        }
-
-        # Ensure we have logging capability
-        if (-not (Get-Command "Write-CustomLog" -ErrorAction SilentlyContinue)) {
-            function Write-CustomLog {
-                param(
-                    [string]$Message,
-                    [string]$Level = "INFO"
-                )
-                
-                $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
-                $logMessage = "[$timestamp] [$Level] $Message"
-                Write-Host $logMessage
-                
-                if ($Level -eq "ERROR") {
-                    $script:ConsolidationResults.Errors += $logMessage
-                }
-            }
         }
 
         # Define backup patterns to look for

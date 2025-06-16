@@ -85,10 +85,11 @@ function Invoke-GitControlledPatch {
         [Parameter()]
         [switch]$DryRun
     )
-      begin {
-        # Import required modules from project
-        $projectRoot = "c:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation"
-        Import-Module "$projectRoot\pwsh\modules\LabRunner" -Force -ErrorAction SilentlyContinue
+    
+    begin {
+        # Import required modules
+        Import-Module "$env:USERPROFILE\Documents\PowerShell\Modules\Logging" -Force -ErrorAction SilentlyContinue
+        Import-Module "$env:USERPROFILE\Documents\PowerShell\Modules\TestingFramework" -Force -ErrorAction SilentlyContinue
         
         Write-CustomLog "=== Starting Git-Controlled Patch Process ===" -Level INFO
         Write-CustomLog "Patch Description: $PatchDescription" -Level INFO

@@ -12,13 +12,15 @@
     Description = 'Development environment setup and management for OpenTofu Lab Automation'
     
     PowerShellVersion = '7.0'
-    
-    FunctionsToExport = @(
+      FunctionsToExport = @(
         'Install-PreCommitHook',
         'Remove-PreCommitHook', 
         'Test-PreCommitHook',
         'Set-DevelopmentEnvironment',
-        'Test-DevelopmentSetup'
+        'Test-DevelopmentSetup',
+        'Remove-ProjectEmojis',
+        'Initialize-DevelopmentEnvironment',
+        'Resolve-ModuleImportIssues'
     )
     
     CmdletsToExport = @()
