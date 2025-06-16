@@ -5,9 +5,9 @@ Param(
 
 $ErrorActionPreference = "Stop"
 
-# Import necessary modules
-Import-Module "/pwsh/modules/LabRunner/" -Force
-Import-Module "/pwsh/modules/CodeFixer/" -Force
+# Import necessary modules using environment variables
+Import-Module "$env:PWSH_MODULES_PATH/LabRunner/" -Force
+Import-Module "$env:PWSH_MODULES_PATH/CodeFixer/" -Force
 
 # Load configuration
 if (-Not (Test-Path $ConfigPath)) {
