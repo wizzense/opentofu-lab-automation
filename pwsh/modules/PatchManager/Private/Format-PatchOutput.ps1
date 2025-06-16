@@ -85,7 +85,7 @@ function Format-PatchOutput {
     Write-Host ""
     
     # Patch Details
-    Write-Host "📋 PATCH DETAILS" -ForegroundColor Cyan
+    Write-Host "PATCH DETAILS" -ForegroundColor Cyan
     Write-Host "  Description: $PatchDescription" -ForegroundColor White
     if ($BranchName) {
         Write-Host "  Branch: $BranchName" -ForegroundColor White
