@@ -388,16 +388,15 @@ function Invoke-FixValidation {
 
 function Test-CriticalPathExclusion {
     param([string]$FilePath)
-    
-    $criticalPatterns = @(
-        '\.git\',
+      $criticalPatterns = @(
+        '\.git\\',
         'PROJECT-MANIFEST.json',
         'LICENSE',
         'mkdocs.yml',
         'pyproject.toml',
-        '\.vscode\settings.json',
-        '\.vscode\tasks.json',
-        'archive\',
+        '\.vscode\\settings.json',
+        '\.vscode\\tasks.json',
+        'archive\\',
         'backups\',
         'logs\'
     )
