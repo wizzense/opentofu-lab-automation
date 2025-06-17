@@ -1,6 +1,17 @@
 # Temporary files created for debugging/fixes (prefix with TEMP_)
 TEMP_*
 
+# Temporary files and debugging scripts
+temp-*
+*-temp.*
+Fix-*
+Demo-*
+Test-*
+*test.ps1
+*debug.ps1
+cleanup-*
+Remove-*
+
 # Log files
 *.log
 logs/
