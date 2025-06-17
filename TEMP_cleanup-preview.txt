@@ -1,0 +1,11 @@
+
+Name                           Value
+----                           -----
+Duration                       00:00:48.7696625
+FilesRemoved                   0
+Success                        True
+DirectoriesRemoved             0
+Message                        Comprehensive cleanup completed successfully
+SizeReclaimed                  1803762
+ValidationResult               {[Issues, System.Object[]], [Success, False], [Message, Validation failed with 2 issues]}
+
