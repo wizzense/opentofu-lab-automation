@@ -1,0 +1,271 @@
+{
+  // File and search exclusions for better performance
+  "search.exclude": {
+    "**/backups/**": true,
+    "**/*.backup*": true,
+    "**/archive/**": true,
+    "**/cleanup-backup-*/**": true,
+    "**/temp-*/**": true,
+    "**/node_modules/**": true,
+    "**/.git/**": true
+  },
+  "files.exclude": {
+    "**/backups/**": true,
+    "**/*.backup*": true,
+    "**/archive/**": true,
+    "**/cleanup-backup-*/**": true,
+    "**/temp-*/**": true
+  },
+  "files.watcherExclude": {
+    "**/backups/**": true,
+    "**/*.backup*": true,
+    "**/archive/**": true,
+    "**/cleanup-backup-*/**": true,
+    "**/temp-*/**": true,
+    "**/node_modules/**": true,
+    "**/.git/objects/**": true,
+    "**/.git/subtree-cache/**": true
+  },
+  // GitHub Copilot Configuration
+  "github.copilot.enable": {
+    "*": true,
+    "yaml": true,
+    "plaintext": true,
+    "markdown": true,
+    "powershell": true,
+    "terraform": true,
+    "json": true,
+    "jsonc": true
+  },
+  "github.copilot.chat.codeGeneration.useInstructionFiles": true,
+  "github.copilot.chat.codeGeneration.instructions": [
+    {
+      "text": "Follow PowerShell 7.0+ cross-platform standards with #Requires -Version 7.0"
+    },
+    {
+      "text": "Use forward slashes for all paths and avoid Windows-specific cmdlets"
+    },
+    {
+      "text": "Import modules with absolute paths: Import-Module '/workspaces/opentofu-lab-automation/pwsh/modules/ModuleName/' -Force"
+    },
+    {
+      "text": "Use Write-CustomLog for all logging output with appropriate levels (INFO, WARN, ERROR, SUCCESS)"
+    },
+    {
+      "text": "Implement proper error handling with try-catch blocks and meaningful error messages"
+    },
+    {
+      "text": "Follow the project's no-emoji policy - use clear, professional language"
+    },
+    {
+      "text": "Structure functions with [CmdletBinding(SupportsShouldProcess)] and proper parameter validation"
+    },
+    {
+      "text": "Use environment variables: $env:PROJECT_ROOT, $env:PWSH_MODULES_PATH for paths"
+    }
+  ],
+  "github.copilot.chat.testGeneration.instructions": [
+    {
+      "text": "Generate Pester 5.0+ tests with #Requires -Module Pester and #Requires -Version 7.0"
+    },
+    {
+      "text": "Use Describe-Context-It structure with proper BeforeAll/AfterAll setup"
+    },
+    {
+      "text": "Include cross-platform test scenarios for Windows, Linux, and macOS"
+    },
+    {
+      "text": "Test both success and failure scenarios with appropriate assertions"
+    },
+    {
+      "text": "Mock external dependencies like network calls, file operations, and system commands"
+    },
+    {
+      "text": "Validate error handling and logging behavior"
+    },
+    {
+      "text": "Include performance tests for long-running operations"
+    }
+  ],
+  "github.copilot.chat.reviewSelection.instructions": [
+    {
+      "text": "Check for PowerShell 7.0+ compatibility and cross-platform best practices"
+    },
+    {
+      "text": "Verify proper error handling and logging implementation"
+    },
+    {
+      "text": "Ensure module imports use absolute paths and -Force parameter"
+    },
+    {
+      "text": "Validate that paths use forward slashes for cross-platform compatibility"
+    },
+    {
+      "text": "Check for proper parameter validation and SupportsShouldProcess usage"
+    },
+    {
+      "text": "Verify adherence to project coding standards and conventions"
+    },
+    {
+      "text": "Ensure proper documentation and inline comments"
+    }
+  ],
+  "github.copilot.chat.commitMessageGeneration.instructions": [
+    {
+      "text": "Use conventional commit format: type(scope): description"
+    },
+    {
+      "text": "Common types: feat, fix, docs, style, refactor, test, chore"
+    },
+    {
+      "text": "Reference module names in scope: patchmanager, labrunner, coreapp, etc."
+    },
+    {
+      "text": "Keep description concise but descriptive"
+    },
+    {
+      "text": "No emojis - follow project's professional language policy"
+    }
+  ],
+  "github.copilot.chat.pullRequestDescriptionGeneration.instructions": [
+    {
+      "text": "Summarize key changes and mention affected modules (PatchManager, LabRunner, CoreApp)"
+    },
+    {
+      "text": "Highlight new features, bug fixes, or breaking changes"
+    },
+    {
+      "text": "Include testing information and platform compatibility notes"
+    },
+    {
+      "text": "Reference related issues or documentation updates"
+    },
+    {
+      "text": "Use professional language without emojis"
+    }
+  ],
+  // Copilot instruction files
+  "github.copilot.instructionFiles": [
+    {
+      "pattern": "**/*",
+      "instructionFile": ".vscode/copilot-instructions.md"
+    }
+  ],
+  // PowerShell Configuration
+  "powershell.codeFormatting.preset": "OTBS",
+  "powershell.codeFormatting.openBraceOnSameLine": true,
+  "powershell.codeFormatting.newLineAfterOpenBrace": true,
+  "powershell.codeFormatting.newLineAfterCloseBrace": true,
+  "powershell.codeFormatting.pipelineIndentationStyle": "IncreaseIndentationForFirstPipeline",
+  "powershell.codeFormatting.whitespaceBeforeOpenBrace": true,
+  "powershell.codeFormatting.whitespaceBeforeOpenParen": true,
+  "powershell.codeFormatting.whitespaceAroundOperator": true,
+  "powershell.codeFormatting.whitespaceAfterSeparator": true,
+  "powershell.codeFormatting.ignoreOneLineBlock": true,
+  "powershell.scriptAnalysis.enable": true,
+  "powershell.scriptAnalysis.settingsPath": "pwsh/PSScriptAnalyzerSettings.psd1",
+  "powershell.developer.powerShellExePath": "pwsh",
+  // Python Configuration
+  "python.testing.pytestArgs": [
+    "py"
+  ],
+  "python.testing.unittestEnabled": false,
+  "python.testing.pytestEnabled": true,
+  "python.defaultInterpreterPath": "python3",
+  "python.formatting.provider": "black",
+  "python.linting.enabled": true,
+  "python.linting.pylintEnabled": true,
+  // JSON/JSONC Configuration
+  "json.format.enable": true,
+  "[json]": {
+    "editor.defaultFormatter": "vscode.json-language-features",
+    "editor.formatOnSave": true
+  },
+  "[jsonc]": {
+    "editor.defaultFormatter": "vscode.json-language-features",
+    "editor.formatOnSave": true
+  },
+  // Terraform/OpenTofu Configuration
+  "[terraform]": {
+    "editor.defaultFormatter": "hashicorp.terraform",
+    "editor.formatOnSave": true,
+    "editor.formatOnSaveMode": "file"
+  },
+  "terraform.languageServer": {
+    "enabled": true,
+    "args": []
+  },
+  // Markdown Configuration
+  "[markdown]": {
+    "editor.wordWrap": "on",
+    "editor.quickSuggestions": {
+      "comments": "off",
+      "strings": "off",
+      "other": "off"
+    }
+  },
+  // YAML Configuration
+  "[yaml]": {
+    "editor.formatOnSave": true
+  },
+  "yaml.format.enable": true,
+  "yaml.validate": true,
+  "yaml.hover": true,
+  "yaml.completion": true,
+  // Git Configuration
+  "git.enableCommitSigning": false,
+  "git.fetchOnPull": true,
+  "git.pruneOnFetch": true,
+  "git.autofetch": true,
+  "git.confirmSync": false,
+  // Editor Configuration
+  "editor.formatOnSave": true,
+  "editor.formatOnPaste": true,
+  "editor.trimAutoWhitespace": true,
+  "editor.insertSpaces": true,
+  "editor.tabSize": 4,
+  "editor.detectIndentation": true,
+  "editor.renderWhitespace": "trailing",
+  "editor.rulers": [
+    100,
+    120
+  ],
+  // File associations
+  "files.associations": {
+    "*.ps1": "powershell",
+    "*.psm1": "powershell",
+    "*.psd1": "powershell",
+    "*.tf": "terraform",
+    "*.tfvars": "terraform",
+    "*.hcl": "terraform"
+  },
+  // Terminal Configuration
+  "terminal.integrated.defaultProfile.windows": "PowerShell",
+  "terminal.integrated.profiles.windows": {
+    "PowerShell": {
+      "source": "PowerShell",
+      "icon": "terminal-powershell",
+      "args": [
+        "-NoLogo"
+      ]
+    }
+  },
+  // Extension-specific settings
+  "pester.useLegacyCodeLens": false,
+  "pester.enableCodeLens": true,
+  "errorLens.enabledDiagnosticLevels": [
+    "error",
+    "warning",
+    "info"
+  ],
+  "errorLens.exclude": [
+    "never (read|used)"
+  ],
+  // Workspace-specific settings
+  "explorer.fileNesting.enabled": true,
+  "explorer.fileNesting.patterns": {
+    "*.ps1": "${capture}.Tests.ps1, ${capture}.test.ps1",
+    "*.psm1": "${capture}.psd1",
+    "*.tf": "${capture}.tfvars"
+  }
+}
