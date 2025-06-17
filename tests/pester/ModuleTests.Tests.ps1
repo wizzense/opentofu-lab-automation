@@ -1,10 +1,10 @@
 # Ensure environment variables are set for admin-friendly module discovery
 if (-not $env:PWSH_MODULES_PATH) {
-    $env:PWSH_MODULES_PATH = Join-Path (Split-Path (Split-Path $PSScriptRoot -Parent) -Parent) "src/pwsh/modules"
+    $env:PWSH_MODULES_PATH = Join-Path (Split-Path (Split-Path $PSScriptRoot -Parent) -Parent) "pwsh/modules"
 }
 Describe 'UnifiedMaintenance Module Tests' {
     BeforeAll {
-        $ModulePath = './src/pwsh/modules/UnifiedMaintenance/UnifiedMaintenance.psm1'
+        $ModulePath = './pwsh/modules/UnifiedMaintenance/UnifiedMaintenance.psm1'
     }
 
     Context 'Module Structure' {
@@ -41,7 +41,7 @@ Describe 'UnifiedMaintenance Module Tests' {
 
 Describe 'TestingFramework Module Tests' {
     BeforeAll {
-        $ModulePath = './src/pwsh/modules/TestingFramework/TestingFramework.psm1'
+        $ModulePath = './pwsh/modules/TestingFramework/TestingFramework.psm1'
     }
 
     Context 'Module Structure' {
@@ -61,7 +61,7 @@ Describe 'TestingFramework Module Tests' {
 
 Describe 'ScriptManager Module Tests' {
     BeforeAll {
-        $ModulePath = './src/pwsh/modules/ScriptManager/ScriptManager.psm1'
+        $ModulePath = './pwsh/modules/ScriptManager/ScriptManager.psm1'
     }
 
     Context 'Module Structure' {
