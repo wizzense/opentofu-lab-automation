@@ -1,0 +1,35 @@
+# Temporary files created for debugging/fixes (prefix with TEMP_)
+TEMP_*
+
+# Log files
+*.log
+logs/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# PowerShell cache
+*.psm1_cache
+
+# Backup files
+*.bak
+*.backup
+
+# Test artifacts
+test-output/
+test-results/
+
+# IDE files
+.vscode/settings.json
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Build artifacts
+dist/
+build/
+*.egg-info/

@@ -1,6 +1,6 @@
 # Ensure environment variables are set for admin-friendly module discovery
 if (-not $env:PWSH_MODULES_PATH) {
-    $env:PWSH_MODULES_PATH = Join-Path (Split-Path (Split-Path $PSScriptRoot -Parent) -Parent) "src/pwsh/modules"
+    $env:PWSH_MODULES_PATH = Join-Path (Split-Path (Split-Path $PSScriptRoot -Parent) -Parent) "pwsh/modules"
 }
 @{
     # Test Configuration for OpenTofu Lab Automation
@@ -179,3 +179,4 @@ if (-not $env:PWSH_MODULES_PATH) {
         }
     }
 }
+

@@ -15,7 +15,8 @@ function Test-PatchingRequirements {
     )
     
     # Function for centralized logging
-    if (-not (Get-Command "Write-PatchLog" -ErrorAction SilentlyContinue)) {        function Write-PatchLog {
+    if (-not (Get-Command "Write-PatchLog" -ErrorAction SilentlyContinue)) {
+        function Write-PatchLog {
             param(
                 [string]$Message,
                 [ValidateSet("INFO", "SUCCESS", "WARNING", "ERROR", "DEBUG")]
@@ -28,12 +29,12 @@ function Test-PatchingRequirements {
             
             # Color coding based on level
             $color = switch ($Level) {
-                "INFO"    { "Gray" }
+                "INFO" { "Gray" }
                 "SUCCESS" { "Green" }
                 "WARNING" { "Yellow" }
-                "ERROR"   { "Red" }
-                "DEBUG"   { "DarkGray" }
-                default   { "White" }
+                "ERROR" { "Red" }
+                "DEBUG" { "DarkGray" }
+                default { "White" }
             }
             
             Write-Host $formattedMessage -ForegroundColor $color
@@ -44,7 +45,7 @@ function Test-PatchingRequirements {
             }
         }
     }
-      Write-PatchLog "Testing patching requirements..." "INFO" -LogFile $LogFile
+    Write-PatchLog "Testing patching requirements..." "INFO" -LogFile $LogFile
     Write-PatchLog "Project root: $ProjectRoot" "INFO" -LogFile $LogFile
     
     # Validate project root exists
@@ -64,61 +65,61 @@ function Test-PatchingRequirements {
     # Required modules
     $requiredModules = @(
         @{
-            Name = "PSScriptAnalyzer"
+            Name           = "PSScriptAnalyzer"
             MinimumVersion = "1.18.0"
-            Description = "PowerShell script analysis tool"
+            Description    = "PowerShell script analysis tool"
         },
         @{
-            Name = "Pester"
+            Name           = "Pester"
             MinimumVersion = "5.0.0"
-            Description = "PowerShell testing framework"
+            Description    = "PowerShell testing framework"
         },
         @{
-            Name = "powershell-yaml"
+            Name           = "powershell-yaml"
             MinimumVersion = "0.4.0"
-            Description = "PowerShell module for working with YAML"
+            Description    = "PowerShell module for working with YAML"
         }
     )
     
     # Required commands
     $requiredCommands = @(
         @{
-            Name = "git"
-            TestParam = "--version"
+            Name           = "git"
+            TestParam      = "--version"
             ExpectedOutput = "git version"
-            Description = "Git version control"
+            Description    = "Git version control"
         },
         @{
-            Name = "yamllint"
-            TestParam = "--version"
+            Name           = "yamllint"
+            TestParam      = "--version"
             ExpectedOutput = "yamllint"
-            Description = "YAML validation tool"
-            Optional = $true
+            Description    = "YAML validation tool"
+            Optional       = $true
         },
         @{
-            Name = "python"
-            TestParam = "--version"
+            Name           = "python"
+            TestParam      = "--version"
             ExpectedOutput = "Python"
-            Description = "Python interpreter"
-            Optional = $true
+            Description    = "Python interpreter"
+            Optional       = $true
         }
     )
     
     # Results object
     $results = @{
         AllRequirementsMet = $true
-        ModulesAvailable = @()
-        ModulesMissing = @()
-        CommandsAvailable = @()
-        CommandsMissing = @()
-        Fixes = @()
+        ModulesAvailable   = @()
+        ModulesMissing     = @()
+        CommandsAvailable  = @()
+        CommandsMissing    = @()
+        Fixes              = @()
     }
-    
     # Check PowerShell modules
     foreach ($module in $requiredModules) {
         Write-PatchLog "Checking for module: $($module.Name)" "INFO" -LogFile $LogFile
         
-        $moduleInstalled = Get-Module -Name $module.Name -ListAvailable | Where-Object{ $_.Version -ge $module.MinimumVersion }        if ($moduleInstalled) {
+        $moduleInstalled = Get-Module -Name $module.Name -ListAvailable | Where-Object { $_.Version -ge $module.MinimumVersion }
+        if ($moduleInstalled) {
             Write-PatchLog " Module $($module.Name) v$($moduleInstalled.Version) is available" "SUCCESS" -LogFile $LogFile
             $results.ModulesAvailable += $module.Name
         } else {
@@ -147,7 +148,7 @@ function Test-PatchingRequirements {
         Write-PatchLog "Checking for command: $($command.Name)" "INFO" -LogFile $LogFile
         
         $commandAvailable = Get-Command $command.Name -ErrorAction SilentlyContinue
-          if ($commandAvailable) {
+        if ($commandAvailable) {
             Write-PatchLog " Command $($command.Name) is available" "INFO" -LogFile $LogFile
             $results.CommandsAvailable += $command.Name
         } else {

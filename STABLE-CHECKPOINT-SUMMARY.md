@@ -4,7 +4,7 @@
 
 **Branch**: `systematic-script-fixes`  
 **Status**: Committed and pushed  
-**PR Link**: https://github.com/wizzense/opentofu-lab-automation/pull/new/systematic-script-fixes
+**PR Link**: <https://github.com/wizzense/opentofu-lab-automation/pull/new/systematic-script-fixes>
 
 ### 🔧 Key Fixes Applied
 
