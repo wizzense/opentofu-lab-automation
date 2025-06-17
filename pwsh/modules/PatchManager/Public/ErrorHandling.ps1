@@ -22,9 +22,8 @@ function HandlePatchError {
         
         [Parameter(Mandatory = $false)]
         [System.Management.Automation.ErrorRecord]$ErrorRecord = $null,
-        
         [Parameter(Mandatory = $false)]
-        [ValidateSet("Git", "PatchValidation", "CleanupOperation", "BranchStrategy", "PullRequest", "Rollback", "General")]
+        [ValidateSet("Git", "PatchValidation", "BranchStrategy", "PullRequest", "Rollback", "General")]
         [string]$ErrorCategory = "General",
         
         [Parameter(Mandatory = $false)]
@@ -74,14 +73,13 @@ $($ErrorRecord.ScriptStackTrace)
             Write-Host "See $LogPath for details" -ForegroundColor Yellow
         }
     }
-    
     # Update GitHub issue if provided
-    if ($IssueNumber) {        try {
+    if ($IssueNumber) {
+        try {
             # Build suggested actions based on error category
             $suggestedActions = switch ($ErrorCategory) {
                 "Git" { "- Check Git repository status and permissions" }
                 "PatchValidation" { "- Review changes for syntax errors or validation issues" }
-                "CleanupOperation" { "- Check permissions on files being cleaned up" }
                 "BranchStrategy" { "- Verify branch naming and repository structure" }
                 "PullRequest" { "- Ensure GitHub permissions are correct" }
                 "Rollback" { "- Manual intervention may be required" }
@@ -102,8 +100,7 @@ $suggestedActions
             
             # Use GitHub CLI to add comment
             gh issue comment $IssueNumber --body $issueComment 2>&1 | Out-Null
-        }
-        catch {
+        } catch {
             # Silently continue if GitHub issue update fails
             $issueUpdateError = "Failed to update GitHub issue: $($_.Exception.Message)"
             $issueUpdateError | Out-File -FilePath $LogPath -Append
@@ -112,12 +109,12 @@ $suggestedActions
     
     # Create structured error object
     $errorObject = [PSCustomObject]@{
-        Timestamp = $timestamp
-        Category = $ErrorCategory
-        Message = $ErrorMessage
-        Exception = $ErrorRecord?.Exception
-        StackTrace = $ErrorRecord?.ScriptStackTrace
-        LogPath = $LogPath
+        Timestamp   = $timestamp
+        Category    = $ErrorCategory
+        Message     = $ErrorMessage
+        Exception   = $ErrorRecord?.Exception
+        StackTrace  = $ErrorRecord?.ScriptStackTrace
+        LogPath     = $LogPath
         IssueNumber = $IssueNumber
     }
     
@@ -129,9 +126,8 @@ function Write-PatchLog {
     param(
         [Parameter(Mandatory = $true)]
         [string]$Message,
-        
         [Parameter(Mandatory = $false)]
-        [ValidateSet("INFO", "WARNING", "ERROR", "DEBUG")]
+        [ValidateSet("INFO", "WARNING", "ERROR", "DEBUG", "SUCCESS")]
         [string]$LogLevel = "INFO",
         
         [Parameter(Mandatory = $false)]
@@ -140,28 +136,33 @@ function Write-PatchLog {
         [Parameter(Mandatory = $false)]
         [switch]$NoConsole
     )
-    
-    # Create log directory if needed
-    $logDir = Split-Path $LogFile -Parent
-    if (-not (Test-Path $logDir)) {
-        New-Item -ItemType Directory -Path $logDir -Force | Out-Null
+    # Create log directory if needed (only if LogFile is provided)
+    if ($LogFile -and $LogFile.Trim()) {
+        $logDir = Split-Path $LogFile -Parent
+        if (-not (Test-Path $logDir)) {
+            New-Item -ItemType Directory -Path $logDir -Force | Out-Null
+        }
     }
     
     # Format log message
     $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
     $logMessage = "[$timestamp] [$LogLevel] $Message"
     
-    # Write to log file
-    $logMessage | Out-File -FilePath $LogFile -Append
+    # Write to log file (only if LogFile is provided)
+    if ($LogFile -and $LogFile.Trim()) {
+        $logMessage | Out-File -FilePath $LogFile -Append
+    }
     
     # Write to console with color based on log level (unless NoConsole is specified)
     if (-not $NoConsole) {
         $color = switch ($LogLevel) {
-            "INFO"    { "White" }
+            "INFO" { "White" }
             "WARNING" { "Yellow" }
-            "ERROR"   { "Red" }
-            "DEBUG"   { "Gray" }
-            default   { "White" }        }
+            "ERROR" { "Red" }
+            "DEBUG" { "Gray" }
+            "SUCCESS" { "Green" }
+            default { "White" }
+        }
         
         Write-Host $logMessage -ForegroundColor $color
     }

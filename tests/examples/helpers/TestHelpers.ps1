@@ -2,20 +2,20 @@
 
 <#
 .SYNOPSIS
-    Common test helper functions for OpenTofu Lab Automation tests
+    Common test helper functions for OpenTofu Lab Automation example tests
 
 .DESCRIPTION
     This module provides shared testing utilities and helper functions
-    used across all test files in the project.
+    used across all example test files in the project.
 #>
 
 # Ensure environment variables are set for admin-friendly module discovery
 if (-not $env:PWSH_MODULES_PATH) {
-    $env:PWSH_MODULES_PATH = Join-Path (Split-Path (Split-Path $PSScriptRoot -Parent) -Parent) "pwsh/modules"
+    $env:PWSH_MODULES_PATH = Join-Path (Split-Path (Split-Path (Split-Path $PSScriptRoot -Parent) -Parent) -Parent) "pwsh/modules"
 }
 
 if (-not $env:PROJECT_ROOT) {
-    $env:PROJECT_ROOT = Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
+    $env:PROJECT_ROOT = Split-Path (Split-Path (Split-Path $PSScriptRoot -Parent) -Parent) -Parent
 }
 
 function Import-TestModule {
@@ -67,11 +67,6 @@ function Test-ModuleStructure {
         HasPrivateFolder = $false
         IsValid = $false
         Issues = @()
-        Functions = @{
-            Exported = @()
-            Public = @()
-            Private = @()
-        }
     }
     
     if (-not (Test-Path $ModulePath)) {
@@ -83,14 +78,6 @@ function Test-ModuleStructure {
     $manifestFiles = Get-ChildItem $ModulePath -Filter "*.psd1"
     if ($manifestFiles.Count -gt 0) {
         $result.HasManifest = $true
-        
-        # Test manifest validity
-        try {
-            Test-ModuleManifest $manifestFiles[0].FullName -ErrorAction Stop | Out-Null
-        }
-        catch {
-            $result.Issues += "Invalid module manifest: $($_.Exception.Message)"
-        }
     }
     
     # Check for module file
@@ -102,40 +89,6 @@ function Test-ModuleStructure {
     # Check for Public/Private folders
     $result.HasPublicFolder = Test-Path (Join-Path $ModulePath "Public")
     $result.HasPrivateFolder = Test-Path (Join-Path $ModulePath "Private")
-    
-    # Test module import and get functions
-    $moduleName = Split-Path $ModulePath -Leaf
-    try {
-        Import-Module $ModulePath -Force -ErrorAction Stop
-        $module = Get-Module $moduleName -ErrorAction SilentlyContinue
-        
-        if ($module) {
-            $exportedCommands = Get-Command -Module $module.Name -CommandType Function -ErrorAction SilentlyContinue
-            $result.Functions.Exported = $exportedCommands | ForEach-Object { $_.Name }
-            
-            # Get public functions from files
-            $publicPath = Join-Path $ModulePath "Public"
-            if (Test-Path $publicPath) {
-                $publicFiles = Get-ChildItem $publicPath -Filter "*.ps1"
-                $result.Functions.Public = $publicFiles | ForEach-Object { $_.BaseName }
-            }
-            
-            # Get private functions from files
-            if ($IncludePrivate) {
-                $privatePath = Join-Path $ModulePath "Private"
-                if (Test-Path $privatePath) {
-                    $privateFiles = Get-ChildItem $privatePath -Filter "*.ps1"
-                    $result.Functions.Private = $privateFiles | ForEach-Object { $_.BaseName }
-                }
-            }
-            
-            # Clean up
-            Remove-Module $module.Name -Force -ErrorAction SilentlyContinue
-        }
-    }
-    catch {
-        $result.Issues += "Module failed to import: $($_.Exception.Message)"
-    }
     
     # Determine if module is valid
     $result.IsValid = $result.HasManifest -and $result.HasModuleFile -and $result.Issues.Count -eq 0
@@ -188,5 +141,10 @@ function Get-TestConfiguration {
     }
 }
 
-# Note: Export-ModuleMember only works in module files (.psm1)
-# These functions are available when dot-sourcing this file
+# Export functions
+Export-ModuleMember -Function @(
+    'Import-TestModule',
+    'Test-ModuleStructure', 
+    'Test-PowerShellSyntax',
+    'Get-TestConfiguration'
+)

@@ -2,20 +2,20 @@
 
 <#
 .SYNOPSIS
-    Common test helper functions for OpenTofu Lab Automation tests
+    Common test helper functions for OpenTofu Lab Automation integration tests
 
 .DESCRIPTION
     This module provides shared testing utilities and helper functions
-    used across all test files in the project.
+    used across all integration test files in the project.
 #>
 
 # Ensure environment variables are set for admin-friendly module discovery
 if (-not $env:PWSH_MODULES_PATH) {
-    $env:PWSH_MODULES_PATH = Join-Path (Split-Path (Split-Path $PSScriptRoot -Parent) -Parent) "pwsh/modules"
+    $env:PWSH_MODULES_PATH = Join-Path (Split-Path (Split-Path (Split-Path $PSScriptRoot -Parent) -Parent) -Parent) "pwsh/modules"
 }
 
 if (-not $env:PROJECT_ROOT) {
-    $env:PROJECT_ROOT = Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
+    $env:PROJECT_ROOT = Split-Path (Split-Path (Split-Path $PSScriptRoot -Parent) -Parent) -Parent
 }
 
 function Import-TestModule {

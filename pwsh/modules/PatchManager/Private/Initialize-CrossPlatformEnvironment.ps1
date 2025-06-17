@@ -84,7 +84,7 @@ function Initialize-CrossPlatformEnvironment {
             
             # Set environment variables for cross-platform use
             $env:PROJECT_ROOT = $projectRoot
-            $env:PWSH_MODULES_PATH = Join-Path $projectRoot "pwsh" "modules"
+            $env:PWSH_MODULES_PATH = Join-Path $projectRoot "src" "pwsh" "modules"
             $env:PROJECT_SCRIPTS_PATH = Join-Path $projectRoot "scripts"
             
             # Platform-specific settings
