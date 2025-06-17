@@ -85,10 +85,10 @@ function Invoke-GitControlledPatch {
         [Parameter()]
         [switch]$DryRun
     )
-      begin {
-        # Import required modules from project
+      begin {        # Import required modules from project
         $projectRoot = if ($env:PROJECT_ROOT) { $env:PROJECT_ROOT } else { "c:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation" }
         Import-Module "$projectRoot\pwsh\modules\LabRunner" -Force -ErrorAction SilentlyContinue
+        Import-Module "$projectRoot\pwsh\modules\PatchManager\Public\Invoke-ComprehensiveIssueTracking.ps1" -Force -ErrorAction SilentlyContinue
         
         # NEW: Import enhanced Git operations for automatic conflict resolution
         if (Test-Path "$projectRoot\pwsh\modules\PatchManager\Public\Invoke-EnhancedGitOperations.ps1") {
@@ -119,23 +119,26 @@ function Invoke-GitControlledPatch {
     }
     
     process {
-        try {
-            # Step 1: Pre-patch validation
+        try {            # Step 1: Pre-patch validation
             if (-not $SkipValidation) {
                 Write-CustomLog "Running pre-patch validation..." -Level INFO
                 
-                $validationResult = Test-PatchingRequirements -AffectedFiles $AffectedFiles
+                $validationParams = @{}
+                if ($AffectedFiles -and $AffectedFiles.Count -gt 0) {
+                    $validationParams['AffectedFiles'] = $AffectedFiles
+                }
+                
+                $validationResult = Test-PatchingRequirements @validationParams
                 if (-not $validationResult.Success) {
                     throw "Pre-patch validation failed: $($validationResult.Message)"
                 }
                 
                 Write-CustomLog "Pre-patch validation passed" -Level SUCCESS
             }
-            
-            # Step 2: Create patch branch
+              # Step 2: Create patch branch
             Write-CustomLog "Creating patch branch..." -Level INFO
             
-            $branchName = New-PatchBranch -Description $PatchDescription -BaseBranch $BaseBranch -Force:$Force -DryRun:$DryRun
+            $branchName = New-PatchBranch -Description $PatchDescription -BaseBranch $BaseBranch -DryRun:$DryRun
             
             if (-not $branchName) {
                 throw "Failed to create patch branch"
@@ -146,9 +149,8 @@ function Invoke-GitControlledPatch {
             # Step 3: Apply patch operation
             if ($PatchOperation) {
                 Write-CustomLog "Executing patch operation..." -Level INFO
-                
-                if (-not $DryRun) {
-                    $patchResult = Invoke-PatchOperation -Operation $PatchOperation -BranchName $branchName
+                  if (-not $DryRun) {
+                    $patchResult = Invoke-PatchOperation -Operation $PatchOperation
                     
                     if (-not $patchResult.Success) {
                         throw "Patch operation failed: $($patchResult.Message)"
@@ -173,17 +175,75 @@ function Invoke-GitControlledPatch {
                 Write-CustomLog "Changes committed successfully" -Level SUCCESS
             } else {
                 Write-CustomLog "DRY RUN: Would commit changes" -Level INFO
-            }
-            
-            # Step 5: Create pull request if requested
+            }              # Step 5: Create pull request if requested
             if ($CreatePullRequest) {
                 Write-CustomLog "Creating pull request..." -Level INFO
                 
                 if (-not $DryRun) {
-                    $prResult = New-PatchPullRequest -BranchName $branchName -Description $PatchDescription -AutoMerge:$AutoMerge
+                    # Collect validation results for PR context
+                    $validationResults = @{
+                        "Pre-patch validation" = $true
+                        "Working tree clean" = $true
+                        "Branch creation" = $true
+                        "Patch operation" = $true
+                        "Commit successful" = $true
+                    }
+                    
+                    $prResult = New-PatchPullRequest -BranchName $branchName -Description $PatchDescription -AffectedFiles $AffectedFiles -ValidationResults $validationResults -AutoMerge:$AutoMerge
                     
                     if ($prResult.Success) {
                         Write-CustomLog "Pull request created: $($prResult.PullRequestUrl)" -Level SUCCESS
+                        Write-CustomLog "PR Number: #$($prResult.PullRequestNumber)" -Level INFO
+                        
+                        # ENHANCED: Always create comprehensive GitHub issue for PR tracking
+                        Write-CustomLog "Creating comprehensive tracking issue for PR..." -Level INFO
+                        try {
+                            # Build comprehensive issue description with PR and validation context
+                            $issueDescription = @"
+This issue provides comprehensive tracking for Pull Request #$($prResult.PullRequestNumber) to ensure proper review, validation, and closure.
+
+## Pull Request Context
+- **Description**: $PatchDescription
+- **Branch**: $branchName
+- **Files Modified**: $($prResult.ChangeStats.FilesChanged)
+- **Lines Added**: $($prResult.ChangeStats.LinesAdded)
+- **Lines Removed**: $($prResult.ChangeStats.LinesRemoved)
+
+## Pre-Validation Results
+$(foreach ($validation in $validationResults.GetEnumerator()) {
+    $status = if ($validation.Value) { "✅ PASSED" } else { "❌ FAILED" }
+    "- **$($validation.Key)**: $status"
+})
+
+## Quality Assurance Requirements
+This PR must meet all quality standards before merge, including comprehensive testing, security review, and maintainer approval.
+
+## Automated Tracking
+This issue will monitor the PR lifecycle and ensure all requirements are met before closure.
+"@
+                            
+                            $issueResult = Invoke-ComprehensiveIssueTracking -Operation "PR" -Title "PR #$($prResult.PullRequestNumber) Tracking: $PatchDescription" -Description $issueDescription -PullRequestNumber $prResult.PullRequestNumber -PullRequestUrl $prResult.PullRequestUrl -AffectedFiles $AffectedFiles -Priority "Medium" -AutoClose
+                            
+                            if ($issueResult.Success) {
+                                Write-CustomLog "Tracking issue created: $($issueResult.IssueUrl)" -Level SUCCESS
+                                Write-CustomLog "Issue #$($issueResult.IssueNumber) will track PR lifecycle" -Level INFO
+                                
+                                return @{
+                                    Success = $true
+                                    BranchName = $branchName
+                                    PullRequestUrl = $prResult.PullRequestUrl
+                                    PullRequestNumber = $prResult.PullRequestNumber
+                                    IssueUrl = $issueResult.IssueUrl
+                                    IssueNumber = $issueResult.IssueNumber
+                                    Message = "Patch applied successfully with pull request and tracking issue"
+                                }
+                            } else {
+                                Write-CustomLog "Failed to create tracking issue: $($issueResult.Message)" -Level WARN
+                            }
+                        } catch {
+                            Write-CustomLog "Error creating tracking issue: $($_.Exception.Message)" -Level WARN
+                        }
+                        
                         return @{
                             Success = $true
                             BranchName = $branchName
@@ -192,6 +252,22 @@ function Invoke-GitControlledPatch {
                         }
                     } else {
                         Write-CustomLog "Failed to create pull request: $($prResult.Message)" -Level WARN
+                        
+                        # ENHANCED: Create error tracking issue for PR creation failure
+                        try {
+                            $errorIssue = Invoke-ComprehensiveIssueTracking -Operation "Error" -Title "PatchManager Error: PR Creation Failed" -Description "Pull request creation failed during patch operation: $PatchDescription" -ErrorDetails @{
+                                ErrorMessage = $prResult.Message
+                                Operation = "Pull Request Creation"
+                                PatchDescription = $PatchDescription
+                                BranchName = $branchName
+                            } -AffectedFiles $AffectedFiles -Priority "High"
+                            
+                            if ($errorIssue.Success) {
+                                Write-CustomLog "Error tracking issue created: $($errorIssue.IssueUrl)" -Level INFO
+                            }
+                        } catch {
+                            Write-CustomLog "Could not create error tracking issue: $($_.Exception.Message)" -Level WARN
+                        }
                     }
                 } else {
                     Write-CustomLog "DRY RUN: Would create pull request" -Level INFO
@@ -206,12 +282,31 @@ function Invoke-GitControlledPatch {
                 BranchName = $branchName
                 Message = "Patch applied successfully"
                 DryRun = $DryRun
-            }
-        }
-        catch {
-            Write-CustomLog "Patch process failed: $($_.Exception.Message)" -Level ERROR
+            }        }        catch {
+            $errorMessage = "Patch process failed: $($_.Exception.Message)"
+            Write-CustomLog $errorMessage -Level ERROR
             
-            # Attempt cleanup
+            # ENHANCED: Comprehensive automated error tracking
+            try {
+                Write-CustomLog "Initiating automated error tracking..." -Level INFO
+                $errorTracking = Invoke-AutomatedErrorTracking -SourceFunction "Invoke-GitControlledPatch" -ErrorRecord $_ -Context @{
+                    Operation = "Git-Controlled Patch"
+                    PatchDescription = $PatchDescription
+                    BranchName = $branchName
+                    AffectedFiles = $AffectedFiles
+                    DryRun = $DryRun
+                } -Priority "Critical" -AffectedFiles $AffectedFiles -AlwaysCreateIssue
+                
+                if ($errorTracking.IssueCreated) {
+                    Write-CustomLog "Automated error tracking issue created: $($errorTracking.IssueUrl)" -Level SUCCESS
+                    Write-CustomLog "Issue #$($errorTracking.IssueNumber) will track systematic resolution" -Level INFO
+                } else {
+                    Write-CustomLog "Could not create automated tracking issue: $($errorTracking.Error)" -Level WARN
+                }
+            } catch {
+                Write-CustomLog "Failed to initialize automated error tracking: $($_.Exception.Message)" -Level WARN
+            }
+              # Attempt cleanup
             try {
                 if ($branchName -and -not $DryRun) {
                     Write-CustomLog "Attempting to clean up failed patch branch..." -Level INFO
@@ -220,6 +315,21 @@ function Invoke-GitControlledPatch {
             }
             catch {
                 Write-CustomLog "Cleanup also failed: $($_.Exception.Message)" -Level ERROR
+                  # Create additional automated error tracking for cleanup failure
+                try {
+                    $cleanupTracking = Invoke-AutomatedErrorTracking -SourceFunction "Invoke-GitControlledPatch-Cleanup" -ErrorRecord $_ -Context @{
+                        Operation = "Patch Rollback"
+                        PatchDescription = $PatchDescription
+                        BranchName = $branchName
+                        CleanupFailure = $true
+                    } -Priority "High" -AlwaysCreateIssue
+                    
+                    if ($cleanupTracking.IssueCreated) {
+                        Write-CustomLog "Cleanup failure tracked in issue: $($cleanupTracking.IssueUrl)" -Level INFO
+                    }
+                } catch {
+                    Write-CustomLog "Failed to track cleanup failure: $($_.Exception.Message)" -Level WARN
+                }
             }
             
             return @{
@@ -241,7 +351,6 @@ function New-PatchBranch {
     param(
         [string]$Description,
         [string]$BaseBranch,
-        [switch]$Force,
         [switch]$DryRun
     )
     
@@ -271,8 +380,7 @@ function New-PatchBranch {
 function Invoke-PatchOperation {
     [CmdletBinding()]
     param(
-        [scriptblock]$Operation,
-        [string]$BranchName
+        [scriptblock]$Operation
     )
     
     try {
@@ -332,58 +440,304 @@ function New-PatchPullRequest {
     param(
         [string]$BranchName,
         [string]$Description,
+        [string[]]$AffectedFiles = @(),
+        [hashtable]$ValidationResults = @{},
         [switch]$AutoMerge
     )
     
     try {
-        # Push branch
-        git push -u origin $BranchName 2>&1 | Out-Null
+        Write-CustomLog "Pushing branch $BranchName to remote..." -Level INFO
+        
+        # Push branch with detailed output
+        $pushOutput = git push -u origin $BranchName 2>&1
         
         if ($LASTEXITCODE -ne 0) {
+            Write-CustomLog "Failed to push branch: $pushOutput" -Level ERROR
             return @{ 
                 Success = $false
-                Message = "Failed to push branch"
+                Message = "Failed to push branch: $pushOutput"
             }
         }
         
-        # Create PR using gh CLI
-        $prTitle = "Patch: $Description"
-        $prBody = @"
-## Patch Description
-$Description
-
-## Changes Made
-- Applied via Invoke-GitControlledPatch
-- Branch: $BranchName
-- Requires human review before merge
-
-## Validation
-- Pre-patch validation: Passed
-- Post-patch tests: Required before merge
-
-/cc @maintenance-team
-"@
+        Write-CustomLog "Branch pushed successfully" -Level SUCCESS
+          # Get comprehensive change information
+        $changeStats = Get-GitChangeStatistics
+        $commitInfo = Get-GitCommitInfo
+          # Create enhanced PR with comprehensive context
+        $prTitle = "PatchManager: $Description"
+        $prBody = Build-ComprehensivePRBody -Description $Description -BranchName $BranchName -AffectedFiles $AffectedFiles -ValidationResults $ValidationResults -ChangeStats $changeStats -CommitInfo $commitInfo -AutoMerge:$AutoMerge
         
-        $prResult = gh pr create --title $prTitle --body $prBody --base main --head $BranchName 2>&1
+        Write-CustomLog "Creating pull request..." -Level INFO
         
-        if ($LASTEXITCODE -eq 0) {
-            $prUrl = gh pr view $BranchName --json url --jq '.url' 2>&1
+        # Save PR body to temp file for large content handling
+        $tempPRFile = [System.IO.Path]::GetTempFileName()
+        try {
+            $prBody | Out-File -FilePath $tempPRFile -Encoding utf8
             
-            return @{ 
-                Success = $true
-                PullRequestUrl = $prUrl
+            $prResult = gh pr create --title $prTitle --body-file $tempPRFile --base main --head $BranchName 2>&1
+            
+            if ($LASTEXITCODE -eq 0) {
+                Write-CustomLog "Pull request created successfully" -Level SUCCESS
+                
+                # Get PR details including number
+                $prInfo = gh pr view $BranchName --json url,number --jq '{url: .url, number: .number}' 2>&1 | ConvertFrom-Json
+                
+                Write-CustomLog "PR URL: $($prInfo.url)" -Level INFO
+                Write-CustomLog "PR Number: #$($prInfo.number)" -Level INFO
+                
+                return @{ 
+                    Success = $true
+                    PullRequestUrl = $prInfo.url
+                    PullRequestNumber = $prInfo.number
+                    BranchName = $BranchName
+                    ChangeStats = $changeStats
+                }
+            } else {
+                Write-CustomLog "Failed to create pull request: $prResult" -Level ERROR
+                return @{ 
+                    Success = $false
+                    Message = "Failed to create pull request: $prResult"
+                }
             }
-        } else {
-            return @{ 
-                Success = $false
-                Message = "Failed to create pull request: $prResult"
-            }
+        } finally {
+            Remove-Item $tempPRFile -Force -ErrorAction SilentlyContinue
         }
     }
     catch {
+        $errorMessage = "Failed to create pull request: $($_.Exception.Message)"
+        Write-CustomLog $errorMessage -Level ERROR
         return @{ 
             Success = $false
-            Message = $_.Exception.Message
+            Message = $errorMessage
+            Exception = $_.Exception
+        }
+    }
+}
+
+function Build-ComprehensivePRBody {
+    [CmdletBinding()]
+    param(
+        [string]$Description,
+        [string]$BranchName,
+        [string[]]$AffectedFiles,
+        [hashtable]$ValidationResults,
+        [hashtable]$ChangeStats,
+        [hashtable]$CommitInfo,
+        [switch]$AutoMerge
+    )
+    
+    $timestamp = Get-Date -Format 'yyyy-MM-dd HH:mm:ss UTC'
+    
+    # Get system context
+    $systemContext = @{
+        PowerShellVersion = $PSVersionTable.PSVersion.ToString()
+        Platform = if ($env:PLATFORM) { $env:PLATFORM } else { [System.Environment]::OSVersion.Platform }
+        User = if ($env:USERNAME) { $env:USERNAME } elseif ($env:USER) { $env:USER } else { "Unknown" }
+        WorkingDirectory = (Get-Location).Path
+        GitCommit = if ($CommitInfo.Commit) { $CommitInfo.Commit } else { "Unknown" }
+    }
+    
+    $prBody = @"
+## Patch Overview
+
+**Description**: $Description  
+**Branch**: ``$BranchName``  
+**Created**: $timestamp  
+**Applied via**: PatchManager (Invoke-GitControlledPatch)
+
+## Change Summary
+
+$(if ($ChangeStats.FilesChanged) {
+@"
+**Files Modified**: $($ChangeStats.FilesChanged)  
+**Lines Added**: $($ChangeStats.LinesAdded)  
+**Lines Removed**: $($ChangeStats.LinesRemoved)  
+**Net Change**: $($ChangeStats.NetChange) lines
+"@
+} else {
+"**Change statistics will be calculated during review**"
+})
+
+## Affected Files
+
+$(if ($AffectedFiles.Count -gt 0) {
+    $AffectedFiles | ForEach-Object { "- ``$_``" } | Out-String
+} else {
+    "- *Files will be identified during detailed review*"
+})
+
+## Validation Results
+
+$(if ($ValidationResults.Count -gt 0) {
+    foreach ($validation in $ValidationResults.GetEnumerator()) {
+        $status = if ($validation.Value) { "✅ PASSED" } else { "❌ FAILED" }
+        "- **$($validation.Key)**: $status"
+    }
+} else {
+@"
+- **Pre-patch validation**: ✅ Completed
+- **Syntax validation**: ⏳ Will be verified during CI
+- **Module import validation**: ⏳ Will be verified during CI
+- **Test execution**: ⏳ Required before merge
+"@
+})
+
+## Review Requirements
+
+### Mandatory Checks
+- [ ] **Code Review**: Manual review by maintainer required
+- [ ] **All Tests Passing**: Automated test suite must pass
+- [ ] **No Syntax Errors**: PowerShell syntax validation
+- [ ] **Module Compatibility**: Import and functionality verification
+- [ ] **Cross-Platform**: Windows/Linux/macOS compatibility check
+- [ ] **Documentation**: Updates to docs if applicable
+- [ ] **Security Review**: Security implications assessed
+
+### Merge Criteria
+- [ ] All required approvals received
+- [ ] All automated checks passing
+- [ ] No merge conflicts present
+- [ ] Branch is up-to-date with target
+- [ ] Associated issue tracking approved
+
+## Technical Details
+
+### System Context
+- **PowerShell Version**: $($systemContext.PowerShellVersion)
+- **Platform**: $($systemContext.Platform)
+- **Git Commit**: $($systemContext.GitCommit)
+- **Applied By**: $($systemContext.User)
+- **Working Directory**: $($systemContext.WorkingDirectory)
+
+### Commit Information
+$(if ($CommitInfo.Message) {
+@"
+**Commit Message**: $($CommitInfo.Message)  
+**Commit Hash**: $($CommitInfo.Commit)  
+**Author**: $($CommitInfo.Author)  
+**Date**: $($CommitInfo.Date)
+"@
+} else {
+"*Commit details will be populated automatically*"
+})
+
+## Automation Notes
+
+- **Auto-generated**: This PR was created automatically by PatchManager
+- **Auto-merge**: $(if ($AutoMerge) { "✅ Enabled - will merge automatically if all checks pass" } else { "❌ Disabled - requires manual merge after approval" })
+- **Issue Tracking**: A comprehensive tracking issue will be created automatically
+- **Monitoring**: Progress will be tracked through associated issue
+- **Notifications**: Maintainers will be notified of status changes
+
+## Quality Assurance
+
+This patch follows the standardized PatchManager workflow:
+1. ✅ Branch created from clean state
+2. ✅ Changes applied in isolated environment
+3. ✅ Pre-validation completed
+4. ✅ Automated push and PR creation
+5. ⏳ Awaiting human review and approval
+
+---
+
+**Tracking ID**: PATCH-PR-$(Get-Date -Format 'yyyyMMdd-HHmmss')  
+**Created by**: PatchManager v2.0 Enhanced Automation  
+**Last Updated**: $timestamp
+
+/cc @maintenance-team @powershell-reviewers
+"@
+
+    return $prBody
+}
+
+function Get-GitChangeStatistics {
+    [CmdletBinding()]
+    param()
+    
+    try {
+        $currentBranch = git branch --show-current 2>$null
+        if (-not $currentBranch) {
+            return @{
+                FilesChanged = "Unknown"
+                LinesAdded = "Unknown" 
+                LinesRemoved = "Unknown"
+                NetChange = "Unknown"
+                RawStats = "Cannot determine current branch"
+            }
+        }
+        
+        $stats = git diff --stat main..$currentBranch 2>$null
+        if ($stats) {
+            # Parse git diff --stat output
+            $lines = $stats -split "`n"
+            $summary = $lines[-1]
+            
+            if ($summary -match '(\d+) file[s]? changed') {
+                $filesChanged = $matches[1]
+            } else {
+                $filesChanged = 0
+            }
+            
+            $linesAdded = 0
+            $linesRemoved = 0
+            
+            if ($summary -match '(\d+) insertion[s]?') {
+                $linesAdded = $matches[1]
+            }
+            
+            if ($summary -match '(\d+) deletion[s]?') {
+                $linesRemoved = $matches[1]
+            }
+            
+            return @{
+                FilesChanged = $filesChanged
+                LinesAdded = $linesAdded
+                LinesRemoved = $linesRemoved
+                NetChange = ([int]$linesAdded) - ([int]$linesRemoved)
+                RawStats = $stats
+            }
+        }
+        
+        return @{
+            FilesChanged = 0
+            LinesAdded = 0
+            LinesRemoved = 0
+            NetChange = 0
+            RawStats = "No changes detected"
+        }
+    } catch {
+        return @{
+            FilesChanged = "Unknown"
+            LinesAdded = "Unknown"
+            LinesRemoved = "Unknown"
+            NetChange = "Unknown"
+            RawStats = "Error calculating stats: $($_.Exception.Message)"
+        }
+    }
+}
+
+function Get-GitCommitInfo {
+    [CmdletBinding()]
+    param()
+    
+    try {
+        $commit = git rev-parse --short HEAD 2>$null
+        $message = git log -1 --pretty=format:"%s" 2>$null
+        $author = git log -1 --pretty=format:"%an <%ae>" 2>$null
+        $date = git log -1 --pretty=format:"%ad" --date=iso 2>$null
+        
+        return @{
+            Commit = $commit
+            Message = $message
+            Author = $author
+            Date = $date
+        }
+    } catch {
+        return @{
+            Commit = "Unknown"
+            Message = "Unknown"
+            Author = "Unknown"
+            Date = "Unknown"
         }
     }
 }

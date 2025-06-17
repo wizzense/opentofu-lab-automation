@@ -162,14 +162,15 @@ function Write-CustomLog {
     if ($messageLevel -gt $currentLogLevel -and $messageLevel -gt $currentConsoleLevel) {
         return # Skip logging if message level is too verbose for both outputs
     }
-    
-    # Get caller information for context
+      # Get caller information for context
     $caller = Get-PSCallStack | Select-Object -Skip 1 -First 1
     if (-not $Source) {
-        $Source = if ($caller.FunctionName -eq '<ScriptBlock>') {
+        $Source = if ($caller.FunctionName -eq '<ScriptBlock>' -and $caller.ScriptName) {
             Split-Path $caller.ScriptName -Leaf
-        } else {
+        } elseif ($caller.FunctionName -ne '<ScriptBlock>') {
             "$($caller.FunctionName)"
+        } else {
+            "PowerShell"
         }
     }
     
@@ -186,7 +187,7 @@ function Write-CustomLog {
         Source = $Source
         ProcessId = $processId
         ThreadId = $threadId
-        ScriptName = Split-Path $caller.ScriptName -Leaf
+        ScriptName = if ($caller.ScriptName) { Split-Path $caller.ScriptName -Leaf } else { "Interactive" }
         LineNumber = $caller.ScriptLineNumber
         FunctionName = $caller.FunctionName
     }
