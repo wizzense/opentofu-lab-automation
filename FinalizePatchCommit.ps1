@@ -178,3 +178,4 @@ None - all changes are additive and backward compatible.
     Write-Error "Failed to commit changes"
     exit 1
 }
+

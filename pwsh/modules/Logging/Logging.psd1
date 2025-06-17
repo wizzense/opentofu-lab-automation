@@ -1,4 +1,7 @@
 @{
+    # Root module file
+    RootModule = 'Logging.psm1'
+    
     # Version of this module
     ModuleVersion = '2.0.0'
     

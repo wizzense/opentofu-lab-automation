@@ -162,10 +162,10 @@ Import-Module PSScriptAnalyzer -Force
         string$Path,
         
         Parameter()
-        switch$IncludeLint,
+        switchIncludeLint,
         
         Parameter()
-        switch$IncludeTests,
+        switchIncludeTests,
         
         Parameter()
         string$OutputPath
@@ -448,6 +448,10 @@ Import-Module PSScriptAnalyzer -Force
     
     return $null
 }
+
+
+
+
 
 
 

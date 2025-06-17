@@ -324,7 +324,7 @@ $reportData = @{
     
     foreach ($cat in $reportData.Categories.Keys) {
         $catData = $reportData.Categories$cat
-        $successRate = if ($catData.Total -gt 0) { math::Round(($catData.Passed / $catData.Total) * 100, 1)    } else { 0    }
+        $successRate = if ($catData.Total -gt 0) { [Math]::Round(($catData.Passed / $catData.Total) * 100, 1)    } else { 0    }
         $html += "<tr><td>$cat</td><td>$($catData.Total)</td><td class='passed'>$($catData.Passed)</td><td class='failed'>$($catData.Failed)</td><td>$successRate%</td></tr>`n"
     }
     
@@ -439,7 +439,7 @@ try {
     Write-Host "  Total Tests: $totalTests"
     Write-Host "  Passed: $passedTests" -ForegroundColor Green
     Write-Host "  Failed: $failedTests" -ForegroundColor Red
-    Write-Host "  Success Rate: $(math::Round(($passedTests / $totalTests) * 100, 1))%"
+    Write-Host "  Success Rate: $([Math]::Round(($passedTests / $totalTests) * 100, 1))%"
     
     if ($failedTests -gt 0) {
         Write-Host "`nFailed Tests:" -ForegroundColor Red
@@ -458,6 +458,8 @@ try {
     Write-Error "Test execution failed: $_"
     exit 1
 }
+
+
 
 
 

@@ -76,8 +76,18 @@ $($ErrorRecord.ScriptStackTrace)
     }
     
     # Update GitHub issue if provided
-    if ($IssueNumber) {
-        try {
+    if ($IssueNumber) {        try {
+            # Build suggested actions based on error category
+            $suggestedActions = switch ($ErrorCategory) {
+                "Git" { "- Check Git repository status and permissions" }
+                "PatchValidation" { "- Review changes for syntax errors or validation issues" }
+                "CleanupOperation" { "- Check permissions on files being cleaned up" }
+                "BranchStrategy" { "- Verify branch naming and repository structure" }
+                "PullRequest" { "- Ensure GitHub permissions are correct" }
+                "Rollback" { "- Manual intervention may be required" }
+                default { "- Review error details and logs" }
+            }
+            
             $issueComment = @"
 ## ❌ Error Encountered
 
@@ -86,12 +96,7 @@ $($ErrorRecord.ScriptStackTrace)
 **Details**: $ErrorMessage
 
 ### Suggested Actions
-$($ErrorCategory -eq "Git" ? "- Check Git repository status and permissions" : "")
-$($ErrorCategory -eq "PatchValidation" ? "- Review changes for syntax errors or validation issues" : "")
-$($ErrorCategory -eq "CleanupOperation" ? "- Check permissions on files being cleaned up" : "")
-$($ErrorCategory -eq "BranchStrategy" ? "- Verify branch naming and repository structure" : "")
-$($ErrorCategory -eq "PullRequest" ? "- Ensure GitHub permissions are correct" : "")
-$($ErrorCategory -eq "Rollback" ? "- Manual intervention may be required" : "")
+$suggestedActions
 - Review error log for detailed troubleshooting
 "@
             
@@ -156,12 +161,10 @@ function Write-PatchLog {
             "WARNING" { "Yellow" }
             "ERROR"   { "Red" }
             "DEBUG"   { "Gray" }
-            default   { "White" }
-        }
+            default   { "White" }        }
         
         Write-Host $logMessage -ForegroundColor $color
     }
 }
 
-# Export public functions
-Export-ModuleMember -Function HandlePatchError, Write-PatchLog
+# Note: Export-ModuleMember is handled by the parent module

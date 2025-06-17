@@ -33,7 +33,7 @@ param(
     string$Fix,
     
     Parameter()
-    switch$DryRun,
+    switchDryRun,
     
     Parameter()
     switch$AutoFix
@@ -319,6 +319,8 @@ catch {
     Write-FixLog "Infrastructure fixes failed: $($_.Exception.Message)" "ERROR"
     exit 1
 }
+
+
 
 
 

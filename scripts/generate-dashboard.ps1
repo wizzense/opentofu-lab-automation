@@ -92,7 +92,7 @@ if ($testResultFiles) {
  }
  
  if ($pesterSummary.TotalTests -gt 0) {
- $pesterSummary.SuccessRate = math::Round(($pesterSummary.PassedTests / $pesterSummary.TotalTests) * 100, 1)
+ $pesterSummary.SuccessRate = [Math]::Round(($pesterSummary.PassedTests / $pesterSummary.TotalTests) * 100, 1)
  }
  } catch {
  Write-Warning "Could not parse test results: $($_.Exception.Message)"
@@ -198,7 +198,7 @@ if ($systemComponentCount -gt 0) {
  $healthComponents += $avgSystemHealth * 0.6
 }
 
-$dashboardData.HealthScore = math::Round((healthComponents | Measure-Object -Sum).Sum, 1)
+$dashboardData.HealthScore = [Math]::Round((healthComponents | Measure-Object -Sum).Sum, 1)
 
 # Determine overall health status
 if ($dashboardData.HealthScore -ge 95) {
@@ -345,6 +345,8 @@ Write-Host "Overall Health: $($dashboardData.OverallHealth) ($($dashboardData.He
 if ($dashboardData.HealthScore -lt 85) {
  Write-Host "`nWARN Health score is below 85% - consider reviewing the recommendations above" -ForegroundColor Yellow
 }
+
+
 
 
 

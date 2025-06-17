@@ -85,7 +85,7 @@ function Invoke-GitControlledPatch {
         [Parameter()]
         [switch]$DryRun
     )
-      begin {
+    begin {
         # Import required modules from project
         $projectRoot = if ($env:PROJECT_ROOT) { $env:PROJECT_ROOT } else { "c:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation" }
         Import-Module "$projectRoot\pwsh\modules\LabRunner" -Force -ErrorAction SilentlyContinue
@@ -185,10 +185,10 @@ function Invoke-GitControlledPatch {
                     if ($prResult.Success) {
                         Write-CustomLog "Pull request created: $($prResult.PullRequestUrl)" -Level SUCCESS
                         return @{
-                            Success = $true
-                            BranchName = $branchName
+                            Success        = $true
+                            BranchName     = $branchName
                             PullRequestUrl = $prResult.PullRequestUrl
-                            Message = "Patch applied successfully with pull request"
+                            Message        = "Patch applied successfully with pull request"
                         }
                     } else {
                         Write-CustomLog "Failed to create pull request: $($prResult.Message)" -Level WARN
@@ -202,13 +202,12 @@ function Invoke-GitControlledPatch {
             Write-CustomLog "Patch process completed successfully" -Level SUCCESS
             
             return @{
-                Success = $true
+                Success    = $true
                 BranchName = $branchName
-                Message = "Patch applied successfully"
-                DryRun = $DryRun
+                Message    = "Patch applied successfully"
+                DryRun     = $DryRun
             }
-        }
-        catch {
+        } catch {
             Write-CustomLog "Patch process failed: $($_.Exception.Message)" -Level ERROR
             
             # Attempt cleanup
@@ -217,15 +216,14 @@ function Invoke-GitControlledPatch {
                     Write-CustomLog "Attempting to clean up failed patch branch..." -Level INFO
                     Invoke-PatchRollback -BranchName $branchName -Force
                 }
-            }
-            catch {
+            } catch {
                 Write-CustomLog "Cleanup also failed: $($_.Exception.Message)" -Level ERROR
             }
             
             return @{
                 Success = $false
                 Message = $_.Exception.Message
-                Error = $_
+                Error   = $_
             }
         }
     }
@@ -278,8 +276,7 @@ function Invoke-PatchOperation {
     try {
         & $Operation
         return @{ Success = $true }
-    }
-    catch {
+    } catch {
         return @{ 
             Success = $false
             Message = $_.Exception.Message
@@ -317,8 +314,7 @@ function New-PatchCommit {
                 Message = "Git commit failed"
             }
         }
-    }
-    catch {
+    } catch {
         return @{ 
             Success = $false
             Message = $_.Exception.Message
@@ -370,7 +366,7 @@ $Description
             $prUrl = gh pr view $BranchName --json url --jq '.url' 2>&1
             
             return @{ 
-                Success = $true
+                Success        = $true
                 PullRequestUrl = $prUrl
             }
         } else {
@@ -379,8 +375,7 @@ $Description
                 Message = "Failed to create pull request: $prResult"
             }
         }
-    }
-    catch {
+    } catch {
         return @{ 
             Success = $false
             Message = $_.Exception.Message
@@ -389,3 +384,11 @@ $Description
 }
 
 Export-ModuleMember -Function Invoke-GitControlledPatch
+
+
+
+
+
+
+
+
