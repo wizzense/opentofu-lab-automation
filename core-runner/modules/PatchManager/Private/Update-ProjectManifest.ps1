@@ -46,8 +46,7 @@ function Update-ProjectManifest {
         [Parameter(Mandatory = $false)]
         [string[]]$AffectedFiles = @()
     )
-    
-    begin {
+      begin {
         Write-Verbose "Starting PROJECT-MANIFEST.json update process..."
         
         # Set paths
@@ -61,7 +60,8 @@ function Update-ProjectManifest {
         # Create backup
         $backupDir = Join-Path $env:PROJECT_ROOT "backups/manifest"
         if (-not (Test-Path $backupDir)) {
-            if (-not (Test-Path $backupDir)) { New-Item -ItemType Directory -Path $backupDir -Force | Out-Null }
+            New-Item -ItemType Directory -Path $backupDir -Force | Out-Null
+        }
         
         $backupPath = Join-Path $backupDir "PROJECT-MANIFEST-$(Get-Date -Format 'yyyyMMdd-HHmmss').json"
         Copy-Item -Path $manifestPath -Destination $backupPath -Force
@@ -173,8 +173,7 @@ function Update-ProjectManifest {
                 $activeModules = ($manifest.core.modules | Get-Member -MemberType NoteProperty).Name
                 $manifest.metrics.codebase.activeModules = $activeModules.Count
             }
-            
-            # Write updated manifest
+              # Write updated manifest
             $manifest | ConvertTo-Json-Depth 20 | Set-Content -Path $manifestPath
             Write-Verbose "Successfully updated PROJECT-MANIFEST.json"
             
@@ -189,6 +188,3 @@ function Update-ProjectManifest {
         }
     }
 }
-
-
-

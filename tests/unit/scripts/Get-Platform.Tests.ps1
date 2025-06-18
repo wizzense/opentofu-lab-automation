@@ -25,10 +25,3 @@ Describe 'Get-Platform Tests' {
     }
 }
 
-
-
-
-
-
-
-

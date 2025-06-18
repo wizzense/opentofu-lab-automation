@@ -1,10 +1,3 @@
-
-
-
-
-
-
-
 @{
     # Fixed Pester 5.x Configuration for VS Code Integration
     Run = @{

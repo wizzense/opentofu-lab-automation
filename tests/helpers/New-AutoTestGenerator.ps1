@@ -25,13 +25,6 @@ param(
     int$WatchIntervalSeconds = 30
 )
 
-
-
-
-
-
-
-
 . (Join-Path $PSScriptRoot 'TestHelpers.ps1')
 
 function Get-ScriptAnalysis {
@@ -41,35 +34,14 @@ function Get-ScriptAnalysis {
     #>
     param(string$ScriptPath)
     
-    
-
-
-
-
-
-
-if (-not (Test-Path $ScriptPath)) {
+    if (-not (Test-Path $ScriptPath)) {
         throw "Script not found: $ScriptPath"
     }
     
     $content = Get-Content $ScriptPath -Raw
     $ast = System.Management.Automation.Language.Parser::ParseInput($content, ref$null, ref$null)
     
-    $analysis = @{
-        Functions = @()
-        Parameters = @()
-        Category = 'Unknown'
-        Platform = 'CrossPlatform'
-        RequiresAdmin = $false
-        HasDownloads = $false
-        HasInstallation = $false
-        HasConfiguration = $false
-        HasServiceManagement = $false
-        DependsOnExternal = @()
-    }
-    
-    # Find functions
-    $functions = $ast.FindAll({ $args0 -is System.Management.Automation.Language.FunctionDefinitionAst }, $true)
+        $functions = $ast.FindAll({ $args0 -is System.Management.Automation.Language.FunctionDefinitionAst }, $true)
     foreach ($func in $functions) {
         $analysis.Functions += @{
             Name = $func.Name
@@ -144,14 +116,7 @@ function New-TestTemplate {
         string$ScriptPath
     )
     
-    
-
-
-
-
-
-
-$testName = $ScriptName -replace '\.ps1$', '.Tests.ps1'
+    $testName = $ScriptName -replace '\.ps1$', '.Tests.ps1'
     $scriptRelativePath = $ScriptPath -replace regex::Escape((Get-Location).Path + '\'), ''
     
     $skipConditions = @()
@@ -165,28 +130,14 @@ $testName = $ScriptName -replace '\.ps1$', '.Tests.ps1'
         $skipConditions += '$SkipNonMacOS'
     }
     
-    if ($Analysis.RequiresAdmin) {
-        $skipConditions += '$SkipNonAdmin'
-    }
-    
-    $skipClause = if ($skipConditions.Count -gt 0) { " -Skip:(" + ($skipConditions -join ' -or ') + ")"
-       } else { ""
-       }
-    
+        
     $template = @"
 # filepath: tests/$testName
 . (Join-Path `$PSScriptRoot 'TestDriveCleanup.ps1')
 . (Join-Path `$PSScriptRoot 'helpers' 'TestHelpers.ps1')
 
 BeforeAll {
-    # Load the script under test
-    `$scriptPath = Join-Path `$PSScriptRoot '..' '$scriptRelativePath'
-    if (Test-Path `$scriptPath) {
-        . `$scriptPath
-    }
-    
-    # Set up test environment
-    `$TestConfig = Get-TestConfiguration
+        `$TestConfig = Get-TestConfiguration
     `$SkipNonWindows = -not (Get-Platform).IsWindows
     `$SkipNonLinux = -not (Get-Platform).IsLinux
     `$SkipNonMacOS = -not (Get-Platform).IsMacOS
@@ -402,14 +353,7 @@ function Format-ScriptName {
     #>
     param(string$OriginalName)
     
-    
-
-
-
-
-
-
-# Remove file extension
+    # Remove file extension
     $baseName = System.IO.Path::GetFileNameWithoutExtension($OriginalName)
     
     # Check if already follows convention (nnnn_Verb-Noun format)
@@ -430,14 +374,7 @@ function Format-ScriptName {
     
     # Check if first part is a verb
     if ($parts.Count -gt 0 -and $commonVerbs -contains $parts0) {
-        $verb = $parts0
-        $noun = ($parts1..($parts.Count-1) -join '')
-    } else {
-        # Try to infer verb from context
-        $allParts = $parts -join ''
-        $verb = 'Install'  # Default verb
-        
-        # Infer verb based on common patterns
+            # Infer verb based on common patterns
         if ($allParts -match 'ConfigConfigureSetupSet') { $verb = 'Configure' }
         elseif ($allParts -match 'EnableStartTurn.*On') { $verb = 'Enable' }
         elseif ($allParts -match 'DisableStopTurn.*Off') { $verb = 'Disable' }
@@ -451,14 +388,7 @@ function Format-ScriptName {
     # Ensure we have both verb and noun
     if (-not $noun) { $noun = 'Task' }
     
-    # Create proper Verb-Noun format
-    $formattedName = "$verb-$noun"
-    
-    # Add sequence number if in runner_scripts directory
-    $directory = Split-Path $OriginalName -Parent
-    if ($directory -like "*runner_scripts*") {
-        # Find next available sequence number
-        $runnerScriptsPath = Join-Path $PSScriptRoot ".." ".." "pwsh" "runner_scripts"
+            $runnerScriptsPath = Join-Path $PSScriptRoot ".." ".." "pwsh" "runner_scripts"
         if (Test-Path $runnerScriptsPath) {
             $existingScripts = Get-ChildItem $runnerScriptsPath -Filter "*.ps1" | Where-Object{ $_.Name -match '^0-9{4}_' } | ForEach-Object{ int($_.Name.Substring(0,4)) } | Sort-Object$nextNumber = if ($existingScripts.Count -gt 0) { $existingScripts-1 + 1    } else { 100    }
         } else {
@@ -477,14 +407,7 @@ function Watch-ScriptDirectory {
     #>
     param(string$Directory, int$IntervalSeconds = 30)
     
-    
-
-
-
-
-
-
-Write-Host "Starting script directory watcher for: $Directory" -ForegroundColor Green
+    Write-Host "Starting script directory watcher for: $Directory" -ForegroundColor Green
     Write-Host "Checking every $IntervalSeconds seconds. Press Ctrl+C to stop." -ForegroundColor Yellow
     
     $processedFiles = @{}
@@ -512,14 +435,7 @@ Write-Host "Starting script directory watcher for: $Directory" -ForegroundColor 
                         }
                         
                         # Generate test if it doesn't exist
-                        $testName = $script.Name -replace '\.ps1$', '.Tests.ps1'
-                        $testPath = Join-Path $OutputDirectory $testName
-                        
-                        if (-not (Test-Path $testPath)) {
-                            Write-Host "Generating test file: $testName" -ForegroundColor Green
-                            New-TestForScript -ScriptPath $script.FullName -OutputPath $testPath
-                        }
-                        
+                            
                         $processedFiles$key = $lastWrite
                         
                     } catch {
@@ -540,21 +456,7 @@ Write-Host "Starting script directory watcher for: $Directory" -ForegroundColor 
 function New-TestForScript {
     <#
     .SYNOPSIS
-    Creates a new test file for a given script
-    #>
-    param(
-        string$ScriptPath,
-        string$OutputPath
-    )
-    
-    
-
-
-
-
-
-
-$scriptName = System.IO.Path::GetFileName($ScriptPath)
+        $scriptName = System.IO.Path::GetFileName($ScriptPath)
     Write-Host "Analyzing script: $scriptName" -ForegroundColor Cyan
     
     $analysis = Get-ScriptAnalysis $ScriptPath
@@ -589,14 +491,7 @@ $scriptName = System.IO.Path::GetFileName($ScriptPath)
     
     # Remove existing entry for this script if present
     $index.Tests = $index.Tests | Where-Object{ $_.SourceScript -ne $scriptName }
-    $index.Tests += $testInfo
-    $index.LastUpdated = Get-Date
-    
-    index | ConvertTo-Json-Depth 10  Set-Content $indexPath -Encoding UTF8
-}
-
-# Main execution
-if ($ScriptPath) {
+    if ($ScriptPath) {
     # Generate test for specific script
     if (-not (Test-Path $ScriptPath)) {
         Write-Error "Script not found: $ScriptPath"
@@ -624,14 +519,7 @@ if ($ScriptPath) {
     Watch-ScriptDirectory -Directory $fullWatchPath -IntervalSeconds $WatchIntervalSeconds
     
 } else {
-    # Generate tests for all scripts in directory
-    $fullWatchPath = Join-Path $PSScriptRoot ".." ".." $WatchDirectory
-    if (-not (Test-Path $fullWatchPath)) {
-        Write-Error "Directory not found: $fullWatchPath"
-        exit 1
-    }
-    
-    $scriptFiles = Get-ChildItem $fullWatchPath -Filter "*.ps1" -Recurse | Where-Object{ -not $_.Name.EndsWith('.Tests.ps1') }
+        $scriptFiles = Get-ChildItem $fullWatchPath -Filter "*.ps1" -Recurse | Where-Object{ -not $_.Name.EndsWith('.Tests.ps1') }
     
     Write-Host "Found $($scriptFiles.Count) scripts to process" -ForegroundColor Green
     
@@ -650,12 +538,5 @@ if ($ScriptPath) {
         }
     }
 }
-
-
-
-
-
-
-
 
 

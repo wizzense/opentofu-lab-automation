@@ -1,86 +1,59 @@
-Param(
-    object$Config
+#Requires -Version 7.0
+
+[CmdletBinding(SupportsShouldProcess)]
+param(
+    [Parameter(Mandatory)]
+    [object]$Config
 )
 
-
-
-
-
-
-
-
-Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\pwsh/modules/LabRunner/" -ForceWrite-CustomLog "Starting $MyInvocation.MyCommand"
+Import-Module "$env:PROJECT_ROOT/core-runner/modules/LabRunner/" -Force
+Write-CustomLog "Starting $($MyInvocation.MyCommand.Name)"
 
 function Install-Poetry {
-    CmdletBinding(SupportsShouldProcess=$true)
-    param(object$Config)
-
+    [CmdletBinding(SupportsShouldProcess)]
+    param(
+        [Parameter(Mandatory)]
+        [object]$Config
+    )
     
-
-
-
-
-
-
-Invoke-LabStep -Config $Config -Body {
-        param($Config)
-        
-
-
-
-
-
-
-Write-CustomLog "Running $($MyInvocation.MyCommand.Name)"
-
-        if ($Config.InstallPoetry -eq $true) {
-            $installerUrl = 'https://install.python-poetry.org'
-            Invoke-LabDownload -Uri $installerUrl -Prefix 'install-poetry' -Extension '.py' -Action {
-                param($installerPath)
-                
-
-
-
-
-
-
-$args = @()
-                if ($Config.PoetryVersion) {
-                    $args += '--version'
-                    $args += $Config.PoetryVersion
+    Write-CustomLog "Running $($MyInvocation.MyCommand.Name)"
+    
+    if ($Config.InstallPoetry -eq $true) {
+        if (-not (Get-Command poetry -ErrorAction SilentlyContinue)) {
+            Write-CustomLog 'Installing Poetry...'
+            
+            # Download and install Poetry
+            $url = 'https://install.python-poetry.org'
+            
+            try {
+                if ($PSCmdlet.ShouldProcess('Poetry', 'Install package manager')) {
+                    $response = Invoke-WebRequest -Uri $url -UseBasicParsing
+                    $installScript = $response.Content
+                    
+                    # Execute the install script
+                    $args = @()
+                    if ($Config.PoetryVersion) {
+                        $env:POETRY_VERSION = $Config.PoetryVersion
+                    }
+                    
+                    Write-CustomLog 'Executing Poetry installer...'
+                    Invoke-Expression $installScript
                 }
-                Write-CustomLog 'Executing Poetry installer...'
-                $pythonCmd = Get-Command python -ErrorAction SilentlyContinue
-                if (-not $pythonCmd) {
-                    throw 'Python executable not found. Ensure Python is installed and in PATH.'
-                }
-                & $pythonCmd.Path $installerPath @args
+                Write-CustomLog 'Poetry installation completed.'
+            } catch {
+                Write-CustomLog "Poetry installation failed: $_" -Level 'ERROR'
+                throw
             }
+        } else {
+            Write-CustomLog 'Poetry is already installed.'
         }
-        else {
-            Write-CustomLog 'InstallPoetry flag is disabled. Skipping Poetry installation.'
-        }
-
-        Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
+    } else {
+        Write-CustomLog 'InstallPoetry flag is disabled. Skipping installation.'
     }
 }
 
-if ($MyInvocation.InvocationName -ne '.') { Install-Poetry @PSBoundParameters }
+Invoke-LabStep -Config $Config -Body {
+    Install-Poetry -Config $Config
+}
+
 Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -1,6 +1,4 @@
-Param(object$Config)
-
-
+#Requires -Version 7
 
 
 
@@ -45,24 +43,4 @@ if ($Config.InstallHyperV -eq $true) {
 
     Write-CustomLog "Hyper-V installation complete. A restart is typically required to finalize installation."
 } else {
-    Write-CustomLog "InstallHyperV flag is disabled. Skipping Hyper-V installation."
-}
-    Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
-}
-Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

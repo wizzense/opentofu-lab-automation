@@ -6,18 +6,12 @@ Describe 'PatchManager Function Tests' {
     Context 'Function Files Exist' {
         It 'Should have Test-PatchingRequirements.ps1' {
             Test-Path "$PatchManagerPath/Test-PatchingRequirements.ps1" | Should -Be $true
-        }
-
-        It 'Should have Set-PatchManagerAliases.ps1' {
+        }        It 'Should have Set-PatchManagerAliases.ps1' {
             Test-Path "$PatchManagerPath/Set-PatchManagerAliases.ps1" | Should -Be $true
         }
 
         It 'Should have Invoke-UnifiedMaintenance.ps1' {
             Test-Path "$PatchManagerPath/Invoke-UnifiedMaintenance.ps1" | Should -Be $true
-        }
-
-        It 'Should have Invoke-TieredPesterTests.ps1' {
-            Test-Path "$PatchManagerPath/Invoke-TieredPesterTests.ps1" | Should -Be $true
         }
 
         It 'Should have Invoke-QuickRollback.ps1' {

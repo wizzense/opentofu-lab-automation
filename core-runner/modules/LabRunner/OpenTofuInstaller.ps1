@@ -72,13 +72,6 @@ PS> .\install-opentofu.ps1 -installMethod standalone
 param(
 
     Parameter(Mandatory = $false)
-
-
-
-
-
-
-
     switch$help = $false,
 
     Parameter(Mandatory = $false)
@@ -234,91 +227,28 @@ function logInfo() {
     param(
         $message
     )
-    
-
-
-
-
-
-
-Write-Information "${blue}${message}${normal}"
+    Write-Information "${blue}${message}${normal}"
 }
 
 function logWarning() {
     param(
         $message
     )
-    
-
-
-
-
-
-
-Write-Warning "${orange}${message}${normal}"
-}
-
-function logError() {
-    param(
-        $message
-    )
-    
-
-
-
-
-
-
-try
-    {
-        Console::Error.WriteLine("${red}${message}${normal}")
-    } catch {
-        $msg = $_.ToString()
-        Write-Error $msg
-        throw
-    }
-}
-
-function tempdir() {
-    $tempPath = System.IO.Path::GetTempPath()
-    $randomName = System.IO.Path::GetRandomFileName()
-    $path = Join-Path $tempPath $randomName
-    if (-not (Test-Path $path)) { New-Item -Path $path -ItemType Directory -Force }
+            if (-not (Test-Path $path)) { New-Item -Path $path -ItemType Directory -Force }
 }
 
 function unpackStandalone() {
     logInfo "Unpacking ZIP file to $installPath..."
     try
     {
-        New-Item -Path $installPath -ItemType directory -Force
-    }
-    catch
-    {
-        $msg = $_.ToString()
-        throw InstallFailedException::new("Failed to create target directory at ${installPath}. (${msg})")
-    }
-    $prevProgressPreference = $global:ProgressPreference
-    $global:ProgressPreference = 'SilentlyContinue'
-    try
-    {
-        logInfo "Unzipping $internalZipFile to $installPath..."
-        Expand-Archive -LiteralPath $internalZipFile -DestinationPath $installPath -Force
-    }
-    catch
+        catch
     {
         $msg = $_.ToString()
         throw InstallFailedException::new("Failed to unzip to ${installPath}. (${msg})")
     }
     finally
     {
-        $global:ProgressPreference = $prevProgressPreference
-    }
-
-    if ($skipChangePath) {
-        return
-    }
-    try {
-        if ($allUsers) {
+            if ($allUsers) {
             logInfo "Updating system PATH variable..."
             $target = EnvironmentVariableTarget::Machine
         } else {
@@ -668,13 +598,6 @@ function escapePathArgument {
     CmdletBinding()
     param(
         Parameter(Mandatory=$true, ValueFromPipeline=$true)
-
-
-
-
-
-
-
         string $Path
     )
 
@@ -702,13 +625,6 @@ ${bold}${blue}OPTIONS for all installation methods:${normal}
   ${bold}-skipChangePath${normal}               Skip changing the user/system path to include the OpenTofu path.
   ${bold}-skipVerify${normal}                   Skip cosign integrity verification.
                                 (${bold}${red}not recommended${normal}).
-
-${bold}${blue}OPTIONS for the standalone installation:${normal}
-
-  ${bold}-opentofuVersion ${magenta}VERSION${normal}      Installs the specified OpenTofu version.
-                                (${bold}Default:${normal} ${magenta}${defaultOpenTofuVersion}${normal})
-  ${bold}-installPath ${magenta}PATH${normal}             Installs OpenTofu to the specified path.
-                                (${bold}Default:${normal} ${magenta}${defaultInstallPath}${normal})
   ${bold}-gpgPath ${magenta}PATH${normal}                 Path to GPG. (${bold}Default:${normal} ${magenta}${defaultGPGPath}${normal})
   ${bold}-gpgURL ${magenta}URL${normal}                   URL of the GPG key to use (without ASCII-armor)
                                 (${bold}Default:${normal} ${magenta}${defaultGPGURL}${normal})
@@ -730,14 +646,7 @@ ${bold}${blue}OPTIONS for the standalone installation:${normal}
   ${bold}Signature verification:${normal} This installation method uses cosign or GPG
   to verify the integrity of the downloaded binaries by default. Please install cosign or gpg
   or disable signature verification by specifying ${bold}-skipVerify${normal} to disable it (not recommended).
-  See https://docs.sigstore.dev/system_config/installation/ for details.
-
-${bold}${blue}Exit codes:${normal}
-
-  ${bold}${exitCodeOK}${normal}                             Installation successful.
-  ${bold}${exitCodeInstallRequirementNotMet}${normal}                             Your system is missing one or more requirements
-                                for these selected installation method. Please
-                                install the indicated tools to continue.
+  See https://docs.sigstore.dev/system_config/installation/                                install the indicated tools to continue.
   ${bold}${exitCodeInstallFailed}${normal}                             The installation failed.
   ${bold}${exitCodeInvalidArgument}${normal}                             Invalid configuration options.
 

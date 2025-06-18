@@ -1,75 +1,51 @@
-Param(
-    object$Config
+#Requires -Version 7.0
+
+[CmdletBinding(SupportsShouldProcess)]
+param(
+    [Parameter(Mandatory)]
+    [object]$Config
 )
 
-
-
-
-
-
-
-
-Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\pwsh/modules/LabRunner/" -ForceWrite-CustomLog "Starting $MyInvocation.MyCommand"
+Import-Module "$env:PROJECT_ROOT/core-runner/modules/LabRunner/" -Force
+Write-CustomLog "Starting $($MyInvocation.MyCommand.Name)"
 
 function Set-LabProfile {
-    CmdletBinding(SupportsShouldProcess = $true)
-    param(object$Config)
-
+    [CmdletBinding(SupportsShouldProcess)]
+    param(
+        [Parameter(Mandatory)]
+        [object]$Config
+    )
     
-
-
-
-
-
-
-Invoke-LabStep -Config $Config -Body {
-        param($Config)
+    Write-CustomLog "Running $($MyInvocation.MyCommand.Name)"
+    
+    if ($Config.SetupLabProfile -eq $true) {
+        $profilePath = $PROFILE.CurrentUserAllHosts
+        $profileDir = Split-Path $profilePath
         
-
-
-
-
-
-
-Write-CustomLog "Running $($MyInvocation.MyCommand.Name)"
-        if ($Config.SetupLabProfile -eq $true) {
-            $profilePath = $PROFILE.CurrentUserAllHosts
-            $profileDir  = Split-Path $profilePath            if (-not (Test-Path $profileDir)) {
+        if (-not (Test-Path $profileDir)) {
+            if ($PSCmdlet.ShouldProcess($profileDir, 'Create profile directory')) {
                 New-Item -ItemType Directory -Path $profileDir -Force | Out-Null
             }
-            $repoRoot = Resolve-Path -Path (Join-Path $PSScriptRoot '..')
-            $content = @"
-# OpenTofu Lab Automation profile
-`$env:PATH = \"$repoRoot;`$env:PATH\"
-`$env:PSModulePath = \"$repoRoot\pwsh\modules;`$env:PSModulePath\"
-"@
-            Set-Content -Path $profilePath -Value $content -Encoding utf8
-            Write-CustomLog "Profile written to $profilePath"
-        } else {
-            Write-CustomLog 'SetupLabProfile flag is disabled. Skipping profile creation.'
         }
+        
+        $repoRoot = Resolve-Path -Path (Join-Path $PSScriptRoot '..')
+        $content = @"
+# OpenTofu Lab Automation profile
+`$env:PATH = "$repoRoot;`$env:PATH"
+`$env:PSModulePath = "$repoRoot/pwsh/modules;`$env:PSModulePath"
+"@
+        
+        if ($PSCmdlet.ShouldProcess($profilePath, 'Create PowerShell profile')) {
+            Set-Content -Path $profilePath -Value $content
+            Write-CustomLog "PowerShell profile created at $profilePath"
+        }
+    } else {
+        Write-CustomLog "SetupLabProfile flag is disabled. Skipping profile setup."
     }
-    Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
 }
 
-if ($MyInvocation.InvocationName -ne '.') { Set-LabProfile @PSBoundParameters }
+Invoke-LabStep -Config $Config -Body {
+    Set-LabProfile -Config $Config
+}
+
 Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

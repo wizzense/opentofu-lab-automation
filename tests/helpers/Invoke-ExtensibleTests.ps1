@@ -18,14 +18,7 @@ This script provides enhanced test execution with:
 #>
 
 param(
-    string$Category = @()
-
-
-
-
-
-
-,
+    string$Category = @(),
     
     ValidateSet('Windows', 'Linux', 'macOS', 'All')
     string$Platform = 'All',
@@ -57,35 +50,14 @@ function Get-TestCategories {
     #>
     param(string$TestsPath)
     
-    
-
-
-
-
-
-
-$testFiles = Get-ChildItem $TestsPath -Filter "*.Tests.ps1" -Recurse
+    $testFiles = Get-ChildItem $TestsPath -Filter "*.Tests.ps1" -Recurse
     $categories = @{}
     
     foreach ($file in $testFiles) {
         $content = Get-Content $file.FullName -Raw
         
         # Determine category based on content analysis
-        $category = 'Unknown'
-        
-        if ($content -match 'New-InstallerScriptTestInstall-Download-') {
-            $category = 'Installer'
-        } elseif ($content -match 'New-FeatureScriptTestEnable-Feature') {
-            $category = 'Feature'
-        } elseif ($content -match 'New-ServiceScriptTestServiceWinRM') {
-            $category = 'Service'
-        } elseif ($content -match 'New-ConfigurationScriptTestConfig-Set-') {
-            $category = 'Configuration'
-        } elseif ($content -match 'Integrationrunner\.ps1') {
-            $category = 'Integration'
-        } elseif ($content -match 'SkipNonWindowsWindows-specific') {
-            $category = 'Windows'
-        } elseif ($content -match 'Cross-platformCrossPlatform') {
+            } elseif ($content -match 'Cross-platformCrossPlatform') {
             $category = 'CrossPlatform'
         }
         
@@ -120,14 +92,7 @@ $testFiles = Get-ChildItem $TestsPath -Filter "*.Tests.ps1" -Recurse
 function Test-PlatformCompatibility {
     param(string$TestPlatforms, string$TargetPlatform)
     
-    
-
-
-
-
-
-
-if ($TargetPlatform -eq 'All') {
+    if ($TargetPlatform -eq 'All') {
         return $true
     }
     
@@ -141,49 +106,14 @@ function Invoke-TestBatch {
         switch$Parallel
     )
     
-    
-
-
-
-
-
-
-if ($Parallel -and $Tests.Count -gt 1) {
-        Write-Host "Running $($Tests.Count) tests in parallel..." -ForegroundColor Yellow
-        
-        # Convert PesterConfiguration to hashtable for serialization
-        $configHash = @{
-            Run = @{ PassThru = $Configuration.Run.PassThru.Value }
-            Output = @{ Verbosity = $Configuration.Output.Verbosity.Value }
-            TestResult = @{ 
+                TestResult = @{ 
                 Enabled = $Configuration.TestResult.Enabled.Value
                 OutputPath = $Configuration.TestResult.OutputPath.Value
             }
         }
         
         if ($Configuration.CodeCoverage.Enabled.Value) {
-            $configHash.CodeCoverage = @{
-                Enabled = $true
-                Path = $Configuration.CodeCoverage.Path.Value
-                OutputPath = $Configuration.CodeCoverage.OutputPath.Value
-            }
-        }
-        
-        $jobs = @()
-        foreach ($test in $Tests) {
-            $job = Start-Job -ScriptBlock {
-                param($TestPath, $ConfigHash)
-                
-                
-
-
-
-
-
-
-try {
-                    # Recreate PesterConfiguration from hashtable
-                    $config = New-PesterConfiguration -Hashtable $ConfigHash
+                            $config = New-PesterConfiguration -Hashtable $ConfigHash
                     $result = Invoke-Pester -Path $TestPath -Configuration $config -PassThru
                     return @{
                         Success = $true
@@ -197,26 +127,12 @@ try {
                         Path = $TestPath
                     }
                 }
-            } -ArgumentList $test.Path, $configHash
             
-            $jobs += @{
-                Job = $job
-                Test = $test
-            }
-        }
-        
         # Wait for jobs and collect results
         $results = @()
         foreach ($jobInfo in $jobs) {
             $result = Receive-Job -Job $jobInfo.Job -Wait
-            Remove-Job -Job $jobInfo.Job
-            $results += $result
-        }
-        
-        return $results
-    } else {
-        # Sequential execution
-        $results = @()
+            Remo        $results = @()
         foreach ($test in $Tests) {
             Write-Host "Running test: $($test.Name)" -ForegroundColor Cyan
             
@@ -237,21 +153,7 @@ try {
             }
         }
         
-        return $results
-    }
-}
-
-function New-TestReport {
-    param(object$Results, string$OutputPath)
-    
-    
-
-
-
-
-
-
-$reportData = @{
+        return $    $reportData = @{
         Timestamp = Get-Date
         Platform = $script:CurrentPlatform
         TotalTests = $Results.Count
@@ -286,14 +188,7 @@ $reportData = @{
             $reportData.Categories$category.Failed++
         }
     }
-    
-    # Generate HTML report
-    $html = @"
-<!DOCTYPE html>
-<html>
-<head>
-    <title>OpenTofu Lab Automation Test Report</title>
-    <style>
+        <style>
         body { font-family: Arial, sans-serif; margin: 20px; }
         .summary { background: #f0f0f0; padding: 15px; border-radius: 5px; margin-bottom: 20px; }
         .passed { color: green; font-weight: bold; }
@@ -321,14 +216,7 @@ $reportData = @{
         <table>
             <tr><th>Category</th><th>Total</th><th>Passed</th><th>Failed</th><th>Success Rate</th></tr>
 "@
-    
-    foreach ($cat in $reportData.Categories.Keys) {
-        $catData = $reportData.Categories$cat
-        $successRate = if ($catData.Total -gt 0) { [Math]::Round(($catData.Passed / $catData.Total) * 100, 1)    } else { 0    }
-        $html += "<tr><td>$cat</td><td>$($catData.Total)</td><td class='passed'>$($catData.Passed)</td><td class='failed'>$($catData.Failed)</td><td>$successRate%</td></tr>`n"
-    }
-    
-    $html += @"
+        $html += @"
         </table>
     </div>
     
@@ -458,13 +346,6 @@ try {
     Write-Error "Test execution failed: $_"
     exit 1
 }
-
-
-
-
-
-
-
 
 
 

@@ -25,10 +25,3 @@ Describe 'Enable-RemoteDesktop Tests' {
     }
 }
 
-
-
-
-
-
-
-

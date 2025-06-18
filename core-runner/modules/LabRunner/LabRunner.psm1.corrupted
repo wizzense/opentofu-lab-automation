@@ -43,13 +43,6 @@ function Invoke-CrossPlatformCommand {
     #>
     param(
         Parameter(Mandatory)
-
-
-
-
-
-
-
         string$CommandName,
         
         hashtable$Parameters = @{},
@@ -83,14 +76,7 @@ function Invoke-LabStep {
         object$Config
     )
 
-    
-
-
-
-
-
-
-if ($Config -is string) {
+    if ($Config -is string) {
         if (Test-Path $Config) {
             $Config = Get-Content -Raw -Path $Config  ConvertFrom-Json
         } else {
@@ -163,13 +149,6 @@ function Invoke-CrossPlatformCommand {
     #>
     param(
         Parameter(Mandatory)
-
-
-
-
-
-
-
         string$CommandName,
         
         hashtable$Parameters = @{},
@@ -203,14 +182,7 @@ function Invoke-LabStep {
         object$Config
     )
 
-    
-
-
-
-
-
-
-if ($Config -is string) {
+    if ($Config -is string) {
         if (Test-Path $Config) {
             $Config = Get-Content -Raw -Path $Config  ConvertFrom-Json
         } else {
@@ -249,14 +221,7 @@ if ($Config -is string) {
 function Invoke-LabDownload {
     CmdletBinding()
     param(
-        Parameter(Mandatory)
-
-
-
-
-
-
-string$Uri,
+        Parameter(Mandatory)string$Uri,
         Parameter(Mandatory)scriptblock$Action,
         string$Prefix = 'download',
         string$Extension
@@ -303,14 +268,7 @@ Export-ModuleMember -Function Invoke-LabStep, Invoke-LabDownload, Write-CustomLo
 function Invoke-LabDownload {
     CmdletBinding()
     param(
-        Parameter(Mandatory)
-
-
-
-
-
-
-string$Uri,
+        Parameter(Mandatory)string$Uri,
         Parameter(Mandatory)scriptblock$Action,
         string$Prefix = 'download',
         string$Extension
@@ -380,13 +338,6 @@ function Invoke-CrossPlatformCommand {
     #>
     param(
         Parameter(Mandatory)
-
-
-
-
-
-
-
         string$CommandName,
         
         hashtable$Parameters = @{},
@@ -420,14 +371,7 @@ function Invoke-LabStep {
         object$Config
     )
 
-    
-
-
-
-
-
-
-if ($Config -is string) {
+    if ($Config -is string) {
         if (Test-Path $Config) {
             $Config = Get-Content -Raw -Path $Config  ConvertFrom-Json
         } else {
@@ -466,14 +410,7 @@ if ($Config -is string) {
 function Invoke-LabDownload {
     CmdletBinding()
     param(
-        Parameter(Mandatory)
-
-
-
-
-
-
-string$Uri,
+        Parameter(Mandatory)string$Uri,
         Parameter(Mandatory)scriptblock$Action,
         string$Prefix = 'download',
         string$Extension
@@ -559,13 +496,6 @@ function Invoke-CrossPlatformCommand {
     #>
     param(
         Parameter(Mandatory)
-
-
-
-
-
-
-
         string$CommandName,
         
         hashtable$Parameters = @{},
@@ -599,14 +529,7 @@ function Invoke-LabStep {
         object$Config
     )
 
-    
-
-
-
-
-
-
-if ($Config -is string) {
+    if ($Config -is string) {
         if (Test-Path $Config) {
             $Config = Get-Content -Raw -Path $Config  ConvertFrom-Json
         } else {
@@ -645,14 +568,7 @@ if ($Config -is string) {
 function Invoke-LabDownload {
     CmdletBinding()
     param(
-        Parameter(Mandatory)
-
-
-
-
-
-
-string$Uri,
+        Parameter(Mandatory)string$Uri,
         Parameter(Mandatory)scriptblock$Action,
         string$Prefix = 'download',
         string$Extension

@@ -312,42 +312,6 @@ Describe "PatchManager Rollback Functions" {
     }
 }
 
-Describe "PatchManager Testing Integration" {
-    BeforeEach {
-        $script:gitCalls = @()
-    }
-    
-    Context "Invoke-TieredPesterTests" {
-        It "Should run critical tier tests" {
-            { Invoke-TieredPesterTests -TestCategory "Critical" -DryRun } | Should -Not -Throw
-        }
-        
-        It "Should run all test categories" {
-            $categories = @("Critical", "Important", "Standard", "Optional")
-            
-            foreach ($category in $categories) {
-                { Invoke-TieredPesterTests -TestCategory $category -DryRun } | Should -Not -Throw -Because "Category $category should be supported"
-            }
-        }
-        
-        It "Should generate coverage report when requested" {
-            { Invoke-TieredPesterTests -TestCategory "Unit" -GenerateCoverage -DryRun } | Should -Not -Throw
-        }
-        
-        It "Should block on failure when requested" {
-            { Invoke-TieredPesterTests -TestCategory "Critical" -BlockOnFailure -DryRun } | Should -Not -Throw
-        }
-        
-        It "Should output results in specified format" {
-            $formats = @("NUnitXml", "JUnitXml", "CoverageGutters")
-            
-            foreach ($format in $formats) {
-                { Invoke-TieredPesterTests -TestCategory "Unit" -OutputFormat $format -DryRun } | Should -Not -Throw -Because "Format $format should be supported"
-            }
-        }
-    }
-}
-
 Describe "PatchManager Error Handling and Monitoring" {
     Context "Invoke-ErrorHandler" {
         It "Should handle PowerShell errors gracefully" {

@@ -1,17 +1,25 @@
-Param([object]$Config)
-Import-Module '/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\pwsh/modules/LabRunner/' -ForceWrite-CustomLog "Starting $MyInvocation.MyCommand"
+#Requires -Version 7.0
+
+[CmdletBinding()]
+param(
+    [Parameter()]
+    [object]$Config
+)
+
+Import-Module "$env:PWSH_MODULES_PATH/LabRunner/" -Force
+Write-CustomLog "Starting $($MyInvocation.MyCommand.Name)"
 
 Invoke-LabStep -Config $Config -Body {
     Write-CustomLog "Running $($MyInvocation.MyCommand.Name)"
 
     # Determine InfraPath
-    $InfraPath = if ($Config.InfraRepoPath) { $Config.InfraRepoPath } else { 'C:\Temp\base-infra' }
+    $InfraPath = if ($Config.InfraRepoPath) { $Config.InfraRepoPath } else { 'C:/Temp/base-infra' }
 
     # Ensure the local directory exists; create if it does not
     Write-CustomLog "Ensuring local path '$InfraPath' exists..."
     if (-not (Test-Path $InfraPath)) {
         Write-CustomLog 'Path not found. Creating directory...'
-        if (-not (Test-Path $InfraPath)) { New-Item -ItemType Directory -Path $InfraPath -Force | Out-Null }
+        New-Item -ItemType Directory -Path $InfraPath -Force | Out-Null
 
         # Clone or update repo
         if (-not (Test-Path (Join-Path $InfraPath '.git'))) {
@@ -28,7 +36,7 @@ Invoke-LabStep -Config $Config -Body {
             }
             if ($LASTEXITCODE -ne 0 -or -not (Test-Path (Join-Path $InfraPath '.git'))) {
                 Write-Error "Failed to clone repository from $($config.InfraRepoUrl)"
-                throw
+                throw "Failed to clone repository"
             }
             Write-CustomLog 'Clone completed successfully.'
         } else {
@@ -47,7 +55,9 @@ Invoke-LabStep -Config $Config -Body {
                 Pop-Location
             }
         }
-        Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
     }
 
     Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
+}
+
+Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"

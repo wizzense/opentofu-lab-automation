@@ -22,18 +22,19 @@ param(
     [switch]$Quiet,
     [switch]$WhatIf,
     [switch]$NonInteractive,
-    [ValidateSet('silent','normal','detailed')]
+    [ValidateSet('silent', 'normal', 'detailed')]
     [string]$Verbosity = 'normal'
 )
 
 # Auto-detect non-interactive mode if not explicitly set
-if (-not $NonInteractive) {    # Check if PowerShell was started with -NonInteractive
+if (-not $NonInteractive) {
+    # Check if PowerShell was started with -NonInteractive
     $commandLine = [Environment]::GetCommandLineArgs() -join ' '
     if ($commandLine -match '-NonInteractive' -or 
         $Host.Name -eq 'Default Host' -or
         ([Environment]::UserInteractive -eq $false)) {
         $NonInteractive = $true
-        Write-Verbose "Auto-detected non-interactive mode"
+        Write-Verbose 'Auto-detected non-interactive mode'
     }
 }
 
@@ -80,11 +81,11 @@ function Get-SafeLabConfig {
             $dirs = @{}            if ($cfg.PSObject.Properties['Directories']) {
                 $cfg.Directories.PSObject.Properties | ForEach-Object { $dirs[$_.Name] = $_.Value }
             }
-            $dirs['RepoRoot']       = $repoRoot.Path
-            $dirs['RunnerScripts']  = Join-PathRobust $repoRoot.Path @('core-runner', 'core_app', 'scripts')
+            $dirs['RepoRoot'] = $repoRoot.Path
+            $dirs['RunnerScripts'] = Join-PathRobust $repoRoot.Path @('core-runner', 'core_app', 'scripts')
             $dirs['UtilityScripts'] = Join-PathRobust $repoRoot.Path @('core-runner', 'modules', 'LabRunner')
-            $dirs['ConfigFiles']    = Join-PathRobust $repoRoot.Path @('core-runner', 'core_app')
-            $dirs['InfraRepo']      = if ($cfg.InfraRepoPath) { $cfg.InfraRepoPath } else { 'C:\Temp\base-infra' }
+            $dirs['ConfigFiles'] = Join-PathRobust $repoRoot.Path @('core-runner', 'core_app')
+            $dirs['InfraRepo'] = if ($cfg.InfraRepoPath) { $cfg.InfraRepoPath } else { 'C:\Temp\base-infra' }
             Add-Member -InputObject $cfg -MemberType NoteProperty -Name Directories -Value (New-Object PSCustomObject -Property $dirs) -Force
             return $cfg
         } else {
@@ -96,7 +97,7 @@ function Get-SafeLabConfig {
 if ($Quiet.IsPresent) { $Verbosity = 'silent' }
 
 $script:VerbosityLevels = @{ silent = 0; normal = 1; detailed = 2 }
-$script:ConsoleLevel    = $script:VerbosityLevels$Verbosity
+$script:ConsoleLevel = $script:VerbosityLevels$Verbosity
 
 $targetBranch = 'main'
 $baseUrl = 'https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/refs/heads/'
@@ -107,12 +108,12 @@ $defaultConfig = "${baseUrl}${targetBranch}/core-runner/core_app/default-config.
 
 
 function Write-Continue {
-    param(string$Message = "Press any key to continue...")
+    param(string$Message = 'Press any key to continue...')
     
     # Skip interactive prompts in WhatIf, NonInteractive modes, or when PowerShell is in NonInteractive mode
     if ($WhatIf -or $NonInteractive -or $Quiet -or 
         (Environment::UserInteractive -eq $false) -or
-        ($Host.Name -eq "ConsoleHost" -and $Host.UI.RawUI.KeyAvailable -eq $false)) {
+        ($Host.Name -eq 'ConsoleHost' -and $Host.UI.RawUI.KeyAvailable -eq $false)) {
         Write-CustomLog "Skipping interactive prompt: $Message" 'INFO'
         return
     }
@@ -137,14 +138,14 @@ $ErrorActionPreference = 'Stop'  # So any error throws an exception
 $ProgressPreference = 'SilentlyContinue'
 
 # Resolve script root even when $PSScriptRoot is not populated (e.g. -Command)
-$scriptRoot = if ($PSScriptRoot) { $PSScriptRoot    } else { Split-Path -Parent $MyInvocation.MyCommand.Path    }
+$scriptRoot = if ($PSScriptRoot) { $PSScriptRoot } else { Split-Path -Parent $MyInvocation.MyCommand.Path }
 $isWindowsOS = System.Environment::OSVersion.Platform -eq 'Win32NT'
 
 # Ensure the logger utility is available even when this script is executed
 # standalone. If the logger script is missing, download it from the repository.
-$loggerDir  = Join-Path (Join-Path $scriptRoot 'lab_utils') 'LabRunner'
+$loggerDir = Join-Path (Join-Path $scriptRoot 'lab_utils') 'LabRunner'
 $loggerPath = Join-Path $loggerDir 'Logger.ps1'
-if (-not (Test-Path $loggerPath)) { New-Item -ItemType Directory -Path $loggerPath -Force | Out-Null }${targetBranch}/pwsh/modules/LabRunner/Logger.ps1"
+if (-not (Test-Path $loggerPath)) { New-Item -ItemType Directory -Path $loggerPath -Force | Out-Null }${targetBranch} / pwsh/modules/LabRunner/Logger.ps1"
     Invoke-WebRequest -Uri $loggerUrl -OutFile $loggerPath
 }
 try {
@@ -755,23 +756,3 @@ if ($exitCode -ne 0) {
 
 Write-CustomLog "`n=== Kicker script finished successfully! ==="
 exit 0
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

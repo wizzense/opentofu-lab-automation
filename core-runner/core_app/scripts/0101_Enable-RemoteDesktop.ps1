@@ -1,6 +1,4 @@
-Param(object$Config)
-
-
+#Requires -Version 7
 
 
 
@@ -26,24 +24,4 @@ if ($Config.AllowRemoteDesktop -eq $true) {
     }
 }
 else {
-    Write-CustomLog "Remote Desktop is NOT enabled by config."
-}
-    Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
-}
-Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

@@ -13,62 +13,48 @@
 .EXAMPLE
  .\ScriptTemplate.ps1 -Config $labConfig
 .NOTES
- Always place Param() 
-
-
-
-
-
-
-block BEFORE Import-Module statements
+ Always place Param() block BEFORE Import-Module statements
  This template prevents the parameter ordering syntax errors
 #>
 
 # CORRECT ORDER: Param block comes FIRST
 Param(
- Parameter(Mandatory = $true)
-
-
-
-
-
-
-
- object$Config,
+    Parameter(Mandatory = $true)
+    object$Config,
  
- Parameter(Mandatory = $false)
- string$ExampleParam = "DefaultValue"
+    Parameter(Mandatory = $false)
+    string$ExampleParam = 'DefaultValue'
 )
 
 # Import-Module statements go AFTER Param block
-Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\pwsh/modules/LabRunner/" -Force# Set error handling
-$ErrorActionPreference = "Stop"
+Import-Module '/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\pwsh/modules/LabRunner/' -Force# Set error handling
+$ErrorActionPreference = 'Stop'
 
 try {
- # Initialize logging
- Write-LabLog "Starting script execution" -Level Info
+    # Initialize logging
+    Write-LabLog 'Starting script execution' -Level Info
  
- # Validate configuration
- if (-not $Config) {
- throw "Configuration object is required"
- }
+    # Validate configuration
+    if (-not $Config) {
+        throw 'Configuration object is required'
+    }
  
- # Main script logic goes here
- Write-LabLog "Template script executing with config: $($Config.GetType().Name)" -Level Info
+    # Main script logic goes here
+    Write-LabLog "Template script executing with config: $($Config.GetType().Name)" -Level Info
  
- # Example of accessing lab utilities
- $labState = Get-LabState
- Write-LabLog "Current lab state: $($labState.Status)" -Level Info
+    # Example of accessing lab utilities
+    $labState = Get-LabState
+    Write-LabLog "Current lab state: $($labState.Status)" -Level Info
  
- # Your script implementation here
- # ...
+    # Your script implementation here
+    # ...
  
- Write-LabLog "Script completed successfully" -Level Success
+    Write-LabLog 'Script completed successfully' -Level Success
  
 } catch {
- Write-LabLog "Script failed: $($_.Exception.Message)" -Level Error
- Write-LabLog "Stack trace: $($_.ScriptStackTrace)" -Level Debug
- throw
+    Write-LabLog "Script failed: $($_.Exception.Message)" -Level Error
+    Write-LabLog "Stack trace: $($_.ScriptStackTrace)" -Level Debug
+    throw
 }
 
 # Best practices included in this template:
@@ -78,19 +64,5 @@ try {
 # PASS Proper logging using lab utilities
 # PASS Configuration validation
 # PASS Consistent formatting and style
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 

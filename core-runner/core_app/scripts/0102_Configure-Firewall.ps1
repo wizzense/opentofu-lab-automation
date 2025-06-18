@@ -1,6 +1,4 @@
-Param(object$Config)
-
-
+#Requires -Version 7
 
 
 
@@ -21,24 +19,4 @@ if ($null -ne $Config.FirewallPorts) {
                             -LocalPort $port `
                             -Action Allow | Out-Null}
 } else {
-    Write-CustomLog "No firewall ports specified."
-}
-    Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
-}
-Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

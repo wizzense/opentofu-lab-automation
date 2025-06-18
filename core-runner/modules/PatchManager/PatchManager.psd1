@@ -77,7 +77,6 @@ FunctionsToExport = @(
     'Invoke-QuickRollback',
     'Invoke-PatchRollback',
     'Invoke-PatchValidation',
-    'Invoke-TieredPesterTests',
     'Invoke-ComprehensiveIssueTracking',
     'Invoke-ErrorHandler',
     'Invoke-MonitoredExecution',

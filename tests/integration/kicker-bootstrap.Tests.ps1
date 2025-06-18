@@ -25,10 +25,3 @@ Describe 'kicker-bootstrap Tests' {
     }
 }
 
-
-
-
-
-
-
-

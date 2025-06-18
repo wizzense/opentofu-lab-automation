@@ -2,13 +2,6 @@ param(
     string$Branch = 'main'
 )
 
-
-
-
-
-
-
-
 Set-ExecutionPolicy -ExecutionPolicy Bypass
 
 $bootstrapUrl = "https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/refs/heads/$Branch/pwsh/kicker-bootstrap.ps1"

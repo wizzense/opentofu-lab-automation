@@ -15,16 +15,19 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "Invoke-WebRequest -U
 ### Manual Installation
 
 1. **Download the kicker script:**
+
    ```powershell
    Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/refs/heads/main/kicker-git.ps1' -OutFile '.\kicker-git.ps1'
    ```
 
 2. **Run the script:**
+
    ```powershell
    .\kicker-git.ps1
    ```
 
 3. **Optional parameters:**
+
    ```powershell
    # Quiet mode
    .\kicker-git.ps1 -Quiet
@@ -48,6 +51,7 @@ The bootstrap script automatically sets up:
   - `$env:PWSH_MODULES_PATH` - Module search path
 
 - **Module Import Paths:**
+
   ```powershell
   Import-Module "$env:PROJECT_ROOT\core-runner\modules\Logging" -Force
   Import-Module "$env:PROJECT_ROOT\core-runner\modules\PatchManager" -Force
@@ -121,6 +125,7 @@ To get OpenTofu working, specify these scripts when `core-runner.ps1` is called:
 The runner script can execute the following automation scripts:
 
 ### Core Infrastructure Scripts
+
 - **0000_Cleanup-Files.ps1** - Removes lab-infra OpenTofu infrastructure repo
 - **0001_Reset-Git.ps1** - Resets lab-infra OpenTofu infrastructure repo (re-pulls files/resets if you modify any files)
 - **0006_Install-ValidationTools.ps1** - Downloads the cosign exe to C:\temp\cosign
@@ -134,6 +139,7 @@ The runner script can execute the following automation scripts:
 This script performs extensive Hyper-V host preparation:
 
 **Hyper-V Configuration:**
+
 - Enables Hyper-V if not enabled
 - Enables WinRM if not enabled
   - Sets WinRS MaxMemoryPerShellMB to 1024
@@ -142,12 +148,14 @@ This script performs extensive Hyper-V host preparation:
   - Sets Negotiate to True
 
 **Certificate Management:**
+
 - Creates a self-signed RootCA Certificate (prompts for password)
 - Creates self-signed host certificate (prompts for password)
 - Configures WinRM HTTPS Listener
 - Allows HTTPS 5986 through firewall
 
 **Go Workspace & Provider Setup:**
+
 - Creates a Go workspace in C:\GoWorkspace
 - Builds the hyperv-provider for OpenTofu from Taliesins git
 - Copies the provider to the lab-infra
@@ -155,6 +163,7 @@ This script performs extensive Hyper-V host preparation:
 > **Note**: Certificate validation for the hyperv provider is currently disabled by default. I am still working out how to get it to use the certificates properly (they may need to be converted to .pem first).
 
 ### Optional Administrative Scripts
+
 - **0100_Enable-WinRM.ps1** - Basic WinRM enablement
 - **0101_Enable-RemoteDesktop.ps1** - Remote Desktop configuration
 - **0102_Configure-Firewall.ps1** - Firewall rule management
@@ -241,16 +250,19 @@ dvd_drives {
 ## Advanced Features
 
 ### Cross-Platform Support
+
 - **Windows, Linux, macOS** deployment capability
 - **PowerShell 7.4+** cross-platform compatibility
 - **Advanced PowerShell Modules**: PatchManager, LabRunner, BackupManager
 
 ### Automation & Maintenance
+
 - **Real-time validation** and error correction
 - **CI/CD Integration**: GitHub Actions workflows with comprehensive testing
 - **Infrastructure as Code**: OpenTofu/Terraform configurations for lab environments
 
 ### Module Usage
+
 ```powershell
 # Import core modules
 Import-Module "./core-runner/modules/PatchManager"

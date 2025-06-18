@@ -25,10 +25,3 @@ Describe '0212_Install-AzureCLI Tests' {
     }
 }
 
-
-
-
-
-
-
-

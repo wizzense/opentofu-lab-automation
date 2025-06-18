@@ -145,19 +145,8 @@ Describe "PatchManager Core Functions" {
         It "Should accept RollbackType parameter" {
             { Invoke-QuickRollback -RollbackType "LastCommit" -DryRun } | Should -Not -Throw
         }
-        
-        It "Should accept CreateBackup parameter" {
+          It "Should accept CreateBackup parameter" {
             { Invoke-QuickRollback -RollbackType "LastCommit" -CreateBackup -DryRun } | Should -Not -Throw
-        }
-    }
-    
-    Context "Invoke-TieredPesterTests" {
-        It "Should accept TestCategory parameter" {
-            { Invoke-TieredPesterTests -TestCategory "Unit" -DryRun } | Should -Not -Throw
-        }
-        
-        It "Should accept GenerateCoverage parameter" {
-            { Invoke-TieredPesterTests -TestCategory "Unit" -GenerateCoverage -DryRun } | Should -Not -Throw
         }
     }
 }

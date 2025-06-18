@@ -11,14 +11,7 @@
   ./pwsh/setup-test-env.ps1 -UsePoetry
 #>
 
-param(switch$UsePoetry)
-
-
-
-
-
-
-
+param([switch]$UsePoetry)
 
 $ErrorActionPreference = 'Stop'
 
@@ -27,7 +20,7 @@ $repoRoot = Split-Path $PSScriptRoot -Parent
 $env:PROJECT_ROOT = $repoRoot
 $env:PWSH_MODULES_PATH = "$repoRoot/core-runner/modules"
 
-Write-Host "Setting up environment variables:" -ForegroundColor Cyan
+Write-Host 'Setting up environment variables:' -ForegroundColor Cyan
 Write-Host "  PROJECT_ROOT: $env:PROJECT_ROOT" -ForegroundColor Gray
 Write-Host "  PWSH_MODULES_PATH: $env:PWSH_MODULES_PATH" -ForegroundColor Gray
 
@@ -36,10 +29,10 @@ Write-Host "  PWSH_MODULES_PATH: $env:PWSH_MODULES_PATH" -ForegroundColor Gray
 
 function Install-PesterModule {
     # Remove any old Pester v3 modules
-    Get-Module -ListAvailable -Name Pester | Where-Object{ $_.Version -lt [version]'5.0.0' } | ForEach-Object{
+    Get-Module -ListAvailable -Name Pester | Where-Object { $_.Version -lt [version]'5.0.0' } | ForEach-Object {
         Remove-Item -Recurse -Force $_.ModuleBase -ErrorAction SilentlyContinue
     }
-    if (-not (Get-Module -ListAvailable -Name Pester | Where-Object{ $_.Version -ge [version]'5.7.1' })) {
+    if (-not (Get-Module -ListAvailable -Name Pester | Where-Object { $_.Version -ge [version]'5.7.1' })) {
         Install-Module -Name Pester -RequiredVersion 5.7.1 -Force -Scope CurrentUser
     }
 }
@@ -59,7 +52,7 @@ function Install-PoetryManager {
 }
 
 function Initialize-DevEnvironment {
-    Write-Host "Setting up development environment..." -ForegroundColor Cyan
+    Write-Host 'Setting up development environment...' -ForegroundColor Cyan
     
     # Import DevEnvironment module from correct location
     $devEnvModule = "$env:PWSH_MODULES_PATH/DevEnvironment"
@@ -69,18 +62,16 @@ function Initialize-DevEnvironment {
         # Install pre-commit hook
         try {
             Install-PreCommitHook -Install
-            Write-Host "✓ Pre-commit hook installed" -ForegroundColor Green
-        }
-        catch {
+            Write-Host '✓ Pre-commit hook installed' -ForegroundColor Green
+        } catch {
             Write-Warning "Could not install pre-commit hook: $($_.Exception.Message)"
         }
         
         # Test development setup
         try {
             Test-DevelopmentSetup
-            Write-Host "✓ Development environment validated" -ForegroundColor Green
-        }
-        catch {
+            Write-Host '✓ Development environment validated' -ForegroundColor Green
+        } catch {
             Write-Warning "Development environment validation failed: $($_.Exception.Message)"
         }
     } else {
@@ -90,9 +81,9 @@ function Initialize-DevEnvironment {
         $toolsHook = "$repoRoot/tools/pre-commit-hook.ps1"
         if (Test-Path $toolsHook) {
             & $toolsHook -Install
-            Write-Host "✓ Pre-commit hook installed (from tools)" -ForegroundColor Yellow
+            Write-Host '✓ Pre-commit hook installed (from tools)' -ForegroundColor Yellow
         } else {
-            Write-Warning "No pre-commit hook found in tools directory"
+            Write-Warning 'No pre-commit hook found in tools directory'
         }
     }
 }
@@ -107,23 +98,23 @@ function Test-PatchManagerEnvironment {
     Validates that the PatchManager environment is properly configured
     #>
     
-    Write-Host "Validating PatchManager environment..." -ForegroundColor Cyan
+    Write-Host 'Validating PatchManager environment...' -ForegroundColor Cyan
     
     $validationResults = @{
         EnvironmentVariables = $true
-        LoggingModule = $true
-        PatchManagerModule = $true
-        GitAvailable = $true
+        LoggingModule        = $true
+        PatchManagerModule   = $true
+        GitAvailable         = $true
     }
     
     # Check environment variables
     if (-not $env:PROJECT_ROOT) {
-        Write-Warning "PROJECT_ROOT environment variable not set"
+        Write-Warning 'PROJECT_ROOT environment variable not set'
         $validationResults.EnvironmentVariables = $false
     }
     
     if (-not $env:PWSH_MODULES_PATH) {
-        Write-Warning "PWSH_MODULES_PATH environment variable not set"
+        Write-Warning 'PWSH_MODULES_PATH environment variable not set'
         $validationResults.EnvironmentVariables = $false
     }
     
@@ -135,9 +126,8 @@ function Test-PatchManagerEnvironment {
     } else {
         try {
             Import-Module $loggingPath -Force -ErrorAction Stop
-            Write-Host "✓ Logging module imported successfully" -ForegroundColor Green
-        }
-        catch {
+            Write-Host '✓ Logging module imported successfully' -ForegroundColor Green
+        } catch {
             Write-Warning "Failed to import Logging module: $($_.Exception.Message)"
             $validationResults.LoggingModule = $false
         }
@@ -154,9 +144,8 @@ function Test-PatchManagerEnvironment {
         if (Test-Path $psmFile) {
             try {
                 $null = [System.Management.Automation.PSParser]::Tokenize((Get-Content $psmFile -Raw), [ref]$null)
-                Write-Host "✓ PatchManager module syntax valid" -ForegroundColor Green
-            }
-            catch {
+                Write-Host '✓ PatchManager module syntax valid' -ForegroundColor Green
+            } catch {
                 Write-Warning "PatchManager module has syntax errors: $($_.Exception.Message)"
                 $validationResults.PatchManagerModule = $false
             }
@@ -165,19 +154,19 @@ function Test-PatchManagerEnvironment {
     
     # Check Git availability
     if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
-        Write-Warning "Git not found in PATH"
+        Write-Warning 'Git not found in PATH'
         $validationResults.GitAvailable = $false
     } else {
-        Write-Host "✓ Git is available" -ForegroundColor Green
+        Write-Host '✓ Git is available' -ForegroundColor Green
     }
     
     # Summary
     $allValid = $validationResults.Values | ForEach-Object { $_ } | Where-Object { -not $_ } | Measure-Object | Select-Object -ExpandProperty Count
     if ($allValid -eq 0) {
-        Write-Host "✓ PatchManager environment validation passed" -ForegroundColor Green
+        Write-Host '✓ PatchManager environment validation passed' -ForegroundColor Green
         return $true
     } else {
-        Write-Warning "PatchManager environment validation failed. Check warnings above."
+        Write-Warning 'PatchManager environment validation failed. Check warnings above.'
         return $false
     }
 }
