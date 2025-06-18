@@ -3,7 +3,7 @@
 Automatically generates Pester tests for new PowerShell scripts
 
 .DESCRIPTION
-This script monitors the pwsh/ directory for new scripts and automatically:
+This script monitors the core-runner/core_app/scripts directory for new scripts and automatically:
 - Creates corresponding .Tests.ps1 files
 - Generates boilerplate test code based on script analysis
 - Follows naming conventions and test patterns
@@ -17,7 +17,7 @@ This script monitors the pwsh/ directory for new scripts and automatically:
 #>
 
 param(
-    string$WatchDirectory = "pwsh",
+    string$WatchDirectory = "core-runner/core_app/scripts",
     string$ScriptPath,
     string$OutputDirectory = "tests",
     switch$Force,
@@ -388,7 +388,7 @@ function Format-ScriptName {
     # Ensure we have both verb and noun
     if (-not $noun) { $noun = 'Task' }
     
-            $runnerScriptsPath = Join-Path $PSScriptRoot ".." ".." "pwsh" "runner_scripts"
+            $runnerScriptsPath = Join-Path $PSScriptRoot ".." ".." "core-runner" "core_app" "scripts"
         if (Test-Path $runnerScriptsPath) {
             $existingScripts = Get-ChildItem $runnerScriptsPath -Filter "*.ps1" | Where-Object{ $_.Name -match '^0-9{4}_' } | ForEach-Object{ int($_.Name.Substring(0,4)) } | Sort-Object$nextNumber = if ($existingScripts.Count -gt 0) { $existingScripts-1 + 1    } else { 100    }
         } else {
