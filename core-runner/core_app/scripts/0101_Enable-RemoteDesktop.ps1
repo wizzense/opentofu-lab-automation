@@ -1,10 +1,15 @@
-#Requires -Version 7
+#Requires -Version 7.0
+[CmdletBinding(SupportsShouldProcess)]
+param(
+    [Parameter(Mandatory, ValueFromPipeline)]
+    [object]$Config
+)
 
+Import-Module "$env:PWSH_MODULES_PATH/LabRunner/" -Force
+Import-Module "$env:PROJECT_ROOT/core-runner/modules/Logging/" -Force
 
+Write-CustomLog "Starting $($MyInvocation.MyCommand.Name)"
 
-
-
-Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\pwsh/modules/LabRunner/" -ForceWrite-CustomLog "Starting $MyInvocation.MyCommand"
 Invoke-LabStep -Config $Config -Body {
     Write-CustomLog "Running $($MyInvocation.MyCommand.Name)"
 
