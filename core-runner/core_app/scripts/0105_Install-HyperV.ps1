@@ -41,12 +41,16 @@ Invoke-LabStep -Config $Config -Body {
                 Install-WindowsFeature -Name 'Hyper-V' -IncludeManagementTools:$enableMgtTools -ErrorAction Continue
             }
         } catch {
-            Write-CustomLog 'Only works on Windows Server.'
+        
+            Write-CustomLog "Only works on Windows Server. Error details: $($_.Exception.Message)"
+
         }
 
         Write-CustomLog 'Hyper-V installation complete. A restart is typically required to finalize installation.'
     } else {
-        Write-CustomLog 'InstallHyperV flag is disabled. Skipping installation.'
+
+        Write-CustomLog 'InstallHyperV flag is disabled. Skipping Hyper-V installation.'
+
     }
 }
 
