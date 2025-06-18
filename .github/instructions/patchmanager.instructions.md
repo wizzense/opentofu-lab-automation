@@ -63,6 +63,34 @@ Import-Module "$env:PWSH_MODULES_PATH/PatchManager" -Force
 Get-Module PatchManager | Select-Object Name, Version, ModuleBase
 ```
 
+### Quick Setup and Common Operations
+
+#### Essential Environment Setup
+```powershell
+# Always use environment variables instead of hardcoded paths
+$env:PROJECT_ROOT = if ($env:PROJECT_ROOT) { $env:PROJECT_ROOT } else { (Get-Location).Path }
+$env:PWSH_MODULES_PATH = "$env:PROJECT_ROOT/core-runner/modules"
+
+# Import modules with proper error handling
+Import-Module "$env:PROJECT_ROOT/core-runner/modules/Logging" -Force -ErrorAction SilentlyContinue
+Import-Module "$env:PROJECT_ROOT/core-runner/modules/PatchManager" -Force
+```
+
+#### Most Common Git Operations
+```powershell
+# 1. Quick branch and commit workflow
+git checkout -b "feat/$(Get-Date -Format 'yyyyMMdd')-description"
+git add .
+git commit -m "feat(scope): description of changes"
+git push origin feat/$(Get-Date -Format 'yyyyMMdd')-description
+
+# 2. Using PatchManager functions
+Invoke-GitControlledPatch -PatchDescription "feat(module): implement functionality" -CreatePullRequest
+
+# 3. Enhanced operations with conflict resolution
+Invoke-EnhancedGitOperations -Operation "MergeMain" -ValidateAfter
+```
+
 ### Common PatchManager Operations
 
 #### Quick Git Workflow (Recommended)

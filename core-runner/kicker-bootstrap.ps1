@@ -3,7 +3,9 @@
   Kicker script for a fresh Windows Server Core setup with robust error handling.
 
 $targetBranch = 'main'
-$baseUrl = 'https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/refs/heads/'1) Loads configs/config_files/default-config.json by default (override with -ConfigFile).
+$baseUrl = 'https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/refs/heads/'
+
+  1) Loads core-runner/core_app/default-config.json by default (override with -ConfigFile).
   2) Checks if command-line Git is installed and in PATH.
      - Installs a minimal version if missing.
      - Updates PATH if installed but not found in PATH.
@@ -12,7 +14,7 @@ $baseUrl = 'https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/r
      - Updates PATH if installed but not found in PATH.
      - Prompts for authentication if not already authenticated.
   4) Clones a repository from config.json -> RepoUrl to config.json -> LocalPath (or a default path).
-  5) Invokes runner.ps1 from that repo.
+  5) Invokes core-runner.ps1 from that repo.
 #>
 
 param(
@@ -75,16 +77,15 @@ function Get-SafeLabConfig {
             $content = Get-Content -Raw -LiteralPath $Path
             $cfg = $content | ConvertFrom-Json$labDir = Split-Path -Parent $labConfigScript
             $repoRoot = Resolve-Path (Join-PathRobust $labDir '..')
-            $dirs = @{}
-            if ($cfg.PSObject.Properties'Directories') {
-                $cfg.Directories.PSObject.Properties | ForEach-Object{ $dirs$_.Name = $_.Value }
+            $dirs = @{}            if ($cfg.PSObject.Properties['Directories']) {
+                $cfg.Directories.PSObject.Properties | ForEach-Object { $dirs[$_.Name] = $_.Value }
             }
-            $dirs'RepoRoot'       = $repoRoot.Path
-            $dirs'RunnerScripts'  = Join-PathRobust $repoRoot.Path @('runner_scripts')
-            $dirs'UtilityScripts' = Join-PathRobust $repoRoot.Path @('lab_utils','LabRunner')
-            $dirs'ConfigFiles'    = Join-PathRobust $repoRoot.Path @('..','configs','config_files')
-            $dirs'InfraRepo'      = if ($cfg.InfraRepoPath) { $cfg.InfraRepoPath } else { 'C:\\Temp\\base-infra' }
-            Add-Member -InputObject $cfg -MemberType NoteProperty -Name Directories -Value (pscustomobject$dirs) -Force
+            $dirs['RepoRoot']       = $repoRoot.Path
+            $dirs['RunnerScripts']  = Join-PathRobust $repoRoot.Path @('core-runner', 'core_app', 'scripts')
+            $dirs['UtilityScripts'] = Join-PathRobust $repoRoot.Path @('core-runner', 'modules', 'LabRunner')
+            $dirs['ConfigFiles']    = Join-PathRobust $repoRoot.Path @('core-runner', 'core_app')
+            $dirs['InfraRepo']      = if ($cfg.InfraRepoPath) { $cfg.InfraRepoPath } else { 'C:\Temp\base-infra' }
+            Add-Member -InputObject $cfg -MemberType NoteProperty -Name Directories -Value (New-Object PSCustomObject -Property $dirs) -Force
             return $cfg
         } else {
             throw
@@ -99,7 +100,7 @@ $script:ConsoleLevel    = $script:VerbosityLevels$Verbosity
 
 $targetBranch = 'main'
 $baseUrl = 'https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/refs/heads/'
-$defaultConfig = "${baseUrl}${targetBranch}/configs/config_files/default-config.json"
+$defaultConfig = "${baseUrl}${targetBranch}/core-runner/core_app/default-config.json"
 
 
 # example: https://raw.githubusercontent.com/wizzense/tofu-base-lab/refs/heads/main/configs/bootstrap-config.json

@@ -1,37 +1,120 @@
 # OpenTofu Lab Automation
 
-Kicker script for a fresh Windows Server Core setup with robust error handling and cross-platform support.
+Cross-platform PowerShell automation framework for OpenTofu/Terraform infrastructure management with comprehensive testing and modular architecture.
 
 ## Quick Start - Bootstrap Installation
 
-For a fresh Windows Server Core setup, run this one-liner to get started:
+### One-Line Installation (Recommended)
+
+For a fresh setup, run this one-liner to get started:
 
 ```powershell
-powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/refs/heads/main/pwsh/kicker-bootstrap.ps1' -OutFile '.\kicker-bootstrap.ps1'; .\kicker-bootstrap.ps1"
+powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/refs/heads/main/kicker-git.ps1' -OutFile '.\kicker-git.ps1'; .\kicker-git.ps1"
+```
+
+### Manual Installation
+
+1. **Download the kicker script:**
+   ```powershell
+   Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/refs/heads/main/kicker-git.ps1' -OutFile '.\kicker-git.ps1'
+   ```
+
+2. **Run the script:**
+   ```powershell
+   .\kicker-git.ps1
+   ```
+
+3. **Optional parameters:**
+   ```powershell
+   # Quiet mode
+   .\kicker-git.ps1 -Quiet
+   
+   # Custom configuration
+   .\kicker-git.ps1 -ConfigFile "custom-config.json"
+   
+   # Non-interactive mode (for automation)
+   .\kicker-git.ps1 -NonInteractive
+   
+   # Detailed output
+   .\kicker-git.ps1 -Verbosity detailed
+   ```
+
+## Environment Setup
+
+The bootstrap script automatically sets up:
+
+- **Environment Variables:**
+  - `$env:PROJECT_ROOT` - Project root directory
+  - `$env:PWSH_MODULES_PATH` - Module search path
+
+- **Module Import Paths:**
+  ```powershell
+  Import-Module "$env:PROJECT_ROOT\core-runner\modules\Logging" -Force
+  Import-Module "$env:PROJECT_ROOT\core-runner\modules\PatchManager" -Force
+  ```
+
+## Project Structure
+
+```
+opentofu-lab-automation/
+├── core-runner/                    # Main automation framework
+│   ├── kicker-bootstrap.ps1       # Legacy bootstrap (being phased out)
+│   ├── kicker-bootstrap-clean.ps1 # Clean bootstrap implementation
+│   ├── setup-test-env.ps1         # Environment setup script
+│   ├── core_app/                  # Core application
+│   │   ├── core-runner.ps1        # Main runner script
+│   │   ├── default-config.json    # Default configuration
+│   │   └── scripts/               # Automation scripts (0000_*.ps1)
+│   └── modules/                   # PowerShell modules
+│       ├── Logging/               # Centralized logging
+│       ├── PatchManager/          # Git operations and patching
+│       ├── LabRunner/             # Lab management
+│       ├── BackupManager/         # Backup operations
+│       ├── DevEnvironment/        # Development setup
+│       ├── ParallelExecution/     # Parallel processing
+│       ├── ScriptManager/         # Script management
+│       ├── TestingFramework/      # Testing utilities
+│       └── UnifiedMaintenance/    # Maintenance operations
+├── configs/                       # Configuration files
+├── docs/                          # Documentation
+├── tests/                         # Comprehensive test suite
+├── tools/                         # Utility tools
+└── opentofu/                      # OpenTofu infrastructure
 ```
 
 ## What the Bootstrap Does
 
-1) **Configuration**: Downloads and loads `default-config.json` from the same folder by default (override with `-ConfigFile`).
-2) **Git Setup**: Checks if command-line Git is installed and in PATH.
-   - Prompts to install a minimal version if missing.
+1. **Git Setup**: Checks if command-line Git is installed and in PATH.
+   - Installs a minimal version if missing.
    - Updates PATH if installed but not found in PATH.
-3) **GitHub CLI Setup**: Checks if GitHub CLI is installed and in PATH.
-   - Prompts to install GitHub CLI if missing.
-   - Updates PATH if installed but not found in PATH.
-   - Prompts for authentication if not already authenticated.
-4) **Repository Clone**: Clones this repository from `config.json -> RepoUrl` to `config.json -> LocalPath` (or a default path).
-5) **Runner Execution**: Invokes `runner.ps1` from this repo. Runner can be run with optional parameters to automatically run, but it will prompt you to manually select which scripts to run by default.
-   - Use `-ConfigFile <path>` to specify an alternative configuration file. If omitted, `runner.ps1` loads `configs/default-config.json`.
 
-The bootstrap will print the current config and prompt you to customize it interactively.
+2. **Configuration**: Downloads and loads default configuration file.
+   - Uses `core-runner/core_app/default-config.json` by default
+   - Override with `-ConfigFile` parameter
 
-**Example Infrastructure Repo**: https://github.com/wizzense/tofu-base-lab.git  
-**Example Config File**: https://raw.githubusercontent.com/wizzense/tofu-base-lab/refs/heads/main/configs/bootstrap-config.json
+3. **Repository Clone**: Clones this repository to local workspace.
+   - Default location: `%TEMP%/opentofu-lab-automation`
+   - Configurable via configuration file
 
-## OpenTofu Setup - Essential Scripts
+4. **Core Runner Execution**: Invokes `core-runner.ps1` from the repository.
+   - Loads modules and sets up environment
+   - Can be run with parameters for automation
 
-To get OpenTofu setup, you only need to specify these when `runner.ps1` is called: **0006,0007,0008,0009,0010**
+## Essential OpenTofu Setup Scripts
+
+To get OpenTofu working, specify these scripts when `core-runner.ps1` is called:
+
+**Required Scripts: 0006, 0007, 0008, 0009, 0010**
+
+- **0006_Install-ValidationTools.ps1** - Downloads cosign for verification
+- **0007_Install-Go.ps1** - Downloads and installs Go
+- **0008_Install-OpenTofu.ps1** - Downloads and installs OpenTofu (verified with cosign)
+- **0009_Initialize-OpenTofu.ps1** - Sets up OpenTofu and infrastructure repo
+- **0010_Prepare-HyperVProvider.ps1** - Configures Hyper-V host
+
+**Example Infrastructure Repository**: [tofu-base-lab](https://github.com/wizzense/tofu-base-lab.git)
+
+**Example Config File**: [bootstrap-config.json](https://raw.githubusercontent.com/wizzense/tofu-base-lab/refs/heads/main/configs/bootstrap-config.json)
 
 ## Available Runner Scripts
 
@@ -170,8 +253,8 @@ dvd_drives {
 ### Module Usage
 ```powershell
 # Import core modules
-Import-Module "./pwsh/modules/PatchManager"
-Import-Module "./pwsh/modules/LabRunner"
+Import-Module "./core-runner/modules/PatchManager"
+Import-Module "./core-runner/modules/LabRunner"
 
 # Run lab automation
 Invoke-ParallelLabRunner -ConfigPath "./configs/lab_config.yaml"
@@ -182,8 +265,8 @@ Invoke-ParallelLabRunner -ConfigPath "./configs/lab_config.yaml"
 
 ## Project Structure
 
-- **/pwsh/modules/**: PowerShell modules (PatchManager, LabRunner, BackupManager)
-- **/pwsh/runner_scripts/**: Core automation scripts (0000-0114 series)
+- **/core-runner/modules/**: PowerShell modules (PatchManager, LabRunner, BackupManager)
+- **/core-runner/core_app/scripts/**: Core automation scripts (0000-0114 series)
 - **/scripts/**: Additional automation and maintenance scripts
 - **/opentofu/**: Infrastructure as Code configurations
 - **/tests/**: Pester test files for validation

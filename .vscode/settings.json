@@ -46,10 +46,13 @@
     {
       "pattern": "**/*",
       "instructionFile": ".github/instructions/powershell-testing.instructions.md"
+    },    {
+      "pattern": "**/PatchManager/**",
+      "instructionFile": ".github/instructions/patchmanager.instructions.md"
     },
     {
-      "pattern": "**/*",
-      "instructionFile": ".github/instructions/patchmanager.instructions.md"
+      "pattern": "**/PatchManager/**", 
+      "instructionFile": ".github/instructions/patchmanager-comprehensive.instructions.md"
     },
     {
       "pattern": "**/*",
@@ -128,9 +131,8 @@
     },
     {
       "text": "Use forward slashes for all paths and avoid Windows-specific cmdlets"
-    },
-    {
-      "text": "Import modules with absolute paths: Import-Module '/workspaces/opentofu-lab-automation/pwsh/modules/ModuleName/' -Force"
+    },    {
+      "text": "Use environment variables for paths: Import-Module \"$env:PROJECT_ROOT/core-runner/modules/ModuleName\" -Force"
     },
     {
       "text": "Use Write-CustomLog for all logging output with appropriate levels (INFO, WARN, ERROR, SUCCESS)"
@@ -143,9 +145,17 @@
     },
     {
       "text": "Structure functions with [CmdletBinding(SupportsShouldProcess)] and proper parameter validation"
+    },    {
+      "text": "Use environment variables: $env:PROJECT_ROOT, $env:PWSH_MODULES_PATH for paths"
     },
     {
-      "text": "Use environment variables: $env:PROJECT_ROOT, $env:PWSH_MODULES_PATH for paths"
+      "text": "For PatchManager operations: Always use environment variables instead of hardcoded paths"
+    },
+    {
+      "text": "PatchManager setup: Import-Module \"$env:PROJECT_ROOT/core-runner/modules/Logging\" -Force; Import-Module \"$env:PROJECT_ROOT/core-runner/modules/PatchManager\" -Force"
+    },
+    {
+      "text": "For Git operations: Use git commands directly or Invoke-GitControlledPatch for complex workflows"
     }
   ],
   "github.copilot.chat.testGeneration.instructions": [
