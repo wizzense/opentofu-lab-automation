@@ -4,7 +4,8 @@
 
 
 
-Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\pwsh/modules/LabRunner/" -ForceWrite-CustomLog "Starting $MyInvocation.MyCommand"
+Import-Module "$env:PROJECT_ROOT/core-runner/modules/LabRunner/" -Force
+Write-CustomLog "Starting $MyInvocation.MyCommand"
 Invoke-LabStep -Config $Config -Body {
     Write-CustomLog "Running $($MyInvocation.MyCommand.Name)"
 
@@ -24,4 +25,20 @@ if ($Config.AllowRemoteDesktop -eq $true) {
     }
 }
 else {
+    if ($currentStatus.fDenyTSConnections -eq 1) {
+        Write-CustomLog "Remote Desktop is already disabled."
+    }
+    else {
+        Write-CustomLog "Disabling Remote Desktop via Set-ItemProperty"
+        Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' `
+                         -Name "fDenyTSConnections" `
+                         -Value 1
+        Write-CustomLog "Remote Desktop disabled"
+    }
+}
+
+    Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
+}
+
+Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
 
