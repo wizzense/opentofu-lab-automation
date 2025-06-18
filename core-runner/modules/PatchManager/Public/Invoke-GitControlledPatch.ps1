@@ -538,15 +538,14 @@ function Build-ComprehensivePRBody {
         Platform = if ($env:PLATFORM) { $env:PLATFORM } else { [System.Environment]::OSVersion.Platform }
         User = if ($env:USERNAME) { $env:USERNAME } elseif ($env:USER) { $env:USER } else { "Unknown" }
         WorkingDirectory = (Get-Location).Path
-        GitCommit = if ($CommitInfo.Commit) { $CommitInfo.Commit } else { "Unknown" }
-    }
+        GitCommit = if ($CommitInfo.Commit) { $CommitInfo.Commit } else { "Unknown" }    }
     
     $prBody = @"
 ## Patch Overview
 
-**Description**: $Description  
-**Branch**: ``$BranchName``  
-**Created**: $timestamp  
+**Description**: $Description
+**Branch**: `$BranchName`
+**Created**: $timestamp
 **Applied via**: PatchManager (Invoke-GitControlledPatch)
 
 ## Change Summary

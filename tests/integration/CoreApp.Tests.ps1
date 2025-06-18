@@ -14,16 +14,36 @@
     - Integration with PatchManager workflow
 #>
 
-using module PatchManager
-
 BeforeAll {
-    # Import required modules and helpers
-    Import-Module "$env:PROJECT_ROOT/pwsh/modules/PatchManager/" -Force
-    . "$env:PROJECT_ROOT/tests/helpers/TestHelpers.ps1"
-    . "$env:PROJECT_ROOT/tests/helpers/Get-ScriptAst.ps1"
+    # Set up environment variables if not already set
+    if (-not $env:PROJECT_ROOT) {
+        $env:PROJECT_ROOT = Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
+    }
+    if (-not $env:PWSH_MODULES_PATH) {
+        $env:PWSH_MODULES_PATH = Join-Path $env:PROJECT_ROOT "core-runner/modules"
+    }
+    
+    # Import required modules and helpers  
+    try {
+        Import-Module "$env:PWSH_MODULES_PATH/Logging/" -Force -ErrorAction SilentlyContinue
+        Import-Module "$env:PWSH_MODULES_PATH/PatchManager/" -Force -ErrorAction SilentlyContinue
+    } catch {
+        Write-Warning "Some modules could not be loaded: $_"
+    }
+    
+    # Import test helpers if they exist
+    $testHelpersPath = "$env:PROJECT_ROOT/tests/helpers/TestHelpers.ps1"
+    if (Test-Path $testHelpersPath) {
+        . $testHelpersPath
+    }
+    
+    $scriptAstPath = "$env:PROJECT_ROOT/tests/helpers/Get-ScriptAst.ps1"
+    if (Test-Path $scriptAstPath) {
+        . $scriptAstPath
+    }
     
     # Set up test environment
-    $script:CoreAppPath = "$env:PROJECT_ROOT/pwsh/core_app"
+    $script:CoreAppPath = "$env:PROJECT_ROOT/core-runner/core_app"
     $script:DefaultConfigPath = "$script:CoreAppPath/default-config.json"
     $script:TestResults = @{}
     

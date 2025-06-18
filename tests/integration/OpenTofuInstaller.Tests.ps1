@@ -25,10 +25,3 @@ Describe 'OpenTofuInstaller Tests' {
     }
 }
 
-
-
-
-
-
-
-

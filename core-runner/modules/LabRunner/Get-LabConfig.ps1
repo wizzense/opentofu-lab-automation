@@ -3,14 +3,7 @@ function Get-LabConfig {
     param(
 
         string$Path = (Join-Path $PSScriptRoot '..\default-config.json')
-    
-
-
-
-
-
-
-)
+    )
 
     if (-not (Test-Path $Path)) {
         throw "Config file not found at $Path"

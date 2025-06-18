@@ -15,13 +15,6 @@ using the extensible testing framework templates.
 
 param(
     Parameter(Mandatory)
-
-
-
-
-
-
-
     string$ScriptName,
     
     Parameter(Mandatory)
@@ -41,35 +34,14 @@ param(
 function Get-ScriptAnalysis {
     param(string$ScriptPath)
     
-    
-
-
-
-
-
-
-if (-not (Test-Path $ScriptPath)) {
+    if (-not (Test-Path $ScriptPath)) {
         throw "Script not found: $ScriptPath"
     }
     
     $content = Get-Content $ScriptPath -Raw
     $ast = System.Management.Automation.Language.Parser::ParseFile($ScriptPath, ref$null, ref$null)
     
-    $analysis = @{
-        HasConfigParam = $content -match 'Param\s*\(\s*.*\$Config'
-        HasLabStep = $content -match 'Invoke-LabStep'
-        HasImportModule = $content -match 'Import-Module.*LabRunner'
-        ConfigProperties = @()
-        MockCandidates = @()
-        Platform = 'Any'
-    }
-    
-    # Extract configuration properties that look like boolean flags
-    $configMatches = regex::Matches($content, '\$Config\.(A-Za-zA-Za-z0-9_*)')
-    foreach ($match in $configMatches) {
-        $propertyName = $match.Groups1.Value
-        if ($propertyName -notin $analysis.ConfigProperties) {
-            $analysis.ConfigProperties += $propertyName
+                $analysis.ConfigProperties += $propertyName
         }
     }
     
@@ -97,14 +69,7 @@ if (-not (Test-Path $ScriptPath)) {
 function New-InstallerTestContent {
     param($ScriptName, $Analysis)
     
-    
-
-
-
-
-
-
-$enabledProperty = $Analysis.ConfigProperties | Where-Object{ $_ -match 'Install' } | Select-Object -First 1
+    $enabledProperty = $Analysis.ConfigProperties | Where-Object{ $_ -match 'Install' } | Select-Object -First 1
     if (-not $enabledProperty) {
         $enabledProperty = 'InstallEnabled'  # fallback
     }
@@ -118,28 +83,14 @@ $enabledProperty = $Analysis.ConfigProperties | Where-Object{ $_ -match 'Install
     
     return @"
 # filepath: /workspaces/opentofu-lab-automation/tests/$($ScriptName -replace '\.ps1$', '.Tests.ps1')
-<#
-.SYNOPSIS
-Tests for $ScriptName
-
-.DESCRIPTION
-Auto-generated test using the extensible testing framework.
-Customize as needed for specific requirements.
-#>
+<##>
 
 . (Join-Path `$PSScriptRoot 'TestDriveCleanup.ps1')
 . (Join-Path `$PSScriptRoot 'helpers' 'TestHelpers.ps1')
 . (Join-Path `$PSScriptRoot 'helpers' 'TestTemplates.ps1')
 
 # Generated installer test for $ScriptName
-New-InstallerScriptTest -ScriptName '$ScriptName' -EnabledProperty '$enabledProperty' -InstallerCommand '$installerCommand'$platformClause -AdditionalMocks @{
-    # Add any script-specific mocks here
-    # Example:
-    # 'Get-SomeSpecificCommand' = { PSCustomObject@{ Status = 'Ready' } }
-}
-
-# TODO: Review and customize the following:
-# 1. Verify the EnabledProperty '$enabledProperty' is correct
+New-# 1. Verify the EnabledProperty '$enabledProperty' is correct
 # 2. Verify the InstallerCommand '$installerCommand' is correct  
 # 3. Add any additional configuration properties needed
 # 4. Add script-specific mock implementations
@@ -150,14 +101,7 @@ New-InstallerScriptTest -ScriptName '$ScriptName' -EnabledProperty '$enabledProp
 function New-FeatureTestContent {
     param($ScriptName, $Analysis)
     
-    
-
-
-
-
-
-
-$enabledProperty = $Analysis.ConfigProperties | Where-Object{ $_ -match 'EnableAllow' } | Select-Object -First 1
+    $enabledProperty = $Analysis.ConfigProperties | Where-Object{ $_ -match 'EnableAllow' } | Select-Object -First 1
     if (-not $enabledProperty) {
         $enabledProperty = 'FeatureEnabled'  # fallback
     }
@@ -178,14 +122,7 @@ Tests for $ScriptName
 
 .DESCRIPTION
 Auto-generated test using the extensible testing framework.
-Customize as needed for specific requirements.
-#>
-
-. (Join-Path `$PSScriptRoot 'TestDriveCleanup.ps1')
-. (Join-Path `$PSScriptRoot 'helpers' 'TestHelpers.ps1')
-. (Join-Path `$PSScriptRoot 'helpers' 'TestTemplates.ps1')
-
-# Generated feature test for $ScriptName
+Cust# Generated feature test for $ScriptName
 New-FeatureScriptTest -ScriptName '$ScriptName' -EnabledProperty '$enabledProperty' -FeatureCommands @($commandsArray)$platformClause -AdditionalMocks @{
     # Add any script-specific mocks here
     # Example:
@@ -199,20 +136,6 @@ New-FeatureScriptTest -ScriptName '$ScriptName' -EnabledProperty '$enabledProper
 # 4. Add script-specific mock implementations
 "@
 }
-
-function New-ServiceTestContent {
-    param($ScriptName, $Analysis)
-    
-    
-
-
-
-
-
-
-$serviceName = 'TestService'  # This would need manual specification
-    
-    return @"
 # filepath: /workspaces/opentofu-lab-automation/tests/$($ScriptName -replace '\.ps1$', '.Tests.ps1')
 <#
 .SYNOPSIS
@@ -238,20 +161,6 @@ New-ServiceScriptTest -ScriptName '$ScriptName' -ServiceName '$serviceName' -Req
 # 3. Add script-specific mock implementations
 "@
 }
-
-function New-ConfigurationTestContent {
-    param($ScriptName, $Analysis)
-    
-    
-
-
-
-
-
-
-$enabledProperty = $Analysis.ConfigProperties | Where-Object{ $_ -match 'ConfigSetupSet' } | Select-Object -First 1
-    if (-not $enabledProperty) {
-        $enabledProperty = 'ConfigEnabled'  # fallback
     }
     
     $configCommands = $Analysis.MockCandidates | Where-Object{ $_ -match 'Set-New-Config' }
@@ -273,25 +182,11 @@ Auto-generated test using the extensible testing framework.
 Customize as needed for specific requirements.
 #>
 
-. (Join-Path `$PSScriptRoot 'TestDriveCleanup.ps1')
-. (Join-Path `$PSScriptRoot 'helpers' 'TestHelpers.ps1')
-. (Join-Path `$PSScriptRoot 'helpers' 'TestTemplates.ps1')
-
-# Generated configuration test for $ScriptName
-New-ConfigurationScriptTest -ScriptName '$ScriptName' -EnabledProperty '$enabledProperty' -ConfigurationCommands @($commandsArray)$platformClause -AdditionalMocks @{
-    # Add any script-specific mocks here
-}
+. (J}
 
 # TODO: Review and customize the following:
 # 1. Verify the EnabledProperty '$enabledProperty' is correct
-# 2. Verify the ConfigurationCommands are correct
-# 3. Add any additional configuration properties needed
-# 4. Add script-specific mock implementations
-"@
-}
-
-# Main execution
-try {
+# 2.try {
     $scriptPath = Get-RunnerScriptPath $ScriptName
     if (-not $scriptPath -or -not (Test-Path $scriptPath)) {
         throw "Script not found: $ScriptName"
@@ -319,14 +214,7 @@ try {
         $OutputPath = Join-Path $PSScriptRoot '..' ($ScriptName -replace '\.ps1$', '.Tests.ps1')
     }
     
-    if ($DryRun) {
-        Write-Host "`nGenerated test content:" -ForegroundColor Cyan
-        Write-Host $testContent
-        Write-Host "`nWould write to: $OutputPath" -ForegroundColor Yellow
-    } else {
-        if ((Test-Path $OutputPath) -and -not $Overwrite) {
-            throw "Test file already exists: $OutputPath. Use -Overwrite to replace it."
-        }
+            }
         
         Set-Content -Path $OutputPath -Value $testContent -Encoding UTF8
         Write-Host "Generated test file: $OutputPath" -ForegroundColor Green

@@ -16,13 +16,6 @@ function New-InstallerScriptTest {
     #>
     param(
         Parameter(Mandatory)
-
-
-
-
-
-
-
         string$ScriptName,
         
         Parameter(Mandatory)
@@ -62,46 +55,18 @@ function New-InstallerScriptTest {
         # or to a user-provided Get-Command in AdditionalMocks
         'Get-Command' = { 
             param($Name)
-            
-
-
-
-
-
-
-if ($Name -eq $SoftwareCommandName) { return $null } 
+            if ($Name -eq $SoftwareCommandName) { return $null } 
             # If AdditionalMocks has a Get-Command, use it for other names
             if ($AdditionalMocks.ContainsKey('Get-Command')) {
                 return (& $AdditionalMocks'Get-Command' $Name)
             }
             return $null # Default behavior for other commands
         }
-        'Invoke-LabDownload' = { if ($Action) { & $Action 'test-installer.exe' } }
-        $InstallerCommand = {} # Mock the specific installer command used by the script
-    }
-    # Merge other additional mocks, giving precedence to AdditionalMocks
-    $AdditionalMocks.GetEnumerator() | ForEach-Object{
-        if ($_.Name -ne 'Get-Command') { # Get-Command is handled specially above
-            $enabledScenarioMocks$_.Name = $_.Value
-        }
-    }
-    
-    $scenarios += New-TestScenario -Name "Installs $SoftwareCommandName when enabled" -Description "installs $SoftwareCommandName when $EnabledProperty is true" -Config $finalEnabledConfig -Mocks $enabledScenarioMocks -ExpectedInvocations @{ 'Invoke-LabDownload' = 1; $InstallerCommand = 1 } -RequiredPlatforms $RequiredPlatforms -ExcludedPlatforms $ExcludedPlatforms
-    
-    # --- Disabled scenario ---
-    $disabledScenarioMocks = @{
-        # Get-Command behavior doesn't strictly matter as script shouldn't try to install
+        'Inv        # Get-Command behavior doesn't strictly matter as script shouldn't try to install
         # but we can keep it consistent or simple.
         'Get-Command' = { 
             param($Name)
-            
-
-
-
-
-
-
-# If AdditionalMocks has a Get-Command, use it
+            # If AdditionalMocks has a Get-Command, use it
             if ($AdditionalMocks.ContainsKey('Get-Command')) {
                 return (& $AdditionalMocks'Get-Command' $Name)
             }
@@ -115,35 +80,14 @@ if ($Name -eq $SoftwareCommandName) { return $null }
             $disabledScenarioMocks$_.Name = $_.Value
         }
     }
-    
-    $scenarios += New-TestScenario -Name "Skips $SoftwareCommandName when disabled" -Description "skips $SoftwareCommandName when $EnabledProperty is false" -Config $finalDisabledConfig -Mocks $disabledScenarioMocks -ExpectedInvocations @{ 'Invoke-LabDownload' = 0; $InstallerCommand = 0 } -RequiredPlatforms $RequiredPlatforms -ExcludedPlatforms $ExcludedPlatforms
-    
-    # --- Already installed scenario ---
-    $alreadyInstalledMocks = @{
-        # Mock Get-Command: Software IS already installed
-        'Get-Command' = { 
-            param($Name)
-            
-
-
-
-
-
-
-if ($Name -eq $SoftwareCommandName) { return PSCustomObject@{ Name = $SoftwareCommandName; Source = "/fake/path/to/$SoftwareCommandName" } } 
+                param($Name)
+            if ($Name -eq $SoftwareCommandName) { return PSCustomObject@{ Name = $SoftwareCommandName; Source = "/fake/path/to/$SoftwareCommandName" } } 
             # If AdditionalMocks has a Get-Command, use it for other names
             if ($AdditionalMocks.ContainsKey('Get-Command')) {
                 return (& $AdditionalMocks'Get-Command' $Name)
             }
             return $null # Default behavior for other commands
-        }
-        'Invoke-LabDownload' = {}
-        $InstallerCommand = {}
-    }
-    $AdditionalMocks.GetEnumerator() | ForEach-Object{
-        if ($_.Name -ne 'Get-Command') {
-            $alreadyInstalledMocks$_.Name = $_.Value
-        }
+        }        }
     }
     
     $scenarios += New-TestScenario -Name "Skips $SoftwareCommandName when already installed" -Description "does nothing when $SoftwareCommandName is already installed" -Config $finalEnabledConfig -Mocks $alreadyInstalledMocks -ExpectedInvocations @{ 'Invoke-LabDownload' = 0; $InstallerCommand = 0 } -RequiredPlatforms $RequiredPlatforms -ExcludedPlatforms $ExcludedPlatforms
@@ -151,21 +95,7 @@ if ($Name -eq $SoftwareCommandName) { return PSCustomObject@{ Name = $SoftwareCo
     Test-RunnerScript -ScriptName $ScriptName -Scenarios $scenarios -IncludeStandardTests
 }
 
-function New-FeatureScriptTest {
-    <#
-    .SYNOPSIS
-    Creates a standardized test for feature enablement scripts
-    #>
-    param(
-        Parameter(Mandatory)
-
-
-
-
-
-
-
-        string$ScriptName,
+function New        string$ScriptName,
         
         Parameter(Mandatory)
         string$EnabledProperty,
@@ -179,27 +109,13 @@ function New-FeatureScriptTest {
         
         string$RequiredPlatforms = @('Windows'),
         
-        hashtable$AdditionalMocks = @{}
-    )
-    
-    # Build configurations
-    $finalEnabledConfig = @{ $EnabledProperty = $true } + $EnabledConfig
-    $finalDisabledConfig = @{ $EnabledProperty = $false } + $DisabledConfig
-    
-    $scenarios = @()
+        hash    $scenarios = @()
     
     # Feature enabled and not installed
     $enabledMocks = @{}
     $expectedInvocations = @{}
     
-    foreach ($command in $FeatureCommands) {
-        $enabledMocks$command = {}
-        $expectedInvocations$command = 1
-    }
-    $enabledMocks += $AdditionalMocks
-    
-    $scenarios += New-TestScenario -Name 'Enables feature when requested' -Description "enables feature when $EnabledProperty is true" -Config $finalEnabledConfig -Mocks $enabledMocks -ExpectedInvocations $expectedInvocations -RequiredPlatforms $RequiredPlatforms
-    
+    foreach ($command in $Fe    
     # Feature disabled
     $disabledMocks = @{}
     $disabledInvocations = @{}
@@ -220,21 +136,7 @@ function New-ServiceScriptTest {
     .SYNOPSIS
     Creates a standardized test for service management scripts
     #>
-    param(
-        Parameter(Mandatory)
-
-
-
-
-
-
-
-        string$ScriptName,
-        
-        Parameter(Mandatory)
-        string$ServiceName,
-        
-        string$EnabledProperty,
+    param(        string$EnabledProperty,
         
         hashtable$EnabledConfig = @{},
         
@@ -263,23 +165,9 @@ function New-ServiceScriptTest {
     
     $scenarios += New-TestScenario -Name 'Skips running service' -Description "skips when $ServiceName already running" -Config $EnabledConfig -Mocks $runningMocks -ExpectedInvocations @{ 'Enable-PSRemoting' = 0 } -RequiredPlatforms $RequiredPlatforms
     
-    Test-RunnerScript -ScriptName $ScriptName -Scenarios $scenarios -IncludeStandardTests
-}
-
-function New-ConfigurationScriptTest {
-    <#
-    .SYNOPSIS
-    Creates a standardized test for configuration scripts
-    #>
+    Test-RunnerScript -Scrip    #>
     param(
         Parameter(Mandatory)
-
-
-
-
-
-
-
         string$ScriptName,
         
         Parameter(Mandatory)
@@ -305,14 +193,7 @@ function New-ConfigurationScriptTest {
     # Configuration enabled
     $enabledMocks = @{}
     $expectedInvocations = @{}
-    
-    foreach ($command in $ConfigurationCommands) {
-        $enabledMocks$command = {}
-        $expectedInvocations$command = 1
-    }
-    $enabledMocks += $AdditionalMocks
-    
-    $scenarios += New-TestScenario -Name 'Applies configuration when enabled' -Description "applies configuration when $EnabledProperty is true" -Config $finalEnabledConfig -Mocks $enabledMocks -ExpectedInvocations $expectedInvocations -RequiredPlatforms $RequiredPlatforms
+        $scenarios += New-TestScenario -Name 'Applies configuration when enabled' -Description "applies configuration when $EnabledProperty is true" -Config $finalEnabledConfig -Mocks $enabledMocks -ExpectedInvocations $expectedInvocations -RequiredPlatforms $RequiredPlatforms
     
     # Configuration disabled
     $disabledMocks = @{}
@@ -322,13 +203,6 @@ function New-ConfigurationScriptTest {
         $disabledMocks$command = {}
         $disabledInvocations$command = 0
     }
-    $disabledMocks += $AdditionalMocks
-    
-    $scenarios += New-TestScenario -Name 'Skips when disabled' -Description "skips when $EnabledProperty is false" -Config $finalDisabledConfig -Mocks $disabledMocks -ExpectedInvocations $disabledInvocations -RequiredPlatforms $RequiredPlatforms
-    
-    Test-RunnerScript -ScriptName $ScriptName -Scenarios $scenarios -IncludeStandardTests
-}
-
 function New-CrossPlatformScriptTest {
     <#
     .SYNOPSIS
@@ -336,13 +210,6 @@ function New-CrossPlatformScriptTest {
     #>
     param(
         Parameter(Mandatory)
-
-
-
-
-
-
-
         string$ScriptName,
         
         hashtable$WindowsConfig = @{},
@@ -370,24 +237,10 @@ function New-CrossPlatformScriptTest {
     if ($MacOSConfig.Count -gt 0) {
         $scenarios += New-TestScenario -Name 'macOS execution' -Description 'executes correctly on macOS' -Config $MacOSConfig -Mocks $CommonMocks -RequiredPlatforms @('macOS')
     }
-    
-    Test-RunnerScript -ScriptName $ScriptName -Scenarios $scenarios -IncludeStandardTests
-}
-
-function New-IntegrationTest {
-    <#
-    .SYNOPSIS
-    Creates integration tests that validate end-to-end functionality
+        Creates integration tests that validate end-to-end functionality
     #>
     param(
         Parameter(Mandatory)
-
-
-
-
-
-
-
         string$TestName,
         
         Parameter(Mandatory)
@@ -398,14 +251,7 @@ function New-IntegrationTest {
         
         hashtable$Mocks = @{},
         
-        scriptblock$Validation,
-        
-        string$RequiredPlatforms = @()
-    )
-    
-    Describe "Integration Test: $TestName" {
-        BeforeAll {
-            # Ensure PSScriptRoot is correctly defined for module context if necessary
+        scriptblock$Validati            # Ensure PSScriptRoot is correctly defined for module context if necessary
             # If this script is intended to be a module, it should be saved as .psm1
             # and imported using Import-Module.
             # For now, assuming it's sourced and PSScriptRoot is available.
@@ -443,10 +289,3 @@ function New-IntegrationTest {
         }
     }
 }
-
-# Do NOT include Export-ModuleMember in this .ps1 file.
-# If you convert this to a .psm1 module, then add:
-# Export-ModuleMember -Function New-InstallerScriptTest, New-FeatureScriptTest, New-ServiceScriptTest, New-ConfigurationScriptTest, New-CrossPlatformScriptTest, New-IntegrationTest
-
-
-

@@ -23,13 +23,6 @@ param(
  string$WatchDirectory = "pwsh"
 )
 
-
-
-
-
-
-
-
 $ErrorActionPreference = 'Stop'
 
 Write-Host "Setting up OpenTofu Lab Automation Testing Framework" -ForegroundColor Cyan
@@ -198,35 +191,14 @@ function Start-FileWatcher {
  $watcherScript = Join-Path $helpersPath 'New-AutoTestGenerator.ps1'
  $job = Start-Job -ScriptBlock {
  param($WatcherScript, $WatchPath)
- 
-
-
-
-
-
-
-& $WatcherScript -WatchMode -WatchDirectory $WatchPath -WatchIntervalSeconds 30
+ & $WatcherScript -WatchMode -WatchDirectory $WatchPath -WatchIntervalSeconds 30
  } -ArgumentList $watcherScript, $watchPath
  
  Write-Host " PASS File watcher started (Job ID: $($job.Id))" -ForegroundColor Green
  Write-Host " Use 'Get-Job  Remove-Job' to stop the watcher" -ForegroundColor Gray
  
  return $job
-}
-
-function Test-FrameworkExecution {
- Write-Host "`n Testing framework execution..." -ForegroundColor Yellow
- 
- try {
- # Test the extensible runner
- Write-Host " Testing extensible test runner..." -ForegroundColor Cyan
- $testResult = & (Join-Path $helpersPath 'Invoke-ExtensibleTests.ps1') -ScriptPattern "NonExistentTest*" -Platform 'All' 2>$null
- Write-Host " PASS Extensible test runner working" -ForegroundColor Green
- 
- # Test basic Pester functionality
- Write-Host " Testing Pester integration..." -ForegroundColor Cyan
- $pesterConfig = New-PesterConfiguration
- $pesterConfig.Run.PassThru = $true
+} $pesterConfig.Run.PassThru = $true
  $pesterConfig.Output.Verbosity = 'None'
  $pesterConfig.Run.Path = @() # Empty path to test config only
  

@@ -1,63 +1,59 @@
-Param(object$Config)
+#Requires -Version 7.0
 
+[CmdletBinding(SupportsShouldProcess)]
+param(
+    [Parameter(Mandatory)]
+    [object]$Config
+)
 
+Import-Module "$env:PROJECT_ROOT/core-runner/modules/LabRunner/" -Force
+Write-CustomLog "Starting $($MyInvocation.MyCommand.Name)"
 
-
-
-
-
-Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\pwsh/modules/LabRunner/" -ForceWrite-CustomLog "Starting $MyInvocation.MyCommand"
 Invoke-LabStep -Config $Config -Body {
     Write-CustomLog "Running $($MyInvocation.MyCommand.Name)"
 
     if (-not $Config.InstallSysinternals) {
-        Write-CustomLog "InstallSysinternals flag is disabled. Skipping installation."
+        Write-CustomLog 'InstallSysinternals flag is disabled. Skipping installation.'
         return
     }
 
-    $destDir = if ($Config.SysinternalsPath) { $Config.SysinternalsPath    } else { 'C:\\Sysinternals'    }
+    $destDir = if ($Config.SysinternalsPath) { 
+        $Config.SysinternalsPath 
+    } else { 
+        'C:/Sysinternals' 
+    }
+    
     if (-not (Test-Path $destDir)) {
-        if (-not (Test-Path $destDir)) { New-Item -ItemType Directory -Path $destDir -Force | Out-Null }
-
-    $zipUrl  = 'https:\download.sysinternals.com/files/SysinternalsSuite.zip'
-    Invoke-LabDownload -Uri $zipUrl -Prefix 'SysinternalsSuite' -Extension '.zip' -Action {
-        param($zipPath)
+        Write-CustomLog "Installing Sysinternals to $destDir"
+        $url = 'https://download.sysinternals.com/files/SysinternalsSuite.zip'
         
-
-
-
-
-
-
-Write-CustomLog "Extracting to $destDir"
-        Expand-Archive -Path $zipPath -DestinationPath $destDir -Force
+        Invoke-LabDownload -Uri $url -Prefix 'sysinternals' -Extension '.zip' -Action {
+            param($zipPath)
+            
+            if ($PSCmdlet.ShouldProcess($destDir, 'Create Sysinternals directory')) {
+                New-Item -ItemType Directory -Path $destDir -Force | Out-Null
+            }
+            
+            Write-CustomLog "Extracting to $destDir"
+            if ($PSCmdlet.ShouldProcess($zipPath, 'Extract Sysinternals')) {
+                Expand-Archive -Path $zipPath -DestinationPath $destDir -Force
+            }
+        }
+        
+        # Add to PATH
+        $env:PATH = "$env:PATH;$destDir"
+        Write-CustomLog 'Sysinternals installation completed.'
+    } else {
+        Write-CustomLog "Sysinternals is already installed at $destDir"
     }
 
     $psInfo = Join-Path $destDir 'PsInfo.exe'
     if (Test-Path $psInfo) {
-        Write-CustomLog 'Verifying PsInfo.exe'
-        & psInfo | Out-Null}
-
-    Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
+        Write-CustomLog 'Verifying PsInfo.exe installation'
+        Write-CustomLog "PsInfo.exe found at $psInfo"
+    } else {
+        Write-CustomLog 'PsInfo.exe not found after installation' -Level 'WARN'
+    }
 }
+
 Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

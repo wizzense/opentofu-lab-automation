@@ -25,10 +25,3 @@ Describe 'Get-SystemInfo Tests' {
     }
 }
 
-
-
-
-
-
-
-

@@ -1,53 +1,31 @@
-Param(object$Config)
+#Requires -Version 7.0
 
+[CmdletBinding(SupportsShouldProcess)]
+param(
+    [Parameter(Mandatory)]
+    [object]$Config
+)
 
-
-
-
-
-
-Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\pwsh/modules/LabRunner/" -ForceWrite-CustomLog "Starting $MyInvocation.MyCommand"
-function Install-Chocolatey {
-    CmdletBinding(SupportsShouldProcess = $true)
-    param(object$Config)
-
-    
-
-
-
-
-
+Import-Module "$env:PROJECT_ROOT/core-runner/modules/LabRunner/" -Force
+Write-CustomLog "Starting $($MyInvocation.MyCommand.Name)"
 
 Invoke-LabStep -Config $Config -Body {
-        Write-CustomLog "Running $($MyInvocation.MyCommand.Name)"
-        if ($Config.InstallChocolatey -eq $true) {
-            if (-not (Get-Command choco.exe -ErrorAction SilentlyContinue)) {
-                $command = "Set-ExecutionPolicy Bypass -Scope Process -Force; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))"
+    Write-CustomLog "Running $($MyInvocation.MyCommand.Name)"
+    
+    if ($Config.InstallChocolatey -eq $true) {
+        if (-not (Get-Command choco.exe -ErrorAction SilentlyContinue)) {
+            Write-CustomLog "Installing Chocolatey..."
+            $command = "Set-ExecutionPolicy Bypass -Scope Process -Force; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))"
+            if ($PSCmdlet.ShouldProcess('Chocolatey', 'Install package manager')) {
                 Start-Process powershell.exe -ArgumentList "-NoProfile -ExecutionPolicy Bypass -Command $command" -Wait
-            } else {
-                Write-CustomLog 'Chocolatey already installed.'
             }
+            Write-CustomLog "Chocolatey installation completed."
         } else {
-            Write-CustomLog 'InstallChocolatey flag is disabled. Skipping Chocolatey installation.'
+            Write-CustomLog "Chocolatey is already installed."
         }
+    } else {
+        Write-CustomLog "InstallChocolatey flag is disabled. Skipping installation."
     }
-    Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
 }
-if ($MyInvocation.InvocationName -ne '.') { Install-Chocolatey @PSBoundParameters }
+
 Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

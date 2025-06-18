@@ -1,41 +1,40 @@
-Param(object$Config)
+#Requires -Version 7.0
 
+[CmdletBinding(SupportsShouldProcess)]
+param(
+    [Parameter(Mandatory)]
+    [object]$Config
+)
 
+Import-Module "$env:PROJECT_ROOT/core-runner/modules/LabRunner/" -Force
+Write-CustomLog "Starting $($MyInvocation.MyCommand.Name)"
 
-
-
-
-
-Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\pwsh/modules/LabRunner/" -ForceWrite-CustomLog "Starting $MyInvocation.MyCommand"
 Invoke-LabStep -Config $Config -Body {
     Write-CustomLog "Running $($MyInvocation.MyCommand.Name)"
 
-if ($Config.SetDNSServers -eq $true) {
-    $mockInterface = PSCustomObject@{ InterfaceIndex = 1 }
-    $interfaceIndex = (Invoke-CrossPlatformCommand -CommandName 'Get-NetIPAddress' -Parameters @{ AddressFamily = 'IPv4' } -MockResult @($mockInterface) | Select-Object -First 1 -ExpandProperty InterfaceIndex)
-    Write-CustomLog "Setting DNS servers to $($Config.DNSServers) on interface $interfaceIndex"
-    Invoke-CrossPlatformCommand -CommandName 'Set-DnsClientServerAddress' -Parameters @{ InterfaceIndex = $interfaceIndex; ServerAddresses = $Config.DNSServers } -SkipOnUnavailable
-    Write-CustomLog 'DNS servers configured'
-} else {
-    Write-CustomLog "SetDNSServers flag is disabled. Skipping DNS configuration."
+    if ($Config.SetDNSServers -eq $true) {
+        if (Get-Platform -eq 'Windows') {
+            try {
+                $interface = Get-NetIPAddress -AddressFamily IPv4 | Select-Object -First 1
+                $interfaceIndex = $interface.InterfaceIndex
+                
+                Write-CustomLog "Setting DNS servers to $($Config.DNSServers -join ', ') on interface $interfaceIndex"
+                
+                if ($PSCmdlet.ShouldProcess($interfaceIndex, 'Configure DNS servers')) {
+                    Set-DnsClientServerAddress -InterfaceIndex $interfaceIndex -ServerAddresses $Config.DNSServers
+                }
+                Write-CustomLog 'DNS servers configured'
+            } catch {
+                Write-CustomLog "Failed to configure DNS servers: $_" -Level 'ERROR'
+            }
+        } else {
+            Write-CustomLog 'DNS configuration is only supported on Windows platform' -Level 'WARN'
+        }
+    } else {
+        Write-CustomLog 'SetDNSServers flag is disabled. Skipping configuration.'
+    }
 }
-    Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
-}
+
 Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 

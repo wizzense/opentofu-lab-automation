@@ -1,10 +1,3 @@
-
-
-
-
-
-
-
 @{
     IncludeRules = @(
         'PSUseConsistentIndentation',
@@ -24,9 +17,9 @@
         'PSAvoidUsingPlainTextForPassword'
     )
     # Custom rule settings
-    Rules = @{
+    Rules        = @{
         PSUseCompatibleSyntax = @{
-            Enable = $true
+            Enable         = $true
             TargetVersions = @('5.1', '7.0')
         }
     }

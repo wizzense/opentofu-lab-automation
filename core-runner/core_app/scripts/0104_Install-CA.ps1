@@ -1,24 +1,13 @@
-Param(object$Config)
+#Requires -Version 7
 
 
 
 
 
+Impo    [object]$Config
+)
 
-
-Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\pwsh/modules/LabRunner/" -ForceWrite-CustomLog "Starting $MyInvocation.MyCommand"
-function Install-CA {
-    CmdletBinding(SupportsShouldProcess = $true)
-    param(object$Config)
-
-    
-
-
-
-
-
-
-Invoke-LabStep -Config $Config -Body {
+    Invoke-LabStep -Config $Config -Body {
     Write-CustomLog "Running $($MyInvocation.MyCommand.Name)"
 
 if ($Config.InstallCA -eq $true) {
@@ -32,21 +21,7 @@ if ($null -eq $Config.CertificateAuthority) {
 
 $CAName        = $Config.CertificateAuthority.CommonName
 $ValidityYears = $Config.CertificateAuthority.ValidityYears
-
-if (-not $CAName) {
-    Write-CustomLog "Missing CAName in config. Skipping CA installation."
-    return
-}
-
-# Check if the CA role is already installed
-$role = Get-WindowsFeature -Name Adcs-Cert-Authority
-if ($role.Installed) {
-    Write-CustomLog "Certificate Authority role is already installed. Checking CA configuration..."
-
-    # Check if a CA is already configured
-    $existingCA = Get-Item -Path 'HKLM:\SYSTEM\CurrentControlSet\Services\CertSvc\Configuration' -ErrorAction SilentlyContinue
-    if ($existingCA) {
-        Write-CustomLog "A Certificate Authority is already configured. Skipping installation."
+$rol        Write-CustomLog "A Certificate Authority is already configured. Skipping installation."
         return
     }
 
@@ -83,30 +58,3 @@ if ($PSCmdlet.ShouldProcess($CAName, 'Configure Standalone Root CA')) {
         -ValidityPeriodUnits $ValidityYears `
         -Force
 }
-
-Write-CustomLog "Standalone Root CA '$CAName' installation complete."
-
-} else {
-    Write-CustomLog "InstallCA flag is disabled. Skipping CA installation."
-}
-}
-}
-    Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
-if ($MyInvocation.InvocationName -ne '.') { Install-CA @PSBoundParameters }
-Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

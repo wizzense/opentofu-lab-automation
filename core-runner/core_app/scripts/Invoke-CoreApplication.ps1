@@ -1,32 +1,38 @@
-Param(
-    [Parameter(Mandatory=$true)]
+#Requires -Version 7.0
+
+[CmdletBinding(SupportsShouldProcess)]
+param(
+    [Parameter(Mandatory)]
     [string]$ConfigPath
 )
 
-$ErrorActionPreference = "Stop"
+$ErrorActionPreference = 'Stop'
 
 # Import necessary modules using environment variables
-Import-Module "$env:PWSH_MODULES_PATH/LabRunner/" -Force
-Import-Module "$env:PWSH_MODULES_PATH/CodeFixer/" -Force
+Import-Module "$env:PROJECT_ROOT/core-runner/modules/LabRunner/" -Force
+
+Write-CustomLog "Starting $($MyInvocation.MyCommand.Name)"
 
 # Load configuration
-if (-Not (Test-Path $ConfigPath)) {
-    Write-Error "Configuration file not found at $ConfigPath"
-    exit 1
+if (-not (Test-Path $ConfigPath)) {
+    Write-CustomLog "Configuration file not found at $ConfigPath" -Level 'ERROR'
+    throw "Configuration file not found at $ConfigPath"
 }
-
-$config = Get-Content $ConfigPath | ConvertFrom-Json
-
-Write-Host "Starting core application: $($config.ApplicationName)"
 
 try {
+    $config = Get-Content $ConfigPath | ConvertFrom-Json
+    
+    Write-CustomLog "Starting core application: $($config.ApplicationName)"
+
     # Example operation
     Invoke-LabStep -Config $config -Body {
-        Write-CustomLog "Core application operation started." "INFO"
+        Write-CustomLog 'Core application operation started.' -Level 'INFO'
         # Add core application logic here
-        Write-CustomLog "Core application operation completed successfully." "INFO"
+        Write-CustomLog 'Core application operation completed successfully.' -Level 'INFO'
     }
 } catch {
-    Write-CustomLog "Core application operation failed: $($_.Exception.Message)" "ERROR"
+    Write-CustomLog "Core application operation failed: $($_.Exception.Message)" -Level 'ERROR'
     throw
 }
+
+Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"

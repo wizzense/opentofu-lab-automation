@@ -156,32 +156,24 @@ function Invoke-AutomatedTestWorkflow {
     
     Write-MaintenanceLog "Starting Automated Test Workflow - Category: $TestCategory" "MAINTENANCE"
     
-    # 1. PowerShell Pester Tests
-    if ($TestCategory -in @('Unit', 'All')) {
+    # 1. PowerShell Pester Tests    if ($TestCategory -in @('Unit', 'All')) {
         Invoke-MaintenanceStep "PowerShell Pester Tests" {
             Write-MaintenanceLog "Running Pester tests..." "INFO"
             
-            # Use PatchManager's tiered testing if available
-            if (Get-Command Invoke-TieredPesterTests -ErrorAction SilentlyContinue) {
-                $pesterResults = Invoke-TieredPesterTests -Tier 'All' -OutputFormat 'NUnit' -OutputPath $OutputPath
+            # Standard Pester execution
+            $config = New-PesterConfiguration
+            $config.Run.Path = "$ProjectRoot\tests"
+            $config.Output.Verbosity = 'Detailed'
+            $config.TestResult.Enabled = $true
+            $config.TestResult.OutputPath = "$OutputPath\PesterResults.xml"
+            $config.TestResult.OutputFormat = 'NUnitXml'
+              if ($GenerateCoverage) {
+                $config.CodeCoverage.Enabled = $true
+                $config.CodeCoverage.Path = @("$ProjectRoot\pwsh\modules", "$ProjectRoot\pwsh\core_app")
+                $config.CodeCoverage.OutputPath = "$OutputPath\PesterCoverage.xml"
             }
-            else {
-                # Fallback to standard Pester
-                $config = New-PesterConfiguration
-                $config.Run.Path = "$ProjectRoot\tests"
-                $config.Output.Verbosity = 'Detailed'
-                $config.TestResult.Enabled = $true
-                $config.TestResult.OutputPath = "$OutputPath\PesterResults.xml"
-                $config.TestResult.OutputFormat = 'NUnitXml'
-                
-                if ($GenerateCoverage) {
-                    $config.CodeCoverage.Enabled = $true
-                    $config.CodeCoverage.Path = @("$ProjectRoot\pwsh\modules", "$ProjectRoot\pwsh\core_app")
-                    $config.CodeCoverage.OutputPath = "$OutputPath\PesterCoverage.xml"
-                }
-                
-                $pesterResults = Invoke-Pester -Configuration $config
-            }
+            
+            $pesterResults = Invoke-Pester -Configuration $config
             
             $testResults.Categories.Pester = @{
                 Total = $pesterResults.TotalCount
@@ -549,12 +541,11 @@ function Invoke-UnifiedMaintenance {
     param(
         [ValidateSet('Quick', 'Full', 'Test', 'TestOnly', 'Continuous', 'Track', 'Report', 'All')]
         [string]$Mode = 'Quick',
-        
-        [switch]$AutoFix,
+          [switch]$AutoFix,
         
         [switch]$UpdateChangelog,
         
-        [switch]$UsePatchManager = $true
+        [switch]$UsePatchManager
     )
     
     $ProjectRoot = Get-ProjectRoot

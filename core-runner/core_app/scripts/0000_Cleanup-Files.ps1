@@ -1,16 +1,11 @@
+#Requires -Version 7.0
 Param([object]$Config)
-
-
-
-
-
-
-
-Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\pwsh/modules/LabRunner/" -ForceWrite-CustomLog "Starting $MyInvocation.MyCommand"
+Import-Module "$env:PROJECT_ROOT/core-runner/modules/LabRunner/" -Force
+Write-CustomLog "Starting $MyInvocation.MyCommand"
 Invoke-LabStep -Config $Config -Body {
     Write-CustomLog "Running $($MyInvocation.MyCommand.Name)"
 
-<#
+    <#
 .SYNOPSIS
     Removes the cloned repo and infra directories.
 .DESCRIPTION
@@ -22,12 +17,14 @@ Invoke-LabStep -Config $Config -Body {
     Push-Location -Path $tempPath
 
     try {
-        $localBase = if ($Config.LocalPath) { $Config.LocalPath
-           } else { Get-CrossPlatformTempPath
-           }
+        $localBase = if ($Config.LocalPath) {
+            $Config.LocalPath
+        } else {
+            Get-CrossPlatformTempPath
+        }
         $localBase = System.Environment::ExpandEnvironmentVariables($localBase)
-        $repoName  = ($Config.RepoUrl -split '/')-1 -replace '\.git$',''
-        $repoPath  = Join-Path $localBase $repoName
+        $repoName = ($Config.RepoUrl -split '/') - 1 -replace '\.git$', ''
+        $repoPath = Join-Path $localBase $repoName
 
         if (Test-Path $repoPath) {
             Write-CustomLog "Removing repo path '$repoPath'..."
@@ -36,7 +33,7 @@ Invoke-LabStep -Config $Config -Body {
             Write-CustomLog "Repo path '$repoPath' not found; skipping."
         }
 
-        $infraPath = if ($Config.InfraRepoPath) { $Config.InfraRepoPath    } else { 'C:\\Temp\\base-infra'    }
+        $infraPath = if ($Config.InfraRepoPath) { $Config.InfraRepoPath } else { 'C:\\Temp\\base-infra' }
         if (Test-Path $infraPath) {
             Write-CustomLog "Removing infra path '$infraPath'..."
             Remove-Item -Recurse -Force -Path $infraPath -ErrorAction Stop
@@ -45,12 +42,10 @@ Invoke-LabStep -Config $Config -Body {
         }
 
         Write-CustomLog 'Cleanup completed successfully.'
-    }
-    catch {
+    } catch {
         Write-Error -Message "Cleanup failed: $($PSItem.Exception.Message)`n$($PSItem.ScriptStackTrace)"
         exit 1
-    }
-    finally {
+    } finally {
         try {
             Pop-Location -ErrorAction Stop
         } catch {
@@ -59,19 +54,5 @@ Invoke-LabStep -Config $Config -Body {
     }
     Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
