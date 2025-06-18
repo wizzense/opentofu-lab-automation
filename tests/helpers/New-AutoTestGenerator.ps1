@@ -10,10 +10,10 @@ This script monitors the pwsh/ directory for new scripts and automatically:
 - Integrates with the extensible test framework
 
 .EXAMPLE
-./New-AutoTestGenerator.ps1 -WatchDirectory "pwsh/runner_scripts"
+./New-AutoTestGenerator.ps1 -WatchDirectory "core-runner/core_app/scripts"
 
 .EXAMPLE
-./New-AutoTestGenerator.ps1 -ScriptPath "pwsh/runner_scripts/0301_Install-NewTool.ps1" -Force
+./New-AutoTestGenerator.ps1 -ScriptPath "core-runner/core_app/scripts/0301_Install-NewTool.ps1" -Force
 #>
 
 param(
