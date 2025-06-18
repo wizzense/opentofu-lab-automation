@@ -1,14 +1,8 @@
 #Requires -Version 7
-
-
-
-
-
-Import-Module '/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\pwsh/modules/LabRunner/' -ForceWrite-CustomLog "Starting $MyInvocation.MyCommand"
+Import-Module "$env:PROJECT_ROOT/core-runner/modules/LabRunner/" -Force
+Write-CustomLog "Starting $($MyInvocation.MyCommand.Name)"
 Invoke-LabStep -Config $Config -Body {
     Write-CustomLog "Running $($MyInvocation.MyCommand.Name)"
-
-
 
     # Check if WinRM is already configured
     $winrmStatus = Get-Service -Name WinRM -ErrorAction SilentlyContinue
@@ -26,3 +20,6 @@ Invoke-LabStep -Config $Config -Body {
         # e.g.: Set-Item -Path WSMan:\localhost\Service\Auth\Basic -Value $true
     }
 
+    Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
+}
+Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
