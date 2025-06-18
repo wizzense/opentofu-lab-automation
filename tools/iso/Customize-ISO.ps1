@@ -30,7 +30,7 @@ catch {
 
 Mount-DiskImage -ImagePath "E:\2_auto_unattend_en-us_windows_server_2025_updated_feb_2025_x64_dvd_3733c10e.iso"
 robocopy H:\ E:\CustomISO\ /E
-mkdir E:\Mount
+if (-not (Test-Path E:\Mount)) { New-Item -ItemType Directory -Path E:\Mount -Force | Out-Null }
 dism /mount-image /ImageFile:E:\CustomISO\sources\install.wim /Index:3 /MountDir:E:\Mount
 copy-item "C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\bootstrap.ps1" E:\mount\Windows\bootstrap.ps1
 Copy-Item $UnattendXML -Destination "E:\Mount\Windows\autounattend.xml" -Force
@@ -63,10 +63,7 @@ param(
 if (Test-Path $MountPath) {
     Remove-Item -Recurse -Force $MountPath
 }
-if (-not (Test-Path $ExtractPath)) {
-    New-Item -Path $ExtractPath -ItemType Directory | Out-Null}
-if (-not (Test-Path $MountPath)) {
-    New-Item -Path $MountPath -ItemType Directory | Out-Null}
+if (-not (Test-Path $ExtractPath)) { New-Item -ItemType Directory -Path $ExtractPath -Force | Out-Null }
 
 # Derived path to the WIM file inside the extracted ISO
 $WIMFile = Join-Path $ExtractPath "sources\install.wim"
@@ -108,16 +105,7 @@ $DriveLetter = (Get-Volume -DiskImage $ISO).DriveLetter + ":"
 
 # Step 2: Extract ISO contents
 Write-CustomLog "Extracting ISO contents to $ExtractPath..."
-if (-Not (Test-Path $ExtractPath)) { New-Item -Path $ExtractPath -ItemType Directory | Out-Null}
-robocopy "$DriveLetter\" $ExtractPath /E /NFL /NDL /NJH /NJS /NC /NS
-
-# Step 3: Dismount the ISO
-Write-CustomLog "Dismounting ISO..."
-Dismount-DiskImage -ImagePath $ISOPath
-
-# Step 4: Mount the Install.wim Image
-Write-CustomLog "Mounting install.wim..."
-if (-Not (Test-Path $MountPath)) { New-Item -Path $MountPath -ItemType Directory | Out-Null}
+if (-not (Test-Path $ExtractPath)) { New-Item -ItemType Directory -Path $ExtractPath -Force | Out-Null }
 dism /Mount-Image /ImageFile:$WIMFile /Index:$WIMIndex /MountDir:$MountPath
 
 # Step 5: Copy bootstrap.ps1 into Windows
@@ -145,6 +133,9 @@ Start-Process -FilePath $OscdimgExe -ArgumentList @(
 ) -NoNewWindow -Wait
 
 Write-CustomLog "Custom ISO creation complete! New ISO saved as $OutputISO"
+
+
+
 
 
 

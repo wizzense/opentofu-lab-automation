@@ -12,10 +12,9 @@ BeforeAll {
         param([string[]]$Arguments)
         $script:ghCalls += ,@($Arguments)
         return ""
-    }
-      # Directly source the function file
-    $projectRoot = Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
-    $functionPath = Join-Path $projectRoot "pwsh/modules/PatchManager/Public/ErrorHandling.ps1"
+    }      # Directly source the function file
+    $projectRoot = "c:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation"
+    $functionPath = Join-Path $projectRoot "core-runner/modules/PatchManager/Public/ErrorHandling.ps1"
     if (Test-Path $functionPath) {
         . $functionPath
     } else {

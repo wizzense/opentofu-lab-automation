@@ -242,7 +242,7 @@ Describe "Parallel Processing Integration" {
         It "Should process files in parallel" {
             # Create temporary test files
             $tempDir = Join-Path $TestDrive "ParallelTest"
-            New-Item -ItemType Directory -Path $tempDir -Force | Out-Null
+            if (-not (Test-Path $tempDir)) { New-Item -ItemType Directory -Path $tempDir -Force | Out-Null }
             
             $testFiles = @()
             for ($i = 1; $i -le 5; $i++) {
@@ -295,3 +295,5 @@ AfterAll {
     # Clean up any remaining jobs
     Get-Job | Where-Object { $_.Name -like "TestJob*" -or $_.Name -like "*Parallel*" } | Remove-Job -Force -ErrorAction SilentlyContinue
 }
+
+

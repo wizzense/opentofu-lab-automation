@@ -1,229 +1,229 @@
 # VS Code Configuration for OpenTofu Lab Automation
 
-This directory contains comprehensive VS Code configuration files optimized for the OpenTofu Lab Automation project. The configuration provides an enhanced development experience with proper Copilot integration, debugging support, and project-specific settings.
+This directory contains optimized VS Code workspace configuration specifically tailored for PowerShell automation development, Pester testing, and OpenTofu infrastructure management.
 
 ## Files Overview
 
 ### Core Configuration Files
 
-#### `.vscode/copilot-instructions.md`
+#### `settings.json`
 
-Comprehensive instructions for GitHub Copilot that provide:
+Comprehensive workspace settings optimized for:
 
-- Project context and architecture overview
-- Coding standards and conventions specific to this project
-- Module structure and key functions documentation
-- Common patterns and examples for PowerShell, Python, and OpenTofu
-- Security guidelines and best practices
-- Testing requirements and frameworks
+- **GitHub Copilot**: Advanced configuration with custom instructions and enhanced code generation
+- **PowerShell Development**: Formatting, analysis, and cross-platform compatibility
+- **Pester Testing**: Test discovery, execution, and reporting
+- **OpenTofu/Terraform**: Infrastructure as code support
+- **File Management**: Optimized search, exclusions, and file associations
 
-#### `.vscode/settings.json`
+#### `tasks.json`
 
-VS Code workspace settings including:
+Predefined tasks for common development operations:
 
-- **Copilot Configuration**: Enhanced code generation, test generation, and code review instructions
-- **PowerShell Settings**: Cross-platform formatting, script analysis, and debugging
-- **File Management**: Exclusions for backups, archives, and temporary files
-- **Language-Specific Settings**: Terraform/OpenTofu, Python, JSON, YAML, Markdown
-- **Editor Preferences**: Formatting, rulers, whitespace handling
+- `Run All Pester Tests`: Execute the complete test suite
+- `Run Specific Module Tests`: Test individual modules
+- `PowerShell Script Analysis`: Static code analysis
+- `Setup Development Environment`: Initialize the development environment
+- `Import All Modules`: Load all project modules
+- `OpenTofu Plan/Apply`: Infrastructure deployment tasks
+- `Generate Test Report`: Create detailed test reports
+- `Clean Test Results`: Remove test artifacts
+- `Validate All Module Manifests`: Check module integrity
 
-#### `.vscode/tasks.json`
-
-Pre-configured tasks for common operations:
-
-- **Health Checks**: Quick and comprehensive health analysis
-- **PatchManager Operations**: Direct commits, PR creation, rollbacks
-- **Testing**: Pester tests, PSScriptAnalyzer, Python pytest
-- **Development**: Module testing, environment initialization
-- **OpenTofu**: Validation, planning, and infrastructure management
-
-#### `.vscode/launch.json`
+#### `launch.json`
 
 Debug configurations for:
 
-- **PowerShell Debugging**: Current script, modules, Pester tests
-- **Python Debugging**: Current file, CLI tools, test suites
-- **Integrated Debugging**: Environment variable support and proper working directories
+- **Current File**: Debug the currently open PowerShell file
+- **Pester Tests**: Debug test execution
+- **Specific Module**: Debug individual modules with input prompts
+- **Core Runner**: Debug the main automation framework
+- **Test Environment**: Debug environment setup
 
-#### `.vscode/extensions.json`
+#### `extensions.json`
 
 Recommended extensions for optimal development experience:
 
-- **Core Development**: PowerShell, Python, Git integration
-- **Infrastructure**: Terraform/OpenTofu support
-- **AI Assistance**: GitHub Copilot and Copilot Chat
-- **Code Quality**: Linting, testing, error highlighting
-- **Productivity**: Code runners, diagram tools, remote development
+- PowerShell development tools
+- GitHub Copilot and AI assistance
+- Testing frameworks (Pester)
+- Infrastructure as code (Terraform/OpenTofu)
+- Code quality and analysis tools
+- Git and version control enhancements
+- Productivity and UI improvements
 
-### Additional Files
+### Copilot Enhancement Files
 
-#### `.vscode/snippets/powershell.json`
+#### `copilot-instructions.md`
 
-Custom code snippets for:
+Comprehensive instructions for GitHub Copilot including:
 
-- Standard function templates following project conventions
-- Module import patterns for cross-platform compatibility
-- Error handling and logging patterns
-- Pester test templates
-- Common PowerShell patterns used throughout the project
+- Project overview and standards
+- PowerShell 7.0+ cross-platform requirements
+- Module and function structure guidelines
+- Logging and error handling standards
+- Testing and security considerations
+- Code review and quality guidelines
 
-#### `opentofu-lab-automation.code-workspace`
+#### Specialized Prompt Files
 
-Multi-root workspace configuration that organizes the project into logical sections:
+**`prompts-powershell.md`**
 
-- Main project root
-- PowerShell modules
-- Core application
-- Runner scripts
-- OpenTofu configurations
-- Python CLI
-- Tests and documentation
+- Module development prompts
+- Function implementation templates
+- Configuration and environment setup
+- Performance optimization guidance
+- Documentation and security review prompts
+
+**`prompts-pester.md`**
+
+- Comprehensive test suite generation
+- Mock strategy development
+- Performance and cross-platform testing
+- Test data and fixture management
+- Integration testing strategies
+
+**`prompts-review.md`**
+
+- Code review and quality analysis
+- Security and performance assessment
+- Architecture and standards compliance
+- Dependency and error handling analysis
+- Refactoring recommendations
+
+**`prompts-troubleshooting.md`**
+
+- Error diagnosis and resolution
+- Module loading and configuration issues
+- Performance and compatibility problems
+- Network, file system, and security troubleshooting
+
+### Code Snippets
+
+#### `snippets/powershell.json`
+
+Ready-to-use PowerShell code snippets:
+
+- Function templates with project standards
+- Module manifest boilerplate
+- Pester test structures
+- Error handling patterns
+- Parameter validation
+- Cross-platform utilities
+- Logging implementations
 
 ## Key Features
 
-### Enhanced Copilot Integration
+### GitHub Copilot Optimizations
 
-- **Context-Aware Code Generation**: Copilot understands the project structure and generates code following project standards
-- **Intelligent Test Generation**: Automated Pester and pytest test creation with proper setup/teardown
-- **Code Review Assistance**: Automated code review focusing on PowerShell 7.0+ compatibility and project standards
-- **Conventional Commits**: Automated commit message generation following project conventions
+1. **Custom Instructions**: Tailored to project coding standards and cross-platform requirements
+2. **Specialized Prompts**: Pre-built prompts for common development scenarios
+3. **Advanced Settings**: Optimized temperature, length, and stop sequences for PowerShell
+4. **Context-Aware**: Instructions adapt to different development contexts (testing, review, troubleshooting)
 
-### Cross-Platform Development Support
+### PowerShell Development
 
-- **PowerShell 7.0+ Standards**: All configurations enforce cross-platform PowerShell compatibility
-- **Path Handling**: Proper forward slash usage and absolute path patterns
-- **Environment Variables**: Consistent use of `$env:PROJECT_ROOT` and `$env:PWSH_MODULES_PATH`
-- **Remote Development**: Support for SSH, containers, and GitHub Codespaces
+1. **Cross-Platform Standards**: Enforced forward slash paths and PowerShell 7.0+ compatibility
+2. **Code Formatting**: OTBS (One True Brace Style) with consistent spacing and indentation
+3. **Static Analysis**: Integrated PSScriptAnalyzer with project-specific settings
+4. **Module Management**: Simplified import and validation workflows
 
-### Comprehensive Testing Integration
+### Testing Infrastructure
 
-- **Pester 5.0+ Support**: Full integration with Pester testing framework
-- **Python Testing**: pytest integration with proper PYTHONPATH configuration
-- **Script Analysis**: PSScriptAnalyzer integration with project-specific rules
-- **Continuous Validation**: Automated testing tasks and debug configurations
+1. **Pester Integration**: Optimized for Pester 5.0+ with proper configuration
+2. **Test Discovery**: Automatic test file detection and organization
+3. **Debugging Support**: Debug configurations for test execution and analysis
+4. **Report Generation**: Automated test reporting and result management
 
-### Project-Specific Optimizations
+### Infrastructure as Code
 
-- **Module-Aware Navigation**: Quick access to PatchManager, LabRunner, and CoreApp modules
-- **OpenTofu Integration**: Validation and planning tasks for infrastructure code
-- **Backup/Archive Exclusions**: Performance optimized by excluding backup directories
-- **Intelligent File Nesting**: Related files (tests, manifests) are nested appropriately
+1. **OpenTofu Support**: Tasks and configurations for infrastructure management
+2. **Terraform Integration**: HCL syntax support and formatting
+3. **Plan/Apply Workflows**: Streamlined deployment processes
 
-## Usage Examples
+## Usage Guidelines
 
-### Running Common Tasks
+### Getting Started
 
-```bash
-# Quick health check
-Ctrl+Shift+P -> Tasks: Run Task -> Quick Health Check
+1. **Install Recommended Extensions**: Use the Command Palette (`Ctrl+Shift+P`) and run "Extensions: Show Recommended Extensions"
+2. **Configure Environment**: Run the "Setup Development Environment" task
+3. **Import Modules**: Use the "Import All Modules" task to load project modules
+4. **Run Tests**: Execute "Run All Pester Tests" to validate the environment
 
-# Run all tests
-Ctrl+Shift+P -> Tasks: Run Task -> Run Pester Tests
+### Development Workflow
 
-# Apply changes with PatchManager
-Ctrl+Shift+P -> Tasks: Run Task -> PatchManager: Apply Changes with PR
-```
+1. **Use Copilot Prompts**: Reference the prompt files for consistent code generation
+2. **Follow Standards**: Adhere to the PowerShell 7.0+ cross-platform guidelines
+3. **Test Continuously**: Run relevant tests as you develop
+4. **Debug Effectively**: Use the provided debug configurations
 
-### Debugging
+### Best Practices
 
-```bash
-# Debug current PowerShell script
-F5 (with PowerShell file open)
-
-# Debug specific module
-Ctrl+Shift+P -> Debug: Select and Start Debugging -> PowerShell: Debug PatchManager Module
-
-# Debug Python CLI
-Ctrl+Shift+P -> Debug: Select and Start Debugging -> Python: Debug Lab Control CLI
-```
-
-### Code Generation with Copilot
-
-- **Function Creation**: Type `psfunction` and tab to get a complete function template
-- **Module Import**: Type `psimport` and tab for proper module import syntax
-- **Test Generation**: Use Copilot Chat to generate tests: "Generate Pester tests for this function"
-- **Error Handling**: Type `pstrycatch` for comprehensive error handling patterns
+1. **Cross-Platform**: Always use forward slashes for paths
+2. **Error Handling**: Implement comprehensive try-catch blocks with logging
+3. **Parameter Validation**: Use validation attributes for all function parameters
+4. **Documentation**: Include proper help documentation for all functions
+5. **Testing**: Write comprehensive Pester tests for all functionality
 
 ## Customization
 
-### Adding Custom Tasks
+### Adding New Prompts
 
-Edit `.vscode/tasks.json` to add project-specific tasks:
+Create new prompt files in the `.vscode` directory following the existing pattern:
 
-```json
-{
-    "label": "Your Custom Task",
-    "type": "shell",
-    "command": "pwsh",
-    "args": ["-File", "./your-script.ps1"],
-    "group": "build"
-}
-```
+- Use descriptive headings
+- Include specific, actionable instructions
+- Provide context about the project structure
+- Follow the established formatting conventions
 
-### Custom Snippets
+### Modifying Settings
 
-Add snippets to `.vscode/snippets/powershell.json`:
+When updating `settings.json`:
 
-```json
-"Your Snippet Name": {
-    "prefix": "yourprefix",
-    "body": ["Your code template"],
-    "description": "Description of your snippet"
-}
-```
+- Maintain the existing structure and categories
+- Test changes with the development workflow
+- Document significant modifications
+- Consider cross-platform compatibility
 
-### Environment-Specific Settings
+### Creating New Tasks
 
-Create `.vscode/settings.json` overrides for different environments:
+When adding tasks to `tasks.json`:
 
-```json
-{
-    "powershell.developer.powerShellExePath": "/usr/local/bin/pwsh",
-    "terminal.integrated.defaultProfile.linux": "PowerShell"
-}
-```
+- Use descriptive labels and groups
+- Include appropriate problem matchers
+- Configure presentation options for optimal UX
+- Test task execution in different scenarios
 
 ## Troubleshooting
 
 ### Common Issues
 
-#### PowerShell Extension Not Loading
+1. **Extension Conflicts**: Check for conflicting extensions and disable as needed
+2. **PowerShell Version**: Ensure PowerShell 7.0+ is installed and configured
+3. **Module Loading**: Verify module paths and permissions
+4. **Test Failures**: Check Pester configuration and test file paths
 
-1. Ensure PowerShell 7.0+ is installed and in PATH
-2. Check `powershell.developer.powerShellExePath` setting
-3. Restart VS Code and reload the PowerShell extension
+### Support Resources
 
-#### Copilot Not Using Instructions
+- Project documentation in the `docs/` directory
+- Test configuration in `tests/config/`
+- Module examples in `core-runner/modules/`
+- Troubleshooting scripts in the project root
 
-1. Verify `github.copilot.chat.codeGeneration.useInstructionFiles` is enabled
-2. Check that `.vscode/copilot-instructions.md` exists and is readable
-3. Restart Copilot service: Command Palette -> "GitHub Copilot: Restart Language Server"
+## Maintenance
 
-#### Tasks Not Running
+### Regular Updates
 
-1. Ensure `pwsh` is available in PATH
-2. Check working directory settings in task configuration
-3. Verify required modules are available
+1. **Extension Updates**: Keep recommended extensions current
+2. **Setting Reviews**: Periodically review and optimize settings
+3. **Prompt Refinement**: Update prompts based on development experience
+4. **Task Optimization**: Improve task performance and reliability
 
-#### Debug Configurations Not Working
+### Version Control
 
-1. Check that debug configurations match your installed extensions
-2. Ensure PowerShell debugger extension is enabled
-3. Verify file paths in launch.json are correct
+- Include all `.vscode` files in version control
+- Document significant configuration changes
+- Share improvements with the development team
+- Maintain consistency across development environments
 
-### Performance Optimization
-
-- **File Exclusions**: The configuration excludes backup and archive directories for better performance
-- **Watcher Exclusions**: Git and node_modules directories are excluded from file watching
-- **Search Optimization**: Search operations ignore irrelevant directories
-
-## Integration with Project Workflows
-
-This VS Code configuration integrates seamlessly with:
-
-- **PatchManager Module**: Direct integration with patch management workflows
-- **CI/CD Pipelines**: Tasks mirror GitHub Actions workflows
-- **Testing Frameworks**: Pester and pytest integration with proper environment setup
-- **Cross-Platform Development**: Consistent experience across Windows, Linux, and macOS
-
-The configuration follows the project's emphasis on maintainability, cross-platform compatibility, and comprehensive testing while providing an enhanced development experience through intelligent tooling and automation.
+This configuration setup provides a comprehensive, optimized development environment for PowerShell automation, testing, and infrastructure management with enhanced AI assistance through GitHub Copilot.

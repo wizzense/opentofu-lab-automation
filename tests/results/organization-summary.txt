@@ -1,23 +1,23 @@
 TEST ORGANIZATION SUMMARY
 ========================
-Generated: 06/17/2025 10:51:29
+Generated: 06/17/2025 20:09:13
 
 TARGET STRUCTURE:
-- results/: Test output and result files (0 test files)
-- system/: System-wide validation and comprehensive tests (6 test files)
-  - validation/: 0 test files
-  - quality/: 0 test files
-  - performance/: 0 test files
-- config/: Test configuration files and settings (0 test files)
+- unit/: Unit tests for individual functions/cmdlets (73 test files)
+  - modules/: 14 test files
+  - scripts/: 59 test files
+  - functions/: 0 test files
 - integration/: Integration tests for component interactions (28 test files)
   - workflows/: 0 test files
   - services/: 0 test files
   - pipelines/: 0 test files
-- helpers/: Test helper functions and utilities (2 test files)
+- results/: Test output and result files (0 test files)
+- config/: Test configuration files and settings (0 test files)
 - data/: Test data files and fixtures (0 test files)
-- unit/: Unit tests for individual functions/cmdlets (61 test files)
-  - modules/: 3 test files
-  - scripts/: 58 test files
-  - functions/: 0 test files
+- system/: System-wide validation and comprehensive tests (6 test files)
+  - validation/: 0 test files
+  - quality/: 0 test files
+  - performance/: 0 test files
+- helpers/: Test helper functions and utilities (2 test files)
 
-TOTAL TEST FILES: 104
+TOTAL TEST FILES: 116

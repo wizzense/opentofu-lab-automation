@@ -2,8 +2,8 @@
 
 BeforeAll {
     # Directly source the function file to test individual functions
-    $projectRoot = Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
-    $functionPath = Join-Path $projectRoot "pwsh/modules/PatchManager/Public/BranchStrategy.ps1"
+    $projectRoot = "c:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation"
+    $functionPath = Join-Path $projectRoot "core-runner/modules/PatchManager/Public/BranchStrategy.ps1"
     . $functionPath
 }
 

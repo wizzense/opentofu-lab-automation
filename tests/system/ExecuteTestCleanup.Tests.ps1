@@ -66,7 +66,7 @@ Describe "Test Structure Cleanup Execution" {
             foreach ($dir in $directories) {
                 $fullPath = Join-Path $testsRoot $dir
                 Execute-Action "Create directory $dir" {
-                    New-Item -Path $fullPath -ItemType Directory -Force | Out-Null
+                    if (-not (Test-Path $fullPath)) { New-Item -Path $fullPath -ItemType Directory -Force | Out-Null }
                 }
                 
                 if (-not $WhatIf) {
@@ -222,3 +222,4 @@ Describe "Post-Cleanup Validation" {
         }
     }
 }
+

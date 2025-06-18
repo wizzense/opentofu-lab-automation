@@ -38,6 +38,90 @@
     "jsonc": true
   },
   "github.copilot.chat.codeGeneration.useInstructionFiles": true,
+  "github.copilot.instructionFiles": [
+    {
+      "pattern": "**/*",
+      "instructionFile": ".github/copilot-instructions.md"
+    },
+    {
+      "pattern": "**/*",
+      "instructionFile": ".github/instructions/powershell-testing.instructions.md"
+    },
+    {
+      "pattern": "**/*",
+      "instructionFile": ".github/instructions/patchmanager.instructions.md"
+    },
+    {
+      "pattern": "**/*",
+      "instructionFile": ".github/instructions/devenvironment.instructions.md"
+    },
+    {
+      "pattern": "**/*",
+      "instructionFile": ".github/instructions/logging.instructions.md"
+    },
+    {
+      "pattern": "**/*",
+      "instructionFile": ".github/instructions/parallelexecution.instructions.md"
+    },
+    {
+      "pattern": "**/*",
+      "instructionFile": ".github/instructions/comprehensive-testing.instructions.md"
+    }
+  ],
+  "github.copilot.chat.promptFiles": [
+    {
+      "pattern": "**/*",
+      "promptFile": ".github/prompts/create-powershell-module.prompt.md"
+    },
+    {
+      "pattern": "**/*",
+      "promptFile": ".github/prompts/pester-testing.prompt.md"
+    },
+    {
+      "pattern": "**/*",
+      "promptFile": ".github/prompts/patchmanager-development.prompt.md"
+    },
+    {
+      "pattern": "**/*",
+      "promptFile": ".github/prompts/labrunner-development.prompt.md"
+    },
+    {
+      "pattern": "**/*",
+      "promptFile": ".github/prompts/testingframework-development.prompt.md"
+    },
+    {
+      "pattern": "**/*",
+      "promptFile": ".github/prompts/devenvironment-development.prompt.md"
+    },
+    {
+      "pattern": "**/*",
+      "promptFile": ".github/prompts/logging-development.prompt.md"
+    },
+    {
+      "pattern": "**/*",
+      "promptFile": ".github/prompts/parallelexecution-development.prompt.md"
+    },
+    {
+      "pattern": "**/*",
+      "promptFile": ".github/prompts/system-maintenance.prompt.md"
+    },
+    {
+      "pattern": "**/*",
+      "promptFile": ".github/prompts/troubleshooting.prompt.md"
+    },
+    {
+      "pattern": "**/*",
+      "promptFile": ".github/prompts/code-review.prompt.md"
+    },
+    {
+      "pattern": "**/*",
+      "promptFile": ".github/prompts/cicd-management.prompt.md"
+    },
+    {
+      "pattern": "**/*",
+      "promptFile": ".github/prompts/infrastructure-management.prompt.md"
+    }
+  ],
   "github.copilot.chat.codeGeneration.instructions": [
     {
       "text": "Follow PowerShell 7.0+ cross-platform standards with #Requires -Version 7.0"
@@ -144,14 +228,22 @@
       "text": "Use professional language without emojis"
     }
   ],
-  // Copilot instruction files
-  "github.copilot.instructionFiles": [
-    {
-      "pattern": "**/*",
-      "instructionFile": ".vscode/copilot-instructions.md"
+  "github.copilot.advanced": {
+    "secret_key": "value",
+    "length": 16000,
+    "temperature": 0.1,
+    "top_p": 1,
+    "stops": {
+      "powershell": [
+        "\n\n",
+        "# End",
+        "```"
+      ]
     }
-  ],
-  // PowerShell Configuration
+  },
+  "github.copilot.chat.welcomeMessage": "never",
+  "github.copilot.chat.localeOverride": "en",
+  "github.copilot.editor.enableCodeActions": true, // PowerShell Configuration
   "powershell.codeFormatting.preset": "OTBS",
   "powershell.codeFormatting.openBraceOnSameLine": true,
   "powershell.codeFormatting.newLineAfterOpenBrace": true,
@@ -162,9 +254,26 @@
   "powershell.codeFormatting.whitespaceAroundOperator": true,
   "powershell.codeFormatting.whitespaceAfterSeparator": true,
   "powershell.codeFormatting.ignoreOneLineBlock": true,
+  "powershell.codeFormatting.trimWhitespaceAroundPipe": true,
+  "powershell.codeFormatting.useConstantStrings": true,
+  "powershell.codeFormatting.useCorrectCasing": true,
   "powershell.scriptAnalysis.enable": true,
   "powershell.scriptAnalysis.settingsPath": "pwsh/PSScriptAnalyzerSettings.psd1",
   "powershell.developer.powerShellExePath": "pwsh",
+  "powershell.powerShellDefaultVersion": "PowerShell (x64)",
+  "powershell.integratedConsole.showOnStartup": false,
+  "powershell.debugging.createTemporaryIntegratedConsole": false,
+  "[powershell]": {
+    "editor.formatOnSave": true,
+    "editor.formatOnPaste": true,
+    "editor.insertSpaces": true,
+    "editor.tabSize": 4,
+    "editor.wordWrap": "off",
+    "editor.semanticHighlighting.enabled": true,
+    "editor.bracketPairColorization.enabled": true,
+    "editor.suggest.showKeywords": true,
+    "editor.suggest.showSnippets": true
+  },
   // Python Configuration
   "python.testing.pytestArgs": [
     "py"
@@ -249,23 +358,27 @@
         "-NoLogo"
       ]
     }
-  },
-  // Extension-specific settings
+  }, // Extension-specific settings
   "pester.useLegacyCodeLens": false,
   "pester.enableCodeLens": true,
+  "pester.outputVerbosity": "Normal",
+  "pester.autoDiscoverTests": true,
+  "pester.testFilePath": [
+    "tests/**/*.Tests.ps1"
+  ],
+  "pester.configurationFilePath": "tests/config/PesterConfiguration.psd1",
+  "pester.testFilePattern": "**/*.Tests.ps1",
+  "pester.excludeTestFiles": [
+    "**/temp/**",
+    "**/backup*/**",
+    "**/archive/**"
+  ],
   "errorLens.enabledDiagnosticLevels": [
     "error",
     "warning",
     "info"
   ],
-  "errorLens.exclude": [
+  "errorLens.excludeByMessage": [
     "never (read|used)"
-  ],
-  // Workspace-specific settings
-  "explorer.fileNesting.enabled": true,
-  "explorer.fileNesting.patterns": {
-    "*.ps1": "${capture}.Tests.ps1, ${capture}.test.ps1",
-    "*.psm1": "${capture}.psd1",
-    "*.tf": "${capture}.tfvars"
-  }
+  ]
 }

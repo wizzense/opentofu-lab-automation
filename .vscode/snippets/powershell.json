@@ -4,72 +4,69 @@
         "body": [
             "#Requires -Version 7.0",
             "",
-            "function ${1:FunctionName} {",
+            "function ${1:Verb-Noun} {",
             "    [CmdletBinding(SupportsShouldProcess)]",
             "    param(",
-            "        [Parameter(Mandatory)]",
-            "        [string]$${2:RequiredParam},",
+            "        [Parameter(Mandatory = \\$true)]",
+            "        [ValidateNotNullOrEmpty()]",
+            "        [string]\\$${2:RequiredParam},",
             "        ",
             "        [Parameter()]",
-            "        [switch]$${3:OptionalSwitch}",
+            "        [string]\\$${3:OptionalParam} = '${4:DefaultValue}'",
             "    )",
             "    ",
             "    begin {",
-            "        Write-CustomLog \"Starting \\$($MyInvocation.MyCommand)\"",
-            "        ${4:# Initialization logic}",
+            "        Write-CustomLog -Level 'INFO' -Message \"Starting \\$($MyInvocation.MyCommand.Name)\"",
             "    }",
             "    ",
             "    process {",
             "        try {",
-            "            if (\\$PSCmdlet.ShouldProcess(\\$${2:RequiredParam}, \"${5:Operation Description}\")) {",
-            "                ${6:# Main logic here}",
-            "                Write-CustomLog \"Processing \\$${2:RequiredParam}\"",
+            "            if (\\$PSCmdlet.ShouldProcess(\\$${2:RequiredParam}, '${5:Action}')) {",
+            "                ${0:# Implementation here}",
             "            }",
             "        }",
             "        catch {",
-            "            Write-CustomLog \"Error in \\$($MyInvocation.MyCommand): \\$($_.Exception.Message)\" -Level ERROR",
+            "            Write-CustomLog -Level 'ERROR' -Message \"Error in \\$($MyInvocation.MyCommand.Name): \\$($_.Exception.Message)\"",
             "            throw",
             "        }",
             "    }",
             "    ",
             "    end {",
-            "        Write-CustomLog \"Completed \\$($MyInvocation.MyCommand)\"",
+            "        Write-CustomLog -Level 'SUCCESS' -Message \"Completed \\$($MyInvocation.MyCommand.Name)\"",
             "    }",
             "}"
         ],
-        "description": "Standard PowerShell function template for OpenTofu Lab Automation"
+        "description": "PowerShell function template with project standards"
     },
-    "Module Import Standard": {
-        "prefix": "psimport",
+    "PowerShell Module Manifest": {
+        "prefix": "psmanifest",
         "body": [
             "#Requires -Version 7.0",
-            "Import-Module \"/workspaces/opentofu-lab-automation/pwsh/modules/${1:ModuleName}/\" -Force"
-        ],
-        "description": "Standard module import for cross-platform compatibility"
-    },
-    "Error Handling Block": {
-        "prefix": "pstryeatch",
-        "body": [
-            "try {",
-            "    ${1:# Operation that might fail}",
-            "    \\$result = ${2:Invoke-SomeOperation}",
-            "    Write-CustomLog \"Operation successful: \\$result\" -Level SUCCESS",
-            "}",
-            "catch {",
-            "    \\$errorMsg = \"Failed to ${3:complete operation}: \\$($_.Exception.Message)\"",
-            "    Write-CustomLog \\$errorMsg -Level ERROR",
-            "    ",
-            "    # Determine if this is recoverable",
-            "    if (\\$_.Exception -is [System.IO.FileNotFoundException]) {",
-            "        Write-CustomLog \"Attempting recovery...\" -Level WARN",
-            "        ${4:# Recovery logic}",
-            "    }",
-            "    else {",
-            "        throw  # Re-throw if not recoverable",
+            "",
+            "@{",
+            "    RootModule = '${1:ModuleName}.psm1'",
+            "    ModuleVersion = '${2:1.0.0}'",
+            "    GUID = '${3:guid}'",
+            "    Author = '${4:Author}'",
+            "    CompanyName = '${5:Company}'",
+            "    Copyright = '(c) ${6:Year} ${4:Author}. All rights reserved.'",
+            "    Description = '${7:Module description}'",
+            "    PowerShellVersion = '7.0'",
+            "    RequiredModules = @()",
+            "    FunctionsToExport = @('*')",
+            "    CmdletsToExport = @()",
+            "    VariablesToExport = @()",
+            "    AliasesToExport = @()",
+            "    PrivateData = @{",
+            "        PSData = @{",
+            "            Tags = @('${8:tag1}', '${9:tag2}')",
+            "            ProjectUri = '${10:ProjectUri}'",
+            "            ReleaseNotes = '${11:Initial release}'",
+            "        }",
             "    }",
             "}"
         ],
-        "description": "Comprehensive error handling pattern"
+        "description": "PowerShell module manifest template"
     },
     "Pester Test Template": {
         "prefix": "pestertest",
@@ -77,80 +74,85 @@
             "#Requires -Module Pester",
             "#Requires -Version 7.0",
             "",
-            "Describe \"${1:ModuleName} Tests\" {",
+            "Describe '${1:ComponentName}' {",
             "    BeforeAll {",
-            "        # Setup - import modules, create test data",
-            "        Import-Module \"/workspaces/opentofu-lab-automation/pwsh/modules/${1:ModuleName}/\" -Force",
-            "        ${2:# Additional setup}",
-            "    }",
-            "    ",
-            "    Context \"When testing ${3:basic functionality}\" {",
-            "        It \"Should ${4:perform expected operation}\" {",
-            "            # Arrange",
-            "            \\$testParam = \"${5:TestValue}\"",
-            "            ",
-            "            # Act",
-            "            \\$result = ${6:Invoke-TestFunction} -Parameter \\$testParam",
-            "            ",
-            "            # Assert",
-            "            \\$result | Should -Not -BeNullOrEmpty",
-            "            \\$result.Success | Should -Be \\$true",
-            "        }",
-            "        ",
-            "        It \"Should handle errors gracefully\" {",
-            "            # Arrange",
-            "            \\$invalidParam = \"\"",
-            "            ",
-            "            # Act & Assert",
-            "            { ${6:Invoke-TestFunction} -Parameter \\$invalidParam } | Should -Throw",
-            "        }",
+            "        # Setup test environment",
+            "        \\$ModulePath = '${2:ModulePath}'",
+            "        Import-Module \\$ModulePath -Force",
+            "        ${3:# Additional setup}",
             "    }",
             "    ",
             "    AfterAll {",
-            "        ${7:# Cleanup}",
+            "        # Cleanup test environment",
+            "        ${4:# Cleanup code}",
+            "    }",
+            "    ",
+            "    Context '${5:ContextName}' {",
+            "        BeforeEach {",
+            "            ${6:# Setup for each test}",
+            "        }",
+            "        ",
+            "        It '${7:Should do something}' {",
+            "            # Arrange",
+            "            ${8:# Test setup}",
+            "            ",
+            "            # Act",
+            "            ${9:# Execute action}",
+            "            ",
+            "            # Assert",
+            "            ${0:# Verify results}",
+            "        }",
             "    }",
             "}"
         ],
-        "description": "Standard Pester test template"
+        "description": "Pester test template with Describe-Context-It structure"
     },
-    "Write-CustomLog": {
-        "prefix": "pslog",
+    "Try-Catch Error Handling": {
+        "prefix": "pstrycatch",
         "body": [
-            "Write-CustomLog \"${1:Log message}\" -Level ${2|INFO,WARN,ERROR,SUCCESS|}"
-        ],
-        "description": "Standard logging call"
-    },
-    "Invoke-LabStep Wrapper": {
-        "prefix": "pslabstep",
-        "body": [
-            "Invoke-LabStep -Config \\$Config -Body {",
-            "    Write-CustomLog \"Running \\$($MyInvocation.MyCommand.Name)\"",
-            "    ",
-            "    ${1:# Lab step logic here}",
-            "    ",
-            "    Write-CustomLog \"Completed \\$($MyInvocation.MyCommand.Name)\"",
+            "try {",
+            "    ${1:# Code that might throw an exception}",
+            "}",
+            "catch {",
+            "    Write-CustomLog -Level 'ERROR' -Message \"Error in \\$($MyInvocation.MyCommand.Name): \\$($_.Exception.Message)\"",
+            "    ${2:# Error handling}",
+            "    throw",
             "}"
         ],
-        "description": "Standard lab step wrapper"
+        "description": "Try-catch block with logging"
+    },
+    "Parameter Validation": {
+        "prefix": "psvalidation",
+        "body": [
+            "[Parameter(${1:Mandatory = \\$true})]",
+            "[ValidateNotNullOrEmpty()]",
+            "[${2:string}]\\$${3:ParameterName}${4:,}"
+        ],
+        "description": "Parameter with validation attributes"
     },
     "Cross-Platform Path": {
         "prefix": "pspath",
         "body": [
-            "\\$${1:variableName} = Join-Path -Path \"/workspaces/opentofu-lab-automation\" -ChildPath \"${2:relativePath}\""
+            "\\$Path = Join-Path -Path '${1:BasePath}' -ChildPath '${2:SubPath}' | Convert-Path"
         ],
         "description": "Cross-platform path construction"
     },
-    "Parameter Validation": {
-        "prefix": "psvalidate",
+    "Module Import with Force": {
+        "prefix": "psimport",
         "body": [
-            "[Parameter(${1|Mandatory,})]",
-            "[ValidateNotNullOrEmpty()]",
-            "[${2|string,int,switch,object|}]\\$${3:ParameterName}"
+            "Import-Module '${1:ModulePath}' -Force"
         ],
-        "description": "Parameter with validation"
+        "description": "Import module with force parameter"
     },
-    "Module Header": {
-        "prefix": "psmoduleheader",
+    "Write-CustomLog": {
+        "prefix": "pslog",
+        "body": [
+            "Write-CustomLog -Level '${1|INFO,WARN,ERROR,SUCCESS|}' -Message '${2:Message}'"
+        ],
+        "description": "Write custom log entry"
+    },
+    "PowerShell Script Header": {
+        "prefix": "psheader",
         "body": [
             "#Requires -Version 7.0",
             "",
@@ -168,20 +170,26 @@
             "    ${5:Example usage}",
             "",
             ".NOTES",
-            "    - ${6:Additional notes}",
-            "    - Part of OpenTofu Lab Automation",
-            "    - Follows project PowerShell standards",
-            "#>"
+            "    Author: ${6:Author}",
+            "    Date: ${7:Date}",
+            "    Version: ${8:1.0.0}",
+            "#>",
+            "",
+            "[CmdletBinding(SupportsShouldProcess)]",
+            "param(",
+            "    ${0:# Parameters here}",
+            ")"
         ],
-        "description": "Standard module header with help"
+        "description": "PowerShell script header with help and parameters"
     },
-    "Environment Variable Check": {
-        "prefix": "psenvcheck",
+    "Mock Implementation": {
+        "prefix": "psmock",
         "body": [
-            "if (-not \\$env:${1:VARIABLE_NAME}) {",
-            "    throw \"Environment variable ${1:VARIABLE_NAME} is not set. Please ensure the environment is properly initialized.\"",
-            "}"
+            "Mock ${1:CommandName} {",
+            "    ${2:# Mock implementation}",
+            "    return ${3:\\$null}",
+            "} -ModuleName '${4:ModuleName}'"
         ],
-        "description": "Environment variable validation"
+        "description": "Pester mock implementation"
     }
 }

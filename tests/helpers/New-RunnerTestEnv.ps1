@@ -8,16 +8,16 @@ function global:New-RunnerTestEnv {
     if (Test-Path $root) {
         Remove-Item -Recurse -Force $root -ErrorAction SilentlyContinue
     }
-    New-Item -ItemType Directory -Path $root | Out-Null
+    if (-not (Test-Path $root)) { New-Item -ItemType Directory -Path $root -Force | Out-Null }
     $repoRoot = Join-Path $PSScriptRoot '..' '..'
     $pwshDir = Join-Path $root 'pwsh'
-    New-Item -ItemType Directory -Path $pwshDir | Out-Null
+    if (-not (Test-Path $pwshDir)) { New-Item -ItemType Directory -Path $pwshDir -Force | Out-Null }
     Copy-Item (Join-Path $repoRoot 'pwsh' 'runner.ps1') -Destination $pwshDir
 
     $rsDir = Join-Path $pwshDir 'runner_scripts'
-    New-Item -ItemType Directory -Path $rsDir | Out-Null
+    if (-not (Test-Path $rsDir)) { New-Item -ItemType Directory -Path $rsDir -Force | Out-Null }
     $utils = Join-Path $pwshDir 'modules/LabRunner'
-    New-Item -ItemType Directory -Path $utils -Force | Out-Null
+            if (-not (Test-Path $utils)) { New-Item -ItemType Directory -Path $utils -Force | Out-Null }
     
     'function Write-CustomLog { 
         param([string]$Message, [string]$Level) 
@@ -25,7 +25,7 @@ function global:New-RunnerTestEnv {
     }' | Set-Content -Path (Join-Path $utils 'Logger.ps1')
 
     $labs = Join-Path $pwshDir 'lab_utils'
-    New-Item -ItemType Directory -Path $labs | Out-Null
+    if (-not (Test-Path $labs)) { New-Item -ItemType Directory -Path $labs -Force | Out-Null }
     Copy-Item (Join-Path $repoRoot 'pwsh' 'lab_utils' 'Resolve-ProjectPath.ps1') -Destination $labs -Force -ErrorAction SilentlyContinue
     
     'function Get-LabConfig { 
@@ -50,11 +50,11 @@ function global:New-RunnerTestEnv {
     # Also expose Resolve-ProjectPath from the repository root so tests invoking
     # runner.ps1 can locate it via $root/lab_utils
     $rootLabs = Join-Path $root 'lab_utils'
-    New-Item -ItemType Directory -Path $rootLabs -Force | Out-Null
+            if (-not (Test-Path $rootLabs)) { New-Item -ItemType Directory -Path $rootLabs -Force | Out-Null }
     Copy-Item (Join-Path $repoRoot 'pwsh' 'lab_utils' 'Resolve-ProjectPath.ps1') -Destination $rootLabs -ErrorAction SilentlyContinue
 
     $cfgDir = Join-Path $root 'configs' 'config_files'
-    New-Item -ItemType Directory -Path $cfgDir -Force | Out-Null
+            if (-not (Test-Path $cfgDir)) { New-Item -ItemType Directory -Path $cfgDir -Force | Out-Null }
     '{}' | Set-Content -Path (Join-Path $cfgDir 'default-config.json')
     '{}' | Set-Content -Path (Join-Path $cfgDir 'recommended-config.json')
 
@@ -68,6 +68,8 @@ function global:Remove-RunnerTestEnv {
     }
     $script:RunnerTestEnvDirs = @()
 }
+
+
 
 
 
