@@ -6,7 +6,7 @@ BeforeAll {
     }
     
     # Import the LabRunner module
-    $projectRoot = "c:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation"
+    $projectRoot = $env:PROJECT_ROOT
     $labRunnerPath = Join-Path $projectRoot "core-runner/modules/LabRunner"
     
     try {

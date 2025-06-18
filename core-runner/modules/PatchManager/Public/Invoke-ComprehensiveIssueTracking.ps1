@@ -58,21 +58,30 @@
 function Invoke-ComprehensiveIssueTracking {
     [CmdletBinding()]
     param(
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $false)]
         [ValidateSet("PR", "Error", "TestFailure", "RuntimeFailure", "Warning")]
-        [string]$Operation,
+        [string]$Operation = "PR",
         
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $false)]
         [string]$Title,
         
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $false)]
         [string]$Description,
+        
+        [Parameter(Mandatory = $false)]
+        [string]$PatchDescription,
         
         [Parameter(Mandatory = $false)]
         [int]$PullRequestNumber,
         
         [Parameter(Mandatory = $false)]
         [string]$PullRequestUrl,
+        
+        [Parameter(Mandatory = $false)]
+        [int]$ExistingIssueNumber,
+        
+        [Parameter(Mandatory = $false)]
+        [switch]$CreateAutomatedTracking,
         
         [Parameter(Mandatory = $false)]
         [hashtable]$ErrorDetails = @{},
@@ -566,4 +575,4 @@ This will be handled by the PatchManager monitoring system.
     }
 }
 
-Export-ModuleMember -Function Invoke-ComprehensiveIssueTracking
+

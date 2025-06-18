@@ -123,11 +123,11 @@ function Get-SanitizedBranchName {
         
         [Parameter(Mandatory = $false)]
         [string]$Prefix = "patch",
-        
-        [Parameter(Mandatory = $false)]
+          [Parameter(Mandatory = $false)]
         [switch]$IncludeTimestamp
     )
-      # Replace invalid characters and standardize
+    
+    # Replace invalid characters and standardize
     $sanitized = $Description -replace '[^a-zA-Z0-9]', '-' -replace '-+', '-' -replace '^-|-$', ''
     
     if ($sanitized.Length -gt 40) {
@@ -143,9 +143,4 @@ function Get-SanitizedBranchName {
     }
 }
 
-# Export public functions (only when running as part of module)
-if ($MyInvocation.MyCommand.CommandType -eq 'ExternalScript' -and $MyInvocation.InvocationName -notlike "*\*") {
-    # Running directly as script - don't export
-} else {
-    Export-ModuleMember -Function Get-IntelligentBranchStrategy, Test-BranchProtection, Get-SanitizedBranchName
-}
+

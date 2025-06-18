@@ -1,6 +1,19 @@
 BeforeAll {
+    # Import Logging module first
+    $projectRoot = $env:PROJECT_ROOT
+    $loggingPath = Join-Path $projectRoot "core-runner/modules/Logging"
+    
+    try {
+        Import-Module $loggingPath -Force -Global -ErrorAction Stop
+        Write-Host "Logging module imported successfully" -ForegroundColor Green
+    }
+    catch {
+        Write-Error "Failed to import Logging module: $_"
+        throw
+    }
+
     # Import PatchManager module
-    $projectRoot = "c:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation"
+    $projectRoot = $env:PROJECT_ROOT
     $patchManagerPath = Join-Path $projectRoot "core-runner/modules/PatchManager"
     
     try {

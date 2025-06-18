@@ -1,6 +1,19 @@
 BeforeAll {
+    # Import Logging module first
+    $projectRoot = $env:PROJECT_ROOT
+    $loggingPath = Join-Path $projectRoot "core-runner/modules/Logging"
+    
+    try {
+        Import-Module $loggingPath -Force -Global -ErrorAction Stop
+        Write-Host "Logging module imported successfully" -ForegroundColor Green
+    }
+    catch {
+        Write-Error "Failed to import Logging module: $_"
+        throw
+    }
+
     # Import PatchManager module
-    $projectRoot = "c:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation"
+    $projectRoot = $env:PROJECT_ROOT
     $patchManagerPath = Join-Path $projectRoot "core-runner/modules/PatchManager"
     
     try {
@@ -123,11 +136,10 @@ Describe "PatchManager Branch Management" {
             Test-BranchProtection -BranchName "feature/new-feature" | Should -Be $false
             Test-BranchProtection -BranchName "hotfix/bug-123" | Should -Be $false
         }
-        
-        It "Should handle custom protected patterns" {
+          It "Should handle custom protected patterns" {
             $customPatterns = @("release/*", "prod/*")
-            Test-BranchProtection -BranchName "release/v1.0.0" -ProtectedPatterns $customPatterns | Should -Be $true
-            Test-BranchProtection -BranchName "prod/staging" -ProtectedPatterns $customPatterns | Should -Be $true
+            Test-BranchProtection -BranchName "release/v1.0.0" -ProtectedBranches $customPatterns | Should -Be $true
+            Test-BranchProtection -BranchName "prod/staging" -ProtectedBranches $customPatterns | Should -Be $true
         }
     }
     

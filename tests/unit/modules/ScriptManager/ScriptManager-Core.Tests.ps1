@@ -6,7 +6,7 @@ BeforeAll {
     }
     
     # Import the ScriptManager module
-    $projectRoot = "c:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation"
+    $projectRoot = $env:PROJECT_ROOT
     $scriptManagerPath = Join-Path $projectRoot "core-runner/modules/ScriptManager"
     
     try {

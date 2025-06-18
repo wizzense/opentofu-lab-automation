@@ -288,7 +288,7 @@ Describe "Module - Integration Tests" {
 ### Quick Start
 ```powershell
 # Navigate to tests directory
-cd "c:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\tests"
+cd "$env:PROJECT_ROOT\tests"
 
 # Run all tests
 .\Run-AllModuleTests.ps1

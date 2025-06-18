@@ -81,12 +81,29 @@ function Invoke-GitControlledPatch {
         
         [Parameter()]
         [switch]$AutoMerge,
+          [Parameter()]
+        [switch]$DryRun,
         
         [Parameter()]
-        [switch]$DryRun
-    )
-
-      begin {        # Import required modules from project
+        [switch]$AutoCommitUncommitted
+    )begin {
+        # Check if we're in non-interactive mode (test environment, etc.)
+        $IsNonInteractive = ($Host.Name -eq 'Default Host') -or 
+                          ([Environment]::UserInteractive -eq $false) -or
+                          ($env:PESTER_RUN -eq 'true') -or
+                          ($PSCmdlet.WhatIf)
+        
+        # Validate required parameters - PowerShell will handle mandatory parameter validation
+        # but we add extra validation for meaningful error messages
+        if ([string]::IsNullOrWhiteSpace($PatchDescription)) {
+            if ($IsNonInteractive) {
+                throw "PatchDescription parameter is required. Please provide a meaningful description of the patch being applied."
+            } else {
+                throw "PatchDescription parameter is required. Please provide a meaningful description of the patch being applied."
+            }
+        }
+        
+        # Import required modules from project
 
         $projectRoot = if ($env:PROJECT_ROOT) { $env:PROJECT_ROOT } else { "c:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation" }
         Import-Module "$projectRoot\pwsh\modules\LabRunner" -Force -ErrorAction SilentlyContinue
@@ -351,12 +368,13 @@ This issue will monitor the PR lifecycle and ensure all requirements are met bef
 function New-PatchBranch {
     [CmdletBinding()]
     param(
-        [string]$Description,
+        [string]$PatchDescription,
         [string]$BaseBranch,
+        [string]$Prefix = "patch",
         [switch]$DryRun
     )
     
-    $branchName = "patch/$(Get-Date -Format 'yyyyMMdd-HHmmss')-$($Description -replace '[^a-zA-Z0-9]', '-')"
+    $branchName = "$Prefix/$(Get-Date -Format 'yyyyMMdd-HHmmss')-$($PatchDescription -replace '[^a-zA-Z0-9]', '-')"
     $branchName = $branchName.ToLower()
     
     if ($DryRun) {
@@ -401,7 +419,8 @@ function New-PatchCommit {
     [CmdletBinding()]
     param(
         [string]$Description,
-        [string[]]$AffectedFiles
+        [string[]]$AffectedFiles,
+        [string]$CoAuthor
     )
     
     try {
@@ -413,9 +432,11 @@ function New-PatchCommit {
         } else {
             git add . 2>&1 | Out-Null
         }
-        
-        # Commit with standardized message
+          # Commit with standardized message
         $commitMessage = "patch: $Description"
+        if ($CoAuthor) {
+            $commitMessage += "`n`nCo-authored-by: $CoAuthor"
+        }
         git commit -m $commitMessage 2>&1 | Out-Null
         
         if ($LASTEXITCODE -eq 0) {
@@ -442,10 +463,19 @@ function New-PatchPullRequest {
         [string]$Description,
         [string[]]$AffectedFiles = @(),
         [hashtable]$ValidationResults = @{},
-        [switch]$AutoMerge
+        [switch]$AutoMerge,
+        [switch]$DryRun
     )
-    
-    try {
+      try {
+        if ($DryRun) {
+            Write-CustomLog "DRY RUN: Would push branch $BranchName to remote and create pull request" -Level INFO
+            return @{
+                Success = $true
+                Message = "DRY RUN: Pull request creation simulated"
+                DryRun = $true
+            }
+        }
+        
         Write-CustomLog "Pushing branch $BranchName to remote..." -Level INFO
         
         # Push branch with detailed output
@@ -745,4 +775,3 @@ function Get-GitCommitInfo {
     }
 }
 
-Export-ModuleMember -Function Invoke-GitControlledPatch

@@ -1,9 +1,10 @@
 # Required test file header
 . (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
 
-Describe 'CustomLint Tests' {
-    BeforeAll {
+Describe 'CustomLint Tests' {    BeforeAll {
         Import-Module "$env:PWSH_MODULES_PATH/LabRunner/" -Force
+    }
+    }
 
     Context 'Module Loading' {
         It 'should load required modules' {

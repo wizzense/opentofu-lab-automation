@@ -528,6 +528,6 @@ function Add-ErrorTrackingEntry {
     }
 }
 
-Export-ModuleMember -Function Invoke-AutomatedErrorTracking
+
 
 

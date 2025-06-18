@@ -6,7 +6,7 @@ BeforeAll {
     }
     
     # Import the DevEnvironment module
-    $projectRoot = "c:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation"
+    $projectRoot = $env:PROJECT_ROOT
     $devEnvironmentPath = Join-Path $projectRoot "core-runner/modules/DevEnvironment"
     
     try {

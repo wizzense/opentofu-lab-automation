@@ -16,15 +16,34 @@ including parallel test execution, job management, and result aggregation.
 #>
 
 # Import the centralized Logging module
-$loggingModulePath = Join-Path $env:PWSH_MODULES_PATH "Logging"
-if (-not $env:PWSH_MODULES_PATH -or -not (Test-Path $loggingModulePath)) {
-    $loggingModulePath = Join-Path (Split-Path (Split-Path $PSScriptRoot -Parent) -Parent) "Logging"
+$loggingImported = $false
+$loggingPaths = @(
+    'Logging',  # Try module name first (if in PSModulePath)
+    (Join-Path (Split-Path $PSScriptRoot -Parent) "Logging"),  # Relative to modules directory
+    (Join-Path $env:PWSH_MODULES_PATH "Logging"),  # Environment path
+    (Join-Path $env:PROJECT_ROOT "core-runner/modules/Logging")  # Full project path
+)
+
+foreach ($loggingPath in $loggingPaths) {
+    if ($loggingImported) { break }
+    
+    try {
+        if ($loggingPath -eq 'Logging') {
+            Import-Module 'Logging' -Force -Global -ErrorAction Stop
+        } elseif (Test-Path $loggingPath) {
+            Import-Module $loggingPath -Force -Global -ErrorAction Stop
+        } else {
+            continue
+        }
+        Write-Verbose "Successfully imported Logging module from: $loggingPath"
+        $loggingImported = $true
+    } catch {
+        Write-Verbose "Failed to import Logging from $loggingPath : $_"
+    }
 }
-if (Test-Path $loggingModulePath) {
-    Import-Module $loggingModulePath -Force -Global
-    Write-Verbose "Successfully imported centralized Logging module"
-} else {
-    Write-Warning "Could not find centralized Logging module at $loggingModulePath"
+
+if (-not $loggingImported) {
+    Write-Warning "Could not import Logging module from any of the attempted paths"
     # Fallback logging function
     function Write-CustomLog {
         param([string]$Message, [string]$Level = "INFO")

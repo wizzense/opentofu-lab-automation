@@ -13,7 +13,7 @@ BeforeAll {
         $script:ghCalls += ,@($allArgs)
         return ""
     }# Directly source the function file
-    $projectRoot = "c:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation"
+    $projectRoot = $env:PROJECT_ROOT
     $functionPath = Join-Path $projectRoot "core-runner/modules/PatchManager/Public/ErrorHandling.ps1"
     if (Test-Path $functionPath) {
         . $functionPath

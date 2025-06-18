@@ -40,29 +40,41 @@ function Invoke-QuickRollback {
     [CmdletBinding(SupportsShouldProcess)]
     param(
         [Parameter(Mandatory = $true)]
-        [ValidateSet("LastPatch", "LastCommit", "ToCommit", "ToBranch", "Emergency")]
+        [ValidateSet("LastPatch", "LastCommit", "ToCommit", "ToBranch", "Emergency", "SpecificCommit", "WorkingTree")]
         [string]$RollbackType,
         
         [Parameter(Mandatory = $false)]
         [string]$TargetCommit,
-        
-        [Parameter(Mandatory = $false)]
+          [Parameter(Mandatory = $false)]
         [string]$TargetBranch,
         
         [Parameter(Mandatory = $false)]
+        [string]$CommitHash,
+        
+        [Parameter(Mandatory = $false)]
         [switch]$Force,
-          [Parameter(Mandatory = $false)]
-        [switch]$CreateBackup
-    )
-      begin {
+        
+        [Parameter(Mandatory = $false)]
+        [switch]$CreateBackup,
+        
+        [Parameter(Mandatory = $false)]
+        [switch]$ValidateSafety,
+        
+        [Parameter(Mandatory = $false)]
+        [switch]$DryRun
+    )      begin {
         Write-Host "Starting quick rollback process..." -ForegroundColor Cyan
+        
+        if ($DryRun) {
+            Write-Host "DRY RUN MODE - No actual changes will be made" -ForegroundColor Yellow
+        }
         
         # Set default for CreateBackup if not explicitly specified
         if (-not $PSBoundParameters.ContainsKey('CreateBackup')) {
             $CreateBackup = $true
         }
         
-        Write-Host "Type: $RollbackType | Force: $Force | Backup: $CreateBackup" -ForegroundColor Yellow
+        Write-Host "Type: $RollbackType | Force: $Force | Backup: $CreateBackup | DryRun: $DryRun" -ForegroundColor Yellow
         
         # Validate we're in a Git repository
         if (-not (Test-Path ".git")) {
@@ -282,6 +294,6 @@ function Invoke-PostRollbackValidation {
 }
 
 # Export the function
-Export-ModuleMember -Function Invoke-QuickRollback
+
 
 

@@ -2,7 +2,7 @@
 
 BeforeAll {
     # Directly source the function file to test individual functions
-    $projectRoot = "c:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation"
+    $projectRoot = $env:PROJECT_ROOT
     $functionPath = Join-Path $projectRoot "core-runner/modules/PatchManager/Public/BranchStrategy.ps1"
     . $functionPath
 }

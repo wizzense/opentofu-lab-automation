@@ -38,9 +38,8 @@
 #>
 
 function Invoke-EnhancedPatchManager {
-    [CmdletBinding(SupportsShouldProcess)]
-    param(
-        [Parameter(Mandatory = $true)]
+    [CmdletBinding(SupportsShouldProcess)]    param(
+        [Parameter(Mandatory = $false)]
         [string]$PatchDescription,
         
         [Parameter()]
@@ -64,8 +63,12 @@ function Invoke-EnhancedPatchManager {
         [Parameter()]
         [switch]$DryRun
     )
-    
-    begin {
+      begin {
+        # Validate required parameters first - fail fast in non-interactive mode
+        if ([string]::IsNullOrWhiteSpace($PatchDescription)) {
+            throw "PatchDescription parameter is required. Please provide a meaningful description of the patch being applied."
+        }
+        
         Write-Host "=== Enhanced PatchManager with Automated Validation ===" -ForegroundColor Cyan
         
         # Import required modules
