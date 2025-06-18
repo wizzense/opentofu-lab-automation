@@ -6,8 +6,10 @@ param(
 )
 
 try {
-    Import-Module "$env:PROJECT_ROOT/core-runner/modules/LabRunner/" -Force
-    Write-CustomLog -Level 'INFO' -Message "Starting $($MyInvocation.MyCommand)"
+    Import-Module "$env:PWSH_MODULES_PATH/LabRunner/" -Force
+    Import-Module "$env:PROJECT_ROOT/core-runner/modules/Logging/" -Force
+
+    Write-CustomLog "Starting $($MyInvocation.MyCommand.Name)"
     Invoke-LabStep -Config $Config -Body {
         Write-CustomLog -Level 'INFO' -Message "Running $($MyInvocation.MyCommand.Name)"
         if ($Config.InstallGo -eq $true) {
