@@ -12,9 +12,10 @@ function global:New-RunnerTestEnv {
     $repoRoot = Join-Path $PSScriptRoot '..' '..'
     $pwshDir = Join-Path $root 'pwsh'
     if (-not (Test-Path $pwshDir)) { New-Item -ItemType Directory -Path $pwshDir -Force | Out-Null }
-    Copy-Item (Join-Path $repoRoot 'pwsh' 'runner.ps1') -Destination $pwshDir
+    Copy-Item (Join-Path $repoRoot 'core-runner' 'core_app' 'core-runner.ps1') -Destination $pwshDir
 
-    $rsDir = Join-Path $pwshDir 'core_app/scripts'
+    $rsDir = Join-Path $root 'core-runner' 'core_app' 'scripts'
+
     if (-not (Test-Path $rsDir)) { New-Item -ItemType Directory -Path $rsDir -Force | Out-Null }
     $utils = Join-Path $pwshDir 'modules/LabRunner'
             if (-not (Test-Path $utils)) { New-Item -ItemType Directory -Path $utils -Force | Out-Null }
@@ -26,7 +27,7 @@ function global:New-RunnerTestEnv {
 
     $labs = Join-Path $pwshDir 'lab_utils'
     if (-not (Test-Path $labs)) { New-Item -ItemType Directory -Path $labs -Force | Out-Null }
-    Copy-Item (Join-Path $repoRoot 'pwsh' 'lab_utils' 'Resolve-ProjectPath.ps1') -Destination $labs -Force -ErrorAction SilentlyContinue
+    Copy-Item (Join-Path $repoRoot 'core-runner' 'modules' 'LabRunner' 'Resolve-ProjectPath.psm1') -Destination $labs -Force -ErrorAction SilentlyContinue
     
     'function Get-LabConfig { 
         param([string]$Path) 
@@ -51,7 +52,7 @@ function global:New-RunnerTestEnv {
     # runner.ps1 can locate it via $root/lab_utils
     $rootLabs = Join-Path $root 'lab_utils'
             if (-not (Test-Path $rootLabs)) { New-Item -ItemType Directory -Path $rootLabs -Force | Out-Null }
-    Copy-Item (Join-Path $repoRoot 'pwsh' 'lab_utils' 'Resolve-ProjectPath.ps1') -Destination $rootLabs -ErrorAction SilentlyContinue
+    Copy-Item (Join-Path $repoRoot 'core-runner' 'modules' 'LabRunner' 'Resolve-ProjectPath.psm1') -Destination $rootLabs -ErrorAction SilentlyContinue
 
     $cfgDir = Join-Path $root 'configs' 'config_files'
             if (-not (Test-Path $cfgDir)) { New-Item -ItemType Directory -Path $cfgDir -Force | Out-Null }
