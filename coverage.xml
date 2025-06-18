@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE report PUBLIC "-//JACOCO//DTD Report 1.1//EN" "report.dtd"[]>
-<report name="Pester (06/18/2025 20:27:14)">
-  <sessioninfo id="this" start="1750278401850" dump="1750278434393" />
+<report name="Pester (06/18/2025 23:18:26)">
+  <sessioninfo id="this" start="1750288675779" dump="1750288706131" />
   <package name="tests">
     <class name="tests/Invoke-DynamicTests" sourcefilename="Invoke-DynamicTests.ps1">
       <method name="&lt;script&gt;" desc="()" line="3">
@@ -1150,19 +1150,14 @@
   </package>
   <package name="tests/helpers">
     <class name="tests/helpers/Get-ScriptAst" sourcefilename="helpers/Get-ScriptAst.ps1">
-      <method name="Get-ScriptAst" desc="()" line="2">
-        <counter type="INSTRUCTION" missed="1" covered="0" />
-        <counter type="LINE" missed="1" covered="0" />
-        <counter type="METHOD" missed="1" covered="0" />
-      </method>
-      <method name="&lt;script&gt;" desc="()" line="3">
-        <counter type="INSTRUCTION" missed="13" covered="0" />
+      <method name="Get-ScriptAst" desc="()" line="3">
+        <counter type="INSTRUCTION" missed="10" covered="0" />
         <counter type="LINE" missed="9" covered="0" />
         <counter type="METHOD" missed="1" covered="0" />
       </method>
-      <counter type="INSTRUCTION" missed="14" covered="0" />
-      <counter type="LINE" missed="10" covered="0" />
-      <counter type="METHOD" missed="2" covered="0" />
+      <counter type="INSTRUCTION" missed="10" covered="0" />
+      <counter type="LINE" missed="9" covered="0" />
+      <counter type="METHOD" missed="1" covered="0" />
       <counter type="CLASS" missed="1" covered="0" />
     </class>
     <class name="tests/helpers/Invoke-ExtensibleTests" sourcefilename="helpers/Invoke-ExtensibleTests.ps1">
@@ -1427,19 +1422,18 @@
       <counter type="CLASS" missed="1" covered="0" />
     </class>
     <sourcefile name="helpers/Get-ScriptAst.ps1">
-      <line nr="2" mi="1" ci="0" mb="0" cb="0" />
       <line nr="3" mi="2" ci="0" mb="0" cb="0" />
       <line nr="4" mi="1" ci="0" mb="0" cb="0" />
       <line nr="7" mi="1" ci="0" mb="0" cb="0" />
       <line nr="9" mi="1" ci="0" mb="0" cb="0" />
-      <line nr="11" mi="3" ci="0" mb="0" cb="0" />
+      <line nr="11" mi="1" ci="0" mb="0" cb="0" />
       <line nr="12" mi="1" ci="0" mb="0" cb="0" />
-      <line nr="15" mi="2" ci="0" mb="0" cb="0" />
+      <line nr="15" mi="1" ci="0" mb="0" cb="0" />
       <line nr="16" mi="1" ci="0" mb="0" cb="0" />
-      <line nr="17" mi="1" ci="0" mb="0" cb="0" />
-      <counter type="INSTRUCTION" missed="14" covered="0" />
-      <counter type="LINE" missed="10" covered="0" />
-      <counter type="METHOD" missed="2" covered="0" />
+      <line nr="18" mi="1" ci="0" mb="0" cb="0" />
+      <counter type="INSTRUCTION" missed="10" covered="0" />
+      <counter type="LINE" missed="9" covered="0" />
+      <counter type="METHOD" missed="1" covered="0" />
       <counter type="CLASS" missed="1" covered="0" />
     </sourcefile>
     <sourcefile name="helpers/Invoke-ExtensibleTests.ps1">
@@ -2253,9 +2247,9 @@
       <counter type="METHOD" missed="1" covered="0" />
       <counter type="CLASS" missed="1" covered="0" />
     </sourcefile>
-    <counter type="INSTRUCTION" missed="1049" covered="2" />
-    <counter type="LINE" missed="753" covered="2" />
-    <counter type="METHOD" missed="40" covered="1" />
+    <counter type="INSTRUCTION" missed="1045" covered="2" />
+    <counter type="LINE" missed="752" covered="2" />
+    <counter type="METHOD" missed="39" covered="1" />
     <counter type="CLASS" missed="11" covered="1" />
   </package>
   <package name="tests/helpers/helpers">
@@ -2556,8 +2550,8 @@
     <counter type="METHOD" missed="5" covered="0" />
     <counter type="CLASS" missed="1" covered="0" />
   </package>
-  <counter type="INSTRUCTION" missed="2497" covered="2" />
-  <counter type="LINE" missed="1831" covered="2" />
-  <counter type="METHOD" missed="82" covered="1" />
+  <counter type="INSTRUCTION" missed="2493" covered="2" />
+  <counter type="LINE" missed="1830" covered="2" />
+  <counter type="METHOD" missed="81" covered="1" />
   <counter type="CLASS" missed="21" covered="1" />
 </report>

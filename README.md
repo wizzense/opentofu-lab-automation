@@ -4,43 +4,95 @@ Cross-platform PowerShell automation framework for OpenTofu/Terraform infrastruc
 
 ## Quick Start - Bootstrap Installation
 
-### One-Line Installation (Recommended)
+### 🚀 One-Line Installation (Recommended)
 
-For a fresh setup, run this one-liner to get started:
+**Modern Bootstrap (Recommended):**
 
 ```powershell
-powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/refs/heads/main/kicker-git.ps1' -OutFile '.\kicker-git.ps1'; .\kicker-git.ps1"
+powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/main/kicker-git.ps1' -OutFile '.\bootstrap.ps1'; .\bootstrap.ps1"
 ```
 
-### Manual Installation
+**Alternative Minimal Launcher:**
 
-1. **Download the kicker script:**
+```powershell
+powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/main/bootstrap-launcher.ps1' -OutFile '.\launcher.ps1'; .\launcher.ps1"
+```
 
-   ```powershell
-   Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/refs/heads/main/kicker-git.ps1' -OutFile '.\kicker-git.ps1'
-   ```
+### 📋 Bootstrap Options
 
-2. **Run the script:**
+Choose the bootstrap method that best fits your needs:
 
-   ```powershell
-   .\kicker-git.ps1
-   ```
+#### 1. **Modern Bootstrap** (`kicker-git.ps1`) - **RECOMMENDED**
 
-3. **Optional parameters:**
+- ✅ Full CoreApp orchestration integration
+- ✅ Cross-platform support (Windows, Linux, macOS)
+- ✅ Self-updating capabilities
+- ✅ Comprehensive health checks
+- ✅ Advanced error handling and logging
 
-   ```powershell
-   # Quiet mode
-   .\kicker-git.ps1 -Quiet
-   
-   # Custom configuration
-   .\kicker-git.ps1 -ConfigFile "custom-config.json"
-   
-   # Non-interactive mode (for automation)
-   .\kicker-git.ps1 -NonInteractive
-   
-   # Detailed output
-   .\kicker-git.ps1 -Verbosity detailed
-   ```
+```powershell
+# Download and run with options
+.\kicker-git.ps1 -Verbosity detailed -NonInteractive
+.\kicker-git.ps1 -ConfigFile "my-config.json" -TargetBranch "develop"
+.\kicker-git.ps1 -WhatIf  # See what would be done
+```
+
+#### 2. **Enhanced Bootstrap** (`kicker-bootstrap-enhanced.ps1`)
+
+- ✅ Backward compatible with existing workflows
+- ✅ Enhanced logging and error handling
+- ✅ Robust prerequisite checking
+- ✅ CoreApp orchestration integration
+
+```powershell
+# Traditional bootstrap with modern enhancements
+.\kicker-bootstrap-enhanced.ps1 -Force -Verbosity detailed
+```
+
+#### 3. **Legacy Bootstrap** (`kicker-bootstrap.ps1`)
+
+- ✅ Original bootstrap script
+- ✅ Maintained for compatibility
+- ⚠️ Limited to original feature set
+
+### 🔧 Manual Installation
+
+If you prefer manual control:
+
+```powershell
+# 1. Download the modern bootstrap script
+Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/main/kicker-git.ps1' -OutFile '.\kicker-git.ps1'
+
+# 2. Run with your preferred options
+.\kicker-git.ps1
+
+# 3. Available parameters:
+#    -ConfigFile      : Custom configuration file
+#    -Quiet          : Minimal output
+#    -NonInteractive : No prompts (automation-friendly)  
+#    -Verbosity      : silent|normal|detailed
+#    -SkipPrerequisites : Skip auto-installation
+#    -TargetBranch   : Git branch to use
+#    -LocalPath      : Custom clone location
+#    -WhatIf         : Show what would be done
+#    -Force          : Force re-clone
+```
+
+### ⚡ Quick Examples
+
+```powershell
+# Silent automation-friendly setup
+.\kicker-git.ps1 -NonInteractive -Verbosity silent
+
+# Development setup with detailed logging
+.\kicker-git.ps1 -TargetBranch "develop" -Verbosity detailed
+
+# Custom configuration with specific location
+.\kicker-git.ps1 -ConfigFile "prod-config.json" -LocalPath "C:\Labs"
+
+# Test what would happen without making changes
+.\kicker-git.ps1 -WhatIf
+```
 
 ## Environment Setup
 

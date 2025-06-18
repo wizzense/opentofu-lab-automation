@@ -16,9 +16,8 @@
     
     # Copyright statement for this module
     Copyright         = '(c) 2025 Wizzense. All rights reserved.'
-    
-    # Description of the functionality provided by this module
-    Description       = 'Core application module for OpenTofu Lab Automation - consolidates lab utilities, runner scripts, and configuration files'
+      # Description of the functionality provided by this module
+    Description       = 'Parent orchestration module for OpenTofu Lab Automation - manages all modules and provides unified interface'
     
     # Minimum version of the PowerShell engine required by this module
     PowerShellVersion = '7.0'
@@ -30,7 +29,12 @@
         'Get-CoreConfiguration',
         'Test-CoreApplicationHealth',
         'Write-CustomLog',
-        'Get-PlatformInfo'
+        'Get-PlatformInfo',
+        'Initialize-CoreApplication',
+        'Import-CoreModules',
+        'Get-CoreModuleStatus',
+        'Invoke-UnifiedMaintenance',
+        'Start-DevEnvironmentSetup'
     )
     
     # Cmdlets to export from this module
@@ -44,9 +48,8 @@
     
     # List of all modules packaged with this module
     ModuleList        = @()
-    
-    # List of all files packaged with this module
-    FileList          = @('CoreApp.psm1', 'default-config.json', 'Public/Invoke-CoreApplication.ps1')
+      # List of all files packaged with this module
+    FileList          = @('CoreApp.psm1', 'default-config.json')
     
     # Private data to pass to the module specified in RootModule/ModuleToProcess
     PrivateData       = @{
