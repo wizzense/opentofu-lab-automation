@@ -1,0 +1,10 @@
+{
+    "github.copilot.chat.codeGeneration.useInstructionFiles": true,
+    "github.copilot.chat.promptFiles": true,
+    "github.copilot.chat.instructionsFilesLocations": [
+        ".github/instructions"
+    ],
+    "github.copilot.chat.promptFilesLocations": [
+        ".github/prompts"
+    ]
+}

@@ -40,10 +40,11 @@ if (Test-Path (Join-Path $helpersPath 'TestHelpers.ps1')) {
 function Install-RequiredModules {
  Write-Host "`nInstalling required PowerShell modules..." -ForegroundColor Yellow
  
- $modules = @(
- @{ Name = 'Pester'; Version = '5.7.1'; Scope = 'CurrentUser' }
- @{ Name = 'powershell-yaml'; Scope = 'CurrentUser' }
- )
+    $modules = @(
+        @{ Name = 'Pester'; Version = '5.7.1'; Scope = 'CurrentUser' }
+        @{ Name = 'powershell-yaml'; Scope = 'CurrentUser' }
+        @{ Name = 'PSScriptAnalyzer'; Scope = 'CurrentUser' }
+    )
  
  foreach ($module in $modules) {
  try {
@@ -133,7 +134,7 @@ function Initialize-TestGeneration {
  Write-Host "`nGenerating tests for existing scripts..." -ForegroundColor Yellow
  
  $scriptDirs = @(
- (Join-Path $PSScriptRoot '..' 'pwsh' 'runner_scripts'),
+ (Join-Path $PSScriptRoot '..' 'core-runner' 'core_app' 'scripts'),
  (Join-Path $PSScriptRoot '..' 'pwsh' 'lab_utils'),
  (Join-Path $PSScriptRoot '..' 'pwsh')
  )
