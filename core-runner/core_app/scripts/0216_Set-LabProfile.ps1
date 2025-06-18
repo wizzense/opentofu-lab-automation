@@ -15,26 +15,26 @@ function Set-LabProfile {
         [Parameter(Mandatory)]
         [object]$Config
     )
-    
+
     Write-CustomLog "Running $($MyInvocation.MyCommand.Name)"
-    
+
     if ($Config.SetupLabProfile -eq $true) {
         $profilePath = $PROFILE.CurrentUserAllHosts
         $profileDir = Split-Path $profilePath
-        
+
         if (-not (Test-Path $profileDir)) {
             if ($PSCmdlet.ShouldProcess($profileDir, 'Create profile directory')) {
                 New-Item -ItemType Directory -Path $profileDir -Force | Out-Null
             }
         }
-        
+
         $repoRoot = Resolve-Path -Path (Join-Path $PSScriptRoot '..')
         $content = @"
 # OpenTofu Lab Automation profile
 `$env:PATH = "$repoRoot;`$env:PATH"
 `$env:PSModulePath = "$repoRoot/pwsh/modules;`$env:PSModulePath"
 "@
-        
+
         if ($PSCmdlet.ShouldProcess($profilePath, 'Create PowerShell profile')) {
             Set-Content -Path $profilePath -Value $content
             Write-CustomLog "PowerShell profile created at $profilePath"
