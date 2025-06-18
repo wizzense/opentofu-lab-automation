@@ -8,8 +8,8 @@ Describe '0212_Install-AzureCLI Tests' {
 
     Context 'Module Loading' {
         It 'should load required modules' {
-            Get-Module LabRunner  Should -Not -BeNullOrEmpty
-            Get-Module CodeFixer  Should -Not -BeNullOrEmpty
+            Get-Module LabRunner | Should -Not -BeNullOrEmpty
+            Get-Module CodeFixer | Should -Not -BeNullOrEmpty
         }
     }
 
