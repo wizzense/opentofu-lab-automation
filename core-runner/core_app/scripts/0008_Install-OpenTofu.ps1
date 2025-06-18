@@ -5,9 +5,10 @@ param(
     [object]$Config
 )
 
-Import-Module "$env:PROJECT_ROOT/core-runner/modules/LabRunner/" -Force
+Import-Module "$env:PWSH_MODULES_PATH/LabRunner/" -Force
+Import-Module "$env:PROJECT_ROOT/core-runner/modules/Logging/" -Force
 
-Write-CustomLog "Starting $MyInvocation.MyCommand"
+Write-CustomLog "Starting $($MyInvocation.MyCommand.Name)"
 
 function Install-OpenTofu {
     [CmdletBinding()]

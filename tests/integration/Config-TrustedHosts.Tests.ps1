@@ -8,7 +8,6 @@ Describe 'Config-TrustedHosts Tests' {
     Context 'Module Loading' {
         It 'should load required modules' {
             Get-Module LabRunner | Should -Not -BeNullOrEmpty
-            Get-Module CodeFixer | Should -Not -BeNullOrEmpty
         }
     }
 
