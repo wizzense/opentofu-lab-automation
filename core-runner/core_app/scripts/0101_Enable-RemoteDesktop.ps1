@@ -6,7 +6,8 @@ param(
     [object]$Config
 )
 
-Import-Module "$env:PWSH_MODULES_PATH/LabRunner/" -Force
+$modulePath = Join-Path -Path $env:PWSH_MODULES_PATH -ChildPath "LabRunner"
+Import-Module $modulePath -Force
 Write-CustomLog "Starting $($MyInvocation.MyCommand.Name)"
 
 Invoke-LabStep -Config $Config -Body {
