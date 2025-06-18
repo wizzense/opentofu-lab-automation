@@ -1,15 +1,14 @@
-#Requires -Version 7
-
-
-
-
-
-Impo    [object]$Config
+#Requires -Version 7.0
+[CmdletBinding(SupportsShouldProcess)]
+param(
+    [Parameter(Mandatory, ValueFromPipeline)]
+    [object]$Config
 )
 
-    Invoke-LabStep -Config $Config -Body {
-    Write-CustomLog "Running $($MyInvocation.MyCommand.Name)"
+Import-Module "$env:PWSH_MODULES_PATH/LabRunner/" -Force
+Import-Module "$env:PROJECT_ROOT/core-runner/modules/Logging/" -Force
 
+Write-CustomLog "Starting $($MyInvocation.MyCommand.Name)"
 if ($Config.InstallCA -eq $true) {
 Write-CustomLog "Checking for existing Certificate Authority (Standalone Root CA)..."
 

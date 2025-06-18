@@ -1,15 +1,13 @@
 #Requires -Version 7.0
-
-[CmdletBinding()]
+[CmdletBinding(SupportsShouldProcess)]
 param(
-    [Parameter()]
-    [object]$Config,
-    
-    [Parameter()]
-    [switch]$AsJson
+    [Parameter(Mandatory, ValueFromPipeline)]
+    [object]$Config
 )
 
-Import-Module "$env:PROJECT_ROOT/core-runner/modules/LabRunner/" -Force
+Import-Module "$env:PWSH_MODULES_PATH/LabRunner/" -Force
+Import-Module "$env:PROJECT_ROOT/core-runner/modules/Logging/" -Force
+
 Write-CustomLog "Starting $($MyInvocation.MyCommand.Name)"
 
 function Get-SystemInfo {

@@ -1,12 +1,13 @@
 #Requires -Version 7.0
-
 [CmdletBinding(SupportsShouldProcess)]
 param(
-    [Parameter(Mandatory)]
+    [Parameter(Mandatory, ValueFromPipeline)]
     [object]$Config
 )
 
-Import-Module "$env:PROJECT_ROOT/core-runner/modules/LabRunner/" -Force
+Import-Module "$env:PWSH_MODULES_PATH/LabRunner/" -Force
+Import-Module "$env:PROJECT_ROOT/core-runner/modules/Logging/" -Force
+
 Write-CustomLog "Starting $($MyInvocation.MyCommand.Name)"
 
 function Set-LabProfile {
@@ -32,7 +33,7 @@ function Set-LabProfile {
         $content = @"
 # OpenTofu Lab Automation profile
 `$env:PATH = "$repoRoot;`$env:PATH"
-`$env:PSModulePath = "$repoRoot/pwsh/modules;`$env:PSModulePath"
+`$env:PSModulePath = "$repoRoot/core-runner/modules;`$env:PSModulePath"
 "@
         
         if ($PSCmdlet.ShouldProcess($profilePath, 'Create PowerShell profile')) {
