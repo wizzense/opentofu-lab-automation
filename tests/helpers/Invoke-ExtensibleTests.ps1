@@ -301,7 +301,7 @@ try {
     
     if ($EnableCodeCoverage) {
         $pesterConfig.CodeCoverage.Enabled = $true
-        $pesterConfig.CodeCoverage.Path = @('pwsh/runner_scripts', 'pwsh/modules')
+        $pesterConfig.CodeCoverage.Path = @('core-runner/core_app/scripts', 'pwsh/modules')
         $pesterConfig.CodeCoverage.OutputPath = Join-Path $OutputPath 'coverage.xml'
     }
     
