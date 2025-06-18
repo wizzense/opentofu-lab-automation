@@ -4,7 +4,8 @@
 
 
 
-Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\pwsh/modules/LabRunner/" -ForceWrite-CustomLog "Starting $MyInvocation.MyCommand"
+Import-Module "$env:PROJECT_ROOT/core-runner/modules/LabRunner/" -Force
+Write-CustomLog "Starting $MyInvocation.MyCommand"
 Invoke-LabStep -Config $Config -Body {
     Write-CustomLog "Running $($MyInvocation.MyCommand.Name)"
 
@@ -24,4 +25,8 @@ if ($Config.AllowRemoteDesktop -eq $true) {
     }
 }
 else {
+    Write-CustomLog 'Remote Desktop remains disabled as per configuration.'
+}
 
+Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
+}
