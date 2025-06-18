@@ -6,7 +6,7 @@
         },
         {
             "name": "PowerShell Modules",
-            "path": "./pwsh/modules"
+            "path": "./core-runner/modules"
         },
         {
             "name": "Core Application",
@@ -14,7 +14,7 @@
         },
         {
             "name": "Runner Scripts",
-            "path": "./pwsh/runner_scripts"
+            "path": "./core-runner/core_app/scripts"
         },
         {
             "name": "OpenTofu Configurations",
