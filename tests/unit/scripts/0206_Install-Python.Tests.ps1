@@ -8,8 +8,8 @@ Describe '0206_Install-Python Tests' {
 
     Context 'Module Loading' {
         It 'should load required modules' {
-            Get-Module LabRunner  Should -Not -BeNullOrEmpty
-            Get-Module CodeFixer  Should -Not -BeNullOrEmpty
+            Get-Module LabRunner | Should -Not -BeNullOrEmpty
+            Get-Module CodeFixer | Should -Not -BeNullOrEmpty
         }
     }
 
