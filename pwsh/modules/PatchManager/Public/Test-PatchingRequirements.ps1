@@ -115,12 +115,13 @@ function Test-PatchingRequirements {
         Fixes              = @()
     }
     # Check PowerShell modules
-    foreach ($module in $requiredModules) {
-        Write-PatchLog "Checking for module: $($module.Name)" "INFO" -LogFile $LogFile
+    foreach ($module in $requiredModules) {        Write-PatchLog "Checking for module: $($module.Name)" "INFO" -LogFile $LogFile
         
         $moduleInstalled = Get-Module -Name $module.Name -ListAvailable | Where-Object { $_.Version -ge $module.MinimumVersion }
-        if ($moduleInstalled) {
-            Write-PatchLog " Module $($module.Name) v$($moduleInstalled.Version) is available" "SUCCESS" -LogFile $LogFile
+
+          if ($moduleInstalled) {
+            Write-PatchLog " Module $($module.Name) v$($moduleInstalled.Version) is available" "INFO" -LogFile $LogFile
+
             $results.ModulesAvailable += $module.Name
         } else {
             Write-PatchLog " Module $($module.Name) v$($module.MinimumVersion)+ not found" "WARNING" -LogFile $LogFile

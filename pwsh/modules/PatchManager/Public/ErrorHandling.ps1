@@ -136,20 +136,20 @@ function Write-PatchLog {
         [Parameter(Mandatory = $false)]
         [switch]$NoConsole
     )
-    # Create log directory if needed (only if LogFile is provided)
+
+      # Format log message
+    $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+    $logMessage = "[$timestamp] [$LogLevel] $Message"
+    
+    # Write to log file only if LogFile is provided and not empty
     if ($LogFile -and $LogFile.Trim()) {
+        # Create log directory if needed
         $logDir = Split-Path $LogFile -Parent
         if (-not (Test-Path $logDir)) {
             New-Item -ItemType Directory -Path $logDir -Force | Out-Null
         }
-    }
-    
-    # Format log message
-    $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
-    $logMessage = "[$timestamp] [$LogLevel] $Message"
-    
-    # Write to log file (only if LogFile is provided)
-    if ($LogFile -and $LogFile.Trim()) {
+        
+        # Write to log file
         $logMessage | Out-File -FilePath $LogFile -Append
     }
     

@@ -1,15 +1,22 @@
 #Requires -Version 7.0
 
-# Import the centralized Logging module
-$loggingModulePath = Join-Path $env:PWSH_MODULES_PATH "Logging"
-if (-not $env:PWSH_MODULES_PATH -or -not (Test-Path $loggingModulePath)) {
-    $loggingModulePath = Join-Path (Split-Path $PSScriptRoot -Parent) "Logging"
-}
-if (Test-Path $loggingModulePath) {
-    Import-Module $loggingModulePath -Force -Global
+# Import the centralized Logging module using admin-friendly import
+try {
+    Import-Module 'Logging' -Force -Global
     Write-Verbose "Successfully imported centralized Logging module"
-} else {
-    Write-Warning "Could not find centralized Logging module at $loggingModulePath"
+} catch {
+    Write-Warning "Could not import Logging module: $_"
+    # Fallback to path-based import if needed
+    $loggingModulePath = Join-Path $env:PWSH_MODULES_PATH "Logging"
+    if (-not $env:PWSH_MODULES_PATH -or -not (Test-Path $loggingModulePath)) {
+        $loggingModulePath = Join-Path (Split-Path $PSScriptRoot -Parent) "Logging"
+    }
+    if (Test-Path $loggingModulePath) {
+        Import-Module $loggingModulePath -Force -Global
+        Write-Verbose "Successfully imported centralized Logging module via fallback path"
+    } else {
+        Write-Warning "Could not find centralized Logging module at $loggingModulePath"
+    }
 }
 
 # Import all public functions

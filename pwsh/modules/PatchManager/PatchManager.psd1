@@ -51,7 +51,7 @@ PowerShellVersion = '7.0'
 # ProcessorArchitecture = ''
 
 # Modules that must be imported into the global environment prior to importing this module
-# RequiredModules = @()
+RequiredModules = @('Logging')
 
 # Assemblies that must be loaded prior to importing this module
 # RequiredAssemblies = @()
@@ -69,7 +69,21 @@ PowerShellVersion = '7.0'
 # NestedModules = @()
 
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
-FunctionsToExport = '*'
+FunctionsToExport = @(
+    'Invoke-GitControlledPatch',
+    'Invoke-EnhancedPatchManager', 
+    'Invoke-GitHubIssueIntegration',
+    'Invoke-GitHubIssueResolution',
+    'Invoke-QuickRollback',
+    'Invoke-PatchRollback',
+    'Invoke-PatchValidation',
+    'Invoke-TieredPesterTests',
+    'Invoke-ComprehensiveIssueTracking',
+    'Invoke-ErrorHandler',
+    'Invoke-MonitoredExecution',
+    'Set-PatchManagerAliases',
+    'Test-PatchingRequirements'
+)
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
 CmdletsToExport = '*'
