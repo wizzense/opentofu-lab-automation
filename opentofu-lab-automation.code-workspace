@@ -6,11 +6,11 @@
         },
         {
             "name": "PowerShell Modules",
-            "path": "./pwsh/modules"
+            "path": "./core-runner/modules"
         },
         {
             "name": "Core Application",
-            "path": "./pwsh/core_app"
+            "path": "./core-runner/core_app"
         },
         {
             "name": "Runner Scripts",
