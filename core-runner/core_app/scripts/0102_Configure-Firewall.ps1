@@ -1,10 +1,6 @@
 #Requires -Version 7
-
-
-
-
-
-Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\pwsh/modules/LabRunner/" -ForceWrite-CustomLog "Starting $MyInvocation.MyCommand"
+Import-Module "$env:PROJECT_ROOT/core-runner/modules/LabRunner/" -Force
+Write-CustomLog "Starting $MyInvocation.MyCommand"
 Invoke-LabStep -Config $Config -Body {
     Write-CustomLog "Running $($MyInvocation.MyCommand.Name)"
 
