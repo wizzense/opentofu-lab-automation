@@ -14,7 +14,7 @@ function global:New-RunnerTestEnv {
     if (-not (Test-Path $pwshDir)) { New-Item -ItemType Directory -Path $pwshDir -Force | Out-Null }
     Copy-Item (Join-Path $repoRoot 'pwsh' 'runner.ps1') -Destination $pwshDir
 
-    $rsDir = Join-Path $pwshDir 'runner_scripts'
+    $rsDir = Join-Path $pwshDir 'core_app/scripts'
     if (-not (Test-Path $rsDir)) { New-Item -ItemType Directory -Path $rsDir -Force | Out-Null }
     $utils = Join-Path $pwshDir 'modules/LabRunner'
             if (-not (Test-Path $utils)) { New-Item -ItemType Directory -Path $utils -Force | Out-Null }
