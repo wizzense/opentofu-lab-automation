@@ -311,14 +311,13 @@ function Sync-Repository {
     if (Test-Path $repoPath) {
         if ($Force) {
             Write-BootstrapLog "Removing existing repository (Force specified)" 'WARN'
-            Remove-Item $repoPath -Recurse -Force
-        } else {
+            Remove-Item $repoPath -Recurse -Force        } else {
             Write-BootstrapLog "Repository exists, updating..." 'INFO'
             try {
                 Push-Location $repoPath
-                git fetch origin
-                git reset --hard "origin/$TargetBranch"
-                git clean -fdx
+                git fetch origin 2>&1 | Out-Null
+                git reset --hard "origin/$TargetBranch" 2>&1 | Out-Null
+                git clean -fdx 2>&1 | Out-Null
                 Write-BootstrapLog "✓ Repository updated successfully" 'SUCCESS'
                 Pop-Location
                 return $repoPath
@@ -338,7 +337,7 @@ function Sync-Repository {
             New-Item -ItemType Directory -Path $parentPath -Force | Out-Null
         }
         
-        git clone --branch $TargetBranch --single-branch --depth 1 $script:RepoUrl $repoPath
+        git clone --branch $TargetBranch --single-branch --depth 1 $script:RepoUrl $repoPath 2>&1 | Out-Null
         
         if (-not (Test-Path $repoPath)) {
             throw "Repository clone appeared successful but path does not exist"
