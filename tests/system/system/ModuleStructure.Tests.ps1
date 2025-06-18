@@ -1,7 +1,7 @@
 BeforeAll {
     # Ensure we're using the correct module path - tests directory is one level down from project root
     $projectRoot = Split-Path $PSScriptRoot -Parent
-    $env:PWSH_MODULES_PATH = Join-Path $projectRoot "pwsh/modules"
+    $env:PWSH_MODULES_PATH = Join-Path $projectRoot "core-runner/modules"
 }
 
 Describe "Module Structure Validation" {
