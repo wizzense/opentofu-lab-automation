@@ -27,9 +27,12 @@
 function Invoke-PatchRollback {
     [CmdletBinding()]
     param(
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $false)]
         [ValidateSet("LastCommit", "LastWorkingState", "Emergency", "SpecificCommit", "SelectiveFiles")]
         [string]$RollbackTarget,
+        
+        [Parameter(Mandatory = $false)]
+        [string]$PatchDescription,
         
         [Parameter(Mandatory = $false)]
         [string]$CommitHash,
@@ -41,10 +44,16 @@ function Invoke-PatchRollback {
         [switch]$CreateBackup,
         
         [Parameter(Mandatory = $false)]
+        [switch]$CreateRestorationPoint,
+        
+        [Parameter(Mandatory = $false)]
         [switch]$Force,
         
         [Parameter(Mandatory = $false)]
-        [switch]$ValidateAfterRollback
+        [switch]$ValidateAfterRollback,
+        
+        [Parameter(Mandatory = $false)]
+        [switch]$DryRun
     )
     
     Write-Host "Starting patch rollback: $RollbackTarget" -ForegroundColor Magenta
@@ -103,4 +112,4 @@ function Invoke-PatchRollback {
     }
 }
 
-Export-ModuleMember -Function Invoke-PatchRollback
+

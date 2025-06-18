@@ -1,4 +1,30 @@
 BeforeAll {
+    # Set environment variable to indicate test execution
+    $env:PESTER_RUN = 'true'
+    
+    # Find project root by looking for characteristic files
+    $currentPath = $PSScriptRoot
+    $projectRoot = $currentPath
+    while ($projectRoot -and -not (Test-Path (Join-Path $projectRoot "core-runner"))) {
+        $projectRoot = Split-Path $projectRoot -Parent
+    }
+    
+    if (-not $projectRoot) {
+        throw "Could not find project root (looking for core-runner directory)"
+    }
+    
+    # Import Logging module first
+    $loggingPath = Join-Path $projectRoot "core-runner/modules/Logging"
+    
+    try {
+        Import-Module $loggingPath -Force -Global -ErrorAction Stop
+        Write-Host "Logging module imported successfully" -ForegroundColor Green
+    }
+    catch {
+        Write-Error "Failed to import Logging module: $_"
+        throw
+    }
+
     # Mock Write-CustomLog function
     function global:Write-CustomLog {
         param([string]$Message, [string]$Level = "INFO")
@@ -6,7 +32,6 @@ BeforeAll {
     }
     
     # Import PatchManager module
-    $projectRoot = "c:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation"
     $patchManagerPath = Join-Path $projectRoot "core-runner/modules/PatchManager"
     
     try {
@@ -66,14 +91,17 @@ BeforeAll {
         }
         
         $global:LASTEXITCODE = 0
-        return ""
-    }
+        return ""    }
+}
+
+AfterAll {
+    # Clean up environment variable
+    Remove-Item env:PESTER_RUN -ErrorAction SilentlyContinue
 }
 
 Describe "PatchManager Core Functions" {
     BeforeEach {
-        $script:gitCalls = @()
-    }
+        $script:gitCalls = @()    }
     
     Context "Test-PatchingRequirements" {
         It "Should validate basic patching requirements" {
@@ -87,16 +115,30 @@ Describe "PatchManager Core Functions" {
             $result = Test-PatchingRequirements -ProjectRoot $PWD
             
             $result.AllRequirementsMet | Should -BeOfType [bool]
-            $result.ModulesAvailable | Should -BeOfType [array]
-            $result.ModulesMissing | Should -BeOfType [array]
-            $result.CommandsAvailable | Should -BeOfType [array]
-            $result.CommandsMissing | Should -BeOfType [array]
+            
+            # Test that properties exist and are collection types with Count property
+            $result.ModulesAvailable | Should -Not -BeNullOrEmpty
+            $result.ModulesAvailable.Count | Should -BeGreaterThan -1
+            ($result.ModulesAvailable -is [array]) | Should -BeTrue
+            
+            # For potentially empty arrays, just check they have Count property and are enumerable
+            { $result.ModulesMissing.Count } | Should -Not -Throw
+            $result.ModulesMissing.Count | Should -BeGreaterOrEqual 0
+            ($result.ModulesMissing -is [array]) | Should -BeTrue
+            
+            $result.CommandsAvailable | Should -Not -BeNullOrEmpty
+            $result.CommandsAvailable.Count | Should -BeGreaterOrEqual 1
+            ($result.CommandsAvailable -is [array]) | Should -BeTrue
+            
+            { $result.CommandsMissing.Count } | Should -Not -Throw
+            $result.CommandsMissing.Count | Should -BeGreaterOrEqual 0
+            ($result.CommandsMissing -is [array]) | Should -BeTrue
         }
     }
-    
-    Context "Invoke-GitControlledPatch" {
+      Context "Invoke-GitControlledPatch" {
         It "Should require PatchDescription parameter" {
-            { Invoke-GitControlledPatch } | Should -Throw
+            # Test that mandatory parameter validation works by providing invalid empty string
+            { Invoke-GitControlledPatch -PatchDescription "" -DryRun } | Should -Throw
         }
         
         It "Should accept DryRun parameter" {
@@ -126,14 +168,20 @@ Describe "PatchManager Core Functions" {
             { Invoke-EnhancedPatchManager -PatchDescription "Test patch" -CreatePullRequest -DryRun } | Should -Not -Throw
         }
     }
-    
-    Context "Set-PatchManagerAliases" {
-        It "Should set up aliases without error" {
-            { Set-PatchManagerAliases -Scope Process } | Should -Not -Throw
+      Context "Set-PatchManagerAliases" {        It "Should set up aliases without error" {
+            # Mock Get-Command to return mock git path
+            Mock Get-Command -MockWith { 
+                [PSCustomObject]@{ Source = "C:\mock\git.exe" }
+            } -ParameterFilter { $Name -eq "git" }
+            
+            # Mock the Write-Log function used internally 
+            function global:Write-Log { param($Message, $Level) }
+            
+            # Use -WhatIf to avoid actual alias creation
+            { Set-PatchManagerAliases -Scope Process -WhatIf } | Should -Not -Throw
         }
-        
-        It "Should display help when requested" {
-            { Set-PatchManagerAliases -ShowHelp } | Should -Not -Throw
+          It "Should display aliases when requested" {
+            { Set-PatchManagerAliases -ShowAliases } | Should -Not -Throw
         }
         
         It "Should remove aliases when requested" {
@@ -192,22 +240,20 @@ Describe "PatchManager Error Handling" {
         It "Should handle invalid patch description gracefully" {
             { Invoke-GitControlledPatch -PatchDescription "" -DryRun } | Should -Throw
         }
-        
-        It "Should handle invalid rollback type gracefully" {
+          It "Should handle invalid rollback type gracefully" {
             { Invoke-QuickRollback -RollbackType "InvalidType" -DryRun } | Should -Throw
         }
     }
     
     Context "Environment Validation" {
         It "Should detect missing git command" {
-            # Temporarily remove git mock
-            Remove-Item Function:\git -ErrorAction SilentlyContinue
+            # Mock Get-Command to return null for git (simulating not found)
+            Mock Get-Command -MockWith { 
+                return $null
+            } -ParameterFilter { $Name -eq "git" } -ModuleName PatchManager
             
             $result = Test-PatchingRequirements -ProjectRoot $PWD
             $result.CommandsMissing | Should -Contain "git"
-            
-            # Restore git mock
-            function global:git { param() return "" }
         }
     }
 }

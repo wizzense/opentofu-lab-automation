@@ -1,9 +1,10 @@
 # Required test file header
 . (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
 
-Describe 'Config-TrustedHosts Tests' {
-    BeforeAll {
+Describe 'Config-TrustedHosts Tests' {    BeforeAll {
         Import-Module "$env:PWSH_MODULES_PATH/LabRunner/" -Force
+    }
+    }
 
     Context 'Module Loading' {
         It 'should load required modules' {

@@ -6,7 +6,7 @@ BeforeAll {
     }
     
     # Import the BackupManager module
-    $projectRoot = "c:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation"
+    $projectRoot = $env:PROJECT_ROOT
     $backupManagerPath = Join-Path $projectRoot "core-runner/modules/BackupManager"
     
     try {

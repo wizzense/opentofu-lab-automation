@@ -1,12 +1,12 @@
 Describe 'PatchManager Function Tests' {
     BeforeAll {
         $PatchManagerPath = './src/core-runner/modules/PatchManager/Public'
-    }
-
-    Context 'Function Files Exist' {
+    }    Context 'Function Files Exist' {
         It 'Should have Test-PatchingRequirements.ps1' {
             Test-Path "$PatchManagerPath/Test-PatchingRequirements.ps1" | Should -Be $true
-        }        It 'Should have Set-PatchManagerAliases.ps1' {
+        }
+        
+        It 'Should have Set-PatchManagerAliases.ps1' {
             Test-Path "$PatchManagerPath/Set-PatchManagerAliases.ps1" | Should -Be $true
         }
 

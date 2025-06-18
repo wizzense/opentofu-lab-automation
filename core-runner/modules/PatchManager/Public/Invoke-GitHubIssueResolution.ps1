@@ -257,5 +257,5 @@ Please manually check the PR status and close this issue if appropriate:
 }
 
 # Export the function
-Export-ModuleMember -Function Invoke-GitHubIssueResolution
+
 

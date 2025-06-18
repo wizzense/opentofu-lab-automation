@@ -63,7 +63,7 @@ function Invoke-BackupMaintenance {
     
     $ErrorActionPreference = "Stop"    # Import required modules
     try {
-        $labRunnerPath = "c:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\pwsh\modules\LabRunner"
+        $labRunnerPath = "$env:PROJECT_ROOT\pwsh\modules\LabRunner"
         Import-Module $labRunnerPath -Force -ErrorAction Stop
     } catch {
         Write-Error "Failed to import LabRunner module: $($_.Exception.Message)"

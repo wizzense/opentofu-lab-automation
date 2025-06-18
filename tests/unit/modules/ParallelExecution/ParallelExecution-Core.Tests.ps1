@@ -6,7 +6,7 @@ BeforeAll {
     }
     
     # Import the ParallelExecution module
-    $projectRoot = "c:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation"
+    $projectRoot = $env:PROJECT_ROOT
     $parallelExecutionPath = Join-Path $projectRoot "core-runner/modules/ParallelExecution"
     
     try {

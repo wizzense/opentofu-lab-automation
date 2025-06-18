@@ -1,9 +1,9 @@
 # Required test file header
 . (Join-Path $PSScriptRoot 'helpers' 'TestHelpers.ps1')
 
-Describe 'Cleanup-Files Tests' {
-    BeforeAll {
+Describe 'Cleanup-Files Tests' {    BeforeAll {
         Import-Module "$env:PWSH_MODULES_PATH/LabRunner/" -Force
+    }
 
     Context 'Module Loading' {
         It 'should load required modules' {

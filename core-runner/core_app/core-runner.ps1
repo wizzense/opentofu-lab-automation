@@ -189,8 +189,10 @@ try {
                 }
             }        } else {
             # Check if running in non-interactive mode without specific scripts
-            if ($NonInteractive) {
+            if ($NonInteractive -or $PSCmdlet.WhatIf) {
                 Write-CustomLog 'Non-interactive mode: use -Scripts parameter to specify which scripts to run' -Level INFO
+                Write-CustomLog 'No scripts specified for non-interactive execution' -Level WARN
+                return  # Exit gracefully instead of interactive prompt
             } else {
                 # Interactive mode - show menu
                 Write-Host "`nAvailable Scripts:" -ForegroundColor Cyan
@@ -204,7 +206,7 @@ try {
                 
                 if ($selection -eq 'exit') {
                     Write-CustomLog 'Exiting at user request' -Level INFO
-                    exit 0
+                    return
                 } elseif ($selection -eq 'all') {
                     foreach ($script in $availableScripts) {
                         Write-CustomLog "Executing script: $($script.BaseName)" -Level INFO
@@ -217,7 +219,8 @@ try {
                             $script = $availableScripts[[int]$num - 1]
                             Write-CustomLog "Executing script: $($script.BaseName)" -Level INFO
                             & $script.FullName -Config $config -Verbosity $Verbosity
-                        } else {                            Write-CustomLog "Invalid selection: $num" -Level WARN
+                        } else {
+                            Write-CustomLog "Invalid selection: $num" -Level WARN
                         }
                     }
                 }

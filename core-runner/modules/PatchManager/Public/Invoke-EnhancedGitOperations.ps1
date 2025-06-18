@@ -24,7 +24,7 @@ function Invoke-EnhancedGitOperations {
     [CmdletBinding()]
     param(
         [Parameter(Mandatory = $true)]
-        [ValidateSet("MergeMain", "Stash", "CheckoutMain", "ResolveConflicts")]
+        [ValidateSet("MergeMain", "Stash", "CheckoutMain", "ResolveConflicts", "validate", "resolve-conflicts", "cleanup-directories", "detect-conflicts", "auto-resolve-conflicts")]
         [string]$Operation,
         
         [Parameter()]
@@ -291,6 +291,6 @@ function Invoke-EnhancedGitOperations {
     }
 }
 
-# Export-ModuleMember -Function Invoke-EnhancedGitOperations  # Only export when called as module
+
 
 

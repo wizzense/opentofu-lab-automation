@@ -42,6 +42,9 @@ function Invoke-MonitoredExecution {
         [scriptblock]$ScriptBlock,
         
         [Parameter(Mandatory = $false)]
+        [string]$OperationName = "Unknown Operation",
+        
+        [Parameter(Mandatory = $false)]
         [ValidateSet("Comprehensive", "BasicOnly", "Silent")]
         [string]$ErrorHandling = "Comprehensive",
         
@@ -281,4 +284,4 @@ function Detect-TestFailures {
     return $result
 }
 
-Export-ModuleMember -Function Invoke-MonitoredExecution
+

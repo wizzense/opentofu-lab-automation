@@ -32,7 +32,7 @@ Mount-DiskImage -ImagePath "E:\2_auto_unattend_en-us_windows_server_2025_updated
 robocopy H:\ E:\CustomISO\ /E
 if (-not (Test-Path E:\Mount)) { New-Item -ItemType Directory -Path E:\Mount -Force | Out-Null }
 dism /mount-image /ImageFile:E:\CustomISO\sources\install.wim /Index:3 /MountDir:E:\Mount
-copy-item "C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\bootstrap.ps1" E:\mount\Windows\bootstrap.ps1
+copy-item "$env:PROJECT_ROOT\bootstrap.ps1" E:\mount\Windows\bootstrap.ps1
 Copy-Item $UnattendXML -Destination "E:\Mount\Windows\autounattend.xml" -Force
 dism /Unmount-Image /MountDir:E:\Mount /Commit
 Set-Location -path "C:\Program Files (x86)\Windows Kits\10\Assessment and Deployment Kit\Deployment Tools\amd64\Oscdimg"

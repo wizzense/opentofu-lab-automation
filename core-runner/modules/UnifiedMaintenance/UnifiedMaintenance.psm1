@@ -50,7 +50,7 @@ function Write-MaintenanceLog {
 
 function Get-ProjectRoot {
     if ($IsWindows -or $env:OS -eq "Windows_NT") {
-        return "c:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation"
+        return "$env:PROJECT_ROOT"
     } else {
         return "/workspaces/opentofu-lab-automation"
     }

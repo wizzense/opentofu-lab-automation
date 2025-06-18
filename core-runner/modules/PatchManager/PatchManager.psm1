@@ -1,22 +1,34 @@
 #Requires -Version 7.0
 
-# Import the centralized Logging module using admin-friendly import
-try {
-    Import-Module 'Logging' -Force -Global
-    Write-Verbose "Successfully imported centralized Logging module"
-} catch {
-    Write-Warning "Could not import Logging module: $_"
-    # Fallback to path-based import if needed
-    $loggingModulePath = Join-Path $env:PWSH_MODULES_PATH "Logging"
-    if (-not $env:PWSH_MODULES_PATH -or -not (Test-Path $loggingModulePath)) {
-        $loggingModulePath = Join-Path (Split-Path $PSScriptRoot -Parent) "Logging"
+# Import the centralized Logging module using multiple fallback paths
+$loggingImported = $false
+$loggingPaths = @(
+    'Logging',  # Try module name first (if in PSModulePath)
+    (Join-Path (Split-Path $PSScriptRoot -Parent) "Logging"),  # Relative to modules directory
+    (Join-Path $env:PWSH_MODULES_PATH "Logging"),  # Environment path
+    (Join-Path $env:PROJECT_ROOT "core-runner/modules/Logging")  # Full project path
+)
+
+foreach ($loggingPath in $loggingPaths) {
+    if ($loggingImported) { break }
+    
+    try {
+        if ($loggingPath -eq 'Logging') {
+            Import-Module 'Logging' -Force -Global -ErrorAction Stop
+        } elseif (Test-Path $loggingPath) {
+            Import-Module $loggingPath -Force -Global -ErrorAction Stop
+        } else {
+            continue
+        }
+        Write-Verbose "Successfully imported Logging module from: $loggingPath"
+        $loggingImported = $true
+    } catch {
+        Write-Verbose "Failed to import Logging from $loggingPath : $_"
     }
-    if (Test-Path $loggingModulePath) {
-        Import-Module $loggingModulePath -Force -Global
-        Write-Verbose "Successfully imported centralized Logging module via fallback path"
-    } else {
-        Write-Warning "Could not find centralized Logging module at $loggingModulePath"
-    }
+}
+
+if (-not $loggingImported) {
+    Write-Warning "Could not import Logging module from any of the attempted paths"
 }
 
 # Import all public functions
@@ -54,10 +66,31 @@ try {
 }
 
 # Export only the public functions (private functions are available internally but not exported)
-if ($Public.Count -gt 0) {
-    $functionNames = $Public.BaseName
-    Export-ModuleMember -Function $functionNames
-    Write-Verbose "Exported functions: $($functionNames -join ', ')"
-} else {
-    Write-Warning "No public functions found to export in $PSScriptRoot\Public\"
-}
+# Export all functions defined in the module manifest
+Export-ModuleMember -Function @(
+    'Invoke-GitControlledPatch',
+    'Invoke-EnhancedPatchManager', 
+    'Invoke-GitHubIssueIntegration',
+    'Invoke-GitHubIssueResolution',
+    'Invoke-QuickRollback',
+    'Invoke-PatchRollback',
+    'Invoke-PatchValidation',
+    'Invoke-ComprehensiveIssueTracking',
+    'Invoke-ErrorHandler',
+    'Invoke-MonitoredExecution',
+    'Set-PatchManagerAliases',
+    'Test-PatchingRequirements',
+    'Get-IntelligentBranchStrategy',
+    'Test-BranchProtection',
+    'Get-SanitizedBranchName',
+    'New-PatchBranch',
+    'Invoke-PatchOperation',
+    'New-PatchCommit',
+    'New-PatchPullRequest',
+    'Build-ComprehensivePRBody',
+    'Get-GitChangeStatistics',
+    'Get-GitCommitInfo',
+    'Invoke-EnhancedGitOperations'
+)
+
+Write-Verbose "Module loading complete. Exported all public functions."

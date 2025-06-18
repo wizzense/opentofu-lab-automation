@@ -43,6 +43,9 @@ function Invoke-GitHubIssueIntegration {
         [string]$PatchDescription,
         
         [Parameter(Mandatory = $false)]
+        [int]$IssueNumber,
+        
+        [Parameter(Mandatory = $false)]
         [string]$PullRequestUrl,
         
         [Parameter(Mandatory = $false)]
@@ -56,7 +59,13 @@ function Invoke-GitHubIssueIntegration {
         [string]$Priority = "Medium",
         
         [Parameter(Mandatory = $false)]
-        [switch]$ForceCreate
+        [switch]$ForceCreate,
+        
+        [Parameter(Mandatory = $false)]
+        [switch]$CreateNewIssue,
+        
+        [Parameter(Mandatory = $false)]
+        [switch]$DryRun
     )
     
     begin {

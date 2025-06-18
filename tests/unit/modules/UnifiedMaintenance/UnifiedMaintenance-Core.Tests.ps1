@@ -6,7 +6,7 @@ BeforeAll {
     }
     
     # Import the UnifiedMaintenance module
-    $projectRoot = "c:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation"
+    $projectRoot = $env:PROJECT_ROOT
     $unifiedMaintenancePath = Join-Path $projectRoot "core-runner/modules/UnifiedMaintenance"
     
     try {

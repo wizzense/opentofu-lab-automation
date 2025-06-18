@@ -1,6 +1,19 @@
 BeforeAll {
+    # Import Logging module first
+    $projectRoot = $env:PROJECT_ROOT
+    $loggingPath = Join-Path $projectRoot "core-runner/modules/Logging"
+    
+    try {
+        Import-Module $loggingPath -Force -Global -ErrorAction Stop
+        Write-Host "Logging module imported successfully" -ForegroundColor Green
+    }
+    catch {
+        Write-Error "Failed to import Logging module: $_"
+        throw
+    }
+
     # Import PatchManager module
-    $projectRoot = "c:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation"
+    $projectRoot = $env:PROJECT_ROOT
     $patchManagerPath = Join-Path $projectRoot "core-runner/modules/PatchManager"
     
     try {
@@ -322,7 +335,7 @@ Describe "PatchManager Error Handling and Monitoring" {
                 $null
             )
             
-            { Invoke-ErrorHandler -ErrorRecord $testError -Context "Test context" } | Should -Not -Throw
+            { Invoke-ErrorHandler -ErrorRecord $testError -Context @{ Operation = "Test context" } -ErrorType "RuntimeError" } | Should -Not -Throw
         }
         
         It "Should log errors appropriately" {
@@ -332,8 +345,7 @@ Describe "PatchManager Error Handling and Monitoring" {
                 [System.Management.Automation.ErrorCategory]::InvalidOperation,
                 $null
             )
-            
-            $result = Invoke-ErrorHandler -ErrorRecord $testError -Context "Test context" -LogErrors
+              $result = Invoke-ErrorHandler -ErrorRecord $testError -Context @{ Operation = "Test context" } -ErrorType "RuntimeError"
             
             $result.ErrorLogged | Should -Be $true
         }
@@ -346,7 +358,7 @@ Describe "PatchManager Error Handling and Monitoring" {
                 $null
             )
             
-            $result = Invoke-ErrorHandler -ErrorRecord $testError -ProvideRecoverySuggestions
+            $result = Invoke-ErrorHandler -ErrorRecord $testError -ErrorType "ImportError"
             
             $result.RecoverySuggestions | Should -Not -BeNullOrEmpty
         }

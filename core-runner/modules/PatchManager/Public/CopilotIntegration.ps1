@@ -177,6 +177,6 @@ function Invoke-CopilotSuggestionImplementation {
 }
 
 # Export public functions
-Export-ModuleMember -Function StartCopilotMonitoring, Invoke-CopilotSuggestionImplementation
+
 
 

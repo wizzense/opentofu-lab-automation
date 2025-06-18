@@ -21,7 +21,7 @@
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 ..\..\..\..\AppData\Local\Programs\Python\Python313\Lib\ast.py:54: in parse
     return compile(source, filename, mode, flags,
-E     File "c:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\py\tests\test_cli.py", line 74
+E     File "$env:PROJECT_ROOT\py\tests\test_cli.py", line 74
 E       called"ran" = True
 E             ^^^^^
 E   SyntaxError: invalid syntax</error></testcase><testcase classname="" name="tests.test_get_platform" time="0.000"><error message="collection failure">py\tests\test_get_platform.py:6: in &lt;module&gt;
@@ -50,7 +50,7 @@ E   AttributeError: 'WindowsPath' object has no attribute 'parents2'. Did you me
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 ..\..\..\..\AppData\Local\Programs\Python\Python313\Lib\ast.py:54: in parse
     return compile(source, filename, mode, flags,
-E     File "c:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\py\tests\test_github_utils.py", line 17
+E     File "$env:PROJECT_ROOT\py\tests\test_github_utils.py", line 17
 E       called"cmd" = cmd
 E             ^^^^^
 E   SyntaxError: invalid syntax</error></testcase><testcase classname="" name="tests.test_issue_parser" time="0.000"><error message="collection failure">..\..\..\..\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\python.py:497: in importtestmodule
@@ -76,7 +76,7 @@ E   SyntaxError: invalid syntax</error></testcase><testcase classname="" name="t
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 ..\..\..\..\AppData\Local\Programs\Python\Python313\Lib\ast.py:54: in parse
     return compile(source, filename, mode, flags,
-E     File "c:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\py\tests\test_issue_parser.py", line 17
+E     File "$env:PROJECT_ROOT\py\tests\test_issue_parser.py", line 17
 E       assert data"run_url" == "https://run"
 E                  ^^^^^^^^^
 E   SyntaxError: invalid syntax</error></testcase><testcase classname="" name="tests.test_lint_failures" time="0.000"><error message="collection failure">..\..\..\..\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\python.py:497: in importtestmodule
@@ -102,7 +102,7 @@ E   SyntaxError: invalid syntax</error></testcase><testcase classname="" name="t
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 ..\..\..\..\AppData\Local\Programs\Python\Python313\Lib\ast.py:54: in parse
     return compile(source, filename, mode, flags,
-E     File "c:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\py\tests\test_lint_failures.py", line 25
+E     File "$env:PROJECT_ROOT\py\tests\test_lint_failures.py", line 25
 E       calls = 
 E               ^
 E   SyntaxError: invalid syntax</error></testcase><testcase classname="" name="tests.test_path_index" time="0.000"><error message="collection failure">..\..\..\..\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\python.py:497: in importtestmodule
@@ -128,7 +128,7 @@ E   SyntaxError: invalid syntax</error></testcase><testcase classname="" name="t
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 ..\..\..\..\AppData\Local\Programs\Python\Python313\Lib\ast.py:54: in parse
     return compile(source, filename, mode, flags,
-E     File "c:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\py\tests\test_path_index.py", line 59
+E     File "$env:PROJECT_ROOT\py\tests\test_path_index.py", line 59
 E       if any(skip_pattern in str(rel) for skip_pattern in 
 E              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 E   SyntaxError: Generator expression must be parenthesized</error></testcase><testcase classname="" name="tests.test_pester_failures" time="0.000"><error message="collection failure">..\..\..\..\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\python.py:497: in importtestmodule
@@ -154,7 +154,7 @@ E   SyntaxError: Generator expression must be parenthesized</error></testcase><t
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 ..\..\..\..\AppData\Local\Programs\Python\Python313\Lib\ast.py:54: in parse
     return compile(source, filename, mode, flags,
-E     File "c:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\py\tests\test_pester_failures.py", line 30
+E     File "$env:PROJECT_ROOT\py\tests\test_pester_failures.py", line 30
 E       calls = 
 E               ^
 E   SyntaxError: invalid syntax</error></testcase><testcase classname="" name="tests.test_pytest_failures" time="0.000"><error message="collection failure">..\..\..\..\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\python.py:497: in importtestmodule
@@ -180,7 +180,7 @@ E   SyntaxError: invalid syntax</error></testcase><testcase classname="" name="t
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 ..\..\..\..\AppData\Local\Programs\Python\Python313\Lib\ast.py:54: in parse
     return compile(source, filename, mode, flags,
-E     File "c:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\py\tests\test_pytest_failures.py", line 22
+E     File "$env:PROJECT_ROOT\py\tests\test_pytest_failures.py", line 22
 E       calls = 
 E               ^
 E   SyntaxError: invalid syntax</error></testcase><testcase classname="" name="tests.test_ui" time="0.000"><error message="collection failure">..\..\..\..\AppData\Local\Programs\Python\Python313\Lib\site-packages\_pytest\python.py:497: in importtestmodule
@@ -206,7 +206,7 @@ E   SyntaxError: invalid syntax</error></testcase><testcase classname="" name="t
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 ..\..\..\..\AppData\Local\Programs\Python\Python313\Lib\ast.py:54: in parse
     return compile(source, filename, mode, flags,
-E     File "c:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\py\tests\test_ui.py", line 44
+E     File "$env:PROJECT_ROOT\py\tests\test_ui.py", line 44
 E       captured"scripts" = self.scripts
 E               ^^^^^^^^^
 E   SyntaxError: invalid syntax</error></testcase></testsuite></testsuites>

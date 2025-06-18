@@ -42,13 +42,12 @@ Describe 'TestingFramework Module Tests' {
         $ModulePath = './core-runner/modules/TestingFramework/TestingFramework.psm1'
     }
 
-    Context 'Module Structure' {
-        It 'Should have module file' {
+    Context 'Module Structure' {        It 'Should have module file' {
             Test-Path $ModulePath | Should -Be $true
         }
-
+        
         It 'Should have manifest file' {
-            Test-Path $env:PWSH_MODULES_PATH/TestingFramework/TestingFramework.psd1' | Should -Be $true
+            Test-Path $env:PWSH_MODULES_PATH/TestingFramework/TestingFramework.psd1 | Should -Be $true
         }
 
         It 'Should load module without errors' {
