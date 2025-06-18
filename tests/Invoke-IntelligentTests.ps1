@@ -73,7 +73,7 @@ $testConfig = @{
 
 # Ensure output directory exists
 if (-not (Test-Path $testConfig.OutputPath)) {
-    New-Item -Path $testConfig.OutputPath -ItemType Directory -Force | Out-Null
+    if (-not (Test-Path $testConfig.OutputPath)) { New-Item -Path $testConfig.OutputPath -ItemType Directory -Force | Out-Null }
 }
 
 Write-Host "[SYMBOL] OpenTofu Lab Automation - Intelligent Test Runner" -ForegroundColor Cyan
@@ -508,4 +508,5 @@ if ($testResults | Where-Object { $_.FailedCount -gt 0 }) {
     Write-Host "`nPASS All tests passed!" -ForegroundColor Green
     exit 0
 }
+
 

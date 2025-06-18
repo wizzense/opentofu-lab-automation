@@ -61,7 +61,7 @@ $env:PYTHON_MODULES_PATH = Join-Path $ProjectRoot "src/python"
 
 # Ensure results directory exists
 if (-not (Test-Path $ResultsDir)) {
-    New-Item -Path $ResultsDir -ItemType Directory -Force | Out-Null
+    if (-not (Test-Path $ResultsDir)) { New-Item -Path $ResultsDir -ItemType Directory -Force | Out-Null }
 }
 
 Write-Host "DEPLOY OpenTofu Lab Automation - Master Test Runner" -ForegroundColor Cyan
@@ -360,4 +360,5 @@ switch ($testResults.OverallStatus) {
         exit 1
     }
 }
+
 

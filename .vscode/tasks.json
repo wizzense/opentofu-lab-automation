@@ -1,107 +1,225 @@
 {
-  "tasks": [
-    {
-      "label": "Test: Validate Dependencies",
-      "args": [
-        "-NoProfile",
-        "-Command",
-        "try { Write-Host 'Testing task execution' -ForegroundColor Green; exit 0 } catch { Write-Error $_; exit 1 }"
-      ],
-      "problemMatcher": "$msCompile",
-      "type": "shell",
-      "command": "pwsh",
-      "group": "test",
-      "presentation": {
-        "reveal": "always",
-        "echo": true,
-        "panel": "shared",
-        "focus": false,
-        "showReuseMessage": false
-      }
-    },
-    {
-      "label": "Maintenance: Quick Health Check",
-      "args": [
-        "-NoProfile",
-        "-File",
-        "./scripts/maintenance/infrastructure-health-check.ps1"
-      ],
-      "problemMatcher": "$msCompile",
-      "type": "shell",
-      "command": "pwsh",
-      "group": {
-        "kind": "test",
-        "isDefault": true
-      },
-      "presentation": {
-        "reveal": "always",
-        "echo": true,
-        "panel": "shared",
-        "focus": false
-      }
-    },
-    {
-      "label": "PatchManager: Load Module with Error Handling",
-      "args": [
-        "-NoProfile",
-        "-Command",
-        "try { Import-Module '${workspaceFolder}/pwsh/modules/PatchManager/PatchManager.psd1' -Force -ErrorAction Stop; Write-Host 'PatchManager loaded successfully' -ForegroundColor Green } catch { Write-Error 'PatchManager import failed: $_'; Write-Host 'Module path: ${workspaceFolder}/pwsh/modules/PatchManager/' -ForegroundColor Yellow; exit 1 }"
-      ],
-      "problemMatcher": "$msCompile",
-      "type": "shell",
-      "command": "pwsh",
-      "group": "build",
-      "presentation": {
-        "reveal": "always",
-        "echo": true,
-        "panel": "shared",
-        "focus": false
-      }
-    },
-    {
-      "label": "Test: Run Pester Tests with Error Handling",
-      "args": [
-        "-NoProfile",
-        "-Command",
-        "try { Invoke-Pester -Path './tests/' -Output Detailed -PassThru } catch { Write-Error 'Pester test error: $_'; exit 1 }"
-      ],
-      "problemMatcher": "$msCompile",
-      "type": "shell",
-      "command": "pwsh",
-      "group": "test",
-      "presentation": {
-        "reveal": "always",
-        "echo": true,
-        "panel": "shared",
-        "focus": false
-      }
-    },
-    {
-      "label": "PSScriptAnalyzer: Full Analysis with Error Handling",
-      "args": [
-        "-NoProfile",
-        "-Command",
-        "try { if (Get-Module -ListAvailable -Name PSScriptAnalyzer) { Invoke-ScriptAnalyzer -Path './pwsh/' -Recurse -Severity Warning,Error -IncludeDefaultRules | Format-Table -AutoSize } else { Write-Error 'PSScriptAnalyzer module not found. Install with: Install-Module PSScriptAnalyzer -Force'; exit 1 } } catch { Write-Error 'PSScriptAnalyzer error: $_'; exit 1 }"
-      ],
-      "problemMatcher": "$msCompile",
-      "type": "shell",
-      "command": "pwsh",
-      "group": "test",
-      "presentation": {
-        "reveal": "always",
-        "echo": true,
-        "panel": "shared",
-        "focus": false
-      }
-    }
-  ],
-  "inputs": [
-    {
-      "type": "promptString",
-      "id": "patchDescription",
-      "default": "VS Code task patch",
-      "description": "Enter patch description"
-    }
-  ],
-  "version": "2.0.0"
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Run All Pester Tests",
+            "type": "shell",
+            "command": "pwsh",
+            "args": [
+                "-Command",
+                "Invoke-Pester -Configuration (Import-PowerShellDataFile -Path 'tests/config/PesterConfiguration.psd1')"
+            ],
+            "group": "test",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": true
+            },
+            "problemMatcher": [],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            }
+        },
+        {
+            "label": "Run Specific Module Tests",
+            "type": "shell",
+            "command": "pwsh",
+            "args": [
+                "-Command",
+                "param($ModuleName); Invoke-Pester -Path \"tests/unit/modules/$ModuleName\" -Output Detailed"
+            ],
+            "group": "test",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": true
+            },
+            "problemMatcher": [],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            }
+        },
+        {
+            "label": "PowerShell Script Analysis",
+            "type": "shell",
+            "command": "pwsh",
+            "args": [
+                "-Command",
+                "Invoke-ScriptAnalyzer -Path '${file}' -Settings 'pwsh/PSScriptAnalyzerSettings.psd1' -Recurse"
+            ],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": true
+            },
+            "problemMatcher": [],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            }
+        },
+        {
+            "label": "Setup Development Environment",
+            "type": "shell",
+            "command": "pwsh",
+            "args": [
+                "-Command",
+                "& './core-runner/setup-test-env.ps1'"
+            ],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": true,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": true
+            },
+            "problemMatcher": [],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            }
+        },
+        {
+            "label": "Import All Modules",
+            "type": "shell",
+            "command": "pwsh",
+            "args": [
+                "-Command",
+                "Get-ChildItem -Path 'core-runner/modules' -Directory | ForEach-Object { Import-Module $_.FullName -Force -Verbose }"
+            ],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": true
+            },
+            "problemMatcher": [],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            }
+        },
+        {
+            "label": "OpenTofu Plan",
+            "type": "shell",
+            "command": "tofu",
+            "args": [
+                "plan",
+                "-out=tfplan"
+            ],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": true
+            },
+            "problemMatcher": [],
+            "options": {
+                "cwd": "${workspaceFolder}/opentofu/infrastructure"
+            }
+        },
+        {
+            "label": "OpenTofu Apply",
+            "type": "shell",
+            "command": "tofu",
+            "args": [
+                "apply",
+                "tfplan"
+            ],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": true,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": true
+            },
+            "problemMatcher": [],
+            "options": {
+                "cwd": "${workspaceFolder}/opentofu/infrastructure"
+            }
+        },
+        {
+            "label": "Generate Test Report",
+            "type": "shell",
+            "command": "pwsh",
+            "args": [
+                "-Command",
+                "$config = Import-PowerShellDataFile -Path 'tests/config/PesterConfiguration.psd1'; $config.TestResult.Enabled = $true; Invoke-Pester -Configuration $config"
+            ],
+            "group": "test",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": true
+            },
+            "problemMatcher": [],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            }
+        },
+        {
+            "label": "Clean Test Results",
+            "type": "shell",
+            "command": "pwsh",
+            "args": [
+                "-Command",
+                "Remove-Item -Path 'tests/results/*' -Force -Recurse -ErrorAction SilentlyContinue; Write-Host 'Test results cleaned'"
+            ],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": true
+            },
+            "problemMatcher": [],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            }
+        },
+        {
+            "label": "Validate All Module Manifests",
+            "type": "shell",
+            "command": "pwsh",
+            "args": [
+                "-Command",
+                "Get-ChildItem -Path 'core-runner/modules' -Filter '*.psd1' -Recurse | ForEach-Object { Write-Host \"Validating $($_.Name)\"; Test-ModuleManifest $_.FullName }"
+            ],
+            "group": "test",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": true
+            },
+            "problemMatcher": [],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            }
+        }
+    ]
 }

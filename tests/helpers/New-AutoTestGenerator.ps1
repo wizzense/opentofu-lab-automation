@@ -563,7 +563,7 @@ $scriptName = System.IO.Path::GetFileName($ScriptPath)
     # Ensure output directory exists
     $outputDir = Split-Path $OutputPath -Parent
     if (-not (Test-Path $outputDir)) {
-        New-Item -ItemType Directory -Path $outputDir -Force | Out-Null}
+        if (-not (Test-Path $outputDir)) { New-Item -ItemType Directory -Path $outputDir -Force | Out-Null }
     
     Set-Content -Path $OutputPath -Value $template -Encoding UTF8
     Write-Host "Generated test file: $OutputPath" -ForegroundColor Green
@@ -650,6 +650,8 @@ if ($ScriptPath) {
         }
     }
 }
+
+
 
 
 

@@ -404,7 +404,7 @@ try {
     
     # Ensure output directory exists
     if (-not (Test-Path $OutputPath)) {
-        New-Item -ItemType Directory -Path $OutputPath -Force | Out-Null}
+        if (-not (Test-Path $OutputPath)) { New-Item -ItemType Directory -Path $OutputPath -Force | Out-Null }
     
     # Configure Pester
     $pesterConfig = New-PesterConfiguration
@@ -458,6 +458,8 @@ try {
     Write-Error "Test execution failed: $_"
     exit 1
 }
+
+
 
 
 

@@ -1,29 +1,37 @@
-
-
 @{
-    IncludeRules = @(
-        'PSUseConsistentIndentation',
-        'PSUseConsistentWhitespace', 
-        'PSPlaceOpenBrace',
-        'PSPlaceCloseBrace',
-        'PSAvoidTrailingWhitespace',
-        'PSUseCompatibleSyntax',
-        'PSAvoidUsingPositionalParameters',
-        'PSReviewUnusedParameter',
-        'PSUseDeclaredVarsMoreThanAssignments'
-    )
     ExcludeRules = @(
-        'PSUseShouldProcessForStateChangingFunctions',
-        'PSAvoidUsingWriteHost',
-        'PSAvoidGlobalVars',
-        'PSAvoidUsingPlainTextForPassword'
+        'PSAvoidUsingWriteHost',  # We use Write-Host for colored console output
+        'PSUseShouldProcessForStateChangingFunctions'  # Not all functions need this
     )
-    # Custom rule settings
+    IncludeDefaultRules = $true
+    Severity = @('Error', 'Warning', 'Information')
     Rules = @{
-        PSUseCompatibleSyntax = @{
+        PSPlaceOpenBrace = @{
             Enable = $true
-            TargetVersions = @('5.1', '7.0')
+            OnSameLine = $true
+            NewLineAfter = $true
+            IgnoreOneLineBlock = $true
+        }
+        PSPlaceCloseBrace = @{
+            Enable = $true
+            NewLineAfter = $false
+            IgnoreOneLineBlock = $true
+            NoEmptyLineBefore = $false
+        }
+        PSUseConsistentIndentation = @{
+            Enable = $true
+            Kind = 'space'
+            PipelineIndentation = 'IncreaseIndentationForFirstPipeline'
+            IndentationSize = 4
+        }
+        PSUseConsistentWhitespace = @{
+            Enable = $true
+            CheckInnerBrace = $true
+            CheckOpenBrace = $true
+            CheckOpenParen = $true
+            CheckOperator = $true
+            CheckPipe = $true
+            CheckSeparator = $true
         }
     }
 }
-

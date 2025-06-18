@@ -249,16 +249,27 @@
         "-NoLogo"
       ]
     }
-  },
-  // Extension-specific settings
+  }, // Extension-specific settings
   "pester.useLegacyCodeLens": false,
   "pester.enableCodeLens": true,
+  "pester.outputVerbosity": "Normal",
+  "pester.autoDiscoverTests": true,
+  "pester.testFilePath": [
+    "tests/**/*.Tests.ps1"
+  ],
+  "pester.configurationFilePath": "tests/config/PesterConfiguration.psd1",
+  "pester.testFilePattern": "**/*.Tests.ps1",
+  "pester.excludeTestFiles": [
+    "**/temp/**",
+    "**/backup*/**",
+    "**/archive/**"
+  ],
   "errorLens.enabledDiagnosticLevels": [
     "error",
     "warning",
     "info"
   ],
-  "errorLens.exclude": [
+  "errorLens.excludeByMessage": [
     "never (read|used)"
   ],
   // Workspace-specific settings

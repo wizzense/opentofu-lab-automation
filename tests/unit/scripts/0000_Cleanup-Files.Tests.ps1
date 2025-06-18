@@ -76,10 +76,10 @@ Describe '0000_Cleanup-Files Script Tests' {
             
             # Create test directories if they don't exist
             if (-not (Test-Path $testRepoPath)) {
-                New-Item -Path $testRepoPath -ItemType Directory -Force | Out-Null
+                if (-not (Test-Path $testRepoPath)) { New-Item -Path $testRepoPath -ItemType Directory -Force | Out-Null }
             }
             if (-not (Test-Path $testInfraPath)) {
-                New-Item -Path $testInfraPath -ItemType Directory -Force | Out-Null
+                if (-not (Test-Path $testInfraPath)) { New-Item -Path $testInfraPath -ItemType Directory -Force | Out-Null }
             }
         }
         
@@ -102,8 +102,8 @@ Describe '0000_Cleanup-Files Script Tests' {
             $testRepoPath = Join-Path $script:TestConfig.LocalPath "test-repo"
             $testInfraPath = $script:TestConfig.InfraRepoPath
             
-            New-Item -Path $testRepoPath -ItemType Directory -Force | Out-Null
-            New-Item -Path $testInfraPath -ItemType Directory -Force | Out-Null
+            if (-not (Test-Path $testRepoPath)) { New-Item -Path $testRepoPath -ItemType Directory -Force | Out-Null }
+            if (-not (Test-Path $testInfraPath)) { New-Item -Path $testInfraPath -ItemType Directory -Force | Out-Null }
             
             # Run the cleanup script
             & $script:ScriptPath -Config $script:TestConfig
@@ -161,3 +161,4 @@ Describe '0000_Cleanup-Files Script Tests' {
         }
     }
 }
+
