@@ -1,15 +1,12 @@
 #Requires -Version 7.0
-
 [CmdletBinding(SupportsShouldProcess)]
 param(
-    [Parameter(Mandatory)]
-    [string]$ConfigPath
+    [Parameter(Mandatory, ValueFromPipeline)]
+    [object]$Config
 )
 
-$ErrorActionPreference = 'Stop'
-
-# Import necessary modules using environment variables
-Import-Module "$env:PROJECT_ROOT/core-runner/modules/LabRunner/" -Force
+Import-Module "$env:PWSH_MODULES_PATH/LabRunner/" -Force
+Import-Module "$env:PROJECT_ROOT/core-runner/modules/Logging/" -Force
 
 Write-CustomLog "Starting $($MyInvocation.MyCommand.Name)"
 

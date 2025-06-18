@@ -11,9 +11,9 @@ Describe "Module Structure Validation" {
             $errorHandlingFiles.Count | Should -Be 1
             $errorHandlingFiles | Should -Be "PatchManager\Public\ErrorHandling.ps1"
         }
-          It "Should not have src/pwsh/modules directory" {
+          It "Should not have src/core-runner/modules directory" {
             $projectRoot = Split-Path $PSScriptRoot -Parent
-            $srcModulesPath = Join-Path $projectRoot "src/pwsh/modules"
+            $srcModulesPath = Join-Path $projectRoot "src/core-runner/modules"
             Test-Path $srcModulesPath | Should -Be $false
         }
     }
@@ -42,14 +42,14 @@ Describe "Module Structure Validation" {
     Context "Test Configuration" {
         It "Should have updated test files pointing to correct module path" {
             $dynamicTestsContent = Get-Content "tests\Invoke-DynamicTests.ps1" -Raw
-            $dynamicTestsContent | Should -Match 'pwsh/modules'
-            $dynamicTestsContent | Should -Not -Match 'src/pwsh/modules'
+            $dynamicTestsContent | Should -Match 'core-runner/modules'
+            $dynamicTestsContent | Should -Not -Match 'src/core-runner/modules'
         }
         
         It "Should have updated master tests pointing to correct module path" {
             $masterTestsContent = Get-Content "tests\Run-MasterTests.ps1" -Raw
-            $masterTestsContent | Should -Match 'pwsh/modules'
-            $masterTestsContent | Should -Not -Match 'src/pwsh/modules'
+            $masterTestsContent | Should -Match 'core-runner/modules'
+            $masterTestsContent | Should -Not -Match 'src/core-runner/modules'
         }
     }
 }

@@ -1,6 +1,8 @@
 # Ensure environment variables are set for admin-friendly module discovery
 if (-not $env:PWSH_MODULES_PATH) {
+
     $env:PWSH_MODULES_PATH = Join-Path (Split-Path (Split-Path $PSScriptRoot -Parent) -Parent) "core-runner/modules"
+
 }
 Describe 'Code Quality and Linting Tests' {
     BeforeAll {
@@ -145,7 +147,7 @@ Describe 'Code Quality and Linting Tests' {
         
         It 'Should be able to execute parallel linting (dry run)' {
             $testLintTasks = @(
-                @{ Type = 'PSScriptAnalyzer'; Path = './src/pwsh/modules/ParallelExecution'; Name = 'Test-PSScriptAnalyzer' }
+                @{ Type = 'PSScriptAnalyzer'; Path = './src/core-runner/modules/ParallelExecution'; Name = 'Test-PSScriptAnalyzer' }
             )
             
             { Invoke-ParallelTaskExecution -Tasks $testLintTasks -TaskType 'Lint' -MaxConcurrency 1 } | Should -Not -Throw

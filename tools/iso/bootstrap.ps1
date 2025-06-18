@@ -4,7 +4,7 @@ param(
 
 Set-ExecutionPolicy -ExecutionPolicy Bypass
 
-$bootstrapUrl = "https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/refs/heads/$Branch/pwsh/kicker-bootstrap.ps1"
+$bootstrapUrl = "https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/refs/heads/$Branch/core-runner/kicker-bootstrap.ps1"
 Invoke-WebRequest -Uri $bootstrapUrl -OutFile '.\kicker-bootstrap.ps1'
 
 if (Test-Path '.\kicker-bootstrap.ps1') {

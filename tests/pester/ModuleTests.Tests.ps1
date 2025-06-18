@@ -4,7 +4,7 @@ if (-not $env:PWSH_MODULES_PATH) {
 }
 Describe 'UnifiedMaintenance Module Tests' {
     BeforeAll {
-        $ModulePath = './pwsh/modules/UnifiedMaintenance/UnifiedMaintenance.psm1'
+        $ModulePath = './core-runner/modules/UnifiedMaintenance/UnifiedMaintenance.psm1'
     }
 
     Context 'Module Structure' {
@@ -41,7 +41,7 @@ Describe 'UnifiedMaintenance Module Tests' {
 
 Describe 'TestingFramework Module Tests' {
     BeforeAll {
-        $ModulePath = './pwsh/modules/TestingFramework/TestingFramework.psm1'
+        $ModulePath = './core-runner/modules/TestingFramework/TestingFramework.psm1'
     }
 
     Context 'Module Structure' {
@@ -61,7 +61,7 @@ Describe 'TestingFramework Module Tests' {
 
 Describe 'ScriptManager Module Tests' {
     BeforeAll {
-        $ModulePath = './pwsh/modules/ScriptManager/ScriptManager.psm1'
+        $ModulePath = './core-runner/modules/ScriptManager/ScriptManager.psm1'
     }
 
     Context 'Module Structure' {
