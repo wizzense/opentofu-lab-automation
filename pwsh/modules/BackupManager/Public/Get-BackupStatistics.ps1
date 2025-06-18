@@ -62,7 +62,7 @@ function Get-BackupStatistics {
         } else {
             # Calculate statistics
             $TotalSize = (BackupFiles | Measure-Object -Property Length -Sum).Sum
-            $AverageSize = math::Round($TotalSize / $BackupFiles.Count, 2)
+            $AverageSize = [Math]::Round($TotalSize / $BackupFiles.Count, 2)
             
             # Find oldest and newest files
             $OldestFile = BackupFiles | Sort-ObjectLastWriteTime | Select-Object -First 1
@@ -70,7 +70,7 @@ function Get-BackupStatistics {
             
             # Group by file extension
             $FileTypes = BackupFiles | Group-ObjectExtension | ForEach-Object{
-                $percentage = math::Round(($_.Count / $BackupFiles.Count) * 100, 1)
+                $percentage = [Math]::Round(($_.Count / $BackupFiles.Count) * 100, 1)
                 @{
                     Extension = if ($_.Name) { $_.Name } else { "(no extension)" }
                     Count = $_.Count
@@ -80,18 +80,18 @@ function Get-BackupStatistics {
             
             $result = @{
                 TotalFiles = $BackupFiles.Count
-                TotalSize = math::Round($TotalSize / 1MB, 2)
-                AverageSize = math::Round($AverageSize / 1KB, 2)
+                TotalSize = [Math]::Round($TotalSize / 1MB, 2)
+                AverageSize = [Math]::Round($AverageSize / 1KB, 2)
                 OldestFile = if ($OldestFile) { 
                     @{
                         Name = $OldestFile.Name
-                        Age = math::Round(((Get-Date) - $OldestFile.LastWriteTime).TotalDays, 1)
+                        Age = [Math]::Round(((Get-Date) - $OldestFile.LastWriteTime).TotalDays, 1)
                     }
                 } else { $null }
                 NewestFile = if ($NewestFile) { 
                     @{
                         Name = $NewestFile.Name
-                        Age = math::Round(((Get-Date) - $NewestFile.LastWriteTime).TotalDays, 1)
+                        Age = [Math]::Round(((Get-Date) - $NewestFile.LastWriteTime).TotalDays, 1)
                     }
                 } else { $null }
                 FileTypes = $FileTypes
@@ -102,9 +102,9 @@ function Get-BackupStatistics {
                     @{
                         Name = $_.Name
                         Path = $_.FullName.Replace($ProjectRoot, "").TrimStart('\', '/')
-                        Size = math::Round($_.Length / 1KB, 2)
+                        Size = [Math]::Round($_.Length / 1KB, 2)
                         LastModified = $_.LastWriteTime
-                        Age = math::Round(((Get-Date) - $_.LastWriteTime).TotalDays, 1)
+                        Age = [Math]::Round(((Get-Date) - $_.LastWriteTime).TotalDays, 1)
                     }
                 }
             }
@@ -130,6 +130,14 @@ function Get-BackupStatistics {
         throw $_
     }
 }
+
+
+
+
+
+
+
+
 
 
 

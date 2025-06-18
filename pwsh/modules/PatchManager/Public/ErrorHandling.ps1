@@ -22,9 +22,8 @@ function HandlePatchError {
         
         [Parameter(Mandatory = $false)]
         [System.Management.Automation.ErrorRecord]$ErrorRecord = $null,
-        
         [Parameter(Mandatory = $false)]
-        [ValidateSet("Git", "PatchValidation", "CleanupOperation", "BranchStrategy", "PullRequest", "Rollback", "General")]
+        [ValidateSet("Git", "PatchValidation", "BranchStrategy", "PullRequest", "Rollback", "General")]
         [string]$ErrorCategory = "General",
         
         [Parameter(Mandatory = $false)]
@@ -74,10 +73,19 @@ $($ErrorRecord.ScriptStackTrace)
             Write-Host "See $LogPath for details" -ForegroundColor Yellow
         }
     }
-    
     # Update GitHub issue if provided
     if ($IssueNumber) {
         try {
+            # Build suggested actions based on error category
+            $suggestedActions = switch ($ErrorCategory) {
+                "Git" { "- Check Git repository status and permissions" }
+                "PatchValidation" { "- Review changes for syntax errors or validation issues" }
+                "BranchStrategy" { "- Verify branch naming and repository structure" }
+                "PullRequest" { "- Ensure GitHub permissions are correct" }
+                "Rollback" { "- Manual intervention may be required" }
+                default { "- Review error details and logs" }
+            }
+            
             $issueComment = @"
 ## ❌ Error Encountered
 
@@ -86,19 +94,13 @@ $($ErrorRecord.ScriptStackTrace)
 **Details**: $ErrorMessage
 
 ### Suggested Actions
-$($ErrorCategory -eq "Git" ? "- Check Git repository status and permissions" : "")
-$($ErrorCategory -eq "PatchValidation" ? "- Review changes for syntax errors or validation issues" : "")
-$($ErrorCategory -eq "CleanupOperation" ? "- Check permissions on files being cleaned up" : "")
-$($ErrorCategory -eq "BranchStrategy" ? "- Verify branch naming and repository structure" : "")
-$($ErrorCategory -eq "PullRequest" ? "- Ensure GitHub permissions are correct" : "")
-$($ErrorCategory -eq "Rollback" ? "- Manual intervention may be required" : "")
+$suggestedActions
 - Review error log for detailed troubleshooting
 "@
             
             # Use GitHub CLI to add comment
             gh issue comment $IssueNumber --body $issueComment 2>&1 | Out-Null
-        }
-        catch {
+        } catch {
             # Silently continue if GitHub issue update fails
             $issueUpdateError = "Failed to update GitHub issue: $($_.Exception.Message)"
             $issueUpdateError | Out-File -FilePath $LogPath -Append
@@ -107,12 +109,12 @@ $($ErrorCategory -eq "Rollback" ? "- Manual intervention may be required" : "")
     
     # Create structured error object
     $errorObject = [PSCustomObject]@{
-        Timestamp = $timestamp
-        Category = $ErrorCategory
-        Message = $ErrorMessage
-        Exception = $ErrorRecord?.Exception
-        StackTrace = $ErrorRecord?.ScriptStackTrace
-        LogPath = $LogPath
+        Timestamp   = $timestamp
+        Category    = $ErrorCategory
+        Message     = $ErrorMessage
+        Exception   = $ErrorRecord?.Exception
+        StackTrace  = $ErrorRecord?.ScriptStackTrace
+        LogPath     = $LogPath
         IssueNumber = $IssueNumber
     }
     
@@ -124,9 +126,8 @@ function Write-PatchLog {
     param(
         [Parameter(Mandatory = $true)]
         [string]$Message,
-        
         [Parameter(Mandatory = $false)]
-        [ValidateSet("INFO", "WARNING", "ERROR", "DEBUG")]
+        [ValidateSet("INFO", "WARNING", "ERROR", "DEBUG", "SUCCESS")]
         [string]$LogLevel = "INFO",
         
         [Parameter(Mandatory = $false)]
@@ -135,6 +136,7 @@ function Write-PatchLog {
         [Parameter(Mandatory = $false)]
         [switch]$NoConsole
     )
+
       # Format log message
     $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
     $logMessage = "[$timestamp] [$LogLevel] $Message"
@@ -154,16 +156,16 @@ function Write-PatchLog {
     # Write to console with color based on log level (unless NoConsole is specified)
     if (-not $NoConsole) {
         $color = switch ($LogLevel) {
-            "INFO"    { "White" }
+            "INFO" { "White" }
             "WARNING" { "Yellow" }
-            "ERROR"   { "Red" }
-            "DEBUG"   { "Gray" }
-            default   { "White" }
+            "ERROR" { "Red" }
+            "DEBUG" { "Gray" }
+            "SUCCESS" { "Green" }
+            default { "White" }
         }
         
         Write-Host $logMessage -ForegroundColor $color
     }
 }
 
-# Export public functions
-Export-ModuleMember -Function HandlePatchError, Write-PatchLog
+# Note: Export-ModuleMember is handled by the parent module

@@ -58,14 +58,14 @@ function Invoke-CrossPlatformFixer {
           # Define path patterns to fix
         $script:PathPatterns = @{
             # Hardcoded Windows paths
-            'C:\\Users\\alexa\\OneDrive\\Documents\\0\. wizzense\\opentofu-lab-automation' = '/workspaces/opentofu-lab-automation'
-            'C:/Users/alexa/OneDrive/Documents/0. wizzense/opentofu-lab-automation' = '/workspaces/opentofu-lab-automation'
+            'C:\\Users\\alexa\\OneDrive\\Documents\\0\. wizzense\\opentofu-lab-automation' = '/workspaces/opentofu-lab-automation/src'
+            'C:/Users/alexa/OneDrive/Documents/0. wizzense/opentofu-lab-automation' = '/workspaces/opentofu-lab-automation/src'
             
             # Fix escaped backslashes
-            'C:\\\\Users\\\\alexa\\\\OneDrive\\\\Documents\\\\0\\. wizzense\\\\opentofu-lab-automation' = '/workspaces/opentofu-lab-automation'
+            'C:\\\\Users\\\\alexa\\\\OneDrive\\\\Documents\\\\0\\. wizzense\\\\opentofu-lab-automation' = '/workspaces/opentofu-lab-automation/src'
             
             # Fix mixed slash patterns
-            'C:\\Users\\alexa\\OneDrive\\Documents\\0. wizzense/opentofu-lab-automation' = '/workspaces/opentofu-lab-automation'
+            'C:\\Users\\alexa\\OneDrive\\Documents\\0. wizzense/opentofu-lab-automation' = '/workspaces/opentofu-lab-automation/src'
         }
         
         # Define import patterns to fix
@@ -84,10 +84,10 @@ function Invoke-CrossPlatformFixer {
             'Import-Module "pwsh\modules\CodeFixer"' = 'Import-Module "/pwsh/modules/CodeFixer/" -Force'
             
             # PatchManager imports
-            'Import-Module "pwsh/modules/PatchManager"' = 'Import-Module "/pwsh/modules/PatchManager/" -Force'
-            'Import-Module "./pwsh/modules/PatchManager"' = 'Import-Module "/pwsh/modules/PatchManager/" -Force'
-            'Import-Module ".\pwsh\modules\PatchManager"' = 'Import-Module "/pwsh/modules/PatchManager/" -Force'
-            'Import-Module "pwsh\modules\PatchManager"' = 'Import-Module "/pwsh/modules/PatchManager/" -Force'
+            'Import-Module "pwsh/modules/PatchManager"' = 'Import-Module "/src/pwsh/modules/PatchManager/" -Force'
+            'Import-Module "./pwsh/modules/PatchManager"' = 'Import-Module "/src/pwsh/modules/PatchManager/" -Force'
+            'Import-Module ".\pwsh\modules\PatchManager"' = 'Import-Module "/src/pwsh/modules/PatchManager/" -Force'
+            'Import-Module "pwsh\modules\PatchManager"' = 'Import-Module "/src/pwsh/modules/PatchManager/" -Force'
             
             # BackupManager imports
             'Import-Module "pwsh/modules/BackupManager"' = 'Import-Module "/pwsh/modules/BackupManager/" -Force'
@@ -428,7 +428,7 @@ function New-CrossPlatformFixReport {
 ## Actions Performed
 
 ### Phase 1: Path Standardization
-- Fixed hardcoded Windows paths to use standard `/workspaces/opentofu-lab-automation` format
+- Fixed hardcoded Windows paths to use standard `/workspaces/opentofu-lab-automation/src` format
 - Replaced backslashes with forward slashes for cross-platform compatibility
 - Updated escaped path patterns
 

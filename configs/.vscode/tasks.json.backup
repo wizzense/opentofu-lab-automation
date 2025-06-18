@@ -1,0 +1,931 @@
+{
+	"version": "2.0.0",
+	"tasks": [		{
+			"label": "Maintenance: Quick Health Check",
+			"type": "shell",
+			"command": "pwsh",
+			"args": [
+				"-NoProfile",
+				"-File",
+				"./scripts/maintenance/infrastructure-health-check.ps1"
+			],
+			"group": {
+				"kind": "test",
+				"isDefault": true
+			},
+			"problemMatcher": [
+				{
+					"owner": "powershell",
+					"fileLocation": ["relative", "${workspaceFolder}"],
+					"pattern": [
+						{
+							"regexp": "^(.*):(\\d+):(\\d+):\\s+(error|warning|info)\\s+(.*)$",
+							"file": 1,
+							"line": 2,
+							"column": 3,
+							"severity": 4,
+							"message": 5
+						}
+					]
+				}
+			],
+			"isBackground": false,
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": false,
+				"panel": "shared",
+				"showReuseMessage": true,
+				"clear": false
+			}
+		},
+		{
+			"label": "Maintenance: Unified Testing",
+			"type": "shell",
+			"command": "pwsh",
+			"args": [
+				"-NoProfile",
+				"-File",
+				"./scripts/maintenance/unified-maintenance.ps1",
+				"-Mode",
+				"TestOnly"
+			],
+			"group": "test",
+			"problemMatcher": [
+				{
+					"owner": "powershell",
+					"fileLocation": ["relative", "${workspaceFolder}"],
+					"pattern": [
+						{
+							"regexp": "^(.*):(\\d+):(\\d+):\\s+(error|warning|info)\\s+(.*)$",
+							"file": 1,
+							"line": 2,
+							"column": 3,
+							"severity": 4,
+							"message": 5
+						}
+					]
+				}
+			],
+			"isBackground": false,
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": false,
+				"panel": "shared",
+				"showReuseMessage": true,
+				"clear": false
+			}
+		},		{
+			"label": "Maintenance: Complete with PatchManager",
+			"type": "shell",
+			"command": "pwsh",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"try { Import-Module '${workspaceFolder}/pwsh/modules/PatchManager/PatchManager.psd1' -Force -ErrorAction Stop; Write-Host 'PatchManager loaded successfully' -ForegroundColor Green } catch { Write-Error \"PatchManager import failed: $_\"; exit 1 }"
+			],
+			"group": "build",
+			"problemMatcher": [
+				{
+					"owner": "powershell",
+					"fileLocation": ["relative", "${workspaceFolder}"],
+					"pattern": [
+						{
+							"regexp": "^(.*):(\\d+):(\\d+):\\s+(error|warning|info)\\s+(.*)$",
+							"file": 1,
+							"line": 2,
+							"column": 3,
+							"severity": 4,
+							"message": 5
+						}
+					]
+				}
+			],		},
+		{
+			"label": "Maintenance: Complete with PatchManager",
+			"type": "shell",
+			"command": "pwsh",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"try { Import-Module '${workspaceFolder}/pwsh/modules/PatchManager/PatchManager.psd1' -Force -ErrorAction Stop; Write-Host 'PatchManager loaded successfully' -ForegroundColor Green } catch { Write-Error \"PatchManager import failed: $_\"; exit 1 }"
+			],
+			"group": "build",
+			"problemMatcher": [
+				{
+					"owner": "powershell",
+					"fileLocation": ["relative", "${workspaceFolder}"],
+					"pattern": [
+						{
+							"regexp": "^(.*):(\\d+):(\\d+):\\s+(error|warning|info)\\s+(.*)$",
+							"file": 1,
+							"line": 2,
+							"column": 3,
+							"severity": 4,
+							"message": 5
+						}
+					]
+				}
+			],
+			"isBackground": false,
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": false,
+				"panel": "shared",
+				"showReuseMessage": true,
+				"clear": false
+			}
+				"showReuseMessage": true,
+				"clear": false
+			}
+		},		{
+			"label": "Run Infrastructure Health",
+			"type": "shell",
+			"command": "pwsh",
+			"args": [
+				"-NoProfile",
+				"-File",
+				"./scripts/maintenance/infrastructure-health-check.ps1"
+			],
+			"group": "test",
+			"problemMatcher": [
+				{
+					"owner": "powershell",
+					"fileLocation": ["relative", "${workspaceFolder}"],
+					"pattern": [
+						{
+							"regexp": "^(.*):(\\d+):(\\d+):\\s+(error|warning|info)\\s+(.*)$",
+							"file": 1,
+							"line": 2,
+							"column": 3,
+							"severity": 4,
+							"message": 5
+						}
+					]
+				}
+			],
+			"isBackground": false,
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": false,
+				"panel": "shared",
+				"showReuseMessage": true,
+				"clear": false
+			}
+		},
+		{
+			"label": "Run Quick Issue Check",
+			"type": "shell",
+			"command": "pwsh",
+			"args": [
+				"-NoProfile",
+				"-File",
+				"./scripts/maintenance/quick-issue-check.ps1"
+			],
+			"group": "test",
+			"problemMatcher": [
+				{
+					"owner": "powershell",
+					"fileLocation": ["relative", "${workspaceFolder}"],
+					"pattern": [
+						{
+							"regexp": "^(.*):(\\d+):(\\d+):\\s+(error|warning|info)\\s+(.*)$",
+							"file": 1,
+							"line": 2,
+							"column": 3,
+							"severity": 4,
+							"message": 5
+						}
+					]
+				}
+			],
+			"isBackground": false,
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": false,
+				"panel": "shared",
+				"showReuseMessage": true,
+				"clear": false
+			}
+		},		{
+			"label": "PatchManager: Apply Changes with DirectCommit",
+			"type": "shell",
+			"command": "pwsh",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"try { Import-Module './pwsh/modules/PatchManager/' -Force; Invoke-GitControlledPatch -PatchDescription '${input:patchDescription}' -PatchOperation { Write-Host 'Changes applied via VS Code task' } -DirectCommit -AutoCommitUncommitted -Force } catch { Write-Error \"PatchManager error: $_\"; exit 1 }"
+			],
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"problemMatcher": [
+				{
+					"owner": "powershell",
+					"fileLocation": ["relative", "${workspaceFolder}"],
+					"pattern": [
+						{
+							"regexp": "^(.*):(\\d+):(\\d+):\\s+(error|warning|info)\\s+(.*)$",
+							"file": 1,
+							"line": 2,
+							"column": 3,
+							"severity": 4,
+							"message": 5
+						}
+					]
+				}
+			],
+			"isBackground": false,
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": false,
+				"panel": "shared",
+				"showReuseMessage": true,
+				"clear": false
+			}
+		},
+		{
+			"label": "PatchManager: Apply Changes with PR",
+			"type": "shell",
+			"command": "pwsh",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"try { Import-Module './pwsh/modules/PatchManager/' -Force; Invoke-GitControlledPatch -PatchDescription '${input:patchDescription}' -PatchOperation { Write-Host 'Changes applied via VS Code task' } -AutoCommitUncommitted -CreatePullRequest } catch { Write-Error \"PatchManager error: $_\"; exit 1 }"
+			],
+			"group": "build",
+			"problemMatcher": [
+				{
+					"owner": "powershell",
+					"fileLocation": ["relative", "${workspaceFolder}"],
+					"pattern": [
+						{
+							"regexp": "^(.*):(\\d+):(\\d+):\\s+(error|warning|info)\\s+(.*)$",
+							"file": 1,
+							"line": 2,
+							"column": 3,
+							"severity": 4,
+							"message": 5
+						}
+					]
+				}
+			],
+			"isBackground": false,
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": false,
+				"panel": "shared",
+				"showReuseMessage": true,
+				"clear": false
+			}
+		},
+		{
+			"label": "PatchManager: Emergency Rollback",
+			"type": "shell",
+			"command": "pwsh",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"try { Import-Module './pwsh/modules/PatchManager/' -Force; Invoke-QuickRollback -RollbackType 'LastPatch' -CreateBackup } catch { Write-Error \"PatchManager error: $_\"; exit 1 }"
+			],
+			"group": "build",
+			"problemMatcher": [
+				{
+					"owner": "powershell",
+					"fileLocation": ["relative", "${workspaceFolder}"],
+					"pattern": [
+						{
+							"regexp": "^(.*):(\\d+):(\\d+):\\s+(error|warning|info)\\s+(.*)$",
+							"file": 1,
+							"line": 2,
+							"column": 3,
+							"severity": 4,
+							"message": 5
+						}
+					]
+				}
+			],
+			"isBackground": false,
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": false,
+				"panel": "shared",
+				"showReuseMessage": true,
+				"clear": false
+			}
+		},		{
+			"label": "Run Pester Tests",
+			"type": "shell",
+			"command": "pwsh",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"try { Invoke-Pester -Path './tests/' -Output Detailed -PassThru } catch { Write-Error \"Pester test error: $_\"; exit 1 }"
+			],
+			"group": "test",
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": false,
+				"panel": "shared",
+				"showReuseMessage": true,
+				"clear": false
+			},
+			"problemMatcher": [
+				{
+					"owner": "pester",
+					"fileLocation": ["relative", "${workspaceFolder}"],
+					"pattern": [
+						{
+							"regexp": "^\\s*\\[\\-\\]\\s+(.*)\\s+(\\d+)ms\\s*$",
+							"message": 1
+						},
+						{
+							"regexp": "^\\s*at\\s+(.*):(\\d+)\\s*$",
+							"file": 1,
+							"line": 2
+						}
+					]
+				}
+			]
+		},
+		{
+			"label": "Run PSScriptAnalyzer",
+			"type": "shell",
+			"command": "pwsh",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"try { Invoke-ScriptAnalyzer -Path './pwsh/' -Recurse -Settings './pwsh/PSScriptAnalyzerSettings.psd1' } catch { Write-Error \"PSScriptAnalyzer error: $_\"; exit 1 }"
+			],
+			"group": "test",
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": false,
+				"panel": "shared",
+				"showReuseMessage": true,
+				"clear": false
+			},
+			"problemMatcher": [
+				{
+					"owner": "psscriptanalyzer",
+					"fileLocation": ["relative", "${workspaceFolder}"],
+					"pattern": [
+						{
+							"regexp": "^(Information|Warning|Error)\\s+(.*)\\s+(.*)\\s+(\\d+)\\s+(\\d+)\\s+(.*)$",
+							"severity": 1,
+							"message": 2,
+							"file": 3,
+							"line": 4,
+							"column": 5,
+							"code": 6
+						}
+					]
+				}
+			]
+		},
+		{
+			"label": "Run Core Application",
+			"type": "shell",
+			"command": "pwsh",
+			"args": [
+				"-NoProfile",
+				"-File",
+				"./pwsh/runner.ps1",
+				"-Scripts",
+				"0006,0007,0008,0009"
+			],
+			"group": "build",
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": false,
+				"panel": "shared",
+				"showReuseMessage": true,
+				"clear": false
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "Test PatchManager Module",
+			"type": "shell",
+			"command": "pwsh",
+			"args": [
+				"-NoProfile",
+				"-File",
+				"./Test-EnhancedPatchManager.ps1"
+			],
+			"group": "test",
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": false,
+				"panel": "shared",
+				"showReuseMessage": true,
+				"clear": false
+			},
+			"problemMatcher": []
+		},		{
+			"label": "Run Python Tests",
+			"type": "shell",
+			"command": "python",
+			"args": [
+				"-m",
+				"pytest",
+				"./py/tests/",
+				"-v",
+				"--tb=short",
+				"--strict-markers"
+			],
+			"group": "test",
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": false,
+				"panel": "shared",
+				"showReuseMessage": true,
+				"clear": false
+			},
+			"problemMatcher": [
+				{
+					"owner": "pytest",
+					"fileLocation": ["relative", "${workspaceFolder}"],
+					"pattern": [
+						{
+							"regexp": "^(.*):(\\d+):\\s+(.*)$",
+							"file": 1,
+							"line": 2,
+							"message": 3
+						}
+					]
+				}
+			]
+		},
+		{
+			"label": "Clean Workspace",
+			"type": "shell",
+			"command": "pwsh",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"Import-Module './pwsh/modules/PatchManager/' -Force; Invoke-ComprehensiveCleanup -CleanupMode 'Standard'"
+			],
+			"group": "build",
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": false,
+				"panel": "shared",
+				"showReuseMessage": true,
+				"clear": false
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "Validate OpenTofu Configuration",
+			"type": "shell",
+			"command": "tofu",
+			"args": [
+				"validate"
+			],
+			"options": {
+				"cwd": "${workspaceFolder}/opentofu/examples"
+			},
+			"group": "test",
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": false,
+				"panel": "shared",
+				"showReuseMessage": true,
+				"clear": false
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "OpenTofu Plan",
+			"type": "shell",
+			"command": "tofu",
+			"args": [
+				"plan"
+			],
+			"options": {
+				"cwd": "${workspaceFolder}/opentofu/examples"
+			},
+			"group": "build",
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": false,
+				"panel": "shared",
+				"showReuseMessage": true,
+				"clear": false
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "Initialize Cross-Platform Environment",
+			"type": "shell",
+			"command": "pwsh",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"Import-Module './pwsh/modules/PatchManager/' -Force; Initialize-CrossPlatformEnvironment"
+			],
+			"group": "build",
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": false,
+				"panel": "shared",
+				"showReuseMessage": true,
+				"clear": false
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "Generate CoreApp Tests (Automated)",
+			"type": "shell",
+			"command": "pwsh",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"./scripts/Invoke-AutomatedTestGeneration.ps1 -Mode Generate -WatchPath './pwsh/core_app' -PatchManagerMode"
+			],
+			"group": "test",
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": false,
+				"panel": "shared",
+				"showReuseMessage": true,
+				"clear": false
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "Monitor CoreApp for Test Generation",
+			"type": "shell",
+			"command": "pwsh",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"./scripts/Invoke-AutomatedTestGeneration.ps1 -Mode Monitor -WatchPath './pwsh/core_app' -PatchManagerMode"
+			],
+			"group": "test",
+			"isBackground": true,
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": false,
+				"panel": "shared",
+				"showReuseMessage": true,
+				"clear": false
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "Run Complete Test Automation",
+			"type": "shell",
+			"command": "pwsh",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"./scripts/Invoke-AutomatedTestGeneration.ps1 -Mode All -WatchPath './pwsh/core_app' -PatchManagerMode"
+			],
+			"group": "test",
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": false,
+				"panel": "shared",
+				"showReuseMessage": true,
+				"clear": false
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "Run CoreApp Pester Tests",
+			"type": "shell",
+			"command": "pwsh",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"Invoke-Pester -Path './tests/CoreApp.Tests.ps1' -Output Detailed"
+			],
+			"group": "test",
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": false,
+				"panel": "shared",
+				"showReuseMessage": true,
+				"clear": false
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "Test: Run All Automated Tests",
+			"type": "shell",
+			"command": "pwsh",
+			"args": [
+				"-File",
+				"./Invoke-AutomatedTestWorkflow.ps1",
+				"-TestCategory",
+				"All",
+				"-GenerateCoverage"
+			],
+			"group": {
+				"kind": "test",
+				"isDefault": false
+			},
+			"problemMatcher": [],
+			"isBackground": false,
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": false,
+				"panel": "shared",
+				"showReuseMessage": true,
+				"clear": false
+			}
+		},
+		{
+			"label": "Test: Run Pester Tests Only",
+			"type": "shell",
+			"command": "pwsh",
+			"args": [
+				"-File",
+				"./Invoke-AutomatedTestWorkflow.ps1",
+				"-TestCategory",
+				"Pester",
+				"-GenerateCoverage"
+			],
+			"group": "test",
+			"problemMatcher": [],
+			"isBackground": false,
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": false,
+				"panel": "shared",
+				"showReuseMessage": true,
+				"clear": false
+			}
+		},
+		{
+			"label": "Test: Run PyTest Only",
+			"type": "shell",
+			"command": "pwsh",
+			"args": [
+				"-File",
+				"./Invoke-AutomatedTestWorkflow.ps1",
+				"-TestCategory",
+				"PyTest",
+				"-GenerateCoverage"
+			],
+			"group": "test",
+			"problemMatcher": [],
+			"isBackground": false,
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": false,
+				"panel": "shared",
+				"showReuseMessage": true,
+				"clear": false
+			}
+		},
+		{
+			"label": "Maintenance: Run Automated Tests Only",
+			"type": "shell",
+			"command": "pwsh",
+			"args": [
+				"-File",
+				"./scripts/maintenance/unified-maintenance.ps1",
+				"-Mode",
+				"TestOnly"
+			],
+			"group": {
+				"kind": "test",
+				"isDefault": false
+			},
+			"problemMatcher": [],
+			"isBackground": false,
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": false,
+				"panel": "shared",
+				"showReuseMessage": true,
+				"clear": false
+			}
+		},
+		{
+			"label": "Maintenance: Start Continuous Testing",
+			"type": "shell",
+			"command": "pwsh",
+			"args": [
+				"-File",
+				"./scripts/maintenance/unified-maintenance.ps1",
+				"-Mode",
+				"Continuous"
+			],
+			"group": {
+				"kind": "test",
+				"isDefault": false
+			},
+			"problemMatcher": [],
+			"isBackground": true,
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": false,
+				"panel": "dedicated",
+				"showReuseMessage": true,
+				"clear": false
+			}
+		},
+		{
+			"label": "Test: Run Automated Test Workflow Direct",
+			"type": "shell",
+			"command": "pwsh",
+			"args": [
+				"-File",
+				"./Invoke-AutomatedTestWorkflow.ps1",
+				"-TestCategory",
+				"All",
+				"-GenerateCoverage"
+			],
+			"group": "test",
+			"problemMatcher": [],
+			"isBackground": false,
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": false,
+				"panel": "shared",
+				"showReuseMessage": true,
+				"clear": false
+			}
+		},
+		{
+			"label": "Test: Generate Missing Tests",
+			"type": "shell",
+			"command": "pwsh",
+			"args": [
+				"-File",
+				"./Invoke-AutomatedTestWorkflow.ps1",
+				"-GenerateTests"
+			],
+			"group": "test",
+			"problemMatcher": [],
+			"isBackground": false,
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": false,
+				"panel": "shared",
+				"showReuseMessage": true,
+				"clear": false
+			}
+		},
+		{
+			"label": "Test: Core App Integration Only",
+			"type": "shell",
+			"command": "pwsh",
+			"args": [
+				"-File",
+				"./Invoke-AutomatedTestWorkflow.ps1",
+				"-TestCategory",
+				"Integration",
+				"-GenerateCoverage"
+			],
+			"group": "test",
+			"problemMatcher": [],
+			"isBackground": false,
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": false,
+				"panel": "shared",
+				"showReuseMessage": true,
+				"clear": false
+			}
+		},
+		{
+			"label": "Emoji: Remove All Emojis (Auto)",
+			"type": "shell",
+			"command": "pwsh",
+			"args": [
+				"-Command",
+				"Import-Module './pwsh/modules/PatchManager' -Force; Invoke-GitControlledPatch -PatchDescription 'chore: remove emoji violations automatically' -PatchOperation { & './scripts/utilities/purge-emojis-v2.ps1' } -DirectCommit -AutoCommitUncommitted"
+			],
+			"group": {
+				"kind": "build",
+				"isDefault": false
+			},
+			"problemMatcher": [],
+			"isBackground": false,
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": true,
+				"panel": "shared",
+				"showReuseMessage": true,
+				"clear": false
+			}
+		},
+		{
+			"label": "Emoji: Scan for Emoji Violations",
+			"type": "shell",
+			"command": "pwsh",
+			"args": [
+				"-Command",
+				"& './scripts/utilities/purge-emojis-v2.ps1' -DryRun -Verbose"
+			],
+			"group": "test",
+			"problemMatcher": [],
+			"isBackground": false,
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": true,
+				"panel": "shared",
+				"showReuseMessage": true,
+				"clear": false
+			}
+		},
+		{
+			"label": "Emoji: Real-time Emoji Monitor",
+			"type": "shell",
+			"command": "pwsh",
+			"args": [
+				"-Command",
+				"$watcher = New-Object System.IO.FileSystemWatcher; $watcher.Path = (Get-Location); $watcher.Filter = '*.*'; $watcher.NotifyFilter = 'LastWrite'; $watcher.EnableRaisingEvents = $true; Register-ObjectEvent -InputObject $watcher -EventName Changed -Action { if ($Event.SourceEventArgs.Name -match '\\.(ps1|md|py|json|yml|yaml)$') { Write-Host 'Checking file for emojis: ' $Event.SourceEventArgs.FullPath -ForegroundColor Yellow; $content = Get-Content $Event.SourceEventArgs.FullPath -Raw -ErrorAction SilentlyContinue; if ($content -and $content -cmatch '[\\u{1F300}-\\u{1F9FF}\\u{2600}-\\u{26FF}\\u{2700}-\\u{27BF}]') { Write-Host 'EMOJI VIOLATION DETECTED in ' $Event.SourceEventArgs.Name -ForegroundColor Red; Write-Host 'Run emoji removal task to fix!' -ForegroundColor Yellow } } }; Write-Host 'Monitoring for emoji violations... Press Ctrl+C to stop' -ForegroundColor Green; try { while ($true) { Start-Sleep 1 } } finally { $watcher.Dispose() }"
+			],
+			"group": "test",
+			"problemMatcher": [],
+			"isBackground": true,
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": false,
+				"panel": "dedicated",
+				"showReuseMessage": true,
+				"clear": false
+			}
+		},
+		{
+			"label": "Validate Task Dependencies",
+			"type": "shell",
+			"command": "pwsh",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"Write-Host 'Validating VS Code task dependencies...' -ForegroundColor Cyan; $errors = 0; $paths = @('./pwsh/modules/PatchManager/', './scripts/maintenance/infrastructure-health-check.ps1', './scripts/maintenance/unified-maintenance.ps1', './tests/', './py/tests/', './Invoke-AutomatedTestWorkflow.ps1'); foreach ($path in $paths) { if (Test-Path $path) { Write-Host \"✅ Found: $path\" -ForegroundColor Green } else { Write-Host \"❌ Missing: $path\" -ForegroundColor Red; $errors++ } }; if ($errors -eq 0) { Write-Host 'All task dependencies validated successfully!' -ForegroundColor Green } else { Write-Error \"$errors missing dependencies found\"; exit 1 }"
+			],
+			"group": "test",
+			"problemMatcher": [
+				{
+					"owner": "task-validator",
+					"fileLocation": ["relative", "${workspaceFolder}"],
+					"pattern": [
+						{
+							"regexp": "^❌\\s+Missing:\\s+(.*)$",
+							"file": 1,
+							"severity": "error",
+							"message": "Task dependency missing"
+						}
+					]
+				}
+			],
+			"isBackground": false,
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": false,
+				"panel": "shared",
+				"showReuseMessage": true,
+				"clear": false
+			}
+		}
+	],
+	"inputs": [
+		{
+			"id": "patchDescription",
+			"description": "Enter patch description",
+			"default": "feat: automated patch via VS Code",
+			"type": "promptString"
+		}
+	]
+}

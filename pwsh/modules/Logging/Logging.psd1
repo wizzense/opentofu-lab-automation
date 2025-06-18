@@ -1,5 +1,6 @@
 @{
     # Script module or binary module file associated with this manifest
+
     RootModule = 'Logging.psm1'
     
     # Version of this module

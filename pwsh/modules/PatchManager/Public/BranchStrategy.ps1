@@ -115,7 +115,8 @@ function Test-BranchProtection {
     return $false
 }
 
-function Get-SanitizedBranchName {    [CmdletBinding()]
+function Get-SanitizedBranchName {
+    [CmdletBinding()]
     param(
         [Parameter(Mandatory = $true)]
         [string]$Description,
@@ -142,5 +143,9 @@ function Get-SanitizedBranchName {    [CmdletBinding()]
     }
 }
 
-# Export public functions
-Export-ModuleMember -Function Get-IntelligentBranchStrategy, Test-BranchProtection, Get-SanitizedBranchName
+# Export public functions (only when running as part of module)
+if ($MyInvocation.MyCommand.CommandType -eq 'ExternalScript' -and $MyInvocation.InvocationName -notlike "*\*") {
+    # Running directly as script - don't export
+} else {
+    Export-ModuleMember -Function Get-IntelligentBranchStrategy, Test-BranchProtection, Get-SanitizedBranchName
+}

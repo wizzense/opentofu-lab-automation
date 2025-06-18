@@ -60,10 +60,9 @@ function Initialize-CrossPlatformEnvironment {
                 $env:PROJECT_ROOT = $currentPath.Path
             }
         }
-        
-        # Set PWSH_MODULES_PATH
+          # Set PWSH_MODULES_PATH
         if (-not $env:PWSH_MODULES_PATH) {
-            $env:PWSH_MODULES_PATH = Join-Path $env:PROJECT_ROOT "pwsh\modules"
+            $env:PWSH_MODULES_PATH = Join-Path $env:PROJECT_ROOT "src/pwsh/modules"
         }
         
         # Set PLATFORM

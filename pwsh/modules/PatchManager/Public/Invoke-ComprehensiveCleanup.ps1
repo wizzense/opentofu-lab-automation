@@ -485,16 +485,16 @@ function Test-CriticalExclusion {
 function Remove-FileOrDirectory {
     param(
         [string]$Path,
+        [string]$Reason,
         [switch]$Force
     )
-    
+
     if (Test-Path $Path) {
         $item = Get-Item $Path
         $size = if ($item.PSIsContainer) { 0 } else { $item.Length }
-        
-        Write-Host "    Removing: $(Split-Path $Path -Leaf) ($Reason)" -ForegroundColor Gray
-        
+
         if (-not $DryRun) {
+            Write-Host "    Removing: $(Split-Path $Path -Leaf) ($Reason)" -ForegroundColor Gray
             try {
                 Remove-Item $Path -Recurse -Force
                 if ($item.PSIsContainer) {
@@ -507,7 +507,7 @@ function Remove-FileOrDirectory {
                 $script:CleanupLog.Errors += "Failed to remove ${Path}: $($_.Exception.Message)"
             }
         } else {
-            Write-Host "      DRY RUN Would remove: $Path" -ForegroundColor DarkGray
+            Write-Host "      DRY RUN Would remove: $Path ($Reason)" -ForegroundColor DarkGray
         }
     }
 }
@@ -528,7 +528,7 @@ function New-CleanupReport {
 - **Files Removed**: $($script:CleanupLog.FilesRemoved.Count)
 - **Directories Removed**: $($script:CleanupLog.DirectoriesRemoved.Count)  
 - **Files Relocated**: $($script:CleanupLog.FilesRelocated.Count)
-- **Size Reclaimed**: $(math::Round($script:CleanupLog.SizeReclaimed / 1MB, 2)) MB
+- **Size Reclaimed**: $([Math]::Round($script:CleanupLog.SizeReclaimed / 1MB, 2)) MB
 - **Errors**: $($script:CleanupLog.Errors.Count)
 
 ## Actions Performed
@@ -583,5 +583,6 @@ $($script:CleanupLog.Errors | ForEach-Object{ "- $_" } | Out-String)
     } else {
         Write-Host "Cleanup report would be saved to: $reportPath" -ForegroundColor DarkGray    }
 }
+
 
 

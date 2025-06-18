@@ -85,7 +85,9 @@ function Invoke-GitControlledPatch {
         [Parameter()]
         [switch]$DryRun
     )
+
       begin {        # Import required modules from project
+
         $projectRoot = if ($env:PROJECT_ROOT) { $env:PROJECT_ROOT } else { "c:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation" }
         Import-Module "$projectRoot\pwsh\modules\LabRunner" -Force -ErrorAction SilentlyContinue
         Import-Module "$projectRoot\pwsh\modules\PatchManager\Public\Invoke-ComprehensiveIssueTracking.ps1" -Force -ErrorAction SilentlyContinue
@@ -245,10 +247,10 @@ This issue will monitor the PR lifecycle and ensure all requirements are met bef
                         }
                         
                         return @{
-                            Success = $true
-                            BranchName = $branchName
+                            Success        = $true
+                            BranchName     = $branchName
                             PullRequestUrl = $prResult.PullRequestUrl
-                            Message = "Patch applied successfully with pull request"
+                            Message        = "Patch applied successfully with pull request"
                         }
                     } else {
                         Write-CustomLog "Failed to create pull request: $($prResult.Message)" -Level WARN
@@ -278,13 +280,14 @@ This issue will monitor the PR lifecycle and ensure all requirements are met bef
             Write-CustomLog "Patch process completed successfully" -Level SUCCESS
             
             return @{
-                Success = $true
+                Success    = $true
                 BranchName = $branchName
                 Message = "Patch applied successfully"
                 DryRun = $DryRun
             }        }        catch {
             $errorMessage = "Patch process failed: $($_.Exception.Message)"
             Write-CustomLog $errorMessage -Level ERROR
+
             
             # ENHANCED: Comprehensive automated error tracking
             try {
@@ -312,8 +315,7 @@ This issue will monitor the PR lifecycle and ensure all requirements are met bef
                     Write-CustomLog "Attempting to clean up failed patch branch..." -Level INFO
                     Invoke-PatchRollback -BranchName $branchName -Force
                 }
-            }
-            catch {
+            } catch {
                 Write-CustomLog "Cleanup also failed: $($_.Exception.Message)" -Level ERROR
                   # Create additional automated error tracking for cleanup failure
                 try {
@@ -335,7 +337,7 @@ This issue will monitor the PR lifecycle and ensure all requirements are met bef
             return @{
                 Success = $false
                 Message = $_.Exception.Message
-                Error = $_
+                Error   = $_
             }
         }
     }
@@ -386,8 +388,7 @@ function Invoke-PatchOperation {
     try {
         & $Operation
         return @{ Success = $true }
-    }
-    catch {
+    } catch {
         return @{ 
             Success = $false
             Message = $_.Exception.Message
@@ -425,8 +426,7 @@ function New-PatchCommit {
                 Message = "Git commit failed"
             }
         }
-    }
-    catch {
+    } catch {
         return @{ 
             Success = $false
             Message = $_.Exception.Message
@@ -474,6 +474,7 @@ function New-PatchPullRequest {
         try {
             $prBody | Out-File -FilePath $tempPRFile -Encoding utf8
             
+
             $prResult = gh pr create --title $prTitle --body-file $tempPRFile --base main --head $BranchName 2>&1
             
             if ($LASTEXITCODE -eq 0) {
@@ -498,14 +499,17 @@ function New-PatchPullRequest {
                     Success = $false
                     Message = "Failed to create pull request: $prResult"
                 }
+
             }
         } finally {
             Remove-Item $tempPRFile -Force -ErrorAction SilentlyContinue
         }
+
     }
     catch {
         $errorMessage = "Failed to create pull request: $($_.Exception.Message)"
         Write-CustomLog $errorMessage -Level ERROR
+
         return @{ 
             Success = $false
             Message = $errorMessage

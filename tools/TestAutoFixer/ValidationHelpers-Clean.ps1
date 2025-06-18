@@ -133,10 +133,10 @@ function Invoke-ValidationChecks {
         string$Path,
         
         Parameter()
-        switch$IncludeLint,
+        switchIncludeLint,
         
         Parameter()
-        switch$IncludeTests,
+        switchIncludeTests,
         
         Parameter()
         string$OutputPath
@@ -265,5 +265,8 @@ function Get-RunnerScriptPath {
     
     return $ScriptName
 }
+
+
+
 
 
