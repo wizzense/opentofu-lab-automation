@@ -65,5 +65,4 @@ Invoke-LabStep -Config $Config -Body {
         Write-CustomLog "InstallNode flag is disabled. Skipping Node.js installation."
     }
 }
-
 Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
