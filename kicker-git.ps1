@@ -107,9 +107,17 @@ $script:VerbosityLevel = @{ silent = 0; normal = 1; detailed = 2 }[$Verbosity]
 # Cross-platform paths (defined early)
 function Get-PlatformTempPath {
     if ($script:PlatformWindows) {
-        return $env:TEMP ?? 'C:\temp'
+        if ($env:TEMP) {
+            return $env:TEMP
+        } else {
+            return 'C:\temp'
+        }
     } else {
-        return $env:TMPDIR ?? '/tmp'
+        if ($env:TMPDIR) {
+            return $env:TMPDIR
+        } else {
+            return '/tmp'
+        }
     }
 }
 
@@ -145,7 +153,7 @@ $script:LogFile = Join-Path (Get-PlatformTempPath) "opentofu-lab-bootstrap-$(Get
 New-Item -ItemType File -Path $script:LogFile -Force -ErrorAction SilentlyContinue | Out-Null
 
 Write-BootstrapLog "OpenTofu Lab Automation Bootstrap v$script:BootstrapVersion" 'SUCCESS'
-Write-BootstrapLog "Platform: $($PSVersionTable.OS ?? 'Windows')" 'INFO'
+Write-BootstrapLog "Platform: $(if ($PSVersionTable.OS) { $PSVersionTable.OS } else { 'Windows' })" 'INFO'
 Write-BootstrapLog "PowerShell: $($PSVersionTable.PSVersion)" 'INFO'
 
 # Cross-platform paths
@@ -160,9 +168,15 @@ function Get-PlatformPowerShell {
             if (Get-Command $path -ErrorAction SilentlyContinue) {
                 return $path
             }
-        }        return "powershell.exe"
+        }
+        return "powershell.exe"
     } else {
-        return (Get-Command pwsh -ErrorAction SilentlyContinue)?.Source ?? '/usr/bin/pwsh'
+        $pwshCmd = Get-Command pwsh -ErrorAction SilentlyContinue
+        if ($pwshCmd) {
+            return $pwshCmd.Source
+        } else {
+            return '/usr/bin/pwsh'
+        }
     }
 }
 
@@ -581,7 +595,7 @@ function Start-Bootstrap {
             Write-BootstrapLog "  • Start-DevEnvironmentSetup    # Set up dev environment" 'INFO' -NoTimestamp
             Write-BootstrapLog "" 'INFO' -NoTimestamp
             Write-BootstrapLog "🔧 Quick Start Commands:" 'INFO' -NoTimestamp
-            Write-BootstrapLog "  • Run tests: cd '$repoPath' && pwsh -Command 'Invoke-Pester'" 'INFO' -NoTimestamp
+            Write-BootstrapLog "  • Run tests: cd '$repoPath'; pwsh -Command 'Invoke-Pester'" 'INFO' -NoTimestamp
             Write-BootstrapLog "  • Open in VS Code: code '$repoPath/opentofu-lab-automation.code-workspace'" 'INFO' -NoTimestamp
             Write-BootstrapLog "  • Explore OpenTofu configs: $repoPath/opentofu/" 'INFO' -NoTimestamp
             Write-BootstrapLog "" 'INFO' -NoTimestamp
