@@ -1,6 +1,6 @@
 Describe 'PatchManager Function Tests' {
     BeforeAll {
-        $PatchManagerPath = './src/pwsh/modules/PatchManager/Public'
+        $PatchManagerPath = './src/core-runner/modules/PatchManager/Public'
     }
 
     Context 'Function Files Exist' {

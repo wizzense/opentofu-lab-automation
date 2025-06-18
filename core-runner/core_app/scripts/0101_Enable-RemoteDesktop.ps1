@@ -1,13 +1,14 @@
 #Requires -Version 7.0
 
-[CmdletBinding()]
+[CmdletBinding(SupportsShouldProcess)]
 param(
-    [Parameter()]
+    [Parameter(Mandatory, ValueFromPipeline)]
     [object]$Config
 )
 
-$modulePath = Join-Path -Path $env:PWSH_MODULES_PATH -ChildPath "LabRunner"
-Import-Module $modulePath -Force
+Import-Module "$env:PWSH_MODULES_PATH/LabRunner" -Force
+Import-Module "$env:PROJECT_ROOT/core-runner/modules/Logging" -Force
+
 Write-CustomLog "Starting $($MyInvocation.MyCommand.Name)"
 
 Invoke-LabStep -Config $Config -Body {
@@ -18,6 +19,7 @@ Invoke-LabStep -Config $Config -Body {
 
     if ($Config.AllowRemoteDesktop -eq $true) {
         if ($currentStatus.fDenyTSConnections -eq 0) {
+
             Write-CustomLog "Remote Desktop is already enabled."
         }
         else {
@@ -39,8 +41,13 @@ Invoke-LabStep -Config $Config -Body {
         else {
             Write-CustomLog "Remote Desktop is already disabled."
         }
+
     }
 
     Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
 }
 
+    Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
+}
+
+Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
