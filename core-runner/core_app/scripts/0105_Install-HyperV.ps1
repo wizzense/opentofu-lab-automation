@@ -1,11 +1,14 @@
 #Requires -Version 7.0
-[CmdletBinding()]
+
+[CmdletBinding(SupportsShouldProcess)]
 param(
-    [Parameter(Mandatory)]
+    [Parameter(Mandatory, ValueFromPipeline)]
     [object]$Config
 )
 
-Import-Module "$env:PROJECT_ROOT/core-runner/modules/LabRunner/" -Force
+Import-Module "$env:PWSH_MODULES_PATH/LabRunner/" -Force
+Import-Module "$env:PROJECT_ROOT/core-runner/modules/Logging/" -Force
+
 Write-CustomLog "Starting $($MyInvocation.MyCommand.Name)"
 
 Invoke-LabStep -Config $Config -Body {
@@ -38,12 +41,16 @@ Invoke-LabStep -Config $Config -Body {
                 Install-WindowsFeature -Name 'Hyper-V' -IncludeManagementTools:$enableMgtTools -ErrorAction Continue
             }
         } catch {
+        
             Write-CustomLog "Only works on Windows Server. Error details: $($_.Exception.Message)"
+
         }
 
         Write-CustomLog 'Hyper-V installation complete. A restart is typically required to finalize installation.'
     } else {
+
         Write-CustomLog 'InstallHyperV flag is disabled. Skipping Hyper-V installation.'
+
     }
 }
 

@@ -4,10 +4,11 @@ param(
     [Parameter(Mandatory, ValueFromPipeline)]
     [object]$Config
 )
-Import-Module "$env:PROJECT_ROOT/core-runner/modules/LabRunner/" -Force
-$scriptRoot = $PSScriptRoot
 
-Write-CustomLog "Starting $MyInvocation.MyCommand"
+Import-Module "$env:PWSH_MODULES_PATH/LabRunner/" -Force
+Import-Module "$env:PROJECT_ROOT/core-runner/modules/Logging/" -Force
+
+Write-CustomLog "Starting $($MyInvocation.MyCommand.Name)"
 
 Invoke-LabStep -Config $Config -Body {
     Write-CustomLog "Running $($MyInvocation.MyCommand.Name)"

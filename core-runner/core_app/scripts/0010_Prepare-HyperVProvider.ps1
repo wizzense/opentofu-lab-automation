@@ -1,23 +1,14 @@
 #Requires -Version 7.0
-<#
-.SYNOPSIS
-    Prepares HyperV Provider for OpenTofu/Terraform with WinRM configuration and certificate management
-.DESCRIPTION
-    This script configures a Windows system to work with the Taliesins HyperV provider for OpenTofu/Terraform.
-    It enables HyperV, configures WinRM with HTTPS, creates and manages certificates, and installs the provider.
-.PARAMETER Config
-    Configuration object containing settings for the HyperV provider setup
-#>
 [CmdletBinding(SupportsShouldProcess)]
-Param(
+param(
+    [Parameter(Mandatory, ValueFromPipeline)]
     [object]$Config
 )
 
-# Import required modules
-Import-Module "$env:PROJECT_ROOT/core-runner/modules/Logging" -Force
-Import-Module "$env:PROJECT_ROOT/core-runner/modules/LabRunner" -Force
+Import-Module "$env:PWSH_MODULES_PATH/LabRunner/" -Force
+Import-Module "$env:PROJECT_ROOT/core-runner/modules/Logging/" -Force
 
-Write-CustomLog 'Starting HyperV Provider Preparation' -Level INFO
+Write-CustomLog "Starting $($MyInvocation.MyCommand.Name)"
 
 #region Helper Functions
 

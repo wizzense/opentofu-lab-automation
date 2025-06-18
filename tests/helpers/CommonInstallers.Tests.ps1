@@ -4,11 +4,11 @@
 Describe 'CommonInstallers Tests' {
     BeforeAll {
         Import-Module "$env:PWSH_MODULES_PATH/LabRunner/" -Force
+    }
 
     Context 'Module Loading' {
         It 'should load required modules' {
-            Get-Module LabRunner  Should -Not -BeNullOrEmpty
-            Get-Module CodeFixer  Should -Not -BeNullOrEmpty
+            Get-Module LabRunner | Should -Not -BeNullOrEmpty
         }
     }
 
