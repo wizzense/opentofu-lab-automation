@@ -1,22 +1,31 @@
-#Requires -Version 7
+#Requires -Version 7.0
 
+[CmdletBinding()]
+param(
+    [Parameter(Mandatory)]
+    [object]$Config
+)
 
+Import-Module "$env:PROJECT_ROOT/core-runner/modules/LabRunner/" -Force
+Write-CustomLog "Starting $($MyInvocation.MyCommand.Name)"
 
-
-
-Import-Module "/C:\Users\alexa\OneDrive\Documents\0. wizzense\opentofu-lab-automation\pwsh/modules/LabRunner/" -ForceWrite-CustomLog "Starting $MyInvocation.MyCommand"
 Invoke-LabStep -Config $Config -Body {
     Write-CustomLog "Running $($MyInvocation.MyCommand.Name)"
 
-Write-CustomLog "Configuring Firewall rules..."
+    Write-CustomLog "Configuring Firewall rules..."
 
-if ($null -ne $Config.FirewallPorts) {
-    foreach ($port in $Config.FirewallPorts) {
-        Write-CustomLog " - Opening TCP port $port"
-        New-NetFirewallRule -DisplayName "Open Port $port" `
-                            -Direction Inbound `
-                            -Protocol TCP `
-                            -LocalPort $port `
-                            -Action Allow | Out-Null}
-} else {
+    if ($null -ne $Config.FirewallPorts) {
+        foreach ($port in $Config.FirewallPorts) {
+            Write-CustomLog " - Opening TCP port $port"
+            New-NetFirewallRule -DisplayName "Open Port $port" `
+                                -Direction Inbound `
+                                -Protocol TCP `
+                                -LocalPort $port `
+                                -Action Allow | Out-Null
+        }
+    } else {
+        Write-CustomLog 'No FirewallPorts specified. Skipping.'
+    }
+}
 
+Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
