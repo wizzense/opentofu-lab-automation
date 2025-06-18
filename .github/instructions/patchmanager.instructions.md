@@ -43,6 +43,102 @@ This document outlines the standards and best practices for developing and testi
 - Reference `patchmanager` in the scope.
 - Keep descriptions concise and professional.
 
+## PatchManager Usage Guide
+
+### Environment Setup
+```powershell
+# 1. Set environment variables (if not already set)
+if (-not $env:PROJECT_ROOT) {
+    $env:PROJECT_ROOT = (Get-Location).Path  # Or your project root
+}
+if (-not $env:PWSH_MODULES_PATH) {
+    $env:PWSH_MODULES_PATH = "$env:PROJECT_ROOT/core-runner/modules"
+}
+
+# 2. Import required modules in order
+Import-Module "$env:PWSH_MODULES_PATH/Logging" -Force
+Import-Module "$env:PWSH_MODULES_PATH/PatchManager" -Force
+
+# 3. Verify module loading
+Get-Module PatchManager | Select-Object Name, Version, ModuleBase
+```
+
+### Common PatchManager Operations
+
+#### Quick Git Workflow (Recommended)
+```powershell
+# 1. Create feature branch
+git checkout -b "feat/your-feature-name"
+
+# 2. Make your changes, then stage and commit
+git add .
+git commit -m "feat(scope): your description following conventional commits"
+
+# 3. Push branch
+git push origin feat/your-feature-name
+```
+
+#### Using PatchManager Functions
+```powershell
+# 1. Git-controlled patch with automatic branch creation
+Invoke-GitControlledPatch -PatchDescription "fix: resolve module import issues" -CreatePullRequest
+
+# 2. Enhanced git operations with conflict resolution
+Invoke-EnhancedGitOperations -Operation "MergeMain" -ValidateAfter
+
+# 3. Quick commit with validation
+$commitMessage = "feat(patchmanager): add new validation feature"
+git add .
+git commit -m $commitMessage
+```
+
+#### Branch Management
+```powershell
+# Create patch branch using PatchManager functions
+. "$env:PWSH_MODULES_PATH/PatchManager/Public/GitOperations.ps1"
+CreatePatchBranch -BranchName "feat/new-feature" -BaseBranch "main"
+
+# Commit changes
+CommitChanges -CommitMessage "feat(scope): your change description"
+```
+
+### Troubleshooting Common Issues
+
+#### Module Import Problems
+```powershell
+# Check environment variables
+Write-Host "PROJECT_ROOT: $env:PROJECT_ROOT"
+Write-Host "PWSH_MODULES_PATH: $env:PWSH_MODULES_PATH"
+
+# Verify paths exist
+Test-Path "$env:PWSH_MODULES_PATH/Logging"
+Test-Path "$env:PWSH_MODULES_PATH/PatchManager"
+
+# Force reimport if needed
+Remove-Module PatchManager -Force -ErrorAction SilentlyContinue
+Remove-Module Logging -Force -ErrorAction SilentlyContinue
+Import-Module "$env:PWSH_MODULES_PATH/Logging" -Force
+Import-Module "$env:PWSH_MODULES_PATH/PatchManager" -Force
+```
+
+#### Git Operation Issues
+```powershell
+# Check git status and resolve conflicts
+git status
+git fetch origin main
+
+# Use enhanced git operations for automatic resolution
+Invoke-EnhancedGitOperations -Operation "ResolveConflicts" -Force
+```
+
+### Best Practices
+- Always use `$env:PROJECT_ROOT` and `$env:PWSH_MODULES_PATH` instead of hardcoded paths
+- Import Logging module before PatchManager (dependency requirement)
+- Use conventional commit format: `type(scope): description`
+- Test module imports before using PatchManager functions
+- Use `-Force` parameter when importing modules for consistent behavior
+
 ## Additional Notes
-- Follow the project's no-emoji policy.
-- Use `$env:PROJECT_ROOT` and `$env:PWSH_MODULES_PATH` for paths.
+- Follow the project's no-emoji policy
+- Use environment variables for all paths to ensure cross-platform compatibility
+- Always verify module loading before executing PatchManager operations
