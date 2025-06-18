@@ -33,7 +33,7 @@ function Set-LabProfile {
         $content = @"
 # OpenTofu Lab Automation profile
 `$env:PATH = "$repoRoot;`$env:PATH"
-`$env:PSModulePath = "$repoRoot/pwsh/modules;`$env:PSModulePath"
+`$env:PSModulePath = "$repoRoot/core-runner/modules;`$env:PSModulePath"
 "@
         
         if ($PSCmdlet.ShouldProcess($profilePath, 'Create PowerShell profile')) {

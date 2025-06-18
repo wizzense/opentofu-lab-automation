@@ -1,4 +1,5 @@
 #Requires -Version 7.0
+
 [CmdletBinding(SupportsShouldProcess)]
 param(
     [Parameter(Mandatory, ValueFromPipeline)]
@@ -13,8 +14,6 @@ Write-CustomLog "Starting $($MyInvocation.MyCommand.Name)"
 Invoke-LabStep -Config $Config -Body {
     Write-CustomLog "Running $($MyInvocation.MyCommand.Name)"
 
-
-
     # Check if WinRM is already configured
     $winrmStatus = Get-Service -Name WinRM -ErrorAction SilentlyContinue
 
@@ -26,8 +25,10 @@ Invoke-LabStep -Config $Config -Body {
         # WinRM QuickConfig
         Enable-PSRemoting -Force
         Write-CustomLog 'Enable-PSRemoting executed'
-    
+
         # Optionally configure additional authentication methods, etc.:
         # e.g.: Set-Item -Path WSMan:\localhost\Service\Auth\Basic -Value $true
     }
+}
 
+Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"

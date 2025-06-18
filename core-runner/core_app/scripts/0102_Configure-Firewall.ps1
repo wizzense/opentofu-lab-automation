@@ -1,4 +1,5 @@
 #Requires -Version 7.0
+
 [CmdletBinding(SupportsShouldProcess)]
 param(
     [Parameter(Mandatory, ValueFromPipeline)]
@@ -13,15 +14,20 @@ Write-CustomLog "Starting $($MyInvocation.MyCommand.Name)"
 Invoke-LabStep -Config $Config -Body {
     Write-CustomLog "Running $($MyInvocation.MyCommand.Name)"
 
-Write-CustomLog "Configuring Firewall rules..."
+    Write-CustomLog "Configuring Firewall rules..."
 
-if ($null -ne $Config.FirewallPorts) {
-    foreach ($port in $Config.FirewallPorts) {
-        Write-CustomLog " - Opening TCP port $port"
-        New-NetFirewallRule -DisplayName "Open Port $port" `
-                            -Direction Inbound `
-                            -Protocol TCP `
-                            -LocalPort $port `
-                            -Action Allow | Out-Null}
-} else {
+    if ($null -ne $Config.FirewallPorts) {
+        foreach ($port in $Config.FirewallPorts) {
+            Write-CustomLog " - Opening TCP port $port"
+            New-NetFirewallRule -DisplayName "Open Port $port" `
+                                -Direction Inbound `
+                                -Protocol TCP `
+                                -LocalPort $port `
+                                -Action Allow | Out-Null
+        }
+    } else {
+        Write-CustomLog 'No FirewallPorts specified. Skipping.'
+    }
+}
 
+Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
