@@ -1,7 +1,5 @@
-# Ensure environment variables are set for admin-friendly module discovery
-if (-not $env:PWSH_MODULES_PATH) {
-    $env:PWSH_MODULES_PATH = Join-Path (Split-Path (Split-Path $PSScriptRoot -Parent) -Parent) "core-runner/modules"
-}
+# Load shared test helpers for environment setup
+. (Join-Path $PSScriptRoot '..' 'helpers' 'TestHelpers.ps1')
 Describe 'UnifiedMaintenance Module Tests' {
     BeforeAll {
         $ModulePath = './core-runner/modules/UnifiedMaintenance/UnifiedMaintenance.psm1'
