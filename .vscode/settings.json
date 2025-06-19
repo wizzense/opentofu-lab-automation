@@ -1,5 +1,9 @@
 {
     "github.copilot.chat.codeGeneration.useInstructionFiles": true,
+    "github.copilot.chat.experimental.codeGeneration.instructions": [
+        { "file": ".github/copilot-instructions.md" },
+        { "file": ".github/instructions/modules.instructions.md" }
+    ],
     "github.copilot.chat.promptFiles": true,
     "github.copilot.chat.instructionsFilesLocations": [
         ".github/instructions"
