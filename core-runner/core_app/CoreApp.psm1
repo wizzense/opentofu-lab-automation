@@ -64,15 +64,15 @@ if (-not (Get-Command Write-CustomLog -ErrorAction SilentlyContinue)) {
         param(
             [Parameter(Mandatory = $true)]
             [string]$Message,
-            
+
             [Parameter()]
             [ValidateSet('INFO', 'WARN', 'ERROR', 'SUCCESS', 'DEBUG')]
             [string]$Level = 'INFO',
-            
+
             [Parameter()]
             [string]$Component = 'CoreApp'
         )
-        
+
         $color = switch ($Level) {
             'ERROR' { 'Red' }
             'WARN' { 'Yellow' }
@@ -86,43 +86,45 @@ if (-not (Get-Command Write-CustomLog -ErrorAction SilentlyContinue)) {
 }
 
 # Core functions if not defined in Public folder
-if (-not (Get-Command Invoke-CoreApplication -ErrorAction SilentlyContinue)) {
-    function Invoke-CoreApplication {
+if (-not (Get-Command Invoke-CoreApplication -ErrorAction SilentlyContinue)) {    function Invoke-CoreApplication {
         [CmdletBinding(SupportsShouldProcess = $true)]
         param(
             [Parameter(Mandatory = $true)]
             [string]$ConfigPath,
-            
+
             [Parameter()]
             [string[]]$Scripts,
-            
+
             [Parameter()]
             [switch]$Auto,
-            
+
             [Parameter()]
-            [switch]$Force
+            [switch]$Force,
+
+            [Parameter()]
+            [switch]$NonInteractive
         )
           process {
             Write-CustomLog -Message 'Starting core application execution' -Level 'INFO'
-            
+
             try {
                 # Load configuration
                 if (-Not (Test-Path $ConfigPath)) {
                     throw "Configuration file not found at $ConfigPath"
                 }
-                
+
                 $config = Get-Content $ConfigPath | ConvertFrom-Json
                 Write-CustomLog -Message 'Loaded configuration' -Level 'INFO'
-                
+
                 # Initialize the complete CoreApp ecosystem
                 if (-not $script:LoadedModules.Count) {
                     Write-CustomLog -Message 'Initializing CoreApp ecosystem...' -Level 'INFO'
                     Initialize-CoreApplication -RequiredOnly:(-not $Auto)
                 }
-                  
+
                 # Execute lab runner
                 Write-CustomLog -Message 'Core application operation started' -Level 'INFO'
-                
+
                 # Run specified scripts or all scripts
                 if ($Scripts) {
                     foreach ($script in $Scripts) {
@@ -138,17 +140,17 @@ if (-not (Get-Command Invoke-CoreApplication -ErrorAction SilentlyContinue)) {
                     }
                 } else {
                     Write-CustomLog -Message 'No specific scripts specified - running core operations' -Level 'INFO'
-                    
+
                     # If Auto mode and LabRunner is available, use it for orchestration
                     if ($Auto -and $script:LoadedModules.ContainsKey('LabRunner')) {
                         Write-CustomLog -Message 'Auto mode: delegating to LabRunner for full orchestration' -Level 'INFO'
                         # Could call LabRunner functions here if needed
                     }
                 }
-                
+
                 Write-CustomLog -Message 'Core application operation completed successfully' -Level 'SUCCESS'
                 return $true
-                
+
             } catch {
                 Write-CustomLog -Message "Core application operation failed: $($_.Exception.Message)" -Level 'ERROR'
                 throw
@@ -163,11 +165,15 @@ if (-not (Get-Command Start-LabRunner -ErrorAction SilentlyContinue)) {
         param(
             [Parameter(Mandatory = $true)]
             [string]$ConfigPath,
-            
+
             [Parameter()]
-            [switch]$Parallel
+            [switch]$Parallel,
+
+            [Parameter()]
+            [switch]$NonInteractive
         )
-          process {
+
+        process {
             try {
                 if ($Parallel) {
                     Write-CustomLog -Message 'Parallel lab runner not implemented yet - using standard runner' -Level 'WARN'
@@ -195,7 +201,7 @@ if (-not (Get-Command Get-CoreConfiguration -ErrorAction SilentlyContinue)) {
             [Parameter()]
             [string]$ConfigPath = (Join-Path $PSScriptRoot 'default-config.json')
         )
-        
+
         process {
             try {
                 if (Test-Path $ConfigPath) {
@@ -215,28 +221,28 @@ if (-not (Get-Command Test-CoreApplicationHealth -ErrorAction SilentlyContinue))
     function Test-CoreApplicationHealth {
         [CmdletBinding()]
         param()
-        
+
         process {
             try {
                 Write-CustomLog -Message 'Running core application health check' -Level 'INFO'
-                
+
                 # Check configuration files
                 $configPath = Join-Path $PSScriptRoot 'default-config.json'
                 if (-not (Test-Path $configPath)) {
                     Write-CustomLog -Message 'Default configuration file missing' -Level 'ERROR'
                     return $false
                 }
-                
+
                 # Check scripts directory
                 $scriptsPath = Join-Path $PSScriptRoot 'scripts'
                 if (-not (Test-Path $scriptsPath)) {
                     Write-CustomLog -Message 'Scripts directory missing' -Level 'ERROR'
                     return $false
                 }
-                
+
                 Write-CustomLog -Message 'Core application health check passed' -Level 'INFO'
                 return $true
-                
+
             } catch {
                 Write-CustomLog -Message "Health check failed: $($_.Exception.Message)" -Level 'ERROR'
                 return $false
@@ -249,7 +255,7 @@ if (-not (Get-Command Get-PlatformInfo -ErrorAction SilentlyContinue)) {
     function Get-PlatformInfo {
         [CmdletBinding()]
         param()
-        
+
         process {
             if ($IsWindows -or ($PSVersionTable.PSVersion.Major -lt 6 -and -not (Get-Command uname -ErrorAction SilentlyContinue))) {
                 return 'Windows'
@@ -282,32 +288,32 @@ if (-not (Get-Command Initialize-CoreApplication -ErrorAction SilentlyContinue))
         param(
             [Parameter()]
             [switch]$RequiredOnly,
-            
+
             [Parameter()]
             [switch]$Force
         )
-        
+
         process {
             try {
                 Write-CustomLog -Message 'Initializing CoreApp ecosystem...' -Level 'INFO'
-                
+
                 # Step 1: Setup environment variables
                 if (-not $env:PROJECT_ROOT) {
                     $env:PROJECT_ROOT = Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
                     Write-CustomLog -Message "Set PROJECT_ROOT: $env:PROJECT_ROOT" -Level 'INFO'
                 }
-                
+
                 if (-not $env:PWSH_MODULES_PATH) {
                     $env:PWSH_MODULES_PATH = Join-Path $env:PROJECT_ROOT "core-runner/modules"
                     Write-CustomLog -Message "Set PWSH_MODULES_PATH: $env:PWSH_MODULES_PATH" -Level 'INFO'
                 }
-                
+
                 # Step 2: Import core modules
                 $result = Import-CoreModules -RequiredOnly:$RequiredOnly -Force:$Force
-                
+
                 # Step 3: Validate system health
                 $healthResult = Test-CoreApplicationHealth
-                
+
                 if ($healthResult -and $result.ImportedCount -gt 0) {
                     Write-CustomLog -Message "CoreApp ecosystem initialized successfully - $($result.ImportedCount) modules loaded" -Level 'SUCCESS'
                     return $true
@@ -315,7 +321,7 @@ if (-not (Get-Command Initialize-CoreApplication -ErrorAction SilentlyContinue))
                     Write-CustomLog -Message 'CoreApp initialization completed with issues' -Level 'WARN'
                     return $false
                 }
-                
+
             } catch {
                 Write-CustomLog -Message "CoreApp initialization failed: $($_.Exception.Message)" -Level 'ERROR'
                 throw
@@ -340,11 +346,11 @@ if (-not (Get-Command Import-CoreModules -ErrorAction SilentlyContinue)) {
         param(
             [Parameter()]
             [switch]$RequiredOnly,
-            
+
             [Parameter()]
             [switch]$Force
         )
-        
+
         process {
             $importResults = @{
                 ImportedCount = 0
@@ -352,19 +358,19 @@ if (-not (Get-Command Import-CoreModules -ErrorAction SilentlyContinue)) {
                 SkippedCount = 0
                 Details = @()
             }
-            
+
             $modulesToImport = if ($RequiredOnly) {
                 $script:CoreModules | Where-Object { $_.Required }
             } else {
                 $script:CoreModules
             }
-            
+
             Write-CustomLog -Message "Importing $($modulesToImport.Count) modules..." -Level 'INFO'
-            
+
             foreach ($moduleInfo in $modulesToImport) {
                 try {
                     $modulePath = Join-Path $PSScriptRoot $moduleInfo.Path
-                    
+
                     if (-not (Test-Path $modulePath)) {
                         Write-CustomLog -Message "Module path not found: $modulePath" -Level 'WARN'
                         $importResults.SkippedCount++
@@ -375,7 +381,7 @@ if (-not (Get-Command Import-CoreModules -ErrorAction SilentlyContinue)) {
                         }
                         continue
                     }
-                    
+
                     # Check if already loaded (unless Force specified)
                     if ($script:LoadedModules.ContainsKey($moduleInfo.Name) -and -not $Force) {
                         Write-CustomLog -Message "Module already loaded: $($moduleInfo.Name)" -Level 'DEBUG'
@@ -387,14 +393,17 @@ if (-not (Get-Command Import-CoreModules -ErrorAction SilentlyContinue)) {
                         }
                         continue
                     }
-                    
-                    Import-Module $modulePath -Force -Global -ErrorAction Stop
+
+                    # Import with Force only if explicitly requested or module not loaded
+                    $shouldForceImport = $Force -or -not (Get-Module -Name $moduleInfo.Name -ErrorAction SilentlyContinue)
+
+                    Import-Module $modulePath -Force:$shouldForceImport -Global -ErrorAction Stop
                     $script:LoadedModules[$moduleInfo.Name] = @{
                         Path = $modulePath
                         ImportTime = Get-Date
                         Description = $moduleInfo.Description
                     }
-                    
+
                     Write-CustomLog -Message "✓ Imported: $($moduleInfo.Name)" -Level 'SUCCESS'
                     $importResults.ImportedCount++
                     $importResults.Details += @{
@@ -402,7 +411,7 @@ if (-not (Get-Command Import-CoreModules -ErrorAction SilentlyContinue)) {
                         Status = 'Imported'
                         Reason = $moduleInfo.Description
                     }
-                    
+
                 } catch {
                     Write-CustomLog -Message "✗ Failed to import $($moduleInfo.Name): $($_.Exception.Message)" -Level 'ERROR'
                     $importResults.FailedCount++
@@ -413,7 +422,7 @@ if (-not (Get-Command Import-CoreModules -ErrorAction SilentlyContinue)) {
                     }
                 }
             }
-            
+
             Write-CustomLog -Message "Module import complete: $($importResults.ImportedCount) imported, $($importResults.FailedCount) failed, $($importResults.SkippedCount) skipped" -Level 'INFO'
             return $importResults
         }
@@ -430,15 +439,15 @@ if (-not (Get-Command Get-CoreModuleStatus -ErrorAction SilentlyContinue)) {
         #>
         [CmdletBinding()]
         param()
-        
+
         process {
             $moduleStatus = @()
-            
+
             foreach ($moduleInfo in $script:CoreModules) {
                 $modulePath = Join-Path $PSScriptRoot $moduleInfo.Path
                 $isLoaded = $script:LoadedModules.ContainsKey($moduleInfo.Name)
                 $isAvailable = Test-Path $modulePath
-                
+
                 $status = @{
                     Name = $moduleInfo.Name
                     Description = $moduleInfo.Description
@@ -447,14 +456,14 @@ if (-not (Get-Command Get-CoreModuleStatus -ErrorAction SilentlyContinue)) {
                     Loaded = $isLoaded
                     Path = $modulePath
                 }
-                
+
                 if ($isLoaded) {
                     $status.LoadTime = $script:LoadedModules[$moduleInfo.Name].ImportTime
                 }
-                
+
                 $moduleStatus += $status
             }
-            
+
             return $moduleStatus
         }
     }
@@ -477,25 +486,25 @@ if (-not (Get-Command Invoke-UnifiedMaintenance -ErrorAction SilentlyContinue)) 
             [Parameter()]
             [ValidateSet('Quick', 'Full', 'Emergency')]
             [string]$Mode = 'Quick',
-            
+
             [Parameter()]
             [switch]$AutoFix
         )
-        
+
         process {
             try {
                 Write-CustomLog -Message "Starting unified maintenance in $Mode mode..." -Level 'INFO'
-                
+
                 # Ensure core modules are loaded
                 Import-CoreModules -RequiredOnly
-                
+
                 $results = @{
                     Mode = $Mode
                     StartTime = Get-Date
                     Operations = @()
                     Success = $true
                 }
-                
+
                 # Run maintenance based on available modules
                 if ($script:LoadedModules.ContainsKey('BackupManager')) {
                     if ($PSCmdlet.ShouldProcess('BackupManager', 'Run maintenance')) {
@@ -508,7 +517,7 @@ if (-not (Get-Command Invoke-UnifiedMaintenance -ErrorAction SilentlyContinue)) 
                         }
                     }
                 }
-                
+
                 if ($script:LoadedModules.ContainsKey('UnifiedMaintenance')) {
                     if ($PSCmdlet.ShouldProcess('UnifiedMaintenance', 'Run maintenance')) {
                         try {
@@ -520,18 +529,18 @@ if (-not (Get-Command Invoke-UnifiedMaintenance -ErrorAction SilentlyContinue)) 
                         }
                     }
                 }
-                
+
                 $results.EndTime = Get-Date
                 $results.Duration = $results.EndTime - $results.StartTime
-                
+
                 if ($results.Success) {
                     Write-CustomLog -Message "Unified maintenance completed successfully in $($results.Duration.TotalSeconds) seconds" -Level 'SUCCESS'
                 } else {
                     Write-CustomLog -Message "Unified maintenance completed with errors" -Level 'WARN'
                 }
-                
+
                 return $results
-                
+
             } catch {
                 Write-CustomLog -Message "Unified maintenance failed: $($_.Exception.Message)" -Level 'ERROR'
                 throw
@@ -556,18 +565,18 @@ if (-not (Get-Command Start-DevEnvironmentSetup -ErrorAction SilentlyContinue)) 
         param(
             [Parameter()]
             [switch]$Force,
-            
+
             [Parameter()]
             [switch]$SkipModuleImportFixes
         )
-        
+
         process {
             try {
                 Write-CustomLog -Message 'Starting development environment setup through CoreApp...' -Level 'INFO'
-                
+
                 # Import DevEnvironment module if available
                 Import-CoreModules -RequiredOnly:$false
-                
+
                 if ($script:LoadedModules.ContainsKey('DevEnvironment')) {
                     if ($PSCmdlet.ShouldProcess('DevEnvironment', 'Initialize development environment')) {
                         Initialize-DevelopmentEnvironment -Force:$Force -SkipModuleImportFixes:$SkipModuleImportFixes
@@ -579,7 +588,7 @@ if (-not (Get-Command Start-DevEnvironmentSetup -ErrorAction SilentlyContinue)) 
                     Initialize-CoreApplication -RequiredOnly
                     return $true
                 }
-                
+
             } catch {
                 Write-CustomLog -Message "Development environment setup failed: $($_.Exception.Message)" -Level 'ERROR'
                 throw

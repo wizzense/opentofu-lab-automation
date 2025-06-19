@@ -22,24 +22,24 @@ function Install-NpmDependencies {
     .PARAMETER Config
         Configuration object passed from runner.ps1
     #>
-    [CmdletBinding(SupportsShouldProcess)]
+    [CmdletBinding()]
     param(
         [Parameter(Mandatory)]
         [object]$Config
     )
-    
+
     Write-CustomLog "Running $($MyInvocation.MyCommand.Name)"
-    
+
     # Check if npm dependencies should be installed
     $nodeDeps = $Config.Node_Dependencies
     if (-not $nodeDeps) {
         Write-CustomLog 'Node_Dependencies configuration not found. Skipping npm installation.'
         return
     }
-    
+
     $installNpm = $false
     $createPath = $false
-    
+
     # Parse configuration
     if ($nodeDeps -is [hashtable]) {
         $installNpm = $nodeDeps.ContainsKey('InstallNpm') -and $nodeDeps.InstallNpm
@@ -57,15 +57,15 @@ function Install-NpmDependencies {
     # Determine frontend path
     $frontendPath = $null
     if ($nodeDeps -is [hashtable]) {
-        if ($nodeDeps.ContainsKey('NpmPath')) { 
-            $frontendPath = $nodeDeps.NpmPath 
+        if ($nodeDeps.ContainsKey('NpmPath')) {
+            $frontendPath = $nodeDeps.NpmPath
         }
     } elseif ($nodeDeps.PSObject.Properties.Match('NpmPath').Count) {
         $frontendPath = $nodeDeps.NpmPath
     }
-    
-    if (-not $frontendPath) { 
-        $frontendPath = Join-Path $PSScriptRoot '..' 'frontend' 
+
+    if (-not $frontendPath) {
+        $frontendPath = Join-Path $PSScriptRoot '..' 'frontend'
     }
 
     # Validate path requirements
@@ -102,8 +102,8 @@ function Install-NpmDependencies {
     Push-Location $frontendPath
     try {
         Write-CustomLog "Running npm install in $frontendPath ..."
-        if ($PSCmdlet.ShouldProcess($frontendPath, 'Run npm install')) { 
-            npm install 
+        if ($PSCmdlet.ShouldProcess($frontendPath, 'Run npm install')) {
+            npm install
         }
         Write-CustomLog 'npm install completed.'
     } catch {
@@ -120,8 +120,3 @@ Invoke-LabStep -Config $Config -Body {
 }
 
 Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
-
-
-
-
-

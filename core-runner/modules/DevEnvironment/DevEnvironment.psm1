@@ -14,28 +14,35 @@
 
 # Import the centralized Logging module
 $loggingImported = $false
-$loggingPaths = @(
-    'Logging',  # Try module name first (if in PSModulePath)
-    (Join-Path (Split-Path $PSScriptRoot -Parent) "Logging"),  # Relative to modules directory
-    (Join-Path $env:PWSH_MODULES_PATH "Logging"),  # Environment path
-    (Join-Path $env:PROJECT_ROOT "core-runner/modules/Logging")  # Full project path
-)
 
-foreach ($loggingPath in $loggingPaths) {
-    if ($loggingImported) { break }
-    
-    try {
-        if ($loggingPath -eq 'Logging') {
-            Import-Module 'Logging' -Force -Global -ErrorAction Stop
-        } elseif (Test-Path $loggingPath) {
-            Import-Module $loggingPath -Force -Global -ErrorAction Stop
-        } else {
-            continue
+# Check if Logging module is already available
+if (Get-Module -Name 'Logging' -ErrorAction SilentlyContinue) {
+    $loggingImported = $true
+    Write-Verbose "Logging module already available"
+} else {
+    $loggingPaths = @(
+        'Logging',  # Try module name first (if in PSModulePath)
+        (Join-Path (Split-Path $PSScriptRoot -Parent) "Logging"),  # Relative to modules directory
+        (Join-Path $env:PWSH_MODULES_PATH "Logging"),  # Environment path
+        (Join-Path $env:PROJECT_ROOT "core-runner/modules/Logging")  # Full project path
+    )
+
+    foreach ($loggingPath in $loggingPaths) {
+        if ($loggingImported) { break }
+
+        try {
+            if ($loggingPath -eq 'Logging') {
+                Import-Module 'Logging' -Global -ErrorAction Stop
+            } elseif (Test-Path $loggingPath) {
+                Import-Module $loggingPath -Global -ErrorAction Stop
+            } else {
+                continue
+            }
+            Write-Verbose "Successfully imported Logging module from: $loggingPath"
+            $loggingImported = $true
+        } catch {
+            Write-Verbose "Failed to import Logging from $loggingPath : $_"
         }
-        Write-Verbose "Successfully imported Logging module from: $loggingPath"
-        $loggingImported = $true
-    } catch {
-        Write-Verbose "Failed to import Logging from $loggingPath : $_"
     }
 }
 
@@ -46,7 +53,7 @@ if (-not $loggingImported) {
         param($Message, $Level = "INFO")
         $color = switch ($Level) {
             "SUCCESS" { "Green" }
-            "WARN" { "Yellow" } 
+            "WARN" { "Yellow" }
             "ERROR" { "Red" }
             default { "White" }
         }

@@ -11,7 +11,7 @@ Import-Module "$env:PROJECT_ROOT/core-runner/modules/Logging" -Force
 Write-CustomLog "Starting $($MyInvocation.MyCommand.Name)"
 
 function Set-LabProfile {
-    [CmdletBinding(SupportsShouldProcess)]
+    [CmdletBinding()]
     param(
         [Parameter(Mandatory)]
         [object]$Config

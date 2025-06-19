@@ -430,8 +430,8 @@ $(Get-CategorySpecificResolutionSteps -Category $FailureCategory)
 To verify resolution of these issues:
 
 ``````powershell
-# Re-run validation for this category
-Test-PatchingRequirements -Category $FailureCategory
+# Re-run validation for this category (simplified validation)
+# Test-PatchingRequirements -Category $FailureCategory  # Disabled for now
 
 # Specific validation commands
 $(Get-CategoryValidationCommands -Category $FailureCategory)

@@ -1,6 +1,6 @@
 # VS Code Configuration for OpenTofu Lab Automation
 
-This directory contains optimized VS Code workspace configuration specifically tailored for PowerShell automation development, Pester testing, and OpenTofu infrastructure management.
+This directory contains optimized VS Code workspace configuration specifically tailored for PowerShell automation development, Pester testing, and OpenTofu infrastructure management with enhanced GitHub Copilot integration.
 
 ## Files Overview
 
@@ -10,11 +10,18 @@ This directory contains optimized VS Code workspace configuration specifically t
 
 Comprehensive workspace settings optimized for:
 
-- **GitHub Copilot**: Advanced configuration with custom instructions and enhanced code generation
+- **GitHub Copilot Instructions**: Latest instruction file system with automatic detection
+- **Custom Instructions**: Task-specific instructions for code generation, testing, and reviews
+- **Prompt Files**: Reusable prompts stored in `.github/prompts/` directory
 - **PowerShell Development**: Formatting, analysis, and cross-platform compatibility
 - **Pester Testing**: Test discovery, execution, and reporting
 - **OpenTofu/Terraform**: Infrastructure as code support
-- **File Management**: Optimized search, exclusions, and file associations
+
+Key Copilot features enabled:
+- `github.copilot.chat.codeGeneration.useInstructionFiles: true`
+- `chat.promptFiles: true`
+- Automatic instruction file detection from `.github/instructions/`
+- Custom prompt files in `.github/prompts/`
 
 #### `tasks.json`
 
@@ -165,6 +172,24 @@ Ready-to-use PowerShell code snippets:
 4. **Documentation**: Include proper help documentation for all functions
 5. **Testing**: Write comprehensive Pester tests for all functionality
 
+### Testing Instruction Files
+
+Run the "🔍 Test Copilot Instructions Setup" task to verify your instruction files are properly configured and detected by VS Code.
+
+### Using Prompt Files
+
+In VS Code chat:
+- Type `/create-powershell-function` to generate functions following project standards
+- Type `/run-bulletproof-tests` for testing guidance
+- Use Command Palette: "Chat: Run Prompt" to browse all available prompts
+
+### Custom Instructions
+
+Instructions are automatically applied based on file patterns:
+- **All .ps1 files**: Module guidelines and PowerShell standards
+- **Test files**: Testing workflows and Pester patterns
+- **Code generation**: Project-specific coding standards
+
 ## Customization
 
 ### Adding New Prompts
@@ -202,6 +227,19 @@ When adding tasks to `tasks.json`:
 2. **PowerShell Version**: Ensure PowerShell 7.0+ is installed and configured
 3. **Module Loading**: Verify module paths and permissions
 4. **Test Failures**: Check Pester configuration and test file paths
+
+### Instructions Not Loading
+- Verify `github.copilot.chat.codeGeneration.useInstructionFiles` is set to `true`
+- Check that instruction files exist in `.github/instructions/`
+- Run "🔍 Test Copilot Instructions Setup" task to validate file presence
+- Restart VS Code if changes aren't recognized
+- Ensure GitHub Copilot extension is up to date
+
+### Prompt Files Not Working
+- Verify `chat.promptFiles` is set to `true`
+- Check that prompt files have `.prompt.md` extension
+- Ensure prompt files are in `.github/prompts/` directory
+- Validate front matter syntax in prompt files
 
 ### Support Resources
 
