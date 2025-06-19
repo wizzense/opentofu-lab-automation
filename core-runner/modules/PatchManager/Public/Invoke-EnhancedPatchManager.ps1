@@ -168,9 +168,16 @@ function Invoke-EnhancedPatchManager {
             # Step 4: Apply patch operation if provided
             if ($PatchOperation) {
                 Write-PatchLog "Applying patch operation..." -Level "INFO"
-                  if (-not $DryRun) {
+                if (-not $DryRun) {
                     $patchResult = & $PatchOperation
-                    Write-PatchLog "Patch operation completed with result: $($null -ne $patchResult)" -Level "SUCCESS"
+                    $operationSuccess = if ($patchResult -is [hashtable] -and $patchResult.ContainsKey('Success')) {
+                        $patchResult.Success
+                    } elseif ($patchResult -is [bool]) {
+                        $patchResult
+                    } else {
+                        $null -ne $patchResult
+                    }
+                    Write-PatchLog "Patch operation completed with result: $operationSuccess" -Level $(if ($operationSuccess) { "SUCCESS" } else { "ERROR" })
                 } else {
                     Write-PatchLog "DRY RUN: Would execute patch operation" -Level "INFO"
                 }
