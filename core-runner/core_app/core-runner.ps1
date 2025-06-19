@@ -180,7 +180,35 @@ try {
                 if (Test-Path $scriptPath) {
                     Write-CustomLog "Executing script: $scriptName" -Level INFO
                     if ($PSCmdlet.ShouldProcess($scriptName, 'Execute script')) {
-                        & $scriptPath -Config $config
+                        try {
+                            # Preserve output streams and ensure visibility
+                            Write-CustomLog "Starting script execution: $scriptName" -Level INFO
+                            
+                            # Execute script with proper output handling
+                            $scriptOutput = & $scriptPath -Config $config *>&1
+                            
+                            # Display captured output
+                            if ($scriptOutput) {
+                                $scriptOutput | ForEach-Object {
+                                    if ($_ -is [System.Management.Automation.ErrorRecord]) {
+                                        Write-CustomLog "Script error: $($_.Exception.Message)" -Level ERROR
+                                    } elseif ($_ -is [System.Management.Automation.WarningRecord]) {
+                                        Write-CustomLog "Script warning: $($_.Message)" -Level WARN
+                                    } elseif ($_ -is [System.Management.Automation.VerboseRecord]) {
+                                        Write-CustomLog "Script verbose: $($_.Message)" -Level DEBUG
+                                    } else {
+                                        Write-Host $_.ToString()
+                                    }
+                                }
+                            }
+                            
+                            Write-CustomLog "Script completed: $scriptName" -Level SUCCESS
+                        } catch {
+                            Write-CustomLog "Script failed: $scriptName - $($_.Exception.Message)" -Level ERROR
+                            if (-not $Force) {
+                                throw
+                            }
+                        }
                     }
                 } else {
                     Write-CustomLog "Script not found: $scriptName" -Level WARN
@@ -192,7 +220,36 @@ try {
             foreach ($script in $availableScripts) {
                 Write-CustomLog "Executing script: $($script.BaseName)" -Level INFO
                 if ($PSCmdlet.ShouldProcess($script.BaseName, 'Execute script')) {
-                    & $script.FullName -Config $config                }
+                    try {
+                        # Preserve output streams and ensure visibility
+                        Write-CustomLog "Starting script execution: $($script.BaseName)" -Level INFO
+                        
+                        # Execute script with proper output handling
+                        $scriptOutput = & $script.FullName -Config $config *>&1
+                        
+                        # Display captured output
+                        if ($scriptOutput) {
+                            $scriptOutput | ForEach-Object {
+                                if ($_ -is [System.Management.Automation.ErrorRecord]) {
+                                    Write-CustomLog "Script error: $($_.Exception.Message)" -Level ERROR
+                                } elseif ($_ -is [System.Management.Automation.WarningRecord]) {
+                                    Write-CustomLog "Script warning: $($_.Message)" -Level WARN
+                                } elseif ($_ -is [System.Management.Automation.VerboseRecord]) {
+                                    Write-CustomLog "Script verbose: $($_.Message)" -Level DEBUG
+                                } else {
+                                    Write-Host $_.ToString()
+                                }
+                            }
+                        }
+                        
+                        Write-CustomLog "Script completed: $($script.BaseName)" -Level SUCCESS
+                    } catch {
+                        Write-CustomLog "Script failed: $($script.BaseName) - $($_.Exception.Message)" -Level ERROR
+                        if (-not $Force) {
+                            throw  # Stop on first error unless Force is specified
+                        }
+                    }
+                }
             }
         } else {
             # Check if running in non-interactive mode without specific scripts
@@ -206,7 +263,27 @@ try {
                         Write-CustomLog "Executing script: $($script.BaseName)" -Level INFO
                         if ($PSCmdlet.ShouldProcess($script.BaseName, 'Execute script')) {
                             try {
-                                & $script.FullName -Config $config
+                                # Preserve output streams and ensure visibility
+                                Write-CustomLog "Starting script execution: $($script.BaseName)" -Level INFO
+                                
+                                # Execute script with proper output handling
+                                $scriptOutput = & $script.FullName -Config $config *>&1
+                                
+                                # Display captured output
+                                if ($scriptOutput) {
+                                    $scriptOutput | ForEach-Object {
+                                        if ($_ -is [System.Management.Automation.ErrorRecord]) {
+                                            Write-CustomLog "Script error: $($_.Exception.Message)" -Level ERROR
+                                        } elseif ($_ -is [System.Management.Automation.WarningRecord]) {
+                                            Write-CustomLog "Script warning: $($_.Message)" -Level WARN
+                                        } elseif ($_ -is [System.Management.Automation.VerboseRecord]) {
+                                            Write-CustomLog "Script verbose: $($_.Message)" -Level DEBUG
+                                        } else {
+                                            Write-Host $_.ToString()
+                                        }
+                                    }
+                                }
+                                
                                 Write-CustomLog "Script completed: $($script.BaseName)" -Level SUCCESS
                             } catch {
                                 Write-CustomLog "Script failed: $($script.BaseName) - $($_.Exception.Message)" -Level ERROR
@@ -247,7 +324,27 @@ try {
                         foreach ($script in $availableScripts) {
                             Write-CustomLog "Executing script: $($script.BaseName)" -Level INFO
                             try {
-                                & $script.FullName -Config $config
+                                # Preserve output streams and ensure visibility
+                                Write-CustomLog "Starting script execution: $($script.BaseName)" -Level INFO
+                                
+                                # Execute script with proper output handling
+                                $scriptOutput = & $script.FullName -Config $config *>&1
+                                
+                                # Display captured output
+                                if ($scriptOutput) {
+                                    $scriptOutput | ForEach-Object {
+                                        if ($_ -is [System.Management.Automation.ErrorRecord]) {
+                                            Write-CustomLog "Script error: $($_.Exception.Message)" -Level ERROR
+                                        } elseif ($_ -is [System.Management.Automation.WarningRecord]) {
+                                            Write-CustomLog "Script warning: $($_.Message)" -Level WARN
+                                        } elseif ($_ -is [System.Management.Automation.VerboseRecord]) {
+                                            Write-CustomLog "Script verbose: $($_.Message)" -Level DEBUG
+                                        } else {
+                                            Write-Host $_.ToString()
+                                        }
+                                    }
+                                }
+                                
                                 Write-CustomLog "Script completed: $($script.BaseName)" -Level SUCCESS
                             } catch {
                                 Write-CustomLog "Script failed: $($script.BaseName) - $($_.Exception.Message)" -Level ERROR
@@ -268,7 +365,27 @@ try {
                             if ($script) {
                                 Write-CustomLog "Executing script: $($script.BaseName)" -Level INFO
                                 try {
-                                    & $script.FullName -Config $config
+                                    # Preserve output streams and ensure visibility
+                                    Write-CustomLog "Starting script execution: $($script.BaseName)" -Level INFO
+                                    
+                                    # Execute script with proper output handling
+                                    $scriptOutput = & $script.FullName -Config $config *>&1
+                                    
+                                    # Display captured output
+                                    if ($scriptOutput) {
+                                        $scriptOutput | ForEach-Object {
+                                            if ($_ -is [System.Management.Automation.ErrorRecord]) {
+                                                Write-CustomLog "Script error: $($_.Exception.Message)" -Level ERROR
+                                            } elseif ($_ -is [System.Management.Automation.WarningRecord]) {
+                                                Write-CustomLog "Script warning: $($_.Message)" -Level WARN
+                                            } elseif ($_ -is [System.Management.Automation.VerboseRecord]) {
+                                                Write-CustomLog "Script verbose: $($_.Message)" -Level DEBUG
+                                            } else {
+                                                Write-Host $_.ToString()
+                                            }
+                                        }
+                                    }
+                                    
                                     Write-CustomLog "Script completed: $($script.BaseName)" -Level SUCCESS
                                 } catch {
                                     Write-CustomLog "Script failed: $($script.BaseName) - $($_.Exception.Message)" -Level ERROR
