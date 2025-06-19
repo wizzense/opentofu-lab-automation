@@ -69,13 +69,15 @@ function Invoke-EnhancedPatchManager {
         }
         
         Write-Host "=== Enhanced PatchManager with Automated Validation ===" -ForegroundColor Cyan
-        
-        # Import required modules
+          # Import required modules
         $projectRoot = $env:PROJECT_ROOT
         if (-not $projectRoot) {
             $projectRoot = (Get-Location).Path
             $env:PROJECT_ROOT = $projectRoot
         }
+        
+        # Import PatchManager module with forward slashes for cross-platform compatibility
+        Import-Module './core-runner/modules/PatchManager' -Force
         
         # Function for logging
         function Write-PatchLog {
@@ -471,20 +473,34 @@ This issue was automatically created by the Enhanced PatchManager system.
 function New-PatchPullRequest {
     [CmdletBinding()]
     param([string]$Description)
-    
-    try {
-        # Commit current changes
-        git add -A 2>&1 | Out-Null
-        $commitMessage = "patch: $Description`n`nAutomated patch with enhanced validation`n- Module import validation`n- Syntax checking`n- Git conflict resolution`n- Emoji prevention"
+      try {
+        # Check if there are changes to commit
+        $gitStatus = git status --porcelain 2>&1
+        $hasChanges = $gitStatus -and ($gitStatus | Where-Object { $_ -match '\S' })
         
-        git commit -m $commitMessage 2>&1 | Out-Null
+        if (-not $hasChanges) {
+            Write-PatchLog "No changes to commit, proceeding with PR creation" -Level "INFO"
+        } else {
+            # Commit current changes
+            git add -A 2>&1 | Out-Null
+            $commitMessage = "patch: $Description`n`nAutomated patch with enhanced validation`n- Module import validation`n- Syntax checking`n- Git conflict resolution`n- Emoji prevention"            
+            git commit -m $commitMessage 2>&1 | Out-Null
+            
+            if ($LASTEXITCODE -ne 0) {
+                throw "Failed to commit changes"
+            }
+        }
+        
+        # Push branch
+        $branchName = git branch --show-current
+        if ([string]::IsNullOrWhiteSpace($branchName)) {
+            throw "Unable to determine current branch name"
+        }
+        
+        Write-PatchLog "Pushing branch: $branchName" -Level "INFO"
+        git push -u origin $branchName 2>&1 | Out-Null
         
         if ($LASTEXITCODE -eq 0) {
-            # Push branch
-            $branchName = git branch --show-current
-            git push -u origin $branchName 2>&1 | Out-Null
-            
-            if ($LASTEXITCODE -eq 0) {
                 # Create PR
                 $prTitle = "patch: $Description"
                 $prBody = @"
@@ -516,22 +532,27 @@ function New-PatchPullRequest {
 ---
 *This PR was created automatically by Enhanced PatchManager*
 "@
+                  $prResult = gh pr create --title $prTitle --body $prBody --base main 2>&1
                 
-                $prResult = gh pr create --title $prTitle --body $prBody --base main 2>&1
-                
-                if ($LASTEXITCODE -eq 0) {
+                if ($LASTEXITCODE -eq 0 -and $prResult) {
                     $prUrl = gh pr view --json url --jq '.url' 2>&1
-                    return @{ Success = $true; PullRequestUrl = $prUrl }
+                    if ($LASTEXITCODE -eq 0 -and $prUrl) {
+                        return @{ Success = $true; PullRequestUrl = $prUrl }
+                    } else {
+                        # Fall back to extracting URL from create output
+                        if ($prResult -match 'https://[^\s]+') {
+                            return @{ Success = $true; PullRequestUrl = $matches[0] }
+                        } else {
+                            return @{ Success = $true; PullRequestUrl = "PR created but URL not found" }
+                        }
+                    }
                 } else {
-                    return @{ Success = $false; Message = "Failed to create PR: $prResult" }
-                }
+                    $errorMessage = if ($prResult) { $prResult -join ' ' } else { "Unknown error creating PR" }
+                    return @{ Success = $false; Message = "Failed to create PR: $errorMessage" }                }
             } else {
                 return @{ Success = $false; Message = "Failed to push branch" }
             }
-        } else {
-            return @{ Success = $false; Message = "Failed to commit changes" }
-        }
-    }
-    catch {        return @{ Success = $false; Message = $_.Exception.Message }
+    } catch {
+        return @{ Success = $false; Message = $_.Exception.Message }
     }
 }

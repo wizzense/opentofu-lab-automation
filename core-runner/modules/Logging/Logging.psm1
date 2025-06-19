@@ -604,7 +604,12 @@ function Set-LoggingConfiguration {
 }
 
 # Export all functions
-Export-ModuleMember -Function Write-CustomLog, Initialize-LoggingSystem, Start-PerformanceTrace, Stop-PerformanceTrace, Write-TraceLog, Write-DebugContext, Get-LoggingConfiguration, Set-LoggingConfiguration
+Export-ModuleMember -Function Write-CustomLog, Initialize-LoggingSystem, Start-PerformanceTrace, Stop-PerformanceTrace, Write-TraceLog, Write-DebugContext, Get-LoggingConfiguration, Set-LoggingConfiguration, Import-ProjectModule
+
+# Dot-source public functions
+Get-ChildItem -Path "$PSScriptRoot/Public/*.ps1" -ErrorAction SilentlyContinue | ForEach-Object {
+    . $_.FullName
+}
 
 # Initialize logging system on module import (after functions are defined)
 try {

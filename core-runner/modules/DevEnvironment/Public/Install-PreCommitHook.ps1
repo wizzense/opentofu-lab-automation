@@ -298,9 +298,7 @@ function Test-DevelopmentSetup {
         # Check pre-commit hook
         if (-not (Test-Path ".git/hooks/pre-commit")) {
             $issues += "Pre-commit hook not installed"
-        }
-        
-        # Check required modules
+        }        # Check required modules
         $requiredModules = @("PatchManager", "Logging")
         foreach ($module in $requiredModules) {
             $modulePath = "$env:PROJECT_ROOT/pwsh/modules/$module"

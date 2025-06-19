@@ -66,14 +66,13 @@
             "options": {
                 "cwd": "${workspaceFolder}"
             }
-        },
-        {
+        },        {
             "label": "Setup Development Environment",
             "type": "shell",
             "command": "pwsh",
             "args": [
                 "-Command",
-                "& './core-runner/setup-test-env.ps1'"
+                "& ./core-runner/setup-test-env.ps1"
             ],
             "group": "build",
             "presentation": {

@@ -82,11 +82,10 @@ function Initialize-DevelopmentEnvironment {
     }
     
     process {
-        try {
-            # Step 1: Resolve all module import issues
+        try {            # Step 1: Resolve all module import issues
             if (-not $SkipModuleImportFixes) {
                 Write-Step "Resolving module import issues"
-                Resolve-ModuleImportIssues -Force:$Force -WhatIf:$WhatIfPreference
+                Resolve-ModuleImportIssues -Force:$Force
             } else {
                 Write-CustomLog "Skipping module import fixes as requested" -Level INFO
             }
@@ -108,11 +107,10 @@ function Initialize-DevelopmentEnvironment {
             } catch {
                 Write-CustomLog "⚠ Git aliases setup failed: $($_.Exception.Message)" -Level WARN
             }
-            
-            # Step 4: Remove any existing emojis from project
+              # Step 4: Remove any existing emojis from project
             Write-Step "Removing emojis from project"
             try {
-                Remove-ProjectEmojis -WhatIf:$WhatIfPreference
+                Remove-ProjectEmojis
                 Write-CustomLog "✓ Project emoji cleanup completed" -Level SUCCESS
             } catch {
                 Write-CustomLog "⚠ Emoji removal failed: $($_.Exception.Message)" -Level WARN

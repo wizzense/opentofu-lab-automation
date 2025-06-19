@@ -3,9 +3,9 @@
   Configure tools for running Pester and pytest.
 
 .DESCRIPTION
-  Installs the Pester module, ensures Python is available and installs
-  the Python dependencies for the project. If -UsePoetry is specified
-  Poetry will be installed and used to install the dev packages.
+  Installs the Pester module and sets up the PowerShell development environment.
+  Python can be optionally installed via configuration files when needed.
+  If -UsePoetry is specified, Poetry configuration will be prepared.
 
 .EXAMPLE
   ./pwsh/setup-test-env.ps1 -UsePoetry
@@ -20,9 +20,13 @@ $repoRoot = Split-Path $PSScriptRoot -Parent
 $env:PROJECT_ROOT = $repoRoot
 $env:PWSH_MODULES_PATH = "$repoRoot/core-runner/modules"
 
+# Add project modules to PSModulePath for easy importing
+$env:PSModulePath = "$env:PWSH_MODULES_PATH;$env:PSModulePath"
+
 Write-Host 'Setting up environment variables:' -ForegroundColor Cyan
 Write-Host "  PROJECT_ROOT: $env:PROJECT_ROOT" -ForegroundColor Gray
 Write-Host "  PWSH_MODULES_PATH: $env:PWSH_MODULES_PATH" -ForegroundColor Gray
+Write-Host "  Added to PSModulePath for easy imports" -ForegroundColor Gray
 
 # Import Get-Platform function from the correct location
 . "$repoRoot/core-runner/modules/LabRunner/Get-Platform.ps1"
@@ -38,10 +42,9 @@ function Install-PesterModule {
 }
 
 function Install-PythonEnvironment {
-    if (-not (Get-Command python -ErrorAction SilentlyContinue)) {
-        . "$repoRoot/core-runner/core_app/scripts/0206_Install-Python.ps1"
-        Install-Python -Config @{ InstallPython = $true }
-    }
+    # Python installation capability preserved in configuration files
+    # Use core-runner with InstallPython=true in config to install Python when needed
+    Write-Host '📝 Python installation available via config files (InstallPython=true)' -ForegroundColor Yellow
 }
 
 function Install-PoetryManager {
@@ -53,6 +56,15 @@ function Install-PoetryManager {
 
 function Initialize-DevEnvironment {
     Write-Host 'Setting up development environment...' -ForegroundColor Cyan
+    
+    # Import required modules in correct order
+    $loggingModule = "$env:PWSH_MODULES_PATH/Logging"
+    if (Test-Path $loggingModule) {
+        Import-Module $loggingModule -Force
+        Write-Host '✓ Logging module imported' -ForegroundColor Green
+    } else {
+        Write-Warning "Logging module not found at $loggingModule"
+    }
     
     # Import DevEnvironment module from correct location
     $devEnvModule = "$env:PWSH_MODULES_PATH/DevEnvironment"
@@ -172,23 +184,15 @@ function Test-PatchManagerEnvironment {
 }
 
 if ($UsePoetry) {
-    Install-PoetryManager
-    Push-Location "$repoRoot/py"
-    poetry install --with dev
-    Pop-Location
+    Write-Host '📝 Poetry installation available via config files (InstallPoetry=true)' -ForegroundColor Yellow
+    Write-Host 'ℹ️  Use core-runner with appropriate config to install Poetry when needed' -ForegroundColor Blue
 } else {
-    $pip = Get-Command pip -ErrorAction SilentlyContinue
-    if (-not $pip) {
-        $pipCmd = @('python', '-m', 'pip')
-    } else {
-        $pipCmd = @($pip.Path)
-    }
-    & $pipCmd install '-e' "$repoRoot/py"
+    Write-Host '📝 Python package management available via Poetry or pip when Python is installed' -ForegroundColor Yellow
 }
 
 Write-Host 'Test environment ready.' -ForegroundColor Green
 Write-Host '✓ Pester 5.7.1+ installed' -ForegroundColor Green
-Write-Host '✓ Python environment configured' -ForegroundColor Green  
+Write-Host '✓ Development environment configured' -ForegroundColor Green  
 Write-Host '✓ Pre-commit hook installed' -ForegroundColor Green
 Write-Host '✓ Development environment validated' -ForegroundColor Green
 
