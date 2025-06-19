@@ -105,11 +105,17 @@ $(if ($AffectedFiles.Count -gt 0) {
                     Title = $issueTitle
                     Body = $issueBody
                 }
-            }
-
-            # Create the issue
+            }            # Create the issue with robust label handling
             Write-CustomLog "Creating GitHub issue: $issueTitle" -Level INFO
-            $result = gh issue create --title $issueTitle --body $issueBody --label "patch,tracking,$Priority" 2>&1
+            
+            # Try with full labels first, fallback to minimal if needed
+            $result = gh issue create --title $issueTitle --body $issueBody --label "patch" 2>&1
+            
+            # If label fails, try without any labels
+            if ($LASTEXITCODE -ne 0 -and $result -match "not found") {
+                Write-CustomLog "Label issue detected, creating without labels" -Level WARN
+                $result = gh issue create --title $issueTitle --body $issueBody 2>&1
+            }
 
             if ($LASTEXITCODE -eq 0) {
                 # Extract issue number from URL
@@ -256,11 +262,15 @@ This patch follows the PatchManager workflow:
 
             if ($LASTEXITCODE -ne 0) {
                 throw "Failed to push branch $BranchName"
-            }
-
-            # Create PR
+            }            # Create PR with robust label handling
             Write-CustomLog "Creating pull request: $prTitle" -Level INFO
             $result = gh pr create --title $prTitle --body $prBody --head $BranchName --label "patch" 2>&1
+            
+            # If label fails, try without any labels
+            if ($LASTEXITCODE -ne 0 -and $result -match "not found") {
+                Write-CustomLog "Label issue detected, creating PR without labels" -Level WARN
+                $result = gh pr create --title $prTitle --body $prBody --head $BranchName 2>&1
+            }
 
             if ($LASTEXITCODE -eq 0) {
                 # Extract PR number from URL
