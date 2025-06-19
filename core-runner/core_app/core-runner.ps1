@@ -29,6 +29,9 @@
 .PARAMETER NonInteractive
     Run in non-interactive mode, suppress prompts and user input
     
+.PARAMETER WhatIf
+    Show what would happen without executing
+    
 .EXAMPLE
     .\core-runner.ps1
     
@@ -44,14 +47,15 @@ param(
     [Parameter(ParameterSetName = 'Verbose')]
     [ValidateSet('silent', 'normal', 'detailed')]
     [string]$Verbosity = 'normal',
-      [string]$ConfigFile,
+    [string]$ConfigFile,
     [switch]$Auto,
     [string]$Scripts,
     [switch]$Force,
-    [switch]$NonInteractive
+    [switch]$NonInteractive,
+    [switch]$WhatIf
 )
 
-# Set up environment
+# Stop on errors
 $ErrorActionPreference = 'Stop'
 
 # Auto-detect non-interactive mode if not explicitly set
@@ -59,19 +63,19 @@ if (-not $NonInteractive) {
     $NonInteractive = ($Host.Name -eq 'Default Host') -or 
                      ([Environment]::UserInteractive -eq $false) -or
                      ($env:PESTER_RUN -eq 'true') -or
-                     ($PSCmdlet.WhatIf) -or
+                     ($PSCmdlet.ShouldProcess($PSCmdlet, 'WhatIf') -eq $false) -or
                      ($Auto.IsPresent)
 }
 
-# Determine repository root - go up one level from core_app to core-runner, then up one more to repo root
+# Determine repository root
 $repoRoot = Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
-$env:PROJECT_ROOT = $repoRoot
+$env:PROJECT_ROOT    = $repoRoot
 $env:PWSH_MODULES_PATH = "$repoRoot/core-runner/modules"
 
 Write-Verbose "Repository root: $repoRoot"
 Write-Verbose "Modules path: $env:PWSH_MODULES_PATH"
 
-# Apply default ConfigFile if not provided
+# Default ConfigFile if not provided
 if (-not $PSBoundParameters.ContainsKey('ConfigFile')) {
     $ConfigFile = Join-Path $PSScriptRoot 'default-config.json'
     if (-not (Test-Path $ConfigFile)) {
@@ -79,42 +83,39 @@ if (-not $PSBoundParameters.ContainsKey('ConfigFile')) {
     }
 }
 
-# Apply quiet flag to verbosity
-if ($Quiet) { 
-    $Verbosity = 'silent' 
+# Quiet mode overrides verbosity
+if ($Quiet) {
+    $Verbosity = 'silent'
 }
 
 $script:VerbosityLevels = @{ silent = 0; normal = 1; detailed = 2 }
-$script:ConsoleLevel = $script:VerbosityLevels[$Verbosity]
+$script:ConsoleLevel    = $script:VerbosityLevels[$Verbosity]
 
-# Determine pwsh executable path for nested script execution
+# Locate PowerShell 7
 $pwshPath = (Get-Command pwsh -ErrorAction SilentlyContinue).Source
 if (-not $pwshPath) {
-    $exeName = if ($IsWindows) { 'pwsh.exe' } else { 'pwsh' }
+    $exeName  = if ($IsWindows) { 'pwsh.exe' } else { 'pwsh' }
     $pwshPath = Join-Path $PSHOME $exeName
 }
-
 if (-not (Test-Path $pwshPath)) {
     Write-Error 'PowerShell 7 not found. Please install PowerShell 7 or adjust PATH.'
     exit 1
 }
 
-# Re-launch under PowerShell 7 if running under Windows PowerShell
+# Relaunch under PS7 if needed
 if ($PSVersionTable.PSVersion.Major -lt 7) {
     Write-Host 'Switching to PowerShell 7...' -ForegroundColor Yellow
-    
     $argList = @()
     foreach ($kvp in $PSBoundParameters.GetEnumerator()) {
         if ($kvp.Value -is [System.Management.Automation.SwitchParameter]) {
-            if ($kvp.Value.IsPresent) { 
-                $argList += "-$($kvp.Key)" 
+            if ($kvp.Value.IsPresent) {
+                $argList += "-$($kvp.Key)"
             }
         } else {
             $argList += "-$($kvp.Key)"
             $argList += $kvp.Value
         }
     }
-    
     & $pwshPath -File $PSCommandPath @argList
     exit $LASTEXITCODE
 }
@@ -123,10 +124,10 @@ if ($PSVersionTable.PSVersion.Major -lt 7) {
 try {
     Write-Verbose 'Importing Logging module...'
     Import-Module "$env:PWSH_MODULES_PATH/Logging" -Force -ErrorAction Stop
-    
+
     Write-Verbose 'Importing LabRunner module...'
     Import-Module "$env:PWSH_MODULES_PATH/LabRunner" -Force -ErrorAction Stop
-    
+
     Write-CustomLog 'Core runner started' -Level INFO
 } catch {
     Write-Error "Failed to import required modules: $($_.Exception.Message)"
@@ -134,7 +135,6 @@ try {
     exit 1
 }
 
-# Set console verbosity level for LabRunner
 $env:LAB_CONSOLE_LEVEL = $script:VerbosityLevels[$Verbosity]
 
 # Load configuration
@@ -158,13 +158,15 @@ try {
     Write-CustomLog "Repository root: $repoRoot" -Level INFO
     Write-CustomLog "Configuration file: $ConfigFile" -Level INFO
     Write-CustomLog "Verbosity level: $Verbosity" -Level INFO
-    
-    # Get available scripts
+    Write-CustomLog "NonInteractive mode: $NonInteractive" -Level INFO
+    Write-CustomLog "WhatIf mode: $($PSCmdlet.WhatIf)" -Level INFO
+
+    # Discover scripts
     $scriptsPath = Join-Path $PSScriptRoot 'scripts'
     if (Test-Path $scriptsPath) {
         $availableScripts = Get-ChildItem -Path $scriptsPath -Filter '*.ps1' | Sort-Object Name
         Write-CustomLog "Found $($availableScripts.Count) scripts" -Level INFO
-        
+
         if ($Scripts) {
             # Run specific scripts
             $scriptList = $Scripts -split ','
@@ -173,60 +175,143 @@ try {
                 if (Test-Path $scriptPath) {
                     Write-CustomLog "Executing script: $scriptName" -Level INFO
                     if ($PSCmdlet.ShouldProcess($scriptName, 'Execute script')) {
-                        & $scriptPath -Config $config
+                        $scriptParams = @{}
+                        $scriptParams['Config'] = $config
+                        $scriptMetadata = Get-Command $scriptPath -ErrorAction SilentlyContinue
+                        if ($scriptMetadata) {
+                            if ($scriptMetadata.Parameters.ContainsKey('Verbosity')) {
+                                $scriptParams['Verbosity'] = $Verbosity
+                            }
+                            if ($scriptMetadata.Parameters.ContainsKey('WhatIf')) {
+                                $scriptParams['WhatIf'] = $WhatIf
+                            }
+                        }
+                        & $scriptPath @scriptParams
                     }
                 } else {
                     Write-CustomLog "Script not found: $scriptName" -Level WARN
                 }
             }
+
         } elseif ($Auto) {
             # Run all scripts in auto mode
             Write-CustomLog 'Running all scripts in automatic mode' -Level INFO
             foreach ($script in $availableScripts) {
                 Write-CustomLog "Executing script: $($script.BaseName)" -Level INFO
                 if ($PSCmdlet.ShouldProcess($script.BaseName, 'Execute script')) {
-                    & $script.FullName -Config $config
+                    $scriptParams = @{}
+                    $scriptParams['Config'] = $config
+                    $scriptMetadata = Get-Command $script.FullName -ErrorAction SilentlyContinue
+                    if ($scriptMetadata) {
+                        if ($scriptMetadata.Parameters.ContainsKey('Auto')) {
+                            $scriptParams['Auto'] = $true
+                        }
+                        if ($scriptMetadata.Parameters.ContainsKey('Verbosity')) {
+                            $scriptParams['Verbosity'] = $Verbosity
+                        }
+                        if ($scriptMetadata.Parameters.ContainsKey('WhatIf')) {
+                            $scriptParams['WhatIf'] = $WhatIf
+                        }
+                    }
+                    & $script.FullName @scriptParams
                 }
-            }        } else {
-            # Check if running in non-interactive mode without specific scripts
-            if ($NonInteractive -or $PSCmdlet.WhatIf) {
+            }
+
+        } else {
+            # Non-interactive / WhatIf handling
+            Write-CustomLog "Debug: NonInteractive=$NonInteractive, WhatIf=$($PSCmdlet.WhatIf), Auto=$($Auto.IsPresent)" -Level DEBUG
+
+            if (-not $PSCmdlet.ShouldProcess("Available scripts", "Execute interactively")) {
+                Write-CustomLog 'WhatIf mode: No scripts will be executed' -Level INFO
+                $scriptNames  = $availableScripts | ForEach-Object { $_.BaseName }
+                Write-CustomLog "Available scripts that would be presented: $($scriptNames.Count)" -Level INFO
+
+                $scriptGroups = $scriptNames | Group-Object {
+                    if ($_ -match '^(\d{2})') { "$($matches[1])xx_*" } else { "Other" }
+                }
+                foreach ($group in $scriptGroups) {
+                    Write-CustomLog "$($group.Name): $($group.Group -join ', ')" -Level INFO
+                }
+
+                return  # Exit gracefully
+
+            } elseif ($NonInteractive) {
                 Write-CustomLog 'Non-interactive mode: use -Scripts parameter to specify which scripts to run' -Level INFO
                 Write-CustomLog 'No scripts specified for non-interactive execution' -Level WARN
-                return  # Exit gracefully instead of interactive prompt
+                return  # Exit gracefully
+
             } else {
-                # Interactive mode - show menu
+                # Interactive menu
                 Write-Host "`nAvailable Scripts:" -ForegroundColor Cyan
                 for ($i = 0; $i -lt $availableScripts.Count; $i++) {
-                    $script = $availableScripts[$i]
-                    Write-Host "  $($i + 1). $($script.BaseName)" -ForegroundColor Gray
+                    $script      = $availableScripts[$i]
+                    $scriptPrefix= if ($script.BaseName -match '^(\d{4})_') { $matches[1] } else { '' }
+                    $displayText = if ($scriptPrefix) { "$($i+1). [$scriptPrefix] $($script.BaseName)" } else { "$($i+1). $($script.BaseName)" }
+                    Write-Host "  $displayText" -ForegroundColor Gray
                 }
-                
-                Write-Host "`nEnter script numbers to run (comma-separated), 'all' for all scripts, or 'exit' to quit:" -ForegroundColor Yellow
+
+                Write-Host "`nEnter script numbers to run:" -ForegroundColor Yellow
+                Write-Host "  • List number (1-$($availableScripts.Count))" -ForegroundColor Gray
+                Write-Host "  • Script prefix (e.g., '0200' for Get-SystemInfo)" -ForegroundColor Gray
+                Write-Host "  • Partial name (e.g., 'SystemInfo')" -ForegroundColor Gray
+                Write-Host "  • 'all' for all scripts, 'exit' to quit" -ForegroundColor Gray
                 $selection = Read-Host 'Selection'
-                
+
                 if ($selection -eq 'exit') {
                     Write-CustomLog 'Exiting at user request' -Level INFO
                     return
                 } elseif ($selection -eq 'all') {
                     foreach ($script in $availableScripts) {
                         Write-CustomLog "Executing script: $($script.BaseName)" -Level INFO
-                        & $script.FullName -Config $config
+                        $scriptParams = @{}
+                        $scriptParams['Config'] = $config
+                        $scriptMetadata = Get-Command $script.FullName -ErrorAction SilentlyContinue
+                        if ($scriptMetadata) {
+                            if ($scriptMetadata.Parameters.ContainsKey('Verbosity')) {
+                                $scriptParams['Verbosity'] = $Verbosity
+                            }
+                            if ($scriptMetadata.Parameters.ContainsKey('WhatIf')) {
+                                $scriptParams['WhatIf'] = $WhatIf
+                            }
+                        }
+                        & $script.FullName @scriptParams
                     }
                 } else {
-                    $selectedItems = $selection -split ',' | ForEach-Object { $_.Trim() }
-                    foreach ($item in $selectedItems) {
-                        $script = $null
-                        if ($item -match '^\d+$' -and [int]$item -le $availableScripts.Count -and [int]$item -gt 0) {
-                            $script = $availableScripts[[int]$item - 1]
-                        } else {
-                            $script = $availableScripts | Where-Object { $_.BaseName -eq $item -or $_.BaseName -like "$item*" } | Select-Object -First 1
+                    $selectedNumbers = $selection -split ',' | ForEach-Object { $_.Trim() }
+                    foreach ($num in $selectedNumbers) {
+                        $selectedScript = $null
+                        if ($num -match '^\d+$' -and [int]$num -le $availableScripts.Count -and [int]$num -gt 0) {
+                            $selectedScript = $availableScripts[[int]$num - 1]
+                        } elseif ($num -match '^\d{4}$') {
+                            Write-CustomLog "Matching script prefix: $num against available scripts." -Level DEBUG
+                            $selectedScript = $availableScripts | Where-Object { $_.BaseName -like "$num*" } | Select-Object -First 1
+                        } elseif ($num -match '^[a-zA-Z]') {
+                            $selectedScript = $availableScripts | Where-Object { $_.BaseName -like "*$num*" } | Select-Object -First 1
                         }
 
-                        if ($script) {
-                            Write-CustomLog "Executing script: $($script.BaseName)" -Level INFO
-                            & $script.FullName -Config $config
+                        if ($selectedScript) {
+                            Write-CustomLog "Executing script: $($selectedScript.BaseName)" -Level INFO
+                            $scriptParams = @{}
+                            $scriptParams['Config'] = $config
+                            $scriptMetadata = Get-Command $selectedScript.FullName -ErrorAction SilentlyContinue
+                            if ($scriptMetadata) {
+                                if ($scriptMetadata.Parameters.ContainsKey('Verbosity')) {
+                                    $scriptParams['Verbosity'] = $Verbosity
+                                }
+                                if ($scriptMetadata.Parameters.ContainsKey('WhatIf')) {
+                                    $scriptParams['WhatIf'] = $WhatIf
+                                }
+                            }
+                            try {
+                                Write-CustomLog "Running script with parameters: $($scriptParams.Keys -join ', ')" -Level DEBUG
+                                & $selectedScript.FullName @scriptParams
+                            } catch {
+                                Write-CustomLog "Error executing script $($selectedScript.BaseName): $($_.Exception.Message)" -Level ERROR
+                                Write-CustomLog "Script parameters: $($scriptParams | ConvertTo-Json -Compress)" -Level DEBUG
+                                throw
+                            }
                         } else {
-                            Write-CustomLog "Invalid selection: $item" -Level WARN
+                            Write-CustomLog "Invalid selection: $num. Valid options are list numbers (1-$($availableScripts.Count)), script prefixes (e.g., '0200'), or partial names." -Level WARN
                         }
                     }
                 }
@@ -236,11 +321,23 @@ try {
         Write-CustomLog "Scripts directory not found: $scriptsPath" -Level WARN
         Write-CustomLog 'No scripts to execute' -Level INFO
     }
-    
+
     Write-CustomLog 'Core runner completed successfully' -Level SUCCESS
-    
+
 } catch {
-    Write-CustomLog "Core runner failed: $($_.Exception.Message)" -Level ERROR
-    Write-CustomLog "Stack trace: $($_.ScriptStackTrace)" -Level DEBUG
+    $errorMsg = $_.Exception.Message
+
+    if ($errorMsg -match 'parameter .* cannot be found') {
+        Write-CustomLog "Parameter error detected. Check if script parameters match what's being passed." -Level ERROR
+        Write-CustomLog "Tip: Ensure the script defines a Verbosity parameter if it's being passed." -Level INFO
+    }
+
+    Write-CustomLog "Core runner failed: $errorMsg" -Level ERROR
+
+    if ($Verbosity -eq 'detailed') {
+        Write-CustomLog "Exception type: $($_.Exception.GetType().Name)" -Level DEBUG
+        Write-CustomLog "Stack trace: $($_.ScriptStackTrace)" -Level DEBUG
+    }
+
     exit 1
 }

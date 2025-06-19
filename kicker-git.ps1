@@ -528,18 +528,43 @@ function Sync-Repository {
         if (-not (Test-Path $parentPath)) {
             New-Item -ItemType Directory -Path $parentPath -Force | Out-Null
         }
-        
-        # Enhanced git clone with better error handling
-        & git clone --branch $TargetBranch --single-branch --depth 1 $script:RepoUrl $repoPath 2>&1 | Out-Null
-        
-        if ($LASTEXITCODE -ne 0) {
-            throw "Git clone failed with exit code: $LASTEXITCODE"
+          # Enhanced git clone with better error handling and diagnostics
+        Write-BootstrapLog "Executing: git clone --branch $TargetBranch --single-branch --depth 1 $script:RepoUrl $repoPath" 'INFO'
+        Write-BootstrapLog "Current working directory: $(Get-Location)" 'INFO'
+        Write-BootstrapLog "Environment variables affecting Git:" 'INFO'
+        Write-BootstrapLog "GIT_CONFIG_GLOBAL: $env:GIT_CONFIG_GLOBAL" 'INFO'
+        Write-BootstrapLog "GIT_SSH: $env:GIT_SSH" 'INFO'
+
+        $retryCount = 0
+        $maxRetries = 3
+        $success = $false
+
+        while (-not $success -and $retryCount -lt $maxRetries) {
+            $retryCount++
+            Write-BootstrapLog "Attempt $retryCount of $maxRetries: Cloning repository..." 'INFO'
+            $gitOutput = & git clone --branch $TargetBranch --single-branch --depth 1 $script:RepoUrl $repoPath 2>&1
+
+            if ($LASTEXITCODE -eq 0) {
+                $success = $true
+                Write-BootstrapLog "Git clone succeeded on attempt $retryCount" 'SUCCESS'
+            } else {
+                $errorDetails = if ($gitOutput) { $gitOutput -join "`n" } else { "No additional error details available" }
+                Write-BootstrapLog "Git clone failed on attempt $retryCount. Output: $errorDetails" 'ERROR'
+
+                if ($retryCount -lt $maxRetries) {
+                    Write-BootstrapLog "Retrying in 5 seconds..." 'WARN'
+                    Start-Sleep -Seconds 5
+                } else {
+                    Write-BootstrapLog "Max retries reached. Failing with error." 'ERROR'
+                    throw "Git clone failed after $maxRetries attempts. Details: $errorDetails"
+                }
+            }
         }
-        
+
         if (-not (Test-Path $repoPath)) {
             throw "Repository clone appeared successful but path does not exist"
         }
-        
+
         # Verify it's a proper clone
         $gitDir = Join-Path $repoPath '.git'
         if (-not (Test-Path $gitDir)) {
@@ -705,33 +730,47 @@ function Show-CoreAppDemo {
     Write-BootstrapLog "🌟 Would you like to see the CoreApp orchestration in action? (y/N)" 'INFO' -NoTimestamp
     
     $response = Read-Host
-    if ($response -match '^[Yy]') {
-        Write-BootstrapLog "Demonstrating CoreApp orchestration features..." 'INFO'
+    if ($response -match '^[Yy]') {        Write-BootstrapLog "Demonstrating CoreApp orchestration features..." 'INFO'
         try {
             Push-Location $RepoPath
-            # Import CoreApp module
-            $coreAppPath = Join-Path $RepoPath "core-runner/core_app"
-            Import-Module $coreAppPath -Force
-            Write-BootstrapLog "✓ CoreApp module imported" 'SUCCESS'
-            # Initialize and show module status
-            Write-BootstrapLog "Initializing core application..." 'INFO'
-            $initResult = Initialize-CoreApplication
-            if ($initResult.Success) {
-                Write-BootstrapLog "✓ Core application initialized" 'SUCCESS'
-                Write-BootstrapLog "Loaded modules: $($initResult.LoadedModules -join ', ')" 'INFO'
+            
+            # Import CoreApp module using the module manifest
+            $coreAppModulePath = Join-Path $RepoPath "core-runner/core_app/CoreApp.psd1"
+            
+            if (-not (Test-Path $coreAppModulePath)) {
+                throw "CoreApp module manifest not found at: $coreAppModulePath"
             }
-            # Show module status
-            Write-BootstrapLog "Module Status:" 'INFO'
-            $moduleStatus = Get-CoreModuleStatus
-            $moduleStatus | ForEach-Object {
-                $icon = if ($_.Status -eq 'Loaded') { '✓' } else { '⚠' }
-                $color = if ($_.Status -eq 'Loaded') { 'SUCCESS' } else { 'WARN' }
-                Write-BootstrapLog "  $icon $($_.Name): $($_.Status)" $color
+            
+            Write-BootstrapLog "Importing CoreApp module from: $coreAppModulePath" 'INFO'
+            Import-Module $coreAppModulePath -Force -ErrorAction Stop
+            Write-BootstrapLog "✓ CoreApp module imported successfully" 'SUCCESS'
+            
+            # Test if functions are available
+            $coreAppFunctions = @('Initialize-CoreApplication', 'Get-CoreModuleStatus')
+            $availableFunctions = @()
+            
+            foreach ($func in $coreAppFunctions) {
+                if (Get-Command $func -ErrorAction SilentlyContinue) {
+                    $availableFunctions += $func
+                    Write-BootstrapLog "✓ Function available: $func" 'SUCCESS'
+                } else {
+                    Write-BootstrapLog "⚠ Function not available: $func" 'WARN'
+                }
             }
+            
+            if ($availableFunctions.Count -gt 0) {
+                Write-BootstrapLog "CoreApp orchestration functions are ready for use!" 'SUCCESS'
+                Write-BootstrapLog "Available functions: $($availableFunctions -join ', ')" 'INFO'
+            } else {
+                Write-BootstrapLog "CoreApp functions are not yet available - module needs initialization" 'WARN'
+            }
+            
             Write-BootstrapLog "✓ CoreApp demonstration completed" 'SUCCESS'
             Pop-Location
+            
         } catch {
             Write-BootstrapLog "Demo failed: $($_.Exception.Message)" 'WARN'
+            Write-BootstrapLog "This is expected during bootstrap - CoreApp will be fully functional after setup" 'INFO'
             Pop-Location
         }
     }
