@@ -472,8 +472,27 @@ This issue was automatically created by the Enhanced PatchManager system.
 # Helper function to create pull request
 function New-PatchPullRequest {
     [CmdletBinding()]
-    param([string]$Description)
-      try {
+    param(
+        [Parameter(Mandatory = $false)]
+        [string]$Description,
+        
+        [Parameter(Mandatory = $false)]
+        [string]$BranchName,
+        
+        [Parameter(Mandatory = $false)]
+        [string[]]$AffectedFiles,
+        
+        [Parameter(Mandatory = $false)]
+        [hashtable]$ValidationResults,
+        
+        [Parameter(Mandatory = $false)]
+        [switch]$AutoMerge,
+        
+        [Parameter(Mandatory = $false)]
+        [switch]$DryRun
+    )
+    
+    try {
         # Check if there are changes to commit
         $gitStatus = git status --porcelain 2>&1
         $hasChanges = $gitStatus -and ($gitStatus | Where-Object { $_ -match '\S' })
@@ -491,23 +510,61 @@ function New-PatchPullRequest {
             }
         }
         
-        # Push branch
-        $branchName = git branch --show-current
-        if ([string]::IsNullOrWhiteSpace($branchName)) {
-            throw "Unable to determine current branch name"
+        # Determine branch name
+        if ([string]::IsNullOrWhiteSpace($BranchName)) {
+            $BranchName = git branch --show-current 2>&1
+            if ($LASTEXITCODE -ne 0 -or [string]::IsNullOrWhiteSpace($BranchName)) {
+                throw "Unable to determine current branch name. Please specify using -BranchName parameter."
+            }
+        }
+          # Validate branch exists
+        git rev-parse --verify $BranchName 2>$null
+        if ($LASTEXITCODE -ne 0) {
+            throw "Branch '$BranchName' does not exist"
         }
         
-        Write-PatchLog "Pushing branch: $branchName" -Level "INFO"
-        git push -u origin $branchName 2>&1 | Out-Null
+        # Push branch
+        Write-PatchLog "Pushing branch $BranchName to remote..." -Level "INFO"
+        $pushResult = git push -u origin $BranchName 2>&1
         
         if ($LASTEXITCODE -eq 0) {
-                # Create PR
-                $prTitle = "patch: $Description"
-                $prBody = @"
+            Write-PatchLog "Branch pushed successfully" -Level "SUCCESS"
+                  if ($DryRun) {
+                Write-PatchLog "DRY RUN: Would push branch $BranchName to remote and create pull request" -Level "INFO"
+                return @{
+                    Success = $true
+                    Message = "DRY RUN: Pull request creation simulated"
+                    BranchName = $BranchName
+                    DryRun = $true
+                }
+            }
+            
+            # Create PR with title length validation
+            Write-PatchLog "Creating pull request..." -Level "INFO"
+            
+            # Ensure PR title is not too long (GitHub limit is 256 chars)
+            $descriptionLines = $Description -split "`n"
+            $prTitle = if ($descriptionLines[0].Length -gt 100) {
+                ($descriptionLines[0].Substring(0, 97) + "...").Trim()
+            } else {
+                $descriptionLines[0].Trim()
+            }
+            
+            # Prefix with type if not already prefixed
+            if (-not ($prTitle -match "^(feat|fix|docs|style|refactor|perf|test|chore|patch):")) {
+                $prTitle = "patch: $prTitle"
+            }
+            
+            # Ensure title is under 250 chars to be safe
+            if ($prTitle.Length -gt 250) {
+                $prTitle = $prTitle.Substring(0, 247) + "..."
+            }
+            
+            $prBody = @"
 ## Enhanced Patch with Automated Validation
 
 **Description**: $Description
-**Branch**: $branchName
+**Branch**: $BranchName
 **Validation**: Comprehensive automated validation completed
 
 ### Changes Include
@@ -532,27 +589,111 @@ function New-PatchPullRequest {
 ---
 *This PR was created automatically by Enhanced PatchManager*
 "@
-                  $prResult = gh pr create --title $prTitle --body $prBody --base main 2>&1
                 
-                if ($LASTEXITCODE -eq 0 -and $prResult) {
-                    $prUrl = gh pr view --json url --jq '.url' 2>&1
-                    if ($LASTEXITCODE -eq 0 -and $prUrl) {
-                        return @{ Success = $true; PullRequestUrl = $prUrl }
-                    } else {
-                        # Fall back to extracting URL from create output
+                # Try to create PR with proper error handling
+                try {
+                    $prResult = gh pr create --title $prTitle --body $prBody --base main 2>&1
+                    
+                    if ($LASTEXITCODE -eq 0) {
+                        # Get the PR URL
+                        try {
+                            $prUrl = gh pr view --json url --jq '.url' 2>&1
+                            if ($LASTEXITCODE -eq 0 -and $prUrl) {
+                                Write-PatchLog "Pull request created successfully: $prUrl" -Level "SUCCESS"
+                                return @{ 
+                                    Success = $true 
+                                    PullRequestUrl = $prUrl 
+                                    BranchName = $BranchName
+                                }
+                            } 
+                        } catch {
+                            # Fallback method - extract URL from creation output
+                        }
+                        
+                        # Fallback to extracting URL from create output
                         if ($prResult -match 'https://[^\s]+') {
-                            return @{ Success = $true; PullRequestUrl = $matches[0] }
+                            $extractedUrl = $matches[0]
+                            Write-PatchLog "Pull request created successfully: $extractedUrl" -Level "SUCCESS"
+                            return @{ 
+                                Success = $true 
+                                PullRequestUrl = $extractedUrl 
+                                BranchName = $BranchName
+                            }
                         } else {
-                            return @{ Success = $true; PullRequestUrl = "PR created but URL not found" }
+                            # PR created but couldn't get URL
+                            Write-PatchLog "Pull request created but couldn't retrieve URL" -Level "WARNING"
+                            return @{ 
+                                Success = $true 
+                                Message = "PR created but URL not found"
+                                BranchName = $BranchName
+                            }
+                        }
+                    } else {
+                        # PR creation failed - check for specific error conditions
+                        $errorMessage = $prResult -join " "
+                        
+                        # Handle common errors
+                        if ($errorMessage -match "already exists") {
+                            Write-PatchLog "A pull request already exists for this branch" -Level "WARNING"
+                            # Try to get that PR's URL
+                            try {
+                                $existingPrUrl = gh pr view $BranchName --json url --jq '.url' 2>&1
+                                if ($LASTEXITCODE -eq 0 -and $existingPrUrl) {
+                                    return @{ 
+                                        Success = $true 
+                                        PullRequestUrl = $existingPrUrl
+                                        BranchName = $BranchName
+                                        Message = "An existing pull request was found for this branch"
+                                    }
+                                }
+                            } catch {
+                                # Ignore error getting existing PR URL
+                            }
+                        } elseif ($errorMessage -match "too long") {
+                            # Title too long - use a shorter title
+                            $shorterTitle = "Patch: " + (Get-Date -Format "yyyy-MM-dd")
+                            Write-PatchLog "Trying again with shorter title: $shorterTitle" -Level "INFO"
+                            
+                            $prResult = gh pr create --title $shorterTitle --body $prBody --base main 2>&1
+                            if ($LASTEXITCODE -eq 0 -and ($prResult -match 'https://[^\s]+')) {
+                                return @{ 
+                                    Success = $true 
+                                    PullRequestUrl = $matches[0]
+                                    BranchName = $BranchName
+                                }
+                            }
+                        }
+                        
+                        # If we reach here, all attempts failed
+                        Write-PatchLog "Failed to create pull request: $errorMessage" -Level "ERROR"
+                        return @{ 
+                            Success = $false
+                            Message = "Failed to create pull request: $errorMessage"
+                            BranchName = $BranchName
                         }
                     }
-                } else {
-                    $errorMessage = if ($prResult) { $prResult -join ' ' } else { "Unknown error creating PR" }
-                    return @{ Success = $false; Message = "Failed to create PR: $errorMessage" }                }
+                } catch {
+                    Write-PatchLog "Exception creating pull request: $($_.Exception.Message)" -Level "ERROR"
+                    return @{ 
+                        Success = $false
+                        Message = "Exception creating pull request: $($_.Exception.Message)"
+                        BranchName = $BranchName
+                    }
+                }
             } else {
-                return @{ Success = $false; Message = "Failed to push branch" }
+                Write-PatchLog "Failed to push branch: $pushResult" -Level "ERROR"
+                return @{ 
+                    Success = $false
+                    Message = "Failed to push branch: $pushResult" 
+                    BranchName = $BranchName
+                }
             }
     } catch {
-        return @{ Success = $false; Message = $_.Exception.Message }
+        Write-PatchLog "Error in New-PatchPullRequest: $($_.Exception.Message)" -Level "ERROR"
+        return @{ 
+            Success = $false
+            Message = $_.Exception.Message
+            BranchName = $BranchName
+        }
     }
 }
