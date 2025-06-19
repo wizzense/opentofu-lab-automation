@@ -30,7 +30,7 @@ CompanyName = 'wizzense'
 Copyright = '(c) wizzense. All rights reserved.'
 
 # Description of the functionality provided by this module
-Description = 'Unified patch management with Git-controlled workflows, comprehensive cleanup, backup consolidation, advanced rollback capabilities, and reduced reliance on traditional backups'
+Description = 'Simplified and reliable patch management with 4 core functions: workflow, issue creation, PR creation, and rollback. Legacy functions moved to Legacy folder.'
 
 # Minimum version of the PowerShell engine required by this module
 PowerShellVersion = '7.0'
@@ -70,38 +70,10 @@ RequiredModules = @()
 
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
 FunctionsToExport = @(
-    'Invoke-GitControlledPatch',
-    'Invoke-EnhancedPatchManager',
-    'Invoke-GitHubIssueIntegration',
-    'Invoke-GitHubIssueResolution',
-    'Invoke-QuickRollback',
-    'Invoke-PatchRollback',
-    'Invoke-BranchRollback',
-    'Invoke-PatchValidation',    'Invoke-ComprehensiveIssueTracking',
-    'Invoke-ValidationFailureHandler',
-    'Invoke-ErrorHandler',    'Invoke-MonitoredExecution',
-    'Get-IntelligentBranchStrategy',
-    'Test-BranchProtection',
-    'Get-SanitizedBranchName',
-    'New-PatchBranch',
-    'Invoke-PatchOperation',
-    'New-PatchCommit',
-    'New-PatchPullRequest',
+    'Invoke-PatchWorkflow',
     'New-PatchIssue',
-    'Build-ComprehensivePRBody',
-    'Get-GitChangeStatistics',
-    'Get-GitCommitInfo',
-    'Invoke-EnhancedGitOperations',
-    'Test-GitHubAuthentication',
-    'CreatePatchBranch',
-    'CommitChanges',
-    'Invoke-CheckoutAndCommit',
-    'Get-SmartIssueStrategy',
-    'Find-ExistingValidationIssues',
-    'Get-ValidationFailureAnalysis',
-    'New-SimpleIssueForPatch',
-    'New-SimplePRForPatch',
-    'Invoke-SimplifiedPatchWorkflow'
+    'New-PatchPR',
+    'Invoke-PatchRollback'
 )
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
