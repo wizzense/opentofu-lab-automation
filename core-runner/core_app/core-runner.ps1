@@ -173,7 +173,7 @@ try {
                 if (Test-Path $scriptPath) {
                     Write-CustomLog "Executing script: $scriptName" -Level INFO
                     if ($PSCmdlet.ShouldProcess($scriptName, 'Execute script')) {
-                        & $scriptPath -Config $config -Verbosity $Verbosity
+                        & $scriptPath -Config $config
                     }
                 } else {
                     Write-CustomLog "Script not found: $scriptName" -Level WARN
@@ -185,7 +185,7 @@ try {
             foreach ($script in $availableScripts) {
                 Write-CustomLog "Executing script: $($script.BaseName)" -Level INFO
                 if ($PSCmdlet.ShouldProcess($script.BaseName, 'Execute script')) {
-                    & $script.FullName -Config $config -Verbosity $Verbosity -Auto
+                    & $script.FullName -Config $config
                 }
             }        } else {
             # Check if running in non-interactive mode without specific scripts
@@ -210,7 +210,7 @@ try {
                 } elseif ($selection -eq 'all') {
                     foreach ($script in $availableScripts) {
                         Write-CustomLog "Executing script: $($script.BaseName)" -Level INFO
-                        & $script.FullName -Config $config -Verbosity $Verbosity
+                        & $script.FullName -Config $config
                     }
                 } else {
                     $selectedItems = $selection -split ',' | ForEach-Object { $_.Trim() }
@@ -224,7 +224,7 @@ try {
 
                         if ($script) {
                             Write-CustomLog "Executing script: $($script.BaseName)" -Level INFO
-                            & $script.FullName -Config $config -Verbosity $Verbosity
+                            & $script.FullName -Config $config
                         } else {
                             Write-CustomLog "Invalid selection: $item" -Level WARN
                         }
