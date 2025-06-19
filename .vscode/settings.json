@@ -1,10 +1,168 @@
 {
+    // GitHub Copilot Configuration
+    "github.copilot.enable": {
+        "*": true,
+        "plaintext": false,
+        "markdown": true,
+        "scminput": false
+    },
+
+    // Repository Custom Instructions (Latest Feature)
     "github.copilot.chat.codeGeneration.useInstructionFiles": true,
+
+    // Advanced Copilot Chat Settings
+    "github.copilot.chat.enableCodeGeneration": true,
+    "github.copilot.chat.followUps": "on",
+    "github.copilot.chat.localeOverride": "en",
+    "github.copilot.chat.scopeSelection": true,
+    "github.copilot.chat.temporalContext": true,
+    "github.copilot.chat.variableContext": true,
+      // Enhanced Code Suggestions
+    "github.copilot.autocomplete.enable": true,
+    "github.copilot.inlineSuggest.count": 3,
+    "github.copilot.inlineSuggest.suppressMiddleClickPaste": true,
+
+    // PowerShell Specific Settings
+    "powershell.codeFormatting.preset": "OTBS",
+    "powershell.codeFormatting.openBraceOnSameLine": true,
+    "powershell.codeFormatting.newLineAfterOpenBrace": true,
+    "powershell.codeFormatting.newLineAfterCloseBrace": true,
+    "powershell.codeFormatting.whitespaceBeforeOpenBrace": true,
+    "powershell.codeFormatting.whitespaceBeforeOpenParen": true,
+    "powershell.codeFormatting.whitespaceAroundOperator": true,
+    "powershell.codeFormatting.whitespaceAfterSeparator": true,
+    "powershell.codeFormatting.ignoreOneLineBlock": true,
+    "powershell.codeFormatting.alignPropertyValuePairs": true,
+    "powershell.codeFormatting.useConstantStrings": true,
+    "powershell.codeFormatting.useCorrectCasing": true,
+
+    // PowerShell Analysis
+    "powershell.scriptAnalysis.enable": true,
+    "powershell.scriptAnalysis.settingsPath": "core-runner/PSScriptAnalyzerSettings.psd1",
+    "powershell.scriptAnalysis.enableReferencesCodeLens": true,
+    "powershell.debugging.createTemporaryIntegratedConsole": false,
+
+    // File Associations and Language Settings
+    "files.associations": {
+        "*.ps1": "powershell",
+        "*.psm1": "powershell",
+        "*.psd1": "powershell",
+        "*.tf": "terraform",
+        "*.tfvars": "terraform",
+        "*.hcl": "terraform"
+    },
+
+    // Editor Configuration for PowerShell
+    "[powershell]": {
+        "editor.insertSpaces": true,
+        "editor.tabSize": 4,
+        "editor.detectIndentation": false,
+        "editor.formatOnSave": true,
+        "editor.formatOnPaste": true,
+        "editor.semanticHighlighting.enabled": true,
+        "editor.rulers": [80, 120],
+        "editor.wordWrap": "bounded",
+        "editor.wordWrapColumn": 120
+    },
+
+    // Terraform/OpenTofu Configuration
+    "[terraform]": {
+        "editor.insertSpaces": true,
+        "editor.tabSize": 2,
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "hashicorp.terraform"
+    },
+
+    // Testing Framework Configuration
+    "pester.useLegacyCodeLens": false,
+    "pester.enableCodeLens": true,
+    "pester.outputVerbosity": "Detailed",
+
+    // Search and File Management
+    "search.exclude": {
+        "**/logs/**": true,
+        "**/tests/results/**": true,
+        "**/tests/TestResults/**": true,
+        "**/*.tfstate*": true,
+        "**/.terraform/**": true,
+        "**/coverage.xml": true
+    },
+
+    "files.exclude": {
+        "**/logs/**": false,
+        "**/tests/results/**": true,
+        "**/.terraform/**": true,
+        "**/*.tfstate.backup": true
+    },
+
+    "files.watcherExclude": {
+        "**/logs/**": true,
+        "**/tests/results/**": true,
+        "**/.terraform/**": true
+    },
+
+    // Git Configuration
+    "git.ignoreLimitWarning": true,
+    "git.autofetch": true,
+    "git.enableSmartCommit": true,
+    "git.confirmSync": false,
+
+    // Terminal Configuration
+    "terminal.integrated.defaultProfile.windows": "PowerShell",
+    "terminal.integrated.profiles.windows": {
+        "PowerShell": {
+            "source": "PowerShell",
+            "icon": "terminal-powershell",
+            "args": ["-NoLogo"]
+        },
+        "PowerShell Core": {
+            "path": "pwsh.exe",
+            "icon": "terminal-powershell",
+            "args": ["-NoLogo"]
+        }
+    },
+
+    // Workspace Settings
+    "explorer.confirmDelete": false,
+    "explorer.confirmDragAndDrop": false,
+    "breadcrumbs.enabled": true,
+    "outline.showVariables": true,
+    "problems.showCurrentInStatus": true,
+
+    // Auto-save and Performance
+    "files.autoSave": "onFocusChange",
+    "files.trimTrailingWhitespace": true,
+    "files.insertFinalNewline": true,
+    "files.trimFinalNewlines": true,
+
+    // IntelliSense and Code Completion
+    "editor.suggestSelection": "first",
+    "editor.acceptSuggestionOnCommitCharacter": true,
+    "editor.acceptSuggestionOnEnter": "on",
+    "editor.quickSuggestionsDelay": 10,
+    "editor.parameterHints.enabled": true,
+    "editor.hover.enabled": true,
+
+    // Error Handling and Debugging
+    "debug.allowBreakpointsEverywhere": true,
+    "debug.openDebug": "openOnDebugBreak",
+    "debug.showInStatusBar": "always",
+
+    // Advanced Copilot Features
+    "github.copilot.chat.contextAwareness": true,
+    "github.copilot.chat.documentationGeneration": true,
+    "github.copilot.chat.performanceOptimization": true,
+    "github.copilot.chat.errorDiagnosis": true,
+    "github.copilot.chat.codeReviewAssistance": true,
+
+    // Prompt Integration
     "github.copilot.chat.promptFiles": true,
-    "github.copilot.chat.instructionsFilesLocations": [
-        ".github/instructions"
-    ],
     "github.copilot.chat.promptFilesLocations": [
         ".github/prompts"
+    ],
+    "github.copilot.chat.codeGeneration.instructions": [
+        {
+            "file": ".github/copilot-instructions.md"
+        }
     ]
 }
