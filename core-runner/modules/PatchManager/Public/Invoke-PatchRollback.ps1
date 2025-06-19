@@ -36,12 +36,16 @@ function Invoke-PatchRollback {
     param(
         [Parameter(Mandatory = $false)]
         [ValidateSet("LastCommit", "PreviousBranch", "SpecificCommit")]
-        [string]$RollbackType = "LastCommit",
-        
+        [string]$RollbackType = "LastCommit",        
         [Parameter(Mandatory = $false)]
         [string]$CommitHash,
         
-        [Parameter(Mandatory = $false)]        
+        [Parameter(Mandatory = $false)]
+        [switch]$CreateBackup,
+        
+        [Parameter(Mandatory = $false)]
+        [switch]$Force,
+        
         [Parameter(Mandatory = $false)]
         [switch]$DryRun
     )
