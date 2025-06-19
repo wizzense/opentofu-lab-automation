@@ -3,38 +3,107 @@ applyTo: "**/*.ps1"
 description: "PatchManager workflows and common scenarios - UPDATED FOR CONSOLIDATED VERSION"
 ---
 
-# PatchManager Workflows & Instructions (Consolidated v2.0)
+# PatchManager Workflows & Instructions (Consolidated v2.1 - IMPROVED)
 
-This file provides comprehensive guidance for using the **NEW CONSOLIDATED PatchManager** in the OpenTofu Lab Automation project.
+This file provides comprehensive guidance for using the **IMPROVED CONSOLIDATED PatchManager** in the OpenTofu Lab Automation project.
 
 ## 🎯 Core PatchManager Functions (4 Total)
 
 ### Main Workflow Function (Primary)
 
-Use `Invoke-PatchWorkflow` for ALL patch operations - this is the single entry point:
+Use `Invoke-PatchWorkflow` for ALL patch operations - this is the single entry point that now handles dirty working trees and creates issues by default:
 
 ```powershell
-# Complete patch workflow with issue and PR creation
+# Complete patch workflow with AUTOMATIC dirty tree handling
 Invoke-PatchWorkflow -PatchDescription "Fix non-interactive mode issues" -PatchOperation {
     # Your code changes here
     Write-Host "Making changes..."
-} -CreateIssue -CreatePR -Priority "Medium"
+} -CreatePR -Priority "Medium"
+# ✅ Auto-commits existing changes, creates issue by default, applies patch, creates PR
 
 # Patch with testing validation
 Invoke-PatchWorkflow -PatchDescription "Update module exports" -PatchOperation {
     # Code changes
     Update-ModuleManifest -Path "Module.psd1" -FunctionsToExport @("Function1")
-} -TestCommands @("pwsh -Command 'Import-Module ./core-runner/modules/LabRunner -Force'") -CreateIssue -CreatePR
+} -TestCommands @("pwsh -Command 'Import-Module ./core-runner/modules/LabRunner -Force'") -CreatePR
 
 # Simple patch without GitHub integration
-Invoke-PatchWorkflow -PatchDescription "Quick fix" -PatchOperation {
+Invoke-PatchWorkflow -PatchDescription "Quick local fix" -CreateIssue:$false -PatchOperation {
     # Your changes
 } -DryRun
+# ✅ No issue created, just handles changes and creates branch
+
+# Emergency patch with everything enabled
+Invoke-PatchWorkflow -PatchDescription "Critical security fix" -PatchOperation {
+    # Critical changes
+} -CreatePR -Priority "Critical"
+# ✅ Creates issue, applies changes, creates PR, all automatically
 ```
 
-### Individual Component Functions
+## 🚀 KEY IMPROVEMENTS IN v2.1
 
-Use these for specific operations:
+### ✅ Automatic Dirty Working Tree Handling
+- **NO MORE FAILURES** on uncommitted changes
+- Automatically commits existing changes before starting patch workflow
+- Sanitizes Unicode/emoji characters before committing
+- Clear logging of what's being auto-committed
+
+### ✅ Issue Creation by Default
+- **Issues created automatically** unless explicitly disabled with `-CreateIssue:$false`
+- **Issue created FIRST** (step 1) for proper tracking
+- PR creation auto-links to issue when both are enabled
+
+### ✅ Streamlined Single-Step Workflow
+- One command does: auto-commit → create branch → create issue → apply changes → commit → (optional) create PR
+- **No more multi-step processes** or failed workflows
+- Perfect for quick fixes and major changes alike
+
+## Common Scenarios (Updated)
+
+### 1. Quick Development Fix (Most Common)
+```powershell
+# Just describe and do - everything else is automatic
+Invoke-PatchWorkflow -PatchDescription "Fix module loading bug" -PatchOperation {
+    # Your fix here
+    $content = Get-Content "module.ps1" -Raw
+    $content = $content -replace "Import-Module", "Import-Module -Force"
+    Set-Content "module.ps1" -Value $content
+}
+# ✅ Result: Auto-commits any pending changes, creates branch, creates issue, applies fix, commits
+```
+
+### 2. Feature Development with PR
+```powershell
+# Add new feature with full GitHub integration
+Invoke-PatchWorkflow -PatchDescription "Add new configuration validation" -PatchOperation {
+    # Implementation here
+    Add-Content "validators.ps1" -Value "function Test-Config { ... }"
+} -CreatePR -TestCommands @("pwsh -File tests/validators.tests.ps1")
+# ✅ Result: Full workflow with issue + PR + testing
+```
+
+### 3. Emergency Hotfix
+```powershell
+# Critical fix with high priority tracking
+Invoke-PatchWorkflow -PatchDescription "Fix security vulnerability in auth module" -PatchOperation {
+    # Security fix
+    Update-AuthModule -SecurityPatch
+} -CreatePR -Priority "Critical"
+# ✅ Result: High-priority issue created, fix applied, PR ready for immediate review
+```
+
+### 4. Local-Only Changes
+```powershell
+# Work locally without GitHub overhead
+Invoke-PatchWorkflow -PatchDescription "Experimental feature testing" -CreateIssue:$false -PatchOperation {
+    # Experimental code
+}
+# ✅ Result: Just branch + commit, no GitHub integration
+```
+
+### Individual Component Functions (Advanced Use)
+
+Use these for specific operations when you need fine-grained control:
 
 ```powershell
 # Create issue only
@@ -59,65 +128,18 @@ Invoke-PatchRollback -RollbackType "SpecificCommit" -CommitHash "abc123def" -Dry
 - ❌ `Invoke-QuickRollback` → Use `Invoke-PatchRollback`
 - ❌ All other legacy functions (23 total)
 
-## Common Scenarios
+## 🎯 New Workflow Philosophy
 
-### 1. Module Development & Testing
-
-When working on modules, always use the new workflow:
-
-```powershell
-# Test a module change safely
-Invoke-PatchWorkflow -PatchDescription "Update LabRunner exports" -PatchOperation {
-    # Make your changes
-    Update-ModuleManifest -Path "core-runner/modules/LabRunner/LabRunner.psd1" -FunctionsToExport @("Function1")
-} -TestCommands @(
-    "pwsh -Command 'Import-Module ./core-runner/modules/LabRunner -Force'",
-    "pwsh -File ./tests/unit/modules/LabRunner/LabRunner.Tests.ps1"
-) -CreateIssue -CreatePR
-```
-
-### 2. Non-Interactive Testing
-
-For testing non-interactive scenarios:
+**Before v2.1:** Multi-step, failure-prone, required clean working tree
+**After v2.1:** Single-step, handles any situation, creates tracking by default
 
 ```powershell
-# Test core-runner in non-interactive mode
-Invoke-PatchWorkflow -PatchDescription "Fix non-interactive mode" -PatchOperation {
-    & "./core-runner/core_app/core-runner.ps1" -NonInteractive -Auto -WhatIf
-} -TestCommands @("./test-noninteractive-fix.ps1 -TestMode All") -CreateIssue
-```
+# OLD WAY (multiple steps, could fail):
+git add .; git commit -m "Save work"  # Manual step
+Invoke-PatchWorkflow -CreateIssue -CreatePR ...  # Could fail on dirty tree
 
-### 3. Bulk Module Updates
-
-When updating multiple modules:
-
-```powershell
-Invoke-PatchWorkflow -PatchDescription "Standardize module error handling" -PatchOperation {
-    Get-ChildItem "core-runner/modules" -Filter "*.psm1" -Recurse | ForEach-Object {
-        # Apply standardized error handling
-        $content = Get-Content $_.FullName -Raw
-        # Make updates...
-        Set-Content $_.FullName -Value $updatedContent
-    }
-} -TestCommands @(
-    "pwsh -File ./tests/Run-AllModuleTests.ps1",
-    "pwsh -File ./tests/Run-BulletproofTests.ps1 -TestSuite Unit"
-) -CreateIssue -CreatePR
-```
-
-### 4. Configuration Changes
-
-For configuration file updates:
-
-```powershell
-Invoke-PatchWorkflow -PatchDescription "Update default configuration" -PatchOperation {
-    $config = Get-Content "configs/default-config.json" | ConvertFrom-Json
-    $config.newProperty = "newValue"
-    $config | ConvertTo-Json -Depth 10 | Set-Content "configs/default-config.json"
-} -TestCommands @(
-    "pwsh -Command 'Test-Json (Get-Content configs/default-config.json -Raw)'",
-    "pwsh -File ./core-runner/core_app/core-runner.ps1 -WhatIf -Auto"
-) -CreateIssue -CreatePR
+# NEW WAY (one step, always works):
+Invoke-PatchWorkflow -PatchDescription "Fix it" -CreatePR ...  # Handles everything automatically
 ```
 
 ## VS Code Tasks Integration
@@ -129,15 +151,16 @@ Use these VS Code tasks for common PatchManager workflows:
 - **Ctrl+Shift+P → Tasks: Run Task → "PatchManager: Emergency Rollback"**
 - **Ctrl+Shift+P → Tasks: Run Task → "PatchManager: Validate All Modules"**
 
-## Best Practices
+## Best Practices (Updated for v2.1)
 
 1. **Use the main workflow** for most patch operations: `Invoke-PatchWorkflow`
-2. **Always use descriptive patch descriptions** that explain the what and why
-3. **Create issues and PRs together** using `-CreateIssue -CreatePR` for proper auto-closing
-4. **Include test commands** when possible to validate your changes
-5. **Use DryRun mode first** to preview changes without executing them: `-DryRun`
-6. **No emoji/Unicode output** - the new workflow follows project standards
-7. **Explicit control** - create issues and PRs only when needed, not automatically
+2. **Issues created by default** - use `-CreateIssue:$false` only for quick local changes
+3. **No more clean working tree requirement** - the workflow auto-commits existing changes
+4. **Always use descriptive patch descriptions** that explain the what and why
+5. **Include test commands** when possible to validate your changes
+6. **Use DryRun mode first** to preview changes without executing them: `-DryRun`
+7. **No emoji/Unicode output** - the new workflow sanitizes files and follows project standards
+8. **Create PRs for review** using `-CreatePR` when changes need team review
 
 ## Error Handling Patterns
 
