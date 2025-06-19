@@ -632,10 +632,26 @@ function New-PatchPullRequest {
                         # PR creation failed - check for specific error conditions
                         $errorMessage = $prResult -join " "                        # Handle common errors
                         if ($errorMessage -match "already exists") {
-                            # Extract PR URL from error message if it's there
-                            if ($errorMessage -match "(https://[^\s\n]+)") {
-                                $existingPrUrl = $matches[1].TrimEnd('1234567890') # Remove any trailing numbers that might be part of line numbers
-                                Write-PatchLog "A pull request already exists for this branch: $existingPrUrl" -Level "INFO"
+                            Write-PatchLog "A pull request already exists for this branch" -Level "INFO"
+                            
+                            # Try to extract URL directly using a more robust pattern
+                            if ($errorMessage -match "https://github\.com/[^/]+/[^/]+/pull/\d+") {
+                                $existingPrUrl = $matches[0]
+                                Write-PatchLog "Found existing PR URL: $existingPrUrl" -Level "INFO"
+                                return @{ 
+                                    Success = $true 
+                                    PullRequestUrl = $existingPrUrl
+                                    BranchName = $BranchName
+                                    Message = "An existing pull request was found for this branch"
+                                }
+                            }
+                            
+                            # Handle case with line breaks
+                            $urlPattern = [regex]::new("https://github\.com/[^/]+/[^/]+/pull/\d+", [System.Text.RegularExpressions.RegexOptions]::Singleline)
+                            $urlMatch = $urlPattern.Match($errorMessage)
+                            if ($urlMatch.Success) {
+                                $existingPrUrl = $urlMatch.Value
+                                Write-PatchLog "Found existing PR URL using regex: $existingPrUrl" -Level "INFO"
                                 return @{ 
                                     Success = $true 
                                     PullRequestUrl = $existingPrUrl
