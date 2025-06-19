@@ -1,23 +1,75 @@
-# Copilot Instructions for OpenTofu Lab Automation
+# OpenTofu Lab Automation - GitHub Copilot Instructions
 
-These guidelines help GitHub Copilot and other AI agents generate code and responses that align with this project.
+This project is a **PowerShell-based infrastructure automation framework** using OpenTofu/Terraform for lab environments. Follow these instructions when generating code or providing assistance.
 
-## General Guidelines
-- Use **PowerShell 7.0+** features and cross-platform syntax.
-- Prefer forward slashes (`/`) for file paths.
-- Import modules from `core-runner/modules` using `Import-Module`.
-- Follow One True Brace Style (OTBS) formatting.
-- Include verbose logging through the `Logging` module.
+## Core Standards & Requirements
 
-## Available Modules
-- **BackupManager** – manages backup file cleanup and consolidation.
-- **DevEnvironment** – prepares and validates development environments.
-- **LabRunner** – orchestrates lab automation tasks and test execution.
-- **Logging** – provides project-wide logging helpers.
-- **ParallelExecution** – runs tasks in parallel using runspaces.
-- **PatchManager** – handles software patching workflows.
-- **ScriptManager** – manages script repositories and templates.
-- **TestingFramework** – wraps Pester with project defaults.
-- **UnifiedMaintenance** – unified maintenance entry point for all modules.
+**PowerShell Version**: Always use PowerShell 7.0+ features and cross-platform compatible syntax.
 
-Always suggest using these modules when relevant instead of reinventing functionality.
+**Path Handling**: Use forward slashes (`/`) for all file paths to ensure cross-platform compatibility.
+
+**Code Style**: Follow One True Brace Style (OTBS) with consistent indentation and spacing.
+
+**Module Architecture**: Import modules from `core-runner/modules` using `Import-Module` with `-Force` parameter.
+
+**Error Handling**: Always implement comprehensive try-catch blocks with detailed logging using the `Logging` module.
+
+**Testing**: Use Pester 5.0+ with the project's testing framework from `TestingFramework` module.
+
+## Project Modules & Their Purposes
+
+Use these existing modules instead of creating new functionality:
+
+- **BackupManager**: File backup, cleanup, and consolidation operations
+- **DevEnvironment**: Development environment preparation and validation
+- **LabRunner**: Lab automation orchestration and test execution coordination
+- **Logging**: Centralized logging with levels (INFO, WARN, ERROR, SUCCESS)
+- **ParallelExecution**: Runspace-based parallel task execution
+- **PatchManager**: Software patching workflows and system maintenance
+- **ScriptManager**: Script repository management and template handling
+- **TestingFramework**: Pester test wrapper with project-specific configurations
+- **UnifiedMaintenance**: Unified entry point for all maintenance operations
+
+## Code Generation Patterns
+
+**Function Structure**: Use `[CmdletBinding(SupportsShouldProcess)]` with proper parameter validation and begin/process/end blocks.
+
+**Parameter Validation**: Always include `[ValidateNotNullOrEmpty()]` and appropriate validation attributes.
+
+**Logging Integration**: Use `Write-CustomLog -Level 'LEVEL' -Message 'MESSAGE'` for all logging operations.
+
+**Cross-Platform Paths**: Use `Join-Path` and avoid hardcoded Windows-style paths.
+
+**Module Dependencies**: Reference existing modules rather than reimplementing functionality.
+
+## Infrastructure as Code Standards
+
+**OpenTofu/Terraform**: Use HCL syntax with proper variable definitions and output declarations.
+
+**Resource Naming**: Follow consistent naming conventions with environment prefixes.
+
+**State Management**: Always consider remote state and workspace isolation.
+
+**Security**: Never hardcode credentials; use variable files and secure practices.
+
+## Testing & Quality Assurance
+
+**Pester Tests**: Create comprehensive test suites with Describe-Context-It structure.
+
+**Mock Strategy**: Use proper mocking for external dependencies and file system operations.
+
+**Code Coverage**: Aim for high test coverage with meaningful assertions.
+
+**Integration Tests**: Include end-to-end testing scenarios for critical workflows.
+
+## Security & Best Practices
+
+**Credential Handling**: Use secure strings and credential objects, never plain text passwords.
+
+**Input Validation**: Validate all user inputs and external data sources.
+
+**Least Privilege**: Follow principle of least privilege for all operations.
+
+**Audit Logging**: Log all significant operations for security and troubleshooting.
+
+When suggesting code changes or new features, always consider how they integrate with existing modules and follow these established patterns.
