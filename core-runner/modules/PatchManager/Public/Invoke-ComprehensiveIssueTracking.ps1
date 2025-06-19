@@ -3,51 +3,51 @@
 <#
 .SYNOPSIS
     Comprehensive GitHub issue creation and tracking for all PatchManager operations
-    
+
 .DESCRIPTION
     This function automatically creates GitHub issues for:
     1. Every pull request (with detailed notes)
     2. Any errors, test failures, or runtime failures
     3. Central bug tracking and error management
-    
+
     Ensures every change and error is tracked through GitHub issues for systematic resolution.
-    
+
 .PARAMETER Operation
     The type of operation (PR, Error, TestFailure, RuntimeFailure)
-    
+
 .PARAMETER Title
     The title for the issue
-    
+
 .PARAMETER Description
     Detailed description of the issue/operation
-    
+
 .PARAMETER PullRequestNumber
     PR number to link to (for PR operations)
-    
+
 .PARAMETER PullRequestUrl
     PR URL to link to (for PR operations)
-    
+
 .PARAMETER ErrorDetails
     Detailed error information including stack traces, logs, etc.
-    
+
 .PARAMETER AffectedFiles
     Array of files affected by the operation
-    
+
 .PARAMETER Priority
     Priority level (Critical, High, Medium, Low)
-    
+
 .PARAMETER Labels
     Additional labels to apply to the issue
-    
+
 .PARAMETER AutoClose
     Whether to auto-close the issue when associated PR is merged
-    
+
 .EXAMPLE
     Invoke-ComprehensiveIssueTracking -Operation "PR" -Title "Enhancement: Update module imports" -Description "Detailed PR description" -PullRequestNumber 123 -AffectedFiles @("file1.ps1")
-    
+
 .EXAMPLE
     Invoke-ComprehensiveIssueTracking -Operation "Error" -Title "PatchManager Error: Branch creation failed" -ErrorDetails $errorInfo -Priority "High"
-    
+
 .NOTES
     - Creates very detailed issue bodies with comprehensive context
     - Links issues to PRs automatically
@@ -60,48 +60,48 @@ function Invoke-ComprehensiveIssueTracking {
     param(        [Parameter(Mandatory = $false)]
         [ValidateSet("PR", "Patch", "Error", "TestFailure", "RuntimeFailure", "Warning")]
         [string]$Operation = "PR",
-        
+
         [Parameter(Mandatory = $false)]
         [string]$Title,
-        
+
         [Parameter(Mandatory = $false)]
         [string]$Description,
-        
+
         [Parameter(Mandatory = $false)]
         [string]$PatchDescription,
-        
+
         [Parameter(Mandatory = $false)]
         [int]$PullRequestNumber,
-        
+
         [Parameter(Mandatory = $false)]
         [string]$PullRequestUrl,
-        
+
         [Parameter(Mandatory = $false)]
         [int]$ExistingIssueNumber,
-        
+
         [Parameter(Mandatory = $false)]
         [switch]$CreateAutomatedTracking,
-        
+
         [Parameter(Mandatory = $false)]
         [hashtable]$ErrorDetails = @{},
-        
+
         [Parameter(Mandatory = $false)]
         [string[]]$AffectedFiles = @(),
-        
+
         [Parameter(Mandatory = $false)]
         [ValidateSet("Critical", "High", "Medium", "Low")]
         [string]$Priority = "Medium",
-        
+
         [Parameter(Mandatory = $false)]
         [string[]]$Labels = @(),
-        
+
         [Parameter(Mandatory = $false)]
         [switch]$AutoClose
     )
-    
+
     begin {
         Write-CustomLog "Starting comprehensive issue tracking for operation: $Operation" -Level INFO
-        
+
         # Check if GitHub CLI is available
         if (-not (Get-Command gh -ErrorAction SilentlyContinue)) {
             Write-CustomLog "GitHub CLI (gh) not found. Cannot create issues automatically." -Level ERROR
@@ -126,7 +126,7 @@ function Invoke-ComprehensiveIssueTracking {
             }
         }
     }
-    
+
     process {
         try {            # Determine operation-specific labels and priority adjustments
             $operationLabels = switch ($Operation) {
@@ -138,14 +138,14 @@ function Invoke-ComprehensiveIssueTracking {
                 "Warning" { @("warning", "monitoring") }
                 default { @("automated") }
             }
-            
+
             # Adjust priority for critical operations
             if ($Operation -eq "RuntimeFailure") {
                 $Priority = "Critical"
             } elseif ($Operation -eq "Error" -or $Operation -eq "TestFailure") {
                 if ($Priority -eq "Low") { $Priority = "Medium" }
             }
-            
+
             # Determine priority-based labels
             $priorityLabels = switch ($Priority) {
                 "Critical" { @("priority-critical", "urgent") }
@@ -153,7 +153,7 @@ function Invoke-ComprehensiveIssueTracking {
                 "Medium" { @("priority-medium") }
                 "Low" { @("priority-low") }
             }
-            
+
             # Combine all labels and remove duplicates
             $allLabels = ($Labels + $operationLabels + $priorityLabels + @("automated", "patchmanager")) | Sort-Object -Unique
               # Create comprehensive issue body
@@ -170,46 +170,46 @@ function Invoke-ComprehensiveIssueTracking {
                 $issueBodyParams['AutoClose'] = $true
             }
             $issueBody = Build-ComprehensiveIssueBody @issueBodyParams
-            
+
             # Ensure all required labels exist
             Initialize-GitHubLabels -Labels $allLabels
-            
+
             # Create the GitHub issue
             Write-CustomLog "Creating GitHub issue: $Title" -Level INFO
               # Save body to temp file to handle large content and special characters
             $tempBodyFile = [System.IO.Path]::GetTempFileName()
             try {
                 $issueBody | Out-File -FilePath $tempBodyFile -Encoding utf8
-                
+
                 # Create issue with enhanced error handling for labels
                 $labelString = $allLabels -join ','
                 Write-CustomLog "Creating GitHub issue: $Title" -Level INFO
                 Write-CustomLog "Using labels: $labelString" -Level DEBUG
-                
+
                 # Try creating issue with labels first
                 $issueResult = gh issue create --title $Title --body-file $tempBodyFile --label $labelString 2>&1
-                
+
                 # If label error occurred, retry without labels
                 if ($LASTEXITCODE -ne 0 -and $issueResult -match "not found|does not exist|invalid label") {
                     Write-CustomLog "Label issue detected, retrying without labels: $($issueResult -join ' ')" -Level WARN
                     $issueResult = gh issue create --title $Title --body-file $tempBodyFile 2>&1
                 }
-                
+
                 if ($LASTEXITCODE -eq 0 -and $issueResult -match "https://") {
                     # Extract issue number from the URL
                     $issueNumber = $null
                     if ($issueResult -match '/issues/(\d+)') {
                         $issueNumber = $matches[1]
                     }
-                    
+
                     Write-CustomLog "GitHub issue created successfully: $issueResult" -Level SUCCESS
                     Write-CustomLog "Issue number: #$issueNumber" -Level INFO
-                    
+
                     # Set up auto-close monitoring if requested
                     if ($AutoClose -and $PullRequestNumber) {
                         Set-IssueAutoCloseMonitoring -IssueNumber $issueNumber -PullRequestNumber $PullRequestNumber
                     }
-                    
+
                     return @{
                         Success = $true
                         Message = "GitHub issue created successfully"
@@ -223,16 +223,16 @@ function Invoke-ComprehensiveIssueTracking {
                     Write-CustomLog "Error output: $errorOutput" -Level ERROR
                     throw "GitHub CLI failed: $errorOutput"
                 }
-                
+
             } finally {
                 # Clean up temp file
                 Remove-Item $tempBodyFile -Force -ErrorAction SilentlyContinue
             }
-            
+
         } catch {
             $errorMessage = "Failed to create GitHub issue: $($_.Exception.Message)"
             Write-CustomLog $errorMessage -Level ERROR
-            
+
             return @{
                 Success = $false
                 Message = $errorMessage
@@ -255,68 +255,68 @@ function Build-ComprehensiveIssueBody {
         [string]$Priority,
         [switch]$AutoClose
     )
-    
+
     $timestamp = Get-Date -Format 'yyyy-MM-dd HH:mm:ss UTC'    # Get environment and system information safely with enhanced details
     $gitBranch = "Unknown"
     $gitCommit = "Unknown"
     $gitRemote = "Unknown"
-    
+
     try {
         $gitBranch = git branch --show-current 2>$null
         if (-not $gitBranch) { $gitBranch = "Unknown" }
-    } catch { 
-        $gitBranch = "Unknown" 
+    } catch {
+        $gitBranch = "Unknown"
     }
-    
+
     try {
         $gitCommit = git rev-parse --short HEAD 2>$null
         if (-not $gitCommit) { $gitCommit = "Unknown" }
-    } catch { 
-        $gitCommit = "Unknown" 
+    } catch {
+        $gitCommit = "Unknown"
     }
-    
+
     try {
         $gitRemote = git remote get-url origin 2>$null
         if (-not $gitRemote) { $gitRemote = "Unknown" }
-    } catch { 
-        $gitRemote = "Unknown" 
+    } catch {
+        $gitRemote = "Unknown"
     }
-    
+
     # Determine platform
     $platformInfo = "Unknown"
-    if ($env:PLATFORM) { 
-        $platformInfo = $env:PLATFORM 
-    } elseif ($IsWindows -or $env:OS -eq "Windows_NT") { 
-        $platformInfo = "Windows" 
-    } elseif ($IsLinux) { 
-        $platformInfo = "Linux" 
-    } elseif ($IsMacOS) { 
-        $platformInfo = "macOS" 
+    if ($env:PLATFORM) {
+        $platformInfo = $env:PLATFORM
+    } elseif ($IsWindows -or $env:OS -eq "Windows_NT") {
+        $platformInfo = "Windows"
+    } elseif ($IsLinux) {
+        $platformInfo = "Linux"
+    } elseif ($IsMacOS) {
+        $platformInfo = "macOS"
     }
-    
+
     # Get OS version
     $osVersion = "Unknown"
-    try { 
-        if ($IsWindows -or $env:OS -eq "Windows_NT") { 
-            $osVersion = (Get-CimInstance Win32_OperatingSystem -ErrorAction SilentlyContinue).Version 
+    try {
+        if ($IsWindows -or $env:OS -eq "Windows_NT") {
+            $osVersion = (Get-CimInstance Win32_OperatingSystem -ErrorAction SilentlyContinue).Version
         }
-    } catch { 
-        $osVersion = "Unknown" 
+    } catch {
+        $osVersion = "Unknown"
     }
-    
+
     # Get project root
     $projectRoot = "Unknown"
-    if ($env:PROJECT_ROOT) { 
-        $projectRoot = $env:PROJECT_ROOT 
+    if ($env:PROJECT_ROOT) {
+        $projectRoot = $env:PROJECT_ROOT
     } else {
-        try { 
-            $projectRoot = git rev-parse --show-toplevel 2>$null 
+        try {
+            $projectRoot = git rev-parse --show-toplevel 2>$null
             if (-not $projectRoot) { $projectRoot = "Unknown" }
-        } catch { 
-            $projectRoot = "Unknown" 
+        } catch {
+            $projectRoot = "Unknown"
         }
     }
-    
+
     $systemInfo = @{
         Platform = $platformInfo
         OSVersion = $osVersion
@@ -332,7 +332,7 @@ function Build-ComprehensiveIssueBody {
         ProcessId = $PID
         TimeZone = [System.TimeZoneInfo]::Local.Id
     }
-    
+
     # Build operation-specific content
     $operationContent = switch ($Operation) {        "PR" {
             @"
@@ -363,7 +363,7 @@ This issue tracks the lifecycle of **Pull Request #$PullRequestNumber** to ensur
 $(if ($AutoClose) { "**Note**: This issue will automatically close when PR #$PullRequestNumber is merged." } else { "**Note**: Manual closure required after PR is merged." })
 "@
         }
-        
+
         "Patch" {
             @"
 ## Patch Tracking Issue
@@ -395,7 +395,7 @@ $(if ($AffectedFiles.Count -gt 0) {
 $(if ($AutoClose) { "**Note**: This issue will automatically close when the associated pull request is merged." } else { "**Note**: Manual closure required after patch is deployed." })
 "@
         }
-        
+
         "Error" {
             @"
 ## Error Tracking and Resolution
@@ -406,7 +406,7 @@ This issue tracks an error that occurred during PatchManager operations and requ
 $(if ($ErrorDetails.ErrorMessage) { "**Error Message**: $($ErrorDetails.ErrorMessage)" })
 $(if ($ErrorDetails.Exception) { "**Exception Type**: $($ErrorDetails.Exception.GetType().FullName)" })
 $(if ($ErrorDetails.ErrorCategory) { "**Category**: $($ErrorDetails.ErrorCategory)" })
-$(if ($ErrorDetails.ScriptStackTrace) { 
+$(if ($ErrorDetails.ScriptStackTrace) {
 @"
 
 **Stack Trace**:
@@ -435,7 +435,7 @@ $(if ($ErrorDetails.LogPath) { "- **Log File**: $($ErrorDetails.LogPath)" })
 - [ ] Review related code for similar patterns
 "@
         }
-        
+
         "TestFailure" {
             @"
 ## Test Failure Tracking and Resolution
@@ -446,7 +446,7 @@ This issue tracks a test failure that requires investigation and fixing to maint
 $(if ($ErrorDetails.TestName) { "**Test Name**: $($ErrorDetails.TestName)" })
 $(if ($ErrorDetails.TestFile) { "**Test File**: $($ErrorDetails.TestFile)" })
 $(if ($ErrorDetails.FailureMessage) { "**Failure Message**: $($ErrorDetails.FailureMessage)" })
-$(if ($ErrorDetails.TestOutput) { 
+$(if ($ErrorDetails.TestOutput) {
 @"
 
 **Test Output**:
@@ -476,7 +476,7 @@ $($ErrorDetails.TestOutput)
 - [ ] Regression testing completed
 "@
         }
-        
+
         "RuntimeFailure" {
             @"
 ## Critical Runtime Failure
@@ -487,7 +487,7 @@ This issue tracks a critical runtime failure that requires immediate attention a
 $(if ($ErrorDetails.FailurePoint) { "**Failure Point**: $($ErrorDetails.FailurePoint)" })
 $(if ($ErrorDetails.RuntimeError) { "**Runtime Error**: $($ErrorDetails.RuntimeError)" })
 $(if ($ErrorDetails.SystemState) { "**System State**: $($ErrorDetails.SystemState)" })
-$(if ($ErrorDetails.ErrorLog) { 
+$(if ($ErrorDetails.ErrorLog) {
 @"
 
 **Error Log**:
@@ -512,7 +512,7 @@ $($ErrorDetails.ErrorLog)
 - [ ] Conduct post-mortem analysis
 "@
         }
-        
+
         "Warning" {
             @"
 ## Warning Monitoring and Analysis
@@ -538,7 +538,7 @@ $(if ($ErrorDetails.Frequency) { "**Frequency**: $($ErrorDetails.Frequency)" })
 "@
         }
     }
-    
+
     # Build the complete issue body
     $issueBody = @"
 $operationContent
@@ -606,14 +606,14 @@ This issue is part of the central bug tracking system to ensure systematic resol
 
 **Last Updated**: $timestamp
 "@
-    
+
     return $issueBody
 }
 
 function Initialize-GitHubLabels {
     [CmdletBinding()]
     param([string[]]$Labels)
-    
+
     $standardLabels = @{
         "automated" = @{ color = "0075ca"; description = "Automatically generated by PatchManager" }
         "patchmanager" = @{ color = "1d76db"; description = "Related to PatchManager operations" }
@@ -631,13 +631,13 @@ function Initialize-GitHubLabels {
         "monitoring" = @{ color = "5319e7"; description = "Under monitoring" }
         "warning" = @{ color = "ffd700"; description = "Warning condition" }
     }
-    
+
     foreach ($label in $Labels) {
         if ($standardLabels.ContainsKey($label)) {
             try {
                 $labelInfo = $standardLabels[$label]
                 $labelExists = $null -ne (gh label list | Select-String -Pattern "^$label\s")
-                
+
                 if (-not $labelExists) {
                     Write-CustomLog "Creating label: $label" -Level INFO
                     gh label create $label --color $labelInfo.color --description $labelInfo.description 2>&1 | Out-Null
@@ -658,9 +658,9 @@ function Set-IssueAutoCloseMonitoring {
         [int]$IssueNumber,
         [int]$PullRequestNumber
     )
-    
+
     Write-CustomLog "Setting up auto-close monitoring for Issue #$IssueNumber when PR #$PullRequestNumber is merged" -Level INFO
-    
+
     # Note: This would typically integrate with GitHub Actions or webhooks
     # For now, we'll document the relationship in the issue
     try {
@@ -675,12 +675,10 @@ This issue is configured to automatically close when Pull Request #$PullRequestN
 
 This will be handled by the PatchManager monitoring system.
 "@
-        
+
         gh issue comment $IssueNumber --body $monitoringComment | Out-Null
         Write-CustomLog "Auto-close monitoring configured for Issue #$IssueNumber" -Level SUCCESS
     } catch {
         Write-CustomLog "Failed to set up auto-close monitoring: $($_.Exception.Message)" -Level WARN
     }
 }
-
-
