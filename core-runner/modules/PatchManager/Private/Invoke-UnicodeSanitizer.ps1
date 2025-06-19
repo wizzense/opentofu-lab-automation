@@ -116,13 +116,14 @@ function Invoke-UnicodeSanitizer {
                     $ModifiedContent = $OriginalContent
                     $CharacterCount = 0
                     
-                    # Apply each sanitization pattern
-                    foreach ($Pattern in $ProblematicPatterns.Keys) {
-                        $Replacement = $ProblematicPatterns[$Pattern]
-                        $BeforeLength = $ModifiedContent.Length
-                        $ModifiedContent = $ModifiedContent -replace $Pattern, $Replacement
-                        $AfterLength = $ModifiedContent.Length
-                        $CharacterCount += ($BeforeLength - $AfterLength)
+                    # Combine all patterns into a single regex
+                    $CombinedPattern = [string]::Join('|', $ProblematicPatterns.Keys)
+                    
+                    # Apply the combined regex with dynamic replacement
+                    $ModifiedContent = $ModifiedContent -replace $CombinedPattern, {
+                        param($match)
+                        $CharacterCount += $match.Length
+                        return $ProblematicPatterns[$match.Value]
                     }
                     
                     # Check if content was modified
