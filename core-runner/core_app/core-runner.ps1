@@ -60,7 +60,7 @@ if (-not $NonInteractive) {
     $NonInteractive = ($Host.Name -eq 'Default Host') -or 
                      ([Environment]::UserInteractive -eq $false) -or
                      ($env:PESTER_RUN -eq 'true') -or
-                     ($WhatIf) -or
+                     ($PSCmdlet.ShouldProcess($PSCmdlet, 'WhatIf') -eq $false) -or
                      ($Auto.IsPresent)
 }
 
@@ -170,28 +170,84 @@ try {    Write-CustomLog 'Starting OpenTofu Lab Automation Core Runner' -Level S
         if ($Scripts) {
             # Run specific scripts
             $scriptList = $Scripts -split ','
-            foreach ($scriptName in $scriptList) {
-                $scriptPath = Join-Path $scriptsPath "$scriptName.ps1"
+            foreach ($scriptName in $scriptList) {                $scriptPath = Join-Path $scriptsPath "$scriptName.ps1"
                 if (Test-Path $scriptPath) {
                     Write-CustomLog "Executing script: $scriptName" -Level INFO
                     if ($PSCmdlet.ShouldProcess($scriptName, 'Execute script')) {
-                        & $scriptPath -Config $config -Verbosity $Verbosity
+                        # Create parameter hashtable based on what the script actually accepts
+                        $scriptParams = @{}
+                        
+                        # Always try to pass Config
+                        $scriptParams['Config'] = $config
+                          # Check script parameters and only pass what's supported
+                        $scriptMetadata = Get-Command $scriptPath -ErrorAction SilentlyContinue
+                        if ($scriptMetadata) {
+                            # Only add parameters that the script actually accepts
+                            if ($scriptMetadata.Parameters.ContainsKey('Verbosity')) {
+                                $scriptParams['Verbosity'] = $Verbosity
+                            }
+                            # Add other common parameters if needed
+                            if ($scriptMetadata.Parameters.ContainsKey('WhatIf')) {
+                                $scriptParams['WhatIf'] = $WhatIf
+                            }
+                        }
+                        
+                        # Execute the script with appropriate parameters
+                        & $scriptPath @scriptParams
                     }
-                } else {
+                }else {
                     Write-CustomLog "Script not found: $scriptName" -Level WARN
                 }
-            }        } elseif ($Auto) {
-            # Run all scripts in auto mode
+            }        } elseif ($Auto) {            # Run all scripts in auto mode
             Write-CustomLog 'Running all scripts in automatic mode' -Level INFO
             foreach ($script in $availableScripts) {
                 Write-CustomLog "Executing script: $($script.BaseName)" -Level INFO
                 if ($PSCmdlet.ShouldProcess($script.BaseName, 'Execute script')) {
-                    & $script.FullName -Config $config -Verbosity $Verbosity -Auto
+                    # Create parameter hashtable based on what the script actually accepts
+                    $scriptParams = @{}
+                    
+                    # Always try to pass Config
+                    $scriptParams['Config'] = $config
+                    
+                    # Check if script accepts Auto parameter
+                    $scriptMetadata = Get-Command $script.FullName -ErrorAction SilentlyContinue                    if ($scriptMetadata) {
+                        if ($scriptMetadata.Parameters.ContainsKey('Auto')) {
+                            $scriptParams['Auto'] = $true
+                        }
+                        if ($scriptMetadata.Parameters.ContainsKey('Verbosity')) {
+                            $scriptParams['Verbosity'] = $Verbosity
+                        }
+                        # Add other common parameters if needed
+                        if ($scriptMetadata.Parameters.ContainsKey('WhatIf')) {
+                            $scriptParams['WhatIf'] = $WhatIf
+                        }
+                    }
+                    
+                    # Execute the script with appropriate parameters
+                    & $script.FullName @scriptParams
                 }
-            }        } else {
-            # Check if running in non-interactive mode without specific scripts
+            }} else {        # Check if running in non-interactive mode without specific scripts
             Write-CustomLog "Debug: NonInteractive=$NonInteractive, WhatIf=$($PSCmdlet.WhatIf), Auto=$($Auto.IsPresent)" -Level DEBUG
-            if ($NonInteractive -or $PSCmdlet.WhatIf) {
+            
+            # Enhanced WhatIf handling
+            if (-not $PSCmdlet.ShouldProcess("Available scripts", "Execute interactively")) {
+                Write-CustomLog 'WhatIf mode: No scripts will be executed' -Level INFO
+                $scriptNames = $availableScripts | ForEach-Object { $_.BaseName }
+                Write-CustomLog "Available scripts that would be presented: $($scriptNames.Count)" -Level INFO
+                
+                # Group scripts by prefix for better organization in WhatIf output
+                $scriptGroups = $scriptNames | Group-Object { 
+                    if ($_ -match '^(\d{2})') { $matches[1] + "xx_*" } else { "Other" }
+                }
+                
+                foreach ($group in $scriptGroups) {
+                    Write-CustomLog "$($group.Name): $($group.Group -join ', ')" -Level INFO
+                }
+                
+                return  # Exit gracefully instead of interactive prompt
+            }
+            # Handle non-interactive mode without specified scripts
+            elseif ($NonInteractive) {
                 Write-CustomLog 'Non-interactive mode: use -Scripts parameter to specify which scripts to run' -Level INFO
                 Write-CustomLog 'No scripts specified for non-interactive execution' -Level WARN
                 return  # Exit gracefully instead of interactive prompt
@@ -215,11 +271,30 @@ try {    Write-CustomLog 'Starting OpenTofu Lab Automation Core Runner' -Level S
                 
                 if ($selection -eq 'exit') {
                     Write-CustomLog 'Exiting at user request' -Level INFO
-                    return
-                } elseif ($selection -eq 'all') {
+                    return                } elseif ($selection -eq 'all') {
                     foreach ($script in $availableScripts) {
                         Write-CustomLog "Executing script: $($script.BaseName)" -Level INFO
-                        & $script.FullName -Config $config -Verbosity $Verbosity
+                        
+                        # Create parameter hashtable based on what the script actually accepts
+                        $scriptParams = @{}
+                        
+                        # Always try to pass Config
+                        $scriptParams['Config'] = $config
+                          # Check script parameters and only pass what's supported
+                        $scriptMetadata = Get-Command $script.FullName -ErrorAction SilentlyContinue
+                        if ($scriptMetadata) {
+                            # Only add parameters that the script actually accepts
+                            if ($scriptMetadata.Parameters.ContainsKey('Verbosity')) {
+                                $scriptParams['Verbosity'] = $Verbosity
+                            }
+                            # Add other common parameters if needed
+                            if ($scriptMetadata.Parameters.ContainsKey('WhatIf')) {
+                                $scriptParams['WhatIf'] = $WhatIf
+                            }
+                        }
+                        
+                        # Execute the script with appropriate parameters
+                        & $script.FullName @scriptParams
                     }
                 } else {
                     $selectedNumbers = $selection -split ',' | ForEach-Object { $_.Trim() }
@@ -229,21 +304,46 @@ try {    Write-CustomLog 'Starting OpenTofu Lab Automation Core Runner' -Level S
                         # Try to match by list number (1-based index)
                         if ($num -match '^\d+$' -and [int]$num -le $availableScripts.Count -and [int]$num -gt 0) {
                             $selectedScript = $availableScripts[[int]$num - 1]
-                        }
-                        # Try to match by script prefix (e.g., "0200" for "0200_Get-SystemInfo")
+                        }                        # Try to match by script prefix (e.g., "0200" for "0200_Get-SystemInfo")
                         elseif ($num -match '^\d{4}$') {
                             # Add logging for debugging script prefix matching
                             Write-CustomLog "Matching script prefix: $num against available scripts." -Level DEBUG
-                            $selectedScript = $availableScripts | Where-Object { $_.BaseName -match "^$num" } | Select-Object -First 1
+                            $selectedScript = $availableScripts | Where-Object { $_.BaseName -like "$num*" } | Select-Object -First 1
                         }
                         # Try to match by partial script name
                         elseif ($num -match '^[a-zA-Z]') {
                             $selectedScript = $availableScripts | Where-Object { $_.BaseName -like "*$num*" } | Select-Object -First 1
                         }
-                        
-                        if ($selectedScript) {
+                          if ($selectedScript) {
                             Write-CustomLog "Executing script: $($selectedScript.BaseName)" -Level INFO
-                            & $selectedScript.FullName -Config $config -Verbosity $Verbosity
+                            
+                            # Create parameter hashtable based on what the script actually accepts
+                            $scriptParams = @{}
+                            
+                            # Always try to pass Config
+                            $scriptParams['Config'] = $config
+                              # Check script parameters and only pass what's supported
+                            $scriptMetadata = Get-Command $selectedScript.FullName -ErrorAction SilentlyContinue
+                            if ($scriptMetadata) {
+                                # Only add parameters that the script actually accepts
+                                if ($scriptMetadata.Parameters.ContainsKey('Verbosity')) {
+                                    $scriptParams['Verbosity'] = $Verbosity
+                                }
+                                # Add other common parameters if needed
+                                if ($scriptMetadata.Parameters.ContainsKey('WhatIf')) {
+                                    $scriptParams['WhatIf'] = $WhatIf
+                                }
+                            }
+                              # Execute the script with appropriate parameters
+                            try {
+                                Write-CustomLog "Running script with parameters: $($scriptParams.Keys -join ', ')" -Level DEBUG
+                                & $selectedScript.FullName @scriptParams
+                            }
+                            catch {
+                                Write-CustomLog "Error executing script $($selectedScript.BaseName): $($_.Exception.Message)" -Level ERROR
+                                Write-CustomLog "Script parameters: $($scriptParams | ConvertTo-Json -Compress)" -Level DEBUG
+                                throw
+                            }
                         } else {
                             # Improve error message for invalid selections
                             Write-CustomLog "Invalid selection: $num. Valid options are list numbers (1-$($availableScripts.Count)), script prefixes (e.g., '0200'), or partial names." -Level WARN
@@ -260,7 +360,20 @@ try {    Write-CustomLog 'Starting OpenTofu Lab Automation Core Runner' -Level S
     Write-CustomLog 'Core runner completed successfully' -Level SUCCESS
     
 } catch {
-    Write-CustomLog "Core runner failed: $($_.Exception.Message)" -Level ERROR
-    Write-CustomLog "Stack trace: $($_.ScriptStackTrace)" -Level DEBUG
+    $errorMsg = $_.Exception.Message
+    
+    # Enhance error information for common errors
+    if ($errorMsg -match 'parameter .* cannot be found') {
+        Write-CustomLog "Parameter error detected. Check if script parameters match what's being passed." -Level ERROR
+        Write-CustomLog "Tip: Check that the script has a Verbosity parameter defined if it's being passed." -Level INFO
+    }
+    
+    Write-CustomLog "Core runner failed: $errorMsg" -Level ERROR
+    
+    if ($Verbosity -eq 'detailed') {
+        Write-CustomLog "Exception type: $($_.Exception.GetType().Name)" -Level DEBUG
+        Write-CustomLog "Stack trace: $($_.ScriptStackTrace)" -Level DEBUG
+    }
+    
     exit 1
 }
