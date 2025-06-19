@@ -213,14 +213,20 @@ try {
                         & $script.FullName -Config $config -Verbosity $Verbosity
                     }
                 } else {
-                    $selectedNumbers = $selection -split ',' | ForEach-Object { $_.Trim() }
-                    foreach ($num in $selectedNumbers) {
-                        if ($num -match '^\d+$' -and [int]$num -le $availableScripts.Count -and [int]$num -gt 0) {
-                            $script = $availableScripts[[int]$num - 1]
+                    $selectedItems = $selection -split ',' | ForEach-Object { $_.Trim() }
+                    foreach ($item in $selectedItems) {
+                        $script = $null
+                        if ($item -match '^\d+$' -and [int]$item -le $availableScripts.Count -and [int]$item -gt 0) {
+                            $script = $availableScripts[[int]$item - 1]
+                        } else {
+                            $script = $availableScripts | Where-Object { $_.BaseName -eq $item -or $_.BaseName -like "$item*" } | Select-Object -First 1
+                        }
+
+                        if ($script) {
                             Write-CustomLog "Executing script: $($script.BaseName)" -Level INFO
                             & $script.FullName -Config $config -Verbosity $Verbosity
                         } else {
-                            Write-CustomLog "Invalid selection: $num" -Level WARN
+                            Write-CustomLog "Invalid selection: $item" -Level WARN
                         }
                     }
                 }
