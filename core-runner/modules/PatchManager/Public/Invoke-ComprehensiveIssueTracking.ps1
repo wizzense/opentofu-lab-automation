@@ -246,11 +246,11 @@ function Build-ComprehensiveIssueBody {
         [switch]$AutoClose
     )
     
-    $timestamp = Get-Date -Format 'yyyy-MM-dd HH:mm:ss UTC'
-    
-    # Get environment and system information safely
+    $timestamp = Get-Date -Format 'yyyy-MM-dd HH:mm:ss UTC'    # Get environment and system information safely with enhanced details
     $gitBranch = "Unknown"
     $gitCommit = "Unknown"
+    $gitRemote = "Unknown"
+    
     try {
         $gitBranch = git branch --show-current 2>$null
         if (-not $gitBranch) { $gitBranch = "Unknown" }
@@ -265,13 +265,62 @@ function Build-ComprehensiveIssueBody {
         $gitCommit = "Unknown" 
     }
     
+    try {
+        $gitRemote = git remote get-url origin 2>$null
+        if (-not $gitRemote) { $gitRemote = "Unknown" }
+    } catch { 
+        $gitRemote = "Unknown" 
+    }
+    
+    # Determine platform
+    $platformInfo = "Unknown"
+    if ($env:PLATFORM) { 
+        $platformInfo = $env:PLATFORM 
+    } elseif ($IsWindows -or $env:OS -eq "Windows_NT") { 
+        $platformInfo = "Windows" 
+    } elseif ($IsLinux) { 
+        $platformInfo = "Linux" 
+    } elseif ($IsMacOS) { 
+        $platformInfo = "macOS" 
+    }
+    
+    # Get OS version
+    $osVersion = "Unknown"
+    try { 
+        if ($IsWindows -or $env:OS -eq "Windows_NT") { 
+            $osVersion = (Get-CimInstance Win32_OperatingSystem -ErrorAction SilentlyContinue).Version 
+        }
+    } catch { 
+        $osVersion = "Unknown" 
+    }
+    
+    # Get project root
+    $projectRoot = "Unknown"
+    if ($env:PROJECT_ROOT) { 
+        $projectRoot = $env:PROJECT_ROOT 
+    } else {
+        try { 
+            $projectRoot = git rev-parse --show-toplevel 2>$null 
+            if (-not $projectRoot) { $projectRoot = "Unknown" }
+        } catch { 
+            $projectRoot = "Unknown" 
+        }
+    }
+    
     $systemInfo = @{
-        Platform = if ($env:PLATFORM) { $env:PLATFORM } else { "Unknown" }
+        Platform = $platformInfo
+        OSVersion = $osVersion
         PowerShellVersion = $PSVersionTable.PSVersion.ToString()
+        PowerShellEdition = $PSVersionTable.PSEdition
         GitBranch = $gitBranch
         GitCommit = $gitCommit
+        GitRemote = $gitRemote
         WorkingDirectory = (Get-Location).Path
+        ProjectRoot = $projectRoot
         User = if ($env:USERNAME) { $env:USERNAME } elseif ($env:USER) { $env:USER } else { "Unknown" }
+        ComputerName = if ($env:COMPUTERNAME) { $env:COMPUTERNAME } elseif ($env:HOSTNAME) { $env:HOSTNAME } else { "Unknown" }
+        ProcessId = $PID
+        TimeZone = [System.TimeZoneInfo]::Local.Id
     }
     
     # Build operation-specific content
@@ -459,18 +508,36 @@ $operationContent
 
 ### Environment Details
 - **Platform**: $($systemInfo.Platform)
-- **PowerShell Version**: $($systemInfo.PowerShellVersion)
+- **OS Version**: $($systemInfo.OSVersion)
+- **PowerShell Version**: $($systemInfo.PowerShellVersion) ($($systemInfo.PowerShellEdition))
 - **Git Branch**: $($systemInfo.GitBranch)
 - **Git Commit**: $($systemInfo.GitCommit)
+- **Git Remote**: $($systemInfo.GitRemote)
 - **Working Directory**: $($systemInfo.WorkingDirectory)
+- **Project Root**: $($systemInfo.ProjectRoot)
 - **User**: $($systemInfo.User)
+- **Computer**: $($systemInfo.ComputerName)
+- **Process ID**: $($systemInfo.ProcessId)
+- **Time Zone**: $($systemInfo.TimeZone)
 - **Timestamp**: $timestamp
 
 ### Affected Files
 $(if ($AffectedFiles.Count -gt 0) {
-    $AffectedFiles | ForEach-Object { "- ``$_``" } | Out-String
+    @"
+**Files Detected**: $($AffectedFiles.Count) file(s)
+
+$($AffectedFiles | ForEach-Object { "- ``$_``" } | Out-String)
+"@
 } else {
-    "- No specific files identified"
+    @"
+**Detection Status**: No specific files identified
+- **Methods Attempted**: Stack trace analysis, error context parsing
+- **Possible Reasons**: Global system error, configuration issue, or runtime failure not tied to specific files
+- **Investigation**: Manual review of error details and logs may be required
+- **Context**: Review the error description and system logs for additional clues
+
+*Note: Some errors affect the entire system or environment rather than specific files.*
+"@
 })
 
 ## Description
@@ -528,7 +595,7 @@ function Initialize-GitHubLabels {
         if ($standardLabels.ContainsKey($label)) {
             try {
                 $labelInfo = $standardLabels[$label]
-                $labelExists = (gh label list | Select-String -Pattern "^$label\s") -ne $null
+                $labelExists = $null -ne (gh label list | Select-String -Pattern "^$label\s")
                 
                 if (-not $labelExists) {
                     Write-CustomLog "Creating label: $label" -Level INFO

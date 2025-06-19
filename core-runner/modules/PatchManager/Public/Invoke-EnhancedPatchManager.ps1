@@ -44,12 +44,11 @@ function Invoke-EnhancedPatchManager {
         
         [Parameter()]
         [scriptblock]$PatchOperation,
+          [Parameter()]
+        [switch]$AutoValidate,
         
         [Parameter()]
-        [switch]$AutoValidate = $true,
-        
-        [Parameter()]
-        [switch]$AutoResolveConflicts = $true,
+        [switch]$AutoResolveConflicts,
         
         [Parameter()]
         [switch]$CreateIssue,
@@ -95,16 +94,38 @@ function Invoke-EnhancedPatchManager {
     }
     
     process {
-        try {
-            # Step 1: Pre-patch validation
+        try {            # Step 1: Pre-patch validation
             if ($AutoValidate) {
                 Write-PatchLog "Running comprehensive pre-patch validation..." -Level "INFO"
                 
                 $validationResult = Invoke-ComprehensiveValidation -DryRun:$DryRun
                 if (-not $validationResult.Success) {
                     Write-PatchLog "Pre-patch validation failed: $($validationResult.Message)" -Level "ERROR"
+                    
+                    # NEW: Trigger comprehensive validation failure handling
+                    Write-PatchLog "Triggering comprehensive validation failure tracking..." -Level "INFO"
+                    try {
+                        $failureHandler = Invoke-ValidationFailureHandler -ValidationResults $validationResult.ValidationResults -Context @{
+                            Operation = "PatchManager Pre-Validation"
+                            PatchDescription = $PatchDescription
+                            AutoValidate = $AutoValidate
+                            DryRun = $DryRun
+                        } -PatchDescription $PatchDescription -AffectedFiles @() -Force:$Force
+                        
+                        if ($failureHandler.Success) {
+                            Write-PatchLog "Validation failure tracking completed successfully" -Level "SUCCESS"
+                            Write-PatchLog "Summary Issue: $($failureHandler.SummaryIssue.IssueUrl)" -Level "INFO"
+                            Write-PatchLog "Sub-issues created: $($failureHandler.SubIssues.Count)" -Level "INFO"
+                            Write-PatchLog "Tracking ID: $($failureHandler.TrackingId)" -Level "INFO"
+                        } else {
+                            Write-PatchLog "Failed to create validation failure tracking: $($failureHandler.Message)" -Level "WARN"
+                        }
+                    } catch {
+                        Write-PatchLog "Validation failure handler error: $($_.Exception.Message)" -Level "WARN"
+                    }
+                    
                     if (-not $Force) {
-                        throw "Pre-patch validation failed. Use -Force to override."
+                        throw "Pre-patch validation failed. Comprehensive issue tracking created. Use -Force to override."
                     }
                 }
                 
@@ -145,24 +166,46 @@ function Invoke-EnhancedPatchManager {
             # Step 4: Apply patch operation if provided
             if ($PatchOperation) {
                 Write-PatchLog "Applying patch operation..." -Level "INFO"
-                
-                if (-not $DryRun) {
+                  if (-not $DryRun) {
                     $patchResult = & $PatchOperation
-                    Write-PatchLog "Patch operation completed" -Level "SUCCESS"
+                    Write-PatchLog "Patch operation completed with result: $($null -ne $patchResult)" -Level "SUCCESS"
                 } else {
                     Write-PatchLog "DRY RUN: Would execute patch operation" -Level "INFO"
                 }
             }
-            
-            # Step 5: Post-patch validation
+              # Step 5: Post-patch validation
             if ($AutoValidate) {
                 Write-PatchLog "Running post-patch validation..." -Level "INFO"
                 
                 $postValidationResult = Invoke-ComprehensiveValidation -DryRun:$DryRun
                 if (-not $postValidationResult.Success) {
                     Write-PatchLog "Post-patch validation failed: $($postValidationResult.Message)" -Level "ERROR"
+                    
+                    # NEW: Trigger comprehensive validation failure handling for post-patch failures
+                    Write-PatchLog "Triggering post-patch validation failure tracking..." -Level "INFO"
+                    try {
+                        $postFailureHandler = Invoke-ValidationFailureHandler -ValidationResults $postValidationResult.ValidationResults -Context @{
+                            Operation = "PatchManager Post-Validation"
+                            PatchDescription = $PatchDescription
+                            PostPatch = $true
+                            PatchApplied = $true
+                            DryRun = $DryRun
+                        } -PatchDescription $PatchDescription -AffectedFiles @() -Force:$Force
+                        
+                        if ($postFailureHandler.Success) {
+                            Write-PatchLog "Post-patch validation failure tracking completed" -Level "SUCCESS"
+                            Write-PatchLog "Summary Issue: $($postFailureHandler.SummaryIssue.IssueUrl)" -Level "INFO"
+                            Write-PatchLog "Sub-issues created: $($postFailureHandler.SubIssues.Count)" -Level "INFO"
+                            Write-PatchLog "Tracking ID: $($postFailureHandler.TrackingId)" -Level "INFO"
+                        } else {
+                            Write-PatchLog "Failed to create post-patch validation failure tracking: $($postFailureHandler.Message)" -Level "WARN"
+                        }
+                    } catch {
+                        Write-PatchLog "Post-patch validation failure handler error: $($_.Exception.Message)" -Level "WARN"
+                    }
+                    
                     if (-not $Force) {
-                        throw "Post-patch validation failed. Rolling back changes."
+                        throw "Post-patch validation failed. Comprehensive issue tracking created. Rolling back changes."
                     }
                 }
                 
@@ -282,9 +325,17 @@ function Invoke-ComprehensiveValidation {
                 }
             }
         }
-        
-        # Compile results
+          # Compile results with detailed information
         $issues = @()
+        $validationResults = @{
+            ModuleImportFailures = $failedModules
+            SyntaxErrors = $syntaxErrors
+            EmojiUsageFiles = $emojiFiles
+            ModulesTestedCount = $modules.Count
+            FilesTestedCount = $psFiles.Count
+            ValidationTimestamp = Get-Date -Format 'yyyy-MM-dd HH:mm:ss UTC'
+        }
+        
         if ($failedModules.Count -gt 0) {
             $issues += "Failed module imports: $($failedModules -join ', ')"
         }
@@ -296,13 +347,28 @@ function Invoke-ComprehensiveValidation {
         }
         
         if ($issues.Count -eq 0) {
-            return @{ Success = $true; Message = "All validation checks passed" }
+            return @{ 
+                Success = $true
+                Message = "All validation checks passed"
+                ValidationResults = $validationResults
+            }
         } else {
-            return @{ Success = $false; Message = "Validation issues: $($issues -join '; ')" }
+            return @{ 
+                Success = $false
+                Message = "Validation issues: $($issues -join '; ')"
+                ValidationResults = $validationResults
+            }
         }
     }
     catch {
-        return @{ Success = $false; Message = "Validation failed: $($_.Exception.Message)" }
+        return @{ 
+            Success = $false
+            Message = "Validation failed: $($_.Exception.Message)"
+            ValidationResults = @{
+                ValidationError = $_.Exception.Message
+                ValidationTimestamp = Get-Date -Format 'yyyy-MM-dd HH:mm:ss UTC'
+            }
+        }
     }
 }
 

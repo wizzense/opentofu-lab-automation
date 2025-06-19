@@ -90,6 +90,7 @@ Export-ModuleMember -Function @(
     'Invoke-PatchRollback',
     'Invoke-PatchValidation',
     'Invoke-ComprehensiveIssueTracking',
+    'Invoke-ValidationFailureHandler',
     'Invoke-ErrorHandler',
     'Invoke-MonitoredExecution',
     'Set-PatchManagerAliases',
