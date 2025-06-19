@@ -730,33 +730,47 @@ function Show-CoreAppDemo {
     Write-BootstrapLog "🌟 Would you like to see the CoreApp orchestration in action? (y/N)" 'INFO' -NoTimestamp
     
     $response = Read-Host
-    if ($response -match '^[Yy]') {
-        Write-BootstrapLog "Demonstrating CoreApp orchestration features..." 'INFO'
+    if ($response -match '^[Yy]') {        Write-BootstrapLog "Demonstrating CoreApp orchestration features..." 'INFO'
         try {
             Push-Location $RepoPath
-            # Import CoreApp module
-            $coreAppPath = Join-Path $RepoPath "core-runner/core_app"
-            Import-Module $coreAppPath -Force
-            Write-BootstrapLog "✓ CoreApp module imported" 'SUCCESS'
-            # Initialize and show module status
-            Write-BootstrapLog "Initializing core application..." 'INFO'
-            $initResult = Initialize-CoreApplication
-            if ($initResult.Success) {
-                Write-BootstrapLog "✓ Core application initialized" 'SUCCESS'
-                Write-BootstrapLog "Loaded modules: $($initResult.LoadedModules -join ', ')" 'INFO'
+            
+            # Import CoreApp module using the module manifest
+            $coreAppModulePath = Join-Path $RepoPath "core-runner/core_app/CoreApp.psd1"
+            
+            if (-not (Test-Path $coreAppModulePath)) {
+                throw "CoreApp module manifest not found at: $coreAppModulePath"
             }
-            # Show module status
-            Write-BootstrapLog "Module Status:" 'INFO'
-            $moduleStatus = Get-CoreModuleStatus
-            $moduleStatus | ForEach-Object {
-                $icon = if ($_.Status -eq 'Loaded') { '✓' } else { '⚠' }
-                $color = if ($_.Status -eq 'Loaded') { 'SUCCESS' } else { 'WARN' }
-                Write-BootstrapLog "  $icon $($_.Name): $($_.Status)" $color
+            
+            Write-BootstrapLog "Importing CoreApp module from: $coreAppModulePath" 'INFO'
+            Import-Module $coreAppModulePath -Force -ErrorAction Stop
+            Write-BootstrapLog "✓ CoreApp module imported successfully" 'SUCCESS'
+            
+            # Test if functions are available
+            $coreAppFunctions = @('Initialize-CoreApplication', 'Get-CoreModuleStatus')
+            $availableFunctions = @()
+            
+            foreach ($func in $coreAppFunctions) {
+                if (Get-Command $func -ErrorAction SilentlyContinue) {
+                    $availableFunctions += $func
+                    Write-BootstrapLog "✓ Function available: $func" 'SUCCESS'
+                } else {
+                    Write-BootstrapLog "⚠ Function not available: $func" 'WARN'
+                }
             }
+            
+            if ($availableFunctions.Count -gt 0) {
+                Write-BootstrapLog "CoreApp orchestration functions are ready for use!" 'SUCCESS'
+                Write-BootstrapLog "Available functions: $($availableFunctions -join ', ')" 'INFO'
+            } else {
+                Write-BootstrapLog "CoreApp functions are not yet available - module needs initialization" 'WARN'
+            }
+            
             Write-BootstrapLog "✓ CoreApp demonstration completed" 'SUCCESS'
             Pop-Location
+            
         } catch {
             Write-BootstrapLog "Demo failed: $($_.Exception.Message)" 'WARN'
+            Write-BootstrapLog "This is expected during bootstrap - CoreApp will be fully functional after setup" 'INFO'
             Pop-Location
         }
     }

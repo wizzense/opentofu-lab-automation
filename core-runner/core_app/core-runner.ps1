@@ -194,14 +194,19 @@ try {
                 Write-CustomLog 'No scripts specified for non-interactive execution' -Level WARN
                 return  # Exit gracefully instead of interactive prompt
             } else {
-                # Interactive mode - show menu
-                Write-Host "`nAvailable Scripts:" -ForegroundColor Cyan
+                # Interactive mode - show menu                Write-Host "`nAvailable Scripts:" -ForegroundColor Cyan
                 for ($i = 0; $i -lt $availableScripts.Count; $i++) {
                     $script = $availableScripts[$i]
-                    Write-Host "  $($i + 1). $($script.BaseName)" -ForegroundColor Gray
+                    $scriptPrefix = if ($script.BaseName -match '^(\d{4})_') { $matches[1] } else { '' }
+                    $displayText = if ($scriptPrefix) { "$($i + 1). [$scriptPrefix] $($script.BaseName)" } else { "$($i + 1). $($script.BaseName)" }
+                    Write-Host "  $displayText" -ForegroundColor Gray
                 }
                 
-                Write-Host "`nEnter script numbers to run (comma-separated), 'all' for all scripts, or 'exit' to quit:" -ForegroundColor Yellow
+                Write-Host "`nEnter script numbers to run:" -ForegroundColor Yellow
+                Write-Host "  • List number (1-$($availableScripts.Count))" -ForegroundColor Gray
+                Write-Host "  • Script prefix (e.g., '0200' for Get-SystemInfo)" -ForegroundColor Gray  
+                Write-Host "  • Partial name (e.g., 'SystemInfo')" -ForegroundColor Gray
+                Write-Host "  • 'all' for all scripts, 'exit' to quit" -ForegroundColor Gray
                 $selection = Read-Host 'Selection'
                 
                 if ($selection -eq 'exit') {
@@ -211,16 +216,29 @@ try {
                     foreach ($script in $availableScripts) {
                         Write-CustomLog "Executing script: $($script.BaseName)" -Level INFO
                         & $script.FullName -Config $config -Verbosity $Verbosity
-                    }
-                } else {
+                    }                } else {
                     $selectedNumbers = $selection -split ',' | ForEach-Object { $_.Trim() }
                     foreach ($num in $selectedNumbers) {
+                        $selectedScript = $null
+                        
+                        # Try to match by list number (1-based index)
                         if ($num -match '^\d+$' -and [int]$num -le $availableScripts.Count -and [int]$num -gt 0) {
-                            $script = $availableScripts[[int]$num - 1]
-                            Write-CustomLog "Executing script: $($script.BaseName)" -Level INFO
-                            & $script.FullName -Config $config -Verbosity $Verbosity
+                            $selectedScript = $availableScripts[[int]$num - 1]
+                        }
+                        # Try to match by script prefix (e.g., "0200" for "0200_Get-SystemInfo")
+                        elseif ($num -match '^\d{4}$') {
+                            $selectedScript = $availableScripts | Where-Object { $_.BaseName -like "$num*" } | Select-Object -First 1
+                        }
+                        # Try to match by partial script name
+                        elseif ($num -match '^[a-zA-Z]') {
+                            $selectedScript = $availableScripts | Where-Object { $_.BaseName -like "*$num*" } | Select-Object -First 1
+                        }
+                        
+                        if ($selectedScript) {
+                            Write-CustomLog "Executing script: $($selectedScript.BaseName)" -Level INFO
+                            & $selectedScript.FullName -Config $config -Verbosity $Verbosity
                         } else {
-                            Write-CustomLog "Invalid selection: $num" -Level WARN
+                            Write-CustomLog "Invalid selection: $num (try list number 1-$($availableScripts.Count), script prefix like '0200', or partial name)" -Level WARN
                         }
                     }
                 }
