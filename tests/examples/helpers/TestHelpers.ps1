@@ -131,8 +131,7 @@ function Get-TestConfiguration {
     #>
     [CmdletBinding()]
     param()
-    
-    return @{
+      return @{
         ProjectRoot = $env:PROJECT_ROOT
         ModulesPath = $env:PWSH_MODULES_PATH
         TestsPath = Join-Path $env:PROJECT_ROOT "tests"

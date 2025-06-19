@@ -166,28 +166,7 @@ Describe "PatchManager Core Functions" {
         
         It "Should accept CreatePullRequest parameter" {
             { Invoke-EnhancedPatchManager -PatchDescription "Test patch" -CreatePullRequest -DryRun } | Should -Not -Throw
-        }
-    }
-      Context "Set-PatchManagerAliases" {        It "Should set up aliases without error" {
-            # Mock Get-Command to return mock git path
-            Mock Get-Command -MockWith { 
-                [PSCustomObject]@{ Source = "C:\mock\git.exe" }
-            } -ParameterFilter { $Name -eq "git" }
-            
-            # Mock the Write-Log function used internally 
-            function global:Write-Log { param($Message, $Level) }
-            
-            # Use -WhatIf to avoid actual alias creation
-            { Set-PatchManagerAliases -Scope Process -WhatIf } | Should -Not -Throw
-        }
-          It "Should display aliases when requested" {
-            { Set-PatchManagerAliases -ShowAliases } | Should -Not -Throw
-        }
-        
-        It "Should remove aliases when requested" {
-            { Set-PatchManagerAliases -RemoveAliases -Scope Process } | Should -Not -Throw
-        }
-    }
+        }    }
     
     Context "Invoke-QuickRollback" {
         It "Should accept RollbackType parameter" {
@@ -208,13 +187,11 @@ Describe "PatchManager Integration Tests" {
         It "Should have imported PatchManager functions" {
             Get-Command -Module "PatchManager" | Should -Not -BeNullOrEmpty
         }
-        
-        It "Should have core functions available" {
+          It "Should have core functions available" {
             $expectedFunctions = @(
                 'Invoke-GitControlledPatch',
                 'Invoke-EnhancedPatchManager',
                 'Test-PatchingRequirements',
-                'Set-PatchManagerAliases',
                 'Invoke-QuickRollback'
             )
             

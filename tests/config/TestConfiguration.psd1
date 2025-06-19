@@ -12,7 +12,7 @@ if (-not $env:PWSH_MODULES_PATH) {
         PowerShell = @{
             ModulesPath = $env:PWSH_MODULES_PATH
             IncludePrivateFunctions = $true
-            RequiredModules = @('LabRunner', 'PatchManager', 'Logging')
+            RequiredModules = @('LabRunner', 'PatchManager', 'Logging')')
             TestPatterns = @('*.Tests.ps1', '*Test*.ps1')
         }
         

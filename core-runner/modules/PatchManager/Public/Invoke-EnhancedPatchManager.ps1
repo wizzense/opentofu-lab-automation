@@ -44,12 +44,11 @@ function Invoke-EnhancedPatchManager {
         
         [Parameter()]
         [scriptblock]$PatchOperation,
+          [Parameter()]
+        [switch]$AutoValidate,
         
         [Parameter()]
-        [switch]$AutoValidate = $true,
-        
-        [Parameter()]
-        [switch]$AutoResolveConflicts = $true,
+        [switch]$AutoResolveConflicts,
         
         [Parameter()]
         [switch]$CreateIssue,
@@ -70,13 +69,15 @@ function Invoke-EnhancedPatchManager {
         }
         
         Write-Host "=== Enhanced PatchManager with Automated Validation ===" -ForegroundColor Cyan
-        
-        # Import required modules
+          # Import required modules
         $projectRoot = $env:PROJECT_ROOT
         if (-not $projectRoot) {
             $projectRoot = (Get-Location).Path
             $env:PROJECT_ROOT = $projectRoot
         }
+        
+        # Import PatchManager module with forward slashes for cross-platform compatibility
+        Import-Module './core-runner/modules/PatchManager' -Force
         
         # Function for logging
         function Write-PatchLog {
@@ -95,16 +96,38 @@ function Invoke-EnhancedPatchManager {
     }
     
     process {
-        try {
-            # Step 1: Pre-patch validation
+        try {            # Step 1: Pre-patch validation
             if ($AutoValidate) {
                 Write-PatchLog "Running comprehensive pre-patch validation..." -Level "INFO"
                 
                 $validationResult = Invoke-ComprehensiveValidation -DryRun:$DryRun
                 if (-not $validationResult.Success) {
                     Write-PatchLog "Pre-patch validation failed: $($validationResult.Message)" -Level "ERROR"
+                    
+                    # NEW: Trigger comprehensive validation failure handling
+                    Write-PatchLog "Triggering comprehensive validation failure tracking..." -Level "INFO"
+                    try {
+                        $failureHandler = Invoke-ValidationFailureHandler -ValidationResults $validationResult.ValidationResults -Context @{
+                            Operation = "PatchManager Pre-Validation"
+                            PatchDescription = $PatchDescription
+                            AutoValidate = $AutoValidate
+                            DryRun = $DryRun
+                        } -PatchDescription $PatchDescription -AffectedFiles @() -Force:$Force
+                        
+                        if ($failureHandler.Success) {
+                            Write-PatchLog "Validation failure tracking completed successfully" -Level "SUCCESS"
+                            Write-PatchLog "Summary Issue: $($failureHandler.SummaryIssue.IssueUrl)" -Level "INFO"
+                            Write-PatchLog "Sub-issues created: $($failureHandler.SubIssues.Count)" -Level "INFO"
+                            Write-PatchLog "Tracking ID: $($failureHandler.TrackingId)" -Level "INFO"
+                        } else {
+                            Write-PatchLog "Failed to create validation failure tracking: $($failureHandler.Message)" -Level "WARN"
+                        }
+                    } catch {
+                        Write-PatchLog "Validation failure handler error: $($_.Exception.Message)" -Level "WARN"
+                    }
+                    
                     if (-not $Force) {
-                        throw "Pre-patch validation failed. Use -Force to override."
+                        throw "Pre-patch validation failed. Comprehensive issue tracking created. Use -Force to override."
                     }
                 }
                 
@@ -145,24 +168,53 @@ function Invoke-EnhancedPatchManager {
             # Step 4: Apply patch operation if provided
             if ($PatchOperation) {
                 Write-PatchLog "Applying patch operation..." -Level "INFO"
-                
                 if (-not $DryRun) {
                     $patchResult = & $PatchOperation
-                    Write-PatchLog "Patch operation completed" -Level "SUCCESS"
+                    $operationSuccess = if ($patchResult -is [hashtable] -and $patchResult.ContainsKey('Success')) {
+                        $patchResult.Success
+                    } elseif ($patchResult -is [bool]) {
+                        $patchResult
+                    } else {
+                        $null -ne $patchResult
+                    }
+                    Write-PatchLog "Patch operation completed with result: $operationSuccess" -Level $(if ($operationSuccess) { "SUCCESS" } else { "ERROR" })
                 } else {
                     Write-PatchLog "DRY RUN: Would execute patch operation" -Level "INFO"
                 }
             }
-            
-            # Step 5: Post-patch validation
+              # Step 5: Post-patch validation
             if ($AutoValidate) {
                 Write-PatchLog "Running post-patch validation..." -Level "INFO"
                 
                 $postValidationResult = Invoke-ComprehensiveValidation -DryRun:$DryRun
                 if (-not $postValidationResult.Success) {
                     Write-PatchLog "Post-patch validation failed: $($postValidationResult.Message)" -Level "ERROR"
+                    
+                    # NEW: Trigger comprehensive validation failure handling for post-patch failures
+                    Write-PatchLog "Triggering post-patch validation failure tracking..." -Level "INFO"
+                    try {
+                        $postFailureHandler = Invoke-ValidationFailureHandler -ValidationResults $postValidationResult.ValidationResults -Context @{
+                            Operation = "PatchManager Post-Validation"
+                            PatchDescription = $PatchDescription
+                            PostPatch = $true
+                            PatchApplied = $true
+                            DryRun = $DryRun
+                        } -PatchDescription $PatchDescription -AffectedFiles @() -Force:$Force
+                        
+                        if ($postFailureHandler.Success) {
+                            Write-PatchLog "Post-patch validation failure tracking completed" -Level "SUCCESS"
+                            Write-PatchLog "Summary Issue: $($postFailureHandler.SummaryIssue.IssueUrl)" -Level "INFO"
+                            Write-PatchLog "Sub-issues created: $($postFailureHandler.SubIssues.Count)" -Level "INFO"
+                            Write-PatchLog "Tracking ID: $($postFailureHandler.TrackingId)" -Level "INFO"
+                        } else {
+                            Write-PatchLog "Failed to create post-patch validation failure tracking: $($postFailureHandler.Message)" -Level "WARN"
+                        }
+                    } catch {
+                        Write-PatchLog "Post-patch validation failure handler error: $($_.Exception.Message)" -Level "WARN"
+                    }
+                    
                     if (-not $Force) {
-                        throw "Post-patch validation failed. Rolling back changes."
+                        throw "Post-patch validation failed. Comprehensive issue tracking created. Rolling back changes."
                     }
                 }
                 
@@ -282,9 +334,17 @@ function Invoke-ComprehensiveValidation {
                 }
             }
         }
-        
-        # Compile results
+          # Compile results with detailed information
         $issues = @()
+        $validationResults = @{
+            ModuleImportFailures = $failedModules
+            SyntaxErrors = $syntaxErrors
+            EmojiUsageFiles = $emojiFiles
+            ModulesTestedCount = $modules.Count
+            FilesTestedCount = $psFiles.Count
+            ValidationTimestamp = Get-Date -Format 'yyyy-MM-dd HH:mm:ss UTC'
+        }
+        
         if ($failedModules.Count -gt 0) {
             $issues += "Failed module imports: $($failedModules -join ', ')"
         }
@@ -296,13 +356,28 @@ function Invoke-ComprehensiveValidation {
         }
         
         if ($issues.Count -eq 0) {
-            return @{ Success = $true; Message = "All validation checks passed" }
+            return @{ 
+                Success = $true
+                Message = "All validation checks passed"
+                ValidationResults = $validationResults
+            }
         } else {
-            return @{ Success = $false; Message = "Validation issues: $($issues -join '; ')" }
+            return @{ 
+                Success = $false
+                Message = "Validation issues: $($issues -join '; ')"
+                ValidationResults = $validationResults
+            }
         }
     }
     catch {
-        return @{ Success = $false; Message = "Validation failed: $($_.Exception.Message)" }
+        return @{ 
+            Success = $false
+            Message = "Validation failed: $($_.Exception.Message)"
+            ValidationResults = @{
+                ValidationError = $_.Exception.Message
+                ValidationTimestamp = Get-Date -Format 'yyyy-MM-dd HH:mm:ss UTC'
+            }
+        }
     }
 }
 
@@ -404,28 +479,99 @@ This issue was automatically created by the Enhanced PatchManager system.
 # Helper function to create pull request
 function New-PatchPullRequest {
     [CmdletBinding()]
-    param([string]$Description)
+    param(
+        [Parameter(Mandatory = $false)]
+        [string]$Description,
+        
+        [Parameter(Mandatory = $false)]
+        [string]$BranchName,
+        
+        [Parameter(Mandatory = $false)]
+        [string[]]$AffectedFiles,
+        
+        [Parameter(Mandatory = $false)]
+        [hashtable]$ValidationResults,
+        
+        [Parameter(Mandatory = $false)]
+        [switch]$AutoMerge,
+        
+        [Parameter(Mandatory = $false)]
+        [switch]$DryRun
+    )
     
     try {
-        # Commit current changes
-        git add -A 2>&1 | Out-Null
-        $commitMessage = "patch: $Description`n`nAutomated patch with enhanced validation`n- Module import validation`n- Syntax checking`n- Git conflict resolution`n- Emoji prevention"
+        # Check if there are changes to commit
+        $gitStatus = git status --porcelain 2>&1
+        $hasChanges = $gitStatus -and ($gitStatus | Where-Object { $_ -match '\S' })
         
-        git commit -m $commitMessage 2>&1 | Out-Null
+        if (-not $hasChanges) {
+            Write-PatchLog "No changes to commit, proceeding with PR creation" -Level "INFO"
+        } else {
+            # Commit current changes
+            git add -A 2>&1 | Out-Null
+            $commitMessage = "patch: $Description`n`nAutomated patch with enhanced validation`n- Module import validation`n- Syntax checking`n- Git conflict resolution`n- Emoji prevention"            
+            git commit -m $commitMessage 2>&1 | Out-Null
+            
+            if ($LASTEXITCODE -ne 0) {
+                throw "Failed to commit changes"
+            }
+        }
+        
+        # Determine branch name
+        if ([string]::IsNullOrWhiteSpace($BranchName)) {
+            $BranchName = git branch --show-current 2>&1
+            if ($LASTEXITCODE -ne 0 -or [string]::IsNullOrWhiteSpace($BranchName)) {
+                throw "Unable to determine current branch name. Please specify using -BranchName parameter."
+            }
+        }
+          # Validate branch exists
+        git rev-parse --verify $BranchName 2>$null
+        if ($LASTEXITCODE -ne 0) {
+            throw "Branch '$BranchName' does not exist"
+        }
+        
+        # Push branch
+        Write-PatchLog "Pushing branch $BranchName to remote..." -Level "INFO"
+        $pushResult = git push -u origin $BranchName 2>&1
         
         if ($LASTEXITCODE -eq 0) {
-            # Push branch
-            $branchName = git branch --show-current
-            git push -u origin $branchName 2>&1 | Out-Null
+            Write-PatchLog "Branch pushed successfully" -Level "SUCCESS"
+                  if ($DryRun) {
+                Write-PatchLog "DRY RUN: Would push branch $BranchName to remote and create pull request" -Level "INFO"
+                return @{
+                    Success = $true
+                    Message = "DRY RUN: Pull request creation simulated"
+                    BranchName = $BranchName
+                    DryRun = $true
+                }
+            }
             
-            if ($LASTEXITCODE -eq 0) {
-                # Create PR
-                $prTitle = "patch: $Description"
-                $prBody = @"
+            # Create PR with title length validation
+            Write-PatchLog "Creating pull request..." -Level "INFO"
+            
+            # Ensure PR title is not too long (GitHub limit is 256 chars)
+            $descriptionLines = $Description -split "`n"
+            $prTitle = if ($descriptionLines[0].Length -gt 100) {
+                ($descriptionLines[0].Substring(0, 97) + "...").Trim()
+            } else {
+                $descriptionLines[0].Trim()
+            }
+            
+            # Prefix with type if not already prefixed
+            if (-not ($prTitle -match "^(feat|fix|docs|style|refactor|perf|test|chore|patch):")) {
+                $prTitle = "patch: $prTitle"
+            }
+            
+            # Ensure title is under 250 chars to be safe
+            if ($prTitle.Length -gt 250) {
+                $prTitle = $prTitle.Substring(0, 247) + "..."
+            }
+            
+            $prBody = @"
 ## Enhanced Patch with Automated Validation
 
 **Description**: $Description
-**Branch**: $branchName
+**Branch**: $BranchName
 **Validation**: Comprehensive automated validation completed
 
 ### Changes Include
@@ -451,21 +597,136 @@ function New-PatchPullRequest {
 *This PR was created automatically by Enhanced PatchManager*
 "@
                 
-                $prResult = gh pr create --title $prTitle --body $prBody --base main 2>&1
-                
-                if ($LASTEXITCODE -eq 0) {
-                    $prUrl = gh pr view --json url --jq '.url' 2>&1
-                    return @{ Success = $true; PullRequestUrl = $prUrl }
-                } else {
-                    return @{ Success = $false; Message = "Failed to create PR: $prResult" }
+                # Try to create PR with proper error handling
+                try {
+                    $prResult = gh pr create --title $prTitle --body $prBody --base main 2>&1
+                    
+                    if ($LASTEXITCODE -eq 0) {
+                        # Get the PR URL
+                        try {
+                            $prUrl = gh pr view --json url --jq '.url' 2>&1
+                            if ($LASTEXITCODE -eq 0 -and $prUrl) {
+                                Write-PatchLog "Pull request created successfully: $prUrl" -Level "SUCCESS"
+                                return @{ 
+                                    Success = $true 
+                                    PullRequestUrl = $prUrl 
+                                    BranchName = $BranchName
+                                }
+                            } 
+                        } catch {
+                            # Fallback method - extract URL from creation output
+                        }
+                        
+                        # Fallback to extracting URL from create output
+                        if ($prResult -match 'https://[^\s]+') {
+                            $extractedUrl = $matches[0]
+                            Write-PatchLog "Pull request created successfully: $extractedUrl" -Level "SUCCESS"
+                            return @{ 
+                                Success = $true 
+                                PullRequestUrl = $extractedUrl 
+                                BranchName = $BranchName
+                            }
+                        } else {
+                            # PR created but couldn't get URL
+                            Write-PatchLog "Pull request created but couldn't retrieve URL" -Level "WARNING"
+                            return @{ 
+                                Success = $true 
+                                Message = "PR created but URL not found"
+                                BranchName = $BranchName
+                            }
+                        }
+                    } else {
+                        # PR creation failed - check for specific error conditions
+                        $errorMessage = $prResult -join " "                        # Handle common errors
+                        if ($errorMessage -match "already exists") {
+                            Write-PatchLog "A pull request already exists for this branch" -Level "INFO"
+                            
+                            # Try to extract URL directly using a more robust pattern
+                            if ($errorMessage -match "https://github\.com/[^/]+/[^/]+/pull/\d+") {
+                                $existingPrUrl = $matches[0]
+                                Write-PatchLog "Found existing PR URL: $existingPrUrl" -Level "INFO"
+                                return @{ 
+                                    Success = $true 
+                                    PullRequestUrl = $existingPrUrl
+                                    BranchName = $BranchName
+                                    Message = "An existing pull request was found for this branch"
+                                }
+                            }
+                            
+                            # Handle case with line breaks
+                            $urlPattern = [regex]::new("https://github\.com/[^/]+/[^/]+/pull/\d+", [System.Text.RegularExpressions.RegexOptions]::Singleline)
+                            $urlMatch = $urlPattern.Match($errorMessage)
+                            if ($urlMatch.Success) {
+                                $existingPrUrl = $urlMatch.Value
+                                Write-PatchLog "Found existing PR URL using regex: $existingPrUrl" -Level "INFO"
+                                return @{ 
+                                    Success = $true 
+                                    PullRequestUrl = $existingPrUrl
+                                    BranchName = $BranchName
+                                    Message = "An existing pull request was found for this branch"
+                                }
+                            }
+                            
+                            # Otherwise try to get PR URL using gh cli
+                            Write-PatchLog "A pull request already exists for this branch" -Level "INFO"
+                            try {
+                                $existingPrUrl = gh pr view $BranchName --json url --jq '.url' 2>&1
+                                if ($LASTEXITCODE -eq 0 -and $existingPrUrl) {
+                                    return @{ 
+                                        Success = $true 
+                                        PullRequestUrl = $existingPrUrl
+                                        BranchName = $BranchName
+                                        Message = "An existing pull request was found for this branch"
+                                    }
+                                }
+                            } catch {
+                                # Ignore error getting existing PR URL
+                            }
+                        } elseif ($errorMessage -match "too long") {
+                            # Title too long - use a shorter title
+                            $shorterTitle = "Patch: " + (Get-Date -Format "yyyy-MM-dd")
+                            Write-PatchLog "Trying again with shorter title: $shorterTitle" -Level "INFO"
+                            
+                            $prResult = gh pr create --title $shorterTitle --body $prBody --base main 2>&1
+                            if ($LASTEXITCODE -eq 0 -and ($prResult -match 'https://[^\s]+')) {
+                                return @{ 
+                                    Success = $true 
+                                    PullRequestUrl = $matches[0]
+                                    BranchName = $BranchName
+                                }
+                            }
+                        }
+                        
+                        # If we reach here, all attempts failed
+                        Write-PatchLog "Failed to create pull request: $errorMessage" -Level "ERROR"
+                        return @{ 
+                            Success = $false
+                            Message = "Failed to create pull request: $errorMessage"
+                            BranchName = $BranchName
+                        }
+                    }
+                } catch {
+                    Write-PatchLog "Exception creating pull request: $($_.Exception.Message)" -Level "ERROR"
+                    return @{ 
+                        Success = $false
+                        Message = "Exception creating pull request: $($_.Exception.Message)"
+                        BranchName = $BranchName
+                    }
                 }
             } else {
-                return @{ Success = $false; Message = "Failed to push branch" }
+                Write-PatchLog "Failed to push branch: $pushResult" -Level "ERROR"
+                return @{ 
+                    Success = $false
+                    Message = "Failed to push branch: $pushResult" 
+                    BranchName = $BranchName
+                }
             }
-        } else {
-            return @{ Success = $false; Message = "Failed to commit changes" }
+    } catch {
+        Write-PatchLog "Error in New-PatchPullRequest: $($_.Exception.Message)" -Level "ERROR"
+        return @{ 
+            Success = $false
+            Message = $_.Exception.Message
+            BranchName = $BranchName
         }
-    }
-    catch {        return @{ Success = $false; Message = $_.Exception.Message }
     }
 }
