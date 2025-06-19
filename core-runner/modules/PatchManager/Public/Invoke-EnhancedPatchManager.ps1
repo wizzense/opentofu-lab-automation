@@ -149,9 +149,8 @@ function Invoke-EnhancedPatchManager {
                 }
 
                 Write-PatchLog "Git conflict resolution completed" -Level "SUCCESS"
-            }
-
-            # Step 3: Create GitHub issue if requested
+            }            # Step 3: Create GitHub issue if requested
+            $issueResult = $null
             if ($CreateIssue) {
                 Write-PatchLog "Creating GitHub issue..." -Level "INFO"
 
@@ -159,6 +158,7 @@ function Invoke-EnhancedPatchManager {
                     $issueResult = New-PatchIssue -Description $PatchDescription
                     if ($issueResult.Success) {
                         Write-PatchLog "GitHub issue created: $($issueResult.IssueUrl)" -Level "SUCCESS"
+                        Write-PatchLog "Issue number: #$($issueResult.IssueNumber)" -Level "INFO"
                     } else {
                         Write-PatchLog "Failed to create GitHub issue: $($issueResult.Message)" -Level "WARN"
                     }
@@ -222,24 +222,13 @@ function Invoke-EnhancedPatchManager {
                         Write-PatchLog "Failed to detect branch name for PR creation" -Level "ERROR"
                         $currentBranch = "auto-patch-$(Get-Date -Format 'yyyyMMdd-HHmmss')"
                         Write-PatchLog "Using generated branch name: $currentBranch" -Level "WARN"
-                    }
-
-                    $prResult = New-PatchPullRequest -Description $PatchDescription -BranchName $currentBranch.Trim()
+                    }                    $prResult = New-PatchPullRequest -Description $PatchDescription -BranchName $currentBranch.Trim() -IssueNumber $issueResult.IssueNumber -IssueUrl $issueResult.IssueUrl
                     if ($prResult.Success) {
                         Write-PatchLog "Pull request created: $($prResult.PullRequestUrl)" -Level "SUCCESS"
-
-                        # Automatically create issue tracking for the PR
-                        try {
-                            Write-PatchLog "Creating automatic issue tracking for PR..." -Level "INFO"
-                            $issueResult = Invoke-ComprehensiveIssueTracking -Operation "PR" -Title "Track PR: $PatchDescription" -Description "Automated tracking issue for PR created by PatchManager" -PatchDescription $PatchDescription -PullRequestUrl $prResult.PullRequestUrl -Priority "Medium" -AutoClose
-
-                            if ($issueResult.Success) {
-                                Write-PatchLog "Tracking issue created: $($issueResult.IssueUrl)" -Level "SUCCESS"
-                            } else {
-                                Write-PatchLog "Failed to create tracking issue: $($issueResult.Message)" -Level "WARN"
-                            }
-                        } catch {
-                            Write-PatchLog "Error creating tracking issue: $($_.Exception.Message)" -Level "WARN"
+                        
+                        # If both issue and PR were created, log the connection
+                        if ($issueResult -and $issueResult.Success) {
+                            Write-PatchLog "PR linked to issue #$($issueResult.IssueNumber) for automatic closure" -Level "SUCCESS"
                         }
                     } else {
                         Write-PatchLog "Failed to create pull request: $($prResult.Message)" -Level "WARN"
@@ -377,6 +366,12 @@ function New-PatchPullRequest {
         [hashtable]$ValidationResults,
 
         [Parameter(Mandatory = $false)]
+        [string]$IssueNumber,
+
+        [Parameter(Mandatory = $false)]
+        [string]$IssueUrl,
+
+        [Parameter(Mandatory = $false)]
         [switch]$AutoMerge,
 
         [Parameter(Mandatory = $false)]
@@ -480,6 +475,15 @@ function New-PatchPullRequest {
             # Ensure title is under 250 chars to be safe
             if ($prTitle.Length -gt 250) {
                 $prTitle = $prTitle.Substring(0, 247) + "..."
+            }            # Build PR body with optional issue reference
+            $issueReference = ""
+            if ($IssueNumber) {
+                $issueReference = @"
+
+### Related Issue
+Closes #$IssueNumber
+
+"@
             }
 
             $prBody = @"
@@ -487,7 +491,7 @@ function New-PatchPullRequest {
 
 **Description**: $Description
 **Branch**: $BranchName
-**Validation**: Comprehensive automated validation completed
+**Validation**: Comprehensive automated validation completed$issueReference
 
 ### Changes Include
 - Automated module import validation

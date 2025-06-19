@@ -464,6 +464,7 @@ function New-GitControlledPatchPullRequest {
         [string]$Description,
         [string[]]$AffectedFiles = @(),
         [hashtable]$ValidationResults = @{},
+        [string]$IssueNumber,
         [switch]$AutoMerge,
         [switch]$DryRun
     )
@@ -493,10 +494,9 @@ function New-GitControlledPatchPullRequest {
         Write-CustomLog "Branch pushed successfully" -Level SUCCESS
           # Get comprehensive change information
         $changeStats = Get-GitChangeStatistics
-        $commitInfo = Get-GitCommitInfo
-          # Create enhanced PR with comprehensive context
+        $commitInfo = Get-GitCommitInfo        # Create enhanced PR with comprehensive context
         $prTitle = "PatchManager: $Description"
-        $prBody = Build-ComprehensivePRBody -Description $Description -BranchName $BranchName -AffectedFiles $AffectedFiles -ValidationResults $ValidationResults -ChangeStats $changeStats -CommitInfo $commitInfo -AutoMerge:$AutoMerge
+        $prBody = Build-ComprehensivePRBody -Description $Description -BranchName $BranchName -AffectedFiles $AffectedFiles -ValidationResults $ValidationResults -ChangeStats $changeStats -CommitInfo $commitInfo -IssueNumber $IssueNumber -AutoMerge:$AutoMerge
 
         Write-CustomLog "Creating pull request..." -Level INFO
 
@@ -558,10 +558,9 @@ function Build-ComprehensivePRBody {
         [hashtable]$ValidationResults,
         [hashtable]$ChangeStats,
         [hashtable]$CommitInfo,
+        [string]$IssueNumber,
         [switch]$AutoMerge
-    )
-
-    $timestamp = Get-Date -Format 'yyyy-MM-dd HH:mm:ss UTC'
+    )    $timestamp = Get-Date -Format 'yyyy-MM-dd HH:mm:ss UTC'
 
     # Get system context
     $systemContext = @{
@@ -571,13 +570,24 @@ function Build-ComprehensivePRBody {
         WorkingDirectory = (Get-Location).Path
         GitCommit = if ($CommitInfo.Commit) { $CommitInfo.Commit } else { "Unknown" }    }
 
+    # Build issue reference section if issue number provided
+    $issueReference = ""
+    if ($IssueNumber) {
+        $issueReference = @"
+
+## Related Issue
+Closes #$IssueNumber
+
+"@
+    }
+
     $prBody = @"
 ## Patch Overview
 
 **Description**: $Description
 **Branch**: `$BranchName`
 **Created**: $timestamp
-**Applied via**: PatchManager (Invoke-GitControlledPatch)
+**Applied via**: PatchManager (Invoke-GitControlledPatch)$issueReference
 
 ## Change Summary
 
