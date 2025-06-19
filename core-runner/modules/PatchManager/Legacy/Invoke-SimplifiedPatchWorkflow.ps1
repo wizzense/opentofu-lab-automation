@@ -264,12 +264,12 @@ This patch follows the PatchManager workflow:
                 throw "Failed to push branch $BranchName"
             }            # Create PR with robust label handling
             Write-CustomLog "Creating pull request: $prTitle" -Level INFO
-            $result = gh pr create --title $prTitle --body $prBody --head $BranchName --label "patch" 2>&1
+            $result = gh pr create --title $prTitle --body $prBody --head $BranchName --label "patch,tracking,$Priority" 2>&1
             
-            # If label fails, try without any labels
+            # If label fails, fallback to using only the "patch" label
             if ($LASTEXITCODE -ne 0 -and $result -match "not found") {
-                Write-CustomLog "Label issue detected, creating PR without labels" -Level WARN
-                $result = gh pr create --title $prTitle --body $prBody --head $BranchName 2>&1
+                Write-CustomLog "Label issue detected, creating PR with only the 'patch' label" -Level WARN
+                $result = gh pr create --title $prTitle --body $prBody --head $BranchName --label "patch" 2>&1
             }
 
             if ($LASTEXITCODE -eq 0) {

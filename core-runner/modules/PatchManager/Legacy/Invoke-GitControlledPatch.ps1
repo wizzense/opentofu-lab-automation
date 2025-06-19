@@ -294,7 +294,8 @@ function Invoke-GitControlledPatch {
 
             # Simplified error logging (disabled automated issue tracking per user request)
             Write-CustomLog 'Error occurred during patch process' -Level WARN
-            Write-CustomLog "Error details: $($_.Exception.Message)" -Level ERROR            # Attempt cleanup
+            # Attempt cleanup
+            Write-CustomLog "Error details: $($_.Exception.Message)" -Level ERROR
             try {
                 if ($branchName -and -not $DryRun) {
                     Write-CustomLog 'Attempting to clean up failed patch branch...' -Level INFO

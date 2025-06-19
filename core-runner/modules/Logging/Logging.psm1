@@ -27,7 +27,15 @@
 $script:LoggingConfig = @{
     LogLevel = if ($env:LAB_LOG_LEVEL) { $env:LAB_LOG_LEVEL } else { "INFO" }
     ConsoleLevel = if ($env:LAB_CONSOLE_LEVEL) { $env:LAB_CONSOLE_LEVEL } else { "INFO" }
-    LogFilePath = if ($env:LAB_LOG_PATH) { $env:LAB_LOG_PATH } else { (Join-Path $env:TEMP "opentofu-lab-automation.log") }
+    LogFilePath = if ($env:LAB_LOG_PATH) {
+        $env:LAB_LOG_PATH
+    } elseif ($env:TEMP) {
+        (Join-Path $env:TEMP "opentofu-lab-automation.log")
+    } elseif (Test-Path '/tmp') {
+        "/tmp/opentofu-lab-automation.log"
+    } else {
+        (Join-Path (Get-Location) "logs/opentofu-lab-automation.log")
+    }
     MaxLogSizeMB = if ($env:LAB_MAX_LOG_SIZE_MB) { [int]$env:LAB_MAX_LOG_SIZE_MB } else { 50 }
     MaxLogFiles = if ($env:LAB_MAX_LOG_FILES) { [int]$env:LAB_MAX_LOG_FILES } else { 10 }
     EnableTrace = if ($env:LAB_ENABLE_TRACE) { [bool]$env:LAB_ENABLE_TRACE } else { $false }

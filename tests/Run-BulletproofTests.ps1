@@ -64,7 +64,8 @@ $ErrorActionPreference = 'Stop'
 
 # Set up environment
 if (-not $env:PROJECT_ROOT) {
-    $env:PROJECT_ROOT = $PSScriptRoot | Split-Path -Parent | Split-Path -Parent | Split-Path -Parent
+    # Get the project root by going up from tests directory
+    $env:PROJECT_ROOT = Split-Path $PSScriptRoot -Parent
 }
 
 $projectRoot = $env:PROJECT_ROOT
@@ -101,10 +102,10 @@ function Write-BulletproofLog {
 
     $timestamp = if (-not $NoTimestamp) { "[$(Get-Date -Format 'yyyy-MM-dd HH:mm:ss.fff')] " } else { "" }
     $prefix = switch ($Level) {
-        'INFO' { "🔍" }
-        'WARN' { "⚠️ " }
-        'ERROR' { "❌" }
-        'SUCCESS' { "✅" }
+        'INFO' { "[INFO]" }
+        'WARN' { "[WARN]" }
+        'ERROR' { "[ERROR]" }
+        'SUCCESS' { "[SUCCESS]" }
     }
 
     $color = switch ($Level) {
@@ -184,10 +185,10 @@ $testSuites = @{
     }
 }
 
-Write-BulletproofLog "🚀 Starting Bulletproof Test Suite: $TestSuite" -Level SUCCESS
-Write-BulletproofLog "📂 Project Root: $projectRoot" -Level INFO
-Write-BulletproofLog "📊 Log Level: $LogLevel" -Level INFO
-Write-BulletproofLog "🔧 CI Mode: $CI" -Level INFO
+Write-BulletproofLog "Starting Bulletproof Test Suite: $TestSuite" -Level SUCCESS
+Write-BulletproofLog "Project Root: $projectRoot" -Level INFO
+Write-BulletproofLog "Log Level: $LogLevel" -Level INFO
+Write-BulletproofLog "CI Mode: $CI" -Level INFO
 
 # Get test configuration
 $selectedSuite = $testSuites[$TestSuite]
@@ -196,8 +197,8 @@ if (-not $selectedSuite) {
     exit 1
 }
 
-Write-BulletproofLog "🎯 Test Suite: $($selectedSuite.Name)" -Level INFO
-Write-BulletproofLog "⏱️  Max Duration: $($selectedSuite.MaxDuration) seconds" -Level INFO
+Write-BulletproofLog "Test Suite: $($selectedSuite.Name)" -Level INFO
+Write-BulletproofLog "Max Duration: $($selectedSuite.MaxDuration) seconds" -Level INFO
 
 # Create Pester configuration
 $pesterConfig = @{
@@ -258,7 +259,7 @@ try {
 
 # Start test execution
 $startTime = Get-Date
-Write-BulletproofLog "🏁 Starting test execution at $($startTime.ToString('yyyy-MM-dd HH:mm:ss'))" -Level SUCCESS
+Write-BulletproofLog "Starting test execution at $($startTime.ToString('yyyy-MM-dd HH:mm:ss'))" -Level SUCCESS
 
 # Set timeout for test execution
 $timeoutSeconds = $selectedSuite.MaxDuration
@@ -287,20 +288,20 @@ $totalDuration = $endTime - $startTime
 
 # Process results
 if ($testResult) {
-    Write-BulletproofLog "📊 Test Execution Summary:" -Level SUCCESS
-    Write-BulletproofLog "  ⏱️  Duration: $($totalDuration.ToString('mm\:ss'))" -Level INFO
-    Write-BulletproofLog "  📋 Total Tests: $($testResult.TotalCount)" -Level INFO
-    Write-BulletproofLog "  ✅ Passed: $($testResult.PassedCount)" -Level SUCCESS
-    Write-BulletproofLog "   FAILFailed: $($testResult.FailedCount)" -Level $(if ($testResult.FailedCount -gt 0) { 'ERROR' } else { 'INFO' })
-    Write-BulletproofLog "  ⏭️  Skipped: $($testResult.SkippedCount)" -Level INFO
-    Write-BulletproofLog "  🚫 Not Run: $($testResult.NotRunCount)" -Level INFO
+    Write-BulletproofLog "Test Execution Summary:" -Level SUCCESS
+    Write-BulletproofLog "  Duration: $($totalDuration.ToString('mm\:ss'))" -Level INFO
+    Write-BulletproofLog "  Total Tests: $($testResult.TotalCount)" -Level INFO
+    Write-BulletproofLog "  Passed: $($testResult.PassedCount)" -Level SUCCESS
+    Write-BulletproofLog "  Failed: $($testResult.FailedCount)" -Level $(if ($testResult.FailedCount -gt 0) { 'ERROR' } else { 'INFO' })
+    Write-BulletproofLog "  Skipped: $($testResult.SkippedCount)" -Level INFO
+    Write-BulletproofLog "  Not Run: $($testResult.NotRunCount)" -Level INFO
 
     # Calculate success rate
     $successRate = if ($testResult.TotalCount -gt 0) {
         ($testResult.PassedCount / $testResult.TotalCount) * 100
     } else { 0 }
 
-    Write-BulletproofLog "  🎯 Success Rate: $($successRate.ToString('F1'))%" -Level $(
+    Write-BulletproofLog "  Success Rate: $($successRate.ToString('F1'))%" -Level $(
         if ($successRate -ge 95) { 'SUCCESS' }
         elseif ($successRate -ge 80) { 'WARN' }
         else { 'ERROR' }
@@ -308,9 +309,21 @@ if ($testResult) {
 
     # Show failed tests if any
     if ($testResult.FailedCount -gt 0) {
-        Write-BulletproofLog " FAILFailed Tests:" -Level ERROR
+        Write-BulletproofLog "Failed Tests:" -Level ERROR
         $testResult.Failed | ForEach-Object {
-            Write-BulletproofLog "  • $($_.ExpandedName)" -Level ERROR -NoTimestamp
+            # Try different property names to find the correct one
+            $testName = if ($_.ExpandedName) {
+                $_.ExpandedName
+            } elseif ($_.Name) {
+                $_.Name
+            } elseif ($_.FullyQualifiedName) {
+                $_.FullyQualifiedName
+            } elseif ($_.Describe) {
+                "$($_.Describe).$($_.Context).$($_.Name)"
+            } else {
+                $_.ToString()
+            }
+            Write-BulletproofLog "  • $testName" -Level ERROR -NoTimestamp
             if ($LogLevel -in @('Detailed', 'Verbose')) {
                 Write-BulletproofLog "    $($_.ErrorRecord.Exception.Message)" -Level ERROR -NoTimestamp
             }
@@ -324,14 +337,14 @@ if ($testResult) {
             ($coverage.NumberOfCommandsExecuted / $coverage.NumberOfCommandsAnalyzed) * 100
         } else { 0 }
 
-        Write-BulletproofLog "📈 Code Coverage: $($coveragePercent.ToString('F1'))%" -Level $(
+        Write-BulletproofLog "Code Coverage: $($coveragePercent.ToString('F1'))%" -Level $(
             if ($coveragePercent -ge 80) { 'SUCCESS' }
             elseif ($coveragePercent -ge 60) { 'WARN' }
             else { 'ERROR' }
         )
-        Write-BulletproofLog "  📋 Commands Analyzed: $($coverage.NumberOfCommandsAnalyzed)" -Level INFO
-        Write-BulletproofLog "  ✅ Commands Executed: $($coverage.NumberOfCommandsExecuted)" -Level INFO
-        Write-BulletproofLog "   FAILCommands Missed: $($coverage.NumberOfCommandsMissed)" -Level INFO
+        Write-BulletproofLog "  Commands Analyzed: $($coverage.NumberOfCommandsAnalyzed)" -Level INFO
+        Write-BulletproofLog "  Commands Executed: $($coverage.NumberOfCommandsExecuted)" -Level INFO
+        Write-BulletproofLog "  Commands Missed: $($coverage.NumberOfCommandsMissed)" -Level INFO
     }
 
 } else {
@@ -341,7 +354,7 @@ if ($testResult) {
 
 # Generate HTML report if requested
 if ($GenerateReport -and $testResult) {
-    Write-BulletproofLog "📄 Generating HTML report..." -Level INFO
+    Write-BulletproofLog "Generating HTML report..." -Level INFO
 
     $reportPath = Join-Path $bulletproofDir "BulletproofReport-$TestSuite-$(Get-Date -Format 'yyyyMMddHHmmss').html"
 
@@ -363,7 +376,7 @@ if ($GenerateReport -and $testResult) {
 </head>
 <body>
     <div class="header">
-        <h1>🚀 Bulletproof Test Report</h1>
+        <h1>Bulletproof Test Report</h1>
         <h2>Test Suite: $($selectedSuite.Name)</h2>
         <p><strong>Execution Time:</strong> $($startTime.ToString('yyyy-MM-dd HH:mm:ss')) - $($endTime.ToString('yyyy-MM-dd HH:mm:ss'))</p>
         <p><strong>Duration:</strong> $($totalDuration.ToString('mm\:ss'))</p>
@@ -407,13 +420,13 @@ if ($GenerateReport -and $testResult) {
     </div>
 
     <div style="margin-top: 30px; padding: 20px; background: #f8f9fa; border-radius: 5px;">
-        <h3>🎯 Bulletproof Status</h3>
+        <h3>Bulletproof Status</h3>
         $(if ($successRate -ge 95) {
-            "<p class='success'>✅ <strong>BULLETPROOF</strong> - All systems validated and ready for production</p>"
+            "<p class='success'><strong>BULLETPROOF</strong> - All systems validated and ready for production</p>"
         } elseif ($successRate -ge 80) {
-            "<p class='warning'>⚠️ <strong>MOSTLY BULLETPROOF</strong> - Minor issues detected, review recommended</p>"
+            "<p class='warning'><strong>MOSTLY BULLETPROOF</strong> - Minor issues detected, review recommended</p>"
         } else {
-            "<p class='error'> FAIL<strong>NOT BULLETPROOF</strong> - Critical issues detected, remediation required</p>"
+            "<p class='error'><strong>NOT BULLETPROOF</strong> - Critical issues detected, remediation required</p>"
         })
     </div>
 
@@ -426,24 +439,24 @@ if ($GenerateReport -and $testResult) {
 "@
 
     $htmlReport | Out-File -FilePath $reportPath -Encoding UTF8
-    Write-BulletproofLog "📄 HTML report saved to: $reportPath" -Level SUCCESS
+    Write-BulletproofLog "HTML report saved to: $reportPath" -Level SUCCESS
 }
 
 # Output results files
-Write-BulletproofLog "📂 Test Results:" -Level SUCCESS
+Write-BulletproofLog "Test Results:" -Level SUCCESS
 if ($config.TestResult.Enabled) {
-    Write-BulletproofLog "  📄 XML Results: $($config.TestResult.OutputPath)" -Level INFO
+    Write-BulletproofLog "  XML Results: $($config.TestResult.OutputPath)" -Level INFO
 }
 if ($config.CodeCoverage.Enabled) {
-    Write-BulletproofLog "  📊 Coverage Report: $($config.CodeCoverage.OutputPath)" -Level INFO
+    Write-BulletproofLog "  Coverage Report: $($config.CodeCoverage.OutputPath)" -Level INFO
 }
 
 # Set exit code based on results
 $exitCode = if ($testResult -and $testResult.FailedCount -eq 0) { 0 } else { 1 }
 
 # Final status
-Write-BulletproofLog "🏁 Bulletproof Testing Complete" -Level SUCCESS
-Write-BulletproofLog "🚀 Final Status: $(if ($exitCode -eq 0) { 'BULLETPROOF ✅' } else { 'ISSUES DETECTED ❌' })" -Level $(if ($exitCode -eq 0) { 'SUCCESS' } else { 'ERROR' })
+Write-BulletproofLog "Bulletproof Testing Complete" -Level SUCCESS
+Write-BulletproofLog "Final Status: $(if ($exitCode -eq 0) { 'BULLETPROOF' } else { 'ISSUES DETECTED' })" -Level $(if ($exitCode -eq 0) { 'SUCCESS' } else { 'ERROR' })
 
 # Output structured data for CI/CD
 if ($CI -or $OutputPath) {
@@ -466,7 +479,7 @@ if ($CI -or $OutputPath) {
 
     $outputPath = if ($OutputPath) { $OutputPath } else { Join-Path $bulletproofDir "bulletproof-output.json" }
     $outputData | ConvertTo-Json -Depth 3 | Out-File -FilePath $outputPath -Encoding UTF8
-    Write-BulletproofLog "📊 Structured output saved to: $outputPath" -Level INFO
+    Write-BulletproofLog "Structured output saved to: $outputPath" -Level INFO
 }
 
 exit $exitCode
