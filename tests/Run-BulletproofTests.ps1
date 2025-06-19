@@ -291,7 +291,7 @@ if ($testResult) {
     Write-BulletproofLog "  ⏱️  Duration: $($totalDuration.ToString('mm\:ss'))" -Level INFO
     Write-BulletproofLog "  📋 Total Tests: $($testResult.TotalCount)" -Level INFO
     Write-BulletproofLog "  ✅ Passed: $($testResult.PassedCount)" -Level SUCCESS
-    Write-BulletproofLog "  ❌ Failed: $($testResult.FailedCount)" -Level $(if ($testResult.FailedCount -gt 0) { 'ERROR' } else { 'INFO' })
+    Write-BulletproofLog "   FAILFailed: $($testResult.FailedCount)" -Level $(if ($testResult.FailedCount -gt 0) { 'ERROR' } else { 'INFO' })
     Write-BulletproofLog "  ⏭️  Skipped: $($testResult.SkippedCount)" -Level INFO
     Write-BulletproofLog "  🚫 Not Run: $($testResult.NotRunCount)" -Level INFO
 
@@ -308,7 +308,7 @@ if ($testResult) {
 
     # Show failed tests if any
     if ($testResult.FailedCount -gt 0) {
-        Write-BulletproofLog "❌ Failed Tests:" -Level ERROR
+        Write-BulletproofLog " FAILFailed Tests:" -Level ERROR
         $testResult.Failed | ForEach-Object {
             Write-BulletproofLog "  • $($_.ExpandedName)" -Level ERROR -NoTimestamp
             if ($LogLevel -in @('Detailed', 'Verbose')) {
@@ -331,7 +331,7 @@ if ($testResult) {
         )
         Write-BulletproofLog "  📋 Commands Analyzed: $($coverage.NumberOfCommandsAnalyzed)" -Level INFO
         Write-BulletproofLog "  ✅ Commands Executed: $($coverage.NumberOfCommandsExecuted)" -Level INFO
-        Write-BulletproofLog "  ❌ Commands Missed: $($coverage.NumberOfCommandsMissed)" -Level INFO
+        Write-BulletproofLog "   FAILCommands Missed: $($coverage.NumberOfCommandsMissed)" -Level INFO
     }
 
 } else {
@@ -413,7 +413,7 @@ if ($GenerateReport -and $testResult) {
         } elseif ($successRate -ge 80) {
             "<p class='warning'>⚠️ <strong>MOSTLY BULLETPROOF</strong> - Minor issues detected, review recommended</p>"
         } else {
-            "<p class='error'>❌ <strong>NOT BULLETPROOF</strong> - Critical issues detected, remediation required</p>"
+            "<p class='error'> FAIL<strong>NOT BULLETPROOF</strong> - Critical issues detected, remediation required</p>"
         })
     </div>
 

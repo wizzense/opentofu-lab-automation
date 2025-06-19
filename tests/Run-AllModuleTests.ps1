@@ -42,24 +42,24 @@
 [CmdletBinding()]
 param(
     [Parameter()]
-    [ValidateSet("Logging", "ParallelExecution", "ScriptManager", "TestingFramework", 
+    [ValidateSet("Logging", "ParallelExecution", "ScriptManager", "TestingFramework",
                  "BackupManager", "DevEnvironment", "LabRunner", "UnifiedMaintenance", "PatchManager")]
     [string]$ModuleName,
-    
+
     [Parameter()]
     [ValidateSet("Unit", "Integration", "All")]
     [string]$TestType = "All",
-    
+
     [Parameter()]
     [ValidateSet("NUnitXml", "JUnitXml", "NUnit2.5", "Console")]
     [string]$OutputFormat = "Console",
-    
+
     [Parameter()]
     [string]$OutputFile,
-    
+
     [Parameter()]
     [switch]$Parallel,
-    
+
     [Parameter()]
     [switch]$PassThru
 )
@@ -83,7 +83,7 @@ Import-Module Pester -Force
 $modulesToTest = if ($ModuleName) {
     @($ModuleName)
 } else {
-    @("Logging", "ParallelExecution", "ScriptManager", "TestingFramework", 
+    @("Logging", "ParallelExecution", "ScriptManager", "TestingFramework",
       "BackupManager", "DevEnvironment", "LabRunner", "UnifiedMaintenance", "PatchManager")
 }
 
@@ -118,15 +118,15 @@ foreach ($module in $modulesToTest) {
     $moduleTestPath = Join-Path $testsRoot $module
     if (Test-Path $moduleTestPath) {
         $testFiles = Get-ChildItem -Path $moduleTestPath -Filter "*.Tests.ps1" -Recurse
-        
+
         # Filter by test type if specified
         if ($TestType -ne "All") {
-            $testFiles = $testFiles | Where-Object { 
-                $_.Name -match $TestType -or 
-                ($TestType -eq "Unit" -and $_.Name -notmatch "Integration") 
+            $testFiles = $testFiles | Where-Object {
+                $_.Name -match $TestType -or
+                ($TestType -eq "Unit" -and $_.Name -notmatch "Integration")
             }
         }
-        
+
         $allTestFiles += $testFiles.FullName
         Write-Host "  ✓ Found $($testFiles.Count) test file(s) for $module" -ForegroundColor Green
     } else {
@@ -151,7 +151,7 @@ $startTime = Get-Date
 if ($Parallel.IsPresent) {
     # Run tests in parallel
     Write-Host "Running tests in parallel..." -ForegroundColor Yellow
-    
+
     $jobs = @()
     foreach ($testFile in $allTestFiles) {
         $jobs += Start-Job -ScriptBlock {
@@ -164,11 +164,11 @@ if ($Parallel.IsPresent) {
             Invoke-Pester -Configuration $config
         } -ArgumentList $testFile
     }
-    
+
     Write-Host "Waiting for $($jobs.Count) test jobs to complete..." -ForegroundColor Yellow
     $results = $jobs | Wait-Job | Receive-Job
     $jobs | Remove-Job
-    
+
     # Aggregate results
     $aggregateResult = [PSCustomObject]@{
         TotalCount = ($results | Measure-Object TotalCount -Sum).Sum
@@ -184,13 +184,13 @@ if ($Parallel.IsPresent) {
     $config.Run.Path = $allTestFiles
     $config.Run.PassThru = $true
     $config.Output.Verbosity = 'Normal'
-    
+
     if ($OutputFile) {
         $config.TestResult.Enabled = $true
         $config.TestResult.OutputPath = $OutputFile
         $config.TestResult.OutputFormat = $OutputFormat
     }
-    
+
     $aggregateResult = Invoke-Pester -Configuration $config
 }
 
@@ -202,8 +202,8 @@ Write-Host "`n" + "=" * 60
 Write-Host "📊 TEST RESULTS SUMMARY" -ForegroundColor Cyan
 Write-Host "=" * 60
 
-$passRate = if ($aggregateResult.TotalCount -gt 0) { 
-    [math]::Round(($aggregateResult.PassedCount / $aggregateResult.TotalCount) * 100, 2) 
+$passRate = if ($aggregateResult.TotalCount -gt 0) {
+    [math]::Round(($aggregateResult.PassedCount / $aggregateResult.TotalCount) * 100, 2)
 } else { 0 }
 
 Write-Host "Total Tests:    $($aggregateResult.TotalCount)" -ForegroundColor White
@@ -219,7 +219,7 @@ if ($OutputFile) {
 
 # Show failed tests details
 if ($aggregateResult.FailedCount -gt 0) {
-    Write-Host "`n❌ FAILED TESTS:" -ForegroundColor Red
+    Write-Host "`n FAILFAILED TESTS:" -ForegroundColor Red
     if ($Parallel.IsPresent -and $aggregateResult.Results) {
         foreach ($result in $aggregateResult.Results) {
             if ($result.FailedCount -gt 0) {
@@ -249,24 +249,24 @@ foreach ($module in $modulesToTest) {
     } else {
         $aggregateResult.Tests | Where-Object { $_.Path -like "*$module*" }
     }
-    
+
     if ($moduleTests) {
         $modulePassCount = if ($Parallel.IsPresent) {
             ($moduleTests | Measure-Object PassedCount -Sum).Sum
         } else {
             ($moduleTests | Where-Object Result -eq "Passed").Count
         }
-        
+
         $moduleTotalCount = if ($Parallel.IsPresent) {
             ($moduleTests | Measure-Object TotalCount -Sum).Sum
         } else {
             $moduleTests.Count
         }
-        
-        $modulePassRate = if ($moduleTotalCount -gt 0) { 
-            [math]::Round(($modulePassCount / $moduleTotalCount) * 100, 1) 
+
+        $modulePassRate = if ($moduleTotalCount -gt 0) {
+            [math]::Round(($modulePassCount / $moduleTotalCount) * 100, 1)
         } else { 0 }
-        
+
         $status = if ($modulePassRate -eq 100) { "✅" } elseif ($modulePassRate -ge 75) { "⚠️" } else { "❌" }
         Write-Host "  $status $module`: $modulePassCount/$moduleTotalCount ($modulePassRate%)" -ForegroundColor White
     }

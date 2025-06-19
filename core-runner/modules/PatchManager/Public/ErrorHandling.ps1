@@ -87,7 +87,7 @@ $($ErrorRecord.ScriptStackTrace)
             }
 
             $issueComment = @"
-## ❌ Error Encountered
+##  FAILError Encountered
 
 **Category**: $ErrorCategory
 **Time**: $timestamp

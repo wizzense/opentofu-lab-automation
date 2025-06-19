@@ -396,7 +396,7 @@ function New-ValidationSubIssue {
         [string]$TrackingId
     )
 
-    $title = "🔧 $FailureCategory Validation Failures - $TrackingId"
+    $title = "VALIDATION FAILURES - $FailureCategory - $TrackingId"
 
     $description = @"
 # $FailureCategory Validation Failures
@@ -1004,7 +1004,7 @@ function New-SmartValidationSummaryIssue {
 
         @"
 
-## 🔍 Related Issues
+## Related Issues
 
 **Similar validation failures found** (this may be a recurring issue):
 

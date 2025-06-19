@@ -3,9 +3,9 @@
 ## Problem Addressed ✅
 
 **Before**: After `kicker-git.ps1` finished, users were left confused:
-- ❌ Not in the project directory
-- ❌ Unclear how to restart CoreApp
-- ❌ No obvious next steps
+-  FAILNot in the project directory
+-  FAILUnclear how to restart CoreApp
+-  FAILNo obvious next steps
 
 **After**: Clear relaunch pathway with multiple options:
 - ✅ Bootstrap ends in project directory

@@ -537,7 +537,7 @@ AfterAll {
     Write-Host "⏱️  Total Duration: $($script:TestResults.Summary.TotalDuration.ToString('F2')) minutes" -ForegroundColor Yellow
     Write-Host "📊 Total Tests: $($script:TestResults.Summary.TotalTests)" -ForegroundColor Yellow
     Write-Host "✅ Passed: $($script:TestResults.Summary.PassedTests)" -ForegroundColor Green
-    Write-Host "❌ Failed: $($script:TestResults.Summary.FailedTests)" -ForegroundColor Red
+    Write-Host " FAILFailed: $($script:TestResults.Summary.FailedTests)" -ForegroundColor Red
     Write-Host "⏭️  Skipped: $($script:TestResults.Summary.SkippedTests)" -ForegroundColor Yellow
 
     # Calculate success rate
@@ -592,7 +592,7 @@ AfterAll {
     } elseif ($successRate -ge 80) {
         Write-Host "⚠️  MOSTLY BULLETPROOF - Minor issues detected, review recommended" -ForegroundColor Yellow
     } else {
-        Write-Host "❌ NOT BULLETPROOF - Critical issues detected, remediation required" -ForegroundColor Red
+        Write-Host " FAILNOT BULLETPROOF - Critical issues detected, remediation required" -ForegroundColor Red
     }
 
     # Export detailed results
