@@ -401,17 +401,16 @@
             "options": {
                 "cwd": "${workspaceFolder}"
             }
-        },
+        },        // ========================================
+        // PatchManager Core Workflows (Consolidated v2.0)
         // ========================================
-        // PatchManager Common Workflows
-        // ========================================
         {
-            "label": "PatchManager: Create Patch Branch",
+            "label": "PatchManager: Create Feature Patch",
             "type": "shell",
             "command": "pwsh",
             "args": [
                 "-Command",
-                "Import-Module './core-runner/modules/PatchManager' -Force; Invoke-GitControlledPatch -PatchDescription '${input:patchDescription}' -DryRun"
+                "Import-Module './core-runner/modules/PatchManager' -Force; Invoke-PatchWorkflow -PatchDescription '${input:patchDescription}' -PatchOperation { ${input:patchOperation} } -CreateIssue -CreatePR -DryRun"
             ],
             "group": "build",
             "presentation": {
@@ -428,12 +427,12 @@
             }
         },
         {
-            "label": "PatchManager: Apply Changes with Validation",
+            "label": "PatchManager: Quick Patch with Tests",
             "type": "shell",
             "command": "pwsh",
             "args": [
                 "-Command",
-                "Import-Module './core-runner/modules/PatchManager' -Force; Invoke-GitControlledPatch -PatchDescription '${input:patchDescription}' -PatchOperation { ${input:patchOperation} } -AutoCommitUncommitted"
+                "Import-Module './core-runner/modules/PatchManager' -Force; Invoke-PatchWorkflow -PatchDescription '${input:patchDescription}' -PatchOperation { ${input:patchOperation} } -TestCommands @('${input:testCommand}') -CreateIssue -CreatePR"
             ],
             "group": "build",
             "presentation": {
@@ -450,12 +449,12 @@
             }
         },
         {
-            "label": "PatchManager: Create PR with Tests",
+            "label": "PatchManager: Create Issue Only",
             "type": "shell",
             "command": "pwsh",
             "args": [
                 "-Command",
-                "Import-Module './core-runner/modules/PatchManager' -Force; Invoke-GitControlledPatch -PatchDescription '${input:patchDescription}' -CreatePullRequest -TestCommands @('pwsh -NoProfile -Command \"Import-Module ./core-runner/modules/TestingFramework -Force; Invoke-Pester\"')"
+                "Import-Module './core-runner/modules/PatchManager' -Force; New-PatchIssue -Description '${input:patchDescription}' -Priority '${input:priority}' -DryRun"
             ],
             "group": "build",
             "presentation": {
@@ -472,12 +471,12 @@
             }
         },
         {
-            "label": "PatchManager: Quick Fix Workflow",
+            "label": "PatchManager: Emergency Rollback",
             "type": "shell",
             "command": "pwsh",
             "args": [
                 "-Command",
-                "$description = Read-Host 'Patch Description'; Import-Module './core-runner/modules/PatchManager' -Force; Invoke-GitControlledPatch -PatchDescription $description -AutoCommitUncommitted -CreatePullRequest"
+                "Import-Module './core-runner/modules/PatchManager' -Force; Invoke-PatchRollback -RollbackType 'LastCommit' -CreateBackup -DryRun"
             ],
             "group": "build",
             "presentation": {
@@ -494,14 +493,14 @@
             }
         },
         {
-            "label": "PatchManager: Monitored Execution",
+            "label": "PatchManager: Validate All Modules",
             "type": "shell",
             "command": "pwsh",
             "args": [
                 "-Command",
-                "Import-Module './core-runner/modules/PatchManager' -Force; Invoke-MonitoredExecution -ScriptBlock { ${input:scriptBlock} } -Context @{ Task = '${input:taskName}' } -CreateIssues"
+                "Import-Module './core-runner/modules/PatchManager' -Force; Invoke-PatchWorkflow -PatchDescription 'Validate all modules' -PatchOperation { Get-ChildItem 'core-runner/modules' -Directory | ForEach-Object { Import-Module $_.FullName -Force -Verbose } } -TestCommands @('Get-Module | Where-Object { $_.Path -like \"*core-runner/modules*\" }') -DryRun"
             ],
-            "group": "build",
+            "group": "test",
             "presentation": {
                 "echo": true,
                 "reveal": "always",
@@ -650,18 +649,17 @@
             "problemMatcher": [],
             "options": {
                 "cwd": "${workspaceFolder}"
-            }
-        },
+            }        },
         // ========================================
-        // Development Workflows
+        // Development Workflows (Updated for PatchManager v2.0)
         // ========================================
         {
-            "label": "Dev: Enhanced Git Operations",
+            "label": "Dev: Git Operations (Legacy - Not Recommended)",
             "type": "shell",
             "command": "pwsh",
             "args": [
                 "-Command",
-                "Import-Module './core-runner/modules/PatchManager' -Force; Invoke-EnhancedGitOperations -ValidateAfter"
+                "Write-Warning 'This function has been archived. Use Invoke-PatchWorkflow instead.'; Write-Host 'Try: Invoke-PatchWorkflow -PatchDescription \"Your description\" -PatchOperation { # Your changes }'"
             ],
             "group": "build",
             "presentation": {
@@ -678,12 +676,12 @@
             }
         },
         {
-            "label": "Dev: Automated Error Tracking",
+            "label": "Dev: Use New PatchManager Functions",
             "type": "shell",
             "command": "pwsh",
             "args": [
                 "-Command",
-                "Import-Module './core-runner/modules/PatchManager' -Force; Invoke-AutomatedErrorTracking -SourceFunction '${input:functionName}' -Priority 'Medium'"
+                "Write-Host 'NEW PATCHMANAGER CORE FUNCTIONS:' -ForegroundColor Green; Write-Host '1. Invoke-PatchWorkflow - Main entry point' -ForegroundColor Cyan; Write-Host '2. New-PatchIssue - Create issues' -ForegroundColor Cyan; Write-Host '3. New-PatchPR - Create PRs' -ForegroundColor Cyan; Write-Host '4. Invoke-PatchRollback - Rollback operations' -ForegroundColor Cyan; Write-Host 'Legacy functions are archived in Legacy/ folder' -ForegroundColor Yellow"
             ],
             "group": "build",
             "presentation": {
@@ -781,11 +779,28 @@
             "description": "Enter PowerShell script block to execute",
             "default": "Get-Date",
             "type": "promptString"
-        },
-        {
+        },        {
             "id": "functionName",
             "description": "Enter function name for error tracking",
             "default": "MyFunction",
+            "type": "promptString"
+        },
+        {
+            "id": "priority",
+            "description": "Select priority level",
+            "default": "Medium",
+            "type": "pickString",
+            "options": [
+                "Low",
+                "Medium",
+                "High",
+                "Critical"
+            ]
+        },
+        {
+            "id": "testCommand",
+            "description": "Enter test command to validate changes",
+            "default": "Get-Module",
             "type": "promptString"
         }
     ]

@@ -1,83 +1,98 @@
 ---
 applyTo: "**/*.ps1"
-description: "PatchManager workflows and common scenarios"
+description: "PatchManager workflows and common scenarios - UPDATED FOR CONSOLIDATED VERSION"
 ---
 
-# PatchManager Workflows & Instructions
+# PatchManager Workflows & Instructions (Consolidated v2.0)
 
-This file provides comprehensive guidance for using PatchManager effectively in the OpenTofu Lab Automation project.
+This file provides comprehensive guidance for using the **NEW CONSOLIDATED PatchManager** in the OpenTofu Lab Automation project.
 
-## Core PatchManager Commands
+## 🎯 Core PatchManager Functions (4 Total)
 
-### Simplified Patch Workflow (Recommended)
-Use `Invoke-SimplifiedPatchWorkflow` for clean, focused patch operations:
+### Main Workflow Function (Primary)
+
+Use `Invoke-PatchWorkflow` for ALL patch operations - this is the single entry point:
 
 ```powershell
-# Basic patch with issue and PR creation
-Invoke-SimplifiedPatchWorkflow -PatchDescription "Fix non-interactive mode issues" -PatchOperation {
+# Complete patch workflow with issue and PR creation
+Invoke-PatchWorkflow -PatchDescription "Fix non-interactive mode issues" -PatchOperation {
     # Your code changes here
     Write-Host "Making changes..."
-} -CreateIssue -CreatePullRequest -Priority "Medium"
+} -CreateIssue -CreatePR -Priority "Medium"
 
-# Patch with testing
-Invoke-SimplifiedPatchWorkflow -PatchDescription "Update module exports" -PatchOperation {
+# Patch with testing validation
+Invoke-PatchWorkflow -PatchDescription "Update module exports" -PatchOperation {
     # Code changes
-} -TestCommands @("pwsh -Command 'Import-Module ./core-runner/modules/LabRunner -Force'") -CreateIssue -CreatePullRequest
+    Update-ModuleManifest -Path "Module.psd1" -FunctionsToExport @("Function1")
+} -TestCommands @("pwsh -Command 'Import-Module ./core-runner/modules/LabRunner -Force'") -CreateIssue -CreatePR
+
+# Simple patch without GitHub integration
+Invoke-PatchWorkflow -PatchDescription "Quick fix" -PatchOperation {
+    # Your changes
+} -DryRun
 ```
 
-### Individual Components (Advanced Use)
-Use these for granular control:
+### Individual Component Functions
+
+Use these for specific operations:
 
 ```powershell
 # Create issue only
-New-SimpleIssueForPatch -PatchDescription "Fix module loading" -Priority "High"
+New-PatchIssue -Description "Fix module loading" -Priority "High" -AffectedFiles @("Module.psm1")
 
-# Create PR only (with issue linking)
-New-SimplePRForPatch -PatchDescription "Fix module loading" -BranchName "patch/fix-loading" -IssueNumber 123
+# Create PR only (with optional issue linking)
+New-PatchPR -Description "Fix module loading" -BranchName "patch/fix-loading" -IssueNumber 123
+
+# Rollback operations
+Invoke-PatchRollback -RollbackType "LastCommit" -CreateBackup
+Invoke-PatchRollback -RollbackType "SpecificCommit" -CommitHash "abc123def" -DryRun
 ```
 
-### Legacy Git-Controlled Patching (Still Supported)
-Use `Invoke-GitControlledPatch` for backward compatibility:
+## ⚠️ IMPORTANT: Legacy Functions Archived
 
-```powershell
-# Basic patch workflow
-Invoke-GitControlledPatch -PatchDescription "Fix non-interactive mode issues" -PatchOperation {
-    # Your code changes here
-    Write-Host "Making changes..."
-} -TestCommands @("pwsh -Command 'Import-Module ./core-runner/modules/LabRunner -Force'")
-```
+**These functions are NO LONGER available** (moved to Legacy folder):
+
+- ❌ `Invoke-SimplifiedPatchWorkflow` → Use `Invoke-PatchWorkflow`
+- ❌ `Invoke-GitControlledPatch` → Use `Invoke-PatchWorkflow`
+- ❌ `New-SimpleIssueForPatch` → Use `New-PatchIssue`
+- ❌ `New-SimplePRForPatch` → Use `New-PatchPR`
+- ❌ `Invoke-QuickRollback` → Use `Invoke-PatchRollback`
+- ❌ All other legacy functions (23 total)
 
 ## Common Scenarios
 
 ### 1. Module Development & Testing
-When working on modules, always use git-controlled patches:
+
+When working on modules, always use the new workflow:
 
 ```powershell
 # Test a module change safely
-Invoke-GitControlledPatch -PatchDescription "Update LabRunner exports" -PatchOperation {
+Invoke-PatchWorkflow -PatchDescription "Update LabRunner exports" -PatchOperation {
     # Make your changes
-    Add-Content -Path "core-runner/modules/LabRunner/LabRunner.psm1" -Value "# New function"
+    Update-ModuleManifest -Path "core-runner/modules/LabRunner/LabRunner.psd1" -FunctionsToExport @("Function1")
 } -TestCommands @(
     "pwsh -Command 'Import-Module ./core-runner/modules/LabRunner -Force'",
     "pwsh -File ./tests/unit/modules/LabRunner/LabRunner.Tests.ps1"
-)
+) -CreateIssue -CreatePR
 ```
 
 ### 2. Non-Interactive Testing
+
 For testing non-interactive scenarios:
 
 ```powershell
-# Test core-runner in non-interactive mode with monitoring
-Invoke-MonitoredExecution -ScriptBlock {
+# Test core-runner in non-interactive mode
+Invoke-PatchWorkflow -PatchDescription "Fix non-interactive mode" -PatchOperation {
     & "./core-runner/core_app/core-runner.ps1" -NonInteractive -Auto -WhatIf
-} -Context @{TestType = "NonInteractive"; Component = "CoreRunner"} -CreateIssues
+} -TestCommands @("./test-noninteractive-fix.ps1 -TestMode All") -CreateIssue
 ```
 
 ### 3. Bulk Module Updates
+
 When updating multiple modules:
 
 ```powershell
-Invoke-GitControlledPatch -PatchDescription "Standardize module error handling" -PatchOperation {
+Invoke-PatchWorkflow -PatchDescription "Standardize module error handling" -PatchOperation {
     Get-ChildItem "core-runner/modules" -Filter "*.psm1" -Recurse | ForEach-Object {
         # Apply standardized error handling
         $content = Get-Content $_.FullName -Raw
@@ -87,21 +102,22 @@ Invoke-GitControlledPatch -PatchDescription "Standardize module error handling" 
 } -TestCommands @(
     "pwsh -File ./tests/Run-AllModuleTests.ps1",
     "pwsh -File ./tests/Run-BulletproofTests.ps1 -TestSuite Unit"
-)
+) -CreateIssue -CreatePR
 ```
 
 ### 4. Configuration Changes
+
 For configuration file updates:
 
 ```powershell
-Invoke-GitControlledPatch -PatchDescription "Update default configuration" -PatchOperation {
+Invoke-PatchWorkflow -PatchDescription "Update default configuration" -PatchOperation {
     $config = Get-Content "configs/default-config.json" | ConvertFrom-Json
     $config.newProperty = "newValue"
     $config | ConvertTo-Json -Depth 10 | Set-Content "configs/default-config.json"
 } -TestCommands @(
     "pwsh -Command 'Test-Json (Get-Content configs/default-config.json -Raw)'",
     "pwsh -File ./core-runner/core_app/core-runner.ps1 -WhatIf -Auto"
-)
+) -CreateIssue -CreatePR
 ```
 
 ## VS Code Tasks Integration
@@ -115,12 +131,12 @@ Use these VS Code tasks for common PatchManager workflows:
 
 ## Best Practices
 
-1. **Use the simplified workflow** for most patch operations: `Invoke-SimplifiedPatchWorkflow`
+1. **Use the main workflow** for most patch operations: `Invoke-PatchWorkflow`
 2. **Always use descriptive patch descriptions** that explain the what and why
-3. **Create issues and PRs together** using `-CreateIssue -CreatePullRequest` for proper auto-closing
+3. **Create issues and PRs together** using `-CreateIssue -CreatePR` for proper auto-closing
 4. **Include test commands** when possible to validate your changes
 5. **Use DryRun mode first** to preview changes without executing them: `-DryRun`
-6. **No emoji/Unicode output** - the simplified workflow follows project standards
+6. **No emoji/Unicode output** - the new workflow follows project standards
 7. **Explicit control** - create issues and PRs only when needed, not automatically
 
 ## Error Handling Patterns
@@ -128,22 +144,17 @@ Use these VS Code tasks for common PatchManager workflows:
 ```powershell
 # Pattern 1: Safe execution with rollback
 try {
-    Invoke-GitControlledPatch -PatchDescription "Risky change" -PatchOperation {
+    Invoke-PatchWorkflow -PatchDescription "Risky change" -PatchOperation {
         # Risky code here
-    } -TestCommands @("validation-command")
+    } -TestCommands @("validation-command") -CreateIssue
 } catch {
     Write-Error "Patch failed: $($_.Exception.Message)"
-    # Manual rollback if needed
+    # Use rollback if needed
+    Invoke-PatchRollback -RollbackType "LastCommit" -CreateBackup
 }
 
-# Pattern 2: Monitored execution with issue creation
-Invoke-MonitoredExecution -ScriptBlock {
-    # Code that might fail
-} -ErrorHandling "Comprehensive" -CreateIssues -Context @{
-    Component = "PatchManager"
-    Operation = "TestOperation"
-    Environment = "Development"
-}
+# Pattern 2: Emergency rollback
+Invoke-PatchRollback -RollbackType "LastCommit" -CreateBackup -Force
 ```
 
 ## Testing Integration
@@ -164,8 +175,10 @@ pwsh -File "./test-noninteractive-fix.ps1" -TestMode All
 ## Log File Locations
 
 PatchManager operations create logs in:
+
 - `logs/patchmanager-operations-{date}.log`
-- `logs/monitored-execution-{date}.log`
 - `logs/automated-error-tracking.json`
 
 Always check these logs after operations for detailed execution information.
+
+Always use PowerShell 7.0+ cross-platform syntax with forward slashes for paths.

@@ -25,7 +25,7 @@ Use these existing modules instead of creating new functionality:
 - **LabRunner**: Lab automation orchestration and test execution coordination
 - **Logging**: Centralized logging with levels (INFO, WARN, ERROR, SUCCESS)
 - **ParallelExecution**: Runspace-based parallel task execution
-- **PatchManager**: Software patching workflows and system maintenance
+- **PatchManager**: NEW CONSOLIDATED VERSION - 4 core functions: Invoke-PatchWorkflow, New-PatchIssue, New-PatchPR, Invoke-PatchRollback. Legacy functions archived.
 - **ScriptManager**: Script repository management and template handling
 - **TestingFramework**: Pester test wrapper with project-specific configurations
 - **UnifiedMaintenance**: Unified entry point for all maintenance operations
