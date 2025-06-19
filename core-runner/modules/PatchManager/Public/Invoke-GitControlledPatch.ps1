@@ -183,7 +183,7 @@ function Invoke-GitControlledPatch {
                 Write-CustomLog "Changes committed successfully" -Level SUCCESS
             } else {
                 Write-CustomLog "DRY RUN: Would commit changes" -Level INFO
-            }            # Step 5: Create pull request if requested
+            }              # Step 5: Create pull request if requested
             if ($CreatePullRequest) {
                 Write-CustomLog "Creating pull request..." -Level INFO
 
@@ -197,13 +197,13 @@ function Invoke-GitControlledPatch {
                         "Commit successful" = $true
                     }
 
-                    # FIRST: Create GitHub issue for tracking
+                    # STEP 1: Create GitHub issue FIRST for proper PR linking
                     Write-CustomLog "Creating GitHub issue for patch tracking..." -Level INFO
                     $issueDescription = @"
 This issue tracks the patch: **$PatchDescription**
 
 ## Patch Context
-- **Branch**: `$branchName`
+- **Branch**: $branchName
 - **Created**: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss UTC')
 - **Applied via**: PatchManager (Invoke-GitControlledPatch)
 
@@ -212,7 +212,7 @@ This patch must meet all quality standards before merge, including comprehensive
 
 ## Files Affected
 $(if ($AffectedFiles.Count -gt 0) {
-    $AffectedFiles | ForEach-Object { "- ``$_``" } | Out-String
+    ($AffectedFiles | ForEach-Object { "- ``$_``" }) -join "`n"
 } else {
     "- *Files will be identified during detailed review*"
 })
@@ -227,7 +227,7 @@ This issue will be automatically closed when the associated pull request is merg
                         Write-CustomLog "GitHub issue created: $($issueResult.IssueUrl)" -Level SUCCESS
                         Write-CustomLog "Issue Number: #$($issueResult.IssueNumber)" -Level INFO
 
-                        # SECOND: Create PR with issue reference
+                        # STEP 2: Create PR with issue reference for auto-close
                         $prResult = New-GitControlledPatchPullRequest -BranchName $branchName -Description $PatchDescription -AffectedFiles $AffectedFiles -ValidationResults $validationResults -IssueNumber $issueResult.IssueNumber -AutoMerge:$AutoMerge
 
                         if ($prResult.Success) {
@@ -255,7 +255,7 @@ This issue will be automatically closed when the associated pull request is merg
                         }
                     } else {
                         Write-CustomLog "Failed to create GitHub issue: $($issueResult.Message)" -Level ERROR
-                        # Continue with PR creation without issue link
+                        # Continue with PR creation without issue link as fallback
                         $prResult = New-GitControlledPatchPullRequest -BranchName $branchName -Description $PatchDescription -AffectedFiles $AffectedFiles -ValidationResults $validationResults -AutoMerge:$AutoMerge
 
                         if ($prResult.Success) {
@@ -271,7 +271,32 @@ This issue will be automatically closed when the associated pull request is merg
                             }
                         } else {
                             Write-CustomLog "Failed to create pull request: $($prResult.Message)" -Level ERROR
-                            return @{                } else {
+                            return @{
+                                Success = $false
+                                BranchName = $branchName
+                                Message = "Patch committed but PR creation failed: $($prResult.Message)"
+                            }
+                        }
+                    } else {
+                        Write-CustomLog "Failed to create pull request: $($prResult.Message)" -Level WARN
+
+                        # ENHANCED: Create error tracking issue for PR creation failure
+                        try {
+                            $errorIssue = Invoke-ComprehensiveIssueTracking -Operation "Error" -Title "PatchManager Error: PR Creation Failed" -Description "Pull request creation failed during patch operation: $PatchDescription" -ErrorDetails @{
+                                ErrorMessage = $prResult.Message
+                                Operation = "Pull Request Creation"
+                                PatchDescription = $PatchDescription
+                                BranchName = $branchName
+                            } -AffectedFiles $AffectedFiles -Priority "High"
+
+                            if ($errorIssue.Success) {
+                                Write-CustomLog "Error tracking issue created: $($errorIssue.IssueUrl)" -Level INFO
+                            }
+                        } catch {
+                            Write-CustomLog "Could not create error tracking issue: $($_.Exception.Message)" -Level WARN
+                        }
+                    }
+                } else {
                     Write-CustomLog "DRY RUN: Would create pull request" -Level INFO
                 }
             }
@@ -285,6 +310,8 @@ This issue will be automatically closed when the associated pull request is merg
                 Message = "Patch applied successfully"
                 DryRun = $DryRun
             }
+        }
+        catch {
             $errorMessage = "Patch process failed: $($_.Exception.Message)"
             Write-CustomLog $errorMessage -Level ERROR
 
@@ -479,7 +506,7 @@ function New-GitControlledPatchPullRequest {
         $changeStats = Get-GitChangeStatistics
         $commitInfo = Get-GitCommitInfo        # Create enhanced PR with comprehensive context
         $prTitle = "PatchManager: $Description"
-        $prBody = Build-ComprehensivePRBody -Description $Description -BranchName $BranchName -AffectedFiles $AffectedFiles -ValidationResults $ValidationResults -ChangeStats $changeStats -CommitInfo $commitInfo -IssueNumber $IssueNumber -AutoMerge:$AutoMerge
+        $prBody = Build-ComprehensivePRBody -Description $Description -BranchName $branchName -AffectedFiles $AffectedFiles -ValidationResults $ValidationResults -ChangeStats $changeStats -CommitInfo $commitInfo -IssueNumber $IssueNumber -AutoMerge:$AutoMerge
 
         Write-CustomLog "Creating pull request..." -Level INFO
 
@@ -562,11 +589,13 @@ function Build-ComprehensivePRBody {
 Closes #$IssueNumber
 
 "@
-    }    $prBody = @"
+    }
+
+    $prBody = @"
 ## Patch Overview
 
 **Description**: $Description
-**Branch**: `$BranchName`
+**Branch**: $BranchName
 **Created**: $timestamp
 **Applied via**: PatchManager (Invoke-GitControlledPatch)$issueReference
 
