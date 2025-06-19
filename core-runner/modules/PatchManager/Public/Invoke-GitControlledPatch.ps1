@@ -221,7 +221,7 @@ $(if ($AffectedFiles.Count -gt 0) {
 This issue will be automatically closed when the associated pull request is merged.
 "@
 
-                    $issueResult = Invoke-ComprehensiveIssueTracking -Operation "Patch" -Title "Patch Tracking: $PatchDescription" -Description $issueDescription -AffectedFiles $AffectedFiles -Priority "Medium"
+                    $issueResult = Invoke-ComprehensiveIssueTracking -Operation "PR" -Title "Patch Tracking: $PatchDescription" -Description $issueDescription -AffectedFiles $AffectedFiles -Priority "Medium"
 
                     if ($issueResult.Success) {
                         Write-CustomLog "GitHub issue created: $($issueResult.IssueUrl)" -Level SUCCESS

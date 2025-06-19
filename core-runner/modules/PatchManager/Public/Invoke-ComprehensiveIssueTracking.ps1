@@ -57,9 +57,8 @@
 
 function Invoke-ComprehensiveIssueTracking {
     [CmdletBinding()]
-    param(
-        [Parameter(Mandatory = $false)]
-        [ValidateSet("PR", "Error", "TestFailure", "RuntimeFailure", "Warning")]
+    param(        [Parameter(Mandatory = $false)]
+        [ValidateSet("PR", "Patch", "Error", "TestFailure", "RuntimeFailure", "Warning")]
         [string]$Operation = "PR",
         
         [Parameter(Mandatory = $false)]
@@ -129,10 +128,10 @@ function Invoke-ComprehensiveIssueTracking {
     }
     
     process {
-        try {
-            # Determine operation-specific labels and priority adjustments
+        try {            # Determine operation-specific labels and priority adjustments
             $operationLabels = switch ($Operation) {
                 "PR" { @("enhancement", "pull-request-tracking") }
+                "Patch" { @("enhancement", "patch-tracking", "automation") }
                 "Error" { @("bug", "error", "needs-investigation") }
                 "TestFailure" { @("bug", "test-failure", "needs-fix") }
                 "RuntimeFailure" { @("bug", "runtime-error", "critical") }
@@ -335,8 +334,7 @@ function Build-ComprehensiveIssueBody {
     }
     
     # Build operation-specific content
-    $operationContent = switch ($Operation) {
-        "PR" {
+    $operationContent = switch ($Operation) {        "PR" {
             @"
 ## Pull Request Tracking Issue
 
@@ -363,6 +361,38 @@ This issue tracks the lifecycle of **Pull Request #$PullRequestNumber** to ensur
 - [ ] Branch is up to date with target branch
 
 $(if ($AutoClose) { "**Note**: This issue will automatically close when PR #$PullRequestNumber is merged." } else { "**Note**: Manual closure required after PR is merged." })
+"@
+        }
+        
+        "Patch" {
+            @"
+## Patch Tracking Issue
+
+This issue tracks the patch: **$Description**
+
+### Patch Context
+- **Description**: $Description
+- **Created**: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss UTC')
+- **Applied via**: PatchManager (Invoke-GitControlledPatch)
+
+### Quality Assurance Requirements
+This patch must meet all quality standards before merge, including comprehensive testing, security review, and maintainer approval.
+
+### Files Affected
+$(if ($AffectedFiles.Count -gt 0) {
+    ($AffectedFiles | ForEach-Object { "- ``$_``" }) -join "`n"
+} else {
+    "- *Files will be identified during detailed review*"
+})
+
+### Review Checklist
+- [ ] Patch applied correctly
+- [ ] All tests passing
+- [ ] No breaking changes introduced
+- [ ] Documentation updated if needed
+- [ ] Ready for production deployment
+
+$(if ($AutoClose) { "**Note**: This issue will automatically close when the associated pull request is merged." } else { "**Note**: Manual closure required after patch is deployed." })
 "@
         }
         
