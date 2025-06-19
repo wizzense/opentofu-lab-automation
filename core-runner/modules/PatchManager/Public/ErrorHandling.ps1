@@ -116,57 +116,12 @@ $suggestedActions
         StackTrace  = $ErrorRecord?.ScriptStackTrace
         LogPath     = $LogPath
         IssueNumber = $IssueNumber
-    }
-    
+    }    
     return $errorObject
 }
 
-function Write-PatchLog {
-    [CmdletBinding()]
-    param(
-        [Parameter(Mandatory = $true)]
-        [string]$Message,
-        [Parameter(Mandatory = $false)]
-        [ValidateSet("INFO", "WARNING", "ERROR", "DEBUG", "SUCCESS")]
-        [string]$LogLevel = "INFO",
-        
-        [Parameter(Mandatory = $false)]
-        [string]$LogFile = "logs/patch-operations.log",
-        
-        [Parameter(Mandatory = $false)]
-        [switch]$NoConsole
-    )
-
-      # Format log message
-    $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
-    $logMessage = "[$timestamp] [$LogLevel] $Message"
-    
-    # Write to log file only if LogFile is provided and not empty
-    if ($LogFile -and $LogFile.Trim()) {
-        # Create log directory if needed
-        $logDir = Split-Path $LogFile -Parent
-        if (-not (Test-Path $logDir)) {
-            if (-not (Test-Path $logDir)) { New-Item -ItemType Directory -Path $logDir -Force | Out-Null }
-        }
-        
-        # Write to log file
-        $logMessage | Out-File -FilePath $LogFile -Append
-    }
-    
-    # Write to console with color based on log level (unless NoConsole is specified)
-    if (-not $NoConsole) {
-        $color = switch ($LogLevel) {
-            "INFO" { "White" }
-            "WARNING" { "Yellow" }
-            "ERROR" { "Red" }
-            "DEBUG" { "Gray" }
-            "SUCCESS" { "Green" }
-            default { "White" }
-        }
-        
-        Write-Host $logMessage -ForegroundColor $color
-    }
-}
+# Write-PatchLog function removed to avoid conflicts with internal functions
+# Use Write-CustomLog from the centralized Logging module instead
 
 # Note: Export-ModuleMember is handled by the parent module
 
