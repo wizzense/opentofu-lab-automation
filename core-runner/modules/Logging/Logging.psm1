@@ -36,6 +36,7 @@ $script:LoggingConfig = @{
     EnableCallStack = if ($env:LAB_ENABLE_CALLSTACK) { [bool]$env:LAB_ENABLE_CALLSTACK } else { $true }
     LogToFile = if ($env:LAB_LOG_TO_FILE) { [bool]$env:LAB_LOG_TO_FILE } else { $true }
     LogToConsole = if ($env:LAB_LOG_TO_CONSOLE) { [bool]$env:LAB_LOG_TO_CONSOLE } else { $true }
+    Initialized = $false  # Track initialization state
 }
 
 # Log level hierarchy (higher numbers = more verbose)
@@ -76,8 +77,16 @@ function Initialize-LoggingSystem {
         [switch]$EnableTrace,
         
         [Parameter()]
-        [switch]$EnablePerformance
+        [switch]$EnablePerformance,
+        
+        [Parameter()]
+        [switch]$Force
     )
+    
+    # Check if already initialized (unless forced)
+    if ($script:LoggingConfig.Initialized -and -not $Force.IsPresent) {
+        return
+    }
     
     if ($LogPath) { $script:LoggingConfig.LogFilePath = $LogPath }
     $script:LoggingConfig.LogLevel = $LogLevel
@@ -110,10 +119,12 @@ Performance Tracking: $($script:LoggingConfig.EnablePerformance)
 ================================================================================
 
 "@
-    
-    if ($script:LoggingConfig.LogToFile) {
+      if ($script:LoggingConfig.LogToFile) {
         Add-Content -Path $script:LoggingConfig.LogFilePath -Value $sessionHeader -Encoding UTF8
     }
+    
+    # Mark as initialized
+    $script:LoggingConfig.Initialized = $true
     
     Write-CustomLog "Logging system initialized" -Level SUCCESS
 }

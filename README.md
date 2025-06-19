@@ -12,6 +12,8 @@ Cross-platform PowerShell automation framework for OpenTofu/Terraform infrastruc
 powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/main/kicker-git.ps1' -OutFile '.\bootstrap.ps1'; .\bootstrap.ps1"
 ```
 
+[kicker-git.ps1](https://github.com/wizzense/opentofu-lab-automation/blob/3c5d8271d6c3c474b303e44368b54fc67bc09101/kicker-git.ps1)
+
 **Alternative Minimal Launcher:**
 
 ```powershell

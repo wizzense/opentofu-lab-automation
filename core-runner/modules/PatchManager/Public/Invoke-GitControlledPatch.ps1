@@ -368,13 +368,14 @@ This issue will monitor the PR lifecycle and ensure all requirements are met bef
 function New-PatchBranch {
     [CmdletBinding()]
     param(
-        [string]$PatchDescription,
+        [Parameter(Mandatory = $true)]
+        [string]$Description,
         [string]$BaseBranch,
         [string]$Prefix = "patch",
         [switch]$DryRun
     )
     
-    $branchName = "$Prefix/$(Get-Date -Format 'yyyyMMdd-HHmmss')-$($PatchDescription -replace '[^a-zA-Z0-9]', '-')"
+    $branchName = "$Prefix/$(Get-Date -Format 'yyyyMMdd-HHmmss')-$($Description -replace '[^a-zA-Z0-9]', '-')"
     $branchName = $branchName.ToLower()
     
     if ($DryRun) {

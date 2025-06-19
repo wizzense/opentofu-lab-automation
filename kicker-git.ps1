@@ -172,13 +172,13 @@ function Get-PlatformTempPath {
 function Write-BootstrapLog {
     param(
         [Parameter(Mandatory)]
+        [AllowEmptyString()]
         [string]$Message,
         
         [ValidateSet('INFO', 'WARN', 'ERROR', 'SUCCESS')]
         [string]$Level = 'INFO',
         
-        [switch]$NoTimestamp
-    )
+        [switch]$NoTimestamp    )
     
     $levelPriority = @{ INFO = 1; WARN = 1; ERROR = 0; SUCCESS = 1 }[$Level]
     
@@ -186,17 +186,20 @@ function Write-BootstrapLog {
         $timestamp = if ($NoTimestamp) { '' } else { "[$(Get-Date -Format 'HH:mm:ss')] " }
         $colorMap = @{ INFO = 'White'; WARN = 'Yellow'; ERROR = 'Red'; SUCCESS = 'Green' }
         
+        # Handle empty messages (for spacing)
+        $displayMessage = if ([string]::IsNullOrEmpty($Message)) { '' } else { "$Level`: $Message" }
+        
         # PowerShell 5.1 compatible color output
         try {
-            Write-Host "$timestamp$Level`: $Message" -ForegroundColor $colorMap[$Level]
+            Write-Host "$timestamp$displayMessage" -ForegroundColor $colorMap[$Level]
         } catch {
             # Fallback for environments without color support
-            Write-Host "$timestamp$Level`: $Message"
+            Write-Host "$timestamp$displayMessage"
         }
     }
     
     # Always log to file if possible (enhanced error handling)
-    if ($script:LogFile) {
+    if ($script:LogFile -and -not [string]::IsNullOrEmpty($Message)) {
         try {
             $logDir = Split-Path $script:LogFile -Parent
             if (-not (Test-Path $logDir)) {
@@ -652,10 +655,14 @@ function Invoke-CoreAppBootstrap {
                 $coreAppArgs += @('-ConfigFile', $tempConfigPath)
             } catch {
                 Write-BootstrapLog "Failed to serialize config, proceeding without it: $($_.Exception.Message)" 'WARN'
-            }
-        }
+            }        }
         
-        $coreAppArgs += @('-Verbosity', $Verbosity)
+        # Handle verbosity parameter correctly based on core-runner parameter sets
+        if ($Verbosity -eq 'silent') {
+            $coreAppArgs += '-Quiet'
+        } else {
+            $coreAppArgs += @('-Verbosity', $Verbosity)
+        }
         
         if ($NonInteractive) {
             $coreAppArgs += '-NonInteractive'
@@ -854,17 +861,20 @@ function Start-Bootstrap {
         Write-BootstrapLog "Log file: $script:LogFile" 'INFO'
         Write-BootstrapLog "PowerShell compatibility: $($PSVersionTable.PSVersion.Major).x ✓" 'INFO'
         
-        if ($script:VerbosityLevel -ge 1) {
-            Write-BootstrapLog "" 'INFO' -NoTimestamp
+        if ($script:VerbosityLevel -ge 1) {            Write-BootstrapLog "" 'INFO' -NoTimestamp
             Write-BootstrapLog "🎉 OpenTofu Lab Automation is ready! 🎉" 'SUCCESS' -NoTimestamp
             Write-BootstrapLog "Compatible with PowerShell 5.1 and 7.x ✓" 'SUCCESS' -NoTimestamp
             Write-BootstrapLog "" 'INFO' -NoTimestamp
             Write-BootstrapLog "🚀 CoreApp Orchestration System:" 'INFO' -NoTimestamp
-            Write-BootstrapLog "  • Import-Module '$repoPath/core-runner/core_app'" 'INFO' -NoTimestamp
+            Write-BootstrapLog "  • Import-Module '$repoPath/core-runner/core_app/CoreApp.psm1'" 'INFO' -NoTimestamp
             Write-BootstrapLog "  • Initialize-CoreApplication    # Initialize all modules" 'INFO' -NoTimestamp
             Write-BootstrapLog "  • Get-CoreModuleStatus         # Check module health" 'INFO' -NoTimestamp
             Write-BootstrapLog "  • Invoke-UnifiedMaintenance    # Run maintenance tasks" 'INFO' -NoTimestamp
             Write-BootstrapLog "  • Start-DevEnvironmentSetup    # Set up dev environment" 'INFO' -NoTimestamp
+            Write-BootstrapLog "" 'INFO' -NoTimestamp
+            Write-BootstrapLog "💡 Quick Start - Import CoreApp to current session:" 'INFO' -NoTimestamp
+            Write-BootstrapLog "  Import-Module '$repoPath/core-runner/core_app/CoreApp.psm1' -Force" 'INFO' -NoTimestamp
+            Write-BootstrapLog "  Initialize-CoreApplication" 'INFO' -NoTimestamp
             Write-BootstrapLog "" 'INFO' -NoTimestamp
             Write-BootstrapLog "🔧 Quick Start Commands:" 'INFO' -NoTimestamp
             Write-BootstrapLog "  • Run tests: cd '$repoPath'; pwsh -Command 'Invoke-Pester'" 'INFO' -NoTimestamp
