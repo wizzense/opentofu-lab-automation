@@ -141,7 +141,7 @@ function Initialize-StandardParameters {
     # -----------------------------------------
     
     # Configure verbosity level
-    if ($env:LAB_CONSOLE_LEVEL -ne $scriptParams.VerbosityLevel) {
+    if ($env:LAB_CONSOLE_LEVEL -ne $scriptParams.Verbosity) {
         $env:LAB_CONSOLE_LEVEL = switch ($scriptParams.Verbosity) {
             'silent' { 0 }
             'normal' { 1 }
