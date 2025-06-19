@@ -197,7 +197,8 @@ try {
                 # Interactive mode - show menu                Write-Host "`nAvailable Scripts:" -ForegroundColor Cyan
                 for ($i = 0; $i -lt $availableScripts.Count; $i++) {
                     $script = $availableScripts[$i]
-                    $scriptPrefix = if ($script.BaseName -match '^(\d{4})_') { $matches[1] } else { '' }
+                    # Ensure script prefix extraction is robust and handles unexpected formats
+                    $scriptPrefix = if ($script.BaseName -match '^\d{4}_') { $matches[0] } else { '' }
                     $displayText = if ($scriptPrefix) { "$($i + 1). [$scriptPrefix] $($script.BaseName)" } else { "$($i + 1). $($script.BaseName)" }
                     Write-Host "  $displayText" -ForegroundColor Gray
                 }
@@ -227,7 +228,9 @@ try {
                         }
                         # Try to match by script prefix (e.g., "0200" for "0200_Get-SystemInfo")
                         elseif ($num -match '^\d{4}$') {
-                            $selectedScript = $availableScripts | Where-Object { $_.BaseName -like "$num*" } | Select-Object -First 1
+                            # Add logging for debugging script prefix matching
+                            Write-CustomLog "Matching script prefix: $num against available scripts." -Level DEBUG
+                            $selectedScript = $availableScripts | Where-Object { $_.BaseName -ilike "$num*" } | Select-Object -First 1
                         }
                         # Try to match by partial script name
                         elseif ($num -match '^[a-zA-Z]') {
@@ -238,7 +241,8 @@ try {
                             Write-CustomLog "Executing script: $($selectedScript.BaseName)" -Level INFO
                             & $selectedScript.FullName -Config $config -Verbosity $Verbosity
                         } else {
-                            Write-CustomLog "Invalid selection: $num (try list number 1-$($availableScripts.Count), script prefix like '0200', or partial name)" -Level WARN
+                            # Improve error message for invalid selections
+                            Write-CustomLog "Invalid selection: $num. Valid options are list numbers (1-$($availableScripts.Count)), script prefixes (e.g., '0200'), or partial names." -Level WARN
                         }
                     }
                 }
