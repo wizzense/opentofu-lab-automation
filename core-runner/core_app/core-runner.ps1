@@ -48,7 +48,8 @@ param(
     [switch]$Auto,
     [string]$Scripts,
     [switch]$Force,
-    [switch]$NonInteractive
+    [switch]$NonInteractive,
+    [switch]$WhatIf
 )
 
 # Set up environment
@@ -59,7 +60,7 @@ if (-not $NonInteractive) {
     $NonInteractive = ($Host.Name -eq 'Default Host') -or 
                      ([Environment]::UserInteractive -eq $false) -or
                      ($env:PESTER_RUN -eq 'true') -or
-                     ($PSCmdlet.WhatIf) -or
+                     ($WhatIf) -or
                      ($Auto.IsPresent)
 }
 
@@ -153,11 +154,12 @@ try {
 }
 
 # Main execution logic
-try {
-    Write-CustomLog 'Starting OpenTofu Lab Automation Core Runner' -Level SUCCESS
+try {    Write-CustomLog 'Starting OpenTofu Lab Automation Core Runner' -Level SUCCESS
     Write-CustomLog "Repository root: $repoRoot" -Level INFO
     Write-CustomLog "Configuration file: $ConfigFile" -Level INFO
     Write-CustomLog "Verbosity level: $Verbosity" -Level INFO
+    Write-CustomLog "NonInteractive mode: $NonInteractive" -Level INFO
+    Write-CustomLog "WhatIf mode: $($PSCmdlet.WhatIf)" -Level INFO
     
     # Get available scripts
     $scriptsPath = Join-Path $PSScriptRoot 'scripts'
@@ -178,8 +180,7 @@ try {
                 } else {
                     Write-CustomLog "Script not found: $scriptName" -Level WARN
                 }
-            }
-        } elseif ($Auto) {
+            }        } elseif ($Auto) {
             # Run all scripts in auto mode
             Write-CustomLog 'Running all scripts in automatic mode' -Level INFO
             foreach ($script in $availableScripts) {
@@ -189,16 +190,18 @@ try {
                 }
             }        } else {
             # Check if running in non-interactive mode without specific scripts
+            Write-CustomLog "Debug: NonInteractive=$NonInteractive, WhatIf=$($PSCmdlet.WhatIf), Auto=$($Auto.IsPresent)" -Level DEBUG
             if ($NonInteractive -or $PSCmdlet.WhatIf) {
                 Write-CustomLog 'Non-interactive mode: use -Scripts parameter to specify which scripts to run' -Level INFO
                 Write-CustomLog 'No scripts specified for non-interactive execution' -Level WARN
                 return  # Exit gracefully instead of interactive prompt
             } else {
-                # Interactive mode - show menu                Write-Host "`nAvailable Scripts:" -ForegroundColor Cyan
+                # Interactive mode - show menu
+                Write-Host "`nAvailable Scripts:" -ForegroundColor Cyan
                 for ($i = 0; $i -lt $availableScripts.Count; $i++) {
                     $script = $availableScripts[$i]
-                    # Ensure script prefix extraction is robust and handles unexpected formats
-                    $scriptPrefix = if ($script.BaseName -match '^\d{4}_') { $matches[0] } else { '' }
+                    # Extract script prefix correctly (just the 4-digit number without underscore)
+                    $scriptPrefix = if ($script.BaseName -match '^(\d{4})_') { $matches[1] } else { '' }
                     $displayText = if ($scriptPrefix) { "$($i + 1). [$scriptPrefix] $($script.BaseName)" } else { "$($i + 1). $($script.BaseName)" }
                     Write-Host "  $displayText" -ForegroundColor Gray
                 }
@@ -217,7 +220,8 @@ try {
                     foreach ($script in $availableScripts) {
                         Write-CustomLog "Executing script: $($script.BaseName)" -Level INFO
                         & $script.FullName -Config $config -Verbosity $Verbosity
-                    }                } else {
+                    }
+                } else {
                     $selectedNumbers = $selection -split ',' | ForEach-Object { $_.Trim() }
                     foreach ($num in $selectedNumbers) {
                         $selectedScript = $null
@@ -230,7 +234,7 @@ try {
                         elseif ($num -match '^\d{4}$') {
                             # Add logging for debugging script prefix matching
                             Write-CustomLog "Matching script prefix: $num against available scripts." -Level DEBUG
-                            $selectedScript = $availableScripts | Where-Object { $_.BaseName -ilike "$num*" } | Select-Object -First 1
+                            $selectedScript = $availableScripts | Where-Object { $_.BaseName -match "^$num" } | Select-Object -First 1
                         }
                         # Try to match by partial script name
                         elseif ($num -match '^[a-zA-Z]') {
