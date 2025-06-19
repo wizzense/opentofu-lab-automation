@@ -7,20 +7,46 @@
         "scminput": false
     },
 
-    // Repository Custom Instructions (Latest Feature)
-    "github.copilot.chat.codeGeneration.useInstructionFiles": true,
-
-    // Advanced Copilot Chat Settings
-    "github.copilot.chat.enableCodeGeneration": true,
+    // Copilot Chat Features with new instruction file support
     "github.copilot.chat.followUps": "on",
     "github.copilot.chat.localeOverride": "en",
     "github.copilot.chat.scopeSelection": true,
-    "github.copilot.chat.temporalContext": true,
-    "github.copilot.chat.variableContext": true,
-      // Enhanced Code Suggestions
-    "github.copilot.autocomplete.enable": true,
-    "github.copilot.inlineSuggest.count": 3,
-    "github.copilot.inlineSuggest.suppressMiddleClickPaste": true,
+
+    // Enable instruction files (key setting!)
+    "github.copilot.chat.codeGeneration.useInstructionFiles": true,
+    "chat.promptFiles": true,
+
+    // Configure instruction and prompt file locations
+    "chat.instructionsFilesLocations": {
+        ".github/instructions": true,
+        ".vscode/instructions": true
+    },
+    "chat.promptFilesLocations": {
+        ".github/prompts": true,
+        ".vscode/prompts": true
+    },
+
+    // Specific instruction types with file references
+    "github.copilot.chat.codeGeneration.instructions": [
+        {
+            "file": ".github/instructions/modules.instructions.md"
+        },
+        {
+            "file": ".github/instructions/patchmanager-workflows.instructions.md"
+        },
+        {
+            "text": "Always use PowerShell 7.0+ cross-platform syntax with forward slashes for paths."
+        }
+    ],
+
+    "github.copilot.chat.testGeneration.instructions": [
+        {
+            "file": ".github/instructions/testing-workflows.instructions.md"
+        },
+        {
+            "text": "Use Pester 5.0+ with proper Describe-Context-It structure and comprehensive mocking."
+        }
+    ],
 
     // PowerShell Specific Settings
     "powershell.codeFormatting.preset": "OTBS",
@@ -42,14 +68,16 @@
     "powershell.scriptAnalysis.enableReferencesCodeLens": true,
     "powershell.debugging.createTemporaryIntegratedConsole": false,
 
-    // File Associations and Language Settings
+    // File Associations
     "files.associations": {
         "*.ps1": "powershell",
         "*.psm1": "powershell",
         "*.psd1": "powershell",
         "*.tf": "terraform",
         "*.tfvars": "terraform",
-        "*.hcl": "terraform"
+        "*.hcl": "terraform",
+        "*.instructions.md": "markdown",
+        "*.prompt.md": "markdown"
     },
 
     // Editor Configuration for PowerShell
@@ -93,12 +121,6 @@
         "**/tests/results/**": true,
         "**/.terraform/**": true,
         "**/*.tfstate.backup": true
-    },
-
-    "files.watcherExclude": {
-        "**/logs/**": true,
-        "**/tests/results/**": true,
-        "**/.terraform/**": true
     },
 
     // Git Configuration
@@ -146,23 +168,5 @@
     // Error Handling and Debugging
     "debug.allowBreakpointsEverywhere": true,
     "debug.openDebug": "openOnDebugBreak",
-    "debug.showInStatusBar": "always",
-
-    // Advanced Copilot Features
-    "github.copilot.chat.contextAwareness": true,
-    "github.copilot.chat.documentationGeneration": true,
-    "github.copilot.chat.performanceOptimization": true,
-    "github.copilot.chat.errorDiagnosis": true,
-    "github.copilot.chat.codeReviewAssistance": true,
-
-    // Prompt Integration
-    "github.copilot.chat.promptFiles": true,
-    "github.copilot.chat.promptFilesLocations": [
-        ".github/prompts"
-    ],
-    "github.copilot.chat.codeGeneration.instructions": [
-        {
-            "file": ".github/copilot-instructions.md"
-        }
-    ]
+    "debug.showInStatusBar": "always"
 }

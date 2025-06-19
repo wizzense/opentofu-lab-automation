@@ -196,8 +196,7 @@
             "problemMatcher": [],
             "options": {
                 "cwd": "${workspaceFolder}"
-            }
-        },
+            }        },
         {
             "label": "Validate All Module Manifests",
             "type": "shell",
@@ -219,6 +218,575 @@
             "options": {
                 "cwd": "${workspaceFolder}"
             }
+        },
+        {
+            "label": "🚀 Run Bulletproof Tests - Quick",
+            "type": "shell",
+            "command": "pwsh",
+            "args": [
+                "-File",
+                "tests/Run-BulletproofTests.ps1",
+                "-TestSuite",
+                "Quick",
+                "-LogLevel",
+                "Detailed"
+            ],
+            "group": "test",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": true,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": true
+            },
+            "problemMatcher": [],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            }
+        },
+        {
+            "label": "🔥 Run Bulletproof Tests - Core",
+            "type": "shell",
+            "command": "pwsh",
+            "args": [
+                "-File",
+                "tests/Run-BulletproofTests.ps1",
+                "-TestSuite",
+                "Core",
+                "-LogLevel",
+                "Detailed",
+                "-GenerateReport"
+            ],
+            "group": "test",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": true,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": true
+            },
+            "problemMatcher": [],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            }
+        },
+        {
+            "label": "🎯 Run Bulletproof Tests - All",
+            "type": "shell",
+            "command": "pwsh",
+            "args": [
+                "-File",
+                "tests/Run-BulletproofTests.ps1",
+                "-TestSuite",
+                "All",
+                "-LogLevel",
+                "Detailed",
+                "-GenerateReport"
+            ],
+            "group": "test",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": true,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": true
+            },
+            "problemMatcher": [],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            }
+        },
+        {
+            "label": "⚡ Run Bulletproof Tests - NonInteractive",
+            "type": "shell",
+            "command": "pwsh",
+            "args": [
+                "-File",
+                "tests/Run-BulletproofTests.ps1",
+                "-TestSuite",
+                "NonInteractive",
+                "-LogLevel",
+                "Verbose",
+                "-GenerateReport"
+            ],
+            "group": "test",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": true,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": true
+            },
+            "problemMatcher": [],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            }
+        },
+        {
+            "label": "🔧 Run Bulletproof Tests - CI Mode",
+            "type": "shell",
+            "command": "pwsh",
+            "args": [
+                "-File",
+                "tests/Run-BulletproofTests.ps1",
+                "-TestSuite",
+                "Core",
+                "-LogLevel",
+                "Normal",
+                "-CI"
+            ],
+            "group": "test",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": true,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": true
+            },
+            "problemMatcher": [],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            }
+        },
+        {
+            "label": "📊 Run Performance Tests",
+            "type": "shell",
+            "command": "pwsh",
+            "args": [
+                "-File",
+                "tests/Run-BulletproofTests.ps1",
+                "-TestSuite",
+                "Performance",
+                "-LogLevel",
+                "Detailed",
+                "-GenerateReport"
+            ],
+            "group": "test",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": true,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": true
+            },
+            "problemMatcher": [],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            }
+        },
+        {
+            "label": "🧹 Clean Bulletproof Test Results",
+            "type": "shell",
+            "command": "pwsh",
+            "args": [
+                "-Command",
+                "Remove-Item -Path 'tests/results/bulletproof/*', 'logs/bulletproof*', 'logs/tests/*' -Force -Recurse -ErrorAction SilentlyContinue; Write-Host '🧹 Bulletproof test results and logs cleaned' -ForegroundColor Green"
+            ],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": true
+            },
+            "problemMatcher": [],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            }
+        },
+        // ========================================
+        // PatchManager Common Workflows
+        // ========================================
+        {
+            "label": "PatchManager: Create Patch Branch",
+            "type": "shell",
+            "command": "pwsh",
+            "args": [
+                "-Command",
+                "Import-Module './core-runner/modules/PatchManager' -Force; Invoke-GitControlledPatch -PatchDescription '${input:patchDescription}' -DryRun"
+            ],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": true,
+                "panel": "shared",
+                "showReuseMessage": false,
+                "clear": true
+            },
+            "problemMatcher": [],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            }
+        },
+        {
+            "label": "PatchManager: Apply Changes with Validation",
+            "type": "shell",
+            "command": "pwsh",
+            "args": [
+                "-Command",
+                "Import-Module './core-runner/modules/PatchManager' -Force; Invoke-GitControlledPatch -PatchDescription '${input:patchDescription}' -PatchOperation { ${input:patchOperation} } -AutoCommitUncommitted"
+            ],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": true,
+                "panel": "shared",
+                "showReuseMessage": false,
+                "clear": true
+            },
+            "problemMatcher": [],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            }
+        },
+        {
+            "label": "PatchManager: Create PR with Tests",
+            "type": "shell",
+            "command": "pwsh",
+            "args": [
+                "-Command",
+                "Import-Module './core-runner/modules/PatchManager' -Force; Invoke-GitControlledPatch -PatchDescription '${input:patchDescription}' -CreatePullRequest -TestCommands @('pwsh -NoProfile -Command \"Import-Module ./core-runner/modules/TestingFramework -Force; Invoke-Pester\"')"
+            ],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": true,
+                "panel": "shared",
+                "showReuseMessage": false,
+                "clear": true
+            },
+            "problemMatcher": [],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            }
+        },
+        {
+            "label": "PatchManager: Quick Fix Workflow",
+            "type": "shell",
+            "command": "pwsh",
+            "args": [
+                "-Command",
+                "$description = Read-Host 'Patch Description'; Import-Module './core-runner/modules/PatchManager' -Force; Invoke-GitControlledPatch -PatchDescription $description -AutoCommitUncommitted -CreatePullRequest"
+            ],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": true,
+                "panel": "shared",
+                "showReuseMessage": false,
+                "clear": true
+            },
+            "problemMatcher": [],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            }
+        },
+        {
+            "label": "PatchManager: Monitored Execution",
+            "type": "shell",
+            "command": "pwsh",
+            "args": [
+                "-Command",
+                "Import-Module './core-runner/modules/PatchManager' -Force; Invoke-MonitoredExecution -ScriptBlock { ${input:scriptBlock} } -Context @{ Task = '${input:taskName}' } -CreateIssues"
+            ],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": true,
+                "panel": "shared",
+                "showReuseMessage": false,
+                "clear": true
+            },
+            "problemMatcher": [],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            }
+        },
+        // ========================================
+        // Testing Workflows
+        // ========================================
+        {
+            "label": "Tests: Run Bulletproof Suite",
+            "type": "shell",
+            "command": "pwsh",
+            "args": [
+                "-File",
+                "./tests/Run-BulletproofTests.ps1",
+                "-TestSuite",
+                "${input:testSuite}",
+                "-LogLevel",
+                "Detailed",
+                "-GenerateReport"
+            ],
+            "group": "test",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": true,
+                "panel": "shared",
+                "showReuseMessage": false,
+                "clear": true
+            },
+            "problemMatcher": [],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            }
+        },
+        {
+            "label": "Tests: Run Non-Interactive Validation",
+            "type": "shell",
+            "command": "pwsh",
+            "args": [
+                "-File",
+                "./test-noninteractive-fix.ps1",
+                "-TestMode",
+                "All"
+            ],
+            "group": "test",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": true,
+                "panel": "shared",
+                "showReuseMessage": false,
+                "clear": true
+            },
+            "problemMatcher": [],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            }
+        },
+        {
+            "label": "Tests: Intelligent Test Discovery",
+            "type": "shell",
+            "command": "pwsh",
+            "args": [
+                "-File",
+                "./tests/Invoke-IntelligentTests.ps1",
+                "-TestType",
+                "${input:testType}",
+                "-Severity",
+                "Standard"
+            ],
+            "group": "test",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": true,
+                "panel": "shared",
+                "showReuseMessage": false,
+                "clear": true
+            },
+            "problemMatcher": [],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            }
+        },
+        // ========================================
+        // Core Runner Workflows
+        // ========================================
+        {
+            "label": "CoreRunner: Non-Interactive with Scripts",
+            "type": "shell",
+            "command": "pwsh",
+            "args": [
+                "-File",
+                "./core-runner/core_app/core-runner.ps1",
+                "-NonInteractive",
+                "-Scripts",
+                "${input:scriptNames}",
+                "-Verbosity",
+                "detailed"
+            ],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": true,
+                "panel": "shared",
+                "showReuseMessage": false,
+                "clear": true
+            },
+            "problemMatcher": [],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            }
+        },
+        {
+            "label": "CoreRunner: Auto Mode with WhatIf",
+            "type": "shell",
+            "command": "pwsh",
+            "args": [
+                "-File",
+                "./core-runner/core_app/core-runner.ps1",
+                "-NonInteractive",
+                "-Auto",
+                "-WhatIf",
+                "-Verbosity",
+                "detailed"
+            ],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": true,
+                "panel": "shared",
+                "showReuseMessage": false,
+                "clear": true
+            },
+            "problemMatcher": [],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            }
+        },
+        // ========================================
+        // Development Workflows
+        // ========================================
+        {
+            "label": "Dev: Enhanced Git Operations",
+            "type": "shell",
+            "command": "pwsh",
+            "args": [
+                "-Command",
+                "Import-Module './core-runner/modules/PatchManager' -Force; Invoke-EnhancedGitOperations -ValidateAfter"
+            ],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": true,
+                "panel": "shared",
+                "showReuseMessage": false,
+                "clear": true
+            },
+            "problemMatcher": [],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            }
+        },
+        {
+            "label": "Dev: Automated Error Tracking",
+            "type": "shell",
+            "command": "pwsh",
+            "args": [
+                "-Command",
+                "Import-Module './core-runner/modules/PatchManager' -Force; Invoke-AutomatedErrorTracking -SourceFunction '${input:functionName}' -Priority 'Medium'"
+            ],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": true,
+                "panel": "shared",
+                "showReuseMessage": false,
+                "clear": true
+            },
+            "problemMatcher": [],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            }
+        },
+        {
+            "label": "🔍 Test Copilot Instructions Setup",
+            "type": "shell",
+            "command": "pwsh",
+            "args": [
+                "-Command",
+                "Write-Host '🔍 Testing Copilot instruction file setup...' -ForegroundColor Cyan; $instructionFiles = @('.github/copilot-instructions.md', '.github/instructions/modules.instructions.md', '.github/instructions/testing-workflows.instructions.md', '.github/instructions/patchmanager-workflows.instructions.md'); foreach ($file in $instructionFiles) { if (Test-Path $file) { Write-Host \"✅ Found: $file\" -ForegroundColor Green } else { Write-Host \"❌ Missing: $file\" -ForegroundColor Red } }; $promptFiles = Get-ChildItem '.github/prompts' -Filter '*.prompt.md' -ErrorAction SilentlyContinue; if ($promptFiles) { Write-Host \"✅ Found $($promptFiles.Count) prompt files\" -ForegroundColor Green } else { Write-Host \"❌ No prompt files found\" -ForegroundColor Red }"
+            ],
+            "group": "test",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": true,
+                "panel": "shared",
+                "showReuseMessage": false,
+                "clear": true
+            },
+            "problemMatcher": [],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            }
+        }
+    ],
+    "inputs": [
+        {
+            "id": "patchDescription",
+            "description": "Enter a description for the patch",
+            "default": "Automated patch",
+            "type": "promptString"
+        },
+        {
+            "id": "patchOperation",
+            "description": "Enter the PowerShell operation to perform",
+            "default": "Write-Host 'Patch operation'",
+            "type": "promptString"
+        },
+        {
+            "id": "testSuite",
+            "description": "Select test suite",
+            "default": "Quick",
+            "type": "pickString",
+            "options": [
+                "All",
+                "Core",
+                "Modules",
+                "Integration",
+                "Performance",
+                "Quick",
+                "NonInteractive"
+            ]
+        },
+        {
+            "id": "testType",
+            "description": "Select test type",
+            "default": "Smoke",
+            "type": "pickString",
+            "options": [
+                "All",
+                "Unit",
+                "Integration",
+                "Smoke",
+                "Module",
+                "Script"
+            ]
+        },
+        {
+            "id": "scriptNames",
+            "description": "Enter script names (comma-separated)",
+            "default": "0200_Get-SystemInfo",
+            "type": "promptString"
+        },
+        {
+            "id": "taskName",
+            "description": "Enter task name for monitoring",
+            "default": "Development Task",
+            "type": "promptString"
+        },
+        {
+            "id": "scriptBlock",
+            "description": "Enter PowerShell script block to execute",
+            "default": "Get-Date",
+            "type": "promptString"
+        },
+        {
+            "id": "functionName",
+            "description": "Enter function name for error tracking",
+            "default": "MyFunction",
+            "type": "promptString"
         }
     ]
 }

@@ -700,11 +700,10 @@ function Invoke-CoreAppBootstrap {
             $coreAppArgs += '-Quiet'
         } else {
             $coreAppArgs += @('-Verbosity', $Verbosity)
-        }
-
-        if ($NonInteractive) {
+        }        if ($NonInteractive) {
             $coreAppArgs += '-NonInteractive'
-        }        # Use the best available PowerShell
+            $coreAppArgs += '-Auto'  # Run all scripts automatically in non-interactive mode
+        }# Use the best available PowerShell
         $pwshPath = Get-PlatformPowerShell
         Write-BootstrapLog "Using PowerShell: $pwshPath" 'INFO'        if ($WhatIfPreference) {
             Write-BootstrapLog "WhatIf: Would start CoreApp orchestration" 'INFO'

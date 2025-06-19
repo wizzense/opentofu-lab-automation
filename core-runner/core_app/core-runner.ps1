@@ -191,13 +191,34 @@ try {
             foreach ($script in $availableScripts) {
                 Write-CustomLog "Executing script: $($script.BaseName)" -Level INFO
                 if ($PSCmdlet.ShouldProcess($script.BaseName, 'Execute script')) {
-                    & $script.FullName -Config $config
-                }
-            }        } else {            # Check if running in non-interactive mode without specific scripts
+                    & $script.FullName -Config $config                }
+            }
+        } else {
+            # Check if running in non-interactive mode without specific scripts
             if ($NonInteractive -or $PSCmdlet.WhatIf) {
-                Write-CustomLog 'Non-interactive mode: use -Scripts parameter to specify which scripts to run' -Level INFO
-                Write-CustomLog 'No scripts specified for non-interactive execution' -Level WARN
-                return  # Exit gracefully instead of interactive prompt
+                Write-CustomLog 'Non-interactive mode: use -Scripts parameter to specify which scripts to run, or -Auto for all scripts' -Level INFO
+
+                # In non-interactive mode, if no scripts specified but Auto is enabled, run all scripts
+                if ($Auto) {
+                    Write-CustomLog 'Non-interactive auto mode: Running all scripts automatically' -Level INFO
+                    foreach ($script in $availableScripts) {
+                        Write-CustomLog "Executing script: $($script.BaseName)" -Level INFO
+                        if ($PSCmdlet.ShouldProcess($script.BaseName, 'Execute script')) {
+                            try {
+                                & $script.FullName -Config $config
+                                Write-CustomLog "Script completed: $($script.BaseName)" -Level SUCCESS
+                            } catch {
+                                Write-CustomLog "Script failed: $($script.BaseName) - $($_.Exception.Message)" -Level ERROR
+                                if (-not $Force) {
+                                    throw  # Stop on first error unless Force is specified
+                                }
+                            }
+                        }
+                    }                } else {
+                    Write-CustomLog 'No scripts specified for non-interactive execution' -Level WARN
+                    Write-CustomLog 'Consider using -Auto to run all scripts, or -Scripts to specify particular scripts' -Level INFO
+                }
+                # Don't use return here - let the script complete naturally to reach success logging
             } else {
                 # Interactive mode - show menu in a loop
                 do {
@@ -267,6 +288,7 @@ try {
     }
 
     Write-CustomLog 'Core runner completed successfully' -Level SUCCESS
+    exit 0  # Explicitly set success exit code
 
 } catch {
     Write-CustomLog "Core runner failed: $($_.Exception.Message)" -Level ERROR

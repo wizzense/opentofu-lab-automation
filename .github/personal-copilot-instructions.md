@@ -1,5 +1,5 @@
 # Personal GitHub Copilot Instructions
-
+DO NOT USE EMOJIS
 ## Communication Style
 - Provide clear, concise explanations with practical examples
 - Include context about why certain approaches are recommended

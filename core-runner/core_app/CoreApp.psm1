@@ -86,8 +86,7 @@ if (-not (Get-Command Write-CustomLog -ErrorAction SilentlyContinue)) {
 }
 
 # Core functions if not defined in Public folder
-if (-not (Get-Command Invoke-CoreApplication -ErrorAction SilentlyContinue)) {
-    function Invoke-CoreApplication {
+if (-not (Get-Command Invoke-CoreApplication -ErrorAction SilentlyContinue)) {    function Invoke-CoreApplication {
         [CmdletBinding(SupportsShouldProcess = $true)]
         param(
             [Parameter(Mandatory = $true)]
@@ -100,7 +99,10 @@ if (-not (Get-Command Invoke-CoreApplication -ErrorAction SilentlyContinue)) {
             [switch]$Auto,
 
             [Parameter()]
-            [switch]$Force
+            [switch]$Force,
+
+            [Parameter()]
+            [switch]$NonInteractive
         )
           process {
             Write-CustomLog -Message 'Starting core application execution' -Level 'INFO'
@@ -165,9 +167,13 @@ if (-not (Get-Command Start-LabRunner -ErrorAction SilentlyContinue)) {
             [string]$ConfigPath,
 
             [Parameter()]
-            [switch]$Parallel
+            [switch]$Parallel,
+
+            [Parameter()]
+            [switch]$NonInteractive
         )
-          process {
+
+        process {
             try {
                 if ($Parallel) {
                     Write-CustomLog -Message 'Parallel lab runner not implemented yet - using standard runner' -Level 'WARN'

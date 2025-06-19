@@ -1,0 +1,26 @@
+{
+  "EndTime": "2025-06-19T09:05:58.0184893-07:00",
+  "StartTime": "2025-06-19T09:05:55.6181146-07:00",
+  "TestSuite": "Quick",
+  "Duration": 2.4003747,
+  "HtmlReport": null,
+  "CoverageFile": {
+    "Default": "coverage.xml",
+    "Description": "Path relative to the current directory where code coverage report is saved.",
+    "Value": "C:\\Users\\alexa\\OneDrive\\Documents\\0. wizzense\\opentofu-lab-automation\\tests\\results\\bulletproof\\BulletproofCoverage-Quick-20250619090555.xml",
+    "IsModified": true
+  },
+  "Bulletproof": false,
+  "SuccessRate": 0,
+  "ResultsFile": {
+    "Default": "testResults.xml",
+    "Description": "Path relative to the current directory where test result report is saved.",
+    "Value": "C:\\Users\\alexa\\OneDrive\\Documents\\0. wizzense\\opentofu-lab-automation\\tests\\results\\bulletproof\\BulletproofResults-Quick-20250619090555.xml",
+    "IsModified": true
+  },
+  "ExitCode": 1,
+  "PassedTests": 0,
+  "TotalTests": 0,
+  "SkippedTests": 0,
+  "FailedTests": 1
+}

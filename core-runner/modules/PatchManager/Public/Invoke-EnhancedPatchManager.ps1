@@ -225,7 +225,7 @@ function Invoke-EnhancedPatchManager {
                     }                    $prResult = New-PatchPullRequest -Description $PatchDescription -BranchName $currentBranch.Trim() -IssueNumber $issueResult.IssueNumber -IssueUrl $issueResult.IssueUrl
                     if ($prResult.Success) {
                         Write-PatchLog "Pull request created: $($prResult.PullRequestUrl)" -Level "SUCCESS"
-                        
+
                         # If both issue and PR were created, log the connection
                         if ($issueResult -and $issueResult.Success) {
                             Write-PatchLog "PR linked to issue #$($issueResult.IssueNumber) for automatic closure" -Level "SUCCESS"
