@@ -6,5 +6,8 @@
     ],
     "github.copilot.chat.promptFilesLocations": [
         ".github/prompts"
+    ],
+    "github.copilot.experimental.codeGeneration.instructions": [
+        ".vscode/copilot-instructions.md"
     ]
 }
