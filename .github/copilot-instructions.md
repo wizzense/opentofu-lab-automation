@@ -4,10 +4,13 @@ These guidelines help GitHub Copilot and other AI agents generate code and respo
 
 ## General Guidelines
 - Use **PowerShell 7.0+** features and cross-platform syntax.
-- Prefer forward slashes (`/`) for file paths.
+- Prefer `Join-Path` or forward slashes (`/`) for file paths.
 - Import modules from `core-runner/modules` using `Import-Module`.
 - Follow One True Brace Style (OTBS) formatting.
-- Include verbose logging through the `Logging` module.
+- Functions should use `[CmdletBinding()]` and parameter validation.
+- Include comment-based help sections (`.SYNOPSIS`, `.PARAMETER`, etc.).
+- Log through `Write-CustomLog` or the `Logging` module.
+- Encourage writing Pester tests for new code.
 
 ## Available Modules
 - **BackupManager** – manages backup file cleanup and consolidation.
