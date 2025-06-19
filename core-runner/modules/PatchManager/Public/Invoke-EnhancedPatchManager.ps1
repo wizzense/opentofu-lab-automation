@@ -631,11 +631,22 @@ function New-PatchPullRequest {
                     } else {
                         # PR creation failed - check for specific error conditions
                         $errorMessage = $prResult -join " "
-                        
-                        # Handle common errors
+                          # Handle common errors
                         if ($errorMessage -match "already exists") {
-                            Write-PatchLog "A pull request already exists for this branch" -Level "WARNING"
-                            # Try to get that PR's URL
+                            # Extract PR URL from error message if it's there
+                            if ($errorMessage -match "https://[^\s]+") {
+                                $existingPrUrl = $matches[0]
+                                Write-PatchLog "A pull request already exists for this branch: $existingPrUrl" -Level "INFO"
+                                return @{ 
+                                    Success = $true 
+                                    PullRequestUrl = $existingPrUrl
+                                    BranchName = $BranchName
+                                    Message = "An existing pull request was found for this branch"
+                                }
+                            }
+                            
+                            # Otherwise try to get PR URL using gh cli
+                            Write-PatchLog "A pull request already exists for this branch" -Level "INFO"
                             try {
                                 $existingPrUrl = gh pr view $BranchName --json url --jq '.url' 2>&1
                                 if ($LASTEXITCODE -eq 0 -and $existingPrUrl) {
