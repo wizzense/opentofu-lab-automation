@@ -26,7 +26,7 @@ $scriptBlock = {
 
 & $scriptBlock
 
-# Test command execution 
+# Test command execution
 try {
     $result = Get-Date
     Write-Host "Current time: $result"

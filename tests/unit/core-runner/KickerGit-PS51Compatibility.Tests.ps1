@@ -25,7 +25,7 @@ Describe "kicker-git.ps1 PowerShell 5.1 Compatibility" {
                 [char]0x2605,  # ★ (star)
                 [char]0x26A0   # ⚠ (warning sign)
             )
-            
+
             foreach ($char in $problematicChars) {
                 $kickerContent | Should -Not -Match [regex]::Escape($char.ToString()) -Because "Unicode character '$char' can cause PowerShell 5.1 parsing errors"
             }
@@ -34,7 +34,7 @@ Describe "kicker-git.ps1 PowerShell 5.1 Compatibility" {
         It "Should only contain ASCII characters in critical sections" {
             # Check function headers for ASCII compatibility
             $functionHeaders = [regex]::Matches($kickerContent, "function\s+[\w-]+\s*\{", [System.Text.RegularExpressions.RegexOptions]::Multiline)
-            
+
             foreach ($match in $functionHeaders) {
                 $headerText = $match.Value
                 for ($i = 0; $i -lt $headerText.Length; $i++) {
@@ -61,7 +61,7 @@ Describe "kicker-git.ps1 PowerShell 5.1 Compatibility" {
             $errors = $null
             $tokens = $null
             $ast = [System.Management.Automation.Language.Parser]::ParseFile($kickerScriptPath, [ref]$tokens, [ref]$errors)
-            
+
             $errors | Should -BeNullOrEmpty -Because "Script should parse without syntax errors"
             $ast | Should -Not -BeNullOrEmpty -Because "Script should produce a valid AST"
         }
