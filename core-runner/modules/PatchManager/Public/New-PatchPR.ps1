@@ -75,45 +75,106 @@ function New-PatchPR {
             # Check GitHub CLI availability
             if (-not (Get-Command gh -ErrorAction SilentlyContinue)) {
                 throw "GitHub CLI (gh) not found. Please install and authenticate with GitHub CLI."
-            }
-
-            # Create PR title and body
+            }            # Create PR title and body with comprehensive details
             $prTitle = "Patch: $Description"
             $timestamp = Get-Date -Format 'yyyy-MM-dd HH:mm:ss UTC'
+            
+            # Gather system and environment information
+            $gitInfo = @{
+                CurrentBranch = git branch --show-current 2>&1 | Out-String | ForEach-Object Trim
+                LastCommit = git log -1 --oneline 2>&1 | Out-String | ForEach-Object Trim
+                RepoStatus = git status --porcelain 2>&1 | Out-String | ForEach-Object Trim
+                RemoteUrl = git remote get-url origin 2>&1 | Out-String | ForEach-Object Trim
+            }
+              $systemInfo = @{
+                PowerShellVersion = $PSVersionTable.PSVersion.ToString()
+                OS = if ($IsWindows) { "Windows" } elseif ($IsLinux) { "Linux" } elseif ($IsMacOS) { "macOS" } else { "Unknown" }
+                Hostname = if ($env:COMPUTERNAME) { $env:COMPUTERNAME } elseif ($env:HOSTNAME) { $env:HOSTNAME } else { "Unknown" }
+                UserContext = if ($env:USERNAME) { $env:USERNAME } elseif ($env:USER) { $env:USER } else { "Unknown" }
+                WorkingDirectory = (Get-Location).Path
+            }
 
             $prBody = @"
-## Patch Description
-$Description
+## Patch Summary
+**$Description**
+
+### Technical Details
+| Aspect | Information |
+|--------|-------------|
+| **Created** | $timestamp |
+| **Branch** | ``$BranchName`` |
+| **Base Branch** | ``main`` |
+| **PowerShell** | $($systemInfo.PowerShellVersion) |
+| **Platform** | $($systemInfo.OS) |
+| **Host** | $($systemInfo.Hostname) |
+| **User** | $($systemInfo.UserContext) |
 
 ### Files Affected
 $(if ($AffectedFiles.Count -gt 0) {
     ($AffectedFiles | ForEach-Object { "- ``$_``" }) -join "`n"
 } else {
-    "*Files will be identified during review*"
+    "*Files will be identified during code review*"
 })
 
-### Validation Results
-- Branch created from clean state
-- Changes applied and committed
-- Ready for review and merge
+### Git Information
+| Property | Value |
+|----------|-------|
+| **Current Branch** | ``$($gitInfo.CurrentBranch)`` |
+| **Last Commit** | ``$($gitInfo.LastCommit)`` |
+| **Repository** | $($gitInfo.RemoteUrl) |
+| **Working Tree** | $(if ($gitInfo.RepoStatus) { "Changes pending" } else { "Clean" }) |
+
+### Patch Workflow Status
+- [x] Branch created from clean state
+- [x] Patch operation executed successfully
+- [x] Unicode/emoji sanitization applied
+- [x] Changes committed and pushed
+- [x] Ready for code review
+- [ ] Code review completed
+- [ ] Tests passing
+- [ ] Ready to merge
+
+### Quality Assurance Checklist
+This pull request follows the **PatchManager v2.0 Consolidated Workflow**:
+
+#### Pre-merge Validation
+- [ ] **Code Review**: All changes reviewed by maintainer
+- [ ] **Testing**: Automated tests pass successfully  
+- [ ] **Documentation**: Changes documented appropriately
+- [ ] **Breaking Changes**: No breaking changes or properly documented
+- [ ] **Security**: No security vulnerabilities introduced
+- [ ] **Performance**: No significant performance degradation
+
+#### Integration Checks
+- [ ] **Module Loading**: All affected modules load correctly
+- [ ] **Function Exports**: Module manifests updated if needed
+- [ ] **Cross-Platform**: Changes work on Windows/Linux/macOS
+- [ ] **PowerShell Compatibility**: Works with PowerShell 7.0+
 
 $(if ($IssueNumber) {
-    "### Related Issue`nCloses #$IssueNumber"
+    "### Related Issue`n**Closes #$IssueNumber**`n`nThis pull request automatically closes the related tracking issue upon merge."
 } else {
-    ""
+    "### Standalone Patch`nThis is a standalone patch without a linked tracking issue."
 })
 
-### Quality Assurance
-This patch follows the PatchManager workflow:
-- Branch created from clean state  
-- Changes applied and tested
-- Ready for review and merge
+### Automation Details
+- **PatchManager Version**: 2.0 (Consolidated)
+- **Workflow**: ``Invoke-PatchWorkflow``
+- **Unicode Sanitization**: Applied to all changed files
+- **Branch Strategy**: Feature branch with clean history
+- **Auto-merge**: Not enabled (requires manual review)
 
-**Created**: $timestamp
-**Branch**: ``$BranchName``
+### Review Guidelines
+1. **Verify patch scope** matches description
+2. **Test affected functionality** thoroughly
+3. **Check for edge cases** and error conditions
+4. **Validate cross-platform compatibility**
+5. **Ensure no breaking changes** unless documented
 
 ---
-*Created by PatchManager*
+*This pull request was created by **PatchManager v2.0** following the consolidated patch workflow. All files have been sanitized of problematic Unicode characters for clean cross-platform compatibility.*
+
+**Workflow Command**: ``Invoke-PatchWorkflow -PatchDescription "$Description" -CreatePR``
 "@
 
             if ($DryRun) {

@@ -161,12 +161,24 @@ function Invoke-PatchWorkflow {
                         Write-PatchLog "DRY RUN: Would run test command: $cmd" -Level "INFO"
                     }
                 }
-            }
-
-            # Step 5: Commit changes
+            }            # Step 5: Sanitize files and commit changes
             if (-not $DryRun) {
                 $gitStatus = git status --porcelain 2>&1
                 if ($gitStatus -and ($gitStatus | Where-Object { $_ -match '\S' })) {
+                    # First, sanitize all changed files of Unicode/emoji
+                    Write-PatchLog "Sanitizing files before commit..." -Level "INFO"
+                    try {
+                        $changedFiles = git diff --name-only HEAD 2>&1 | Where-Object { $_ -and $_.Trim() }
+                        if ($changedFiles) {
+                            $sanitizeResult = Invoke-UnicodeSanitizer -FilePaths $changedFiles -ProjectRoot (Get-Location).Path
+                            if ($sanitizeResult.FilesModified -gt 0) {
+                                Write-PatchLog "Sanitized $($sanitizeResult.FilesModified) files, removed $($sanitizeResult.CharactersRemoved) problematic characters" -Level "INFO"
+                            }
+                        }
+                    } catch {
+                        Write-PatchLog "Warning: Unicode sanitization failed: $($_.Exception.Message)" -Level "WARN"
+                    }
+                    
                     Write-PatchLog "Committing changes..." -Level "INFO"
                     git add . 2>&1 | Out-Null
                     git commit -m "PatchManager: $PatchDescription" 2>&1 | Out-Null
@@ -178,7 +190,7 @@ function Invoke-PatchWorkflow {
                     Write-PatchLog "No changes to commit" -Level "INFO"
                 }
             } else {
-                Write-PatchLog "DRY RUN: Would commit changes" -Level "INFO"
+                Write-PatchLog "DRY RUN: Would sanitize files and commit changes" -Level "INFO"
             }
 
             # Step 6: Create issue if requested

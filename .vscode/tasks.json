@@ -713,6 +713,52 @@
                 "panel": "shared",
                 "showReuseMessage": false,
                 "clear": true
+            },            "problemMatcher": [],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            }
+        },
+        // ========================================
+        // Unicode/Emoji Sanitization
+        // ========================================
+        {
+            "label": "PatchManager: Sanitize Unicode/Emoji",
+            "type": "shell",
+            "command": "pwsh",
+            "args": [
+                "-Command",
+                "Import-Module './core-runner/modules/PatchManager' -Force; $result = Invoke-UnicodeSanitizer -DryRun; Write-Host 'Sanitization complete. Run without -DryRun to apply changes.' -ForegroundColor Green"
+            ],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": true,
+                "panel": "shared",
+                "showReuseMessage": false,
+                "clear": true
+            },
+            "problemMatcher": [],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            }
+        },
+        {
+            "label": "PatchManager: Apply Unicode/Emoji Sanitization",
+            "type": "shell",
+            "command": "pwsh",
+            "args": [
+                "-Command",
+                "Import-Module './core-runner/modules/PatchManager' -Force; $result = Invoke-UnicodeSanitizer; Write-Host \"Sanitized $($result.FilesModified) files, removed $($result.CharactersRemoved) characters\" -ForegroundColor Green"
+            ],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": true,
+                "panel": "shared",
+                "showReuseMessage": false,
+                "clear": true
             },
             "problemMatcher": [],
             "options": {
