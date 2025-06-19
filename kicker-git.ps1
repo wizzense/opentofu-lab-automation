@@ -51,12 +51,12 @@
     powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/main/kicker-git.ps1' -OutFile '.\kicker-git.ps1'; .\kicker-git.ps1"
 
 .EXAMPLE
-    # Bootstrap with custom configuration
-    .\kicker-git.ps1 -ConfigFile "my-lab-config.json"
+    # Cross-platform bootstrap with custom configuration
+    ./kicker-git.ps1 -ConfigFile "my-lab-config.json"
 
 .EXAMPLE
     # Non-interactive automation-friendly bootstrap
-    .\kicker-git.ps1 -NonInteractive -Verbosity silent
+    ./kicker-git.ps1 -NonInteractive -Verbosity silent
 
 .EXAMPLE
     # Bootstrap from development branch
@@ -88,11 +88,13 @@ $script:RepoUrl = 'https://github.com/wizzense/opentofu-lab-automation.git'
 $script:RawBaseUrl = 'https://raw.githubusercontent.com/wizzense/opentofu-lab-automation'
 $script:DefaultConfigUrl = "$script:RawBaseUrl/$TargetBranch/core-runner/core_app/default-config.json"
 
-# Auto-detect environment
-$script:PlatformWindows = $PSVersionTable.PSVersion.Major -le 5 -or [System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform([System.Runtime.InteropServices.OSPlatform]::Windows)
-$script:PlatformLinux = $PSVersionTable.PSVersion.Major -gt 5 -and [System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform([System.Runtime.InteropServices.OSPlatform]::Linux)
-$script:PlatformMacOS = $PSVersionTable.PSVersion.Major -gt 5 -and [System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform([System.Runtime.InteropServices.OSPlatform]::OSX)
-$script:IsInteractive = $Host.UI.RawUI.KeyAvailable -and [Environment]::UserInteractive
+# Enhanced platform detection
+$script:PlatformWindows = [System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform([System.Runtime.InteropServices.OSPlatform]::Windows)
+$script:PlatformLinux = [System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform([System.Runtime.InteropServices.OSPlatform]::Linux)
+$script:PlatformMacOS = [System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform([System.Runtime.InteropServices.OSPlatform]::OSX)
+
+# Interactive detection
+$script:IsInteractive = $null -ne $Host.UI.RawUI.KeyAvailable -and [Environment]::UserInteractive
 
 # Auto-detect non-interactive mode
 if (-not $NonInteractive -and (-not $script:IsInteractive -or $env:CI -eq 'true' -or $env:GITHUB_ACTIONS -eq 'true')) {
@@ -105,19 +107,21 @@ if ($Quiet) { $Verbosity = 'silent' }
 $script:VerbosityLevel = @{ silent = 0; normal = 1; detailed = 2 }[$Verbosity]
 
 # Cross-platform paths (defined early)
-function Get-PlatformTempPath {
-    if ($script:PlatformWindows) {
+function Get-PlatformTempPath {    if ($script:PlatformWindows) {
         if ($env:TEMP) {
             return $env:TEMP
         } else {
             return 'C:\temp'
         }
-    } else {
+    } elseif ($script:PlatformLinux -or $script:PlatformMacOS) {
         if ($env:TMPDIR) {
             return $env:TMPDIR
         } else {
             return '/tmp'
         }
+    } else {
+        Write-BootstrapLog -Message 'Unknown platform. Cannot determine temp path.' -Level 'ERROR'
+        exit 1
     }
 }
 
@@ -226,7 +230,7 @@ function Test-Prerequisite {
 }
 
 function Install-GitForWindows {
-    if (-not $script:IsWindows) { return $false }
+    if (-not $script:PlatformWindows) { return $false }
     
     Write-BootstrapLog "Installing Git for Windows..." 'INFO'
     
@@ -250,7 +254,7 @@ function Install-GitForWindows {
 }
 
 function Install-PowerShell7 {
-    if (-not $script:IsWindows) { return $false }
+    if (-not $script:PlatformWindows) { return $false }
     
     Write-BootstrapLog "Installing PowerShell 7..." 'INFO'
     
@@ -275,17 +279,16 @@ function Test-Prerequisites {
     Write-BootstrapLog "=== Validating Prerequisites ===" 'INFO'
     
     $allGood = $true
-    
-    # PowerShell 7 (recommended but not required)
+      # PowerShell 7 (recommended but not required)
     if (-not (Test-Prerequisite -Name "PowerShell 7" -Commands @("pwsh") -InstallInstructions "Install from https://github.com/PowerShell/PowerShell/releases")) {
-        if ($script:IsWindows -and -not $SkipPrerequisites) {
+        if ($script:PlatformWindows -and -not $SkipPrerequisites) {
             Install-PowerShell7 | Out-Null
         }
     }
     
     # Git
     if (-not (Test-Prerequisite -Name "Git" -Commands @("git") -InstallUrl "https://git-scm.com/downloads" -InstallInstructions "Install Git from https://git-scm.com/downloads")) {
-        if ($script:IsWindows -and -not $SkipPrerequisites) {
+        if ($script:PlatformWindows -and -not $SkipPrerequisites) {
             if (-not (Install-GitForWindows)) {
                 $allGood = $false
             }
@@ -448,12 +451,16 @@ function Invoke-CoreAppBootstrap {
         Write-BootstrapLog "Using PowerShell: $pwshPath" 'INFO'
         
         if ($PSCmdlet.ShouldProcess("CoreApp Orchestration", "Start")) {
-            $process = Start-Process -FilePath $pwshPath -ArgumentList $coreAppArgs -Wait -NoNewWindow -PassThru
-            
-            if ($process.ExitCode -eq 0) {
-                Write-BootstrapLog "✓ CoreApp orchestration completed successfully" 'SUCCESS'
-            } else {
-                throw "CoreApp orchestration failed with exit code: $($process.ExitCode)"
+            try {
+                $process = Start-Process -FilePath $pwshPath -ArgumentList $coreAppArgs -Wait -NoNewWindow -PassThru
+                if ($process.ExitCode -eq 0) {
+                    Write-BootstrapLog "✓ CoreApp orchestration completed successfully" 'SUCCESS'
+                } else {
+                    throw "CoreApp orchestration failed with exit code: $($process.ExitCode)"
+                }
+            } catch {
+                Write-BootstrapLog "CoreApp orchestration failed: $($_.Exception.Message)" 'ERROR'
+                throw
             }
         }
         
@@ -478,25 +485,19 @@ function Show-CoreAppDemo {
     $response = Read-Host
     if ($response -match '^[Yy]') {
         Write-BootstrapLog "Demonstrating CoreApp orchestration features..." 'INFO'
-        
         try {
             Push-Location $RepoPath
-            
             # Import CoreApp module
             $coreAppPath = Join-Path $RepoPath "core-runner/core_app"
             Import-Module $coreAppPath -Force
-            
             Write-BootstrapLog "✓ CoreApp module imported" 'SUCCESS'
-            
             # Initialize and show module status
             Write-BootstrapLog "Initializing core application..." 'INFO'
             $initResult = Initialize-CoreApplication
-            
             if ($initResult.Success) {
                 Write-BootstrapLog "✓ Core application initialized" 'SUCCESS'
                 Write-BootstrapLog "Loaded modules: $($initResult.LoadedModules -join ', ')" 'INFO'
             }
-            
             # Show module status
             Write-BootstrapLog "Module Status:" 'INFO'
             $moduleStatus = Get-CoreModuleStatus
@@ -505,10 +506,8 @@ function Show-CoreAppDemo {
                 $color = if ($_.Status -eq 'Loaded') { 'SUCCESS' } else { 'WARN' }
                 Write-BootstrapLog "  $icon $($_.Name): $($_.Status)" $color
             }
-            
             Write-BootstrapLog "✓ CoreApp demonstration completed" 'SUCCESS'
             Pop-Location
-            
         } catch {
             Write-BootstrapLog "Demo failed: $($_.Exception.Message)" 'WARN'
             Pop-Location
@@ -547,6 +546,63 @@ function Test-BootstrapHealth {
     }
     
     return $healthGood
+}
+
+# Cross-platform package installation
+function Install-Prerequisites {
+    if ($script:PlatformWindows) {
+        Write-BootstrapLog -Message "Installing prerequisites on Windows..." -Level INFO
+        # Windows-specific installation logic
+        if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
+            Write-BootstrapLog -Message "Git is not installed. Please install Git manually." -Level ERROR
+            return
+        }
+    } elseif ($script:PlatformLinux) {
+        Write-BootstrapLog -Message "Installing prerequisites on Linux..." -Level INFO
+        if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
+            Write-BootstrapLog -Message "Installing Git..." -Level INFO
+            sudo apt-get update && sudo apt-get install -y git
+        }
+        if (-not (Get-Command pwsh -ErrorAction SilentlyContinue)) {
+            Write-BootstrapLog -Message "Installing PowerShell..." -Level INFO
+            sudo apt-get install -y powershell
+        }
+    } elseif ($script:PlatformMacOS) {
+        Write-BootstrapLog -Message "Installing prerequisites on macOS..." -Level INFO
+        if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
+            Write-BootstrapLog -Message "Installing Git..." -Level INFO
+            brew install git
+        }
+        if (-not (Get-Command pwsh -ErrorAction SilentlyContinue)) {
+            Write-BootstrapLog -Message "Installing PowerShell..." -Level INFO
+            brew install --cask powershell
+        }
+    } else {
+        Write-BootstrapLog -Message "Unsupported platform. Exiting..." -Level ERROR
+        return
+    }
+}
+
+# Update repository clone logic for cross-platform paths
+function New-RepositoryClone {
+    param(
+        [string]$RepositoryUrl,
+        [string]$DestinationPath
+    )
+
+    $DestinationPath = if ($DestinationPath) { $DestinationPath } else { Get-PlatformTempPath }
+
+    if (-not (Test-Path -Path $DestinationPath)) {
+        New-Item -ItemType Directory -Path $DestinationPath | Out-Null
+    }
+
+    if (Test-Path -Path "$DestinationPath/.git") {
+        Write-BootstrapLog -Message "Repository already exists. Pulling latest changes..." -Level INFO
+        git -C $DestinationPath pull
+    } else {
+        Write-BootstrapLog -Message "Cloning repository to $DestinationPath..." -Level INFO
+        git clone $RepositoryUrl $DestinationPath
+    }
 }
 
 # Main bootstrap workflow
