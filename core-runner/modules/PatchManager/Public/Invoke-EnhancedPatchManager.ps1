@@ -217,22 +217,22 @@ function Invoke-EnhancedPatchManager {
                         Write-PatchLog "Unable to detect current branch, using fallback method..." -Level "WARN"
                         $currentBranch = git symbolic-ref --short HEAD 2>&1
                     }
-                    
+
                     if ([string]::IsNullOrWhiteSpace($currentBranch)) {
                         Write-PatchLog "Failed to detect branch name for PR creation" -Level "ERROR"
                         $currentBranch = "auto-patch-$(Get-Date -Format 'yyyyMMdd-HHmmss')"
                         Write-PatchLog "Using generated branch name: $currentBranch" -Level "WARN"
                     }
-                    
+
                     $prResult = New-PatchPullRequest -Description $PatchDescription -BranchName $currentBranch.Trim()
                     if ($prResult.Success) {
                         Write-PatchLog "Pull request created: $($prResult.PullRequestUrl)" -Level "SUCCESS"
-                        
+
                         # Automatically create issue tracking for the PR
                         try {
                             Write-PatchLog "Creating automatic issue tracking for PR..." -Level "INFO"
                             $issueResult = Invoke-ComprehensiveIssueTracking -Operation "PR" -Title "Track PR: $PatchDescription" -Description "Automated tracking issue for PR created by PatchManager" -PatchDescription $PatchDescription -PullRequestUrl $prResult.PullRequestUrl -Priority "Medium" -AutoClose
-                            
+
                             if ($issueResult.Success) {
                                 Write-PatchLog "Tracking issue created: $($issueResult.IssueUrl)" -Level "SUCCESS"
                             } else {
@@ -402,26 +402,26 @@ function New-PatchPullRequest {
         }        # Determine branch name with robust detection
         if ([string]::IsNullOrWhiteSpace($BranchName)) {
             Write-PatchLog "Detecting current branch name..." -Level "INFO"
-            
+
             # Try multiple methods to get branch name
             $tempBranch = git branch --show-current 2>&1
-            
+
             if ($LASTEXITCODE -eq 0 -and -not [string]::IsNullOrWhiteSpace($tempBranch)) {
                 $BranchName = $tempBranch.Trim()
             } else {
                 Write-PatchLog "git branch --show-current failed (exit code: $LASTEXITCODE), trying alternative method..." -Level "WARN"
-                
+
                 # Fallback: try git symbolic-ref
                 $tempBranch = git symbolic-ref --short HEAD 2>&1
-                
+
                 if ($LASTEXITCODE -eq 0 -and -not [string]::IsNullOrWhiteSpace($tempBranch)) {
                     $BranchName = $tempBranch.Trim()
                 } else {
                     Write-PatchLog "git symbolic-ref failed (exit code: $LASTEXITCODE), trying git rev-parse..." -Level "WARN"
-                    
+
                     # Final fallback: try git rev-parse --abbrev-ref HEAD
                     $tempBranch = git rev-parse --abbrev-ref HEAD 2>&1
-                    
+
                     if ($LASTEXITCODE -eq 0 -and -not [string]::IsNullOrWhiteSpace($tempBranch)) {
                         $BranchName = $tempBranch.Trim()
                     } else {
@@ -431,10 +431,10 @@ function New-PatchPullRequest {
                     }
                 }
             }
-            
+
             Write-PatchLog "Detected branch: '$BranchName'" -Level "INFO"
         }
-        
+
         # Validate branch name is not empty after all processing
         if ([string]::IsNullOrWhiteSpace($BranchName)) {
             throw "Branch name is empty after detection. This should not happen."

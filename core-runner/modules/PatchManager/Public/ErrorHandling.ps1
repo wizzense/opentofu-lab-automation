@@ -2,11 +2,11 @@
 <#
 .SYNOPSIS
     Error handling module for PatchManager
-    
+
 .DESCRIPTION
     Provides standardized error handling functions for PatchManager operations
     including logging, structured error objects, and recovery operations.
-    
+
 .NOTES
     - Integrated with GitHub issue reporting
     - Creates comprehensive error logs
@@ -19,19 +19,19 @@ function HandlePatchError {
     param(
         [Parameter(Mandatory = $true)]
         [string]$ErrorMessage,
-        
+
         [Parameter(Mandatory = $false)]
         [System.Management.Automation.ErrorRecord]$ErrorRecord = $null,
         [Parameter(Mandatory = $false)]
         [ValidateSet("Git", "PatchValidation", "BranchStrategy", "PullRequest", "Rollback", "General")]
         [string]$ErrorCategory = "General",
-        
+
         [Parameter(Mandatory = $false)]
         [string]$LogPath = "logs/patch-errors.log",
-        
+
         [Parameter(Mandatory = $false)]
         [switch]$Silent = $false,
-        
+
         [Parameter(Mandatory = $false)]
         [int]$IssueNumber = $null
     )
@@ -41,10 +41,10 @@ function HandlePatchError {
     if (-not (Test-Path $logDir)) {
             if (-not (Test-Path $logDir)) { New-Item -ItemType Directory -Path $logDir -Force | Out-Null }
     }
-    
+
     # Construct timestamp
     $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
-    
+
     # Create error log entry
     $logEntry = @"
 [$timestamp] [$ErrorCategory] ERROR:
@@ -61,14 +61,14 @@ $($ErrorRecord.ScriptStackTrace)
 
 "@
     }
-    
+
     # Write to log file
     $logEntry | Out-File -FilePath $LogPath -Append
-    
+
     # Display error unless silent mode is enabled
     if (-not $Silent) {
         Write-Host "[$ErrorCategory] Error: $ErrorMessage" -ForegroundColor Red
-        
+
         if ($ErrorRecord) {
             Write-Host "See $LogPath for details" -ForegroundColor Yellow
         }
@@ -85,7 +85,7 @@ $($ErrorRecord.ScriptStackTrace)
                 "Rollback" { "- Manual intervention may be required" }
                 default { "- Review error details and logs" }
             }
-            
+
             $issueComment = @"
 ## ❌ Error Encountered
 
@@ -97,7 +97,7 @@ $($ErrorRecord.ScriptStackTrace)
 $suggestedActions
 - Review error log for detailed troubleshooting
 "@
-            
+
             # Use GitHub CLI to add comment
             gh issue comment $IssueNumber --body $issueComment 2>&1 | Out-Null
         } catch {
@@ -106,7 +106,7 @@ $suggestedActions
             $issueUpdateError | Out-File -FilePath $LogPath -Append
         }
     }
-    
+
     # Create structured error object
     $errorObject = [PSCustomObject]@{
         Timestamp   = $timestamp
@@ -116,7 +116,7 @@ $suggestedActions
         StackTrace  = $ErrorRecord?.ScriptStackTrace
         LogPath     = $LogPath
         IssueNumber = $IssueNumber
-    }    
+    }
     return $errorObject
 }
 
@@ -124,5 +124,3 @@ $suggestedActions
 # Use Write-CustomLog from the centralized Logging module instead
 
 # Note: Export-ModuleMember is handled by the parent module
-
-

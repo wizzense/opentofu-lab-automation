@@ -14,11 +14,11 @@ Write-CustomLog "Starting $($MyInvocation.MyCommand.Name)"
 function Install-Cosign {
     [CmdletBinding()]
     param()
-    
+
     # Check if cosign is available in the current PATH
     if (-not (Test-Path (Join-Path $Config.CosignPath 'cosign-windows-amd64.exe') -ErrorAction SilentlyContinue)) {
         Write-CustomLog 'Cosign is not found. Installing cosign...' -Level 'INFO'
-        
+
         # Define the installation directory and destination file path
         $installDir = $Config.CosignPath
         $destination = Join-Path $installDir 'cosign-windows-amd64.exe'
@@ -80,13 +80,8 @@ Invoke-LabStep -Config $Config -Body {
     if (-not $Config.InstallCosign -and -not $Config.InstallGpg) {
         Write-CustomLog 'No installation option specified. Use -InstallCosign and/or -InstallGpg when running this script.' -Level 'WARN'
     }
-    
+
     Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
 }
 
 Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
-
-
-
-
-
