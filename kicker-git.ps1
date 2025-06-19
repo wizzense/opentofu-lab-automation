@@ -289,12 +289,12 @@ function Test-Prerequisite {
 
     foreach ($cmd in $Commands) {
         if (Get-Command $cmd -ErrorAction SilentlyContinue) {
-            Write-BootstrapLog "✓ $Name is available ($cmd)" 'SUCCESS'
+            Write-BootstrapLog "OK $Name is available ($cmd)" 'SUCCESS'
             return $true
         }
     }
 
-    Write-BootstrapLog "✗ $Name not found" 'WARN'
+    Write-BootstrapLog "FAIL $Name not found" 'WARN'
 
     if ($SkipPrerequisites) {
         Write-BootstrapLog "Skipping $Name installation (SkipPrerequisites specified)" 'WARN'
@@ -435,7 +435,7 @@ function Test-GitHubAuthentication {
     try {
         $authStatus = & gh auth status 2>&1
         if ($LASTEXITCODE -eq 0) {
-            Write-BootstrapLog "✓ GitHub CLI is authenticated" 'SUCCESS'
+            Write-BootstrapLog "OK GitHub CLI is authenticated" 'SUCCESS'
             return $true
         } else {
             Write-BootstrapLog "GitHub CLI is not authenticated" 'WARN'
@@ -485,7 +485,7 @@ function Test-Prerequisites {
         throw "Required prerequisites are missing. Please install them and re-run this script."
     }
 
-    Write-BootstrapLog "✓ All required prerequisites are available" 'SUCCESS'
+    Write-BootstrapLog "OK All required prerequisites are available" 'SUCCESS'
 }
 
 # Repository operations
@@ -544,7 +544,7 @@ function Sync-Repository {
                     Write-BootstrapLog "Git clean had issues but continuing..." 'WARN'
                 }
 
-                Write-BootstrapLog "✓ Repository updated successfully" 'SUCCESS'
+                Write-BootstrapLog "OK Repository updated successfully" 'SUCCESS'
                 Pop-Location
                 return $repoPath
             } catch {
@@ -585,7 +585,7 @@ function Sync-Repository {
             throw "Cloned directory is not a valid git repository"
         }
 
-        Write-BootstrapLog "✓ Repository cloned successfully" 'SUCCESS'
+        Write-BootstrapLog "OK Repository cloned successfully" 'SUCCESS'
         return $repoPath
     } catch {
         throw "Failed to clone repository: $($_.Exception.Message)"
@@ -643,7 +643,7 @@ function Get-BootstrapConfig {
             }
         }
 
-        Write-BootstrapLog "✓ Configuration loaded successfully" 'SUCCESS'
+        Write-BootstrapLog "OK Configuration loaded successfully" 'SUCCESS'
         return $config
     } catch {
         Write-BootstrapLog "Failed to parse configuration: $($_.Exception.Message)" 'ERROR'
@@ -722,7 +722,7 @@ function Invoke-CoreAppBootstrap {
             $process = Start-Process -FilePath $pwshPath -ArgumentList ($coreAppArgs -join ' ') -Wait -NoNewWindow -PassThru -WorkingDirectory $RepoPath
 
             if ($process.ExitCode -eq 0) {
-                Write-BootstrapLog "✓ CoreApp orchestration completed successfully" 'SUCCESS'
+                Write-BootstrapLog "OK CoreApp orchestration completed successfully" 'SUCCESS'
             } else {
                 throw "CoreApp orchestration failed with exit code: $($process.ExitCode)"
             }
@@ -747,7 +747,7 @@ function Show-CoreAppDemo {
     }
 
     Write-BootstrapLog "" 'INFO' -NoTimestamp
-    Write-BootstrapLog "🌟 Would you like to see the CoreApp orchestration in action? (y/N)" 'INFO' -NoTimestamp
+    Write-BootstrapLog "* Would you like to see the CoreApp orchestration in action? (y/N)" 'INFO' -NoTimestamp
 
     $response = Read-Host
     if ($response -match '^[Yy]') {
@@ -757,23 +757,23 @@ function Show-CoreAppDemo {
             # Import CoreApp module
             $coreAppPath = Join-Path $RepoPath "core-runner/core_app"
             Import-Module $coreAppPath -Force
-            Write-BootstrapLog "✓ CoreApp module imported" 'SUCCESS'
+            Write-BootstrapLog "OK CoreApp module imported" 'SUCCESS'
             # Initialize and show module status
             Write-BootstrapLog "Initializing core application..." 'INFO'
             $initResult = Initialize-CoreApplication
             if ($initResult.Success) {
-                Write-BootstrapLog "✓ Core application initialized" 'SUCCESS'
+                Write-BootstrapLog "OK Core application initialized" 'SUCCESS'
                 Write-BootstrapLog "Loaded modules: $($initResult.LoadedModules -join ', ')" 'INFO'
             }
             # Show module status
             Write-BootstrapLog "Module Status:" 'INFO'
             $moduleStatus = Get-CoreModuleStatus
             $moduleStatus | ForEach-Object {
-                $icon = if ($_.Status -eq 'Loaded') { '✓' } else { '⚠' }
+                $icon = if ($_.Status -eq 'Loaded') { 'OK' } else { 'WARNING' }
                 $color = if ($_.Status -eq 'Loaded') { 'SUCCESS' } else { 'WARN' }
                 Write-BootstrapLog "  $icon $($_.Name): $($_.Status)" $color
             }
-            Write-BootstrapLog "✓ CoreApp demonstration completed" 'SUCCESS'
+            Write-BootstrapLog "OK CoreApp demonstration completed" 'SUCCESS'
             Pop-Location
         } catch {
             Write-BootstrapLog "Demo failed: $($_.Exception.Message)" 'WARN'
@@ -799,17 +799,17 @@ function Test-BootstrapHealth {
 
     foreach ($item in $healthItems) {
         if (Test-Path $item.Path) {
-            Write-BootstrapLog "✓ $($item.Name)" 'SUCCESS'
+            Write-BootstrapLog "OK $($item.Name)" 'SUCCESS'
         } else {
-            Write-BootstrapLog "✗ $($item.Name) - Missing: $($item.Path)" 'ERROR'
+            Write-BootstrapLog "FAIL $($item.Name) - Missing: $($item.Path)" 'ERROR'
             $healthGood = $false
         }
     }
 
     if ($healthGood) {
-        Write-BootstrapLog "✓ All health checks passed" 'SUCCESS'
+        Write-BootstrapLog "OK All health checks passed" 'SUCCESS'
     } else {
-        Write-BootstrapLog "⚠ Some health checks failed - proceeding anyway" 'WARN'
+        Write-BootstrapLog "WARNING Some health checks failed - proceeding anyway" 'WARN'
     }
 
     return $healthGood
@@ -903,7 +903,7 @@ function Start-Bootstrap {
 
         # Change to project directory
         Set-Location $repoPath
-        Write-BootstrapLog "✓ Changed to project directory: $repoPath" 'SUCCESS'
+        Write-BootstrapLog "OK Changed to project directory: $repoPath" 'SUCCESS'
 
         # Create a convenient relaunch script
         $relaunchScript = Join-Path $repoPath "Relaunch-CoreApp.ps1"
@@ -931,7 +931,7 @@ param(
 # Ensure we're in the right directory
 Set-Location "`$PSScriptRoot"
 
-Write-Host "🚀 Relaunching OpenTofu Lab Automation CoreApp..." -ForegroundColor Cyan
+Write-Host " Relaunching OpenTofu Lab Automation CoreApp..." -ForegroundColor Cyan
 Write-Host "Project Directory: `$(Get-Location)" -ForegroundColor Green
 
 try {
@@ -941,55 +941,56 @@ try {
     # Initialize CoreApp ecosystem
     Initialize-CoreApplication -Force:`$Force
 
-    Write-Host "✅ CoreApp relaunch complete!" -ForegroundColor Green
+    Write-Host "[SUCCESS] CoreApp relaunch complete!" -ForegroundColor Green
     Write-Host ""
-    Write-Host "🎯 Available commands:" -ForegroundColor Yellow
-    Write-Host "  • Get-CoreModuleStatus      - Check module status"
-    Write-Host "  • Invoke-UnifiedMaintenance - Run maintenance"
-    Write-Host "  • Start-DevEnvironmentSetup - Setup dev environment"
-    Write-Host "  • Test-CoreApplicationHealth - Health check"
+    Write-Host " Available commands:" -ForegroundColor Yellow
+    Write-Host "  - Get-CoreModuleStatus      - Check module status"
+    Write-Host "  - Invoke-UnifiedMaintenance - Run maintenance"
+    Write-Host "  - Start-DevEnvironmentSetup - Setup dev environment"
+    Write-Host "  - Test-CoreApplicationHealth - Health check"
     Write-Host ""
-    Write-Host "💡 Quick actions:" -ForegroundColor Yellow
-    Write-Host "  • Run tests: Invoke-Pester"
-    Write-Host "  • Open VS Code: code ./opentofu-lab-automation.code-workspace"
-    Write-Host "  • Run PatchManager demo: ./run-demo-examples.ps1"
+    Write-Host "TIP: Quick actions:" -ForegroundColor Yellow
+    Write-Host "  - Run tests: Invoke-Pester"
+    Write-Host "  - Open VS Code: code ./opentofu-lab-automation.code-workspace"
+    Write-Host "  - Run PatchManager demo: ./run-demo-examples.ps1"
 
 } catch {
     Write-Error "Failed to relaunch CoreApp: `$(`$_.Exception.Message)"
-    Write-Host "💡 Try running: .\kicker-git.ps1 -Force" -ForegroundColor Yellow
+    Write-Host "TIP: Try running: .\kicker-git.ps1 -Force" -ForegroundColor Yellow
     exit 1
 }
 "@
 
         Set-Content -Path $relaunchScript -Value $relaunchContent -Encoding UTF8
-        Write-BootstrapLog "✓ Created relaunch helper: $relaunchScript" 'SUCCESS'
+        Write-BootstrapLog "Created relaunch helper: $relaunchScript" 'SUCCESS'
 
         # Success message with clear next steps
-        Write-BootstrapLog "=== Bootstrap Completed Successfully ===" 'SUCCESS'        Write-BootstrapLog "Repository location: $repoPath" 'INFO'
+        Write-BootstrapLog "=== Bootstrap Completed Successfully ===" 'SUCCESS'
+        Write-BootstrapLog "Repository location: $repoPath" 'INFO'
         Write-BootstrapLog "Current directory: $(Get-Location)" 'INFO'
         Write-BootstrapLog "Log file: $script:LogFile" 'INFO'
-        Write-BootstrapLog "PowerShell compatibility: $($PSVersionTable.PSVersion.Major).x ✓" 'INFO'
+        Write-BootstrapLog "PowerShell compatibility: $($PSVersionTable.PSVersion.Major).x OK" 'INFO'
 
         if ($script:VerbosityLevel -ge 1) {
             Write-BootstrapLog "" 'INFO' -NoTimestamp
-            Write-BootstrapLog "🎉 OpenTofu Lab Automation is ready! 🎉" 'SUCCESS' -NoTimestamp
+            Write-BootstrapLog " OpenTofu Lab Automation is ready! " 'SUCCESS' -NoTimestamp
             Write-BootstrapLog "You are now in the project directory: $(Get-Location)" 'SUCCESS' -NoTimestamp
             Write-BootstrapLog "" 'INFO' -NoTimestamp
-            Write-BootstrapLog "� To relaunch CoreApp anytime:" 'INFO' -NoTimestamp
+            Write-BootstrapLog " To relaunch CoreApp anytime:" 'INFO' -NoTimestamp
             Write-BootstrapLog "  .\Relaunch-CoreApp.ps1           # Convenient relaunch script" 'INFO' -NoTimestamp
             Write-BootstrapLog "  .\Start-CoreApp.ps1             # Alternative launcher" 'INFO' -NoTimestamp
             Write-BootstrapLog "" 'INFO' -NoTimestamp
-            Write-BootstrapLog "🚀 Quick Start Options:" 'INFO' -NoTimestamp
+            Write-BootstrapLog " Quick Start Options:" 'INFO' -NoTimestamp
             Write-BootstrapLog "  .\Relaunch-CoreApp.ps1          # Start CoreApp (recommended)" 'INFO' -NoTimestamp
             Write-BootstrapLog "  .\Quick-Setup.ps1               # Development environment" 'INFO' -NoTimestamp
             Write-BootstrapLog "  .\run-demo-examples.ps1         # Run PatchManager demos" 'INFO' -NoTimestamp
             Write-BootstrapLog "" 'INFO' -NoTimestamp
-            Write-BootstrapLog "🔧 Development Commands:" 'INFO' -NoTimestamp
-            Write-BootstrapLog "  • Run tests: Invoke-Pester" 'INFO' -NoTimestamp
-            Write-BootstrapLog "  • Open VS Code: code ./opentofu-lab-automation.code-workspace" 'INFO' -NoTimestamp
-            Write-BootstrapLog "  • Explore configs: ls ./opentofu/" 'INFO' -NoTimestamp
+            Write-BootstrapLog " Development Commands:" 'INFO' -NoTimestamp
+            Write-BootstrapLog "  - Run tests: Invoke-Pester" 'INFO' -NoTimestamp
+            Write-BootstrapLog "  - Open VS Code: code ./opentofu-lab-automation.code-workspace" 'INFO' -NoTimestamp
+            Write-BootstrapLog "  - Explore configs: ls ./opentofu/" 'INFO' -NoTimestamp
             Write-BootstrapLog "" 'INFO' -NoTimestamp
-            Write-BootstrapLog "📚 Documentation: ./docs/ | 🐛 Issues: https://github.com/wizzense/opentofu-lab-automation/issues" 'INFO' -NoTimestamp
+            Write-BootstrapLog "DOCS: Documentation: ./docs/ | BUGS: Issues: https://github.com/wizzense/opentofu-lab-automation/issues" 'INFO' -NoTimestamp
         }
 
     } catch {
