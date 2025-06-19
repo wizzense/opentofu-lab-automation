@@ -528,18 +528,43 @@ function Sync-Repository {
         if (-not (Test-Path $parentPath)) {
             New-Item -ItemType Directory -Path $parentPath -Force | Out-Null
         }
-        
-        # Enhanced git clone with better error handling
-        & git clone --branch $TargetBranch --single-branch --depth 1 $script:RepoUrl $repoPath 2>&1 | Out-Null
-        
-        if ($LASTEXITCODE -ne 0) {
-            throw "Git clone failed with exit code: $LASTEXITCODE"
+          # Enhanced git clone with better error handling and diagnostics
+        Write-BootstrapLog "Executing: git clone --branch $TargetBranch --single-branch --depth 1 $script:RepoUrl $repoPath" 'INFO'
+        Write-BootstrapLog "Current working directory: $(Get-Location)" 'INFO'
+        Write-BootstrapLog "Environment variables affecting Git:" 'INFO'
+        Write-BootstrapLog "GIT_CONFIG_GLOBAL: $env:GIT_CONFIG_GLOBAL" 'INFO'
+        Write-BootstrapLog "GIT_SSH: $env:GIT_SSH" 'INFO'
+
+        $retryCount = 0
+        $maxRetries = 3
+        $success = $false
+
+        while (-not $success -and $retryCount -lt $maxRetries) {
+            $retryCount++
+            Write-BootstrapLog "Attempt $retryCount of $maxRetries: Cloning repository..." 'INFO'
+            $gitOutput = & git clone --branch $TargetBranch --single-branch --depth 1 $script:RepoUrl $repoPath 2>&1
+
+            if ($LASTEXITCODE -eq 0) {
+                $success = $true
+                Write-BootstrapLog "Git clone succeeded on attempt $retryCount" 'SUCCESS'
+            } else {
+                $errorDetails = if ($gitOutput) { $gitOutput -join "`n" } else { "No additional error details available" }
+                Write-BootstrapLog "Git clone failed on attempt $retryCount. Output: $errorDetails" 'ERROR'
+
+                if ($retryCount -lt $maxRetries) {
+                    Write-BootstrapLog "Retrying in 5 seconds..." 'WARN'
+                    Start-Sleep -Seconds 5
+                } else {
+                    Write-BootstrapLog "Max retries reached. Failing with error." 'ERROR'
+                    throw "Git clone failed after $maxRetries attempts. Details: $errorDetails"
+                }
+            }
         }
-        
+
         if (-not (Test-Path $repoPath)) {
             throw "Repository clone appeared successful but path does not exist"
         }
-        
+
         # Verify it's a proper clone
         $gitDir = Join-Path $repoPath '.git'
         if (-not (Test-Path $gitDir)) {
