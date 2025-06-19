@@ -670,67 +670,65 @@ function Invoke-CoreAppBootstrap {
     Write-BootstrapLog "Invoking CoreApp orchestration..." 'INFO'
 
     try {
-        Push-Location $RepoPath        # Prepare arguments for CoreApp
+        Push-Location $RepoPath
+
+        # Prepare arguments for CoreApp
         $coreAppArgs = @(
-            '-NoLogo'
-            '-NoProfile'
-            '-File'
-            $runnerScript  # Don't manually quote - Start-Process handles this
+            '-NoLogo',
+            '-NoProfile',
+            '-File',
+            $runnerScript
         )
 
         if ($Config) {
             $tempConfigPath = Join-Path (Get-PlatformTempPath) "bootstrap-runtime-config.json"
 
-            # PowerShell version compatible JSON serialization
             try {
                 if ($script:IsPowerShell7Plus) {
                     $Config | ConvertTo-Json -Depth 10 | Set-Content $tempConfigPath -Encoding UTF8
                 } else {
-                    # PowerShell 5.1 compatible approach
                     $jsonOutput = $Config | ConvertTo-Json -Depth 10
                     [System.IO.File]::WriteAllText($tempConfigPath, $jsonOutput, [System.Text.Encoding]::UTF8)
                 }
                 $coreAppArgs += @('-ConfigFile', $tempConfigPath)
             } catch {
                 Write-BootstrapLog "Failed to serialize config, proceeding without it: $($_.Exception.Message)" 'WARN'
-            }        }
+            }
+        }
 
-        # Handle verbosity parameter correctly based on core-runner parameter sets
         if ($Verbosity -eq 'silent') {
             $coreAppArgs += '-Quiet'
         } else {
             $coreAppArgs += @('-Verbosity', $Verbosity)
-        }        if ($NonInteractive) {
+        }
+
+        if ($NonInteractive) {
             $coreAppArgs += '-NonInteractive'
-            $coreAppArgs += '-Auto'  # Run all scripts automatically in non-interactive mode
-        }# Use the best available PowerShell
+            $coreAppArgs += '-Auto'
+        }
+
         $pwshPath = Get-PlatformPowerShell
-        Write-BootstrapLog "Using PowerShell: $pwshPath" 'INFO'        if ($WhatIfPreference) {
-            Write-BootstrapLog "WhatIf: Would start CoreApp orchestration" 'INFO'
-        } else {            try {
-                # Debug: Show the exact command being executed
-                Write-BootstrapLog "Executing: $pwshPath" 'INFO'
-                Write-BootstrapLog "Arguments:" 'INFO'
-                for ($i = 0; $i -lt $coreAppArgs.Length; $i++) {
-                    Write-BootstrapLog "  [$i]: '$($coreAppArgs[$i])'" 'INFO'
-                }
+        Write-BootstrapLog "Using PowerShell: $pwshPath" 'INFO'
 
-                # Set environment variables for the child process
-                $env:PROJECT_ROOT = $RepoPath
-                $env:PWSH_MODULES_PATH = "$RepoPath/core-runner/modules"
-
-                # Use Start-Process with explicit parameter handling to avoid argument parsing issues
-                $process = Start-Process -FilePath $pwshPath -ArgumentList $coreAppArgs -Wait -NoNewWindow -PassThru -WorkingDirectory $RepoPath
-
-                if ($process.ExitCode -eq 0) {
-                    Write-BootstrapLog "✓ CoreApp orchestration completed successfully" 'SUCCESS'
-                } else {
-                    throw "CoreApp orchestration failed with exit code: $($process.ExitCode)"
-                }
-            } catch {
-                Write-BootstrapLog "CoreApp orchestration failed: $($_.Exception.Message)" 'ERROR'
-                throw
+        try {
+            # Debug: Show the exact command being executed
+            Write-BootstrapLog "Executing: $pwshPath" 'INFO'
+            Write-BootstrapLog "Arguments:" 'INFO'
+            for ($i = 0; $i -lt $coreAppArgs.Length; $i++) {
+                Write-BootstrapLog "  [$i]: '$($coreAppArgs[$i])'" 'INFO'
             }
+
+            # Use Start-Process with explicit parameter handling to avoid argument parsing issues
+            $process = Start-Process -FilePath $pwshPath -ArgumentList ($coreAppArgs -join ' ') -Wait -NoNewWindow -PassThru -WorkingDirectory $RepoPath
+
+            if ($process.ExitCode -eq 0) {
+                Write-BootstrapLog "✓ CoreApp orchestration completed successfully" 'SUCCESS'
+            } else {
+                throw "CoreApp orchestration failed with exit code: $($process.ExitCode)"
+            }
+        } catch {
+            Write-BootstrapLog "CoreApp orchestration failed: $($_.Exception.Message)" 'ERROR'
+            throw
         }
 
         Pop-Location

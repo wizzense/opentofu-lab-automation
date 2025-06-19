@@ -72,7 +72,7 @@ function New-SimpleIssueForPatch {
             # Create a simple, focused issue title and body
             $issueTitle = "Patch: $PatchDescription"
             $timestamp = Get-Date -Format 'yyyy-MM-dd HH:mm:ss UTC'
-            
+
             $issueBody = @"
 ## Patch Tracking Issue
 
@@ -105,11 +105,17 @@ $(if ($AffectedFiles.Count -gt 0) {
                     Title = $issueTitle
                     Body = $issueBody
                 }
-            }
-
-            # Create the issue
+            }            # Create the issue with robust label handling
             Write-CustomLog "Creating GitHub issue: $issueTitle" -Level INFO
-            $result = gh issue create --title $issueTitle --body $issueBody --label "patch,tracking,$Priority" 2>&1
+            
+            # Try with full labels first, fallback to minimal if needed
+            $result = gh issue create --title $issueTitle --body $issueBody --label "patch" 2>&1
+            
+            # If label fails, try without any labels
+            if ($LASTEXITCODE -ne 0 -and $result -match "not found") {
+                Write-CustomLog "Label issue detected, creating without labels" -Level WARN
+                $result = gh issue create --title $issueTitle --body $issueBody 2>&1
+            }
 
             if ($LASTEXITCODE -eq 0) {
                 # Extract issue number from URL
@@ -134,7 +140,7 @@ $(if ($AffectedFiles.Count -gt 0) {
         } catch {
             $errorMessage = "Failed to create issue: $($_.Exception.Message)"
             Write-CustomLog $errorMessage -Level ERROR
-            
+
             return @{
                 Success = $false
                 Message = $errorMessage
@@ -181,7 +187,7 @@ function New-SimplePRForPatch {
 
             # Build PR title and body
             $prTitle = "Patch: $PatchDescription"
-            
+
             # Build validation results text (no emojis)
             $validationText = if ($ValidationResults.Count -gt 0) {
                 $ValidationResults.GetEnumerator() | ForEach-Object {
@@ -244,7 +250,7 @@ This patch follows the PatchManager workflow:
                 Write-CustomLog "Committing pending changes..." -Level INFO
                 git add . 2>&1 | Out-Null
                 git commit -m "PatchManager: $PatchDescription" 2>&1 | Out-Null
-                
+
                 if ($LASTEXITCODE -ne 0) {
                     Write-CustomLog "Warning: Git commit may have had issues, but continuing..." -Level WARN
                 }
@@ -253,14 +259,18 @@ This patch follows the PatchManager workflow:
             # Push branch
             Write-CustomLog "Pushing branch: $BranchName" -Level INFO
             git push origin $BranchName 2>&1 | Out-Null
-            
+
             if ($LASTEXITCODE -ne 0) {
                 throw "Failed to push branch $BranchName"
-            }
-
-            # Create PR
+            }            # Create PR with robust label handling
             Write-CustomLog "Creating pull request: $prTitle" -Level INFO
-            $result = gh pr create --title $prTitle --body $prBody --head $BranchName --label "patch" 2>&1
+            $result = gh pr create --title $prTitle --body $prBody --head $BranchName --label "patch,tracking,$Priority" 2>&1
+            
+            # If label fails, fallback to using only the "patch" label
+            if ($LASTEXITCODE -ne 0 -and $result -match "not found") {
+                Write-CustomLog "Label issue detected, creating PR with only the 'patch' label" -Level WARN
+                $result = gh pr create --title $prTitle --body $prBody --head $BranchName --label "patch" 2>&1
+            }
 
             if ($LASTEXITCODE -eq 0) {
                 # Extract PR number from URL
@@ -282,7 +292,7 @@ This patch follows the PatchManager workflow:
                 if ($errorText -match "already exists.*https://github\.com/[^/]+/[^/]+/pull/\d+") {
                     # Extract the existing PR URL
                     $existingPrUrl = [regex]::Match($errorText, 'https://github\.com/[^/]+/[^/]+/pull/\d+').Value
-                    
+
                     # Extract PR number from URL
                     $prNumber = $null
                     if ($existingPrUrl -match '/pull/(\d+)') {
@@ -307,7 +317,7 @@ This patch follows the PatchManager workflow:
         } catch {
             $errorMessage = "Failed to create pull request: $($_.Exception.Message)"
             Write-CustomLog $errorMessage -Level ERROR
-            
+
             return @{
                 Success = $false
                 Message = $errorMessage
@@ -344,7 +354,7 @@ function Invoke-SimplifiedPatchWorkflow {
 
     begin {
         Write-CustomLog "Starting simplified patch workflow: $PatchDescription" -Level INFO
-        
+
         if ($DryRun) {
             Write-CustomLog "DRY RUN MODE: No actual changes will be made" -Level WARN
         }
@@ -367,23 +377,23 @@ function Invoke-SimplifiedPatchWorkflow {
             # Step 1: Create branch
             $branchName = "patch/$(Get-Date -Format 'yyyyMMdd-HHmmss')-$($PatchDescription -replace '[^\w-]', '-' -replace '-+', '-')"
             $branchName = $branchName.Substring(0, [Math]::Min($branchName.Length, 80)) # Limit branch name length
-            
+
             Write-CustomLog "Creating branch: $branchName" -Level INFO
-            
+
             if (-not $DryRun) {
                 git checkout -b $branchName 2>&1 | Out-Null
                 if ($LASTEXITCODE -ne 0) {
                     throw "Failed to create branch: $branchName"
                 }
             }
-            
+
             $results.BranchName = $branchName
 
             # Step 2: Create issue if requested
             if ($CreateIssue) {
                 Write-CustomLog "Creating tracking issue..." -Level INFO
                 $issueResult = New-SimpleIssueForPatch -PatchDescription $PatchDescription -Priority $Priority -DryRun:$DryRun
-                
+
                 if ($issueResult.Success) {
                     $results.IssueNumber = $issueResult.IssueNumber
                     $results.IssueUrl = $issueResult.IssueUrl
@@ -395,10 +405,10 @@ function Invoke-SimplifiedPatchWorkflow {
 
             # Step 3: Apply patch operation
             Write-CustomLog "Applying patch operation..." -Level INFO
-            
+
             if (-not $DryRun) {
                 $patchResult = & $PatchOperation
-                
+
                 # Basic success check
                 if ($patchResult -is [hashtable] -and $patchResult.ContainsKey('Success') -and -not $patchResult.Success) {
                     throw "Patch operation failed: $($patchResult.Message)"
@@ -410,10 +420,10 @@ function Invoke-SimplifiedPatchWorkflow {
             # Step 4: Run test commands if provided
             if ($TestCommands.Count -gt 0) {
                 Write-CustomLog "Running $($TestCommands.Count) test command(s)..." -Level INFO
-                
+
                 foreach ($testCmd in $TestCommands) {
                     Write-CustomLog "Running test: $testCmd" -Level INFO
-                    
+
                     if (-not $DryRun) {
                         $testResult = Invoke-Expression $testCmd
                         if ($LASTEXITCODE -ne 0) {
@@ -428,20 +438,20 @@ function Invoke-SimplifiedPatchWorkflow {
             # Step 5: Create pull request if requested
             if ($CreatePullRequest) {
                 Write-CustomLog "Creating pull request..." -Level INFO
-                
+
                 $prParams = @{
                     PatchDescription = $PatchDescription
                     BranchName = $branchName
                     DryRun = $DryRun
                 }
-                
+
                 if ($results.IssueNumber) {
                     $prParams.IssueNumber = $results.IssueNumber
                     $prParams.IssueUrl = $results.IssueUrl
                 }
-                
+
                 $prResult = New-SimplePRForPatch @prParams
-                
+
                 if ($prResult.Success) {
                     $results.PullRequestNumber = $prResult.PullRequestNumber
                     $results.PullRequestUrl = $prResult.PullRequestUrl
@@ -455,14 +465,14 @@ function Invoke-SimplifiedPatchWorkflow {
             # Success
             $results.Success = $true
             $results.Message = "Patch workflow completed successfully"
-            
+
             Write-CustomLog "Simplified patch workflow completed successfully" -Level SUCCESS
             return $results
 
         } catch {
             $errorMessage = "Patch workflow failed: $($_.Exception.Message)"
             Write-CustomLog $errorMessage -Level ERROR
-            
+
             $results.Success = $false
             $results.Message = $errorMessage
             return $results

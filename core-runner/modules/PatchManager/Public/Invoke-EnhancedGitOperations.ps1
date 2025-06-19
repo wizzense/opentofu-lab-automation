@@ -291,4 +291,3 @@ function Invoke-EnhancedGitOperations {
         return @{ Success = $true }
     }
 }
-
