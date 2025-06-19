@@ -402,7 +402,7 @@
                 "cwd": "${workspaceFolder}"
             }
         },        // ========================================
-        // PatchManager Core Workflows (Consolidated v2.0)
+        // PatchManager Core Workflows (Consolidated v2.1 - IMPROVED)
         // ========================================
         {
             "label": "PatchManager: Create Feature Patch",
@@ -410,7 +410,7 @@
             "command": "pwsh",
             "args": [
                 "-Command",
-                "Import-Module './core-runner/modules/PatchManager' -Force; Invoke-PatchWorkflow -PatchDescription '${input:patchDescription}' -PatchOperation { ${input:patchOperation} } -CreateIssue -CreatePR -DryRun"
+                "Import-Module './core-runner/modules/PatchManager' -Force; Invoke-PatchWorkflow -PatchDescription '${input:patchDescription}' -PatchOperation { ${input:patchOperation} } -CreatePR -DryRun"
             ],
             "group": "build",
             "presentation": {
@@ -432,7 +432,7 @@
             "command": "pwsh",
             "args": [
                 "-Command",
-                "Import-Module './core-runner/modules/PatchManager' -Force; Invoke-PatchWorkflow -PatchDescription '${input:patchDescription}' -PatchOperation { ${input:patchOperation} } -TestCommands @('${input:testCommand}') -CreateIssue -CreatePR"
+                "Import-Module './core-runner/modules/PatchManager' -Force; Invoke-PatchWorkflow -PatchDescription '${input:patchDescription}' -PatchOperation { ${input:patchOperation} } -TestCommands @('${input:testCommand}') -CreatePR"
             ],
             "group": "build",
             "presentation": {
@@ -455,6 +455,28 @@
             "args": [
                 "-Command",
                 "Import-Module './core-runner/modules/PatchManager' -Force; New-PatchIssue -Description '${input:patchDescription}' -Priority '${input:priority}' -DryRun"
+            ],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": true,
+                "panel": "shared",
+                "showReuseMessage": false,
+                "clear": true
+            },
+            "problemMatcher": [],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            }
+        },
+        {
+            "label": "PatchManager: Quick Local Fix (No Issue)",
+            "type": "shell",
+            "command": "pwsh",
+            "args": [
+                "-Command",
+                "Import-Module './core-runner/modules/PatchManager' -Force; Invoke-PatchWorkflow -PatchDescription '${input:patchDescription}' -PatchOperation { ${input:patchOperation} } -CreateIssue:$false"
             ],
             "group": "build",
             "presentation": {
@@ -651,7 +673,7 @@
                 "cwd": "${workspaceFolder}"
             }        },
         // ========================================
-        // Development Workflows (Updated for PatchManager v2.0)
+        // Development Workflows (Updated for PatchManager v2.1 - IMPROVED)
         // ========================================
         {
             "label": "Dev: Git Operations (Legacy - Not Recommended)",
@@ -681,7 +703,7 @@
             "command": "pwsh",
             "args": [
                 "-Command",
-                "Write-Host 'NEW PATCHMANAGER CORE FUNCTIONS:' -ForegroundColor Green; Write-Host '1. Invoke-PatchWorkflow - Main entry point' -ForegroundColor Cyan; Write-Host '2. New-PatchIssue - Create issues' -ForegroundColor Cyan; Write-Host '3. New-PatchPR - Create PRs' -ForegroundColor Cyan; Write-Host '4. Invoke-PatchRollback - Rollback operations' -ForegroundColor Cyan; Write-Host 'Legacy functions are archived in Legacy/ folder' -ForegroundColor Yellow"
+                "Write-Host 'NEW PATCHMANAGER CORE FUNCTIONS (v2.1 - IMPROVED):' -ForegroundColor Green; Write-Host '1. Invoke-PatchWorkflow - Main entry point (auto-commits, creates issues by default)' -ForegroundColor Cyan; Write-Host '2. New-PatchIssue - Create issues' -ForegroundColor Cyan; Write-Host '3. New-PatchPR - Create PRs' -ForegroundColor Cyan; Write-Host '4. Invoke-PatchRollback - Rollback operations' -ForegroundColor Cyan; Write-Host 'KEY IMPROVEMENTS: Auto-commit dirty trees, issue creation by default, single-step workflow' -ForegroundColor Yellow"
             ],
             "group": "build",
             "presentation": {

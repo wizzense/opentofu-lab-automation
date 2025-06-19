@@ -20,10 +20,10 @@
     Optional array of commands to run for validation
 
 .PARAMETER CreateIssue
-    Create a GitHub issue to track this patch
+    Create a GitHub issue to track this patch (default: true, use -CreateIssue:$false to disable)
 
 .PARAMETER CreatePR
-    Create a pull request for this patch
+    Create a pull request for this patch (default: false, use -CreatePR to enable)
 
 .PARAMETER Priority
     Priority level for issue tracking (Low, Medium, High, Critical)
@@ -41,9 +41,17 @@
         $content = $content -replace "old pattern", "new pattern"
         Set-Content "module.ps1" -Value $content
     }
+    # Creates issue by default, applies changes, commits to new branch
 
 .EXAMPLE
-    Invoke-PatchWorkflow -PatchDescription "Update configuration" -CreateIssue -CreatePR -Priority "High" -TestCommands @("Test-Config")
+    Invoke-PatchWorkflow -PatchDescription "Update configuration" -CreatePR -Priority "High" -TestCommands @("Test-Config")
+    # Creates issue AND PR, includes testing
+
+.EXAMPLE
+    Invoke-PatchWorkflow -PatchDescription "Quick local fix" -CreateIssue:$false -PatchOperation { 
+        # Quick local change
+    }
+    # No issue created, just branch + commit
 
 .NOTES
     This function replaces:
@@ -67,7 +75,7 @@ function Invoke-PatchWorkflow {
         [string[]]$TestCommands = @(),
 
         [Parameter(Mandatory = $false)]
-        [switch]$CreateIssue,
+        [switch]$CreateIssue = $true,
 
         [Parameter(Mandatory = $false)]
         [switch]$CreatePR,
@@ -107,13 +115,40 @@ function Invoke-PatchWorkflow {
 
     process {
         try {
-            # Step 1: Validate environment
-            if (-not $Force) {
-                $gitStatus = git status --porcelain 2>&1
-                if ($gitStatus -and ($gitStatus | Where-Object { $_ -match '\S' })) {
-                    Write-PatchLog "Working tree is not clean. Use -Force to proceed anyway." -Level "ERROR"
-                    throw "Working tree not clean"
+            # Step 1: Handle existing changes (auto-commit or stash)
+            $gitStatus = git status --porcelain 2>&1
+            $hasUncommittedChanges = $gitStatus -and ($gitStatus | Where-Object { $_ -match '\S' })
+            
+            if ($hasUncommittedChanges) {
+                Write-PatchLog "Working tree has uncommitted changes. Auto-committing them first..." -Level "INFO"
+                
+                if (-not $DryRun) {
+                    # Sanitize files before committing existing changes
+                    try {
+                        $changedFiles = git diff --name-only HEAD 2>&1 | Where-Object { $_ -and $_.Trim() }
+                        if ($changedFiles) {
+                            $sanitizeResult = Invoke-UnicodeSanitizer -FilePaths $changedFiles -ProjectRoot (Get-Location).Path
+                            if ($sanitizeResult.FilesModified -gt 0) {
+                                Write-PatchLog "Sanitized $($sanitizeResult.FilesModified) files before committing" -Level "INFO"
+                            }
+                        }
+                    } catch {
+                        Write-PatchLog "Warning: Unicode sanitization failed: $($_.Exception.Message)" -Level "WARN"
+                    }
+                    
+                    git add . 2>&1 | Out-Null
+                    git commit -m "Auto-commit: Changes before patch workflow for '$PatchDescription'" 2>&1 | Out-Null
+                    
+                    if ($LASTEXITCODE -ne 0) {
+                        Write-PatchLog "Warning: Auto-commit may have had issues" -Level "WARN"
+                    } else {
+                        Write-PatchLog "Successfully auto-committed existing changes" -Level "SUCCESS"
+                    }
+                } else {
+                    Write-PatchLog "DRY RUN: Would auto-commit existing changes" -Level "INFO"
                 }
+            } else {
+                Write-PatchLog "Working tree is clean - proceeding with patch workflow" -Level "INFO"
             }
 
             # Step 2: Create patch branch
@@ -130,7 +165,26 @@ function Invoke-PatchWorkflow {
                 }
             }
 
-            # Step 3: Apply patch operation
+            # Step 3: Create tracking issue (by default, unless explicitly disabled)
+            $issueResult = $null
+            if ($CreateIssue) {
+                Write-PatchLog "Creating tracking issue (step 1 of workflow)..." -Level "INFO"
+                
+                if (-not $DryRun) {
+                    $issueResult = New-PatchIssue -Description $PatchDescription -Priority $Priority
+                    if ($issueResult.Success) {
+                        Write-PatchLog "Issue created: $($issueResult.IssueUrl)" -Level "SUCCESS"
+                    } else {
+                        Write-PatchLog "Issue creation failed: $($issueResult.Message)" -Level "WARN"
+                    }
+                } else {
+                    Write-PatchLog "DRY RUN: Would create GitHub issue" -Level "INFO"
+                }
+            } else {
+                Write-PatchLog "Skipping issue creation (disabled by -CreateIssue:`$false)" -Level "INFO"
+            }
+
+            # Step 4: Apply patch operation
             if ($PatchOperation) {
                 Write-PatchLog "Applying patch operation..." -Level "INFO"
                 
@@ -141,7 +195,7 @@ function Invoke-PatchWorkflow {
                 }
             }
 
-            # Step 4: Run test commands
+            # Step 5: Run test commands
             if ($TestCommands.Count -gt 0) {
                 Write-PatchLog "Running $($TestCommands.Count) test command(s)..." -Level "INFO"
                 
@@ -161,7 +215,7 @@ function Invoke-PatchWorkflow {
                         Write-PatchLog "DRY RUN: Would run test command: $cmd" -Level "INFO"
                     }
                 }
-            }            # Step 5: Sanitize files and commit changes
+            }            # Step 6: Sanitize files and commit patch changes
             if (-not $DryRun) {
                 $gitStatus = git status --porcelain 2>&1
                 if ($gitStatus -and ($gitStatus | Where-Object { $_ -match '\S' })) {
@@ -191,23 +245,6 @@ function Invoke-PatchWorkflow {
                 }
             } else {
                 Write-PatchLog "DRY RUN: Would sanitize files and commit changes" -Level "INFO"
-            }
-
-            # Step 6: Create issue if requested
-            $issueResult = $null
-            if ($CreateIssue) {
-                Write-PatchLog "Creating tracking issue..." -Level "INFO"
-                
-                if (-not $DryRun) {
-                    $issueResult = New-PatchIssue -Description $PatchDescription -Priority $Priority
-                    if ($issueResult.Success) {
-                        Write-PatchLog "Issue created: $($issueResult.IssueUrl)" -Level "SUCCESS"
-                    } else {
-                        Write-PatchLog "Issue creation failed: $($issueResult.Message)" -Level "WARN"
-                    }
-                } else {
-                    Write-PatchLog "DRY RUN: Would create GitHub issue" -Level "INFO"
-                }
             }
 
             # Step 7: Create PR if requested
