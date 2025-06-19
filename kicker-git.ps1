@@ -1,4 +1,4 @@
-﻿<#
+<#
 .SYNOPSIS
     Cross-compatible bootstrap script for OpenTofu Lab Automation with CoreApp orchestration.
 

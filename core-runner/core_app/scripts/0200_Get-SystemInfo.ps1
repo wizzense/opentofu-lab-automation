@@ -2,17 +2,28 @@
 
 [CmdletBinding(SupportsShouldProcess)]
 param(
-
     [Parameter()]
     [object]$Config,
 
     [Parameter()]
-    [switch]$AsJson
-
+    [switch]$AsJson,
+    
+    [Parameter()]
+    [ValidateSet('silent', 'normal', 'detailed')]
+    [string]$Verbosity = 'normal',
+    
+    [Parameter()]
+    [switch]$Auto,
+    
+    [Parameter()]
+    [switch]$Force
 )
 
 Import-Module "$env:PWSH_MODULES_PATH/LabRunner/" -Force
 Import-Module "$env:PROJECT_ROOT/core-runner/modules/Logging" -Force
+
+# Initialize standardized parameters
+$params = Initialize-StandardParameters -InputParameters $PSBoundParameters -ScriptName $MyInvocation.MyCommand.Name
 
 Write-CustomLog "Starting $($MyInvocation.MyCommand.Name)"
 
@@ -113,8 +124,20 @@ function Get-SystemInfo {
     }
 }
 
-if ($MyInvocation.InvocationName -ne '.') {
-    Get-SystemInfo @PSBoundParameters
+# Handle WhatIf mode with ShouldProcess
+if (-not $params.IsWhatIfMode -and $PSCmdlet.ShouldProcess("Get system information", "Execute gathering")) {
+    if ($MyInvocation.InvocationName -ne '.') {
+        $systemInfo = Get-SystemInfo -AsJson:$AsJson -Config $params.Config
+        
+        # If in detailed verbosity mode, show more information
+        if ($params.Verbosity -eq 'detailed') {
+            Write-CustomLog "System information details:" -Level INFO
+            $systemInfo | Format-List | Out-String | ForEach-Object { Write-CustomLog $_ -Level INFO }
+        }
+    }
+}
+else {
+    Write-CustomLog "WhatIf: Would gather system information for platform: $(Get-Platform)" -Level INFO
 }
 
 Write-CustomLog "Completed $($MyInvocation.MyCommand.Name)"
