@@ -311,54 +311,23 @@ This issue will be automatically closed when the associated pull request is merg
                 DryRun = $DryRun
             }
         }
-        catch {
-            $errorMessage = "Patch process failed: $($_.Exception.Message)"
+        catch {            $errorMessage = "Patch process failed: $($_.Exception.Message)"
             Write-CustomLog $errorMessage -Level ERROR
 
-
-            # ENHANCED: Comprehensive automated error tracking
-            try {
-                Write-CustomLog "Initiating automated error tracking..." -Level INFO
-                $errorTracking = Invoke-AutomatedErrorTracking -SourceFunction "Invoke-GitControlledPatch" -ErrorRecord $_ -Context @{
-                    Operation = "Git-Controlled Patch"
-                    PatchDescription = $PatchDescription
-                    BranchName = $branchName
-                    AffectedFiles = $AffectedFiles
-                    DryRun = $DryRun
-                } -Priority "Critical" -AffectedFiles $AffectedFiles -AlwaysCreateIssue
-
-                if ($errorTracking.IssueCreated) {
-                    Write-CustomLog "Automated error tracking issue created: $($errorTracking.IssueUrl)" -Level SUCCESS
-                    Write-CustomLog "Issue #$($errorTracking.IssueNumber) will track systematic resolution" -Level INFO
-                } else {
-                    Write-CustomLog "Could not create automated tracking issue: $($errorTracking.Error)" -Level WARN
-                }
-            } catch {
-                Write-CustomLog "Failed to initialize automated error tracking: $($_.Exception.Message)" -Level WARN
-            }
-              # Attempt cleanup
+            # Simplified error logging (disabled automated issue tracking per user request)
+            Write-CustomLog "Error occurred during patch process" -Level WARN
+            Write-CustomLog "Error details: $($_.Exception.Message)" -Level ERROR            # Attempt cleanup
             try {
                 if ($branchName -and -not $DryRun) {
                     Write-CustomLog "Attempting to clean up failed patch branch..." -Level INFO
-                    Invoke-PatchRollback -BranchName $branchName -Force
+                    # Simple cleanup: delete the failed branch
+                    git checkout main 2>&1 | Out-Null
+                    git branch -D $branchName 2>&1 | Out-Null
+                    Write-CustomLog "Cleaned up failed branch: $branchName" -Level INFO
                 }
             } catch {
                 Write-CustomLog "Cleanup also failed: $($_.Exception.Message)" -Level ERROR
-                  # Create additional automated error tracking for cleanup failure
-                try {
-                    $cleanupTracking = Invoke-AutomatedErrorTracking -SourceFunction "Invoke-GitControlledPatch-Cleanup" -ErrorRecord $_ -Context @{
-                        Operation = "Patch Rollback"
-                        PatchDescription = $PatchDescription
-                        BranchName = $branchName
-                        CleanupFailure = $true
-                    } -Priority "High" -AlwaysCreateIssue
-
-                    if ($cleanupTracking.IssueCreated) {
-                        Write-CustomLog "Cleanup failure tracked in issue: $($cleanupTracking.IssueUrl)" -Level INFO
-                    }
-                } catch {
-                    Write-CustomLog "Failed to track cleanup failure: $($_.Exception.Message)" -Level WARN
-                }
+                Write-CustomLog "Manual cleanup may be required for branch: $branchName" -Level WARN
             }
 
             return @{
@@ -435,6 +404,15 @@ function New-PatchCommit {
     )
 
     try {
+        # Check if there are any changes to commit
+        $gitStatus = git status --porcelain
+        if (-not $gitStatus) {
+            return @{
+                Success = $false
+                Message = "No changes to commit"
+            }
+        }
+
         # Stage files
         if ($AffectedFiles.Count -gt 0) {
             foreach ($file in $AffectedFiles) {
