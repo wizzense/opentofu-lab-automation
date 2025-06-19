@@ -180,35 +180,7 @@ try {
                 if (Test-Path $scriptPath) {
                     Write-CustomLog "Executing script: $scriptName" -Level INFO
                     if ($PSCmdlet.ShouldProcess($scriptName, 'Execute script')) {
-                        try {
-                            # Preserve output streams and ensure visibility
-                            Write-CustomLog "Starting script execution: $scriptName" -Level INFO
-                            
-                            # Execute script with proper output handling
-                            $scriptOutput = & $scriptPath -Config $config *>&1
-                            
-                            # Display captured output
-                            if ($scriptOutput) {
-                                $scriptOutput | ForEach-Object {
-                                    if ($_ -is [System.Management.Automation.ErrorRecord]) {
-                                        Write-CustomLog "Script error: $($_.Exception.Message)" -Level ERROR
-                                    } elseif ($_ -is [System.Management.Automation.WarningRecord]) {
-                                        Write-CustomLog "Script warning: $($_.Message)" -Level WARN
-                                    } elseif ($_ -is [System.Management.Automation.VerboseRecord]) {
-                                        Write-CustomLog "Script verbose: $($_.Message)" -Level DEBUG
-                                    } else {
-                                        Write-Host $_.ToString()
-                                    }
-                                }
-                            }
-                            
-                            Write-CustomLog "Script completed: $scriptName" -Level SUCCESS
-                        } catch {
-                            Write-CustomLog "Script failed: $scriptName - $($_.Exception.Message)" -Level ERROR
-                            if (-not $Force) {
-                                throw
-                            }
-                        }
+                        Invoke-ScriptWithOutputHandling -ScriptName $scriptName -ScriptPath $scriptPath -Config $config -Force $Force
                     }
                 } else {
                     Write-CustomLog "Script not found: $scriptName" -Level WARN
