@@ -55,6 +55,93 @@ param(
 # Set up environment
 $ErrorActionPreference = 'Stop'
 
+function Invoke-ScriptWithOutputHandling {
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory)]
+        [string]$ScriptName,
+
+        [Parameter(Mandatory)]
+        [string]$ScriptPath,
+
+        [Parameter(Mandatory)]
+        $Config,
+
+        [switch]$Force,
+
+        [ValidateSet('silent', 'normal', 'detailed')]
+        [string]$Verbosity = 'normal'
+    )
+
+    # Script execution with output handling and user-focused display
+    # In normal mode, logging is minimal (WARN/ERROR only) to keep output clean
+    # Scripts should use Write-Host for user-facing output and Write-CustomLog for internal logging
+    Write-CustomLog "Starting script execution: $ScriptName" -Level DEBUG
+
+    try {
+        $scriptOutput = & $ScriptPath -Config $Config *>&1
+        $visibleOutputCount = 0
+        $hasUserVisibleOutput = $false
+
+        if ($scriptOutput) {
+            $scriptOutput | ForEach-Object {
+                if ($_ -is [System.Management.Automation.ErrorRecord]) {
+                    Write-CustomLog "Script error: $($_.Exception.Message)" -Level ERROR
+                    $visibleOutputCount++
+                    $hasUserVisibleOutput = $true
+                } elseif ($_ -is [System.Management.Automation.WarningRecord]) {
+                    Write-CustomLog "Script warning: $($_.Message)" -Level WARN
+                    $visibleOutputCount++
+                    $hasUserVisibleOutput = $true
+                } elseif ($_ -is [System.Management.Automation.VerboseRecord]) {
+                    Write-CustomLog "Script verbose: $($_.Message)" -Level DEBUG
+                    # Verbose output doesn't count as "user visible" in normal mode
+                } else {
+                    # In silent mode, suppress all Write-Host output including user-facing information
+                    if ($Verbosity -ne 'silent') {
+                        Write-Host $_.ToString()
+                        $visibleOutputCount++
+                        $hasUserVisibleOutput = $true
+                    } else {
+                        # Still count the output for tracking, but don't display it
+                        $visibleOutputCount++
+                        $hasUserVisibleOutput = $true
+                    }
+                }
+            }
+        }
+
+        # Detect and warn about scripts with no visible output
+        if (-not $hasUserVisibleOutput -and $Verbosity -in @('normal', 'silent')) {
+            $warningMessage = "⚠️  Script '$ScriptName' completed successfully but produced no visible output in '$Verbosity' mode."
+            $suggestionMessage = "💡 Consider running with '-Verbosity detailed' to see more information, or the script may need output improvements."
+
+            Write-Host ""
+            Write-Host $warningMessage -ForegroundColor Yellow
+            Write-Host $suggestionMessage -ForegroundColor Cyan
+            Write-Host ""
+
+            Write-CustomLog "No visible output detected for script: $ScriptName in verbosity mode: $Verbosity" -Level WARN
+
+            # Track this for potential automation/reporting
+            $script:NoOutputScripts = $script:NoOutputScripts ?? @()
+            $script:NoOutputScripts += [PSCustomObject]@{
+                ScriptName = $ScriptName
+                ScriptPath = $ScriptPath
+                Verbosity = $Verbosity
+                Timestamp = Get-Date
+            }
+        }
+
+        Write-CustomLog "Script completed: $ScriptName (Visible outputs: $visibleOutputCount)" -Level DEBUG
+    } catch {
+        Write-CustomLog "Script failed: $ScriptName - $($_.Exception.Message)" -Level ERROR
+        if (-not $Force) {
+            throw
+        }
+    }
+}
+
 # Auto-detect non-interactive mode if not explicitly set
 if (-not $NonInteractive) {
     $hostCheck = ($Host.Name -eq 'Default Host')
@@ -91,8 +178,16 @@ if ($Quiet) {
     $Verbosity = 'silent'
 }
 
+# Map verbosity settings to logging levels
+$script:VerbosityToLogLevel = @{
+    silent = 'SILENT'   # Suppress all console output in silent mode
+    normal = 'WARN'     # Show only WARN and ERROR in normal mode (cleaner user experience)
+    detailed = 'DEBUG'  # Show everything including DEBUG in detailed mode
+}
+
 $script:VerbosityLevels = @{ silent = 0; normal = 1; detailed = 2 }
 $script:ConsoleLevel = $script:VerbosityLevels[$Verbosity]
+$script:LogLevel = $script:VerbosityToLogLevel[$Verbosity]
 
 # Determine pwsh executable path for nested script execution
 $pwshPath = (Get-Command pwsh -ErrorAction SilentlyContinue).Source
@@ -129,29 +224,39 @@ if ($PSVersionTable.PSVersion.Major -lt 7) {
 # Import required modules
 try {
     Write-Verbose 'Importing Logging module...'
-    Import-Module "$env:PWSH_MODULES_PATH/Logging" -Force -ErrorAction Stop
 
-    Write-Verbose 'Importing LabRunner module...'
-    Import-Module "$env:PWSH_MODULES_PATH/LabRunner" -Force -ErrorAction Stop
+    # In silent mode, suppress all output during module import and initialization
+    if ($Verbosity -eq 'silent') {
+        Import-Module "$env:PWSH_MODULES_PATH/Logging" -Force -ErrorAction Stop *>$null
+        Import-Module "$env:PWSH_MODULES_PATH/LabRunner" -Force -ErrorAction Stop *>$null
+        # Initialize logging system with proper verbosity mapping (Force required to override auto-init)
+        Initialize-LoggingSystem -ConsoleLevel $script:LogLevel -LogLevel 'DEBUG' -Force *>$null
+    } else {
+        Import-Module "$env:PWSH_MODULES_PATH/Logging" -Force -ErrorAction Stop
+        Write-Verbose 'Importing LabRunner module...'
+        Import-Module "$env:PWSH_MODULES_PATH/LabRunner" -Force -ErrorAction Stop
+        # Initialize logging system with proper verbosity mapping (Force required to override auto-init)
+        Initialize-LoggingSystem -ConsoleLevel $script:LogLevel -LogLevel 'DEBUG' -Force
+    }
 
-    Write-CustomLog 'Core runner started' -Level INFO
+    Write-CustomLog 'Core runner started' -Level DEBUG
 } catch {
     Write-Error "Failed to import required modules: $($_.Exception.Message)"
     Write-Error "Ensure modules exist at: $env:PWSH_MODULES_PATH"
     exit 1
 }
 
-# Set console verbosity level for LabRunner
-$env:LAB_CONSOLE_LEVEL = $script:VerbosityLevels[$Verbosity]
+# Set console verbosity level for LabRunner (maintain compatibility)
+$env:LAB_CONSOLE_LEVEL = $script:LogLevel
 
 # Load configuration
 try {
     if (Test-Path $ConfigFile) {
-        Write-CustomLog "Loading configuration from: $ConfigFile" -Level INFO
+        Write-CustomLog "Loading configuration from: $ConfigFile" -Level DEBUG
         $config = Get-Content $ConfigFile -Raw | ConvertFrom-Json
     } else {
         Write-CustomLog "Configuration file not found: $ConfigFile" -Level WARN
-        Write-CustomLog 'Using default configuration' -Level INFO
+        Write-CustomLog 'Using default configuration' -Level DEBUG
         $config = @{}
     }
 } catch {
@@ -161,16 +266,16 @@ try {
 
 # Main execution logic
 try {
-    Write-CustomLog 'Starting OpenTofu Lab Automation Core Runner' -Level SUCCESS
-    Write-CustomLog "Repository root: $repoRoot" -Level INFO
-    Write-CustomLog "Configuration file: $ConfigFile" -Level INFO
-    Write-CustomLog "Verbosity level: $Verbosity" -Level INFO
+    Write-CustomLog 'Starting OpenTofu Lab Automation Core Runner' -Level DEBUG
+    Write-CustomLog "Repository root: $repoRoot" -Level DEBUG
+    Write-CustomLog "Configuration file: $ConfigFile" -Level DEBUG
+    Write-CustomLog "Verbosity level: $Verbosity" -Level DEBUG
 
     # Get available scripts
     $scriptsPath = Join-Path $PSScriptRoot 'scripts'
     if (Test-Path $scriptsPath) {
         $availableScripts = Get-ChildItem -Path $scriptsPath -Filter '*.ps1' | Sort-Object Name
-        Write-CustomLog "Found $($availableScripts.Count) scripts" -Level INFO
+        Write-CustomLog "Found $($availableScripts.Count) scripts" -Level DEBUG
 
         if ($Scripts) {
             # Run specific scripts
@@ -178,9 +283,9 @@ try {
             foreach ($scriptName in $scriptList) {
                 $scriptPath = Join-Path $scriptsPath "$scriptName.ps1"
                 if (Test-Path $scriptPath) {
-                    Write-CustomLog "Executing script: $scriptName" -Level INFO
+                    Write-CustomLog "Executing script: $scriptName" -Level DEBUG
                     if ($PSCmdlet.ShouldProcess($scriptName, 'Execute script')) {
-                        & $scriptPath -Config $config
+                        Invoke-ScriptWithOutputHandling -ScriptName $scriptName -ScriptPath $scriptPath -Config $config -Force:$Force -Verbosity $Verbosity
                     }
                 } else {
                     Write-CustomLog "Script not found: $scriptName" -Level WARN
@@ -192,7 +297,8 @@ try {
             foreach ($script in $availableScripts) {
                 Write-CustomLog "Executing script: $($script.BaseName)" -Level INFO
                 if ($PSCmdlet.ShouldProcess($script.BaseName, 'Execute script')) {
-                    & $script.FullName -Config $config                }
+                    Invoke-ScriptWithOutputHandling -ScriptName $script.BaseName -ScriptPath $script.FullName -Config $config -Force:$Force -Verbosity $Verbosity
+                }
             }
         } else {
             # Check if running in non-interactive mode without specific scripts
@@ -205,15 +311,7 @@ try {
                     foreach ($script in $availableScripts) {
                         Write-CustomLog "Executing script: $($script.BaseName)" -Level INFO
                         if ($PSCmdlet.ShouldProcess($script.BaseName, 'Execute script')) {
-                            try {
-                                & $script.FullName -Config $config
-                                Write-CustomLog "Script completed: $($script.BaseName)" -Level SUCCESS
-                            } catch {
-                                Write-CustomLog "Script failed: $($script.BaseName) - $($_.Exception.Message)" -Level ERROR
-                                if (-not $Force) {
-                                    throw  # Stop on first error unless Force is specified
-                                }
-                            }
+                            Invoke-ScriptWithOutputHandling -ScriptName $script.BaseName -ScriptPath $script.FullName -Config $config -Force:$Force -Verbosity $Verbosity
                         }
                     }                } else {
                     Write-CustomLog 'No scripts specified for non-interactive execution' -Level WARN
@@ -246,12 +344,7 @@ try {
                     } elseif ($selection -eq 'all') {
                         foreach ($script in $availableScripts) {
                             Write-CustomLog "Executing script: $($script.BaseName)" -Level INFO
-                            try {
-                                & $script.FullName -Config $config
-                                Write-CustomLog "Script completed: $($script.BaseName)" -Level SUCCESS
-                            } catch {
-                                Write-CustomLog "Script failed: $($script.BaseName) - $($_.Exception.Message)" -Level ERROR
-                            }
+                            Invoke-ScriptWithOutputHandling -ScriptName $script.BaseName -ScriptPath $script.FullName -Config $config -Force:$Force
                         }
                         Write-Host "`nPress any key to return to menu..." -ForegroundColor Yellow
                         $null = $Host.UI.RawUI.ReadKey('NoEcho,IncludeKeyDown')
@@ -267,12 +360,7 @@ try {
 
                             if ($script) {
                                 Write-CustomLog "Executing script: $($script.BaseName)" -Level INFO
-                                try {
-                                    & $script.FullName -Config $config
-                                    Write-CustomLog "Script completed: $($script.BaseName)" -Level SUCCESS
-                                } catch {
-                                    Write-CustomLog "Script failed: $($script.BaseName) - $($_.Exception.Message)" -Level ERROR
-                                }
+                                Invoke-ScriptWithOutputHandling -ScriptName $script.BaseName -ScriptPath $script.FullName -Config $config -Force:$Force -Verbosity $Verbosity
                             } else {
                                 Write-CustomLog "Invalid selection: $item" -Level WARN
                             }
@@ -288,11 +376,54 @@ try {
         Write-CustomLog 'No scripts to execute' -Level INFO
     }
 
-    Write-CustomLog 'Core runner completed successfully' -Level SUCCESS
+    # Generate summary of scripts with no output issues
+    if ($script:NoOutputScripts -and $script:NoOutputScripts.Count -gt 0) {
+        Write-Host ""
+        Write-Host "=" * 80 -ForegroundColor Yellow
+        Write-Host "📊 NO OUTPUT DETECTION SUMMARY" -ForegroundColor Yellow
+        Write-Host "=" * 80 -ForegroundColor Yellow
+        Write-Host ""
+        Write-Host "The following scripts completed successfully but produced no visible output:" -ForegroundColor Yellow
+        Write-Host ""
+
+        foreach ($scriptInfo in $script:NoOutputScripts) {
+            Write-Host "• $($scriptInfo.ScriptName) (verbosity: $($scriptInfo.Verbosity))" -ForegroundColor Cyan
+        }
+
+        Write-Host ""
+        Write-Host "💡 Suggestions:" -ForegroundColor Cyan
+        Write-Host "  1. Run with '-Verbosity detailed' to see more information" -ForegroundColor White
+        Write-Host "  2. Consider enhancing these scripts to provide user-friendly output" -ForegroundColor White
+        Write-Host "  3. Use PatchManager to track and improve script output" -ForegroundColor White
+        Write-Host ""
+        Write-Host "=" * 80 -ForegroundColor Yellow
+
+        # Save summary to logs for potential automation
+        $summaryPath = "$repoRoot/logs/no-output-scripts-$(Get-Date -Format 'yyyy-MM-dd-HHmm').json"
+        $script:NoOutputScripts | ConvertTo-Json -Depth 3 | Out-File -FilePath $summaryPath -Encoding UTF8
+        Write-CustomLog "No-output scripts summary saved to: $summaryPath" -Level INFO
+
+        # Optionally auto-create PatchManager issue for tracking (only in detailed mode to avoid spam)
+        if ($Verbosity -eq 'detailed' -and -not $NonInteractive) {
+            try {
+                Import-Module "$repoRoot/core-runner/modules/PatchManager" -Force -ErrorAction SilentlyContinue
+                if (Get-Command New-PatchIssue -ErrorAction SilentlyContinue) {
+                    $issueDescription = "Scripts with no visible output detected: $($script:NoOutputScripts.ScriptName -join ', ')"
+                    $affectedFiles = $script:NoOutputScripts.ScriptPath
+                    Write-Host "🔧 Creating PatchManager issue to track output improvements..." -ForegroundColor Green
+                    New-PatchIssue -Description $issueDescription -Priority "Low" -AffectedFiles $affectedFiles -Labels @("enhancement", "user-experience", "output-improvement")
+                }
+            } catch {
+                Write-CustomLog "Could not create PatchManager issue: $($_.Exception.Message)" -Level WARN
+            }
+        }
+    }
+
+    Write-CustomLog 'Core runner completed successfully' -Level DEBUG
     exit 0  # Explicitly set success exit code
 
 } catch {
     Write-CustomLog "Core runner failed: $($_.Exception.Message)" -Level ERROR
-    Write-CustomLog "Stack trace: $($_.ScriptStackTrace)" -Level DEBUG
+    Write-CustomLog "Stack trace: $($_.ScriptStackTrace)" -Level INFO
     exit 1
 }

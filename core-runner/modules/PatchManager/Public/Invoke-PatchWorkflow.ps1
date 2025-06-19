@@ -7,7 +7,7 @@
 .DESCRIPTION
     This is the single, unified function for creating patches. It replaces all the overlapping
     patch functions and provides consistent, predictable behavior.
-    
+
     No emoji/Unicode output - follows project standards.
 
 .PARAMETER PatchDescription
@@ -48,7 +48,7 @@
     # Creates issue AND PR, includes testing
 
 .EXAMPLE
-    Invoke-PatchWorkflow -PatchDescription "Quick local fix" -CreateIssue:$false -PatchOperation { 
+    Invoke-PatchWorkflow -PatchDescription "Quick local fix" -CreateIssue:$false -PatchOperation {
         # Quick local change
     }
     # No issue created, just branch + commit
@@ -56,7 +56,7 @@
 .NOTES
     This function replaces:
     - Invoke-GitControlledPatch
-    - Invoke-EnhancedPatchManager  
+    - Invoke-EnhancedPatchManager
     - Invoke-SimplifiedPatchWorkflow
     - And 10+ other overlapping functions
 #>
@@ -107,7 +107,7 @@ function Invoke-PatchWorkflow {
         }
 
         Write-PatchLog "Starting patch workflow: $PatchDescription" -Level "INFO"
-        
+
         if ($DryRun) {
             Write-PatchLog "DRY RUN MODE: No actual changes will be made" -Level "WARN"
         }
@@ -118,10 +118,10 @@ function Invoke-PatchWorkflow {
             # Step 1: Handle existing changes (auto-commit or stash)
             $gitStatus = git status --porcelain 2>&1
             $hasUncommittedChanges = $gitStatus -and ($gitStatus | Where-Object { $_ -match '\S' })
-            
+
             if ($hasUncommittedChanges) {
                 Write-PatchLog "Working tree has uncommitted changes. Auto-committing them first..." -Level "INFO"
-                
+
                 if (-not $DryRun) {
                     # Sanitize files before committing existing changes
                     try {
@@ -135,10 +135,10 @@ function Invoke-PatchWorkflow {
                     } catch {
                         Write-PatchLog "Warning: Unicode sanitization failed: $($_.Exception.Message)" -Level "WARN"
                     }
-                    
+
                     git add . 2>&1 | Out-Null
                     git commit -m "Auto-commit: Changes before patch workflow for '$PatchDescription'" 2>&1 | Out-Null
-                    
+
                     if ($LASTEXITCODE -ne 0) {
                         Write-PatchLog "Warning: Auto-commit may have had issues" -Level "WARN"
                     } else {
@@ -155,9 +155,9 @@ function Invoke-PatchWorkflow {
             $timestamp = Get-Date -Format "yyyyMMdd-HHmmss"
             $safeName = $PatchDescription -replace '[^a-zA-Z0-9\-_]', '-' -replace '-+', '-'
             $branchName = "patch/$timestamp-$safeName"
-            
+
             Write-PatchLog "Creating branch: $branchName" -Level "INFO"
-            
+
             if (-not $DryRun) {
                 git checkout -b $branchName 2>&1 | Out-Null
                 if ($LASTEXITCODE -ne 0) {
@@ -169,7 +169,7 @@ function Invoke-PatchWorkflow {
             $issueResult = $null
             if ($CreateIssue) {
                 Write-PatchLog "Creating tracking issue (step 1 of workflow)..." -Level "INFO"
-                
+
                 if (-not $DryRun) {
                     $issueResult = New-PatchIssue -Description $PatchDescription -Priority $Priority
                     if ($issueResult.Success) {
@@ -187,7 +187,7 @@ function Invoke-PatchWorkflow {
             # Step 4: Apply patch operation
             if ($PatchOperation) {
                 Write-PatchLog "Applying patch operation..." -Level "INFO"
-                
+
                 if (-not $DryRun) {
                     & $PatchOperation
                 } else {
@@ -198,10 +198,10 @@ function Invoke-PatchWorkflow {
             # Step 5: Run test commands
             if ($TestCommands.Count -gt 0) {
                 Write-PatchLog "Running $($TestCommands.Count) test command(s)..." -Level "INFO"
-                
+
                 foreach ($cmd in $TestCommands) {
                     Write-PatchLog "Running test: $cmd" -Level "INFO"
-                    
+
                     if (-not $DryRun) {
                         try {
                             Invoke-Expression $cmd
@@ -232,11 +232,11 @@ function Invoke-PatchWorkflow {
                     } catch {
                         Write-PatchLog "Warning: Unicode sanitization failed: $($_.Exception.Message)" -Level "WARN"
                     }
-                    
+
                     Write-PatchLog "Committing changes..." -Level "INFO"
                     git add . 2>&1 | Out-Null
                     git commit -m "PatchManager: $PatchDescription" 2>&1 | Out-Null
-                    
+
                     if ($LASTEXITCODE -ne 0) {
                         Write-PatchLog "Warning: Git commit may have had issues" -Level "WARN"
                     }
@@ -250,17 +250,17 @@ function Invoke-PatchWorkflow {
             # Step 7: Create PR if requested
             if ($CreatePR) {
                 Write-PatchLog "Creating pull request..." -Level "INFO"
-                
+
                 if (-not $DryRun) {
                     $prParams = @{
                         Description = $PatchDescription
                         BranchName = $branchName
                     }
-                    
+
                     if ($issueResult -and $issueResult.Success) {
                         $prParams.IssueNumber = $issueResult.IssueNumber
                     }
-                    
+
                     $prResult = New-PatchPR @prParams
                     if ($prResult.Success) {
                         Write-PatchLog "Pull request created: $($prResult.PullRequestUrl)" -Level "SUCCESS"
@@ -275,7 +275,7 @@ function Invoke-PatchWorkflow {
 
             # Success
             Write-PatchLog "Patch workflow completed successfully" -Level "SUCCESS"
-            
+
             return @{
                 Success = $true
                 BranchName = $branchName
@@ -289,7 +289,7 @@ function Invoke-PatchWorkflow {
         } catch {
             $errorMessage = "Patch workflow failed: $($_.Exception.Message)"
             Write-PatchLog $errorMessage -Level "ERROR"
-            
+
             # Cleanup on failure
             if (-not $DryRun -and $branchName) {
                 try {
@@ -300,7 +300,7 @@ function Invoke-PatchWorkflow {
                     Write-PatchLog "Cleanup failed: $($_.Exception.Message)" -Level "WARN"
                 }
             }
-            
+
             return @{
                 Success = $false
                 Message = $errorMessage
