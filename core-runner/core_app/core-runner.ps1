@@ -173,7 +173,7 @@ try {
                 if (Test-Path $scriptPath) {
                     Write-CustomLog "Executing script: $scriptName" -Level INFO
                     if ($PSCmdlet.ShouldProcess($scriptName, 'Execute script')) {
-                        & $scriptPath -Config $config -Verbosity $Verbosity
+                        & $scriptPath -Config $config
                     }
                 } else {
                     Write-CustomLog "Script not found: $scriptName" -Level WARN
@@ -185,7 +185,7 @@ try {
             foreach ($script in $availableScripts) {
                 Write-CustomLog "Executing script: $($script.BaseName)" -Level INFO
                 if ($PSCmdlet.ShouldProcess($script.BaseName, 'Execute script')) {
-                    & $script.FullName -Config $config -Verbosity $Verbosity -Auto
+                    & $script.FullName -Config $config
                 }
             }        } else {
             # Check if running in non-interactive mode without specific scripts
@@ -210,17 +210,23 @@ try {
                 } elseif ($selection -eq 'all') {
                     foreach ($script in $availableScripts) {
                         Write-CustomLog "Executing script: $($script.BaseName)" -Level INFO
-                        & $script.FullName -Config $config -Verbosity $Verbosity
+                        & $script.FullName -Config $config
                     }
                 } else {
-                    $selectedNumbers = $selection -split ',' | ForEach-Object { $_.Trim() }
-                    foreach ($num in $selectedNumbers) {
-                        if ($num -match '^\d+$' -and [int]$num -le $availableScripts.Count -and [int]$num -gt 0) {
-                            $script = $availableScripts[[int]$num - 1]
-                            Write-CustomLog "Executing script: $($script.BaseName)" -Level INFO
-                            & $script.FullName -Config $config -Verbosity $Verbosity
+                    $selectedItems = $selection -split ',' | ForEach-Object { $_.Trim() }
+                    foreach ($item in $selectedItems) {
+                        $script = $null
+                        if ($item -match '^\d+$' -and [int]$item -le $availableScripts.Count -and [int]$item -gt 0) {
+                            $script = $availableScripts[[int]$item - 1]
                         } else {
-                            Write-CustomLog "Invalid selection: $num" -Level WARN
+                            $script = $availableScripts | Where-Object { $_.BaseName -eq $item -or $_.BaseName -like "$item*" } | Select-Object -First 1
+                        }
+
+                        if ($script) {
+                            Write-CustomLog "Executing script: $($script.BaseName)" -Level INFO
+                            & $script.FullName -Config $config
+                        } else {
+                            Write-CustomLog "Invalid selection: $item" -Level WARN
                         }
                     }
                 }
