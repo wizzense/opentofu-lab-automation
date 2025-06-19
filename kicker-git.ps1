@@ -1,19 +1,21 @@
-<#
+﻿<#
 .SYNOPSIS
-    Modern bootstrap script for OpenTofu Lab Automation with CoreApp orchestration.
+    Cross-compatible bootstrap script for OpenTofu Lab Automation with CoreApp orchestration.
 
 .DESCRIPTION
     This is the single entry point for downloading and setting up the entire OpenTofu Lab Automation suite.
-    It leverages the new CoreApp orchestration architecture for robust, modern deployment.
+    Compatible with both PowerShell 5.1 and 7.x, with robust cross-platform support.
     
     Features:
-    - Cross-platform support (Windows, Linux, macOS)
+    - Full compatibility with PowerShell 5.1 and 7.x
+    - Cross-platform support (Windows, Linux, macOS) 
     - Self-updating capabilities
     - Comprehensive error handling and logging
     - Integration with CoreApp orchestration
     - Non-interactive mode support
     - Robust dependency management
     - Health checks and validation
+    - Progressive enhancement based on PowerShell version
 
 .PARAMETER ConfigFile
     Path to custom configuration file. If not specified, will use default configuration.
@@ -43,12 +45,16 @@
     Force re-clone even if repository already exists.
 
 .EXAMPLE
-    # The ultimate one-liner - download and execute directly
+    # PowerShell 5.1 and 7.x compatible one-liner
     iex (iwr 'https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/main/kicker-git.ps1').Content
 
 .EXAMPLE
-    # Traditional download and execute
+    # Traditional Windows PowerShell 5.1
     powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/main/kicker-git.ps1' -OutFile '.\kicker-git.ps1'; .\kicker-git.ps1"
+
+.EXAMPLE
+    # PowerShell 7.x (cross-platform)
+    pwsh -NoProfile -ExecutionPolicy Bypass -Command "Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/main/kicker-git.ps1' -OutFile '.\kicker-git.ps1'; .\kicker-git.ps1"
 
 .EXAMPLE
     # Cross-platform bootstrap with custom configuration
@@ -63,8 +69,12 @@
     .\kicker-git.ps1 -TargetBranch "develop" -Verbosity detailed
 
 .EXAMPLE
-    # CI/CD pipeline usage
+    # CI/CD pipeline usage - PowerShell 7
     curl -sL https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/main/kicker-git.ps1 | pwsh -
+
+.EXAMPLE
+    # CI/CD pipeline usage - PowerShell 5.1
+    curl -sL https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/main/kicker-git.ps1 | powershell -
 #>
 
 [CmdletBinding(SupportsShouldProcess)]
@@ -83,18 +93,44 @@ param(
 #Requires -Version 5.1
 
 # Bootstrap constants
-$script:BootstrapVersion = '2.0.1'  # Updated to force GitHub refresh
+$script:BootstrapVersion = '2.1.0'
 $script:RepoUrl = 'https://github.com/wizzense/opentofu-lab-automation.git'
 $script:RawBaseUrl = 'https://raw.githubusercontent.com/wizzense/opentofu-lab-automation'
 $script:DefaultConfigUrl = "$script:RawBaseUrl/$TargetBranch/core-runner/core_app/default-config.json"
 
-# Enhanced platform detection
-$script:PlatformWindows = [System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform([System.Runtime.InteropServices.OSPlatform]::Windows)
-$script:PlatformLinux = [System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform([System.Runtime.InteropServices.OSPlatform]::Linux)
-$script:PlatformMacOS = [System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform([System.Runtime.InteropServices.OSPlatform]::OSX)
+# PowerShell version compatibility detection
+$script:IsPowerShell7Plus = $PSVersionTable.PSVersion.Major -ge 7
+$script:IsPowerShell5 = $PSVersionTable.PSVersion.Major -eq 5
 
-# Interactive detection
-$script:IsInteractive = $null -ne $Host.UI.RawUI.KeyAvailable -and [Environment]::UserInteractive
+# Cross-platform detection (with fallback for PowerShell 5.1)
+if ($script:IsPowerShell7Plus) {
+    # PowerShell 7+ has RuntimeInformation
+    $script:PlatformWindows = [System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform([System.Runtime.InteropServices.OSPlatform]::Windows)
+    $script:PlatformLinux = [System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform([System.Runtime.InteropServices.OSPlatform]::Linux)
+    $script:PlatformMacOS = [System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform([System.Runtime.InteropServices.OSPlatform]::OSX)
+} else {
+    # PowerShell 5.1 fallback detection
+    $script:PlatformWindows = [System.Environment]::OSVersion.Platform -eq [System.PlatformID]::Win32NT
+    $script:PlatformLinux = $false
+    $script:PlatformMacOS = $false
+    
+    # Additional check for non-Windows in PowerShell 5.1
+    if (-not $script:PlatformWindows) {
+        if ($env:OS -eq 'linux' -or $IsLinux) {
+            $script:PlatformLinux = $true
+        } elseif ($env:OS -eq 'darwin' -or $IsMacOS) {
+            $script:PlatformMacOS = $true
+        }
+    }
+}
+
+# Interactive detection (compatible with both versions)
+if ($script:IsPowerShell7Plus) {
+    $script:IsInteractive = $null -ne $Host.UI.RawUI -and [Environment]::UserInteractive
+} else {
+    # PowerShell 5.1 compatible detection
+    $script:IsInteractive = $Host.Name -ne 'ServerRemoteHost' -and [Environment]::UserInteractive
+}
 
 # Auto-detect non-interactive mode
 if (-not $NonInteractive -and (-not $script:IsInteractive -or $env:CI -eq 'true' -or $env:GITHUB_ACTIONS -eq 'true')) {
@@ -106,12 +142,15 @@ if (-not $NonInteractive -and (-not $script:IsInteractive -or $env:CI -eq 'true'
 if ($Quiet) { $Verbosity = 'silent' }
 $script:VerbosityLevel = @{ silent = 0; normal = 1; detailed = 2 }[$Verbosity]
 
-# Cross-platform paths (defined early)
-function Get-PlatformTempPath {    if ($script:PlatformWindows) {
+# Cross-platform paths (compatible with both PowerShell versions)
+function Get-PlatformTempPath {
+    if ($script:PlatformWindows) {
         if ($env:TEMP) {
             return $env:TEMP
+        } elseif ($env:TMP) {
+            return $env:TMP
         } else {
-            return 'C:\temp'
+            return 'C:/temp'
         }
     } elseif ($script:PlatformLinux -or $script:PlatformMacOS) {
         if ($env:TMPDIR) {
@@ -120,12 +159,16 @@ function Get-PlatformTempPath {    if ($script:PlatformWindows) {
             return '/tmp'
         }
     } else {
-        Write-BootstrapLog -Message 'Unknown platform. Cannot determine temp path.' -Level 'ERROR'
-        exit 1
+        Write-BootstrapLog -Message 'Unknown platform. Using fallback temp path.' -Level 'WARN'
+        if ($script:PlatformWindows) {
+            return 'C:/temp'
+        } else {
+            return '/tmp'
+        }
     }
 }
 
-# Robust logging with fallback
+# Enhanced logging with PowerShell version compatibility
 function Write-BootstrapLog {
     param(
         [Parameter(Mandatory)]
@@ -143,12 +186,27 @@ function Write-BootstrapLog {
         $timestamp = if ($NoTimestamp) { '' } else { "[$(Get-Date -Format 'HH:mm:ss')] " }
         $colorMap = @{ INFO = 'White'; WARN = 'Yellow'; ERROR = 'Red'; SUCCESS = 'Green' }
         
-        Write-Host "$timestamp$Level`: $Message" -ForegroundColor $colorMap[$Level]
+        # PowerShell 5.1 compatible color output
+        try {
+            Write-Host "$timestamp$Level`: $Message" -ForegroundColor $colorMap[$Level]
+        } catch {
+            # Fallback for environments without color support
+            Write-Host "$timestamp$Level`: $Message"
+        }
     }
-      # Always log to file if possible
-    if ($script:LogFile -and (Test-Path (Split-Path $script:LogFile -Parent))) {
-        $logEntry = "$(Get-Date -Format 'yyyy-MM-dd HH:mm:ss') [$Level] $Message"
-        Add-Content -Path $script:LogFile -Value $logEntry -ErrorAction SilentlyContinue
+    
+    # Always log to file if possible (enhanced error handling)
+    if ($script:LogFile) {
+        try {
+            $logDir = Split-Path $script:LogFile -Parent
+            if (-not (Test-Path $logDir)) {
+                New-Item -ItemType Directory -Path $logDir -Force | Out-Null
+            }
+            $logEntry = "$(Get-Date -Format 'yyyy-MM-dd HH:mm:ss') [$Level] $Message"
+            Add-Content -Path $script:LogFile -Value $logEntry -ErrorAction SilentlyContinue
+        } catch {
+            # Silently ignore logging errors to prevent bootstrap failures
+        }
     }
 }
 
@@ -157,30 +215,56 @@ $script:LogFile = Join-Path (Get-PlatformTempPath) "opentofu-lab-bootstrap-$(Get
 New-Item -ItemType File -Path $script:LogFile -Force -ErrorAction SilentlyContinue | Out-Null
 
 Write-BootstrapLog "OpenTofu Lab Automation Bootstrap v$script:BootstrapVersion" 'SUCCESS'
-Write-BootstrapLog "Platform: $(if ($PSVersionTable.OS) { $PSVersionTable.OS } else { 'Windows' })" 'INFO'
-Write-BootstrapLog "PowerShell: $($PSVersionTable.PSVersion)" 'INFO'
+Write-BootstrapLog "PowerShell Version: $($PSVersionTable.PSVersion)" 'INFO'
+Write-BootstrapLog "PowerShell Edition: $($PSVersionTable.PSEdition)" 'INFO'
+if ($PSVersionTable.OS) {
+    Write-BootstrapLog "Platform: $($PSVersionTable.OS)" 'INFO'
+} else {
+    Write-BootstrapLog "Platform: Windows (PowerShell 5.1)" 'INFO'
+}
+Write-BootstrapLog "Compatibility Mode: PowerShell $($PSVersionTable.PSVersion.Major).x" 'INFO'
 
-# Cross-platform paths
+# Cross-platform PowerShell path detection (enhanced compatibility)
 function Get-PlatformPowerShell {
+    # Always prefer PowerShell 7+ if available
     if ($script:PlatformWindows) {
         $pwshPaths = @(
-            "$env:ProgramFiles\PowerShell\7\pwsh.exe",
-            "${env:ProgramFiles(x86)}\PowerShell\7\pwsh.exe",
+            "$env:ProgramFiles/PowerShell/7/pwsh.exe",
+            "${env:ProgramFiles(x86)}/PowerShell/7/pwsh.exe",
             "pwsh.exe"
         )
         foreach ($path in $pwshPaths) {
-            if (Get-Command $path -ErrorAction SilentlyContinue) {
+            try {
+                if (Get-Command $path -ErrorAction SilentlyContinue) {
+                    return $path
+                }
+            } catch {
+                continue
+            }
+        }
+        # Fallback to Windows PowerShell 5.1
+        return "powershell.exe"
+    } else {
+        # Unix-like systems
+        try {
+            $pwshCmd = Get-Command pwsh -ErrorAction SilentlyContinue
+            if ($pwshCmd) {
+                return $pwshCmd.Source
+            }
+        } catch {
+            # Continue to fallback
+        }
+        
+        # Check common installation paths
+        $unixPaths = @('/usr/bin/pwsh', '/usr/local/bin/pwsh', '/opt/microsoft/powershell/7/pwsh')
+        foreach ($path in $unixPaths) {
+            if (Test-Path $path) {
                 return $path
             }
         }
-        return "powershell.exe"
-    } else {
-        $pwshCmd = Get-Command pwsh -ErrorAction SilentlyContinue
-        if ($pwshCmd) {
-            return $pwshCmd.Source
-        } else {
-            return '/usr/bin/pwsh'
-        }
+        
+        # Last resort fallback
+        return 'pwsh'
     }
 }
 
@@ -229,6 +313,46 @@ function Test-Prerequisite {
     return $false
 }
 
+# Enhanced web request function for PowerShell compatibility
+function Invoke-CompatibleWebRequest {
+    param(
+        [Parameter(Mandatory)]
+        [string]$Uri,
+        
+        [Parameter(Mandatory)]
+        [string]$OutFile,
+        
+        [switch]$UseBasicParsing
+    )
+    
+    # Default to using basic parsing
+    if (-not $PSBoundParameters.ContainsKey('UseBasicParsing')) {
+        $UseBasicParsing = $true
+    }
+    
+    try {
+        if ($script:IsPowerShell7Plus) {
+            # PowerShell 7+ - use modern approach
+            Invoke-WebRequest -Uri $Uri -OutFile $OutFile -UseBasicParsing:$UseBasicParsing
+        } else {
+            # PowerShell 5.1 - use compatible approach
+            $webClient = New-Object System.Net.WebClient
+            $webClient.Headers.Add('User-Agent', 'PowerShell/5.1 OpenTofu-Lab-Bootstrap')
+            
+            # Handle TLS for older systems
+            [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]::Tls12
+            
+            $webClient.DownloadFile($Uri, $OutFile)
+            $webClient.Dispose()
+        }
+        return $true
+    } catch {
+        Write-BootstrapLog "Web request failed: $($_.Exception.Message)" 'ERROR'
+        return $false
+    }
+}
+
+# Enhanced Git installation for Windows (PowerShell version compatible)
 function Install-GitForWindows {
     if (-not $script:PlatformWindows) { return $false }
     
@@ -238,15 +362,23 @@ function Install-GitForWindows {
         $gitUrl = "https://github.com/git-for-windows/git/releases/latest/download/Git-2.47.1-64-bit.exe"
         $gitInstaller = Join-Path (Get-PlatformTempPath) "Git-Installer.exe"
         
-        Invoke-WebRequest -Uri $gitUrl -OutFile $gitInstaller -UseBasicParsing
-        Start-Process -FilePath $gitInstaller -ArgumentList "/SILENT", "/NORESTART" -Wait -NoNewWindow
+        if (-not (Invoke-CompatibleWebRequest -Uri $gitUrl -OutFile $gitInstaller)) {
+            throw "Failed to download Git installer"
+        }
+        
+        $process = Start-Process -FilePath $gitInstaller -ArgumentList "/SILENT", "/NORESTART" -Wait -NoNewWindow -PassThru
         Remove-Item $gitInstaller -ErrorAction SilentlyContinue
-        
-        # Refresh PATH
-        $env:PATH = [Environment]::GetEnvironmentVariable('PATH', 'Machine') + ';' + [Environment]::GetEnvironmentVariable('PATH', 'User')
-        
-        Write-BootstrapLog "Git installation completed" 'SUCCESS'
-        return $true
+          if ($process.ExitCode -eq 0) {
+            # Refresh PATH (PowerShell 5.1 compatible)
+            $machinePath = [Environment]::GetEnvironmentVariable('PATH', 'Machine')
+            $userPath = [Environment]::GetEnvironmentVariable('PATH', 'User')
+            $env:PATH = $machinePath + ';' + $userPath
+            
+            Write-BootstrapLog "Git installation completed successfully" 'SUCCESS'
+            return $true
+        } else {
+            throw "Git installer returned exit code: $($process.ExitCode)"
+        }
     } catch {
         Write-BootstrapLog "Git installation failed: $($_.Exception.Message)" 'ERROR'
         return $false
@@ -262,12 +394,19 @@ function Install-PowerShell7 {
         $pwshUrl = "https://github.com/PowerShell/PowerShell/releases/latest/download/PowerShell-7.4.6-win-x64.msi"
         $pwshInstaller = Join-Path (Get-PlatformTempPath) "PowerShell-7-Installer.msi"
         
-        Invoke-WebRequest -Uri $pwshUrl -OutFile $pwshInstaller -UseBasicParsing
-        Start-Process -FilePath "msiexec.exe" -ArgumentList "/i", $pwshInstaller, "/quiet", "/norestart" -Wait -NoNewWindow
+        if (-not (Invoke-CompatibleWebRequest -Uri $pwshUrl -OutFile $pwshInstaller)) {
+            throw "Failed to download PowerShell 7 installer"
+        }
+        
+        $process = Start-Process -FilePath "msiexec.exe" -ArgumentList "/i", $pwshInstaller, "/quiet", "/norestart" -Wait -NoNewWindow -PassThru
         Remove-Item $pwshInstaller -ErrorAction SilentlyContinue
         
-        Write-BootstrapLog "PowerShell 7 installation completed" 'SUCCESS'
-        return $true
+        if ($process.ExitCode -eq 0) {
+            Write-BootstrapLog "PowerShell 7 installation completed successfully" 'SUCCESS'
+            return $true
+        } else {
+            throw "PowerShell 7 installer returned exit code: $($process.ExitCode)"
+        }
     } catch {
         Write-BootstrapLog "PowerShell 7 installation failed: $($_.Exception.Message)" 'ERROR'
         return $false
@@ -318,6 +457,7 @@ function Get-RepositoryPath {
     return Join-Path $basePath "opentofu-lab-automation"
 }
 
+# Enhanced repository synchronization (PowerShell 5.1 and 7.x compatible)
 function Sync-Repository {
     $repoPath = Get-RepositoryPath
     
@@ -325,23 +465,55 @@ function Sync-Repository {
     Write-BootstrapLog "Target path: $repoPath" 'INFO'
     Write-BootstrapLog "Branch: $TargetBranch" 'INFO'
     
-    if (Test-Path $repoPath) {        if ($Force) {
+    if (Test-Path $repoPath) {
+        if ($Force) {
             Write-BootstrapLog "Removing existing repository (Force specified)" 'WARN'
-            Remove-Item $repoPath -Recurse -Force
+            try {
+                Remove-Item $repoPath -Recurse -Force -ErrorAction Stop
+            } catch {
+                Write-BootstrapLog "Failed to remove existing repository: $($_.Exception.Message)" 'ERROR'
+                throw
+            }
         } else {
             Write-BootstrapLog "Repository exists, updating..." 'INFO'
             try {
                 Push-Location $repoPath
-                git fetch origin 2>&1 | Out-Null
-                git reset --hard "origin/$TargetBranch" 2>&1 | Out-Null
-                git clean -fdx 2>&1 | Out-Null
+                
+                # Check if it's a valid git repository
+                $gitDir = Join-Path $repoPath '.git'
+                if (-not (Test-Path $gitDir)) {
+                    throw "Directory exists but is not a git repository"
+                }
+                
+                # Enhanced git operations with better error handling
+                Write-BootstrapLog "Fetching latest changes..." 'INFO'
+                & git fetch origin 2>&1 | Out-Null
+                if ($LASTEXITCODE -ne 0) {
+                    throw "Git fetch failed with exit code: $LASTEXITCODE"
+                }
+                
+                & git reset --hard "origin/$TargetBranch" 2>&1 | Out-Null
+                if ($LASTEXITCODE -ne 0) {
+                    throw "Git reset failed with exit code: $LASTEXITCODE"
+                }
+                
+                & git clean -fdx 2>&1 | Out-Null
+                if ($LASTEXITCODE -ne 0) {
+                    Write-BootstrapLog "Git clean had issues but continuing..." 'WARN'
+                }
+                
                 Write-BootstrapLog "✓ Repository updated successfully" 'SUCCESS'
                 Pop-Location
                 return $repoPath
             } catch {
                 Write-BootstrapLog "Update failed, will re-clone: $($_.Exception.Message)" 'WARN'
                 Pop-Location
-                Remove-Item $repoPath -Recurse -Force
+                try {
+                    Remove-Item $repoPath -Recurse -Force -ErrorAction Stop
+                } catch {
+                    Write-BootstrapLog "Failed to clean up for re-clone: $($_.Exception.Message)" 'ERROR'
+                    throw
+                }
             }
         }
     }
@@ -354,10 +526,21 @@ function Sync-Repository {
             New-Item -ItemType Directory -Path $parentPath -Force | Out-Null
         }
         
-        git clone --branch $TargetBranch --single-branch --depth 1 $script:RepoUrl $repoPath 2>&1 | Out-Null
+        # Enhanced git clone with better error handling
+        & git clone --branch $TargetBranch --single-branch --depth 1 $script:RepoUrl $repoPath 2>&1 | Out-Null
+        
+        if ($LASTEXITCODE -ne 0) {
+            throw "Git clone failed with exit code: $LASTEXITCODE"
+        }
         
         if (-not (Test-Path $repoPath)) {
             throw "Repository clone appeared successful but path does not exist"
+        }
+        
+        # Verify it's a proper clone
+        $gitDir = Join-Path $repoPath '.git'
+        if (-not (Test-Path $gitDir)) {
+            throw "Cloned directory is not a valid git repository"
         }
         
         Write-BootstrapLog "✓ Repository cloned successfully" 'SUCCESS'
@@ -367,7 +550,7 @@ function Sync-Repository {
     }
 }
 
-# Configuration management
+# Enhanced configuration management (PowerShell version compatible)
 function Get-BootstrapConfig {
     param([string]$RepoPath)
     
@@ -387,18 +570,37 @@ function Get-BootstrapConfig {
             # Download default config
             $tempConfig = Join-Path (Get-PlatformTempPath) "bootstrap-config.json"
             try {
-                Invoke-WebRequest -Uri $script:DefaultConfigUrl -OutFile $tempConfig -UseBasicParsing
-                $configPath = $tempConfig
-                Write-BootstrapLog "Downloaded default configuration" 'INFO'
+                if (Invoke-CompatibleWebRequest -Uri $script:DefaultConfigUrl -OutFile $tempConfig) {
+                    $configPath = $tempConfig
+                    Write-BootstrapLog "Downloaded default configuration" 'INFO'
+                } else {
+                    throw "Failed to download default configuration"
+                }
             } catch {
-                Write-BootstrapLog "Could not download default config, using minimal config" 'WARN'
+                Write-BootstrapLog "Could not download default config, using minimal config: $($_.Exception.Message)" 'WARN'
                 return $null
             }
         }
     }
     
     try {
-        $config = Get-Content $configPath -Raw | ConvertFrom-Json
+        $configContent = Get-Content $configPath -Raw -ErrorAction Stop
+        
+        # PowerShell 5.1 compatible JSON parsing
+        if ($script:IsPowerShell7Plus) {
+            $config = $configContent | ConvertFrom-Json
+        } else {
+            # PowerShell 5.1 - use more careful JSON parsing
+            try {
+                $config = $configContent | ConvertFrom-Json
+            } catch {
+                # Fallback for complex JSON in PowerShell 5.1
+                Add-Type -AssemblyName System.Web.Extensions
+                $jsSerializer = New-Object System.Web.Script.Serialization.JavaScriptSerializer
+                $config = $jsSerializer.DeserializeObject($configContent)
+            }
+        }
+        
         Write-BootstrapLog "✓ Configuration loaded successfully" 'SUCCESS'
         return $config
     } catch {
@@ -407,7 +609,7 @@ function Get-BootstrapConfig {
     }
 }
 
-# CoreApp orchestration
+# Enhanced CoreApp orchestration (PowerShell 5.1 and 7.x compatible)
 function Invoke-CoreAppBootstrap {
     [CmdletBinding(SupportsShouldProcess)]
     param(
@@ -427,7 +629,8 @@ function Invoke-CoreAppBootstrap {
     
     try {
         Push-Location $RepoPath
-          # Prepare arguments for CoreApp
+        
+        # Prepare arguments for CoreApp
         $coreAppArgs = @(
             '-NoLogo'
             '-NoProfile'
@@ -436,8 +639,20 @@ function Invoke-CoreAppBootstrap {
         
         if ($Config) {
             $tempConfigPath = Join-Path (Get-PlatformTempPath) "bootstrap-runtime-config.json"
-            $Config | ConvertTo-Json -Depth 10 | Set-Content $tempConfigPath
-            $coreAppArgs += @('-ConfigFile', $tempConfigPath)
+            
+            # PowerShell version compatible JSON serialization
+            try {
+                if ($script:IsPowerShell7Plus) {
+                    $Config | ConvertTo-Json -Depth 10 | Set-Content $tempConfigPath -Encoding UTF8
+                } else {
+                    # PowerShell 5.1 compatible approach
+                    $jsonOutput = $Config | ConvertTo-Json -Depth 10
+                    [System.IO.File]::WriteAllText($tempConfigPath, $jsonOutput, [System.Text.Encoding]::UTF8)
+                }
+                $coreAppArgs += @('-ConfigFile', $tempConfigPath)
+            } catch {
+                Write-BootstrapLog "Failed to serialize config, proceeding without it: $($_.Exception.Message)" 'WARN'
+            }
         }
         
         $coreAppArgs += @('-Verbosity', $Verbosity)
@@ -449,12 +664,18 @@ function Invoke-CoreAppBootstrap {
         # Use the best available PowerShell
         $pwshPath = Get-PlatformPowerShell
         Write-BootstrapLog "Using PowerShell: $pwshPath" 'INFO'
-          if ($PSCmdlet.ShouldProcess("CoreApp Orchestration", "Start")) {
-            $process = Start-Process -FilePath $pwshPath -ArgumentList $coreAppArgs -Wait -NoNewWindow -PassThru
-            if ($process.ExitCode -eq 0) {
-                Write-BootstrapLog "✓ CoreApp orchestration completed successfully" 'SUCCESS'
-            } else {
-                throw "CoreApp orchestration failed with exit code: $($process.ExitCode)"
+        
+        if ($PSCmdlet.ShouldProcess("CoreApp Orchestration", "Start")) {
+            try {
+                $process = Start-Process -FilePath $pwshPath -ArgumentList $coreAppArgs -Wait -NoNewWindow -PassThru
+                if ($process.ExitCode -eq 0) {
+                    Write-BootstrapLog "✓ CoreApp orchestration completed successfully" 'SUCCESS'
+                } else {
+                    throw "CoreApp orchestration failed with exit code: $($process.ExitCode)"
+                }
+            } catch {
+                Write-BootstrapLog "CoreApp orchestration failed: $($_.Exception.Message)" 'ERROR'
+                throw
             }
         }
         
@@ -550,12 +771,11 @@ function Install-Prerequisites {
         if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
             Write-BootstrapLog -Message "Git is not installed. Please install Git manually." -Level ERROR
             return
-        }
-    } elseif ($script:PlatformLinux) {
+        }    } elseif ($script:PlatformLinux) {
         Write-BootstrapLog -Message "Installing prerequisites on Linux..." -Level INFO
         if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
             Write-BootstrapLog -Message "Installing Git..." -Level INFO
-            sudo apt-get update && sudo apt-get install -y git
+            sudo apt-get update; sudo apt-get install -y git
         }
         if (-not (Get-Command pwsh -ErrorAction SilentlyContinue)) {
             Write-BootstrapLog -Message "Installing PowerShell..." -Level INFO
@@ -624,18 +844,20 @@ function Start-Bootstrap {
             return
         }
         
-        Invoke-CoreAppBootstrap -RepoPath $repoPath -Config $config
-        
+        Invoke-CoreAppBootstrap -RepoPath $repoPath -Config $config        
         # Step 6: Demonstrate CoreApp features (interactive only)
         Show-CoreAppDemo -RepoPath $repoPath
-          # Success!
+        
+        # Success!
         Write-BootstrapLog "=== Bootstrap Completed Successfully ===" 'SUCCESS'
         Write-BootstrapLog "Repository location: $repoPath" 'INFO'
         Write-BootstrapLog "Log file: $script:LogFile" 'INFO'
+        Write-BootstrapLog "PowerShell compatibility: $($PSVersionTable.PSVersion.Major).x ✓" 'INFO'
         
         if ($script:VerbosityLevel -ge 1) {
             Write-BootstrapLog "" 'INFO' -NoTimestamp
             Write-BootstrapLog "🎉 OpenTofu Lab Automation is ready! 🎉" 'SUCCESS' -NoTimestamp
+            Write-BootstrapLog "Compatible with PowerShell 5.1 and 7.x ✓" 'SUCCESS' -NoTimestamp
             Write-BootstrapLog "" 'INFO' -NoTimestamp
             Write-BootstrapLog "🚀 CoreApp Orchestration System:" 'INFO' -NoTimestamp
             Write-BootstrapLog "  • Import-Module '$repoPath/core-runner/core_app'" 'INFO' -NoTimestamp
@@ -664,4 +886,7 @@ function Start-Bootstrap {
 if ($MyInvocation.InvocationName -ne '.') {
     Start-Bootstrap
 }
-# Force update 06/18/2025 17:18:23
+
+# PowerShell 5.1 and 7.x Compatible Bootstrap Script
+# Updated: 06/18/2025 - Enhanced cross-version compatibility
+# Features: PowerShell 5.1/7.x compatibility, cross-platform support, robust error handling
