@@ -2,6 +2,15 @@
 
 # Import the centralized Logging module using multiple fallback paths
 $loggingImported = $false
+
+# Set up environment variables if not already set
+if (-not $env:PROJECT_ROOT) {
+    $env:PROJECT_ROOT = (Get-Item $PSScriptRoot).Parent.Parent.Parent.FullName
+}
+if (-not $env:PWSH_MODULES_PATH) {
+    $env:PWSH_MODULES_PATH = (Get-Item $PSScriptRoot).Parent.FullName
+}
+
 $loggingPaths = @(
     'Logging',  # Try module name first (if in PSModulePath)
     (Join-Path (Split-Path $PSScriptRoot -Parent) "Logging"),  # Relative to modules directory
@@ -15,7 +24,7 @@ foreach ($loggingPath in $loggingPaths) {
     try {
         if ($loggingPath -eq 'Logging') {
             Import-Module 'Logging' -Force -Global -ErrorAction Stop
-        } elseif (Test-Path $loggingPath) {
+        } elseif ($loggingPath -and (Test-Path $loggingPath)) {
             Import-Module $loggingPath -Force -Global -ErrorAction Stop
         } else {
             continue
@@ -28,7 +37,12 @@ foreach ($loggingPath in $loggingPaths) {
 }
 
 if (-not $loggingImported) {
-    Write-Warning "Could not import Logging module from any of the attempted paths"
+    Write-Warning "Could not import Logging module from any of the attempted paths. Using fallback Write-Host."
+    # Create a fallback Write-CustomLog function
+    function Write-CustomLog {
+        param([string]$Message, [string]$Level = 'INFO')
+        Write-Host "[$Level] $Message"
+    }
 }
 
 # Import all public functions
@@ -90,7 +104,8 @@ Export-ModuleMember -Function @(
     'Build-ComprehensivePRBody',
     'Get-GitChangeStatistics',
     'Get-GitCommitInfo',
-    'Invoke-EnhancedGitOperations'
+    'Invoke-EnhancedGitOperations',
+    'Invoke-CheckoutAndCommit'
 )
 
 Write-Verbose "Module loading complete. Exported all public functions."

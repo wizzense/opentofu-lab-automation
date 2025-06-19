@@ -1,10 +1,29 @@
 function CreatePatchBranch {
     param(
+        [Parameter(Mandatory)]
+        [ValidateNotNullOrEmpty()]
         [string]$BranchName,
-        [string]$BaseBranch
+        
+        [Parameter()]
+        [ValidateNotNullOrEmpty()]
+        [string]$BaseBranch = 'main'
     )
 
+    if ([string]::IsNullOrWhiteSpace($BranchName)) {
+        throw "Branch name cannot be null, empty, or whitespace"
+    }
+    
+    if ([string]::IsNullOrWhiteSpace($BaseBranch)) {
+        throw "Base branch name cannot be null, empty, or whitespace"
+    }
+
     Write-Host "Creating patch branch: $BranchName from base branch: $BaseBranch" -ForegroundColor Cyan
+    
+    # Validate branch name format
+    if ($BranchName -match '[^a-zA-Z0-9/_-]') {
+        throw "Invalid branch name: '$BranchName'. Branch names can only contain letters, numbers, hyphens, underscores, and forward slashes."
+    }
+    
     git checkout -b $BranchName $BaseBranch
     if ($LASTEXITCODE -ne 0) {
         throw "Failed to create branch: $BranchName"

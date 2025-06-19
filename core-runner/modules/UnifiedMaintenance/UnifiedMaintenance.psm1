@@ -217,8 +217,7 @@ function Invoke-AutomatedTestWorkflow {
                     ExitCode = $pytestExitCode
                     Success = $pytestExitCode -eq 0
                 }
-                
-                Write-MaintenanceLog "pytest exit code: $pytestExitCode" "INFO"
+                  Write-MaintenanceLog "pytest exit code: $pytestExitCode" "INFO"
                 
                 return @{ ExitCode = $pytestExitCode; Output = $pytestResult }
             }
@@ -226,7 +225,7 @@ function Invoke-AutomatedTestWorkflow {
                 Write-MaintenanceLog "Python tests directory not found: $pythonTestPath" "WARNING"
                 return $null
             }
-        } $false
+        }
     }
     
     # 3. Integration Tests
@@ -243,14 +242,13 @@ function Invoke-AutomatedTestWorkflow {
                     Success = $integrationResult.Success
                     Details = $integrationResult.Details
                 }
-                
-                return $integrationResult
+                  return $integrationResult
             }
             else {
                 Write-MaintenanceLog "Integration test script not found" "WARNING"
                 return $null
             }
-        } $false
+        }
     }
     
     # 4. Performance Tests
@@ -277,12 +275,11 @@ function Invoke-AutomatedTestWorkflow {
             $performanceResults.RunnerPerformanceTime = $runnerPerfTime.TotalSeconds
             
             $testResults.Categories.Performance = $performanceResults
-            
-            Write-MaintenanceLog "Module import: $($moduleImportTime.TotalSeconds.ToString('F2'))s" "INFO"
+              Write-MaintenanceLog "Module import: $($moduleImportTime.TotalSeconds.ToString('F2'))s" "INFO"
             Write-MaintenanceLog "Runner performance: $($runnerPerfTime.TotalSeconds.ToString('F2'))s" "INFO"
             
             return $performanceResults
-        } $false
+        }
     }
     
     # 5. Generate comprehensive report
@@ -324,15 +321,13 @@ Parallel Execution: $($Parallel.IsPresent)
 - Module Import Time: $($testResults.Categories.Performance.ModuleImportTime.ToString('F2'))s
 - Runner Performance: $($testResults.Categories.Performance.RunnerPerformanceTime.ToString('F2'))s
 "@
-        }
-        
-        $reportPath = "$OutputPath\TestWorkflowReport.md"
+        }        $reportPath = "$OutputPath\TestWorkflowReport.md"
         Set-Content -Path $reportPath -Value $reportContent
         
         Write-MaintenanceLog "Test report generated: $reportPath" "SUCCESS"
         
         return $reportPath
-    } $false
+    }
     
     Write-MaintenanceLog "Automated Test Workflow completed" "SUCCESS"
     return $testResults
@@ -632,7 +627,7 @@ function Invoke-MaintenanceOperations {
 }
 
 # Module initialization
-Write-MaintenanceLog "UnifiedMaintenance module loaded successfully" "SUCCESS"
+# Write-MaintenanceLog "UnifiedMaintenance module loaded successfully" "SUCCESS"
 
 # Export public functions
 foreach ($function in $publicFunctions) {
