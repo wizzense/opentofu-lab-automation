@@ -705,7 +705,7 @@
             "command": "pwsh",
             "args": [
                 "-Command",
-                "Write-Host '🔍 Testing Copilot instruction file setup...' -ForegroundColor Cyan; $instructionFiles = @('.github/copilot-instructions.md', '.github/instructions/modules.instructions.md', '.github/instructions/testing-workflows.instructions.md', '.github/instructions/patchmanager-workflows.instructions.md'); foreach ($file in $instructionFiles) { if (Test-Path $file) { Write-Host \"✅ Found: $file\" -ForegroundColor Green } else { Write-Host \"❌ Missing: $file\" -ForegroundColor Red } }; $promptFiles = Get-ChildItem '.github/prompts' -Filter '*.prompt.md' -ErrorAction SilentlyContinue; if ($promptFiles) { Write-Host \"✅ Found $($promptFiles.Count) prompt files\" -ForegroundColor Green } else { Write-Host \"❌ No prompt files found\" -ForegroundColor Red }"
+                "Write-Host '🔍 Testing Copilot instruction file setup...' -ForegroundColor Cyan; $instructionFiles = @('.github/copilot-instructions.md', '.github/instructions/modules.instructions.md', '.github/instructions/testing-workflows.instructions.md', '.github/instructions/patchmanager-workflows.instructions.md'); foreach ($file in $instructionFiles) { if (Test-Path $file) { Write-Host \"✅ Found: $file\" -ForegroundColor Green } else { Write-Host \" FAILMissing: $file\" -ForegroundColor Red } }; $promptFiles = Get-ChildItem '.github/prompts' -Filter '*.prompt.md' -ErrorAction SilentlyContinue; if ($promptFiles) { Write-Host \"✅ Found $($promptFiles.Count) prompt files\" -ForegroundColor Green } else { Write-Host \" FAILNo prompt files found\" -ForegroundColor Red }"
             ],
             "group": "test",
             "presentation": {

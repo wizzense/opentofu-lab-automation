@@ -9,8 +9,35 @@ This file provides comprehensive guidance for using PatchManager effectively in 
 
 ## Core PatchManager Commands
 
-### Git-Controlled Patching
-Use `Invoke-GitControlledPatch` for safe, tracked changes:
+### Simplified Patch Workflow (Recommended)
+Use `Invoke-SimplifiedPatchWorkflow` for clean, focused patch operations:
+
+```powershell
+# Basic patch with issue and PR creation
+Invoke-SimplifiedPatchWorkflow -PatchDescription "Fix non-interactive mode issues" -PatchOperation {
+    # Your code changes here
+    Write-Host "Making changes..."
+} -CreateIssue -CreatePullRequest -Priority "Medium"
+
+# Patch with testing
+Invoke-SimplifiedPatchWorkflow -PatchDescription "Update module exports" -PatchOperation {
+    # Code changes
+} -TestCommands @("pwsh -Command 'Import-Module ./core-runner/modules/LabRunner -Force'") -CreateIssue -CreatePullRequest
+```
+
+### Individual Components (Advanced Use)
+Use these for granular control:
+
+```powershell
+# Create issue only
+New-SimpleIssueForPatch -PatchDescription "Fix module loading" -Priority "High"
+
+# Create PR only (with issue linking)
+New-SimplePRForPatch -PatchDescription "Fix module loading" -BranchName "patch/fix-loading" -IssueNumber 123
+```
+
+### Legacy Git-Controlled Patching (Still Supported)
+Use `Invoke-GitControlledPatch` for backward compatibility:
 
 ```powershell
 # Basic patch workflow
@@ -18,21 +45,6 @@ Invoke-GitControlledPatch -PatchDescription "Fix non-interactive mode issues" -P
     # Your code changes here
     Write-Host "Making changes..."
 } -TestCommands @("pwsh -Command 'Import-Module ./core-runner/modules/LabRunner -Force'")
-
-# Advanced patch with auto-commit
-Invoke-GitControlledPatch -PatchDescription "Update module exports" -PatchOperation {
-    # Code changes
-} -AutoCommitUncommitted -CreatePullRequest
-```
-
-### Monitored Execution
-Use `Invoke-MonitoredExecution` for error tracking:
-
-```powershell
-Invoke-MonitoredExecution -ScriptBlock {
-    # Risky operations
-    Import-Module SomeModule -Force
-} -Context @{Operation = "Module Import"; Component = "Testing"} -CreateIssues
 ```
 
 ## Common Scenarios
@@ -103,12 +115,13 @@ Use these VS Code tasks for common PatchManager workflows:
 
 ## Best Practices
 
-1. **Always use descriptive patch descriptions** that explain the what and why
-2. **Include comprehensive test commands** that validate your changes
-3. **Use WhatIf mode first** to preview changes without executing them
-4. **Test non-interactive scenarios** especially for core-runner changes
-5. **Capture error context** with monitored execution for debugging
-6. **Create issues automatically** for tracking recurring problems
+1. **Use the simplified workflow** for most patch operations: `Invoke-SimplifiedPatchWorkflow`
+2. **Always use descriptive patch descriptions** that explain the what and why
+3. **Create issues and PRs together** using `-CreateIssue -CreatePullRequest` for proper auto-closing
+4. **Include test commands** when possible to validate your changes
+5. **Use DryRun mode first** to preview changes without executing them: `-DryRun`
+6. **No emoji/Unicode output** - the simplified workflow follows project standards
+7. **Explicit control** - create issues and PRs only when needed, not automatically
 
 ## Error Handling Patterns
 

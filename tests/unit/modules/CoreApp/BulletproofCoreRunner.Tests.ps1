@@ -106,14 +106,14 @@ $($result.StandardOutput)
 $($result.StandardError)
 
 === Test Validation ===
-Exit Code Match: $(if ($result.ExitCode -eq $ExpectedExitCode) { "✅ PASS" } else { "❌ FAIL" })
-Duration Check: $(if ($result.Duration -lt $MaxDurationMs) { "✅ PASS" } else { "❌ FAIL" })
+Exit Code Match: $(if ($result.ExitCode -eq $ExpectedExitCode) { "✅ PASS" } else { " FAILFAIL" })
+Duration Check: $(if ($result.Duration -lt $MaxDurationMs) { "✅ PASS" } else { " FAILFAIL" })
 
 Expected Output Patterns:
-$($ExpectedOutput | ForEach-Object { "  - $_`: $(if ($result.StandardOutput -match $_) { "✅ FOUND" } else { "❌ NOT FOUND" })" })
+$($ExpectedOutput | ForEach-Object { "  - $_`: $(if ($result.StandardOutput -match $_) { "✅ FOUND" } else { " FAILNOT FOUND" })" })
 
 Expected Error Patterns:
-$($ExpectedErrors | ForEach-Object { "  - $_`: $(if ($result.StandardError -match $_) { "✅ FOUND" } else { "❌ NOT FOUND" })" })
+$($ExpectedErrors | ForEach-Object { "  - $_`: $(if ($result.StandardError -match $_) { "✅ FOUND" } else { " FAILNOT FOUND" })" })
 
 === End of Bulletproof Log ===
 "@

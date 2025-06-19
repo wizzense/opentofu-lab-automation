@@ -136,7 +136,7 @@ All bulletproof tests generate comprehensive log files:
 ⏱️  Total Duration: 8.5 minutes
 📊 Total Tests: 67
 ✅ Passed: 66
-❌ Failed: 1
+ FAILFailed: 1
 ⏭️  Skipped: 0
 📈 Code Coverage: 87.3%
 ```

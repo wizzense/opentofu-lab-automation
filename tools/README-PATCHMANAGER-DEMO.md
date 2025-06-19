@@ -6,7 +6,7 @@ This directory contains a comprehensive demonstration script for the PatchManage
 
 The `demo-patchmanager.ps1` script provides interactive demonstrations of:
 - ✅ **Basic patch workflows** - Create, apply, and commit patches
-- ✅ **Advanced patch features** - Test commands, validation, and automated commits  
+- ✅ **Advanced patch features** - Test commands, validation, and automated commits
 - ✅ **Rollback capabilities** - Patch rollback and recovery operations
 - ✅ **GitHub issue integration** - Automated issue creation and tracking
 - ✅ **Cross-platform features** - Path handling and compatibility
@@ -20,7 +20,7 @@ The `demo-patchmanager.ps1` script provides interactive demonstrations of:
 .\demo-patchmanager.ps1 -DemoMode Basic -DryRun
 ```
 
-### Interactive Advanced Demo  
+### Interactive Advanced Demo
 ```powershell
 # Run advanced features with interactive prompts
 .\demo-patchmanager.ps1 -DemoMode Advanced -Interactive
@@ -105,7 +105,7 @@ Minimize output for automated scenarios.
 The demo provides rich, colorful output with:
 - 📋 **Step indicators** for each demonstration phase
 - ✅ **Success markers** for completed operations
-- ❌ **Error indicators** with detailed information
+-  FAIL**Error indicators** with detailed information
 - 📊 **Statistics summary** at completion
 - 🎯 **Next steps** guidance
 
@@ -155,8 +155,8 @@ All demos support `-DryRun` mode which:
 - ✅ Shows what operations would be performed
 - ✅ Creates branch names and displays them
 - ✅ Runs validation without making changes
-- ❌ Does not create actual files or commits
-- ❌ Does not push to remote repositories
+-  FAILDoes not create actual files or commits
+-  FAILDoes not push to remote repositories
 
 ### Error Handling
 - Comprehensive error tracking and reporting
@@ -196,7 +196,7 @@ If you see module import errors:
 ### Git Configuration Errors
 If you see Git-related errors:
 ```
-❌ Git repository not properly configured
+ FAILGit repository not properly configured
 ```
 
 **Solution**: Ensure you're in a Git repository and have configured:
@@ -208,10 +208,10 @@ git config user.email "your.email@example.com"
 ### Permission Errors
 If you see permission-related errors:
 ```
-❌ Failed to create branch or commit
+ FAILFailed to create branch or commit
 ```
 
-**Solution**: 
+**Solution**:
 - Run PowerShell as Administrator (Windows)
 - Check file permissions in the repository directory
 - Ensure Git has write access to the repository
@@ -224,10 +224,10 @@ You can modify the demo script to add your own scenarios:
 ```powershell
 function Invoke-MyCustomDemo {
     Write-DemoHeader "My Custom Demo" "Description of what this demonstrates"
-    
+
     try {
         Write-DemoStep "1. My custom step"
-        
+
         $patchResult = Invoke-GitControlledPatch `
             -PatchDescription "My custom patch" `
             -PatchOperation {
@@ -235,13 +235,13 @@ function Invoke-MyCustomDemo {
                 Write-Host "Performing custom operations..."
             } `
             -DryRun:$DryRun
-            
+
         if ($patchResult.Success) {
             Write-DemoSuccess "Custom demo completed successfully"
         } else {
             Write-DemoError "Custom demo failed" $patchResult.Error
         }
-        
+
     } catch {
         Write-DemoError "Custom demo encountered an exception" $_.Exception.Message
     }
