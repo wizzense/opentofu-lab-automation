@@ -85,31 +85,12 @@ try {
     Write-Warning "Error initializing cross-platform environment: $_"
 }
 
-# Export only the public functions (private functions are available internally but not exported)
-# Export all functions defined in the module manifest
+# Export only the 4 core functions 
 Export-ModuleMember -Function @(
-    'Invoke-GitControlledPatch',
-    'Invoke-EnhancedPatchManager',
-    'Invoke-GitHubIssueIntegration',
-    'Invoke-GitHubIssueResolution',
-    'Invoke-QuickRollback',
-    'Invoke-PatchRollback',
-    'Invoke-PatchValidation',
-    'Invoke-ComprehensiveIssueTracking',
-    'Invoke-ValidationFailureHandler',    'Invoke-ErrorHandler',    'Invoke-MonitoredExecution',
-    'Get-IntelligentBranchStrategy',
-    'Test-BranchProtection',
-    'Get-SanitizedBranchName',
-    'New-PatchBranch',
-    'Invoke-PatchOperation',
-    'New-PatchCommit',
-    'New-PatchPullRequest',
-    'Build-ComprehensivePRBody',
-    'Get-GitChangeStatistics',
-    'Get-GitCommitInfo',
-    'Invoke-EnhancedGitOperations',
-    'Invoke-CheckoutAndCommit',
-    'Invoke-ComprehensiveValidation'
+    'Invoke-PatchWorkflow',
+    'New-PatchIssue', 
+    'New-PatchPR',
+    'Invoke-PatchRollback'
 )
 
 Write-Verbose "Module loading complete. Exported all public functions."
