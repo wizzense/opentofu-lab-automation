@@ -267,9 +267,7 @@ This patch follows the PatchManager workflow:
                 $prNumber = $null
                 if ($result -match '/pull/(\d+)') {
                     $prNumber = $matches[1]
-                }
-
-                Write-CustomLog "Pull request created successfully: $result" -Level SUCCESS
+                }                Write-CustomLog "Pull request created successfully: $result" -Level SUCCESS
                 Write-CustomLog "PR number: #$prNumber" -Level INFO
 
                 return @{
@@ -279,7 +277,31 @@ This patch follows the PatchManager workflow:
                     Title = $prTitle
                 }
             } else {
-                throw "GitHub CLI failed: $($result -join ' ')"
+                # Check if this is an "already exists" error (which is actually success)
+                $errorText = $result -join ' '
+                if ($errorText -match "already exists.*https://github\.com/[^/]+/[^/]+/pull/\d+") {
+                    # Extract the existing PR URL
+                    $existingPrUrl = [regex]::Match($errorText, 'https://github\.com/[^/]+/[^/]+/pull/\d+').Value
+                    
+                    # Extract PR number from URL
+                    $prNumber = $null
+                    if ($existingPrUrl -match '/pull/(\d+)') {
+                        $prNumber = $matches[1]
+                    }
+
+                    Write-CustomLog "Pull request already exists: $existingPrUrl" -Level SUCCESS
+                    Write-CustomLog "Using existing PR #$prNumber" -Level INFO
+
+                    return @{
+                        Success = $true
+                        PullRequestUrl = $existingPrUrl
+                        PullRequestNumber = $prNumber
+                        Title = $prTitle
+                        Message = "Using existing pull request"
+                    }
+                } else {
+                    throw "GitHub CLI failed: $errorText"
+                }
             }
 
         } catch {
