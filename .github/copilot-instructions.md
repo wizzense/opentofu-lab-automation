@@ -72,4 +72,28 @@ Use these existing modules instead of creating new functionality:
 
 **Audit Logging**: Log all significant operations for security and troubleshooting.
 
+## Advanced Copilot Features
+
+**Context Awareness**: Leverage repository-specific instructions to provide context-aware suggestions.
+
+**Prompt Integration**: Use specialized prompt templates for PowerShell development, testing, infrastructure, and troubleshooting.
+
+**Code Review Assistance**: Generate code that adheres to project standards and includes inline comments for clarity.
+
+**Documentation Generation**: Automatically include detailed help documentation for all functions and modules.
+
+**Performance Optimization**: Suggest improvements for parallel execution, memory efficiency, and large dataset handling.
+
+**Error Diagnosis**: Provide troubleshooting steps and common resolutions for errors encountered during development.
+
+## Collaboration and Feedback
+
+**Team Standards**: Ensure generated code aligns with team coding standards and practices.
+
+**Feedback Loop**: Continuously refine instructions based on team feedback and project evolution.
+
+**Version Control**: Track changes to instructions and prompt templates to maintain consistency across the team.
+
+**Training and Onboarding**: Use Copilot to assist new team members in understanding project architecture and standards.
+
 When suggesting code changes or new features, always consider how they integrate with existing modules and follow these established patterns.

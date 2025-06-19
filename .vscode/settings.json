@@ -9,11 +9,6 @@
 
     // Repository Custom Instructions (Latest Feature)
     "github.copilot.chat.codeGeneration.useInstructionFiles": true,
-    "github.copilot.chat.experimental.codeGeneration.instructions": [
-        {
-            "file": ".github/copilot-instructions.md"
-        }
-    ],
 
     // Advanced Copilot Chat Settings
     "github.copilot.chat.enableCodeGeneration": true,
@@ -153,9 +148,21 @@
     "debug.openDebug": "openOnDebugBreak",
     "debug.showInStatusBar": "always",
 
-    // Prompt Files Configuration
+    // Advanced Copilot Features
+    "github.copilot.chat.contextAwareness": true,
+    "github.copilot.chat.documentationGeneration": true,
+    "github.copilot.chat.performanceOptimization": true,
+    "github.copilot.chat.errorDiagnosis": true,
+    "github.copilot.chat.codeReviewAssistance": true,
+
+    // Prompt Integration
     "github.copilot.chat.promptFiles": true,
     "github.copilot.chat.promptFilesLocations": [
         ".github/prompts"
+    ],
+    "github.copilot.chat.codeGeneration.instructions": [
+        {
+            "file": ".github/copilot-instructions.md"
+        }
     ]
 }
