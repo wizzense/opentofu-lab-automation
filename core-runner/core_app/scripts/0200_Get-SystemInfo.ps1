@@ -7,14 +7,14 @@ param(
 
     [Parameter()]
     [switch]$AsJson,
-    
+
     [Parameter()]
     [ValidateSet('silent', 'normal', 'detailed')]
     [string]$Verbosity = 'normal',
-    
+
     [Parameter()]
     [switch]$Auto,
-    
+
     [Parameter()]
     [switch]$Force
 )
@@ -128,18 +128,18 @@ function Get-SystemInfo {
 if (-not $params.IsWhatIfMode -and $PSCmdlet.ShouldProcess("Get system information", "Execute gathering")) {
     if ($MyInvocation.InvocationName -ne '.') {
         $systemInfo = Get-SystemInfo -AsJson:$AsJson -Config $params.Config
-        
+
         # Always show key system information to the user in interactive mode
         if ($params.Verbosity -ne 'silent') {
             Write-Host "`n=== System Information ===" -ForegroundColor Cyan
             Write-Host "Computer Name: $($systemInfo.ComputerName)" -ForegroundColor Green
             Write-Host "Platform: $($systemInfo.Platform)" -ForegroundColor Green
             Write-Host "OS Version: $($systemInfo.OSVersion)" -ForegroundColor Green
-            
+
             if ($systemInfo.IPAddresses -and $systemInfo.IPAddresses.Count -gt 0) {
                 Write-Host "IP Addresses: $($systemInfo.IPAddresses -join ', ')" -ForegroundColor Green
             }
-            
+
             # Show disk information summary
             if ($systemInfo.DiskInfo -and $systemInfo.DiskInfo.Count -gt 0) {
                 Write-Host "`nDisk Information:" -ForegroundColor Yellow
@@ -154,16 +154,16 @@ if (-not $params.IsWhatIfMode -and $PSCmdlet.ShouldProcess("Get system informati
             }
             Write-Host "=========================" -ForegroundColor Cyan
         }
-        
+
         # If in detailed verbosity mode, show complete detailed information
         if ($params.Verbosity -eq 'detailed') {
             Write-Host "`n=== Detailed System Information ===" -ForegroundColor Magenta
-            $systemInfo | Format-List | Out-String | ForEach-Object { 
+            $systemInfo | Format-List | Out-String | ForEach-Object {
                 Write-Host $_ -ForegroundColor Gray
             }
             Write-Host "===================================" -ForegroundColor Magenta
         }
-        
+
         # Log the completion with summary
         Write-CustomLog "System information gathered successfully. Platform: $($systemInfo.Platform), Computer: $($systemInfo.ComputerName)" -Level SUCCESS
     }

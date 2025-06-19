@@ -73,7 +73,10 @@ function Invoke-ScriptWithOutputHandling {
         [string]$Verbosity = 'normal'
     )
 
-    Write-CustomLog "Starting script execution: $ScriptName" -Level INFO
+    # Script execution with output handling and user-focused display
+    # In normal mode, logging is minimal (WARN/ERROR only) to keep output clean
+    # Scripts should use Write-Host for user-facing output and Write-CustomLog for internal logging
+    Write-CustomLog "Starting script execution: $ScriptName" -Level DEBUG
 
     try {
         $scriptOutput = & $ScriptPath -Config $Config *>&1
@@ -94,9 +97,16 @@ function Invoke-ScriptWithOutputHandling {
                     Write-CustomLog "Script verbose: $($_.Message)" -Level DEBUG
                     # Verbose output doesn't count as "user visible" in normal mode
                 } else {
-                    Write-Host $_.ToString()
-                    $visibleOutputCount++
-                    $hasUserVisibleOutput = $true
+                    # In silent mode, suppress all Write-Host output including user-facing information
+                    if ($Verbosity -ne 'silent') {
+                        Write-Host $_.ToString()
+                        $visibleOutputCount++
+                        $hasUserVisibleOutput = $true
+                    } else {
+                        # Still count the output for tracking, but don't display it
+                        $visibleOutputCount++
+                        $hasUserVisibleOutput = $true
+                    }
                 }
             }
         }
@@ -105,14 +115,14 @@ function Invoke-ScriptWithOutputHandling {
         if (-not $hasUserVisibleOutput -and $Verbosity -in @('normal', 'silent')) {
             $warningMessage = "⚠️  Script '$ScriptName' completed successfully but produced no visible output in '$Verbosity' mode."
             $suggestionMessage = "💡 Consider running with '-Verbosity detailed' to see more information, or the script may need output improvements."
-            
+
             Write-Host ""
             Write-Host $warningMessage -ForegroundColor Yellow
             Write-Host $suggestionMessage -ForegroundColor Cyan
             Write-Host ""
-            
+
             Write-CustomLog "No visible output detected for script: $ScriptName in verbosity mode: $Verbosity" -Level WARN
-            
+
             # Track this for potential automation/reporting
             $script:NoOutputScripts = $script:NoOutputScripts ?? @()
             $script:NoOutputScripts += [PSCustomObject]@{
@@ -123,7 +133,7 @@ function Invoke-ScriptWithOutputHandling {
             }
         }
 
-        Write-CustomLog "Script completed: $ScriptName (Visible outputs: $visibleOutputCount)" -Level SUCCESS
+        Write-CustomLog "Script completed: $ScriptName (Visible outputs: $visibleOutputCount)" -Level DEBUG
     } catch {
         Write-CustomLog "Script failed: $ScriptName - $($_.Exception.Message)" -Level ERROR
         if (-not $Force) {
@@ -170,8 +180,8 @@ if ($Quiet) {
 
 # Map verbosity settings to logging levels
 $script:VerbosityToLogLevel = @{
-    silent = 'ERROR'    # Only show errors in silent mode
-    normal = 'INFO'     # Show INFO, WARN, ERROR, SUCCESS in normal mode
+    silent = 'SILENT'   # Suppress all console output in silent mode
+    normal = 'WARN'     # Show only WARN and ERROR in normal mode (cleaner user experience)
     detailed = 'DEBUG'  # Show everything including DEBUG in detailed mode
 }
 
@@ -214,15 +224,22 @@ if ($PSVersionTable.PSVersion.Major -lt 7) {
 # Import required modules
 try {
     Write-Verbose 'Importing Logging module...'
-    Import-Module "$env:PWSH_MODULES_PATH/Logging" -Force -ErrorAction Stop
 
-    Write-Verbose 'Importing LabRunner module...'
-    Import-Module "$env:PWSH_MODULES_PATH/LabRunner" -Force -ErrorAction Stop
+    # In silent mode, suppress all output during module import and initialization
+    if ($Verbosity -eq 'silent') {
+        Import-Module "$env:PWSH_MODULES_PATH/Logging" -Force -ErrorAction Stop *>$null
+        Import-Module "$env:PWSH_MODULES_PATH/LabRunner" -Force -ErrorAction Stop *>$null
+        # Initialize logging system with proper verbosity mapping (Force required to override auto-init)
+        Initialize-LoggingSystem -ConsoleLevel $script:LogLevel -LogLevel 'DEBUG' -Force *>$null
+    } else {
+        Import-Module "$env:PWSH_MODULES_PATH/Logging" -Force -ErrorAction Stop
+        Write-Verbose 'Importing LabRunner module...'
+        Import-Module "$env:PWSH_MODULES_PATH/LabRunner" -Force -ErrorAction Stop
+        # Initialize logging system with proper verbosity mapping (Force required to override auto-init)
+        Initialize-LoggingSystem -ConsoleLevel $script:LogLevel -LogLevel 'DEBUG' -Force
+    }
 
-    # Initialize logging system with proper verbosity mapping
-    Initialize-LoggingSystem -ConsoleLevel $script:LogLevel -LogLevel 'DEBUG'
-
-    Write-CustomLog 'Core runner started' -Level INFO
+    Write-CustomLog 'Core runner started' -Level DEBUG
 } catch {
     Write-Error "Failed to import required modules: $($_.Exception.Message)"
     Write-Error "Ensure modules exist at: $env:PWSH_MODULES_PATH"
@@ -235,11 +252,11 @@ $env:LAB_CONSOLE_LEVEL = $script:LogLevel
 # Load configuration
 try {
     if (Test-Path $ConfigFile) {
-        Write-CustomLog "Loading configuration from: $ConfigFile" -Level INFO
+        Write-CustomLog "Loading configuration from: $ConfigFile" -Level DEBUG
         $config = Get-Content $ConfigFile -Raw | ConvertFrom-Json
     } else {
         Write-CustomLog "Configuration file not found: $ConfigFile" -Level WARN
-        Write-CustomLog 'Using default configuration' -Level INFO
+        Write-CustomLog 'Using default configuration' -Level DEBUG
         $config = @{}
     }
 } catch {
@@ -249,16 +266,16 @@ try {
 
 # Main execution logic
 try {
-    Write-CustomLog 'Starting OpenTofu Lab Automation Core Runner' -Level SUCCESS
-    Write-CustomLog "Repository root: $repoRoot" -Level INFO
-    Write-CustomLog "Configuration file: $ConfigFile" -Level INFO
-    Write-CustomLog "Verbosity level: $Verbosity" -Level INFO
+    Write-CustomLog 'Starting OpenTofu Lab Automation Core Runner' -Level DEBUG
+    Write-CustomLog "Repository root: $repoRoot" -Level DEBUG
+    Write-CustomLog "Configuration file: $ConfigFile" -Level DEBUG
+    Write-CustomLog "Verbosity level: $Verbosity" -Level DEBUG
 
     # Get available scripts
     $scriptsPath = Join-Path $PSScriptRoot 'scripts'
     if (Test-Path $scriptsPath) {
         $availableScripts = Get-ChildItem -Path $scriptsPath -Filter '*.ps1' | Sort-Object Name
-        Write-CustomLog "Found $($availableScripts.Count) scripts" -Level INFO
+        Write-CustomLog "Found $($availableScripts.Count) scripts" -Level DEBUG
 
         if ($Scripts) {
             # Run specific scripts
@@ -266,7 +283,7 @@ try {
             foreach ($scriptName in $scriptList) {
                 $scriptPath = Join-Path $scriptsPath "$scriptName.ps1"
                 if (Test-Path $scriptPath) {
-                    Write-CustomLog "Executing script: $scriptName" -Level INFO
+                    Write-CustomLog "Executing script: $scriptName" -Level DEBUG
                     if ($PSCmdlet.ShouldProcess($scriptName, 'Execute script')) {
                         Invoke-ScriptWithOutputHandling -ScriptName $scriptName -ScriptPath $scriptPath -Config $config -Force:$Force -Verbosity $Verbosity
                     }
@@ -368,11 +385,11 @@ try {
         Write-Host ""
         Write-Host "The following scripts completed successfully but produced no visible output:" -ForegroundColor Yellow
         Write-Host ""
-        
+
         foreach ($scriptInfo in $script:NoOutputScripts) {
             Write-Host "• $($scriptInfo.ScriptName) (verbosity: $($scriptInfo.Verbosity))" -ForegroundColor Cyan
         }
-        
+
         Write-Host ""
         Write-Host "💡 Suggestions:" -ForegroundColor Cyan
         Write-Host "  1. Run with '-Verbosity detailed' to see more information" -ForegroundColor White
@@ -380,12 +397,12 @@ try {
         Write-Host "  3. Use PatchManager to track and improve script output" -ForegroundColor White
         Write-Host ""
         Write-Host "=" * 80 -ForegroundColor Yellow
-        
+
         # Save summary to logs for potential automation
         $summaryPath = "$repoRoot/logs/no-output-scripts-$(Get-Date -Format 'yyyy-MM-dd-HHmm').json"
         $script:NoOutputScripts | ConvertTo-Json -Depth 3 | Out-File -FilePath $summaryPath -Encoding UTF8
         Write-CustomLog "No-output scripts summary saved to: $summaryPath" -Level INFO
-        
+
         # Optionally auto-create PatchManager issue for tracking (only in detailed mode to avoid spam)
         if ($Verbosity -eq 'detailed' -and -not $NonInteractive) {
             try {
@@ -402,7 +419,7 @@ try {
         }
     }
 
-    Write-CustomLog 'Core runner completed successfully' -Level SUCCESS
+    Write-CustomLog 'Core runner completed successfully' -Level DEBUG
     exit 0  # Explicitly set success exit code
 
 } catch {

@@ -628,10 +628,15 @@ Get-ChildItem -Path "$PSScriptRoot/Public/*.ps1" -ErrorAction SilentlyContinue |
 # Only initialize if not already initialized
 if (-not $script:LoggingConfig.Initialized) {
     try {
+        # Auto-initialization should be silent to avoid duplicate "initialized" messages
+        # The explicit Initialize-LoggingSystem call from core runner will show the message
+        $script:LoggingConfig.LogToConsole = $false  # Temporarily disable console output
         Initialize-LoggingSystem -ErrorAction SilentlyContinue
+        $script:LoggingConfig.LogToConsole = $true   # Re-enable console output
     }
     catch {
         # If initialization fails, continue with basic logging
         Write-Warning "Logging system initialization had issues, using basic configuration"
+        $script:LoggingConfig.LogToConsole = $true   # Ensure console output is re-enabled
     }
 }
