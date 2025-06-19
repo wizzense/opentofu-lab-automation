@@ -449,18 +449,12 @@ function Invoke-CoreAppBootstrap {
         # Use the best available PowerShell
         $pwshPath = Get-PlatformPowerShell
         Write-BootstrapLog "Using PowerShell: $pwshPath" 'INFO'
-        
-        if ($PSCmdlet.ShouldProcess("CoreApp Orchestration", "Start")) {
-            try {
-                $process = Start-Process -FilePath $pwshPath -ArgumentList $coreAppArgs -Wait -NoNewWindow -PassThru
-                if ($process.ExitCode -eq 0) {
-                    Write-BootstrapLog "✓ CoreApp orchestration completed successfully" 'SUCCESS'
-                } else {
-                    throw "CoreApp orchestration failed with exit code: $($process.ExitCode)"
-                }
-            } catch {
-                Write-BootstrapLog "CoreApp orchestration failed: $($_.Exception.Message)" 'ERROR'
-                throw
+          if ($PSCmdlet.ShouldProcess("CoreApp Orchestration", "Start")) {
+            $process = Start-Process -FilePath $pwshPath -ArgumentList $coreAppArgs -Wait -NoNewWindow -PassThru
+            if ($process.ExitCode -eq 0) {
+                Write-BootstrapLog "✓ CoreApp orchestration completed successfully" 'SUCCESS'
+            } else {
+                throw "CoreApp orchestration failed with exit code: $($process.ExitCode)"
             }
         }
         
