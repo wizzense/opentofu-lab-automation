@@ -208,7 +208,7 @@ function Invoke-GitControlledPatch {
                         "Commit successful" = $true
                     }
                     
-                    $prResult = New-PatchPullRequest -BranchName $branchName -Description $PatchDescription -AffectedFiles $AffectedFiles -ValidationResults $validationResults -AutoMerge:$AutoMerge
+                    $prResult = New-GitControlledPatchPullRequest -BranchName $branchName -Description $PatchDescription -AffectedFiles $AffectedFiles -ValidationResults $validationResults -AutoMerge:$AutoMerge
                     
                     if ($prResult.Success) {
                         Write-CustomLog "Pull request created: $($prResult.PullRequestUrl)" -Level SUCCESS
@@ -457,7 +457,7 @@ function New-PatchCommit {
 }
 
 # Helper function to create pull request
-function New-PatchPullRequest {
+function New-GitControlledPatchPullRequest {
     [CmdletBinding()]
     param(
         [string]$BranchName,

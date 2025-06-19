@@ -3,36 +3,42 @@
 # Import the centralized Logging module using multiple fallback paths
 $loggingImported = $false
 
-# Set up environment variables if not already set
-if (-not $env:PROJECT_ROOT) {
-    $env:PROJECT_ROOT = (Get-Item $PSScriptRoot).Parent.Parent.Parent.FullName
-}
-if (-not $env:PWSH_MODULES_PATH) {
-    $env:PWSH_MODULES_PATH = (Get-Item $PSScriptRoot).Parent.FullName
-}
+# Check if Logging module is already available
+if (Get-Module -Name 'Logging' -ErrorAction SilentlyContinue) {
+    $loggingImported = $true
+    Write-Verbose "Logging module already available"
+} else {
+    # Set up environment variables if not already set
+    if (-not $env:PROJECT_ROOT) {
+        $env:PROJECT_ROOT = (Get-Item $PSScriptRoot).Parent.Parent.Parent.FullName
+    }
+    if (-not $env:PWSH_MODULES_PATH) {
+        $env:PWSH_MODULES_PATH = (Get-Item $PSScriptRoot).Parent.FullName
+    }
 
-$loggingPaths = @(
-    'Logging',  # Try module name first (if in PSModulePath)
-    (Join-Path (Split-Path $PSScriptRoot -Parent) "Logging"),  # Relative to modules directory
-    (Join-Path $env:PWSH_MODULES_PATH "Logging"),  # Environment path
-    (Join-Path $env:PROJECT_ROOT "core-runner/modules/Logging")  # Full project path
-)
+    $loggingPaths = @(
+        'Logging',  # Try module name first (if in PSModulePath)
+        (Join-Path (Split-Path $PSScriptRoot -Parent) "Logging"),  # Relative to modules directory
+        (Join-Path $env:PWSH_MODULES_PATH "Logging"),  # Environment path
+        (Join-Path $env:PROJECT_ROOT "core-runner/modules/Logging")  # Full project path
+    )
 
-foreach ($loggingPath in $loggingPaths) {
-    if ($loggingImported) { break }
-    
-    try {
-        if ($loggingPath -eq 'Logging') {
-            Import-Module 'Logging' -Force -Global -ErrorAction Stop
-        } elseif ($loggingPath -and (Test-Path $loggingPath)) {
-            Import-Module $loggingPath -Force -Global -ErrorAction Stop
-        } else {
-            continue
+    foreach ($loggingPath in $loggingPaths) {
+        if ($loggingImported) { break }
+
+        try {
+            if ($loggingPath -eq 'Logging') {
+                Import-Module 'Logging' -Global -ErrorAction Stop
+            } elseif ($loggingPath -and (Test-Path $loggingPath)) {
+                Import-Module $loggingPath -Global -ErrorAction Stop
+            } else {
+                continue
+            }
+            Write-Verbose "Successfully imported Logging module from: $loggingPath"
+            $loggingImported = $true
+        } catch {
+            Write-Verbose "Failed to import Logging from $loggingPath : $_"
         }
-        Write-Verbose "Successfully imported Logging module from: $loggingPath"
-        $loggingImported = $true
-    } catch {
-        Write-Verbose "Failed to import Logging from $loggingPath : $_"
     }
 }
 
@@ -48,7 +54,7 @@ if (-not $loggingImported) {
 # Import all public functions
 $Public = @(Get-ChildItem -Path $PSScriptRoot\Public\*.ps1 -ErrorAction SilentlyContinue)
 
-# Import all private functions  
+# Import all private functions
 $Private = @(Get-ChildItem -Path $PSScriptRoot\Private\*.ps1 -ErrorAction SilentlyContinue)
 
 Write-Verbose "Found $($Public.Count) public functions and $($Private.Count) private functions"
@@ -83,7 +89,7 @@ try {
 # Export all functions defined in the module manifest
 Export-ModuleMember -Function @(
     'Invoke-GitControlledPatch',
-    'Invoke-EnhancedPatchManager', 
+    'Invoke-EnhancedPatchManager',
     'Invoke-GitHubIssueIntegration',
     'Invoke-GitHubIssueResolution',
     'Invoke-QuickRollback',
@@ -104,7 +110,8 @@ Export-ModuleMember -Function @(
     'Get-GitChangeStatistics',
     'Get-GitCommitInfo',
     'Invoke-EnhancedGitOperations',
-    'Invoke-CheckoutAndCommit'
+    'Invoke-CheckoutAndCommit',
+    'Invoke-ComprehensiveValidation'
 )
 
 Write-Verbose "Module loading complete. Exported all public functions."

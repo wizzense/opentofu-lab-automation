@@ -5,10 +5,10 @@
 .DESCRIPTION
     This is the single entry point for downloading and setting up the entire OpenTofu Lab Automation suite.
     Compatible with both PowerShell 5.1 and 7.x, with robust cross-platform support.
-    
+
     Features:
     - Full compatibility with PowerShell 5.1 and 7.x
-    - Cross-platform support (Windows, Linux, macOS) 
+    - Cross-platform support (Windows, Linux, macOS)
     - Self-updating capabilities
     - Comprehensive error handling and logging
     - Integration with CoreApp orchestration
@@ -32,14 +32,14 @@
 .PARAMETER SkipPrerequisites
     Skip automatic installation of prerequisites (Git, GitHub CLI, PowerShell).
 
+.PARAMETER SkipGitHubAuth
+    Skip GitHub authentication check.
+
 .PARAMETER TargetBranch
     Specify which branch to bootstrap from (default: main).
 
 .PARAMETER LocalPath
     Custom local path for repository clone (default: temp directory).
-
-.PARAMETER WhatIf
-    Show what would be done without making changes.
 
 .PARAMETER Force
     Force re-clone even if repository already exists.
@@ -85,6 +85,7 @@ param(
     [ValidateSet('silent', 'normal', 'detailed')]
     [string]$Verbosity = 'normal',
     [switch]$SkipPrerequisites,
+    [switch]$SkipGitHubAuth,
     [string]$TargetBranch = 'main',
     [string]$LocalPath,
     [switch]$Force
@@ -113,7 +114,7 @@ if ($script:IsPowerShell7Plus) {
     $script:PlatformWindows = [System.Environment]::OSVersion.Platform -eq [System.PlatformID]::Win32NT
     $script:PlatformLinux = $false
     $script:PlatformMacOS = $false
-    
+
     # Additional check for non-Windows in PowerShell 5.1
     if (-not $script:PlatformWindows) {
         if ($env:OS -eq 'linux' -or $IsLinux) {
@@ -174,21 +175,21 @@ function Write-BootstrapLog {
         [Parameter(Mandatory)]
         [AllowEmptyString()]
         [string]$Message,
-        
+
         [ValidateSet('INFO', 'WARN', 'ERROR', 'SUCCESS')]
         [string]$Level = 'INFO',
-        
+
         [switch]$NoTimestamp    )
-    
+
     $levelPriority = @{ INFO = 1; WARN = 1; ERROR = 0; SUCCESS = 1 }[$Level]
-    
+
     if ($script:VerbosityLevel -ge $levelPriority) {
         $timestamp = if ($NoTimestamp) { '' } else { "[$(Get-Date -Format 'HH:mm:ss')] " }
         $colorMap = @{ INFO = 'White'; WARN = 'Yellow'; ERROR = 'Red'; SUCCESS = 'Green' }
-        
+
         # Handle empty messages (for spacing)
         $displayMessage = if ([string]::IsNullOrEmpty($Message)) { '' } else { "$Level`: $Message" }
-        
+
         # PowerShell 5.1 compatible color output
         try {
             Write-Host "$timestamp$displayMessage" -ForegroundColor $colorMap[$Level]
@@ -197,7 +198,7 @@ function Write-BootstrapLog {
             Write-Host "$timestamp$displayMessage"
         }
     }
-    
+
     # Always log to file if possible (enhanced error handling)
     if ($script:LogFile -and -not [string]::IsNullOrEmpty($Message)) {
         try {
@@ -257,7 +258,7 @@ function Get-PlatformPowerShell {
         } catch {
             # Continue to fallback
         }
-        
+
         # Check common installation paths
         $unixPaths = @('/usr/bin/pwsh', '/usr/local/bin/pwsh', '/opt/microsoft/powershell/7/pwsh')
         foreach ($path in $unixPaths) {
@@ -265,7 +266,7 @@ function Get-PlatformPowerShell {
                 return $path
             }
         }
-        
+
         # Last resort fallback
         return 'pwsh'
     }
@@ -283,36 +284,36 @@ function Test-Prerequisite {
         [string]$InstallUrl,
         [string]$InstallInstructions
     )
-    
+
     Write-BootstrapLog "Checking prerequisite: $Name" 'INFO'
-    
+
     foreach ($cmd in $Commands) {
         if (Get-Command $cmd -ErrorAction SilentlyContinue) {
             Write-BootstrapLog "✓ $Name is available ($cmd)" 'SUCCESS'
             return $true
         }
     }
-    
+
     Write-BootstrapLog "✗ $Name not found" 'WARN'
-    
+
     if ($SkipPrerequisites) {
         Write-BootstrapLog "Skipping $Name installation (SkipPrerequisites specified)" 'WARN'
         return $false
     }
-    
+
     if ($NonInteractive) {
         Write-BootstrapLog "Cannot install $Name in non-interactive mode" 'ERROR'
         Write-BootstrapLog "Please install manually: $InstallInstructions" 'INFO'
         return $false
     }
-    
+
     Write-BootstrapLog "Installation required for $Name" 'INFO'
     Write-BootstrapLog "Instructions: $InstallInstructions" 'INFO'
-    
+
     if ($InstallUrl) {
         Write-BootstrapLog "Download: $InstallUrl" 'INFO'
     }
-    
+
     return $false
 }
 
@@ -321,18 +322,18 @@ function Invoke-CompatibleWebRequest {
     param(
         [Parameter(Mandatory)]
         [string]$Uri,
-        
+
         [Parameter(Mandatory)]
         [string]$OutFile,
-        
+
         [switch]$UseBasicParsing
     )
-    
+
     # Default to using basic parsing
     if (-not $PSBoundParameters.ContainsKey('UseBasicParsing')) {
         $UseBasicParsing = $true
     }
-    
+
     try {
         if ($script:IsPowerShell7Plus) {
             # PowerShell 7+ - use modern approach
@@ -341,10 +342,10 @@ function Invoke-CompatibleWebRequest {
             # PowerShell 5.1 - use compatible approach
             $webClient = New-Object System.Net.WebClient
             $webClient.Headers.Add('User-Agent', 'PowerShell/5.1 OpenTofu-Lab-Bootstrap')
-            
+
             # Handle TLS for older systems
             [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]::Tls12
-            
+
             $webClient.DownloadFile($Uri, $OutFile)
             $webClient.Dispose()
         }
@@ -358,17 +359,17 @@ function Invoke-CompatibleWebRequest {
 # Enhanced Git installation for Windows (PowerShell version compatible)
 function Install-GitForWindows {
     if (-not $script:PlatformWindows) { return $false }
-    
+
     Write-BootstrapLog "Installing Git for Windows..." 'INFO'
-    
+
     try {
         $gitUrl = "https://github.com/git-for-windows/git/releases/latest/download/Git-2.47.1-64-bit.exe"
         $gitInstaller = Join-Path (Get-PlatformTempPath) "Git-Installer.exe"
-        
+
         if (-not (Invoke-CompatibleWebRequest -Uri $gitUrl -OutFile $gitInstaller)) {
             throw "Failed to download Git installer"
         }
-        
+
         $process = Start-Process -FilePath $gitInstaller -ArgumentList "/SILENT", "/NORESTART" -Wait -NoNewWindow -PassThru
         Remove-Item $gitInstaller -ErrorAction SilentlyContinue
           if ($process.ExitCode -eq 0) {
@@ -376,7 +377,7 @@ function Install-GitForWindows {
             $machinePath = [Environment]::GetEnvironmentVariable('PATH', 'Machine')
             $userPath = [Environment]::GetEnvironmentVariable('PATH', 'User')
             $env:PATH = $machinePath + ';' + $userPath
-            
+
             Write-BootstrapLog "Git installation completed successfully" 'SUCCESS'
             return $true
         } else {
@@ -390,20 +391,20 @@ function Install-GitForWindows {
 
 function Install-PowerShell7 {
     if (-not $script:PlatformWindows) { return $false }
-    
+
     Write-BootstrapLog "Installing PowerShell 7..." 'INFO'
-    
+
     try {
         $pwshUrl = "https://github.com/PowerShell/PowerShell/releases/latest/download/PowerShell-7.4.6-win-x64.msi"
         $pwshInstaller = Join-Path (Get-PlatformTempPath) "PowerShell-7-Installer.msi"
-        
+
         if (-not (Invoke-CompatibleWebRequest -Uri $pwshUrl -OutFile $pwshInstaller)) {
             throw "Failed to download PowerShell 7 installer"
         }
-        
+
         $process = Start-Process -FilePath "msiexec.exe" -ArgumentList "/i", $pwshInstaller, "/quiet", "/norestart" -Wait -NoNewWindow -PassThru
         Remove-Item $pwshInstaller -ErrorAction SilentlyContinue
-        
+
         if ($process.ExitCode -eq 0) {
             Write-BootstrapLog "PowerShell 7 installation completed successfully" 'SUCCESS'
             return $true
@@ -416,10 +417,47 @@ function Install-PowerShell7 {
     }
 }
 
+# Enhanced GitHub authentication check
+function Test-GitHubAuthentication {
+    if ($SkipGitHubAuth) {
+        Write-BootstrapLog "Skipping GitHub authentication check (SkipGitHubAuth specified)" 'INFO'
+        return $true
+    }
+
+    # Check if GitHub CLI is available
+    if (-not (Get-Command 'gh' -ErrorAction SilentlyContinue)) {
+        Write-BootstrapLog "GitHub CLI not available, skipping authentication check" 'WARN'
+        return $true
+    }
+
+    Write-BootstrapLog "Checking GitHub CLI authentication..." 'INFO'
+
+    try {
+        $authStatus = & gh auth status 2>&1
+        if ($LASTEXITCODE -eq 0) {
+            Write-BootstrapLog "✓ GitHub CLI is authenticated" 'SUCCESS'
+            return $true
+        } else {
+            Write-BootstrapLog "GitHub CLI is not authenticated" 'WARN'
+
+            if ($NonInteractive) {
+                Write-BootstrapLog "Cannot authenticate in non-interactive mode. Some features may be limited." 'WARN'
+                return $true  # Don't fail, just warn
+            } else {
+                Write-BootstrapLog "Please authenticate with GitHub CLI: gh auth login" 'INFO'
+                return $true  # Don't fail, just inform
+            }
+        }
+    } catch {
+        Write-BootstrapLog "GitHub authentication check failed: $($_.Exception.Message)" 'WARN'
+        return $true  # Don't fail on auth check errors
+    }
+}
+
 # Main prerequisite validation
 function Test-Prerequisites {
     Write-BootstrapLog "=== Validating Prerequisites ===" 'INFO'
-    
+
     $allGood = $true
       # PowerShell 7 (recommended but not required)
     if (-not (Test-Prerequisite -Name "PowerShell 7" -Commands @("pwsh") -InstallInstructions "Install from https://github.com/PowerShell/PowerShell/releases")) {
@@ -427,7 +465,7 @@ function Test-Prerequisites {
             Install-PowerShell7 | Out-Null
         }
     }
-    
+
     # Git
     if (-not (Test-Prerequisite -Name "Git" -Commands @("git") -InstallUrl "https://git-scm.com/downloads" -InstallInstructions "Install Git from https://git-scm.com/downloads")) {
         if ($script:PlatformWindows -and -not $SkipPrerequisites) {
@@ -437,15 +475,16 @@ function Test-Prerequisites {
         } else {
             $allGood = $false
         }
-    }
-    
-    # GitHub CLI (optional but recommended)
+    }    # GitHub CLI (optional but recommended)
     Test-Prerequisite -Name "GitHub CLI" -Commands @("gh") -InstallUrl "https://cli.github.com/" -InstallInstructions "Install from https://cli.github.com/" | Out-Null
-    
+
+    # Check GitHub authentication
+    Test-GitHubAuthentication | Out-Null
+
     if (-not $allGood) {
         throw "Required prerequisites are missing. Please install them and re-run this script."
     }
-    
+
     Write-BootstrapLog "✓ All required prerequisites are available" 'SUCCESS'
 }
 
@@ -456,18 +495,18 @@ function Get-RepositoryPath {
     } else {
         $basePath = Get-PlatformTempPath
     }
-    
+
     return Join-Path $basePath "opentofu-lab-automation"
 }
 
 # Enhanced repository synchronization (PowerShell 5.1 and 7.x compatible)
 function Sync-Repository {
     $repoPath = Get-RepositoryPath
-    
+
     Write-BootstrapLog "=== Repository Synchronization ===" 'INFO'
     Write-BootstrapLog "Target path: $repoPath" 'INFO'
     Write-BootstrapLog "Branch: $TargetBranch" 'INFO'
-    
+
     if (Test-Path $repoPath) {
         if ($Force) {
             Write-BootstrapLog "Removing existing repository (Force specified)" 'WARN'
@@ -481,30 +520,30 @@ function Sync-Repository {
             Write-BootstrapLog "Repository exists, updating..." 'INFO'
             try {
                 Push-Location $repoPath
-                
+
                 # Check if it's a valid git repository
                 $gitDir = Join-Path $repoPath '.git'
                 if (-not (Test-Path $gitDir)) {
                     throw "Directory exists but is not a git repository"
                 }
-                
+
                 # Enhanced git operations with better error handling
                 Write-BootstrapLog "Fetching latest changes..." 'INFO'
                 & git fetch origin 2>&1 | Out-Null
                 if ($LASTEXITCODE -ne 0) {
                     throw "Git fetch failed with exit code: $LASTEXITCODE"
                 }
-                
+
                 & git reset --hard "origin/$TargetBranch" 2>&1 | Out-Null
                 if ($LASTEXITCODE -ne 0) {
                     throw "Git reset failed with exit code: $LASTEXITCODE"
                 }
-                
+
                 & git clean -fdx 2>&1 | Out-Null
                 if ($LASTEXITCODE -ne 0) {
                     Write-BootstrapLog "Git clean had issues but continuing..." 'WARN'
                 }
-                
+
                 Write-BootstrapLog "✓ Repository updated successfully" 'SUCCESS'
                 Pop-Location
                 return $repoPath
@@ -520,32 +559,32 @@ function Sync-Repository {
             }
         }
     }
-    
+
     Write-BootstrapLog "Cloning repository..." 'INFO'
-    
+
     try {
         $parentPath = Split-Path $repoPath -Parent
         if (-not (Test-Path $parentPath)) {
             New-Item -ItemType Directory -Path $parentPath -Force | Out-Null
         }
-        
+
         # Enhanced git clone with better error handling
         & git clone --branch $TargetBranch --single-branch --depth 1 $script:RepoUrl $repoPath 2>&1 | Out-Null
-        
+
         if ($LASTEXITCODE -ne 0) {
             throw "Git clone failed with exit code: $LASTEXITCODE"
         }
-        
+
         if (-not (Test-Path $repoPath)) {
             throw "Repository clone appeared successful but path does not exist"
         }
-        
+
         # Verify it's a proper clone
         $gitDir = Join-Path $repoPath '.git'
         if (-not (Test-Path $gitDir)) {
             throw "Cloned directory is not a valid git repository"
         }
-        
+
         Write-BootstrapLog "✓ Repository cloned successfully" 'SUCCESS'
         return $repoPath
     } catch {
@@ -556,16 +595,16 @@ function Sync-Repository {
 # Enhanced configuration management (PowerShell version compatible)
 function Get-BootstrapConfig {
     param([string]$RepoPath)
-    
+
     Write-BootstrapLog "=== Configuration Loading ===" 'INFO'
-    
+
     if ($ConfigFile -and (Test-Path $ConfigFile)) {
         $configPath = $ConfigFile
         Write-BootstrapLog "Using specified config: $configPath" 'INFO'
     } else {
         # Look for config in repo
         $defaultConfigPath = Join-Path $RepoPath "core-runner/core_app/default-config.json"
-        
+
         if (Test-Path $defaultConfigPath) {
             $configPath = $defaultConfigPath
             Write-BootstrapLog "Using repository default config" 'INFO'
@@ -585,10 +624,10 @@ function Get-BootstrapConfig {
             }
         }
     }
-    
+
     try {
         $configContent = Get-Content $configPath -Raw -ErrorAction Stop
-        
+
         # PowerShell 5.1 compatible JSON parsing
         if ($script:IsPowerShell7Plus) {
             $config = $configContent | ConvertFrom-Json
@@ -603,7 +642,7 @@ function Get-BootstrapConfig {
                 $config = $jsSerializer.DeserializeObject($configContent)
             }
         }
-        
+
         Write-BootstrapLog "✓ Configuration loaded successfully" 'SUCCESS'
         return $config
     } catch {
@@ -614,35 +653,34 @@ function Get-BootstrapConfig {
 
 # Enhanced CoreApp orchestration (PowerShell 5.1 and 7.x compatible)
 function Invoke-CoreAppBootstrap {
-    [CmdletBinding(SupportsShouldProcess)]
+    [CmdletBinding()]
     param(
         [string]$RepoPath,
         [object]$Config
     )
-    
+
     Write-BootstrapLog "=== CoreApp Orchestration Bootstrap ===" 'INFO'
-    
+
     $runnerScript = Join-Path $RepoPath "core-runner/core_app/core-runner.ps1"
-    
+
     if (-not (Test-Path $runnerScript)) {
         throw "CoreApp runner script not found at: $runnerScript"
     }
-    
+
     Write-BootstrapLog "Invoking CoreApp orchestration..." 'INFO'
-    
+
     try {
-        Push-Location $RepoPath
-        
-        # Prepare arguments for CoreApp
+        Push-Location $RepoPath        # Prepare arguments for CoreApp
         $coreAppArgs = @(
             '-NoLogo'
             '-NoProfile'
-            '-File', $runnerScript
+            '-File'
+            $runnerScript  # Don't manually quote - Start-Process handles this
         )
-        
+
         if ($Config) {
             $tempConfigPath = Join-Path (Get-PlatformTempPath) "bootstrap-runtime-config.json"
-            
+
             # PowerShell version compatible JSON serialization
             try {
                 if ($script:IsPowerShell7Plus) {
@@ -656,25 +694,35 @@ function Invoke-CoreAppBootstrap {
             } catch {
                 Write-BootstrapLog "Failed to serialize config, proceeding without it: $($_.Exception.Message)" 'WARN'
             }        }
-        
+
         # Handle verbosity parameter correctly based on core-runner parameter sets
         if ($Verbosity -eq 'silent') {
             $coreAppArgs += '-Quiet'
         } else {
             $coreAppArgs += @('-Verbosity', $Verbosity)
         }
-        
+
         if ($NonInteractive) {
             $coreAppArgs += '-NonInteractive'
-        }
-        
-        # Use the best available PowerShell
+        }        # Use the best available PowerShell
         $pwshPath = Get-PlatformPowerShell
-        Write-BootstrapLog "Using PowerShell: $pwshPath" 'INFO'
-        
-        if ($PSCmdlet.ShouldProcess("CoreApp Orchestration", "Start")) {
-            try {
-                $process = Start-Process -FilePath $pwshPath -ArgumentList $coreAppArgs -Wait -NoNewWindow -PassThru
+        Write-BootstrapLog "Using PowerShell: $pwshPath" 'INFO'        if ($WhatIfPreference) {
+            Write-BootstrapLog "WhatIf: Would start CoreApp orchestration" 'INFO'
+        } else {            try {
+                # Debug: Show the exact command being executed
+                Write-BootstrapLog "Executing: $pwshPath" 'INFO'
+                Write-BootstrapLog "Arguments:" 'INFO'
+                for ($i = 0; $i -lt $coreAppArgs.Length; $i++) {
+                    Write-BootstrapLog "  [$i]: '$($coreAppArgs[$i])'" 'INFO'
+                }
+
+                # Set environment variables for the child process
+                $env:PROJECT_ROOT = $RepoPath
+                $env:PWSH_MODULES_PATH = "$RepoPath/core-runner/modules"
+
+                # Use Start-Process with explicit parameter handling to avoid argument parsing issues
+                $process = Start-Process -FilePath $pwshPath -ArgumentList $coreAppArgs -Wait -NoNewWindow -PassThru -WorkingDirectory $RepoPath
+
                 if ($process.ExitCode -eq 0) {
                     Write-BootstrapLog "✓ CoreApp orchestration completed successfully" 'SUCCESS'
                 } else {
@@ -685,7 +733,7 @@ function Invoke-CoreAppBootstrap {
                 throw
             }
         }
-        
+
         Pop-Location
     } catch {
         Pop-Location
@@ -696,14 +744,14 @@ function Invoke-CoreAppBootstrap {
 # Demonstrate CoreApp orchestration features
 function Show-CoreAppDemo {
     param([string]$RepoPath)
-    
+
     if ($NonInteractive -or $script:VerbosityLevel -eq 0) {
         return
     }
-    
+
     Write-BootstrapLog "" 'INFO' -NoTimestamp
     Write-BootstrapLog "🌟 Would you like to see the CoreApp orchestration in action? (y/N)" 'INFO' -NoTimestamp
-    
+
     $response = Read-Host
     if ($response -match '^[Yy]') {
         Write-BootstrapLog "Demonstrating CoreApp orchestration features..." 'INFO'
@@ -740,18 +788,18 @@ function Show-CoreAppDemo {
 # Health check and validation
 function Test-BootstrapHealth {
     param([string]$RepoPath)
-    
+
     Write-BootstrapLog "=== Health Check ===" 'INFO'
-    
+
     $healthItems = @(
         @{ Path = Join-Path $RepoPath "core-runner/core_app/CoreApp.psm1"; Name = "CoreApp Module" }
         @{ Path = Join-Path $RepoPath "core-runner/modules"; Name = "Core Modules Directory" }
         @{ Path = Join-Path $RepoPath "tests"; Name = "Test Framework" }
         @{ Path = Join-Path $RepoPath "opentofu"; Name = "OpenTofu Configuration" }
     )
-    
+
     $healthGood = $true
-    
+
     foreach ($item in $healthItems) {
         if (Test-Path $item.Path) {
             Write-BootstrapLog "✓ $($item.Name)" 'SUCCESS'
@@ -760,13 +808,13 @@ function Test-BootstrapHealth {
             $healthGood = $false
         }
     }
-    
+
     if ($healthGood) {
         Write-BootstrapLog "✓ All health checks passed" 'SUCCESS'
     } else {
         Write-BootstrapLog "⚠ Some health checks failed - proceeding anyway" 'WARN'
     }
-    
+
     return $healthGood
 }
 
@@ -828,63 +876,125 @@ function New-RepositoryClone {
 
 # Main bootstrap workflow
 function Start-Bootstrap {
-    [CmdletBinding(SupportsShouldProcess)]
+    [CmdletBinding()]
     param()
     Write-BootstrapLog "=== OpenTofu Lab Automation Bootstrap ===" 'SUCCESS'
-    
+
     try {
         # Step 1: Validate prerequisites
-        Test-Prerequisites
-        
-        # Step 2: Sync repository
+        Test-Prerequisites        # Step 2: Sync repository
         $repoPath = Sync-Repository
-        
+        Write-BootstrapLog "Repository path: '$repoPath'" 'INFO'
+
         # Step 3: Load configuration
         $config = Get-BootstrapConfig -RepoPath $repoPath
-        
+
         # Step 4: Health check
-        Test-BootstrapHealth -RepoPath $repoPath | Out-Null
-        
-        # Step 5: Invoke CoreApp orchestration
-        if (-not $PSCmdlet.ShouldProcess("Bootstrap Process", "Complete")) {
+        Test-BootstrapHealth -RepoPath $repoPath | Out-Null        # Step 5: Invoke CoreApp orchestration
+        if ($WhatIfPreference) {
             Write-BootstrapLog "WhatIf: Would complete bootstrap with CoreApp orchestration" 'INFO'
             return
         }
-        
-        Invoke-CoreAppBootstrap -RepoPath $repoPath -Config $config        
+
+        Write-BootstrapLog "About to call Invoke-CoreAppBootstrap with repoPath: '$repoPath'" 'INFO'
+        Invoke-CoreAppBootstrap -RepoPath $repoPath -Config $config
         # Step 6: Demonstrate CoreApp features (interactive only)
         Show-CoreAppDemo -RepoPath $repoPath
-        
-        # Success!
-        Write-BootstrapLog "=== Bootstrap Completed Successfully ===" 'SUCCESS'
-        Write-BootstrapLog "Repository location: $repoPath" 'INFO'
+
+        # Step 7: Change to project directory and create relaunch helper
+        Write-BootstrapLog "Setting up project environment..." 'INFO'
+
+        # Change to project directory
+        Set-Location $repoPath
+        Write-BootstrapLog "✓ Changed to project directory: $repoPath" 'SUCCESS'
+
+        # Create a convenient relaunch script
+        $relaunchScript = Join-Path $repoPath "Relaunch-CoreApp.ps1"
+        $relaunchContent = @"
+<#
+.SYNOPSIS
+    Convenient relaunch script for OpenTofu Lab Automation CoreApp
+
+.DESCRIPTION
+    This script was generated by kicker-git.ps1 to provide an easy way to
+    restart the CoreApp environment after the initial bootstrap.
+
+.EXAMPLE
+    .\Relaunch-CoreApp.ps1
+
+.EXAMPLE
+    .\Relaunch-CoreApp.ps1 -Force
+#>
+
+[CmdletBinding()]
+param(
+    [switch]`$Force
+)
+
+# Ensure we're in the right directory
+Set-Location "`$PSScriptRoot"
+
+Write-Host "🚀 Relaunching OpenTofu Lab Automation CoreApp..." -ForegroundColor Cyan
+Write-Host "Project Directory: `$(Get-Location)" -ForegroundColor Green
+
+try {
+    # Import CoreApp module
+    Import-Module "./core-runner/core_app/CoreApp.psm1" -Force:`$Force
+
+    # Initialize CoreApp ecosystem
+    Initialize-CoreApplication -Force:`$Force
+
+    Write-Host "✅ CoreApp relaunch complete!" -ForegroundColor Green
+    Write-Host ""
+    Write-Host "🎯 Available commands:" -ForegroundColor Yellow
+    Write-Host "  • Get-CoreModuleStatus      - Check module status"
+    Write-Host "  • Invoke-UnifiedMaintenance - Run maintenance"
+    Write-Host "  • Start-DevEnvironmentSetup - Setup dev environment"
+    Write-Host "  • Test-CoreApplicationHealth - Health check"
+    Write-Host ""
+    Write-Host "💡 Quick actions:" -ForegroundColor Yellow
+    Write-Host "  • Run tests: Invoke-Pester"
+    Write-Host "  • Open VS Code: code ./opentofu-lab-automation.code-workspace"
+    Write-Host "  • Run PatchManager demo: ./run-demo-examples.ps1"
+
+} catch {
+    Write-Error "Failed to relaunch CoreApp: `$(`$_.Exception.Message)"
+    Write-Host "💡 Try running: .\kicker-git.ps1 -Force" -ForegroundColor Yellow
+    exit 1
+}
+"@
+
+        Set-Content -Path $relaunchScript -Value $relaunchContent -Encoding UTF8
+        Write-BootstrapLog "✓ Created relaunch helper: $relaunchScript" 'SUCCESS'
+
+        # Success message with clear next steps
+        Write-BootstrapLog "=== Bootstrap Completed Successfully ===" 'SUCCESS'        Write-BootstrapLog "Repository location: $repoPath" 'INFO'
+        Write-BootstrapLog "Current directory: $(Get-Location)" 'INFO'
         Write-BootstrapLog "Log file: $script:LogFile" 'INFO'
         Write-BootstrapLog "PowerShell compatibility: $($PSVersionTable.PSVersion.Major).x ✓" 'INFO'
-        
-        if ($script:VerbosityLevel -ge 1) {            Write-BootstrapLog "" 'INFO' -NoTimestamp
+
+        if ($script:VerbosityLevel -ge 1) {
+            Write-BootstrapLog "" 'INFO' -NoTimestamp
             Write-BootstrapLog "🎉 OpenTofu Lab Automation is ready! 🎉" 'SUCCESS' -NoTimestamp
-            Write-BootstrapLog "Compatible with PowerShell 5.1 and 7.x ✓" 'SUCCESS' -NoTimestamp
+            Write-BootstrapLog "You are now in the project directory: $(Get-Location)" 'SUCCESS' -NoTimestamp
             Write-BootstrapLog "" 'INFO' -NoTimestamp
-            Write-BootstrapLog "🚀 CoreApp Orchestration System:" 'INFO' -NoTimestamp
-            Write-BootstrapLog "  • Import-Module '$repoPath/core-runner/core_app/CoreApp.psm1'" 'INFO' -NoTimestamp
-            Write-BootstrapLog "  • Initialize-CoreApplication    # Initialize all modules" 'INFO' -NoTimestamp
-            Write-BootstrapLog "  • Get-CoreModuleStatus         # Check module health" 'INFO' -NoTimestamp
-            Write-BootstrapLog "  • Invoke-UnifiedMaintenance    # Run maintenance tasks" 'INFO' -NoTimestamp
-            Write-BootstrapLog "  • Start-DevEnvironmentSetup    # Set up dev environment" 'INFO' -NoTimestamp
+            Write-BootstrapLog "� To relaunch CoreApp anytime:" 'INFO' -NoTimestamp
+            Write-BootstrapLog "  .\Relaunch-CoreApp.ps1           # Convenient relaunch script" 'INFO' -NoTimestamp
+            Write-BootstrapLog "  .\Start-CoreApp.ps1             # Alternative launcher" 'INFO' -NoTimestamp
             Write-BootstrapLog "" 'INFO' -NoTimestamp
-            Write-BootstrapLog "💡 Quick Start - Import CoreApp to current session:" 'INFO' -NoTimestamp
-            Write-BootstrapLog "  Import-Module '$repoPath/core-runner/core_app/CoreApp.psm1' -Force" 'INFO' -NoTimestamp
-            Write-BootstrapLog "  Initialize-CoreApplication" 'INFO' -NoTimestamp
+            Write-BootstrapLog "🚀 Quick Start Options:" 'INFO' -NoTimestamp
+            Write-BootstrapLog "  .\Relaunch-CoreApp.ps1          # Start CoreApp (recommended)" 'INFO' -NoTimestamp
+            Write-BootstrapLog "  .\Quick-Setup.ps1               # Development environment" 'INFO' -NoTimestamp
+            Write-BootstrapLog "  .\run-demo-examples.ps1         # Run PatchManager demos" 'INFO' -NoTimestamp
             Write-BootstrapLog "" 'INFO' -NoTimestamp
-            Write-BootstrapLog "🔧 Quick Start Commands:" 'INFO' -NoTimestamp
-            Write-BootstrapLog "  • Run tests: cd '$repoPath'; pwsh -Command 'Invoke-Pester'" 'INFO' -NoTimestamp
-            Write-BootstrapLog "  • Open in VS Code: code '$repoPath/opentofu-lab-automation.code-workspace'" 'INFO' -NoTimestamp
-            Write-BootstrapLog "  • Explore OpenTofu configs: $repoPath/opentofu/" 'INFO' -NoTimestamp
+            Write-BootstrapLog "🔧 Development Commands:" 'INFO' -NoTimestamp
+            Write-BootstrapLog "  • Run tests: Invoke-Pester" 'INFO' -NoTimestamp
+            Write-BootstrapLog "  • Open VS Code: code ./opentofu-lab-automation.code-workspace" 'INFO' -NoTimestamp
+            Write-BootstrapLog "  • Explore configs: ls ./opentofu/" 'INFO' -NoTimestamp
             Write-BootstrapLog "" 'INFO' -NoTimestamp
-            Write-BootstrapLog "📚 Documentation: $repoPath/docs/" 'INFO' -NoTimestamp
-            Write-BootstrapLog "🐛 Issues: https://github.com/wizzense/opentofu-lab-automation/issues" 'INFO' -NoTimestamp
+            Write-BootstrapLog "📚 Documentation: ./docs/ | 🐛 Issues: https://github.com/wizzense/opentofu-lab-automation/issues" 'INFO' -NoTimestamp
         }
-        
+
     } catch {
         Write-BootstrapLog "Bootstrap failed: $($_.Exception.Message)" 'ERROR'
         Write-BootstrapLog "Log file: $script:LogFile" 'INFO'

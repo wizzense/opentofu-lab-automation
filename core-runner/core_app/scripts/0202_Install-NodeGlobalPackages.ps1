@@ -14,11 +14,10 @@ function Install-GlobalPackage {
     <#
     .SYNOPSIS
         Installs a global npm package
-    
+
     .PARAMETER Package
         The npm package name to install
-    #>
-    [CmdletBinding(SupportsShouldProcess)]
+    #>    [CmdletBinding()]
     param(
         [Parameter(Mandatory)]
         [string]$Package
@@ -37,7 +36,7 @@ function Install-GlobalPackage {
 
 Invoke-LabStep -Config $Config -Body {
     Write-CustomLog "Running $($MyInvocation.MyCommand.Name)"
-    
+
     $nodeDeps = $Config.Node_Dependencies
     if (-not $nodeDeps) {
         Write-CustomLog 'Node_Dependencies configuration not found. Skipping global package installation.'
@@ -45,17 +44,17 @@ Invoke-LabStep -Config $Config -Body {
     }
 
     $packages = @()
-    
+
     # Parse configuration for packages to install
     if ($nodeDeps -is [hashtable]) {
-        if ($nodeDeps.ContainsKey('InstallYarn') -and $nodeDeps.InstallYarn) { 
-            $packages += 'yarn' 
+        if ($nodeDeps.ContainsKey('InstallYarn') -and $nodeDeps.InstallYarn) {
+            $packages += 'yarn'
         }
-        if ($nodeDeps.ContainsKey('InstallVite') -and $nodeDeps.InstallVite) { 
-            $packages += 'vite' 
+        if ($nodeDeps.ContainsKey('InstallVite') -and $nodeDeps.InstallVite) {
+            $packages += 'vite'
         }
-        if ($nodeDeps.ContainsKey('InstallNodemon') -and $nodeDeps.InstallNodemon) { 
-            $packages += 'nodemon' 
+        if ($nodeDeps.ContainsKey('InstallNodemon') -and $nodeDeps.InstallNodemon) {
+            $packages += 'nodemon'
         }
     } else {
         if ($nodeDeps.PSObject.Properties.Match('InstallYarn').Count -and $nodeDeps.InstallYarn) {
@@ -75,7 +74,7 @@ Invoke-LabStep -Config $Config -Body {
     }
 
     Write-CustomLog "Installing global npm packages: $($packages -join ', ')"
-    
+
     foreach ($package in $packages) {
         try {
             Install-GlobalPackage -Package $package

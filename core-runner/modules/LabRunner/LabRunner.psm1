@@ -2,28 +2,35 @@
 
 # Import the centralized Logging module
 $loggingImported = $false
-$loggingPaths = @(
-    'Logging',  # Try module name first (if in PSModulePath)
-    (Join-Path (Split-Path $PSScriptRoot -Parent) "Logging"),  # Relative to modules directory
-    (Join-Path $env:PWSH_MODULES_PATH "Logging"),  # Environment path
-    (Join-Path $env:PROJECT_ROOT "core-runner/modules/Logging")  # Full project path
-)
 
-foreach ($loggingPath in $loggingPaths) {
-    if ($loggingImported) { break }
-    
-    try {
-        if ($loggingPath -eq 'Logging') {
-            Import-Module 'Logging' -Force -Global -ErrorAction Stop
-        } elseif (Test-Path $loggingPath) {
-            Import-Module $loggingPath -Force -Global -ErrorAction Stop
-        } else {
-            continue
+# Check if Logging module is already available
+if (Get-Module -Name 'Logging' -ErrorAction SilentlyContinue) {
+    $loggingImported = $true
+    Write-Verbose "Logging module already available"
+} else {
+    $loggingPaths = @(
+        'Logging',  # Try module name first (if in PSModulePath)
+        (Join-Path (Split-Path $PSScriptRoot -Parent) "Logging"),  # Relative to modules directory
+        (Join-Path $env:PWSH_MODULES_PATH "Logging"),  # Environment path
+        (Join-Path $env:PROJECT_ROOT "core-runner/modules/Logging")  # Full project path
+    )
+
+    foreach ($loggingPath in $loggingPaths) {
+        if ($loggingImported) { break }
+
+        try {
+            if ($loggingPath -eq 'Logging') {
+                Import-Module 'Logging' -Global -ErrorAction Stop
+            } elseif (Test-Path $loggingPath) {
+                Import-Module $loggingPath -Global -ErrorAction Stop
+            } else {
+                continue
+            }
+            Write-Verbose "Successfully imported Logging module from: $loggingPath"
+            $loggingImported = $true
+        } catch {
+            Write-Verbose "Failed to import Logging from $loggingPath : $_"
         }
-        Write-Verbose "Successfully imported Logging module from: $loggingPath"
-        $loggingImported = $true
-    } catch {
-        Write-Verbose "Failed to import Logging from $loggingPath : $_"
     }
 }
 
@@ -57,15 +64,15 @@ function Get-CrossPlatformTempPath {
     <#
     .SYNOPSIS
     Returns the appropriate temporary directory path for the current platform.
-    
+
     .DESCRIPTION
     Provides a cross-platform way to get the temporary directory, handling cases where
     $env:TEMP might not be set (e.g., on Linux/macOS).
     #>
-    if ($env:TEMP) { 
-        return $env:TEMP 
-    } else { 
-        return [System.IO.Path]::GetTempPath() 
+    if ($env:TEMP) {
+        return $env:TEMP
+    } else {
+        return [System.IO.Path]::GetTempPath()
     }
 }
 
@@ -73,20 +80,20 @@ function Invoke-CrossPlatformCommand {
     <#
     .SYNOPSIS
     Safely invokes platform-specific cmdlets with fallback behavior
-    
+
     .DESCRIPTION
     Checks if a cmdlet is available before invoking it, allowing scripts to be more
     cross-platform compatible. Provides mock-friendly execution for testing.
-    
+
     .PARAMETER CommandName
     The name of the cmdlet to invoke
-    
+
     .PARAMETER Parameters
     Hashtable of parameters to pass to the cmdlet
-    
+
     .PARAMETER MockResult
     Result to return when the cmdlet is not available (for testing/cross-platform compatibility)
-    
+
     .PARAMETER SkipOnUnavailable
     If true, silently skip execution when cmdlet is unavailable instead of throwing
     #>
@@ -94,14 +101,14 @@ function Invoke-CrossPlatformCommand {
     param(
         [Parameter(Mandatory)]
         [string]$CommandName,
-        
+
         [hashtable]$Parameters = @{},
-        
+
         [object]$MockResult = $null,
-        
+
         [switch]$SkipOnUnavailable
     )
-    
+
     if (Get-Command $CommandName -ErrorAction SilentlyContinue) {
         return & $CommandName @Parameters
     } elseif ($MockResult -ne $null) {
@@ -151,14 +158,14 @@ function Invoke-LabStep {
     try {
         & $Body $Config
     } catch {
-        if (-not $suppress) { 
-            Write-CustomLog "ERROR: $_" 'ERROR' 
+        if (-not $suppress) {
+            Write-CustomLog "ERROR: $_" 'ERROR'
         }
         throw
     } finally {
         $ErrorActionPreference = $prevEAP
-        if ($suppress -and $null -ne $prevConsole) { 
-            $script:ConsoleLevel = $prevConsole 
+        if ($suppress -and $null -ne $prevConsole) {
+            $script:ConsoleLevel = $prevConsole
         }
     }
 }
@@ -179,11 +186,11 @@ function Invoke-LabDownload {
     } else {
         try { [System.IO.Path]::GetExtension($Uri).Split('?')[0] } catch { '' }
     }
-    
+
     $tempDir = Get-CrossPlatformTempPath
     $path = Join-Path $tempDir ("{0}_{1}{2}" -f $Prefix, [guid]::NewGuid(), $ext)
     Write-CustomLog "Downloading $Uri to $path"
-    
+
     try {
         Invoke-LabWebRequest -Uri $Uri -OutFile $path -UseBasicParsing
         & $Action $path
@@ -200,12 +207,12 @@ function Read-LoggedInput {
         [switch]$AsSecureString,
         [string]$DefaultValue = ""
     )
-    
+
     # Check if we're in non-interactive mode (test environment, etc.)
-    $IsNonInteractive = ($Host.Name -eq 'Default Host') -or 
+    $IsNonInteractive = ($Host.Name -eq 'Default Host') -or
                       ([Environment]::UserInteractive -eq $false) -or
                       ($env:PESTER_RUN -eq 'true')
-    
+
     if ($IsNonInteractive) {
         Write-CustomLog "Non-interactive mode detected. Using default value for: $Prompt" 'INFO'
         if ($AsSecureString -and -not [string]::IsNullOrEmpty($DefaultValue)) {
@@ -213,12 +220,12 @@ function Read-LoggedInput {
         }
         return $DefaultValue
     }
-    
+
     if ($AsSecureString) {
         Write-CustomLog "$Prompt (secure input)"
         return Read-Host -Prompt $Prompt -AsSecureString
     }
-    
+
     $answer = Read-Host -Prompt $Prompt
     Write-CustomLog "$($Prompt): $answer"
     return $answer
@@ -232,7 +239,7 @@ function Invoke-LabWebRequest {
         [string]$OutFile,
         [switch]$UseBasicParsing
     )
-    
+
     try {
         Invoke-WebRequest @PSBoundParameters
     } catch {
@@ -247,7 +254,7 @@ function Invoke-LabNpm {
         [Parameter(ValueFromRemainingArguments=$true)]
         [string[]]$Args
     )
-    
+
     Write-CustomLog "Running npm $($Args -join ' ')" 'INFO'
     npm @Args
 }
@@ -258,12 +265,12 @@ function Resolve-ProjectPath {
         [Parameter(Mandatory)]
         [string]$RelativePath
     )
-    
+
     $projectRoot = $env:PROJECT_ROOT
     if (-not $projectRoot) {
         $projectRoot = (Get-Item $PSScriptRoot).Parent.Parent.FullName
     }
-    
+
     return Join-Path $projectRoot $RelativePath
 }
 
@@ -272,23 +279,23 @@ function Get-LabConfig {
     param(
         [string]$Path = 'configs/lab_config.yaml'
     )
-    
-    $fullPath = if ([System.IO.Path]::IsPathRooted($Path)) { 
-        $Path 
-    } else { 
-        Resolve-ProjectPath $Path 
+
+    $fullPath = if ([System.IO.Path]::IsPathRooted($Path)) {
+        $Path
+    } else {
+        Resolve-ProjectPath $Path
     }
-    
+
     if (-not (Test-Path $fullPath)) {
         Write-CustomLog "Config file not found: $fullPath" 'WARN'
         return $null
     }
-    
+
     try {
         # Simple YAML-like parsing for basic config files
         $content = Get-Content $fullPath -Raw
         $config = @{}
-        
+
         $content -split "`n" | ForEach-Object {
             $line = $_.Trim()
             if ($line -and -not $line.StartsWith('#')) {
@@ -297,7 +304,7 @@ function Get-LabConfig {
                 }
             }
         }
-        
+
         return $config
     } catch {
         Write-CustomLog "Failed to parse config file $fullPath : $_" 'ERROR'
@@ -328,7 +335,7 @@ if (Test-Path $publicFunctionsPath) {
 # Export module members
 Export-ModuleMember -Function @(
     'Get-CrossPlatformTempPath',
-    'Invoke-CrossPlatformCommand', 
+    'Invoke-CrossPlatformCommand',
     'Invoke-LabStep',
     'Invoke-LabDownload',
     'Read-LoggedInput',

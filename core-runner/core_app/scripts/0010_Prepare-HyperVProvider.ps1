@@ -17,7 +17,7 @@ function Convert-CerToPem {
     .SYNOPSIS
         Converts a CER certificate file to PEM format
     #>
-    [CmdletBinding(SupportsShouldProcess)]
+    [CmdletBinding()]
     param(
         [Parameter(Mandatory)]
         [ValidateNotNullOrEmpty()]
@@ -52,7 +52,7 @@ function Convert-PfxToPem {
     .SYNOPSIS
         Converts a PFX certificate file to separate PEM certificate and key files
     #>
-    [CmdletBinding(SupportsShouldProcess)]
+    [CmdletBinding()]
     param(
         [Parameter(Mandatory)]
         [ValidateNotNullOrEmpty()]

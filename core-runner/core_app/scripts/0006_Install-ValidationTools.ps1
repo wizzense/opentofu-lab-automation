@@ -12,7 +12,7 @@ Import-Module "$env:PROJECT_ROOT/core-runner/modules/Logging" -Force
 Write-CustomLog "Starting $($MyInvocation.MyCommand.Name)"
 
 function Install-Cosign {
-    [CmdletBinding(SupportsShouldProcess)]
+    [CmdletBinding()]
     param()
     
     # Check if cosign is available in the current PATH

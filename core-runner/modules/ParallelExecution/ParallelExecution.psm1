@@ -17,28 +17,35 @@ including parallel test execution, job management, and result aggregation.
 
 # Import the centralized Logging module
 $loggingImported = $false
-$loggingPaths = @(
-    'Logging',  # Try module name first (if in PSModulePath)
-    (Join-Path (Split-Path $PSScriptRoot -Parent) "Logging"),  # Relative to modules directory
-    (Join-Path $env:PWSH_MODULES_PATH "Logging"),  # Environment path
-    (Join-Path $env:PROJECT_ROOT "core-runner/modules/Logging")  # Full project path
-)
 
-foreach ($loggingPath in $loggingPaths) {
-    if ($loggingImported) { break }
-    
-    try {
-        if ($loggingPath -eq 'Logging') {
-            Import-Module 'Logging' -Force -Global -ErrorAction Stop
-        } elseif (Test-Path $loggingPath) {
-            Import-Module $loggingPath -Force -Global -ErrorAction Stop
-        } else {
-            continue
+# Check if Logging module is already available
+if (Get-Module -Name 'Logging' -ErrorAction SilentlyContinue) {
+    $loggingImported = $true
+    Write-Verbose "Logging module already available"
+} else {
+    $loggingPaths = @(
+        'Logging',  # Try module name first (if in PSModulePath)
+        (Join-Path (Split-Path $PSScriptRoot -Parent) "Logging"),  # Relative to modules directory
+        (Join-Path $env:PWSH_MODULES_PATH "Logging"),  # Environment path
+        (Join-Path $env:PROJECT_ROOT "core-runner/modules/Logging")  # Full project path
+    )
+
+    foreach ($loggingPath in $loggingPaths) {
+        if ($loggingImported) { break }
+
+        try {
+            if ($loggingPath -eq 'Logging') {
+                Import-Module 'Logging' -Global -ErrorAction Stop
+            } elseif (Test-Path $loggingPath) {
+                Import-Module $loggingPath -Global -ErrorAction Stop
+            } else {
+                continue
+            }
+            Write-Verbose "Successfully imported Logging module from: $loggingPath"
+            $loggingImported = $true
+        } catch {
+            Write-Verbose "Failed to import Logging from $loggingPath : $_"
         }
-        Write-Verbose "Successfully imported Logging module from: $loggingPath"
-        $loggingImported = $true
-    } catch {
-        Write-Verbose "Failed to import Logging from $loggingPath : $_"
     }
 }
 
@@ -55,29 +62,29 @@ function Invoke-ParallelForEach {
     <#
     .SYNOPSIS
     Executes a script block in parallel across multiple items
-    
+
     .DESCRIPTION
     Provides a cross-platform parallel foreach implementation using PowerShell 7.0+ ForEach-Object -Parallel
-    
+
     .PARAMETER InputObject
     The collection of items to process in parallel
-    
+
     .PARAMETER ScriptBlock
     The script block to execute for each item
-    
+
     .PARAMETER ThrottleLimit
     Maximum number of parallel threads (default: processor count)
-    
+
     .PARAMETER TimeoutSeconds
     Timeout for the entire operation in seconds (default: 300)
-    
+
     .EXAMPLE
     $files = Get-ChildItem *.ps1
     $results = Invoke-ParallelForEach -InputObject $files -ScriptBlock {
         param($file)
         Invoke-ScriptAnalyzer -Path $file.FullName
     }
-    
+
     .NOTES
     Uses PowerShell 7.0+ native parallel processing
     #>
@@ -86,41 +93,41 @@ function Invoke-ParallelForEach {
         [Parameter(Mandatory = $false, ValueFromPipeline = $true)]
         [AllowEmptyCollection()]
         [object[]]$InputObject = @(),
-        
+
         [Parameter(Mandatory = $true)]
         [scriptblock]$ScriptBlock,
-        
+
         [Parameter(Mandatory = $false)]
         [int]$ThrottleLimit = [Environment]::ProcessorCount,
-        
+
         [Parameter(Mandatory = $false)]
         [int]$TimeoutSeconds = 300
     )
-    
+
     begin {
         Write-CustomLog "Starting parallel execution with throttle limit: $ThrottleLimit" -Level "INFO"
         $items = @()
     }
-    
+
     process {
         if ($InputObject) {
             $items += $InputObject
         }
     }
-    
+
     end {
         if ($items.Count -eq 0) {
             Write-CustomLog "No items to process" -Level "INFO"
             return @()
         }
-        
+
         try {
             $startTime = Get-Date
             $results = $items | ForEach-Object -Parallel $ScriptBlock -ThrottleLimit $ThrottleLimit -TimeoutSeconds $TimeoutSeconds
-            
+
             $duration = (Get-Date) - $startTime
             Write-CustomLog "Parallel execution completed in $($duration.TotalSeconds) seconds" -Level "SUCCESS"
-            
+
             return $results
         }
         catch {
@@ -134,19 +141,19 @@ function Start-ParallelJob {
     <#
     .SYNOPSIS
     Starts a background job for parallel execution
-    
+
     .DESCRIPTION
     Creates and starts a PowerShell background job with proper error handling and logging
-    
+
     .PARAMETER Name
     Name of the job for identification
-    
+
     .PARAMETER ScriptBlock
     Script block to execute in the background job
-    
+
     .PARAMETER ArgumentList
     Arguments to pass to the script block
-    
+
     .EXAMPLE
     $job = Start-ParallelJob -Name "TestValidation" -ScriptBlock {
         param($path)
@@ -157,19 +164,19 @@ function Start-ParallelJob {
     param(
         [Parameter(Mandatory = $true)]
         [string]$Name,
-        
+
         [Parameter(Mandatory = $true)]
         [scriptblock]$ScriptBlock,
-        
+
         [Parameter(Mandatory = $false)]
         [object[]]$ArgumentList = @()
     )
-    
+
     try {
         Write-CustomLog "Starting background job: $Name" -Level "INFO"
-        
+
         $job = Start-Job -Name $Name -ScriptBlock $ScriptBlock -ArgumentList $ArgumentList
-        
+
         Write-CustomLog "Job started successfully: $Name (ID: $($job.Id))" -Level "SUCCESS"
         return $job
     }
@@ -183,19 +190,19 @@ function Wait-ParallelJobs {
     <#
     .SYNOPSIS
     Waits for multiple parallel jobs to complete
-    
+
     .DESCRIPTION
     Monitors and waits for background jobs with timeout and progress reporting
-    
+
     .PARAMETER Jobs
     Array of job objects to wait for
-    
+
     .PARAMETER TimeoutSeconds
     Maximum time to wait for all jobs to complete
-    
+
     .PARAMETER ShowProgress
     Whether to show progress while waiting
-    
+
     .EXAMPLE
     $jobs = @($job1, $job2, $job3)
     $results = Wait-ParallelJobs -Jobs $jobs -TimeoutSeconds 600 -ShowProgress
@@ -204,28 +211,28 @@ function Wait-ParallelJobs {
     param(
         [Parameter(Mandatory = $true)]
         [System.Management.Automation.Job[]]$Jobs,
-        
+
         [Parameter(Mandatory = $false)]
         [int]$TimeoutSeconds = 600,
-        
+
         [Parameter(Mandatory = $false)]
         [switch]$ShowProgress
     )
-    
+
     try {
         $startTime = Get-Date
         $results = @{}
-        
+
         Write-CustomLog "Waiting for $($Jobs.Count) jobs to complete (timeout: $TimeoutSeconds seconds)" -Level "INFO"
           do {
             $runningJobs = $Jobs | Where-Object { $_.State -eq 'Running' }
             $completedJobs = $Jobs | Where-Object { $_.State -in @('Completed', 'Failed', 'Stopped') }
-            
+
             if ($ShowProgress) {
                 $percentComplete = [math]::Round(($completedJobs.Count / $Jobs.Count) * 100, 1)
                 Write-Progress -Activity "Waiting for parallel jobs" -Status "$($completedJobs.Count)/$($Jobs.Count) completed" -PercentComplete $percentComplete
             }
-            
+
             # Check for completed jobs and collect results
             foreach ($job in ($Jobs | Where-Object { $_.State -in @('Completed', 'Failed', 'Stopped') })) {
                 if (-not $results.ContainsKey($job.Id)) {
@@ -237,7 +244,7 @@ function Wait-ParallelJobs {
                         HasErrors = $job.ChildJobs[0].Error.Count -gt 0
                         Errors = $job.ChildJobs[0].Error
                     }
-                    
+
                     if ($job.State -eq 'Failed') {
                         Write-CustomLog "Job failed: $($job.Name)" -Level "ERROR"
                     } else {
@@ -245,7 +252,7 @@ function Wait-ParallelJobs {
                     }
                 }
             }
-            
+
             # Check timeout
             $elapsed = (Get-Date) - $startTime
             if ($elapsed.TotalSeconds -gt $TimeoutSeconds) {
@@ -264,23 +271,23 @@ function Wait-ParallelJobs {
                 }
                 break
             }
-            
+
             if ($runningJobs.Count -gt 0) {
                 Start-Sleep -Seconds 1
             }
-            
+
         } while ($runningJobs.Count -gt 0)
-        
+
         if ($ShowProgress) {
             Write-Progress -Activity "Waiting for parallel jobs" -Completed
         }
-        
+
         # Clean up jobs
         $Jobs | Remove-Job -Force -ErrorAction SilentlyContinue
-        
+
         $duration = (Get-Date) - $startTime
         Write-CustomLog "All jobs completed in $($duration.TotalSeconds) seconds" -Level "SUCCESS"
-        
+
         return $results.Values
     }
     catch {
@@ -293,19 +300,19 @@ function Invoke-ParallelPesterTests {
     <#
     .SYNOPSIS
     Runs Pester tests in parallel for improved performance
-    
+
     .DESCRIPTION
     Executes Pester tests across multiple test files in parallel, aggregating results
-    
+
     .PARAMETER TestPaths
     Array of test file paths or directories to test
-    
+
     .PARAMETER ThrottleLimit
     Maximum number of parallel test jobs
-    
+
     .PARAMETER OutputFormat
     Pester output format (Detailed, Normal, Minimal)
-    
+
     .EXAMPLE
     $results = Invoke-ParallelPesterTests -TestPaths @("./tests/Module1.Tests.ps1", "./tests/Module2.Tests.ps1")
     #>
@@ -313,18 +320,18 @@ function Invoke-ParallelPesterTests {
     param(
         [Parameter(Mandatory = $true)]
         [string[]]$TestPaths,
-        
+
         [Parameter(Mandatory = $false)]
         [int]$ThrottleLimit = [Environment]::ProcessorCount,
-        
+
         [Parameter(Mandatory = $false)]
         [ValidateSet('Detailed', 'Normal', 'Minimal')]
         [string]$OutputFormat = 'Normal'
     )
-    
+
     try {
         Write-CustomLog "Starting parallel Pester tests for $($TestPaths.Count) paths" -Level "INFO"
-        
+
         $jobs = @()
         foreach ($testPath in $TestPaths) {
             $jobName = "PesterTest_$(Split-Path $testPath -Leaf)"
@@ -333,9 +340,9 @@ function Invoke-ParallelPesterTests {
                 Import-Module Pester -Force
                 Invoke-Pester -Path $path -Output $output -PassThru
             } -ArgumentList @($testPath, $OutputFormat)
-            
+
             $jobs += $job
-            
+
             # Throttle job creation
             if ($jobs.Count -ge $ThrottleLimit) {
                 $completedJobs = $jobs | Where-Object { $_.State -ne 'Running' }
@@ -345,10 +352,10 @@ function Invoke-ParallelPesterTests {
                 }
             }
         }
-        
+
         Write-CustomLog "All test jobs started, waiting for completion..." -Level "INFO"
         $results = Wait-ParallelJobs -Jobs $jobs -ShowProgress
-        
+
         return $results
     }
     catch {
@@ -361,13 +368,13 @@ function Merge-ParallelTestResults {
     <#
     .SYNOPSIS
     Merges results from parallel Pester test execution
-    
+
     .DESCRIPTION
     Aggregates test results from multiple parallel test runs into a single summary
-    
+
     .PARAMETER TestResults
     Array of test result objects from parallel execution
-    
+
     .EXAMPLE
     $mergedResults = Merge-ParallelTestResults -TestResults $parallelResults
     #>
@@ -377,10 +384,10 @@ function Merge-ParallelTestResults {
         [AllowEmptyCollection()]
         [object[]]$TestResults = @()
     )
-    
+
     try {
         Write-CustomLog "Merging results from $($TestResults.Count) parallel test runs" -Level "INFO"
-        
+
         if ($TestResults.Count -eq 0) {
             return [PSCustomObject]@{
                 TotalTests = 0
@@ -392,33 +399,33 @@ function Merge-ParallelTestResults {
                 Success = $true
             }
         }
-        
+
         $totalPassed = 0
         $totalFailed = 0
         $totalSkipped = 0
         $totalTime = [timespan]::Zero
         $allFailures = @()
-        
+
         foreach ($result in $TestResults) {
             if ($result.Result -and $result.Result.PSObject.Properties['Passed']) {
                 $totalPassed += $result.Result.Passed.Count
                 $totalFailed += $result.Result.Failed.Count
                 $totalSkipped += $result.Result.Skipped.Count
-                
+
                 if ($result.Result.PSObject.Properties['TotalTime']) {
                     $totalTime += $result.Result.TotalTime
                 }
-                
+
                 if ($result.Result.Failed.Count -gt 0) {
                     $allFailures += $result.Result.Failed
                 }
             }
-            
+
             if ($result.HasErrors) {
                 Write-CustomLog "Test job $($result.Name) had errors: $($result.Errors -join '; ')" -Level "WARN"
             }
         }
-        
+
         $summary = [PSCustomObject]@{
             TotalTests = $totalPassed + $totalFailed + $totalSkipped
             Passed = $totalPassed
@@ -428,9 +435,9 @@ function Merge-ParallelTestResults {
             Failures = $allFailures
             Success = $totalFailed -eq 0
         }
-        
+
         Write-CustomLog "Test summary: $($summary.Passed) passed, $($summary.Failed) failed, $($summary.Skipped) skipped in $($summary.TotalTime)" -Level "INFO"
-        
+
         return $summary
     }
     catch {
@@ -442,7 +449,7 @@ function Merge-ParallelTestResults {
 # Export module functions
 Export-ModuleMember -Function @(
     'Invoke-ParallelForEach',
-    'Start-ParallelJob', 
+    'Start-ParallelJob',
     'Wait-ParallelJobs',
     'Invoke-ParallelPesterTests',
     'Merge-ParallelTestResults'
