@@ -83,7 +83,7 @@ param(
 #Requires -Version 5.1
 
 # Bootstrap constants
-$script:BootstrapVersion = '2.0.0'
+$script:BootstrapVersion = '2.0.1'  # Updated to force GitHub refresh
 $script:RepoUrl = 'https://github.com/wizzense/opentofu-lab-automation.git'
 $script:RawBaseUrl = 'https://raw.githubusercontent.com/wizzense/opentofu-lab-automation'
 $script:DefaultConfigUrl = "$script:RawBaseUrl/$TargetBranch/core-runner/core_app/default-config.json"
@@ -325,10 +325,10 @@ function Sync-Repository {
     Write-BootstrapLog "Target path: $repoPath" 'INFO'
     Write-BootstrapLog "Branch: $TargetBranch" 'INFO'
     
-    if (Test-Path $repoPath) {
-        if ($Force) {
+    if (Test-Path $repoPath) {        if ($Force) {
             Write-BootstrapLog "Removing existing repository (Force specified)" 'WARN'
-            Remove-Item $repoPath -Recurse -Force        } else {
+            Remove-Item $repoPath -Recurse -Force
+        } else {
             Write-BootstrapLog "Repository exists, updating..." 'INFO'
             try {
                 Push-Location $repoPath
