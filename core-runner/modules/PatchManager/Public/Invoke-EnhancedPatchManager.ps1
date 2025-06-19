@@ -88,19 +88,10 @@ function Invoke-EnhancedPatchManager {
             } catch {
                 Write-Warning "Failed to load Invoke-ComprehensiveValidation: $($_.Exception.Message)"
             }
-        }
-
-        # Function for logging
+        }        # Function for logging - use centralized logging
         function Write-PatchLog {
             param([string]$Message, [string]$Level = "INFO")
-            $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss.fff"
-            $color = switch ($Level) {
-                "ERROR" { "Red" }
-                "WARN" { "Yellow" }
-                "SUCCESS" { "Green" }
-                default { "White" }
-            }
-            Write-Host "[$timestamp] [$Level] $Message" -ForegroundColor $color
+            Write-CustomLog -Message $Message -Level $Level
         }
 
         Write-PatchLog "Starting enhanced patch process: $PatchDescription" -Level "INFO"
