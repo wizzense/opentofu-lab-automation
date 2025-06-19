@@ -177,17 +177,26 @@ function Invoke-ComprehensiveIssueTracking {
             
             # Create the GitHub issue
             Write-CustomLog "Creating GitHub issue: $Title" -Level INFO
-            
-            # Save body to temp file to handle large content and special characters
+              # Save body to temp file to handle large content and special characters
             $tempBodyFile = [System.IO.Path]::GetTempFileName()
             try {
                 $issueBody | Out-File -FilePath $tempBodyFile -Encoding utf8
                 
-                # Create issue with file-based body
+                # Create issue with enhanced error handling for labels
                 $labelString = $allLabels -join ','
-                $issueResult = gh issue create --title $Title --body-file $tempBodyFile --label $labelString
+                Write-CustomLog "Creating GitHub issue: $Title" -Level INFO
+                Write-CustomLog "Using labels: $labelString" -Level DEBUG
                 
-                if ($LASTEXITCODE -eq 0 -and $issueResult) {
+                # Try creating issue with labels first
+                $issueResult = gh issue create --title $Title --body-file $tempBodyFile --label $labelString 2>&1
+                
+                # If label error occurred, retry without labels
+                if ($LASTEXITCODE -ne 0 -and $issueResult -match "not found|does not exist|invalid label") {
+                    Write-CustomLog "Label issue detected, retrying without labels: $($issueResult -join ' ')" -Level WARN
+                    $issueResult = gh issue create --title $Title --body-file $tempBodyFile 2>&1
+                }
+                
+                if ($LASTEXITCODE -eq 0 -and $issueResult -match "https://") {
                     # Extract issue number from the URL
                     $issueNumber = $null
                     if ($issueResult -match '/issues/(\d+)') {
@@ -209,9 +218,11 @@ function Invoke-ComprehensiveIssueTracking {
                         IssueNumber = $issueNumber
                         Operation = $Operation
                         Priority = $Priority
-                    }
-                } else {
-                    throw "GitHub CLI returned error: $issueResult"
+                    }                } else {
+                    $errorOutput = $issueResult -join "`n"
+                    Write-CustomLog "GitHub CLI failed with exit code $LASTEXITCODE" -Level ERROR
+                    Write-CustomLog "Error output: $errorOutput" -Level ERROR
+                    throw "GitHub CLI failed: $errorOutput"
                 }
                 
             } finally {
