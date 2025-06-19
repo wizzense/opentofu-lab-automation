@@ -39,7 +39,7 @@ $errorText = $result -join ' '
 if ($errorText -match "already exists.*https://github\.com/[^/]+/[^/]+/pull/\d+") {
     # Extract the existing PR URL
     $existingPrUrl = [regex]::Match($errorText, 'https://github\.com/[^/]+/[^/]+/pull/\d+').Value
-    
+
     # Extract PR number from URL
     $prNumber = $null
     if ($existingPrUrl -match '/pull/(\d+)') {
@@ -96,7 +96,7 @@ if ($errorText -match "already exists.*https://github\.com/[^/]+/[^/]+/pull/\d+"
 
 ### 📊 **Project Standards**
 - **Compliance with no-emoji policy** ✅
-- **Professional output formatting** ✅  
+- **Professional output formatting** ✅
 - **Proper GitHub issue/PR linking** ✅
 - **DryRun support for safe testing** ✅
 

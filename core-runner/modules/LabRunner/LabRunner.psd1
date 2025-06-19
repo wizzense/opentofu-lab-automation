@@ -1,33 +1,31 @@
-
-
-
-
 @{
-    RootModule = 'LabRunner.psm1'
+    RootModule    = 'LabRunner.psm1'
     ModuleVersion = '0.1.0'
-    GUID = 'c0000000-0000-4000-8000-000000000001'
+    GUID          = 'c0000000-0000-4000-8000-000000000001'
     NestedModules = @('Resolve-ProjectPath.psm1')
-    Author = 'OpenTofu'    FunctionsToExport = @(
+    Author        = 'wizzense',
+    FunctionsToExport = @(
         'Invoke-LabStep',
         'Invoke-LabDownload',
+        Author = 'OpenTofu'
+        'Read-LoggedInput', (
+            'Invoke-LabStep',
+            'Invoke-LabWebRequest', d',
         'Write-CustomLog',
-        'Read-LoggedInput',
-        'Get-Platform',
-        'Invoke-LabWebRequest',
+        'Invoke-OpenTofuInstaller',ut',
+            'Get-Platform',
+            'Invoke-ArchiveDownload', quest',
         'Invoke-LabNpm',
-        'Invoke-OpenTofuInstaller',
-        'Resolve-ProjectPath',
-        'Invoke-ArchiveDownload',
-        'Format-Config',
-        'Expand-All',
-        'Get-MenuSelection',
-        'Get-GhDownloadArgs',
-        'Get-LabConfig',
-        'Test-IsAdmin',
-        'Invoke-ParallelLabRunner',
-        'Test-ParallelRunnerSupport',
-        'Initialize-StandardParameters'
+        'Expand-All',ler',
+            'Resolve-ProjectPath',
+            'Get-GhDownloadArgs', ownload',
+        'Get-LabConfig',g',
+            'Expand-All',
+            'Invoke-ParallelLabRunner', 'Get-GhDownloadArgs',
+            'Test-ParallelRunnerSupport',
+            'Initialize-StandardParameters'
+        )
+        'Test-ParallelRunnerSupport'
     )
 }
-
-
+}

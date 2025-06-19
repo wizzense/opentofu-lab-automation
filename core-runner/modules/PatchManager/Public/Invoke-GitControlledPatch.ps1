@@ -198,7 +198,7 @@ function Invoke-GitControlledPatch {
                         'Commit successful'    = $true
                     }                    # STEP 1: Create GitHub issue for tracking (simplified approach)
                     Write-CustomLog 'Creating GitHub issue for patch tracking...' -Level INFO
-                    
+
                     $issueResult = New-SimpleIssueForPatch -PatchDescription $PatchDescription -Priority 'Medium' -AffectedFiles $AffectedFiles
 
                     if ($issueResult.Success) {
@@ -533,7 +533,7 @@ function Build-ComprehensivePRBody {
         Platform          = if ($env:PLATFORM) { $env:PLATFORM } else { [System.Environment]::OSVersion.Platform }
         User              = if ($env:USERNAME) { $env:USERNAME } elseif ($env:USER) { $env:USER } else { 'Unknown' }
         WorkingDirectory  = (Get-Location).Path
-        GitCommit         = if ($CommitInfo.Commit) { $CommitInfo.Commit } else { 'Unknown' }    
+        GitCommit         = if ($CommitInfo.Commit) { $CommitInfo.Commit } else { 'Unknown' }
     }
 
     # Build issue reference section if issue number provided
