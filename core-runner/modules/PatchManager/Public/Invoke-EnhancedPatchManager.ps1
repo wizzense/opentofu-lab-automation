@@ -630,12 +630,11 @@ function New-PatchPullRequest {
                         }
                     } else {
                         # PR creation failed - check for specific error conditions
-                        $errorMessage = $prResult -join " "
-                          # Handle common errors
+                        $errorMessage = $prResult -join " "                        # Handle common errors
                         if ($errorMessage -match "already exists") {
                             # Extract PR URL from error message if it's there
-                            if ($errorMessage -match "https://[^\s]+") {
-                                $existingPrUrl = $matches[0]
+                            if ($errorMessage -match "(https://[^\s\n]+)") {
+                                $existingPrUrl = $matches[1].TrimEnd('1234567890') # Remove any trailing numbers that might be part of line numbers
                                 Write-PatchLog "A pull request already exists for this branch: $existingPrUrl" -Level "INFO"
                                 return @{ 
                                     Success = $true 
