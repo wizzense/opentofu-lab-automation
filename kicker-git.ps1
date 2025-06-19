@@ -962,10 +962,11 @@ try {
 "@
 
         Set-Content -Path $relaunchScript -Value $relaunchContent -Encoding UTF8
-        Write-BootstrapLog "✓ Created relaunch helper: $relaunchScript" 'SUCCESS'
+        Write-BootstrapLog "Created relaunch helper: $relaunchScript" 'SUCCESS'
 
         # Success message with clear next steps
-        Write-BootstrapLog "=== Bootstrap Completed Successfully ===" 'SUCCESS'        Write-BootstrapLog "Repository location: $repoPath" 'INFO'
+        Write-BootstrapLog "=== Bootstrap Completed Successfully ===" 'SUCCESS'
+        Write-BootstrapLog "Repository location: $repoPath" 'INFO'
         Write-BootstrapLog "Current directory: $(Get-Location)" 'INFO'
         Write-BootstrapLog "Log file: $script:LogFile" 'INFO'
         Write-BootstrapLog "PowerShell compatibility: $($PSVersionTable.PSVersion.Major).x ✓" 'INFO'
