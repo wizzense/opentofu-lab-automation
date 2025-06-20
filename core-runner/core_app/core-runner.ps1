@@ -352,9 +352,16 @@ try {
                         $selectedItems = $selection -split ',' | ForEach-Object { $_.Trim() }
                         foreach ($item in $selectedItems) {
                             $script = $null
-                            if ($item -match '^\d+$' -and [int]$item -le $availableScripts.Count -and [int]$item -gt 0) {
+                            # Check if input is a menu number (1-2 digits, within menu range)
+                            if ($item -match '^\d{1,2}$' -and [int]$item -le $availableScripts.Count -and [int]$item -gt 0) {
                                 $script = $availableScripts[[int]$item - 1]
-                            } else {
+                            } 
+                            # Check if input is a 4-digit script name (like 0002, 0006)
+                            elseif ($item -match '^\d{4}$') {
+                                $script = $availableScripts | Where-Object { $_.BaseName -like "*$item*" } | Select-Object -First 1
+                            }
+                            # Fallback to name-based matching
+                            else {
                                 $script = $availableScripts | Where-Object { $_.BaseName -eq $item -or $_.BaseName -like "$item*" } | Select-Object -First 1
                             }
 
