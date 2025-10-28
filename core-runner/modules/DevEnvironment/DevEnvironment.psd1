@@ -27,9 +27,8 @@
     VariablesToExport = @()
     AliasesToExport = @()
     
-    RequiredModules = @(
-        'Logging'
-    )
+    # Note: Logging module is imported dynamically in the .psm1 file with fallback support
+    # RequiredModules removed to allow standalone import
     
     PrivateData = @{
         PSData = @{

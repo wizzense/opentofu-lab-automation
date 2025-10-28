@@ -27,6 +27,10 @@ __pycache__/
 # Backup files
 *.bak
 *.backup
+*.backup-*
+*.old
+*.new
+*.corrupted
 
 # Test artifacts
 test-output/

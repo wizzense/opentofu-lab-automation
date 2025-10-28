@@ -31,7 +31,7 @@ function Register-OneOffScript {
     if (-not (Test-Path $MetadataFile)) {
         $allScripts = @()
     } else {
-        $allScripts = Get-Content $MetadataFile  ConvertFrom-Json
+        $allScripts = Get-Content $MetadataFile | ConvertFrom-Json
     }
 
     $existingScript = $allScripts | Where-Object { $_.ScriptPath -eq $ScriptPath }
