@@ -57,12 +57,15 @@ jobs:
             Write-Host ""
             Write-Host "Errors: $errors, Warnings: $warnings" -ForegroundColor Yellow
             
-            # Fail on errors, warn on warnings
+            # Configurable warning threshold (default: 10)
+            $warningThreshold = if ($env:PSSA_WARNING_THRESHOLD) { [int]$env:PSSA_WARNING_THRESHOLD } else { 10 }
+            
+            # Fail on errors, warn on warnings above threshold
             if ($errors -gt 0) {
               Write-Error "Found $errors PSScriptAnalyzer errors"
               exit 1
-            } elseif ($warnings -gt 10) {
-              Write-Warning "Found $warnings PSScriptAnalyzer warnings (threshold: 10)"
+            } elseif ($warnings -gt $warningThreshold) {
+              Write-Warning "Found $warnings PSScriptAnalyzer warnings (threshold: $warningThreshold)"
               exit 1
             }
           } else {
@@ -91,8 +94,14 @@ jobs:
       - name: Setup PowerShell modules
         shell: pwsh
         run: |
-          Install-Module -Name Pester -MinimumVersion 5.0 -Force -Scope CurrentUser -SkipPublisherCheck
-          Write-Host "✓ Pester installed: $(Get-Module Pester -ListAvailable | Select-Object -First 1 | Select-Object -ExpandProperty Version)"
+          try {
+            # TODO: Consider caching Pester module for improved performance across jobs
+            Install-Module -Name Pester -MinimumVersion 5.0 -Force -Scope CurrentUser -SkipPublisherCheck -ErrorAction Stop
+            Write-Host "✓ Pester installed: $(Get-Module Pester -ListAvailable | Select-Object -First 1 | Select-Object -ExpandProperty Version)"
+          } catch {
+            Write-Error "Failed to install Pester module: $($_.Exception.Message)"
+            exit 1
+          }
 
       - name: Run Unit Tests
         shell: pwsh
@@ -122,16 +131,30 @@ jobs:
       - name: Setup PowerShell modules
         shell: pwsh
         run: |
-          Install-Module -Name Pester -MinimumVersion 5.0 -Force -Scope CurrentUser -SkipPublisherCheck
+          try {
+            Install-Module -Name Pester -MinimumVersion 5.0 -Force -Scope CurrentUser -SkipPublisherCheck -ErrorAction Stop
+            Write-Host "✓ Pester installed: $(Get-Module Pester -ListAvailable | Select-Object -First 1 | Select-Object -ExpandProperty Version)"
+          } catch {
+            Write-Error "Failed to install Pester module: $($_.Exception.Message)"
+            exit 1
+          }
 
       - name: Run Integration Tests
         shell: pwsh
         run: |
           $env:PROJECT_ROOT = "${{ github.workspace }}"
           
-          # Import modules
-          Import-Module "$env:PROJECT_ROOT/core-runner/modules/Logging" -Force
-          Import-Module "$env:PROJECT_ROOT/core-runner/modules/TestingFramework" -Force
+          try {
+            # Import modules with error handling
+            Import-Module "$env:PROJECT_ROOT/core-runner/modules/Logging" -Force -ErrorAction Stop
+            Write-Host "✓ Loaded Logging module"
+            
+            Import-Module "$env:PROJECT_ROOT/core-runner/modules/TestingFramework" -Force -ErrorAction Stop
+            Write-Host "✓ Loaded TestingFramework module"
+          } catch {
+            Write-Error "Failed to import required modules: $($_.Exception.Message)"
+            exit 1
+          }
           
           # Run integration tests
           $config = New-PesterConfiguration

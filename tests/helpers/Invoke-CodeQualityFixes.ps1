@@ -98,7 +98,13 @@ foreach ($file in $files) {
             Write-Host "  [DRY RUN] Would fix: $relativePath ($issuesFixed issues)" -ForegroundColor Yellow
         } else {
             if ($PSCmdlet.ShouldProcess($relativePath, "Fix $issuesFixed code quality issues")) {
-                Set-Content -Path $file.FullName -Value $content -NoNewline
+                # Preserve original file ending (newline or not)
+                $hasTrailingNewline = $originalContent -match '\r?\n$'
+                if ($hasTrailingNewline) {
+                    Set-Content -Path $file.FullName -Value $content
+                } else {
+                    Set-Content -Path $file.FullName -Value $content -NoNewline
+                }
                 Write-Host "  ✓ Fixed: $relativePath ($issuesFixed issues)" -ForegroundColor Green
                 $fixedFiles++
                 $totalIssues += $issuesFixed
