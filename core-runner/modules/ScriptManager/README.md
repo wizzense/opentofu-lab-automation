@@ -74,9 +74,12 @@ Scripts are tracked in `scripts/one-off-scripts.json`:
 
 The module validates that scripts:
 - Exist at the specified path
-- Import required modules properly
-- Use modern function patterns (e.g., `Invoke-ParallelScriptAnalyzer`)
-- Avoid deprecated functions (e.g., `Invoke-BatchScriptAnalysis`)
+- Import required modules properly (includes `Import-Module` statements)
+- Follow project standards (checked against configured patterns)
+
+**Example validation checks:**
+- Modern function patterns are preferred over deprecated alternatives
+- Scripts should use approved PowerShell cmdlets and approved verb naming
 
 ## Best Practices
 
