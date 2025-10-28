@@ -2,379 +2,345 @@
 
 Cross-platform PowerShell automation framework for OpenTofu/Terraform infrastructure management with comprehensive testing and modular architecture.
 
-## Quick Start - Bootstrap Installation
+## 🚀 Quick Start
 
-### 🚀 One-Line Installation
+### One-Line Installation
 
-**Bootstrap with kicker-git.ps1** (Main Entry Point):
-
+**Windows PowerShell 5.1:**
 ```powershell
 powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/main/kicker-git.ps1' -OutFile '.\kicker-git.ps1'; .\kicker-git.ps1"
 ```
 
-**PowerShell 7.x** (Cross-platform):
-
+**PowerShell 7+ (Cross-platform):**
 ```powershell
 pwsh -NoProfile -ExecutionPolicy Bypass -Command "Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/main/kicker-git.ps1' -OutFile '.\kicker-git.ps1'; .\kicker-git.ps1"
 ```
 
-[kicker-git.ps1](https://github.com/wizzense/opentofu-lab-automation/blob/main/kicker-git.ps1)
-
-### 📋 Bootstrap Options
-
-The `kicker-git.ps1` script is your **single entry point** for all bootstrap scenarios:
-
-#### **kicker-git.ps1** Features
-
-- ✅ Full CoreApp orchestration integration
-- ✅ Cross-platform support (Windows, Linux, macOS)
-- ✅ PowerShell 5.1 and 7.x compatibility
-- ✅ Self-updating capabilities
-- ✅ Comprehensive health checks
-- ✅ Advanced error handling and logging
-- ✅ Non-interactive mode for automation
-- ✅ Enhanced GitHub authentication handling
+### Bootstrap Options
 
 ```powershell
-# Download and run with options
-.\kicker-git.ps1 -Verbosity detailed -NonInteractive
-.\kicker-git.ps1 -ConfigFile "my-config.json" -TargetBranch "develop"
-.\kicker-git.ps1 -SkipGitHubAuth -SkipPrerequisites
-.\kicker-git.ps1 -WhatIf  # See what would be done
-```
-.\kicker-git.ps1 -Force -Verbosity detailed
-```
+# Interactive setup with detailed logging
+.\kicker-git.ps1 -Verbosity detailed
 
-#### 3. **Legacy Bootstrap** (`kicker-bootstrap.ps1`)
-
-- ✅ Original bootstrap script
-- ✅ Maintained for compatibility
-- ⚠️ Limited to original feature set
-
-### 🔧 Manual Installation
-
-If you prefer manual control:
-
-```powershell
-# 1. Download the modern bootstrap script
-Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/wizzense/opentofu-lab-automation/main/kicker-git.ps1' -OutFile '.\kicker-git.ps1'
-
-# 2. Run with your preferred options
-.\kicker-git.ps1
-
-# 3. Available parameters:
-#    -ConfigFile      : Custom configuration file
-#    -Quiet          : Minimal output
-#    -NonInteractive : No prompts (automation-friendly)
-#    -Verbosity      : silent|normal|detailed
-#    -SkipPrerequisites : Skip auto-installation
-#    -TargetBranch   : Git branch to use
-#    -LocalPath      : Custom clone location
-#    -WhatIf         : Show what would be done
-#    -Force          : Force re-clone
-```
-
-### ⚡ Quick Examples
-
-```powershell
-# Silent automation-friendly setup
+# Automation-friendly silent mode
 .\kicker-git.ps1 -NonInteractive -Verbosity silent
 
-# Development setup with detailed logging
-.\kicker-git.ps1 -TargetBranch "develop" -Verbosity detailed
+# Development branch setup
+.\kicker-git.ps1 -TargetBranch "develop"
 
-# Custom configuration with specific location
-.\kicker-git.ps1 -ConfigFile "prod-config.json" -LocalPath "C:\Labs"
-
-# Test what would happen without making changes
+# Preview changes without executing
 .\kicker-git.ps1 -WhatIf
 ```
 
-## Environment Setup
+## 📋 Key Features
 
-The bootstrap script automatically sets up:
+- **Cross-Platform**: Windows, Linux, and macOS support
+- **Modular Architecture**: 9 specialized PowerShell modules
+- **Infrastructure as Code**: OpenTofu/Terraform configurations for lab environments
+- **Comprehensive Testing**: Bulletproof testing with Pester integration
+- **Parallel Execution**: Runspace-based concurrent processing
+- **Git Integration**: Automated patch management with GitHub integration
+- **Enterprise Logging**: Multi-level logging with performance tracing
+- **CI/CD Ready**: GitHub Actions workflows and automation support
 
-- **Environment Variables:**
-  - `$env:PROJECT_ROOT` - Project root directory
-  - `$env:PWSH_MODULES_PATH` - Module search path
-
-- **Module Import Paths:**
-
-  ```powershell
-  Import-Module "$env:PROJECT_ROOT\core-runner\modules\Logging" -Force
-  Import-Module "$env:PROJECT_ROOT\core-runner\modules\PatchManager" -Force
-  ```
-
-## Project Structure
+## 🏗️ Project Structure
 
 ```
 opentofu-lab-automation/
 ├── core-runner/                    # Main automation framework
-│   ├── kicker-bootstrap.ps1       # Legacy bootstrap (being phased out)
-│   ├── kicker-bootstrap-clean.ps1 # Clean bootstrap implementation
-│   ├── setup-test-env.ps1         # Environment setup script
-│   ├── core_app/                  # Core application
-│   │   ├── core-runner.ps1        # Main runner script
-│   │   ├── default-config.json    # Default configuration
-│   │   └── scripts/               # Automation scripts (0000_*.ps1)
-│   └── modules/                   # PowerShell modules
-│       ├── Logging/               # Centralized logging
-│       ├── PatchManager/          # Git operations and patching
-│       ├── LabRunner/             # Lab management
-│       ├── BackupManager/         # Backup operations
-│       ├── DevEnvironment/        # Development setup
-│       ├── ParallelExecution/     # Parallel processing
-│       ├── ScriptManager/         # Script management
-│       ├── TestingFramework/      # Testing utilities
-│       └── UnifiedMaintenance/    # Maintenance operations
-├── configs/                       # Configuration files
-├── docs/                          # Documentation
-├── tests/                         # Comprehensive test suite
-├── tools/                         # Utility tools
-└── opentofu/                      # OpenTofu infrastructure
+│   ├── core_app/                   # Core application
+│   │   ├── core-runner.ps1         # Main runner script
+│   │   ├── default-config.json     # Default configuration
+│   │   └── scripts/                # Automation scripts (0000-0114)
+│   └── modules/                    # PowerShell modules
+│       ├── BackupManager/          # Backup and cleanup operations
+│       ├── DevEnvironment/         # Development environment setup
+│       ├── LabRunner/              # Lab automation orchestration
+│       ├── Logging/                # Enterprise logging system
+│       ├── ParallelExecution/      # Parallel processing utilities
+│       ├── PatchManager/           # Git and patch management
+│       ├── ScriptManager/          # Script management
+│       ├── TestingFramework/       # Unified testing framework
+│       └── UnifiedMaintenance/     # Maintenance orchestration
+├── configs/                        # Configuration files
+├── docs/                           # Documentation
+├── tests/                          # Comprehensive test suite
+├── tools/                          # Utility tools
+└── opentofu/                       # Infrastructure as Code
 ```
 
-## What the Bootstrap Does
+## 🔧 PowerShell Modules
 
-1. **Git Setup**: Checks if command-line Git is installed and in PATH.
-   - Installs a minimal version if missing.
-   - Updates PATH if installed but not found in PATH.
+All modules have comprehensive README files with usage examples:
 
-2. **Configuration**: Downloads and loads default configuration file.
-   - Uses `core-runner/core_app/default-config.json` by default
-   - Override with `-ConfigFile` parameter
+| Module | Purpose | Documentation |
+|--------|---------|---------------|
+| **BackupManager** | Backup file consolidation and cleanup | [README](core-runner/modules/BackupManager/README.md) |
+| **DevEnvironment** | Development environment setup and management | [README](core-runner/modules/DevEnvironment/README.md) |
+| **LabRunner** | Lab automation and script execution orchestration | [README](core-runner/modules/LabRunner/README.md) |
+| **Logging** | Enterprise-grade centralized logging | [README](core-runner/modules/Logging/README.md) |
+| **ParallelExecution** | Parallel processing with runspaces | [README](core-runner/modules/ParallelExecution/README.md) |
+| **PatchManager** | Git operations and patch management | [README](core-runner/modules/PatchManager/README.md) |
+| **ScriptManager** | One-off script management | [README](core-runner/modules/ScriptManager/README.md) |
+| **TestingFramework** | Unified test execution and reporting | [README](core-runner/modules/TestingFramework/README.md) |
+| **UnifiedMaintenance** | Maintenance operation orchestration | [README](core-runner/modules/UnifiedMaintenance/README.md) |
 
-3. **Repository Clone**: Clones this repository to local workspace.
-   - Default location: `%TEMP%/opentofu-lab-automation`
-   - Configurable via configuration file
+### Quick Module Usage
 
-4. **Core Runner Execution**: Invokes `core-runner.ps1` from the repository.
-   - Loads modules and sets up environment
-   - Can be run with parameters for automation
+```powershell
+# Import a module
+Import-Module "./core-runner/modules/Logging" -Force
 
-## Essential OpenTofu Setup Scripts
+# Use centralized logging
+Write-CustomLog -Level 'INFO' -Message 'Starting automation'
 
-To get OpenTofu working, specify these scripts when `core-runner.ps1` is called:
+# Run unified tests
+Import-Module "./core-runner/modules/TestingFramework" -Force
+Invoke-UnifiedTestExecution -TestSuite "All"
 
-**Required Scripts: 0006, 0007, 0008, 0009, 0010**
+# Manage patches
+Import-Module "./core-runner/modules/PatchManager" -Force
+Invoke-PatchWorkflow -PatchDescription "Fix bug" -CreatePR -PatchOperation {
+    # Your changes here
+}
+```
 
-- **0006_Install-ValidationTools.ps1** - Downloads cosign for verification
-- **0007_Install-Go.ps1** - Downloads and installs Go
-- **0008_Install-OpenTofu.ps1** - Downloads and installs OpenTofu (verified with cosign)
-- **0009_Initialize-OpenTofu.ps1** - Sets up OpenTofu and infrastructure repo
-- **0010_Prepare-HyperVProvider.ps1** - Configures Hyper-V host
+## 🎯 Core Runner Scripts
 
-**Example Infrastructure Repository**: [tofu-base-lab](https://github.com/wizzense/tofu-base-lab.git)
-
-**Example Config File**: [bootstrap-config.json](https://raw.githubusercontent.com/wizzense/tofu-base-lab/refs/heads/main/configs/bootstrap-config.json)
-
-## Available Runner Scripts
-
-The runner script can execute the following automation scripts:
+The core runner executes numbered automation scripts:
 
 ### Core Infrastructure Scripts
+- **0006** - Install validation tools (cosign)
+- **0007** - Install Go language
+- **0008** - Install OpenTofu with verification
+- **0009** - Initialize OpenTofu infrastructure
+- **0010** - Prepare Hyper-V host configuration
 
-- **0000_Cleanup-Files.ps1** - Removes lab-infra OpenTofu infrastructure repo
-- **0001_Reset-Git.ps1** - Resets lab-infra OpenTofu infrastructure repo (re-pulls files/resets if you modify any files)
-- **0006_Install-ValidationTools.ps1** - Downloads the cosign exe to C:\temp\cosign
-- **0007_Install-Go.ps1** - Downloads and installs Go
-- **0008_Install-OpenTofu.ps1** - Downloads and installs OpenTofu standalone (verified with cosign)
-- **0009_Initialize-OpenTofu.ps1** - Sets up OpenTofu and the lab-infra repo in C:\temp\base-infra
-- **0010_Prepare-HyperVHost.ps1** - Comprehensive Hyper-V host configuration
+### Administrative Scripts (0100-0116)
+- **0100** - Enable WinRM
+- **0101** - Enable Remote Desktop
+- **0102** - Configure Firewall
+- **0103** - Change Computer Name
+- **0104** - Install Certificate Authority
+- **0105** - Install Hyper-V
+- **0106** - Install Windows Admin Center
+- Plus DNS, PXE, and other administrative configurations
 
-### 0010_Prepare-HyperVHost.ps1 Details
-
-This script performs extensive Hyper-V host preparation:
-
-**Hyper-V Configuration:**
-
-- Enables Hyper-V if not enabled
-- Enables WinRM if not enabled
-  - Sets WinRS MaxMemoryPerShellMB to 1024
-  - Sets WinRM MaxTimeoutms to 1800000
-  - Sets TrustedHosts to '*'
-  - Sets Negotiate to True
-
-**Certificate Management:**
-
-- Creates a self-signed RootCA Certificate (prompts for password)
-- Creates self-signed host certificate (prompts for password)
-- Configures WinRM HTTPS Listener
-- Allows HTTPS 5986 through firewall
-
-**Go Workspace & Provider Setup:**
-
-- Creates a Go workspace in C:\GoWorkspace
-- Builds the hyperv-provider for OpenTofu from Taliesins git
-- Copies the provider to the lab-infra
-
-> **Note**: Certificate validation for the hyperv provider is currently disabled by default. I am still working out how to get it to use the certificates properly (they may need to be converted to .pem first).
-
-### Optional Administrative Scripts
-
-- **0100_Enable-WinRM.ps1** - Basic WinRM enablement
-- **0101_Enable-RemoteDesktop.ps1** - Remote Desktop configuration
-- **0102_Configure-Firewall.ps1** - Firewall rule management
-- **0103_Change-ComputerName.ps1** - Computer name configuration
-- **0104_Install-CA.ps1** - Certificate Authority installation
-- **0105_Install-HyperV.ps1** - Hyper-V feature installation
-- **0106_Install-WAC.ps1** - Windows Admin Center installation
-- **0111_Disable-TCPIP6.ps1** - IPv6 configuration
-- **0112_Enable-PXE.ps1** - PXE boot configuration
-- **0113_Config-DNS.ps1** - DNS configuration
-- **0114_Config-TrustedHosts.ps1** - Trusted hosts configuration
-
-## Usage Instructions
-
-**Run ALL scripts**: Type `all`
-**Run specific scripts**: Provide comma-separated 4-digit prefixes (e.g., `0001,0003,0006,0007,0008,0009,0010`)
-**Exit**: Type `exit` to quit the script
-
-## Configuration Requirements
-
-### OpenTofu Provider Configuration
-
-Make sure to modify the `main.tf` so it uses your admin credentials and hostname/IP of the host machine if you don't have a customized config.json or choose not to customize:
-
-```hcl
-provider "hyperv" {
-  user            = "ad\\administrator"
-  password        = ""
-  host            = "192.168.1.121"
-  port            = 5986
-  https           = true
-  insecure        = true  # This skips SSL validation
-  use_ntlm        = true  # Use NTLM as it's enabled on the WinRM service
-  tls_server_name = ""
-  cacert_path     = ""    # Leave empty if skipping SSL validation
-  cert_path       = ""    # Leave empty if skipping SSL validation
-  key_path        = ""    # Leave empty if skipping SSL validation
-  script_path     = "C:/Temp/terraform_%RAND%.cmd"
-  timeout         = "30s"
-}
-
-variable "hyperv_host_name" {
-  type    = string
-  default = "192.168.1.121"
-}
-
-variable "hyperv_user" {
-  type    = string
-  default = "ad\\administrator"
-}
-
-variable "hyperv_password" {
-  type    = string
-  default = ""
-}
-```
-
-### VHD Configuration
-
-You will also need to modify the VHD configuration to create multiple VHD objects with distinct paths:
-
-```hcl
-resource "hyperv_vhd" "control_node_vhd" {
-  count = var.number_of_vms
-
-  depends_on = [hyperv_network_switch.Lan]
-
-  # Unique path for each VHD (e.g. ...-0.vhdx, ...-1.vhdx, etc.)
-  path = "B:\\hyper-v\\PrimaryControlNode\\PrimaryControlNode-Server2025-${count.index}.vhdx"
-  size = 60737421312
-}
-```
-
-### DVD Drive Configuration
-
-```hcl
-dvd_drives {
-  controller_number   = "0"
-  controller_location = "1"
-  path                = "B:\\share\\isos\\2_auto_unattend_en-us_windows_server_2025_updated_feb_2025_x64_dvd_3733c10e.iso"
-}
-```
-
-## Advanced Features
-
-### Cross-Platform Support
-
-- **Windows, Linux, macOS** deployment capability
-- **PowerShell 7.4+** cross-platform compatibility
-- **Advanced PowerShell Modules**: PatchManager, LabRunner, BackupManager
-
-### Automation & Maintenance
-
-- **Real-time validation** and error correction
-- **CI/CD Integration**: GitHub Actions workflows with comprehensive testing
-- **Infrastructure as Code**: OpenTofu/Terraform configurations for lab environments
-
-### Module Usage
+### Running Scripts
 
 ```powershell
-# Import core modules
-Import-Module "./core-runner/modules/PatchManager"
-Import-Module "./core-runner/modules/LabRunner"
+# Run specific scripts
+./core-runner.ps1 -Scripts "0006,0007,0008,0009,0010"
 
-# Run lab automation
-Invoke-ParallelLabRunner -ConfigPath "./configs/lab_config.yaml"
+# Run all scripts
+./core-runner.ps1 -Auto
 
-# Perform maintenance
-./scripts/maintenance/unified-maintenance.ps1 -Mode "All" -AutoFix
+# Run with detailed logging
+./core-runner.ps1 -Scripts "0200" -Verbosity detailed
+
+# Non-interactive mode for automation
+./core-runner.ps1 -NonInteractive -Auto -Verbosity silent
 ```
 
-## Project Structure
+## 🧪 Testing
 
-- **/core-runner/modules/**: PowerShell modules (PatchManager, LabRunner, BackupManager)
-- **/core-runner/core_app/scripts/**: Core automation scripts (0000-0114 series)
-- **/scripts/**: Additional automation and maintenance scripts
-- **/opentofu/**: Infrastructure as Code configurations
-- **/tests/**: Pester test files for validation
-- **/.github/workflows/**: CI/CD automation
-- **/configs/**: Configuration files and templates
-
-## Future Plans
-
-Will probably change repo name to just 'lab-automation'.
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## 🔄 After Initial Bootstrap
-
-After `kicker-git.ps1` completes, you'll be in the project directory with several relaunch options:
-
-### **Quick Relaunch Options** (Choose Your Preference)
+### Run Tests
 
 ```powershell
-# Option 1: Generated relaunch script (recommended)
-.\Relaunch-CoreApp.ps1           # Auto-generated by kicker-git.ps1
+# Bulletproof test suite
+pwsh -File "./tests/Run-BulletproofTests.ps1" -TestSuite "All"
 
-# Option 2: Existing launcher
-.\Start-CoreApp.ps1              # Manual CoreApp initialization
+# Module tests in parallel
+pwsh -File "./tests/Run-AllModuleTests.ps1" -Parallel
 
-# Option 3: Super quick launcher
-.\go.ps1                         # Minimal typing required
+# Non-interactive mode testing
+pwsh -File "./test-noninteractive-fix.ps1" -TestMode "All"
 
-# Option 4: Quick development setup
-.\Quick-Setup.ps1                # Environment + modules
+# Unified test execution
+Import-Module "./core-runner/modules/TestingFramework" -Force
+Invoke-UnifiedTestExecution -TestSuite "All" -EnableParallel
 ```
 
-### **Manual CoreApp Start**
+### Test Coverage
+
+- **17/17 bulletproof tests** passing consistently
+- **Unit tests** for all modules
+- **Integration tests** for module interactions
+- **Syntax validation** for all PowerShell files
+- **CI/CD integration** with GitHub Actions
+
+## 📚 Documentation
+
+### Primary Documentation
+- **[Project Overview](docs/overview.md)** - Comprehensive project architecture
+- **[Bulletproof Testing Guide](docs/BULLETPROOF-TESTING-GUIDE.md)** - Testing strategy and execution
+- **[Module Documentation](core-runner/modules/)** - Individual module README files
+
+### GitHub Resources
+- **[GitHub Instructions](.github/instructions/)** - Copilot guidelines and workflows
+- **[Agent Personas](.github/agents/)** - Team agent configurations
+- **[Prompts](.github/prompts/)** - Reusable prompt templates
+
+### Historical Reference
+- **[Documentation Archive](docs/archive/)** - Completed work summaries and historical records
+
+## 🔄 Development Workflow
+
+### Setup Development Environment
 
 ```powershell
-# If you prefer manual control:
-Import-Module "./core-runner/core_app/CoreApp.psm1" -Force
-Initialize-CoreApplication
+# Initialize development environment
+Import-Module "./core-runner/modules/DevEnvironment" -Force
+Initialize-DevelopmentEnvironment
+
+# Install pre-commit hooks
+Install-PreCommitHook
 ```
 
-### **Development Workflow**
+### Make Changes with PatchManager
 
 ```powershell
-# After any relaunch script:
-Get-CoreModuleStatus             # Check module health
-Invoke-UnifiedMaintenance        # Run maintenance
-Start-DevEnvironmentSetup        # Setup dev environment
-Test-CoreApplicationHealth       # Health check
+# Create patch with automatic tracking
+Invoke-PatchWorkflow -PatchDescription "Add new feature" -CreatePR -PatchOperation {
+    # Your code changes
+    Add-Content "./Module.psm1" -Value "function New-Feature { }"
+}
 ```
+
+### Run Maintenance
+
+```powershell
+# Daily maintenance
+Import-Module "./core-runner/modules/UnifiedMaintenance" -Force
+Invoke-UnifiedMaintenance -Mode "Full" -AutoFix
+```
+
+## 🌐 OpenTofu Infrastructure
+
+### Example Infrastructure Repository
+[tofu-base-lab](https://github.com/wizzense/tofu-base-lab.git) - Base lab infrastructure
+
+### Infrastructure Code Location
+- **OpenTofu modules**: `./opentofu/modules/`
+- **Example configurations**: `./opentofu/examples/`
+- **Provider configurations**: Hyper-V, others as needed
+
+### Setup OpenTofu Environment
+
+```powershell
+# Run essential setup scripts
+./core-runner.ps1 -Scripts "0006,0007,0008,0009,0010"
+
+# Navigate to infrastructure
+cd opentofu/examples/hyperv
+
+# Initialize and apply
+tofu init
+tofu plan
+tofu apply
+```
+
+## 🔒 Configuration
+
+### Configuration Files
+- `./configs/default-config.json` - Default settings
+- `./configs/core-runner-config.json` - Core runner specific
+- `./core-runner/core_app/default-config.json` - Application defaults
+
+### Environment Variables
+- `$env:PROJECT_ROOT` - Project root directory
+- `$env:PWSH_MODULES_PATH` - Module search paths
+
+## 🤝 Contributing
+
+### Development Standards
+- **PowerShell 7.0+** cross-platform syntax
+- **Forward slashes** for all file paths
+- **OTBS style** (One True Brace Style)
+- **Comprehensive logging** with Write-CustomLog
+- **Error handling** with try-catch blocks
+- **Module imports** with -Force parameter
+
+### Before Committing
+```powershell
+# Run pre-commit checks
+Test-PreCommitHook
+
+# Run tests
+pwsh -File "./tests/Run-BulletproofTests.ps1" -TestSuite "Quick"
+
+# Check syntax
+Invoke-SyntaxValidation -Path "./"
+```
+
+## 📊 Project Status
+
+### Latest Release
+Check [Releases](https://github.com/wizzense/opentofu-lab-automation/releases) for the latest version
+
+### Build Status
+GitHub Actions workflows automatically test all changes
+
+### Test Coverage
+- Unit tests: Comprehensive module coverage
+- Integration tests: Cross-module workflows
+- Syntax validation: All PowerShell files
+
+## 🆘 Troubleshooting
+
+### Common Issues
+
+**Module Import Failures**
+```powershell
+# Diagnose and fix module issues
+Import-Module "./core-runner/modules/DevEnvironment" -Force
+Resolve-ModuleImportIssues -ModuleName "LabRunner" -AutoFix
+```
+
+**Core Runner Issues**
+```powershell
+# Run with detailed logging
+./core-runner.ps1 -Verbosity detailed
+
+# Check system health
+Import-Module "./core-runner/modules/UnifiedMaintenance" -Force
+Invoke-InfrastructureHealth
+```
+
+**Test Failures**
+```powershell
+# Run specific test file
+Invoke-PesterTests -Path "./tests/unit/specific.Tests.ps1"
+
+# Check test configuration
+Get-TestConfiguration
+```
+
+### Getting Help
+
+1. **Check module README** for specific module issues
+2. **Review logs** in `./logs/` directory
+3. **Run health checks** with UnifiedMaintenance module
+4. **Check documentation** in `./docs/` directory
+5. **Open GitHub issue** for unresolved problems
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🙏 Acknowledgments
+
+Built with:
+- **PowerShell 7+** - Cross-platform automation
+- **OpenTofu** - Infrastructure as Code
+- **Pester** - PowerShell testing framework
+- **GitHub Actions** - CI/CD automation
+
+---
+
+**Quick Links:**
+- [Project Overview](docs/overview.md)
+- [Testing Guide](docs/BULLETPROOF-TESTING-GUIDE.md)
+- [Module Documentation](core-runner/modules/)
+- [GitHub Instructions](.github/instructions/)
+- [Roadmap](docs/roadmap/)
