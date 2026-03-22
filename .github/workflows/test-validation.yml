@@ -1,0 +1,202 @@
+name: Test Validation & Quality Assurance
+
+on:
+  pull_request:
+    branches: [ main, develop ]
+    paths:
+      - '**.ps1'
+      - '**.psm1'
+      - '**.psd1'
+      - 'tests/**'
+      - '.github/workflows/test-validation.yml'
+  push:
+    branches: [ main, develop ]
+    paths:
+      - '**.ps1'
+      - '**.psm1'
+      - '**.psd1'
+      - 'tests/**'
+  workflow_dispatch:
+
+env:
+  PROJECT_ROOT: ${{ github.workspace }}
+
+jobs:
+  code-quality:
+    name: Code Quality & Linting
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup PowerShell
+        shell: pwsh
+        run: |
+          Write-Host "PowerShell Version: $($PSVersionTable.PSVersion)"
+          Write-Host "OS: $($PSVersionTable.OS)"
+
+      - name: Install PSScriptAnalyzer
+        shell: pwsh
+        run: |
+          Install-Module -Name PSScriptAnalyzer -Force -Scope CurrentUser -SkipPublisherCheck
+          Write-Host "✓ PSScriptAnalyzer installed: $(Get-Module PSScriptAnalyzer -ListAvailable | Select-Object -ExpandProperty Version)"
+
+      - name: Run PSScriptAnalyzer
+        shell: pwsh
+        run: |
+          $results = Invoke-ScriptAnalyzer -Path . -Recurse -Settings './tests/config/PSScriptAnalyzerSettings.psd1' -Severity Error,Warning
+          
+          if ($results) {
+            Write-Host "❌ PSScriptAnalyzer found issues:" -ForegroundColor Red
+            $results | Format-Table -AutoSize
+            
+            # Count by severity
+            $errors = ($results | Where-Object Severity -eq 'Error').Count
+            $warnings = ($results | Where-Object Severity -eq 'Warning').Count
+            
+            Write-Host ""
+            Write-Host "Errors: $errors, Warnings: $warnings" -ForegroundColor Yellow
+            
+            # Configurable warning threshold (default: 10)
+            $warningThreshold = if ($env:PSSA_WARNING_THRESHOLD) { [int]$env:PSSA_WARNING_THRESHOLD } else { 10 }
+            
+            # Fail on errors, warn on warnings above threshold
+            if ($errors -gt 0) {
+              Write-Error "Found $errors PSScriptAnalyzer errors"
+              exit 1
+            } elseif ($warnings -gt $warningThreshold) {
+              Write-Warning "Found $warnings PSScriptAnalyzer warnings (threshold: $warningThreshold)"
+              exit 1
+            }
+          } else {
+            Write-Host "✅ No PSScriptAnalyzer issues found" -ForegroundColor Green
+          }
+
+  unit-tests:
+    name: Unit Tests
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        include:
+          - os: ubuntu-latest
+            platform: Linux
+          - os: windows-latest
+            platform: Windows
+          - os: macos-latest
+            platform: macOS
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup PowerShell modules
+        shell: pwsh
+        run: |
+          try {
+            # TODO: Consider caching Pester module for improved performance across jobs
+            Install-Module -Name Pester -MinimumVersion 5.0 -Force -Scope CurrentUser -SkipPublisherCheck -ErrorAction Stop
+            Write-Host "✓ Pester installed: $(Get-Module Pester -ListAvailable | Select-Object -First 1 | Select-Object -ExpandProperty Version)"
+          } catch {
+            Write-Error "Failed to install Pester module: $($_.Exception.Message)"
+            exit 1
+          }
+
+      - name: Run Unit Tests
+        shell: pwsh
+        run: |
+          $env:PROJECT_ROOT = "${{ github.workspace }}"
+          pwsh -File "./tests/Run-BulletproofTests.ps1" -TestSuite "Quick" -CI -LogLevel "Normal"
+
+      - name: Upload Test Results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-results-${{ matrix.platform }}
+          path: |
+            tests/results/**/*.xml
+            tests/results/**/*.html
+          retention-days: 30
+
+  integration-tests:
+    name: Integration Tests
+    runs-on: ubuntu-latest
+    needs: unit-tests
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup PowerShell modules
+        shell: pwsh
+        run: |
+          try {
+            Install-Module -Name Pester -MinimumVersion 5.0 -Force -Scope CurrentUser -SkipPublisherCheck -ErrorAction Stop
+            Write-Host "✓ Pester installed: $(Get-Module Pester -ListAvailable | Select-Object -First 1 | Select-Object -ExpandProperty Version)"
+          } catch {
+            Write-Error "Failed to install Pester module: $($_.Exception.Message)"
+            exit 1
+          }
+
+      - name: Run Integration Tests
+        shell: pwsh
+        run: |
+          $env:PROJECT_ROOT = "${{ github.workspace }}"
+          
+          try {
+            # Import modules with error handling
+            Import-Module "$env:PROJECT_ROOT/core-runner/modules/Logging" -Force -ErrorAction Stop
+            Write-Host "✓ Loaded Logging module"
+            
+            Import-Module "$env:PROJECT_ROOT/core-runner/modules/TestingFramework" -Force -ErrorAction Stop
+            Write-Host "✓ Loaded TestingFramework module"
+          } catch {
+            Write-Error "Failed to import required modules: $($_.Exception.Message)"
+            exit 1
+          }
+          
+          # Run integration tests
+          $config = New-PesterConfiguration
+          $config.Run.Path = "./tests/integration"
+          $config.Run.PassThru = $true
+          $config.TestResult.Enabled = $true
+          $config.TestResult.OutputPath = "./tests/results/integration-results.xml"
+          $config.Output.Verbosity = "Detailed"
+          
+          $result = Invoke-Pester -Configuration $config
+          
+          if ($result.FailedCount -gt 0) {
+            Write-Error "Integration tests failed: $($result.FailedCount) failures"
+            exit 1
+          }
+
+      - name: Upload Integration Results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: integration-test-results
+          path: tests/results/integration-results.xml
+          retention-days: 30
+
+  test-summary:
+    name: Test Summary
+    runs-on: ubuntu-latest
+    needs: [code-quality, unit-tests, integration-tests]
+    if: always()
+    
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+
+      - name: Generate Summary
+        shell: pwsh
+        run: |
+          Write-Host "## 🧪 Test Validation Summary" -ForegroundColor Cyan
+          Write-Host ""
+          Write-Host "✅ All validation checks completed" -ForegroundColor Green
+          Write-Host ""
+          Write-Host "### Jobs Status:"
+          Write-Host "- Code Quality: ${{ needs.code-quality.result }}"
+          Write-Host "- Unit Tests: ${{ needs.unit-tests.result }}"
+          Write-Host "- Integration Tests: ${{ needs.integration-tests.result }}"
