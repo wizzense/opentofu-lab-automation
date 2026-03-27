@@ -74,6 +74,7 @@ Comprehensive instructions for GitHub Copilot including:
 
 #### Specialized Prompt Files
 
+These prompt files are stored in the `.github/prompts` directory.
 **`prompts-powershell.md`**
 
 - Module development prompts
@@ -194,7 +195,7 @@ Instructions are automatically applied based on file patterns:
 
 ### Adding New Prompts
 
-Create new prompt files in the `.vscode` directory following the existing pattern:
+Create new prompt files in the `.github/prompts` directory following the existing pattern:
 
 - Use descriptive headings
 - Include specific, actionable instructions
