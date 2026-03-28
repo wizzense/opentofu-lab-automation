@@ -21,10 +21,6 @@
             "path": "./opentofu"
         },
         {
-            "name": "Python CLI",
-            "path": "./py"
-        },
-        {
             "name": "Tests",
             "path": "./tests"
         },
