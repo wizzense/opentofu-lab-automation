@@ -3,18 +3,37 @@
 
 Describe 'Get-LabConfig Tests' {
     BeforeAll {
-        Import-Module "$env:PWSH_MODULES_PATH/LabRunner/" -Force}
+        # Dot-source the script directly for testing
+        $script:ScriptPath = Join-Path $env:PROJECT_ROOT 'core-runner/modules/LabRunner/Get-LabConfig.ps1'
+        . $script:ScriptPath
 
-    Context 'Module Loading' {
-        It 'should load required modules' {
-            Get-Module LabRunner | Should -Not -BeNullOrEmpty
+        # Create sample JSON and YAML config files
+        $script:JsonPath = Join-Path $TestDrive 'config.json'
+        @{ LabName = 'JsonLab' } | ConvertTo-Json | Set-Content -Path $script:JsonPath -Encoding UTF8
+
+        $script:YamlPath = Join-Path $TestDrive 'config.yaml'
+        "LabName: YamlLab" | Set-Content -Path $script:YamlPath -Encoding UTF8
+    }
+
+    Context 'Script Validation' {
+        It 'script should exist' {
+            $script:ScriptPath | Should -Exist
         }
     }
 
-    Context 'Functionality Tests' {
-        It 'should execute without errors' {
-            # Basic test implementation
-            $true | Should -BeTrue
+    Context 'JSON Loading' {
+        It 'should parse JSON config' {
+            $result = Get-LabConfig -Path $script:JsonPath
+            $result.LabName | Should -Be 'JsonLab'
+            $result.Directories | Should -Not -BeNullOrEmpty
+        }
+    }
+
+    Context 'YAML Loading' {
+        It 'should parse YAML config' {
+            $result = Get-LabConfig -Path $script:YamlPath
+            $result.LabName | Should -Be 'YamlLab'
+            $result.Directories | Should -Not -BeNullOrEmpty
         }
     }
 
